@@ -208,7 +208,7 @@ test.describe('when using the file tree to', () => {
       tag: '@electron',
     },
     async ({ browser: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
+      const { page } = await setupElectron({
         testInfo,
       })
 
@@ -257,7 +257,7 @@ test.describe('when using the file tree to', () => {
       await page.locator('#showDebugPanel').getByText('OffOn').click()
       await page.getByTestId('settings-close-button').click()
 
-      test.step('swap between small and large files', async () => {
+      await test.step('swap between small and large files', async () => {
         await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl
         await mainFile.click()
