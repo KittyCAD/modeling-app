@@ -72,8 +72,8 @@ const createWindow = (): BrowserWindow => {
       preload: path.join(__dirname, './preload.js'),
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    // frame: false,
-    // titleBarStyle: 'hiddenInset',
+    frame: !window.electron.os.isMac,
+    titleBarStyle: 'hiddenInset',
   })
 
   // and load the index.html of the app.
