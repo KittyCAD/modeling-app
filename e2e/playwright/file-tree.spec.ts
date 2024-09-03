@@ -267,7 +267,6 @@ test.describe('when using the file tree to', () => {
         // Once it is building, click back to the smaller file
         await mainFile.click()
         await expectCmdLog('[data-message-type="execution-done"]', 20_000)
-        await new Promise(() => {})
         await closeDebugPanel()
       })
     }
