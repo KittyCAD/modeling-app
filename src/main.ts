@@ -23,6 +23,14 @@ if (!process.env.NODE_ENV)
   console.warn(
     '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
   )
+// Default prod values
+process.env.VITE_KC_API_WS_MODELING_URL =
+  'wss://api.zoo.dev/ws/modeling/commands'
+process.env.VITE_KC_API_BASE_URL = 'https://api.zoo.dev'
+process.env.VITE_KC_SITE_BASE_URL = 'https://zoo.dev'
+process.env.VITE_KC_SKIP_AUTH = 'false'
+process.env.VITE_KC_CONNECTION_TIMEOUT_MS = '15000'
+// dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
