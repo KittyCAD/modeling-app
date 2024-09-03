@@ -48,6 +48,10 @@ export type CommandBarMachineEvent =
     }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
   | {
+      type: 'xstate.done.actor.validateSingleArgument'
+      output: { [x: string]: unknown }
+    }
+  | {
       type: 'xstate.done.actor.validateArguments'
       output: { [x: string]: unknown }
     }
@@ -76,7 +80,7 @@ export const commandBarMachine = setup({
   actions: {
     enqueueValidArgsToSubmit: assign({
       argumentsToSubmit: ({ context, event }) => {
-        if (event.type !== 'xstate.done.actor.validateArguments') return {}
+        if (event.type !== 'xstate.done.actor.validateSingleArgument') return {}
         const [argName, argData] = Object.entries(event.output)[0]
         const { currentArgument } = context
         if (!currentArgument) return {}
@@ -428,7 +432,7 @@ export const commandBarMachine = setup({
         Validating: {
           invoke: {
             src: 'Validate argument',
-            id: 'validateArgument',
+            id: 'validateSingleArgument',
             input: ({ event }) => {
               if (event.type !== 'Submit argument') return {}
               return event.data

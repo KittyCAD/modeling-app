@@ -90,9 +90,9 @@ export function createMachineCommand<
     needsReview: commandConfig.needsReview || false,
     onSubmit: (data?: S[typeof type]) => {
       if (data !== undefined && data !== null) {
-        send(type, { data })
+        send({ type, data })
       } else {
-        send(type)
+        send({ type })
       }
     },
   }

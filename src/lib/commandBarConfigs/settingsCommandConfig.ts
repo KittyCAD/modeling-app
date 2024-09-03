@@ -132,7 +132,7 @@ export function createSettingsCommand({
       if (data !== undefined && data !== null) {
         send({ type: `set.${type}`, data })
       } else {
-        send(type)
+        send({ type })
       }
     },
     args: {
