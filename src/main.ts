@@ -11,6 +11,7 @@ import * as kittycad from '@kittycad/lib/import'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
+import os from 'node:os'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -72,8 +73,8 @@ const createWindow = (): BrowserWindow => {
       preload: path.join(__dirname, './preload.js'),
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    // frame: false,
-    // titleBarStyle: 'hiddenInset',
+    frame: os.platform() !== 'darwin',
+    titleBarStyle: 'hiddenInset',
   })
 
   // and load the index.html of the app.
