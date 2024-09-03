@@ -1,0 +1,65 @@
+appId: dev.zoo.modeling-app
+
+directories:
+  output: out
+  buildResources: assets
+
+files:
+  - .vite/**
+
+mac:
+  category: public.app-category.developer-tools
+  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
+  target:
+    - target: dmg 
+      arch:
+        - x64
+        - arm64
+    - target: zip 
+      arch:
+        - x64
+        - arm64
+  notarize:
+    teamId: 92H8YB3B95
+
+win:
+  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - arm64
+    - target: msi
+      arch:
+        - x64
+        - arm64
+  signingHashAlgorithms:
+    - sha256
+  sign: "./sign-win.js"
+  publisherName: "KittyCAD Inc"  # needs to be exactly like on Digicert
+  icon: "assets/icon.ico"
+
+msi:
+  oneClick: false
+  perMachine: true
+
+nsis:
+  oneClick: false
+  perMachine: true
+  allowElevation: true
+  license: "LICENSE"
+  installerIcon: "assets/icon.ico"
+  include: "./installer.nsh"
+
+linux:
+  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
+  target:
+    - target: appImage
+      arch:
+        - x64
+        - arm64
+
+publish:
+  - provider: generic
+    url: https://dl.zoo.dev/releases/modeling-app/test/electron-builder
+    channel: latest

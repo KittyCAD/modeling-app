@@ -511,10 +511,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     editorTextMatches: async (code: string) => {
       const editor = page.locator(editorSelector)
-      const editorText = await editor.textContent()
-      return expect(util.toNormalizedCode(editorText || '')).toBe(
-        util.toNormalizedCode(code)
-      )
+      return expect(editor).toHaveText(code, { useInnerText: true })
     },
 
     pasteCodeInEditor: async (code: string) => {
@@ -532,15 +529,59 @@ export async function getUtils(page: Page, test_?: typeof test) {
       })
     },
 
+    createNewFile: async (name: string) => {
+      return test?.step(`Create a file named ${name}`, async () => {
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+      })
+    },
+
+    selectFile: async (name: string) => {
+      return test?.step(`Select ${name}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click()
+      })
+    },
+
     createNewFileAndSelect: async (name: string) => {
       return test?.step(`Create a file named ${name}, select it`, async () => {
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
         await page
-          .getByTestId('file-pane-scroll-container')
+          .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
           .click()
+      })
+    },
+
+    renameFile: async (fromName: string, toName: string) => {
+      return test?.step(`Rename ${fromName} to ${toName}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: fromName })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-rename').click()
+        await page.getByTestId('file-rename-field').fill(toName)
+        await page.keyboard.press('Enter')
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: toName })
+          .click()
+      })
+    },
+
+    deleteFile: async (name: string) => {
+      return test?.step(`Delete ${name}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await page.getByTestId('delete-confirmation').click()
       })
     },
 
@@ -772,7 +813,6 @@ export async function setup(context: BrowserContext, page: Page) {
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      console.log('TEST_SETTINGS.projects', settings)
     },
     {
       token: secrets.token,

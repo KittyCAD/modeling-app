@@ -35,7 +35,7 @@ export const ActionIcon = ({
   return (
     <div
       className={
-        `w-fit inline-grid place-content-center ${className} ` +
+        `w-fit self-stretch inline-grid place-content-center ${className} ` +
         computedBgClassName
       }
     >
