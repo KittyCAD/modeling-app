@@ -16,7 +16,7 @@ type ToolbarMode = {
 }
 
 export interface ToolbarItemCallbackProps {
-  modelingStateMatches: StateFrom<typeof modelingMachine>['matches']
+  modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
   sketchPathId: string | false
@@ -282,11 +282,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'line',
-        onClick: ({ modelingStateMatches: matches, modelingSend }) =>
+        onClick: ({ modelingState, modelingSend }) =>
           modelingSend({
             type: 'change tool',
             data: {
-              tool: !matches({ Sketch: 'Line tool' }) ? 'line' : 'none',
+              tool: !modelingState.matches({ Sketch: 'Line tool' })
+                ? 'line'
+                : 'none',
             },
           }),
         icon: 'line',
@@ -306,11 +308,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'tangential-arc',
-          onClick: ({ modelingStateMatches, modelingSend }) =>
+          onClick: ({ modelingState, modelingSend }) =>
             modelingSend({
               type: 'change tool',
               data: {
-                tool: !modelingStateMatches({ Sketch: 'Tangential arc to' })
+                tool: !modelingState.matches({ Sketch: 'Tangential arc to' })
                   ? 'tangentialArc'
                   : 'none',
               },
@@ -386,11 +388,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'corner-rectangle',
-          onClick: ({ modelingStateMatches, modelingSend }) =>
+          onClick: ({ modelingState, modelingSend }) =>
             modelingSend({
               type: 'change tool',
               data: {
-                tool: !modelingStateMatches({ Sketch: 'Rectangle tool' })
+                tool: !modelingState.matches({ Sketch: 'Rectangle tool' })
                   ? 'rectangle'
                   : 'none',
               },

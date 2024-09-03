@@ -68,12 +68,12 @@ export function Toolbar({
    */
   const configCallbackProps: ToolbarItemCallbackProps = useMemo(
     () => ({
-      modelingStateMatches: state.matches,
+      modelingState: state,
       modelingSend: send,
       commandBarSend,
       sketchPathId,
     }),
-    [state.matches, send, commandBarSend, sketchPathId]
+    [state, send, commandBarSend, sketchPathId]
   )
 
   /**
