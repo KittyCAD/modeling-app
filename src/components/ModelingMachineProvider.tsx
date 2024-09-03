@@ -363,7 +363,7 @@ export const ModelingMachineProvider = ({
           return {}
         }),
         Make: async (_, event) => {
-          if (event.type !== 'Make' || TEST) return
+          if (event.type !== 'Make') return
           // Check if we already have an export intent.
           if (engineCommandManager.exportIntent) {
             toast.error('Already exporting')
@@ -407,7 +407,7 @@ export const ModelingMachineProvider = ({
           )
         },
         'Engine export': async (_, event) => {
-          if (event.type !== 'Export' || TEST) return
+          if (event.type !== 'Export') return
           if (engineCommandManager.exportIntent) {
             toast.error('Already exporting')
             return
