@@ -107,10 +107,7 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
           codeManager.updateCodeStateEditor(bracket)
           await codeManager.writeToFile()
 
-          kclManager.isFirstRender = true
-          await kclManager.executeCode(true).then(() => {
-            kclManager.isFirstRender = false
-          })
+          await kclManager.executeCode(true)
           props.setShouldShowWarning(false)
         }}
         nextText="Overwrite code and continue"

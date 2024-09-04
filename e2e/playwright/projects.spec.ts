@@ -495,10 +495,6 @@ test(
 
     await file.click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
     await expect(u.codeLocator).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
     )
