@@ -852,10 +852,12 @@ export async function setupElectron({
   testInfo,
   folderSetupFn,
   cleanProjectDir = true,
+  appSettings,
 }: {
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
+  appSettings?: Partial<SaveSettingsPayload>
 }) {
   // create or otherwise clear the folder
   const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -889,15 +891,19 @@ export async function setupElectron({
 
   if (cleanProjectDir) {
     const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = TOML.stringify({
-      ...TEST_SETTINGS,
-      settings: {
-        app: {
-          ...TEST_SETTINGS.app,
-          projectDirectory: projectDirName,
-        },
-      },
-    })
+    const settingsOverrides = TOML.stringify(
+      appSettings
+        ? { settings: appSettings }
+        : {
+            ...TEST_SETTINGS,
+            settings: {
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+              },
+            },
+          }
+    )
     await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
   }
 
