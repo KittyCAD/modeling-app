@@ -109,6 +109,13 @@ test(
         // clean up output.gltf
         await fsp.rm('output.gltf')
       })
+
+      await test.step('Spinner should say export-done', async () => {
+        const modelStateIndicator = page.getByTestId(
+          'model-state-indicator-export-done'
+        )
+        await expect(modelStateIndicator).toBeVisible({ timeout: 60000 })
+      })
     })
 
     await test.step('on open of file in file pane', async () => {
@@ -182,6 +189,13 @@ test(
 
         // clean up output.gltf
         await fsp.rm('output.gltf')
+      })
+
+      await test.step('Spinner should say export-done', async () => {
+        const modelStateIndicator = page.getByTestId(
+          'model-state-indicator-export-done'
+        )
+        await expect(modelStateIndicator).toBeVisible({ timeout: 60000 })
       })
       await electronApp.close()
     })
