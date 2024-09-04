@@ -238,7 +238,9 @@ test.describe('when using the file tree to', () => {
 
       // Create a large lego file
       await createNewFile('lego')
-      const legoFile = page.getByRole('button', { name: 'lego.kcl' })
+      const legoFile = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'lego.kcl' }),
+      })
       await expect(legoFile).toBeVisible({ timeout: 60_000 })
       await legoFile.click()
       const kclLego = await fsp.readFile(
@@ -246,7 +248,9 @@ test.describe('when using the file tree to', () => {
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)
-      const mainFile = page.getByRole('button', { name: 'main.kcl' })
+      const mainFile = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'main.kcl' }),
+      })
 
       // Open settings and enable the debug panel
       await page
