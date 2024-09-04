@@ -91,7 +91,7 @@ interface ExtrudeEdge {
   type: 'extrudeEdge'
   segId: string
   extrusionId: string
-  edgeId: string
+  subType: 'opposite' | 'adjacent'
 }
 
 /** A edgeCut is a more generic term for both fillet or chamfer */
@@ -422,6 +422,56 @@ export function getArtifactsToUpdate({
       }
     })
     return returnArr
+  } else if (
+    // is opposite edge
+    (cmd.type === 'solid3d_get_opposite_edge' &&
+      response.type === 'modeling' &&
+      response.data.modeling_response.type === 'solid3d_get_opposite_edge' &&
+      response.data.modeling_response.data.edge) ||
+    // or is adjacent edge
+    (cmd.type === 'solid3d_get_prev_adjacent_edge' &&
+      response.type === 'modeling' &&
+      response.data.modeling_response.type ===
+        'solid3d_get_prev_adjacent_edge' &&
+      response.data.modeling_response.data.edge)
+  ) {
+    const wall = getArtifact(cmd.face_id)
+    if (wall?.type !== 'wall') return returnArr
+    const extrusion = getArtifact(wall.extrusionId)
+    if (extrusion?.type !== 'extrusion') return returnArr
+    const path = getArtifact(extrusion.pathId)
+    if (path?.type !== 'path') return returnArr
+    const segment = getArtifact(cmd.edge_id)
+    if (segment?.type !== 'segment') return returnArr
+
+    return [
+      {
+        id: response.data.modeling_response.data.edge,
+        artifact: {
+          type: 'extrudeEdge',
+          subType:
+            cmd.type === 'solid3d_get_prev_adjacent_edge'
+              ? 'adjacent'
+              : 'opposite',
+          segId: cmd.edge_id,
+          extrusionId: path.extrusionId,
+        },
+      },
+      {
+        id: cmd.edge_id,
+        artifact: {
+          ...segment,
+          edgeIds: [response.data.modeling_response.data.edge],
+        },
+      },
+      {
+        id: path.extrusionId,
+        artifact: {
+          ...extrusion,
+          edgeIds: [response.data.modeling_response.data.edge],
+        },
+      },
+    ]
   } else if (cmd.type === 'solid3d_fillet_edge') {
     returnArr.push({
       id,
@@ -649,6 +699,18 @@ export function getWallCodeRef(
 ): CommonCommandProperties | Error {
   const seg = getArtifactOfTypes(
     { key: wall.segId, types: ['segment'] },
+    artifactGraph
+  )
+  if (err(seg)) return seg
+  return seg.codeRef
+}
+
+export function getExtrudeEdgeCodeRef(
+  edge: ExtrudeEdge,
+  artifactGraph: ArtifactGraph
+): CommonCommandProperties | Error {
+  const seg = getArtifactOfTypes(
+    { key: edge.segId, types: ['segment'] },
     artifactGraph
   )
   if (err(seg)) return seg

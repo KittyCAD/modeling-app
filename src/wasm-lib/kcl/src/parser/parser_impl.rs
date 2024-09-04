@@ -135,13 +135,16 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
 
 fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     let mut non_code_meta = NonCodeMeta::default();
-    let (head, noncode) = terminated(
-        (expression_but_not_pipe, preceded(whitespace, opt(non_code_node))),
+    let (head, noncode): (_, Vec<_>) = terminated(
+        (
+            expression_but_not_pipe,
+            repeat(0.., preceded(whitespace, non_code_node)),
+        ),
         peek(pipe_surrounded_by_whitespace),
     )
     .context(expected("an expression, followed by the |> (pipe) operator"))
     .parse_next(i)?;
-    if let Some(nc) = noncode {
+    for nc in noncode {
         non_code_meta.insert(0, nc);
     }
     let mut values = vec![head];
@@ -3452,6 +3455,17 @@ mod snapshot_tests {
             // b: 2,
             c: 3
         }"
+    );
+    snapshot_test!(
+        ba,
+        r#"
+const sketch001 = startSketchOn('XY')
+  // |> arc({
+  //   angleEnd: 270,
+  //   angleStart: 450,
+  // }, %)
+  |> startProfileAt(%)
+"#
     );
 }
 

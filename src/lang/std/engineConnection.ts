@@ -16,6 +16,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import { KclManager } from 'lang/KclSingleton'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1279,6 +1281,7 @@ interface PendingMessage {
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
+  isSceneCommand: boolean
 }
 export class EngineCommandManager extends EventTarget {
   /**
@@ -1379,6 +1382,7 @@ export class EngineCommandManager extends EventTarget {
   }: CustomEvent<NewTrackArgs>) => {}
   modelingSend: ReturnType<typeof useModelingContext>['send'] =
     (() => {}) as any
+  kclManager: null | KclManager = null
 
   set exportIntent(intent: ExportIntent | null) {
     this._exportIntent = intent
@@ -1932,11 +1936,21 @@ export class EngineCommandManager extends EventTarget {
       ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
-    return this.sendCommand(command.cmd_id, {
-      command,
-      idToRangeMap: {},
-      range: [0, 0],
-    }).then(([a]) => a)
+    return this.sendCommand(
+      command.cmd_id,
+      {
+        command,
+        idToRangeMap: {},
+        range: [0, 0],
+      },
+      true // isSceneCommand
+    )
+      .then(([a]) => a)
+      .catch((e) => {
+        // TODO: Previously was never caught, we are not rejecting these pendingCommands but this needs to be handled at some point.
+        /*noop*/
+        return null
+      })
   }
   /**
    * A wrapper around the sendCommand where all inputs are JSON strings
@@ -1963,6 +1977,12 @@ export class EngineCommandManager extends EventTarget {
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
+    // Current executeAst is stale, going to interrupt, a new executeAst will trigger
+    // Used in conjunction with rejectAllModelingCommands
+    if (this?.kclManager?.executeIsStale) {
+      return Promise.reject(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
+    }
+
     const resp = await this.sendCommand(id, {
       command,
       range,
@@ -1980,7 +2000,8 @@ export class EngineCommandManager extends EventTarget {
       command: PendingMessage['command']
       range: PendingMessage['range']
       idToRangeMap: PendingMessage['idToRangeMap']
-    }
+    },
+    isSceneCommand = false
   ): Promise<[Models['WebSocketResponse_type']]> {
     const { promise, resolve, reject } = promiseFactory<any>()
     this.pendingCommands[id] = {
@@ -1990,7 +2011,9 @@ export class EngineCommandManager extends EventTarget {
       command: message.command,
       range: message.range,
       idToRangeMap: message.idToRangeMap,
+      isSceneCommand,
     }
+
     if (message.command.type === 'modeling_cmd_req') {
       this.orderedCommands.push({
         command: message.command,
@@ -2037,6 +2060,19 @@ export class EngineCommandManager extends EventTarget {
       this.deferredArtifactPopulated(null)
     }
   }
+
+  /**
+   * Reject all of the modeling pendingCommands created from sendModelingCommandFromWasm
+   * This interrupts the runtime of executeAst. Stops the AST processing and stops sending commands
+   * to the engine
+   */
+  rejectAllModelingCommands(rejectionMessage: string) {
+    Object.values(this.pendingCommands).forEach(
+      ({ reject, isSceneCommand }) =>
+        !isSceneCommand && reject(rejectionMessage)
+    )
+  }
+
   async initPlanes() {
     if (this.planesInitialized()) return
     const planes = await this.makeDefaultPlanes()
