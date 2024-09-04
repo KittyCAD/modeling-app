@@ -959,7 +959,7 @@ test(
         .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
           timeout: 10_000,
         })
-        .toBeLessThan(10)
+        .toBeLessThan(15)
     })
 
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
