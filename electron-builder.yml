@@ -27,6 +27,7 @@ mac:
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
       role: Editor
+      rank: Owner
 
 win:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
