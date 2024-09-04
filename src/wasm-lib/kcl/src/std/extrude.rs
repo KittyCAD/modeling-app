@@ -99,7 +99,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         )
         .await?;
 
-        args.send_modeling_cmd(
+        args.batch_modeling_cmd(
             id,
             kittycad::types::ModelingCmd::Extrude {
                 target: sketch_group.id,
