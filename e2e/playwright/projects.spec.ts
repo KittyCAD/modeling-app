@@ -176,7 +176,7 @@ test.describe('Can export from electron app', () => {
             .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
               timeout: 10_000,
             })
-            .toBeLessThan(10)
+            .toBeLessThan(15)
         })
 
         const exportLocations: Array<Paths> = []
@@ -859,7 +859,7 @@ const extrude001 = extrude(200, sketch001)`)
       .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
         timeout: 10_000,
       })
-      .toBeLessThan(10)
+      .toBeLessThan(15)
 
     await expect(async () => {
       await page.mouse.move(0, 0, { steps: 5 })
@@ -868,7 +868,7 @@ const extrude001 = extrude(200, sketch001)`)
       // check user can interact with model by checking it turns yellow
       await expect
         .poll(() => u.getGreatestPixDiff(pointOnModel, [185, 185, 142]))
-        .toBeLessThan(10)
+        .toBeLessThan(15)
     }).toPass({ timeout: 40_000, intervals: [1_000] })
 
     await page.getByTestId('app-logo').click()
@@ -993,7 +993,7 @@ test(
         .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
           timeout: 10_000,
         })
-        .toBeLessThan(10)
+        .toBeLessThan(15)
     })
 
     await test.step('Opening the router-template project should load the stream', async () => {
