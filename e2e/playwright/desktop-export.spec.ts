@@ -82,6 +82,7 @@ test(
       // Look out for the toast message
       await expect(exportingToastMessage).toBeVisible()
       await expect(alreadyExportingToastMessage).not.toBeVisible()
+      await page.waitForTimeout(50000000)
 
       // Expect it to succeed.
       await expect(errorToastMessage).not.toBeVisible()
