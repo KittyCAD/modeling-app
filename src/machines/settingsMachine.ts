@@ -1,4 +1,4 @@
-import { assign, fromCallback, setup } from 'xstate'
+import { assign, setup } from 'xstate'
 import { Themes, getSystemTheme, setThemeClass } from 'lib/theme'
 import { createSettings, settings } from 'lib/settings/initialSettings'
 import {

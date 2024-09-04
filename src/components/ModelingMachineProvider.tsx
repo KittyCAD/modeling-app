@@ -11,7 +11,6 @@ import {
 } from 'xstate'
 import {
   ModelingMachineEvent,
-  SetSelections,
   getPersistedContext,
   modelingMachine,
   modelingMachineDefaultContext,
@@ -62,7 +61,7 @@ import {
   sketchOnExtrudedFace,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { PathToNode, Program, parse, recast } from 'lang/wasm'
+import { Program, parse, recast } from 'lang/wasm'
 import {
   getNodePathFromSourceRange,
   hasExtrudableGeometry,
