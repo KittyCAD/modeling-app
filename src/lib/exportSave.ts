@@ -14,7 +14,7 @@ const save_ = async (file: ModelingAppFile) => {
         extensions.push(extension)
       }
 
-      if (!(window as any).playwrightSkipFilePicker) {
+      if ((window as any).playwrightSkipFilePicker) {
         // skip file picker, save to default location
         await window.electron.writeFile(
           file.name,
