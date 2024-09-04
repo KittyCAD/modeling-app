@@ -462,9 +462,9 @@ export const readProjectSettingsFile = async (
  */
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
-  const initialDirConfig: DeepPartial<Configuration> = {
-    settings: { project: { directory: await getInitialDefaultDir() } },
-  }
+  const initialProjectDirConfig: DeepPartial<
+    Configuration['settings']['project']
+  > = { directory: await getInitialDefaultDir() }
 
   // The file exists, read it and parse it.
   if (window.electron.exists(settingsPath)) {
@@ -477,9 +477,24 @@ export const readAppSettingsFile = async () => {
     const hasProjectDirectorySetting =
       parsedAppConfig.settings?.project?.directory ||
       parsedAppConfig.settings?.app?.project_directory
-    return hasProjectDirectorySetting
-      ? parsedAppConfig
-      : Object.assign(parsedAppConfig, initialDirConfig)
+
+    if (hasProjectDirectorySetting) {
+      return parsedAppConfig
+    } else {
+      // inject the default project directory setting
+      const mergedConfig: DeepPartial<Configuration> = {
+        ...parsedAppConfig,
+        settings: {
+          ...parsedAppConfig.settings,
+          project: Object.assign(
+            {},
+            parsedAppConfig.settings?.project,
+            initialProjectDirConfig
+          ),
+        },
+      }
+      return mergedConfig
+    }
   }
 
   // The file doesn't exist, create a new one.
@@ -488,7 +503,19 @@ export const readAppSettingsFile = async () => {
     return Promise.reject(defaultAppConfig)
   }
 
-  return Object.assign(defaultAppConfig, initialDirConfig)
+  // inject the default project directory setting
+  const mergedDefaultConfig: DeepPartial<Configuration> = {
+    ...defaultAppConfig,
+    settings: {
+      ...defaultAppConfig.settings,
+      project: Object.assign(
+        {},
+        defaultAppConfig.settings?.project,
+        initialProjectDirConfig
+      ),
+    },
+  }
+  return mergedDefaultConfig
 }
 
 export const writeAppSettingsFile = async (tomlStr: string) => {
