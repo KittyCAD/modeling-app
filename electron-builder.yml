@@ -11,16 +11,174 @@ mac:
   category: public.app-category.developer-tools
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
-    - target: dmg 
+    - target: dmg
       arch:
         - x64
         - arm64
-    - target: zip 
+    - target: zip
       arch:
         - x64
         - arm64
   notarize:
     teamId: 92H8YB3B95
+  extendInfo:
+    - CFBundleDocumentTypes:
+      - LSItemContentTypes:
+          - dev.zoo.kcl
+        CFBundleTypeName: KCL
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Owner
+      - LSItemContentTypes:
+          - dev.zoo.toml
+        CFBundleTypeName: TOML
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - dev.zoo.gltf
+        CFBundleTypeName: glTF
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - dev.zoo.glb
+        CFBundleTypeName: glb
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - dev.zoo.step
+        CFBundleTypeName: STEP
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - dev.zoo.fbx
+        CFBundleTypeName: FBX
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - dev.zoo.sldprt
+        CFBundleTypeName: Solidworks Part
+        CFBundleTypeRole: Viewer
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - public.geometry-definition-format
+        CFBundleTypeName: OBJ
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - public.polygon-file-format
+        CFBundleTypeName: PLY
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - public.standard-tesselated-geometry-format
+        CFBundleTypeName: STL
+        CFBundleTypeRole: Editor
+        LSTypeIsPackage: false
+        LSHandlerRank: Default
+      - LSItemContentTypes:
+          - public.folder
+        CFBundleTypeName: Folders
+        CFBundleTypeRole: Viewer
+        LSHandlerRank: Alternate
+
+    - UTExportedTypeDeclarations:
+      - UTTypeIdentifier: dev.zoo.kcl
+        UTTypeReferenceURL: https://zoo.dev/docs/kcl
+        UTTypeConformsTo:
+          - public.source-code
+          - public.data
+          - public.text
+          - public.plain-text
+          - public.3d-content
+          - public.script
+        UTTypeDescription: KCL (KittyCAD Language) document
+        UTTypeTagSpecification:
+          public.filename-extension:
+            - kcl
+          public.mime-type:
+            - text/vnd.zoo.kcl
+      - UTTypeIdentifier: dev.zoo.gltf
+        UTTypeReferenceURL: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
+        UTTypeConformsTo:
+          - public.data
+          - public.text
+          - public.plain-text
+          - public.3d-content
+          - public.json
+        UTTypeDescription: Graphics Library Transmission Format (glTF)
+        UTTypeTagSpecification:
+          public.filename-extension:
+            - gltf
+          public.mime-type:
+            - model/gltf+json
+      - UTTypeIdentifier: dev.zoo.glb
+        UTTypeReferenceURL: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
+        UTTypeConformsTo:
+          - public.data
+          - public.3d-content
+        UTTypeDescription: Graphics Library Transmission Format (glTF) binary
+        UTTypeTagSpecification:
+          public.filename-extension:
+            - glb
+          public.mime-type:
+            - model/gltf-binary
+      - UTTypeIdentifier: dev.zoo.step
+        UTTypeReferenceURL: https://www.loc.gov/preservation/digital/formats/fdd/fdd000448.shtml
+        UTTypeConformsTo:
+          - public.data
+          - public.3d-content
+          - public.text
+          - public.plain-text
+        UTTypeDescription: STEP-file, ISO 10303-21
+        UTTypeTagSpecification:
+          public.filename-extension:
+            - step
+            - stp
+          public.mime-type:
+            - model/step
+      - UTTypeIdentifier: dev.zoo.sldprt
+        UTTypeReferenceURL: https://docs.fileformat.com/cad/sldprt/
+        UTTypeConformsTo:
+          - public.data
+          - public.3d-content
+        UTTypeDescription: Solidworks Part
+        UTTypeTagSpecification:
+          public.filename-extension:
+            - sldprt
+          public.mime-type:
+            - model/vnd.solidworks.sldprt
+      - UTTypeIdentifier: dev.zoo.fbx
+        UTTypeReferenceURL: https://en.wikipedia.org/wiki/FBX
+        UTTypeConformsTo:
+          - public.data
+          - public.3d-content
+        UTTypeDescription: Autodesk Filmbox (FBX) format
+        UTTypeTagSpecification:
+          public.filename-extension:
+            - fbx
+            - fbxb
+          public.mime-type:
+            - model/vnd.autodesk.fbx
+      - UTTypeIdentifier: dev.zoo.toml
+        UTTypeReferenceURL: https://toml.io/en/
+        UTTypeConformsTo:
+          - public.data
+          - public.text
+          - public.plain-text
+        UTTypeDescription: Tom's Obvious Minimal Language
+        UTTypeTagSpecification:
+          public.filename-extension:
+            - kcl
+          public.mime-type:
+            - text/toml
 
 win:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
@@ -38,6 +196,13 @@ win:
   sign: "./sign-win.js"
   publisherName: "KittyCAD Inc"  # needs to be exactly like on Digicert
   icon: "assets/icon.ico"
+  fileAssociations:
+    - ext: kcl
+      name: kcl
+      mimeType: text/vnd.zoo.kcl
+      description: Zoo KCL File
+      icon: "assets/icon.ico"
+      role: Editor
 
 msi:
   oneClick: false
@@ -57,6 +222,13 @@ linux:
       arch:
         - x64
         - arm64
+  fileAssociations:
+    - ext: kcl
+      name: kcl
+      mimeType: text/vnd.zoo.kcl
+      description: Zoo KCL File
+      icon: "assets/icon.ico"
+      role: Editor
 
 publish:
   - provider: generic
