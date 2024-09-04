@@ -49,7 +49,6 @@ win:
       name: kcl
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
-      icon: "assets/icon.ico"
       role: Editor
 
 msi:
@@ -75,7 +74,6 @@ linux:
       name: kcl
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
-      icon: "assets/icon.ico"
       role: Editor
 
 publish:
