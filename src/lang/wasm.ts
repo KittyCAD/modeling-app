@@ -95,8 +95,6 @@ export const wasmUrl = () => {
       document.location.pathname.split('/').slice(0, -1).join('/') +
       '/wasm_lib_bg.wasm'
 
-  console.log(`Full URL for WASM: ${fullUrl}`)
-
   return fullUrl
 }
 
