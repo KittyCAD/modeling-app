@@ -17,6 +17,7 @@ const DEFAULT_V_DEGREE: u32 = 1;
 /// Data for a loft.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub struct LoftData {
     /// Degree of the interpolation. Must be greater than zero.
     /// For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction.
