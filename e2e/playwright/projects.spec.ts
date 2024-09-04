@@ -867,7 +867,7 @@ const extrude001 = extrude(200, sketch001)`)
       await page.mouse.click(pointOnModel.x, pointOnModel.y)
       // check user can interact with model by checking it turns yellow
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [185, 185, 142]))
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [180, 180, 137]))
         .toBeLessThan(15)
     }).toPass({ timeout: 40_000, intervals: [1_000] })
 
