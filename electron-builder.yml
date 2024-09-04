@@ -47,7 +47,6 @@ nsis:
   oneClick: false
   perMachine: true
   allowElevation: true
-  license: "LICENSE"
   installerIcon: "assets/icon.ico"
   include: "./installer.nsh"
 
