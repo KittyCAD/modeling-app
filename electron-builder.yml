@@ -11,11 +11,11 @@ mac:
   category: public.app-category.developer-tools
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
-    - target: dmg 
+    - target: dmg
       arch:
         - x64
         - arm64
-    - target: zip 
+    - target: zip
       arch:
         - x64
         - arm64
@@ -38,6 +38,13 @@ win:
   sign: "./sign-win.js"
   publisherName: "KittyCAD Inc"  # needs to be exactly like on Digicert
   icon: "assets/icon.ico"
+  fileAssociations:
+    - ext: kcl
+      name: kcl
+      mimeType: text/vnd.zoo.kcl
+      description: Zoo KCL File
+      icon: "assets/icon.ico"
+      role: Editor
 
 msi:
   oneClick: false
@@ -57,6 +64,13 @@ linux:
       arch:
         - x64
         - arm64
+  fileAssociations:
+    - ext: kcl
+      name: kcl
+      mimeType: text/vnd.zoo.kcl
+      description: Zoo KCL File
+      icon: "assets/icon.ico"
+      role: Editor
 
 publish:
   - provider: generic
