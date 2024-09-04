@@ -233,10 +233,6 @@ test.describe('Testing settings', () => {
     `Project settings override user settings on desktop`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
@@ -276,11 +272,26 @@ test.describe('Testing settings', () => {
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
         await settingsCloseButton.click()
       })
+      let screenshot = await page.screenshot()
+      await testInfo.attach('screenshot1', {
+        body: screenshot,
+        contentType: 'image/png',
+      })
 
       await test.step('Set project theme color', async () => {
         // Open the project
         await projectLink.click()
+        screenshot = await page.screenshot()
+        await testInfo.attach('screenshot2', {
+          body: screenshot,
+          contentType: 'image/png',
+        })
         await settingsOpenButton.click()
+        screenshot = await page.screenshot()
+        await testInfo.attach('screenshot3', {
+          body: screenshot,
+          contentType: 'image/png',
+        })
         // The project tab should be selected by default within a project
         await expect(projectSettingsTab).toBeChecked()
         await themeColorSetting.fill(projectThemeColor)
