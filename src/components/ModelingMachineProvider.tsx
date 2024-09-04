@@ -67,7 +67,6 @@ import {
   hasExtrudableGeometry,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
-import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
@@ -154,9 +153,7 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
 
-            kclManager.isFirstRender = true
             kclManager.executeCode().then(() => {
-              kclManager.isFirstRender = false
               if (engineCommandManager.engineConnection?.idleMode) return
 
               store.videoElement?.play().catch((e) => {
@@ -404,7 +401,7 @@ export const ModelingMachineProvider = ({
           }
         ),
         Make: async ({ event }) => {
-          if (event.type !== 'Make' || TEST) return
+          if (event.type !== 'Make') return
           // Check if we already have an export intent.
           if (engineCommandManager.exportIntent) {
             toast.error('Already exporting')
@@ -448,7 +445,7 @@ export const ModelingMachineProvider = ({
           )
         },
         'Engine export': async ({ event }) => {
-          if (event.type !== 'Export' || TEST) return
+          if (event.type !== 'Export') return
           if (engineCommandManager.exportIntent) {
             toast.error('Already exporting')
             return

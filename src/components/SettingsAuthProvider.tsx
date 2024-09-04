@@ -186,10 +186,7 @@ export const SettingsAuthProviderBase = ({
               resetSettingsIncludesUnitChange
             ) {
               // Unit changes requires a re-exec of code
-              kclManager.isFirstRender = true
-              kclManager.executeCode(true).then(() => {
-                kclManager.isFirstRender = false
-              })
+              kclManager.executeCode(true)
             } else {
               // For any future logging we'd like to do
               // console.log(

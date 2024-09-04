@@ -54,12 +54,10 @@ export const Stream = () => {
    * central place, we can move this code there.
    */
   async function executeCodeAndPlayStream() {
-    kclManager.isFirstRender = true
     kclManager.executeCode(true).then(() => {
       videoRef.current?.play().catch((e) => {
         console.warn('Video playing was prevented', e, videoRef.current)
       })
-      kclManager.isFirstRender = false
       setStreamState(StreamState.Playing)
     })
   }
@@ -219,7 +217,7 @@ export const Stream = () => {
    * Play the vid
    */
   useEffect(() => {
-    if (!kclManager.isFirstRender) {
+    if (!kclManager.isExecuting) {
       setTimeout(() =>
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
@@ -227,7 +225,7 @@ export const Stream = () => {
         })
       )
     }
-  }, [kclManager.isFirstRender])
+  }, [kclManager.isExecuting])
 
   useEffect(() => {
     if (
@@ -382,15 +380,15 @@ export const Stream = () => {
           </div>
         </div>
       )}
-      {(!isNetworkOkay || isLoading || kclManager.isFirstRender) && (
+      {(!isNetworkOkay || isLoading) && (
         <div className="text-center absolute inset-0">
           <Loading>
-            {!isNetworkOkay && !isLoading && !kclManager.isFirstRender ? (
+            {!isNetworkOkay && !isLoading ? (
               <span data-testid="loading-stream">Stream disconnected...</span>
-            ) : !isLoading && kclManager.isFirstRender ? (
-              <span data-testid="loading-stream">Building scene...</span>
             ) : (
-              <span data-testid="loading-stream">Loading stream...</span>
+              !isLoading && (
+                <span data-testid="loading-stream">Loading stream...</span>
+              )
             )}
           </Loading>
         </div>

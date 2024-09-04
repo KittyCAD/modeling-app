@@ -82,10 +82,7 @@ export function useDemoCode() {
     if (!editorManager.editorView || codeManager.code === bracket) return
     setTimeout(async () => {
       codeManager.updateCodeStateEditor(bracket)
-      kclManager.isFirstRender = true
-      await kclManager.executeCode(true).then(() => {
-        kclManager.isFirstRender = false
-      })
+      await kclManager.executeCode(true)
       await codeManager.writeToFile()
     })
   }, [editorManager.editorView])
