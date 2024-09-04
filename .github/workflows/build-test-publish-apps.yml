@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - cut-release-v0.25.0-updater-test-build-1
+      - cut-release-v0.25.0-updater-test-build-2
   release:
     types: [published]
   schedule:
@@ -327,11 +327,11 @@ jobs:
           parent: false
           destination: ${{ env.BUCKET_DIR_TAURI }}/${{ env.VERSION }}
 
-      - name: Upload update endpoint to public bucket for tauri
-        uses: google-github-actions/upload-cloud-storage@v2.1.1
-        with:
-          path: last_update.json
-          destination: ${{ env.BUCKET_DIR }}
+      # - name: Upload update endpoint to public bucket for tauri
+      #   uses: google-github-actions/upload-cloud-storage@v2.1.1
+      #   with:
+      #     path: last_update.json
+      #     destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to Github
         if: ${{ github.event_name == 'release' }}
