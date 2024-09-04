@@ -115,22 +115,6 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 /// ```
 ///
 /// ```no_run
-/// // Loft a square and a circle on the `-XY` plane using offset.
-/// const squareSketch = startSketchOn('-XY')
-///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
-///
-/// const circleSketch = startSketchOn(offsetPlane('-XY', 150))
-///     |> circle([0, 100], 50, %)
-///
-/// loft([squareSketch, circleSketch])
-/// ```
-///
-/// ```no_run
 /// // Loft a square and a circle on the `-XZ` plane using offset.
 /// const squareSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-100, 200], %)
@@ -140,23 +124,7 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch = startSketchOn(offsetPlane('-XZ', 150))
-///     |> circle([0, 100], 50, %)
-///
-/// loft([squareSketch, circleSketch])
-/// ```
-///
-/// ```no_run
-/// // Loft a square and a circle on the `-YZ` plane using offset.
-/// const squareSketch = startSketchOn('-YZ')
-///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
-///
-/// const circleSketch = startSketchOn(offsetPlane('-YZ', 150))
+/// const circleSketch = startSketchOn(offsetPlane('-XZ', -150))
 ///     |> circle([0, 100], 50, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -175,19 +143,19 @@ async fn inner_offset_plane(std_plane: StandardPlane, offset: f64) -> Result<Pla
             plane.origin.z += offset;
         }
         StandardPlane::XZ => {
-            plane.origin.y += -offset;
+            plane.origin.y -= offset;
         }
         StandardPlane::YZ => {
             plane.origin.x += offset;
         }
         StandardPlane::NegXY => {
-            plane.origin.z += -offset;
+            plane.origin.z -= offset;
         }
         StandardPlane::NegXZ => {
             plane.origin.y += offset;
         }
         StandardPlane::NegYZ => {
-            plane.origin.x += -offset;
+            plane.origin.x -= offset;
         }
     }
 
