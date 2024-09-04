@@ -67,7 +67,7 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 /// plane and 10 units away from it.
 ///
 /// ```no_run
-/// // Loft a square and a triangle on the `XY` plane using offset.
+/// // Loft a square and a circle on the `XY` plane using offset.
 /// const squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
@@ -76,18 +76,14 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('XY', 150))
-///     |> startProfileAt([0, 125], %)
-///     |> line([-15, -30], %)
-///     |> line([30, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+/// const circleSketch = startSketchOn(offsetPlane('XY', 150))
+///     |> circle([0, 100], 50, %)
 ///
-/// loft([squareSketch, triangleSketch])
+/// loft([squareSketch, circleSketch])
 /// ```
 ///
 /// ```no_run
-/// // Loft a square and a triangle on the `XZ` plane using offset.
+/// // Loft a square and a circle on the `XZ` plane using offset.
 /// const squareSketch = startSketchOn('XZ')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
@@ -96,18 +92,14 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('XZ', 150))
-///     |> startProfileAt([0, 125], %)
-///     |> line([-15, -30], %)
-///     |> line([30, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+/// const circleSketch = startSketchOn(offsetPlane('XZ', 150))
+///     |> circle([0, 100], 50, %)
 ///
-/// loft([squareSketch, triangleSketch])
+/// loft([squareSketch, circleSketch])
 /// ```
 ///
 /// ```no_run
-/// // Loft a square and a triangle on the `YZ` plane using offset.
+/// // Loft a square and a circle on the `YZ` plane using offset.
 /// const squareSketch = startSketchOn('YZ')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
@@ -116,18 +108,14 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('YZ', 150))
-///     |> startProfileAt([0, 125], %)
-///     |> line([-15, -30], %)
-///     |> line([30, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+/// const circleSketch = startSketchOn(offsetPlane('YZ', 150))
+///     |> circle([0, 100], 50, %)
 ///
-/// loft([squareSketch, triangleSketch])
+/// loft([squareSketch, circleSketch])
 /// ```
 ///
 /// ```no_run
-/// // Loft a square and a triangle on the `-XY` plane using offset.
+/// // Loft a square and a circle on the `-XY` plane using offset.
 /// const squareSketch = startSketchOn('-XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
@@ -136,18 +124,14 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('-XY', 150))
-///     |> startProfileAt([0, 125], %)
-///     |> line([-15, -30], %)
-///     |> line([30, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+/// const circleSketch = startSketchOn(offsetPlane('-XY', 150))
+///     |> circle([0, 100], 50, %)
 ///
-/// loft([squareSketch, triangleSketch])
+/// loft([squareSketch, circleSketch])
 /// ```
 ///
 /// ```no_run
-/// // Loft a square and a triangle on the `-XZ` plane using offset.
+/// // Loft a square and a circle on the `-XZ` plane using offset.
 /// const squareSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
@@ -156,18 +140,14 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('-XZ', 150))
-///     |> startProfileAt([0, 125], %)
-///     |> line([-15, -30], %)
-///     |> line([30, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+/// const circleSketch = startSketchOn(offsetPlane('-XZ', 150))
+///     |> circle([0, 100], 50, %)
 ///
-/// loft([squareSketch, triangleSketch])
+/// loft([squareSketch, circleSketch])
 /// ```
 ///
 /// ```no_run
-/// // Loft a square and a triangle on the `-YZ` plane using offset.
+/// // Loft a square and a circle on the `-YZ` plane using offset.
 /// const squareSketch = startSketchOn('-YZ')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
@@ -176,14 +156,10 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('-YZ', 150))
-///     |> startProfileAt([0, 125], %)
-///     |> line([-15, -30], %)
-///     |> line([30, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+/// const circleSketch = startSketchOn(offsetPlane('-YZ', 150))
+///     |> circle([0, 100], 50, %)
 ///
-/// loft([squareSketch, triangleSketch])
+/// loft([squareSketch, circleSketch])
 /// ```
 #[stdlib {
     name = "offsetPlane",
