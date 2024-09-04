@@ -91,7 +91,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
                 adjust_camera: false,
                 planar_normal: if let SketchSurface::Plane(plane) = &sketch_group.on {
                     // We pass in the normal for the plane here.
-                    Some(plane.z_axis.clone().into())
+                    Some(plane.z_axis.into())
                 } else {
                     None
                 },
@@ -287,11 +287,11 @@ pub(crate) async fn do_post_extrude(
         // sketch group.
         id: sketch_group.id,
         value: new_value,
-        sketch_group: sketch_group.clone(),
+        meta: sketch_group.meta.clone(),
+        sketch_group,
         height: length,
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
-        meta: sketch_group.meta,
     }))
 }
