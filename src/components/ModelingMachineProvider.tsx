@@ -160,8 +160,10 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
 
-            kclManager.executeCode().then(() => {
-              if (engineCommandManager.engineConnection?.idleMode) return
+            kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.engineConnection?.idleMode) return
 
                 store.videoElement?.play().catch((e) => {
                   console.warn('Video playing was prevented', e)

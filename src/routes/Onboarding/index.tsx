@@ -82,11 +82,13 @@ export const onboardingRoutes = [
 export function useDemoCode() {
   useEffect(() => {
     if (!editorManager.editorView || codeManager.code === bracket) return
-    setTimeout(toSync(async () => {
-      codeManager.updateCodeStateEditor(bracket)
-      await kclManager.executeCode(true)
-      await codeManager.writeToFile()
-    }, reportRejection))
+    setTimeout(
+      toSync(async () => {
+        codeManager.updateCodeStateEditor(bracket)
+        await kclManager.executeCode(true)
+        await codeManager.writeToFile()
+      }, reportRejection)
+    )
   }, [editorManager.editorView])
 }
 
