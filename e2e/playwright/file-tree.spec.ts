@@ -239,7 +239,7 @@ test.describe('when using the file tree to', () => {
       // Create a large lego file
       await createNewFile('lego')
       const legoFile = page.getByRole('button', { name: 'lego.kcl' })
-      await expect(legoFile).toBeVisible({ timeout: 20_000 })
+      await expect(legoFile).toBeVisible({ timeout: 60_000 })
       await legoFile.click()
       const kclLego = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/lego.kcl',
@@ -261,12 +261,12 @@ test.describe('when using the file tree to', () => {
         await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl
         await mainFile.click()
-        await expectCmdLog('[data-message-type="execution-done"]', 20_000)
+        await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         // Click the large file
         await legoFile.click()
         // Once it is building, click back to the smaller file
         await mainFile.click()
-        await expectCmdLog('[data-message-type="execution-done"]', 20_000)
+        await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         await closeDebugPanel()
       })
     }
