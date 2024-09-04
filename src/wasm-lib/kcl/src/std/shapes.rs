@@ -24,12 +24,24 @@ pub enum SketchSurfaceOrGroup {
     SketchGroup(Box<SketchGroup>),
 }
 
+/// Data for drawing an angled line that intersects with a given line.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+// TODO: make sure the docs on the args below are correct.
+pub struct CircleData {
+    /// The center of the circle.
+    pub center: [f64; 2],
+    /// The circle radius
+    pub radius: f64,
+}
+
 /// Sketch a circle.
 pub async fn circle(args: Args) -> Result<KclValue, KclError> {
-    let (center, radius, sketch_surface_or_group, tag): ([f64; 2], f64, SketchSurfaceOrGroup, Option<TagDeclarator>) =
+    let (data, sketch_surface_or_group, tag): (CircleData, SketchSurfaceOrGroup, Option<TagDeclarator>) =
         args.get_circle_args()?;
 
-    let sketch_group = inner_circle(center, radius, sketch_surface_or_group, tag, args).await?;
+    let sketch_group = inner_circle(data, sketch_surface_or_group, tag, args).await?;
     Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
@@ -58,8 +70,7 @@ pub async fn circle(args: Args) -> Result<KclValue, KclError> {
     name = "circle",
 }]
 async fn inner_circle(
-    center: [f64; 2],
-    radius: f64,
+    data: CircleData,
     sketch_surface_or_group: SketchSurfaceOrGroup,
     tag: Option<TagDeclarator>,
     args: Args,
@@ -68,15 +79,18 @@ async fn inner_circle(
         SketchSurfaceOrGroup::SketchSurface(surface) => surface,
         SketchSurfaceOrGroup::SketchGroup(group) => group.on,
     };
-    let sketch_group =
-        crate::std::sketch::inner_start_profile_at([center[0] + radius, center[1]], sketch_surface, None, args.clone())
-            .await?;
+    let sketch_group = crate::std::sketch::inner_start_profile_at(
+        [data.center[0] + data.radius, data.center[1]],
+        sketch_surface,
+        None,
+        args.clone(),
+    )
+    .await?;
 
     let from: Point2d = sketch_group.current_pen_position()?;
 
     let angle_start = Angle::from_degrees(0.0);
     let angle_end = Angle::from_degrees(360.0);
-    let (center, end) = arc_center_and_end(from, angle_start, angle_end, radius);
 
     if angle_start == angle_end {
         return Err(KclError::Type(KclErrorDetails {
@@ -94,8 +108,8 @@ async fn inner_circle(
             segment: kittycad::types::PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: center.into(),
-                radius,
+                center: data.center.into(),
+                radius: data.radius,
                 relative: false,
             },
         },
@@ -104,17 +118,16 @@ async fn inner_circle(
 
     let current_path = Path::Circle {
         base: BasePath {
-            from: center.into(),
-            // to: end.into(),
-            to: center.into(),
+            from: data.center.into(),
+            to: data.center.into(),
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
-        radius,
-        center: center.into(),
+        radius: data.radius,
+        center: data.center.into(),
         ccw: angle_start.degrees() < angle_end.degrees(),
     };
 

@@ -14,6 +14,8 @@ use crate::{
     std::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg},
 };
 
+use super::shapes::Circle;
+
 #[derive(Debug, Clone)]
 pub struct Args {
     pub args: Vec<KclValue>,
@@ -261,8 +263,7 @@ impl Args {
         &self,
     ) -> Result<
         (
-            [f64; 2],
-            f64,
+            crate::std::shapes::CircleData,
             crate::std::shapes::SketchSurfaceOrGroup,
             Option<TagDeclarator>,
         ),
@@ -605,6 +606,7 @@ fn from_user_val<T: DeserializeOwned>(arg: &KclValue) -> Option<T> {
 impl_from_arg_via_json!(super::sketch::AngledLineData);
 impl_from_arg_via_json!(super::sketch::AngledLineToData);
 impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
+impl_from_arg_via_json!(super::shapes::CircleData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
 impl_from_arg_via_json!(super::sketch::BezierData);
