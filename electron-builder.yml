@@ -89,7 +89,7 @@ mac:
         CFBundleTypeRole: Viewer
         LSHandlerRank: Alternate
 
-    UTExportedTypeDeclarations:
+    - UTExportedTypeDeclarations:
       - UTTypeIdentifier: dev.zoo.kcl
         UTTypeReferenceURL: https://zoo.dev/docs/kcl
         UTTypeConformsTo:
