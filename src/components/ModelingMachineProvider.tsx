@@ -66,7 +66,6 @@ import {
   hasExtrudableGeometry,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
-import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
