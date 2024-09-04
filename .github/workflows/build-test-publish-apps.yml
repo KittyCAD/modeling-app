@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - cut-release-v0.25.0-updater-test-build-1
   release:
     types: [published]
   schedule:
@@ -13,8 +14,8 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  CUT_RELEASE_PR: true
+  BUILD_RELEASE: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -183,17 +184,17 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [prepare-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
-      BUCKET_DIR: ${{ github.event_name == 'schedule' && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app' }}
-      WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-      BUCKET_DIR_TAURI: 'dl.kittycad.io/releases/modeling-app/tauri-compat'
-      WEBSITE_DIR_TAURI: 'dl.zoo.dev/releases/modeling-app/tauri-compat'
+      BUCKET_DIR: ${{ github.event_name == 'schedule' && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app/test/cut-release-v0.25.0-updater-test' }}
+      WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app/test/cut-release-v0.25.0-updater-test' }}
+      BUCKET_DIR_TAURI: 'dl.kittycad.io/releases/modeling-app/test/cut-release-v0.25.0-updater-test/tauri-compat'
+      WEBSITE_DIR_TAURI: 'dl.zoo.dev/releases/modeling-app/test/cut-release-v0.25.0-updater-test/tauri-compat'
       URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/checkout@v4
