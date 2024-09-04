@@ -26,7 +26,6 @@ mac:
       name: kcl
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
-      icon: "assets/icon.ico"
       role: Editor
 
 win:
