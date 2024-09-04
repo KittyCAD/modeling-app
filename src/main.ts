@@ -12,7 +12,7 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { trapSuppressed } from 'lib/trap'
+import { reportRejection, trapSuppressed } from 'lib/trap'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -220,12 +220,12 @@ export async function checkForUpdates(autoUpdater: AppUpdater) {
   console.log(result)
 }
 
-app.on('ready', async () => {
+app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
-  checkForUpdates(autoUpdater)
+  checkForUpdates(autoUpdater).catch(reportRejection)
   const fifteenMinutes = 15 * 60 * 1000
   setInterval(() => {
-    checkForUpdates(autoUpdater)
+    checkForUpdates(autoUpdater).catch(reportRejection)
   }, fifteenMinutes)
 
   autoUpdater.on('update-available', (info) => {
