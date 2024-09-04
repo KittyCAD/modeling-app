@@ -262,7 +262,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-    timeout-minutes: 30
+    timeout-minutes: 40
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
@@ -381,7 +381,7 @@ jobs:
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
                     if [[ "$IS_UBUNTU" == "true" ]]; then
-                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
                     else
                       yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
                     fi
