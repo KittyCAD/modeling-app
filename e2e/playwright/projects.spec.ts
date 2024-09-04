@@ -207,7 +207,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBe(477713)
+            .toBe(477481)
 
           // clean up output.gltf
           await fsp.rm('output.gltf')
@@ -938,16 +938,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
 
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
@@ -972,16 +963,7 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
 
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)

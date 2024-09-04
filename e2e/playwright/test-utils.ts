@@ -891,17 +891,19 @@ export async function setupElectron({
 
   if (cleanProjectDir) {
     const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = TOML.stringify({
-      settings: appSettings
-        ? appSettings
+    const settingsOverrides = TOML.stringify(
+      appSettings
+        ? { settings: appSettings }
         : {
             ...TEST_SETTINGS,
-            app: {
-              ...TEST_SETTINGS.app,
-              projectDirectory: projectDirName,
+            settings: {
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+              },
             },
-          },
-    })
+          }
+    )
     await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
   }
 
