@@ -60,7 +60,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (): BrowserWindow => {
+const createWindow = (filePath?: string): BrowserWindow => {
   const newWindow = new BrowserWindow({
     autoHideMenuBar: true,
     show: false,
@@ -90,6 +90,18 @@ const createWindow = (): BrowserWindow => {
   // mainWindow.webContents.openDevTools()
 
   newWindow.show()
+
+  getProjectPathAtStartup(filePath).then((projectPath) => {
+    if (projectPath === null) return
+    console.log('Sending file-opened event to renderer process', projectPath)
+    newWindow.webContents.on('did-finish-load', () => {
+      console.log(
+        'INSIDE Sending file-opened event to renderer process',
+        projectPath
+      )
+      newWindow.webContents.send('file-opened', projectPath)
+    })
+  })
 
   return newWindow
 }
@@ -233,7 +245,9 @@ app.on('ready', async () => {
   })
 })
 
-ipcMain.handle('loadProjectAtStartup', async () => {
+const getProjectPathAtStartup = async (
+  filePath?: string
+): Promise<string | null> => {
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
@@ -241,52 +255,54 @@ ipcMain.handle('loadProjectAtStartup', async () => {
     return null
   }
 
-  let projectPath: string | null = null
-  // macOS: open-file events that were received before the app is ready
-  const macOpenFiles: string[] = (global as any).macOpenFiles
-  if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {
-    projectPath = macOpenFiles[0] // We only do one project at a time
-  }
-  // Reset this so we don't accidentally use it again.
-  const macOpenFilesEmpty: string[] = []
-  // @ts-ignore
-  global['macOpenFiles'] = macOpenFilesEmpty
+  let projectPath: string | null = filePath || null
+  if (projectPath === null) {
+    // macOS: open-file events that were received before the app is ready
+    const macOpenFiles: string[] = (global as any).macOpenFiles
+    if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {
+      projectPath = macOpenFiles[0] // We only do one project at a time
+    }
+    // Reset this so we don't accidentally use it again.
+    const macOpenFilesEmpty: string[] = []
+    // @ts-ignore
+    global['macOpenFiles'] = macOpenFilesEmpty
 
-  // macOS: open-url events that were received before the app is ready
-  const getOpenUrls: string[] = (global as any).getOpenUrls
-  if (getOpenUrls && getOpenUrls.length > 0) {
-    projectPath = getOpenUrls[0] // We only do one project at a
-  }
-  // Reset this so we don't accidentally use it again.
-  // @ts-ignore
-  global['getOpenUrls'] = []
+    // macOS: open-url events that were received before the app is ready
+    const getOpenUrls: string[] = (global as any).getOpenUrls
+    if (getOpenUrls && getOpenUrls.length > 0) {
+      projectPath = getOpenUrls[0] // We only do one project at a
+    }
+    // Reset this so we don't accidentally use it again.
+    // @ts-ignore
+    global['getOpenUrls'] = []
 
-  // Check if we have a project path in the command line arguments
-  // If we do, we will load the project at that path
-  if (args._.length > 1) {
-    if (args._[1].length > 0) {
-      projectPath = args._[1]
-      // Reset all this value so we don't accidentally use it again.
-      args._[1] = ''
+    // Check if we have a project path in the command line arguments
+    // If we do, we will load the project at that path
+    if (args._.length > 1) {
+      if (args._[1].length > 0) {
+        projectPath = args._[1]
+        // Reset all this value so we don't accidentally use it again.
+        args._[1] = ''
+      }
     }
   }
 
   if (projectPath) {
     // We have a project path, load the project information.
     console.log(`Loading project at startup: ${projectPath}`)
-    try {
-      const currentFile = await getCurrentProjectFile(projectPath)
-      console.log(`Project loaded: ${currentFile}`)
-      return currentFile
-    } catch (e) {
-      console.error(e)
+    const currentFile = await getCurrentProjectFile(projectPath)
+
+    if (currentFile instanceof Error) {
+      console.error(currentFile)
+      return null
     }
 
-    return null
+    console.log(`Project loaded: ${currentFile}`)
+    return currentFile
   }
 
   return null
-})
+}
 
 function parseCLIArgs(): minimist.ParsedArgs {
   return minimist(process.argv, {})
@@ -303,10 +319,11 @@ function registerStartupListeners() {
   app.on('open-file', function (event, path) {
     event.preventDefault()
 
-    macOpenFiles.push(path)
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {
-      createWindow()
+      createWindow(path)
+    } else {
+      macOpenFiles.push(path)
     }
   })
 
@@ -322,10 +339,11 @@ function registerStartupListeners() {
   ) {
     event.preventDefault()
 
-    openUrls.push(url)
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {
-      createWindow()
+      createWindow(url)
+    } else {
+      openUrls.push(url)
     }
   }
 

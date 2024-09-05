@@ -8,7 +8,12 @@ import { ActionButton } from 'components/ActionButton'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from 'components/AppHeader'
 import ProjectCard from 'components/ProjectCard/ProjectCard'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { type HomeLoaderData } from 'lib/types'
 import Loading from 'components/Loading'
@@ -39,9 +44,23 @@ import {
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
 
+// Custom hook to handle file opening
+const useFileOpener = () => {
+  useEffect(() => {
+    console.log('useFileOpener')
+    window.electron.onFileOpened((filePath) => {
+      console.log('File opened:', filePath)
+      // Handle the file here
+
+      return redirect(PATHS.FILE + '/' + encodeURIComponent(filePath))
+    })
+  }, [])
+}
+
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  useFileOpener()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()

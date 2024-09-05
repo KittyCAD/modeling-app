@@ -69,19 +69,6 @@ const router = createRouter([
         path: PATHS.INDEX,
         loader: async () => {
           const onDesktop = isDesktop()
-          if (onDesktop) {
-            const projectStartupFile =
-              await window.electron.loadProjectAtStartup()
-            if (projectStartupFile !== null) {
-              // Redirect to the file if we have a file path.
-              if (projectStartupFile.length > 0) {
-                return redirect(
-                  PATHS.FILE + '/' + encodeURIComponent(projectStartupFile)
-                )
-              }
-            }
-          }
-
           return onDesktop
             ? redirect(PATHS.HOME)
             : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
