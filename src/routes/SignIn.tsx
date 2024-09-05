@@ -58,7 +58,16 @@ const SignIn = () => {
   }
 
   return (
-    <main className="bg-primary h-screen grid place-items-stretch m-0 p-2">
+    <main
+      className="bg-primary h-screen grid place-items-stretch m-0 p-2"
+      style={
+        isDesktop()
+          ? ({
+              '-webkit-app-region': 'drag',
+            } as CSSProperties)
+          : {}
+      }
+    >
       <div
         style={
           {
@@ -68,6 +77,7 @@ const SignIn = () => {
             '--circle-size-mid': '15%',
             '--circle-size-end': '200%',
             '--circle-timing': 'cubic-bezier(0.25, 1, 0.4, 0.9)',
+            ...(isDesktop() ? { '-webkit-app-region': 'no-drag' } : {}),
           } as CSSProperties
         }
         className="in-circle-hesitate body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
