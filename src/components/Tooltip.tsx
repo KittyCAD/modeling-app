@@ -12,6 +12,7 @@ interface TooltipProps extends React.PropsWithChildren {
   position?: TooltipPosition
   wrapperClassName?: string
   contentClassName?: string
+  wrapperStyle?: React.CSSProperties
   delay?: number
   hoverOnly?: boolean
   inert?: boolean
@@ -22,6 +23,7 @@ export default function Tooltip({
   position = 'top',
   wrapperClassName: className,
   contentClassName,
+  wrapperStyle = {},
   delay = 200,
   hoverOnly = false,
   inert = true,
@@ -36,7 +38,10 @@ export default function Tooltip({
       } ${styles.tooltipWrapper} ${hoverOnly ? '' : styles.withFocus} ${
         styles[position]
       } ${className}`}
-      style={{ '--_delay': delay + 'ms' } as React.CSSProperties}
+      style={Object.assign(
+        { '--_delay': delay + 'ms' } as React.CSSProperties,
+        wrapperStyle
+      )}
     >
       <div className={`rounded ${styles.tooltip} ${contentClassName || ''}`}>
         {children}
