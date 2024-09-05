@@ -54,7 +54,11 @@ export const FileMachineProvider = ({
           toast.success(event.output.message)
         },
         toastSuccess: ({ event }) => {
-          if (event.type !== 'xstate.done.actor.rename-file') return
+          if (
+            event.type !== 'xstate.done.actor.rename-file' &&
+            event.type !== 'xstate.done.actor.delete-file'
+          )
+            return
           toast.success(event.output.message)
         },
         toastError: ({ event }) => {
@@ -237,7 +241,9 @@ export const FileMachineProvider = ({
             // the same path on the navigate, which doesn't cause anything to
             // refresh, leaving a stale execution state.
             navigate(0)
-            return
+            return {
+              message: 'No more files in project, created main.kcl',
+            }
           }
 
           // If we just deleted the current file or one of its parent directories,
@@ -249,9 +255,11 @@ export const FileMachineProvider = ({
             navigate(`../${PATHS.FILE}/${encodeURIComponent(project.path)}`)
           }
 
-          return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
-            input.name
-          }"`
+          return {
+            message: `Successfully deleted ${isDir ? 'folder' : 'file'} "${
+              input.name
+            }"`,
+          }
         }),
       },
     }),
