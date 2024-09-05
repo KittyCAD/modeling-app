@@ -8,7 +8,6 @@ import {
   parseProjectSettings,
 } from 'lang/wasm'
 import {
-  DEFAULT_HOST,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
@@ -556,28 +555,6 @@ export const getUser = async (
   token: string,
   hostname: string
 ): Promise<Models['User_type']> => {
-  // Use the host passed in if it's set.
-  // Otherwise, use the default host.
-  const host = !hostname ? DEFAULT_HOST : hostname
-
-  // Change the baseURL to the one we want.
-  let baseurl = host
-  if (!(host.indexOf('http://') === 0) && !(host.indexOf('https://') === 0)) {
-    baseurl = `https://${host}`
-    if (host.indexOf('localhost') === 0) {
-      baseurl = `http://${host}`
-    }
-  }
-
-  // Use kittycad library to fetch the user info from /user/me
-  if (baseurl !== DEFAULT_HOST) {
-    // The TypeScript generated library uses environment variables for this
-    // because it was intended for NodeJS.
-    // Needs to stay like this because window.electron.kittycad needs it
-    // internally.
-    window.electron.setBaseUrl(baseurl)
-  }
-
   try {
     const user = await window.electron.kittycad('users.get_user_self', {
       client: { token },
