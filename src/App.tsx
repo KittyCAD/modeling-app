@@ -122,11 +122,11 @@ export function App() {
         // Override the electron window draggable region behavior as well
         // when the button is down in the stream
         style={
-          {
-            '-webkit-app-region': context.store?.buttonDownInStream
-              ? 'no-drag'
-              : '',
-          } as React.CSSProperties
+          isDesktop() && context.store?.buttonDownInStream
+            ? ({
+                '-webkit-app-region': 'no-drag',
+              } as React.CSSProperties)
+            : {}
         }
         project={{ project, file }}
         enableMenu={true}
