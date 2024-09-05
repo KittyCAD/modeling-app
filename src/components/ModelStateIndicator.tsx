@@ -7,7 +7,7 @@ export const ModelStateIndicator = () => {
 
   if (isExecuting)
     return (
-      <div className="w-6 h-6" data-testid="model-state-indicator">
+      <div className="w-6 h-6" data-testid="model-state-indicator-loading">
         <Spinner className="w-6 h-6" />
       </div>
     )

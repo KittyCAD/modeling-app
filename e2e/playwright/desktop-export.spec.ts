@@ -54,6 +54,11 @@ test(
       const modelStateIndicator = page.getByTestId(
         'model-state-indicator-execution-done'
       )
+      const modelStateIndicatorLoading = page.getByTestId(
+        'model-state-indicator-loading'
+      )
+
+      await expect(modelStateIndicatorLoading).toBeVisible()
       await expect(modelStateIndicator).toBeVisible({ timeout: 60000 })
 
       const gltfOption = page.getByText('glTF')
