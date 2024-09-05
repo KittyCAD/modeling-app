@@ -79,7 +79,7 @@ fn whitespace(i: &mut Located<&str>) -> PResult<Token> {
 
 fn inner_word(i: &mut Located<&str>) -> PResult<()> {
     one_of(('a'..='z', 'A'..='Z', '_')).parse_next(i)?;
-    repeat(0.., one_of(('a'..='z', 'A'..='Z', '0'..='9', '_'))).parse_next(i)?;
+    repeat::<_, _, (), _, _>(0.., one_of(('a'..='z', 'A'..='Z', '0'..='9', '_'))).parse_next(i)?;
     Ok(())
 }
 
