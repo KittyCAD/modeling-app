@@ -59,19 +59,7 @@ const SignIn = () => {
 
   return (
     <main className="bg-primary h-screen grid place-items-stretch m-0 p-2">
-      <div
-        style={
-          {
-            height: 'calc(100vh - 16px)',
-            '--circle-x': '14%',
-            '--circle-y': '12%',
-            '--circle-size-mid': '15%',
-            '--circle-size-end': '200%',
-            '--circle-timing': 'cubic-bezier(0.25, 1, 0.4, 0.9)',
-          } as CSSProperties
-        }
-        className="in-circle-hesitate body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
-      >
+      <div className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto">
         <div className="max-w-7xl grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
           <div className="col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
             <div className="flex items-baseline mb-8">
@@ -194,7 +182,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/ball-bearing"
+                  to="https://zoo.dev/docs/kcl-samples/a-parametric-bearing-pillow-block"
                   iconStart={{ icon: 'settings' }}
                   className="border-chalkboard-30 dark:border-chalkboard-80"
                 >
