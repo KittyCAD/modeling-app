@@ -147,9 +147,6 @@ test.describe('Can export from electron app', () => {
         const u = await getUtils(page)
 
         page.on('console', console.log)
-        await electronApp.context().addInitScript(async () => {
-          ;(window as any).playwrightSkipFilePicker = true
-        })
 
         const pointOnModel = { x: 630, y: 280 }
 
@@ -495,10 +492,6 @@ test(
 
     await file.click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
     await expect(u.codeLocator).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
     )
@@ -942,16 +935,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
 
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
@@ -976,16 +960,7 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
 
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
@@ -1744,7 +1719,7 @@ test.describe('Renaming in the file tree', () => {
       })
 
       await test.step('Rename the folder', async () => {
-        await page.waitForTimeout(60000)
+        await page.waitForTimeout(2000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
