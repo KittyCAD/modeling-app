@@ -50,6 +50,12 @@ type FileMachineEvents =
         path: string
       }
     }
+  | {
+      type: 'xstate.done.actor.delete-file'
+      output: {
+        message: string
+      }
+    }
   | { type: 'assign'; data: { [key: string]: any } }
   | { type: 'Refresh' }
 
@@ -129,7 +135,7 @@ export const fileMachine = setup({
     deleteFile: fromPromise(
       (_: {
         input: { path: string; children: FileEntry[] | null; name: string }
-      }) => Promise.resolve('' as string | undefined)
+      }) => Promise.resolve({ message: '' } as { message: string } | undefined)
     ),
     createFile: fromPromise(
       (_: {

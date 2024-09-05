@@ -14,6 +14,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
 import { appThemeToTheme } from 'lib/theme'
 import {
+  getInitialDefaultDir,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
@@ -176,6 +177,11 @@ export async function loadAndValidateSettings(
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   const settings = createSettings()
+  // Because getting the default directory is async, we need to set it after
+  if (onDesktop) {
+    settings.app.projectDirectory.default = await getInitialDefaultDir()
+  }
+
   setSettingsAtLevel(
     settings,
     'user',

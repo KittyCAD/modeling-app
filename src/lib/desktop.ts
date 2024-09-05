@@ -462,29 +462,60 @@ export const readProjectSettingsFile = async (
  */
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
+  const initialProjectDirConfig: DeepPartial<
+    Configuration['settings']['project']
+  > = { directory: await getInitialDefaultDir() }
 
   // The file exists, read it and parse it.
   if (window.electron.exists(settingsPath)) {
     const configToml = await window.electron.readFile(settingsPath)
-    const configObj = parseAppSettings(configToml)
-    if (err(configObj)) {
-      return Promise.reject(configObj)
+    const parsedAppConfig = parseAppSettings(configToml)
+    if (err(parsedAppConfig)) {
+      return Promise.reject(parsedAppConfig)
     }
 
-    return configObj
+    const hasProjectDirectorySetting =
+      parsedAppConfig.settings?.project?.directory ||
+      parsedAppConfig.settings?.app?.project_directory
+
+    if (hasProjectDirectorySetting) {
+      return parsedAppConfig
+    } else {
+      // inject the default project directory setting
+      const mergedConfig: DeepPartial<Configuration> = {
+        ...parsedAppConfig,
+        settings: {
+          ...parsedAppConfig.settings,
+          project: Object.assign(
+            {},
+            parsedAppConfig.settings?.project,
+            initialProjectDirConfig
+          ),
+        },
+      }
+      return mergedConfig
+    }
   }
 
   // The file doesn't exist, create a new one.
-  // This defaultAppConfig is truly an empty object every time.
   const defaultAppConfig = defaultAppSettings()
   if (err(defaultAppConfig)) {
     return Promise.reject(defaultAppConfig)
   }
-  const initialDirConfig: DeepPartial<Configuration> = {
-    settings: { project: { directory: await getInitialDefaultDir() } },
+
+  // inject the default project directory setting
+  const mergedDefaultConfig: DeepPartial<Configuration> = {
+    ...defaultAppConfig,
+    settings: {
+      ...defaultAppConfig.settings,
+      project: Object.assign(
+        {},
+        defaultAppConfig.settings?.project,
+        initialProjectDirConfig
+      ),
+    },
   }
-  const config = Object.assign(defaultAppConfig, initialDirConfig)
-  return config
+  return mergedDefaultConfig
 }
 
 export const writeAppSettingsFile = async (tomlStr: string) => {

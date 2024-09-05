@@ -271,10 +271,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
     })
 
     // If they're open by default, we're not actually testing anything.
@@ -302,16 +299,7 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
     })
 
     await test.step('All panes opened before should be visible', async () => {
