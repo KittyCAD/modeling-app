@@ -1,6 +1,6 @@
 {
   "name": "zoo-modeling-app",
-  "version": "0.24.12",
+  "version": "0.25.0",
   "private": true,
   "productName": "Zoo Modeling App",
   "author": {
@@ -51,7 +51,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
-    "react-hotkeys-hook": "^4.5.0",
+    "react-hotkeys-hook": "^4.5.1",
     "react-json-view": "^1.21.3",
     "react-modal": "^3.16.1",
     "react-modal-promise": "^1.0.2",

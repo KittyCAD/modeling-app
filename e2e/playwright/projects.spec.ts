@@ -147,9 +147,6 @@ test.describe('Can export from electron app', () => {
         const u = await getUtils(page)
 
         page.on('console', console.log)
-        await electronApp.context().addInitScript(async () => {
-          ;(window as any).playwrightSkipFilePicker = true
-        })
 
         const pointOnModel = { x: 630, y: 280 }
 
