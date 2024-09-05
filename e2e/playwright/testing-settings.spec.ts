@@ -304,6 +304,61 @@ test.describe('Testing settings', () => {
   )
 
   test(
+    `Load desktop app with no settings file`,
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        // This is what makes no settings file get created
+        cleanProjectDir: false,
+        testInfo,
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Selectors and constants
+      const errorHeading = page.getByRole('heading', {
+        name: 'An unextected error occurred',
+      })
+      const projectDirLink = page.getByText('Loaded from')
+
+      // If the app loads without exploding we're in the clear
+      await expect(errorHeading).not.toBeVisible()
+      await expect(projectDirLink).toBeVisible()
+
+      await electronApp.close()
+    }
+  )
+
+  test(
+    `Load desktop app with a settings file, but no project directory setting`,
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        appSettings: {
+          app: {
+            themeColor: '259',
+          },
+        },
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Selectors and constants
+      const errorHeading = page.getByRole('heading', {
+        name: 'An unextected error occurred',
+      })
+      const projectDirLink = page.getByText('Loaded from')
+
+      // If the app loads without exploding we're in the clear
+      await expect(errorHeading).not.toBeVisible()
+      await expect(projectDirLink).toBeVisible()
+
+      await electronApp.close()
+    }
+  )
+
+  test(
     `Closing settings modal should go back to the original file being viewed`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
