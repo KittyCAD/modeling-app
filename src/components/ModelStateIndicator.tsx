@@ -18,7 +18,7 @@ export const ModelStateIndicator = () => {
       data-testid="model-state-indicator"
     >
       <CustomIcon
-        data-testid="model-state-indicator-export-done"
+        data-testid="model-state-indicator-execution-done"
         name="checkmark"
         className="w-6 h-6"
       />
