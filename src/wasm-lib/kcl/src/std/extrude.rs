@@ -182,34 +182,40 @@ pub(crate) async fn do_post_extrude(
         vec![]
     };
 
-    for face_info in &face_infos {
-        if face_info.cap == ExtrusionFaceCapType::None {
+    for (curve_id, face_id) in face_infos
+        .iter()
+        .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
+        .filter_map(|face_info| {
             if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
-                // Batch these commands, because the Rust code doesn't actually care about the outcome.
-                // So, there's no need to await them.
-                // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
-                // uses this to build the artifact graph, which the UI needs.
-                args.batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
-                        edge_id: curve_id,
-                        object_id: sketch_group.id,
-                        face_id,
-                    },
-                )
-                .await?;
-
-                args.batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
-                        edge_id: curve_id,
-                        object_id: sketch_group.id,
-                        face_id,
-                    },
-                )
-                .await?;
+                Some((curve_id, face_id))
+            } else {
+                None
             }
-        }
+        })
+    {
+        // Batch these commands, because the Rust code doesn't actually care about the outcome.
+        // So, there's no need to await them.
+        // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
+        // uses this to build the artifact graph, which the UI needs.
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
+                edge_id: curve_id,
+                object_id: sketch_group.id,
+                face_id,
+            },
+        )
+        .await?;
+
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
+                edge_id: curve_id,
+                object_id: sketch_group.id,
+                face_id,
+            },
+        )
+        .await?;
     }
 
     // Create a hashmap for quick id lookup
