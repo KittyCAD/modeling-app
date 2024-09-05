@@ -12,7 +12,6 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { PATHS } from 'lib/paths'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -95,7 +94,7 @@ const createWindow = (filePath?: string): BrowserWindow => {
 
       console.log('Loading file', projectPath)
 
-      const fullUrl = `/${PATHS.FILE}/${encodeURIComponent(projectPath)}`
+      const fullUrl = `/file/${encodeURIComponent(projectPath)}`
       console.log('Full URL', fullUrl)
 
       newWindow.loadFile(startIndex, {
