@@ -1,5 +1,7 @@
 //! Functions related to extruding.
 
+use std::collections::HashMap;
+
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::ExtrusionFaceCapType;
@@ -218,25 +220,7 @@ pub(crate) async fn do_post_extrude(
         .await?;
     }
 
-    // Create a hashmap for quick id lookup
-    let mut face_id_map = std::collections::HashMap::new();
-    // creating fake ids for start and end caps is to make extrudes mock-execute safe
-    let (mut start_cap_id, mut end_cap_id) = if args.ctx.is_mock {
-        (Some(Uuid::new_v4()), Some(Uuid::new_v4()))
-    } else {
-        (None, None)
-    };
-    for face_info in face_infos {
-        match face_info.cap {
-            ExtrusionFaceCapType::Bottom => start_cap_id = face_info.face_id,
-            ExtrusionFaceCapType::Top => end_cap_id = face_info.face_id,
-            ExtrusionFaceCapType::None => {
-                if let Some(curve_id) = face_info.curve_id {
-                    face_id_map.insert(curve_id, face_info.face_id);
-                }
-            }
-        }
-    }
+    let (face_id_map, start_cap_id, end_cap_id) = analyze_faces(args.ctx.is_mock, face_infos);
 
     // Iterate over the sketch_group.value array and add face_id to GeoMeta
     let new_value = sketch_group
@@ -300,4 +284,32 @@ pub(crate) async fn do_post_extrude(
         end_cap_id,
         edge_cuts: vec![],
     }))
+}
+
+/// Returns curve-to-face map, start cap ID, end cap ID.
+fn analyze_faces(
+    is_mock: bool,
+    face_infos: Vec<kittycad::types::ExtrusionFaceInfo>,
+) -> (HashMap<Uuid, Option<Uuid>>, Option<Uuid>, Option<Uuid>) {
+    // Create a hashmap for quick id lookup
+    let num_side_faces = face_infos.len() - 2; // Top face, bottom face + remainder are side faces.
+    let mut face_id_map = HashMap::with_capacity(num_side_faces);
+    // creating fake ids for start and end caps is to make extrudes mock-execute safe
+    let (mut start_cap_id, mut end_cap_id) = if is_mock {
+        (Some(Uuid::new_v4()), Some(Uuid::new_v4()))
+    } else {
+        (None, None)
+    };
+    for face_info in face_infos {
+        match face_info.cap {
+            ExtrusionFaceCapType::Bottom => start_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Top => end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::None => {
+                if let Some(curve_id) = face_info.curve_id {
+                    face_id_map.insert(curve_id, face_info.face_id);
+                }
+            }
+        }
+    }
+    (face_id_map, start_cap_id, end_cap_id)
 }
