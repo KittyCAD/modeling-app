@@ -56,11 +56,6 @@ body.dark {
   .dark .body-bg {
     @apply bg-chalkboard-100;
   }
-
-  body {
-    scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
-    @apply text-chalkboard-10;
-  }
 }
 
 select {
