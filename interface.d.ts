@@ -31,7 +31,6 @@ export interface IElectronAPI {
   sep: typeof path.sep
   rename: (prev: string, next: string) => typeof fs.rename
   setBaseUrl: (value: string) => void
-  onFileOpened: (callback: (f: string) => void) => void
   packageJson: {
     name: string
   }

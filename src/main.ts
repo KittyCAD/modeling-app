@@ -12,7 +12,6 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import url from 'node:url'
 import { PATHS } from 'lib/paths'
 
 let mainWindow: BrowserWindow | null = null
@@ -79,25 +78,21 @@ const createWindow = (filePath?: string): BrowserWindow => {
     titleBarStyle: 'hiddenInset',
   })
 
-  const startUrl =
-    MAIN_WINDOW_VITE_DEV_SERVER_URL ||
-    url.format({
-      pathname: path.join(
-        __dirname,
-        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-      ),
-      protocol: 'file:',
-      slashes: true,
-    })
-
   getProjectPathAtStartup(filePath).then((projectPath) => {
-    if (projectPath === null) {
-      newWindow.loadURL(startUrl)
+    // and load the index.html of the app.
+    if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+      newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
     } else {
-      newWindow.loadURL(
-        `${startUrl}#${PATHS.FILE}/${encodeURIComponent(projectPath)}`
+      newWindow.loadFile(
+        path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
+        {
+          hash: projectPath
+            ? `${PATHS.FILE}/${encodeURIComponent(projectPath)}`
+            : undefined,
+        }
       )
     }
+
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
 
