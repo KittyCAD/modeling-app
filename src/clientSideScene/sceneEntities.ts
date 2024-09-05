@@ -1414,7 +1414,7 @@ export class SceneEntities {
       ) as CSS2DObject
       const labelWrapperElem = labelWrapper.element as HTMLDivElement
       const label = labelWrapperElem.children[0] as HTMLParagraphElement
-      label.innerText = `${roundOff(length)}${sceneInfra._baseUnit}`
+      label.innerText = `${roundOff(length)}`
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
       label.style.setProperty('--x', `0px`)
       label.style.setProperty('--y', `0px`)
