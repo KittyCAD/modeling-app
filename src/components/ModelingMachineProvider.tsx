@@ -10,7 +10,6 @@ import {
   fromPromise,
 } from 'xstate'
 import {
-  ModelingMachineEvent,
   getPersistedContext,
   modelingMachine,
   modelingMachineDefaultContext,
@@ -162,19 +161,9 @@ export const ModelingMachineProvider = ({
             })
           })()
         },
-        'Set mouse state': assign({
-          mouseState: ({ event }) =>
-            (
-              event as Extract<
-                ModelingMachineEvent,
-                { type: 'Set mouse state' }
-              >
-            ).data,
-          segmentHoverMap: ({
-            context: { mouseState, segmentHoverMap },
-            event,
-          }) => {
-            if (event.type !== 'Set mouse state') return {}
+        'Set mouse state': assign(({ context, event }) => {
+          if (event.type !== 'Set mouse state') return {}
+          const nextSegmentHoverMap = () => {
             if (event.data.type === 'isHovering') {
               const parent = getParentGroup(event.data.on, [
                 STRAIGHT_SEGMENT,
@@ -182,23 +171,25 @@ export const ModelingMachineProvider = ({
               ])
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
-              if (!parent || !pathToNode) return segmentHoverMap
-              if (segmentHoverMap[pathToNodeString] !== undefined)
-                clearTimeout(segmentHoverMap[JSON.stringify(pathToNode)])
+              if (!parent || !pathToNode) return context.segmentHoverMap
+              if (context.segmentHoverMap[pathToNodeString] !== undefined)
+                clearTimeout(
+                  context.segmentHoverMap[JSON.stringify(pathToNode)]
+                )
               return {
-                ...segmentHoverMap,
+                ...context.segmentHoverMap,
                 [pathToNodeString]: 0,
               }
             } else if (
               event.data.type === 'idle' &&
-              mouseState.type === 'isHovering'
+              context.mouseState.type === 'isHovering'
             ) {
-              const mouseOnParent = getParentGroup(mouseState.on, [
+              const mouseOnParent = getParentGroup(context.mouseState.on, [
                 STRAIGHT_SEGMENT,
                 TANGENTIAL_ARC_TO_SEGMENT,
               ])
               if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
-                return segmentHoverMap
+                return context.segmentHoverMap
               const pathToNodeString = JSON.stringify(
                 mouseOnParent?.userData?.pathToNode
               )
@@ -212,16 +203,20 @@ export const ModelingMachineProvider = ({
                 })
               }, 800) as unknown as number
               return {
-                ...segmentHoverMap,
+                ...context.segmentHoverMap,
                 [pathToNodeString]: timeoutId,
               }
             } else if (event.data.type === 'timeoutEnd') {
-              const copy = { ...segmentHoverMap }
+              const copy = { ...context.segmentHoverMap }
               delete copy[event.data.pathToNodeString]
               return copy
             }
             return {}
-          },
+          }
+          return {
+            mouseState: event.data,
+            segmentHoverMap: nextSegmentHoverMap(),
+          }
         }),
         'Set Segment Overlays': assign({
           segmentOverlays: ({ context: { segmentOverlays }, event }) => {
@@ -241,21 +236,16 @@ export const ModelingMachineProvider = ({
             return {}
           },
         }),
-        'Set sketchDetails': assign(({ context: { sketchDetails }, event }) =>
-          sketchDetails
-            ? {
-                sketchDetails: {
-                  ...sketchDetails,
-                  sketchPathToNode: (
-                    event as Extract<
-                      ModelingMachineEvent,
-                      { type: 'Delete segment' }
-                    >
-                  ).data,
-                },
-              }
-            : {}
-        ),
+        'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
+          if (event.type !== 'Delete segment') return {}
+          if (!sketchDetails) return {}
+          return {
+            sketchDetails: {
+              ...sketchDetails,
+              sketchPathToNode: event.data,
+            },
+          }
+        }),
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
             // this was needed for ts after adding 'Set selection' action to on done modal events
