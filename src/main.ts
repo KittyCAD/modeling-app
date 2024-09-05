@@ -12,6 +12,8 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
+import url from 'node:url'
+import { PATHS } from 'lib/paths'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -77,30 +79,29 @@ const createWindow = (filePath?: string): BrowserWindow => {
     titleBarStyle: 'hiddenInset',
   })
 
-  // and load the index.html of the app.
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
-  } else {
-    newWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    )
-  }
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-
-  newWindow.show()
+  const startUrl =
+    MAIN_WINDOW_VITE_DEV_SERVER_URL ||
+    url.format({
+      pathname: path.join(
+        __dirname,
+        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+      ),
+      protocol: 'file:',
+      slashes: true,
+    })
 
   getProjectPathAtStartup(filePath).then((projectPath) => {
-    if (projectPath === null) return
-    console.log('Sending file-opened event to renderer process', projectPath)
-    newWindow.webContents.on('did-finish-load', () => {
-      console.log(
-        'INSIDE Sending file-opened event to renderer process',
-        projectPath
+    if (projectPath === null) {
+      newWindow.loadURL(startUrl)
+    } else {
+      newWindow.loadURL(
+        `${startUrl}#${PATHS.FILE}/${encodeURIComponent(projectPath)}`
       )
-      newWindow.webContents.send('file-opened', projectPath)
-    })
+    }
+    // Open the DevTools.
+    // mainWindow.webContents.openDevTools()
+
+    newWindow.show()
   })
 
   return newWindow
