@@ -442,26 +442,20 @@ export const modelingMachine = setup({
       context: { selectionRanges },
       event,
     }) => {
-      const _event = event as Extract<
-        ModelingMachineEvent,
-        { type: 'Constrain remove constraints' }
-      >
+      if (event.type !== 'Constrain remove constraints') return false
       const info = removeConstrainingValuesInfo({
         selectionRanges,
-        pathToNodes: _event.data && [_event.data],
+        pathToNodes: event.data && [event.data],
       })
       if (trap(info)) return false
       return info.enabled
     },
     'Can convert to variable': ({ event }) => {
-      const _event = event as Extract<
-        ModelingMachineEvent,
-        { type: 'Convert to variable' }
-      >
-      if (!_event.data) return false
+      if (event.type !== 'Convert to variable') return false
+      if (!event.data) return false
       const ast = parse(recast(kclManager.ast))
       if (err(ast)) return false
-      const isSafeRetVal = isNodeSafeToReplacePath(ast, _event.data.pathToNode)
+      const isSafeRetVal = isNodeSafeToReplacePath(ast, event.data.pathToNode)
       if (err(isSafeRetVal)) return false
       return isSafeRetVal.isSafe
     },
@@ -516,18 +510,19 @@ export const modelingMachine = setup({
         },
       }),
     'set new sketch metadata': assign(({ event }) => {
-      const _event = event as Extract<
-        ModelingMachineEvent,
-        { type: 'xstate.done.actor.animate-to-face' }
-      >
+      if (
+        event.type !== 'xstate.done.actor.animate-to-sketch' &&
+        event.type !== 'xstate.done.actor.animate-to-face'
+      )
+        return {}
       return {
-        sketchDetails: _event.output,
+        sketchDetails: event.output,
       }
     }),
     'AST extrude': async ({ context: { store }, event }) => {
-      const _event = event as Extract<ModelingMachineEvent, { type: 'Extrude' }>
-      if (!_event.data) return
-      const { selection, distance } = _event.data
+      if (event.type !== 'Extrude') return
+      if (!event.data) return
+      const { selection, distance } = event.data
       let ast = kclManager.ast
       if (
         'variableName' in distance &&
@@ -595,11 +590,11 @@ export const modelingMachine = setup({
       await kclManager.updateAst(modifiedAst, true)
     },
     'AST fillet': async ({ event }) => {
-      const _event = event as Extract<ModelingMachineEvent, { type: 'Fillet' }>
-      if (!_event.data) return
+      if (event.type !== 'Fillet') return
+      if (!event.data) return
 
       // Extract inputs
-      const { selection, radius } = _event.data
+      const { selection, radius } = event.data
 
       // Apply fillet to selection
       const applyFilletToSelectionResult = applyFilletToSelection(
@@ -686,17 +681,14 @@ export const modelingMachine = setup({
       })
     },
     'set up draft rectangle': ({ context: { sketchDetails }, event }) => {
-      const _event = event as Extract<
-        ModelingMachineEvent,
-        { type: 'Add rectangle origin' }
-      >
-      if (!sketchDetails || !_event.data) return
+      if (event.type !== 'Add rectangle origin') return
+      if (!sketchDetails || !event.data) return
       sceneEntitiesManager.setupDraftRectangle(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin,
-        _event.data
+        event.data
       )
     },
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
@@ -752,30 +744,25 @@ export const modelingMachine = setup({
     'set selection filter to defaults': () =>
       kclManager.defaultSelectionFilter(),
     'Delete segment': ({ context: { sketchDetails }, event }) => {
-      const _event = event as Extract<
-        ModelingMachineEvent,
-        { type: 'Delete segment' }
-      >
-      if (!sketchDetails || !_event.data) return
+      if (event.type !== 'Delete segment') return
+      if (!sketchDetails || !event.data) return
       return deleteSegment({
-        pathToNode: _event.data,
+        pathToNode: event.data,
         sketchDetails,
       })
     },
     'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
     'Set context': assign({
       store: ({ context: { store }, event }) => {
-        const _event = event as Extract<
-          ModelingMachineEvent,
-          { type: 'Set context' }
-        >
-        if (_event.data.streamDimensions) {
-          sceneInfra._streamDimensions = _event.data.streamDimensions
+        if (event.type !== 'Set context') return store
+        if (!event.data) return store
+        if (event.data.streamDimensions) {
+          sceneInfra._streamDimensions = event.data.streamDimensions
         }
 
         const result = {
           ...store,
-          ..._event.data,
+          ...event.data,
         }
         const persistedContext: Partial<PersistedModelingContext> = {}
         for (const key of PersistedValues) {

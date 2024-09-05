@@ -261,12 +261,6 @@ export const ModelingMachineProvider = ({
               null
             if (!setSelections) return {}
 
-            console.log('from inside Set selection', {
-              event,
-              setSelections,
-              selectionRanges,
-              sketchDetails,
-            })
             const dispatchSelection = (selection?: EditorSelection) => {
               if (!selection) return // TODO less of hack for the below please
               if (!editorManager.editorView) return
