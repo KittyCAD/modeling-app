@@ -58,8 +58,24 @@ const SignIn = () => {
   }
 
   return (
-    <main className="bg-primary h-screen grid place-items-stretch m-0 p-2">
-      <div className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto">
+    <main
+      className="bg-primary h-screen grid place-items-stretch m-0 p-2"
+      style={
+        isDesktop()
+          ? ({
+              '-webkit-app-region': 'drag',
+            } as CSSProperties)
+          : {}
+      }
+    >
+      <div
+        style={
+          isDesktop()
+            ? ({ '-webkit-app-region': 'no-drag' } as CSSProperties)
+            : {}
+        }
+        className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
+      >
         <div className="max-w-7xl grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
           <div className="col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
             <div className="flex items-baseline mb-8">
