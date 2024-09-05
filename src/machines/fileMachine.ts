@@ -57,6 +57,7 @@ export const fileMachine = setup({
   types: {} as {
     context: FileMachineContext
     events: FileMachineEvents
+    input: Partial<Pick<FileMachineContext, 'project' | 'selectedDirectory'>>
   },
   actions: {
     setFiles: assign(({ event }) => {
@@ -147,10 +148,12 @@ export const fileMachine = setup({
 
   initial: 'Reading files',
 
-  context: {
-    project: {} as Project, // TODO: Either make this a flexible type or type this property to allow empty object
-    selectedDirectory: {} as FileEntry, // TODO: Either make this a flexible type or type this property to allow empty object
-    itemsBeingRenamed: [],
+  context: ({ input }) => {
+    return {
+      project: input.project ?? ({} as Project), // TODO: Either make this a flexible type or type this property to allow empty object
+      selectedDirectory: input.selectedDirectory ?? ({} as FileEntry), // TODO: Either make this a flexible type or type this property to allow empty object
+      itemsBeingRenamed: [],
+    }
   },
 
   on: {
