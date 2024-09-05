@@ -82,26 +82,28 @@ const createWindow = (filePath?: string): BrowserWindow => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
   } else {
-    getProjectPathAtStartup(filePath).then(async (projectPath) => {
-      const startIndex = path.join(
-        __dirname,
-        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-      )
+    getProjectPathAtStartup(filePath)
+      .then(async (projectPath) => {
+        const startIndex = path.join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+        )
 
-      if (projectPath === null) {
-        await newWindow.loadFile(startIndex)
-        return
-      }
+        if (projectPath === null) {
+          await newWindow.loadFile(startIndex)
+          return
+        }
 
-      console.log('Loading file', projectPath)
+        console.log('Loading file', projectPath)
 
-      const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-      console.log('Full URL', fullUrl)
+        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+        console.log('Full URL', fullUrl)
 
-      await newWindow.loadFile(startIndex, {
-        hash: fullUrl,
+        await newWindow.loadFile(startIndex, {
+          hash: fullUrl,
+        })
       })
-    }).catch(reportRejection)
+      .catch(reportRejection)
   }
 
   // Open the DevTools.
