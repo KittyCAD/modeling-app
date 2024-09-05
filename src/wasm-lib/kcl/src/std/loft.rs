@@ -98,6 +98,30 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
 /// ```
+///
+/// ```no_run
+/// // Loft a square, a circle, and another circle with options.
+/// const squareSketch = startSketchOn('XY')
+///     |> startProfileAt([-100, 200], %)
+///     |> line([200, 0], %)
+///     |> line([0, -200], %)
+///     |> line([-200, 0], %)
+///     |> lineTo([profileStartX(%), profileStartY(%)], %)
+///     |> close(%)
+///
+/// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
+///     |> circle([0, 100], 50, %)
+///
+/// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
+///     |> circle([0, 100], 20, %)
+///
+/// loft([squareSketch, circleSketch0, circleSketch1], {
+///     baseCurveIndex: 0,
+///     bezApproximateRational: false,
+///     tolerance: 0.000001,
+///     vDegree: 2,
+/// })
+/// ```
 #[stdlib {
     name = "loft",
 }]
