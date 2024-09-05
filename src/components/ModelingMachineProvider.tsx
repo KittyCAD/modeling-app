@@ -174,12 +174,9 @@ export const ModelingMachineProvider = ({
             context: { mouseState, segmentHoverMap },
             event,
           }) => {
-            const _event = event as Extract<
-              ModelingMachineEvent,
-              { type: 'Set mouse state' }
-            >
-            if (_event.data.type === 'isHovering') {
-              const parent = getParentGroup(_event.data.on, [
+            if (event.type !== 'Set mouse state') return {}
+            if (event.data.type === 'isHovering') {
+              const parent = getParentGroup(event.data.on, [
                 STRAIGHT_SEGMENT,
                 TANGENTIAL_ARC_TO_SEGMENT,
               ])
@@ -193,7 +190,7 @@ export const ModelingMachineProvider = ({
                 [pathToNodeString]: 0,
               }
             } else if (
-              _event.data.type === 'idle' &&
+              event.data.type === 'idle' &&
               mouseState.type === 'isHovering'
             ) {
               const mouseOnParent = getParentGroup(mouseState.on, [
@@ -218,9 +215,9 @@ export const ModelingMachineProvider = ({
                 ...segmentHoverMap,
                 [pathToNodeString]: timeoutId,
               }
-            } else if (_event.data.type === 'timeoutEnd') {
+            } else if (event.data.type === 'timeoutEnd') {
               const copy = { ...segmentHoverMap }
-              delete copy[_event.data.pathToNodeString]
+              delete copy[event.data.pathToNodeString]
               return copy
             }
             return {}
@@ -228,19 +225,16 @@ export const ModelingMachineProvider = ({
         }),
         'Set Segment Overlays': assign({
           segmentOverlays: ({ context: { segmentOverlays }, event }) => {
-            const _event = event as Extract<
-              ModelingMachineEvent,
-              { type: 'Set Segment Overlays' }
-            >
-            if (_event.data.type === 'set-many') return _event.data.overlays
-            if (_event.data.type === 'set-one')
+            if (event.type !== 'Set Segment Overlays') return {}
+            if (event.data.type === 'set-many') return event.data.overlays
+            if (event.data.type === 'set-one')
               return {
                 ...segmentOverlays,
-                [_event.data.pathToNodeString]: _event.data.seg,
+                [event.data.pathToNodeString]: event.data.seg,
               }
-            if (_event.data.type === 'delete-one') {
+            if (event.data.type === 'delete-one') {
               const copy = { ...segmentOverlays }
-              delete copy[_event.data.pathToNodeString]
+              delete copy[event.data.pathToNodeString]
               return copy
             }
             // data.type === 'clear'
@@ -508,11 +502,8 @@ export const ModelingMachineProvider = ({
           )
         },
         'Submit to Text-to-CAD API': async ({ event }) => {
-          const _event = event as Extract<
-            ModelingMachineEvent,
-            { type: 'Text-to-CAD' }
-          >
-          const trimmedPrompt = _event.data.prompt.trim()
+          if (event.type !== 'Text-to-CAD') return
+          const trimmedPrompt = event.data.prompt.trim()
           if (!trimmedPrompt) return
 
           void submitAndAwaitTextToKcl({
@@ -564,11 +555,8 @@ export const ModelingMachineProvider = ({
             code: codeManager.code,
           }),
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
-          const _event = event as Extract<
-            ModelingMachineEvent,
-            { type: 'Enter sketch' }
-          >
-          if (_event.data?.forceNewSketch) return false
+          if (event.type !== 'Enter sketch') return false
+          if (event.data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
