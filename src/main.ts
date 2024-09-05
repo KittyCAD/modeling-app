@@ -12,7 +12,7 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { reportRejection, trapSuppressed } from 'lib/trap'
+import { reportRejection } from 'lib/trap'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -80,7 +80,7 @@ const createWindow = (filePath?: string): BrowserWindow => {
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(trapSuppressed)
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
   } else {
     getProjectPathAtStartup(filePath).then(async (projectPath) => {
       const startIndex = path.join(
@@ -101,7 +101,7 @@ const createWindow = (filePath?: string): BrowserWindow => {
       await newWindow.loadFile(startIndex, {
         hash: fullUrl,
       })
-    }).catch(trapSuppressed)
+    }).catch(reportRejection)
   }
 
   // Open the DevTools.

@@ -103,7 +103,7 @@ import {
   updateRectangleSketch,
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs } from 'lib/theme'
-import { err, trap, trapSuppressed } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 
@@ -1169,7 +1169,7 @@ export class SceneEntities {
         )
       )
       sceneInfra.overlayCallbacks(callBacks)
-    })().catch(trapSuppressed)
+    })().catch(reportRejection)
   }
 
   /**

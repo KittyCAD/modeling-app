@@ -27,7 +27,7 @@ import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isArray } from 'lib/utils'
-import { trapSuppressed } from 'lib/trap'
+import { reportRejection } from 'lib/trap'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -481,9 +481,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
                 clearInterval(interval)
                 resolve(false)
               }
-            })().catch(trapSuppressed)
+            })().catch(reportRejection)
           }, 50)
-        })().catch(trapSuppressed)
+        })().catch(reportRejection)
       }),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
