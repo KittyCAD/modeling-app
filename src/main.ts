@@ -94,13 +94,11 @@ const createWindow = (): BrowserWindow => {
   return newWindow
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
+// Quit when all windows are closed, even on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 
 // This method will be called when Electron has finished
