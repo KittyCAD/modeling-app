@@ -268,6 +268,7 @@ code {
 
 .segment-length-label-text {
   transform: translate(var(--x, 0), var(--y, 0));
+  @apply font-mono body-bg;
 }
 
 @layer components {
@@ -275,7 +276,7 @@ code {
     @apply font-mono text-xs inline-block px-0.5 py-[2px] rounded;
 
     /* This is the only place in our code where layout is impacted by theme.
-     * We may not want that later, if hotkeys are possibly visible 
+     * We may not want that later, if hotkeys are possibly visible
      * while switching theme, but more padding feels better in dark mode.
      */
     @apply dark:px-1;
