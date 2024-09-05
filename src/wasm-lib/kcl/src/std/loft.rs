@@ -12,7 +12,7 @@ use crate::{
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
-const DEFAULT_V_DEGREE: u32 = 1;
+const DEFAULT_V_DEGREE: u32 = 2;
 
 /// Data for a loft.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
