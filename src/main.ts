@@ -78,26 +78,36 @@ const createWindow = (filePath?: string): BrowserWindow => {
     titleBarStyle: 'hiddenInset',
   })
 
-  getProjectPathAtStartup(filePath).then((projectPath) => {
-    // and load the index.html of the app.
-    if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-      newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
-    } else {
-      newWindow.loadFile(
-        path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
-        {
-          hash: projectPath
-            ? `${PATHS.FILE}/${encodeURIComponent(projectPath)}`
-            : undefined,
-        }
+  // and load the index.html of the app.
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+  } else {
+    getProjectPathAtStartup(filePath).then((projectPath) => {
+      const startIndex = path.join(
+        __dirname,
+        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
       )
-    }
 
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+      if (projectPath === null) {
+        newWindow.loadFile(startIndex)
+        return
+      }
 
-    newWindow.show()
-  })
+      console.log('Loading file', projectPath)
+
+      const fullUrl = `/${PATHS.FILE}/${encodeURIComponent(projectPath)}`
+      console.log('Full URL', fullUrl)
+
+      newWindow.loadFile(startIndex, {
+        hash: fullUrl,
+      })
+    })
+  }
+
+  // Open the DevTools.
+  // mainWindow.webContents.openDevTools()
+
+  newWindow.show()
 
   return newWindow
 }
