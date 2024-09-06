@@ -15,7 +15,7 @@ import UserMenu from './UserMenu'
 import ProjectMenu from './ProjectMenu'
 import Export from './Export'
 import FutureWork from './FutureWork'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
@@ -82,10 +82,7 @@ export function useDemoCode() {
     if (!editorManager.editorView || codeManager.code === bracket) return
     setTimeout(async () => {
       codeManager.updateCodeStateEditor(bracket)
-      kclManager.isFirstRender = true
-      await kclManager.executeCode(true).then(() => {
-        kclManager.isFirstRender = false
-      })
+      await kclManager.executeCode(true)
       await codeManager.writeToFile()
     })
   }, [editorManager.editorView])
@@ -103,7 +100,7 @@ export function useNextClick(newStatus: string) {
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
-    navigate(filePath + paths.ONBOARDING.INDEX.slice(0, -1) + newStatus)
+    navigate(filePath + PATHS.ONBOARDING.INDEX.slice(0, -1) + newStatus)
   }, [filePath, newStatus, send, navigate])
 }
 

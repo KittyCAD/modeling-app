@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ChamferSurface, ExtrudeGroup, ExtrudeSurface, FilletOrChamfer, GeoMeta, MemoryItem},
+    executor::{ChamferSurface, EdgeCut, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
     std::{fillet::EdgeReference, Args},
 };
 
@@ -27,15 +27,19 @@ pub struct ChamferData {
 }
 
 /// Create chamfers on tagged paths.
-pub async fn chamfer(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
     let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
-    Ok(MemoryItem::ExtrudeGroup(extrude_group))
+    Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
-/// Create chamfers on tagged paths.
+/// Cut a straight transitional edge along a tagged path.
+///
+/// Chamfer is similar in function and use to a fillet, except
+/// a fillet will blend the transition along an edge, rather than cut
+/// a sharp, straight transitional edge.
 ///
 /// ```no_run
 /// const width = 20
@@ -91,7 +95,7 @@ async fn inner_chamfer(
     }
 
     let mut extrude_group = extrude_group.clone();
-    let mut fillet_or_chamfers = Vec::new();
+    let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
@@ -111,7 +115,7 @@ async fn inner_chamfer(
         )
         .await?;
 
-        fillet_or_chamfers.push(FilletOrChamfer::Chamfer {
+        edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
             length: data.length,
@@ -130,7 +134,7 @@ async fn inner_chamfer(
         }
     }
 
-    extrude_group.fillet_or_chamfers = fillet_or_chamfers;
+    extrude_group.edge_cuts = edge_cuts;
 
     Ok(extrude_group)
 }

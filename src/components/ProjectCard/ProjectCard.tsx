@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import { ActionButton } from '../ActionButton'
 import { FILE_EXT } from 'lib/constants'
@@ -7,7 +7,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from '../Tooltip'
 import { DeleteConfirmationDialog } from './DeleteProjectDialog'
 import { ProjectCardRenameForm } from './ProjectCardRenameForm'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
 
 function ProjectCard({
   project,
@@ -36,8 +36,8 @@ function ProjectCard({
     void handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
-  function getDisplayedTime(dateStr: string) {
-    const date = new Date(dateStr)
+  function getDisplayedTime(dateTimeMs: number) {
+    const date = new Date(dateTimeMs)
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     return date.getTime() < startOfToday.getTime()
@@ -52,7 +52,7 @@ function ProjectCard({
     }
 
     // async function setupImageUrl() {
-    //   const projectImagePath = await join(project.path, PROJECT_IMAGE_NAME)
+    //   const projectImagePath = await join(project.file.path, PROJECT_IMAGE_NAME)
     //   if (await exists(projectImagePath)) {
     //     const imageData = await readFile(projectImagePath)
     //     const blob = new Blob([imageData], { type: 'image/jpg' })
@@ -79,7 +79,7 @@ function ProjectCard({
     >
       <Link
         data-testid="project-link"
-        to={`${paths.FILE}/${encodeURIComponent(project.default_file)}`}
+        to={`${PATHS.FILE}/${encodeURIComponent(project.default_file)}`}
         className="flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 group-hover:!hue-rotate-0 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80 group-hover:!divide-primary"
       >
         {/* <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
@@ -113,14 +113,17 @@ function ProjectCard({
           </span>
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
-            {project.metadata && project.metadata?.modified
-              ? getDisplayedTime(project.metadata.modified)
+            {project.metadata && project.metadata.modified
+              ? getDisplayedTime(parseInt(project.metadata.modified))
               : 'never'}
           </span>
         </div>
       </Link>
       {!isEditing && (
-        <div className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100">
+        <div
+          className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100"
+          data-edit-buttons-for={project.name?.replace(FILE_EXT, '')}
+        >
           <ActionButton
             Element="button"
             iconStart={{

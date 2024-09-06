@@ -1,7 +1,7 @@
 import { APP_VERSION } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
 import { HelpMenu } from './HelpMenu'
 import { Link, useLocation } from 'react-router-dom'
@@ -9,7 +9,9 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
-import openWindow from 'lib/openWindow'
+import openWindow, { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { NetworkMachineIndicator } from './NetworkMachineIndicator'
+import { ModelStateIndicator } from './ModelStateIndicator'
 
 export function LowerRightControls({
   children,
@@ -23,10 +25,12 @@ export function LowerRightControls({
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
-  const isPlayWright = window?.localStorage.getItem('playwright') === 'true'
-
-  async function reportbug(event: { preventDefault: () => void }) {
+  async function reportbug(event: {
+    preventDefault: () => void
+    stopPropagation: () => void
+  }) {
     event?.preventDefault()
+    event?.stopPropagation()
 
     if (!coreDumpManager) {
       // open default reporting option
@@ -62,13 +66,17 @@ export function LowerRightControls({
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
+        {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
+          onClick={openExternalBrowserIfDesktop(
+            `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`
+          )}
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
         >
-          v{isPlayWright ? '11.22.33' : APP_VERSION}
+          v{APP_VERSION}
         </a>
         <a
           onClick={reportbug}
@@ -86,10 +94,11 @@ export function LowerRightControls({
         </a>
         <Link
           to={
-            location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
+            location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS + '?tab=project'
+              : PATHS.HOME + PATHS.SETTINGS
           }
+          data-testid="settings-link"
         >
           <CustomIcon
             name="settings"
@@ -100,7 +109,10 @@ export function LowerRightControls({
             Settings
           </Tooltip>
         </Link>
-        <NetworkHealthIndicator />
+        <NetworkMachineIndicator className={linkOverrideClassName} />
+        {!location.pathname.startsWith(PATHS.HOME) && (
+          <NetworkHealthIndicator />
+        )}
         <HelpMenu />
       </menu>
     </section>

@@ -9,8 +9,10 @@ pub mod fillet;
 pub mod helix;
 pub mod import;
 pub mod kcl_stdlib;
+pub mod loft;
 pub mod math;
 pub mod patterns;
+pub mod planes;
 pub mod polar;
 pub mod revolve;
 pub mod segment;
@@ -18,6 +20,7 @@ pub mod shapes;
 pub mod shell;
 pub mod sketch;
 pub mod types;
+pub mod units;
 pub mod utils;
 
 use std::collections::HashMap;
@@ -34,11 +37,11 @@ use crate::{
     ast::types::FunctionExpression,
     docs::StdLibFn,
     errors::KclError,
-    executor::{MemoryItem, ProgramMemory, SketchGroup, SketchSurface},
+    executor::{KclValue, ProgramMemory, SketchGroup, SketchSurface},
     std::kcl_stdlib::KclStdLibFn,
 };
 
-pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + Send>>;
+pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValue, KclError>> + Send>>;
 
 pub type FnMap = HashMap<String, StdFn>;
 
@@ -80,6 +83,7 @@ lazy_static! {
         Box::new(crate::std::sketch::Arc),
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::TangentialArcTo),
+        Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
         Box::new(crate::std::patterns::PatternLinear2D),
@@ -94,7 +98,10 @@ lazy_static! {
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
         Box::new(crate::std::shell::Shell),
+        Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
+        Box::new(crate::std::loft::Loft),
+        Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
@@ -118,8 +125,15 @@ lazy_static! {
         Box::new(crate::std::math::Ln),
         Box::new(crate::std::math::ToDegrees),
         Box::new(crate::std::math::ToRadians),
+        Box::new(crate::std::units::Mm),
+        Box::new(crate::std::units::Inch),
+        Box::new(crate::std::units::Ft),
+        Box::new(crate::std::units::M),
+        Box::new(crate::std::units::Cm),
+        Box::new(crate::std::units::Yd),
         Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
+        Box::new(crate::std::assert::AssertEqual),
         Box::new(crate::std::assert::AssertLessThan),
         Box::new(crate::std::assert::AssertGreaterThan),
         Box::new(crate::std::assert::AssertLessThanOrEq),
@@ -211,14 +225,14 @@ pub enum FunctionKind {
     UserDefined,
 }
 
-/// Returns the length of the given leg.
-pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
+/// Compute the length of the given leg.
+pub async fn leg_length(args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the length of the given leg.
+/// Compute the length of the given leg.
 ///
 /// ```no_run
 /// legLen(5, 3)
@@ -231,14 +245,14 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
     (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
 }
 
-/// Returns the angle of the given leg for x.
-pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
+/// Compute the angle of the given leg for x.
+pub async fn leg_angle_x(args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the angle of the given leg for x.
+/// Compute the angle of the given leg for x.
 ///
 /// ```no_run
 /// legAngX(5, 3)
@@ -251,14 +265,14 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
 }
 
-/// Returns the angle of the given leg for y.
-pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
+/// Compute the angle of the given leg for y.
+pub async fn leg_angle_y(args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the angle of the given leg for y.
+/// Compute the angle of the given leg for y.
 ///
 /// ```no_run
 /// legAngY(5, 3)
@@ -474,7 +488,7 @@ layout: manual
             buf.push_str(&fn_docs);
 
             // Write the file.
-            expectorate::assert_contents(&format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
+            expectorate::assert_contents(format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
         }
     }
 

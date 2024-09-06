@@ -3,16 +3,16 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { createAndOpenNewProject } from 'lib/tauriFS'
-import { isTauri } from 'lib/isTauri'
+import { createAndOpenNewProject } from 'lib/desktopFS'
+import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
 import { APP_NAME } from 'lib/constants'
 import { useState } from 'react'
-import { useLspContext } from 'components/LspProvider'
 import { IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useFileContext } from 'hooks/useFileContext'
+import { useLspContext } from 'components/LspProvider'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -38,7 +38,7 @@ function OnboardingResetWarning(props: OnboardingResetWarningProps) {
   return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        {!isTauri() ? (
+        {!isDesktop() ? (
           <OnboardingWarningWeb {...props} />
         ) : (
           <OnboardingWarningDesktop {...props} />
@@ -51,7 +51,7 @@ function OnboardingResetWarning(props: OnboardingResetWarningProps) {
 function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
   const navigate = useNavigate()
   const dismiss = useDismiss()
-  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { context: fileContext } = useFileContext()
   const { onProjectClose, onProjectOpen } = useLspContext()
 
@@ -107,10 +107,7 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
           codeManager.updateCodeStateEditor(bracket)
           await codeManager.writeToFile()
 
-          kclManager.isFirstRender = true
-          await kclManager.executeCode(true).then(() => {
-            kclManager.isFirstRender = false
-          })
+          await kclManager.executeCode(true)
           props.setShouldShowWarning(false)
         }}
         nextText="Overwrite code and continue"
@@ -145,7 +142,7 @@ function OnboardingIntroductionInner() {
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
           <img
-            src={`/zma-logomark${getLogoTheme()}.svg`}
+            src={`${isDesktop() ? '.' : ''}/zma-logomark${getLogoTheme()}.svg`}
             alt={APP_NAME}
             className="h-20 max-w-full"
           />

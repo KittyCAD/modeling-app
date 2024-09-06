@@ -13,8 +13,8 @@ use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange, TagEngineInfo, TagIdentifier, UserVal,
+        BasePath, ExtrudeGroup, Face, GeoMeta, KclValue, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
+        SketchGroupSet, SketchSurface, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -89,15 +89,15 @@ pub enum StartOrEnd {
 }
 
 /// Draw a line to a point.
-pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (to, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn line_to(args: Args) -> Result<KclValue, KclError> {
+    let (to, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_line_to(to, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw a line to a point.
+/// Draw a line from the current origin to some absolute (x, y) point.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XZ")
@@ -114,10 +114,10 @@ pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_line_to(
     to: [f64; 2],
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
     let id = uuid::Uuid::new_v4();
 
@@ -160,15 +160,17 @@ async fn inner_line_to(
 }
 
 /// Draw a line to a point on the x-axis.
-pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn x_line_to(args: Args) -> Result<KclValue, KclError> {
+    let (to, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_x_line_to(to, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw a line to a point on the x-axis.
+/// Draw a line parallel to the X axis, that ends at the given X.
+/// E.g. if the previous line ended at (1, 1),
+/// then xLineTo(4) draws a line from (1, 1) to (4, 1)
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -194,10 +196,10 @@ pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_x_line_to(
     to: f64,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
 
     let new_sketch_group = inner_line_to([to, from.y], sketch_group, tag, args).await?;
@@ -206,15 +208,17 @@ async fn inner_x_line_to(
 }
 
 /// Draw a line to a point on the y-axis.
-pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn y_line_to(args: Args) -> Result<KclValue, KclError> {
+    let (to, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_y_line_to(to, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw a line to a point on the y-axis.
+/// Draw a line parallel to the Y axis, that ends at the given Y.
+/// E.g. if the previous line ended at (1, 1),
+/// then yLineTo(4) draws a line from (1, 1) to (1, 4)
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XZ")
@@ -233,10 +237,10 @@ pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_y_line_to(
     to: f64,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
 
     let new_sketch_group = inner_line_to([from.x, to], sketch_group, tag, args).await?;
@@ -244,15 +248,16 @@ async fn inner_y_line_to(
 }
 
 /// Draw a line.
-pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
-    let (delta, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn line(args: Args) -> Result<KclValue, KclError> {
+    let (delta, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_line(delta, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw a line.
+/// Draw a line relative to the current origin to a specified (x, y) away
+/// from the current position.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XZ")
@@ -280,10 +285,10 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_line(
     delta: [f64; 2],
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
     let to = [from.x + delta[0], from.y + delta[1]];
 
@@ -328,15 +333,16 @@ async fn inner_line(
 }
 
 /// Draw a line on the x-axis.
-pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn x_line(args: Args) -> Result<KclValue, KclError> {
+    let (length, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_x_line(length, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw a line on the x-axis.
+/// Draw a line relative to the current origin to a specified distance away
+/// from the current position along the 'x' axis.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -362,23 +368,24 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_x_line(
     length: f64,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     inner_line([length, 0.0], sketch_group, tag, args).await
 }
 
 /// Draw a line on the y-axis.
-pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn y_line(args: Args) -> Result<KclValue, KclError> {
+    let (length, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_y_line(length, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw a line on the y-axis.
+/// Draw a line relative to the current origin to a specified distance away
+/// from the current position along the 'y' axis.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -399,10 +406,10 @@ pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_y_line(
     length: f64,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     inner_line([0.0, length], sketch_group, tag, args).await
 }
 
@@ -423,15 +430,16 @@ pub enum AngledLineData {
 }
 
 /// Draw an angled line.
-pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn angled_line(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (AngledLineData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an angled line.
+/// Draw a line segment relative to the current origin using the polar
+/// measure of some angle and distance.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -452,10 +460,10 @@ pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_angled_line(
     data: AngledLineData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
     let (angle, length) = match data {
         AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
@@ -511,15 +519,16 @@ async fn inner_angled_line(
 }
 
 /// Draw an angled line of a given x length.
-pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn angled_line_of_x_length(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (AngledLineData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_of_x_length(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an angled line of a given x length.
+/// Create a line segment from the current 2-dimensional sketch origin
+/// along some angle (in degrees) for some relative length in the 'x' dimension.
 ///
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')
@@ -536,10 +545,10 @@ pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError>
 }]
 async fn inner_angled_line_of_x_length(
     data: AngledLineData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let (angle, length) = match data {
         AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
@@ -578,15 +587,17 @@ pub struct AngledLineToData {
 }
 
 /// Draw an angled line to a given x coordinate.
-pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn angled_line_to_x(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (AngledLineToData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_to_x(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an angled line to a given x coordinate.
+/// Create a line segment from the current 2-dimensional sketch origin
+/// along some angle (in degrees) for some length, ending at the provided value
+/// in the 'x' dimension.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -603,10 +614,10 @@ pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_angled_line_to_x(
     data: AngledLineToData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: x_to } = data;
 
@@ -633,16 +644,17 @@ async fn inner_angled_line_to_x(
 }
 
 /// Draw an angled line of a given y length.
-pub async fn angled_line_of_y_length(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn angled_line_of_y_length(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (AngledLineData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_of_y_length(data, sketch_group, tag, args).await?;
 
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an angled line of a given y length.
+/// Create a line segment from the current 2-dimensional sketch origin
+/// along some angle (in degrees) for some relative length in the 'y' dimension.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -661,10 +673,10 @@ pub async fn angled_line_of_y_length(args: Args) -> Result<MemoryItem, KclError>
 }]
 async fn inner_angled_line_of_y_length(
     data: AngledLineData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let (angle, length) = match data {
         AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
@@ -692,15 +704,17 @@ async fn inner_angled_line_of_y_length(
 }
 
 /// Draw an angled line to a given y coordinate.
-pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn angled_line_to_y(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (AngledLineToData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_angled_line_to_y(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an angled line to a given y coordinate.
+/// Create a line segment from the current 2-dimensional sketch origin
+/// along some angle (in degrees) for some length, ending at the provided value
+/// in the 'y' dimension.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -717,10 +731,10 @@ pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_angled_line_to_y(
     data: AngledLineToData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
     let AngledLineToData { angle, to: y_to } = data;
 
@@ -761,14 +775,16 @@ pub struct AngledLineThatIntersectsData {
 }
 
 /// Draw an angled line that intersects with a given line.
-pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (AngledLineThatIntersectsData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn angled_line_that_intersects(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (AngledLineThatIntersectsData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
     let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an angled line that intersects with a given line.
+/// Draw an angled line from the current origin, constructing a line segment
+/// such that the newly created line intersects the desired target line
+/// segment.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -790,10 +806,10 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
 }]
 async fn inner_angled_line_that_intersects(
     data: AngledLineThatIntersectsData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let intersect_path = args.get_tag_engine_info(&data.intersect_tag)?;
     let path = intersect_path.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -815,14 +831,14 @@ async fn inner_angled_line_that_intersects(
 }
 
 /// Start a sketch at a given point.
-pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn start_sketch_at(args: Args) -> Result<KclValue, KclError> {
     let data: [f64; 2] = args.get_data()?;
 
     let sketch_group = inner_start_sketch_at(data, args).await?;
-    Ok(MemoryItem::SketchGroup(sketch_group))
+    Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
-/// Start a sketch at a given point on the 'XY' plane.
+/// Start a new 2-dimensional sketch at a given point on the 'XY' plane.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchAt([0, 0])
@@ -856,7 +872,7 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startSketchAt",
 }]
-async fn inner_start_sketch_at(data: [f64; 2], args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_start_sketch_at(data: [f64; 2], args: Args) -> Result<SketchGroup, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
     let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
@@ -990,16 +1006,16 @@ impl From<PlaneData> for Plane {
 }
 
 /// Start a sketch on a specific plane or face.
-pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn start_sketch_on(args: Args) -> Result<KclValue, KclError> {
     let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
 
     match inner_start_sketch_on(data, tag, args).await? {
-        SketchSurface::Plane(plane) => Ok(MemoryItem::Plane(plane)),
-        SketchSurface::Face(face) => Ok(MemoryItem::Face(face)),
+        SketchSurface::Plane(plane) => Ok(KclValue::Plane(plane)),
+        SketchSurface::Face(face) => Ok(KclValue::Face(face)),
     }
 }
 
-/// Start a sketch on a specific plane or face.
+/// Start a new 2-dimensional sketch on a specific plane or face.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("XY")
@@ -1182,16 +1198,16 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
     Ok(Box::new(plane))
 }
 
-/// Start a profile at a given point.
-pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
+/// Start a new profile at a given point.
+pub async fn start_profile_at(args: Args) -> Result<KclValue, KclError> {
     let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<TagDeclarator>) =
         args.get_data_and_sketch_surface()?;
 
     let sketch_group = inner_start_profile_at(start, sketch_surface, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(sketch_group))
+    Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
-/// Start a profile at a given point.
+/// Start a new profile at a given point.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -1233,7 +1249,7 @@ pub(crate) async fn inner_start_profile_at(
     sketch_surface: SketchSurface,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     if let SketchSurface::Face(face) = &sketch_surface {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
@@ -1253,7 +1269,7 @@ pub(crate) async fn inner_start_profile_at(
             adjust_camera: false,
             planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
                 // We pass in the normal for the plane here.
-                Some(plane.z_axis.clone().into())
+                Some(plane.z_axis.into())
             } else {
                 None
             },
@@ -1308,16 +1324,19 @@ pub(crate) async fn inner_start_profile_at(
         },
         start: current_path,
     };
-    Ok(Box::new(sketch_group))
+    Ok(sketch_group)
 }
 
 /// Returns the X component of the sketch profile start point.
-pub async fn profile_start_x(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+pub async fn profile_start_x(args: Args) -> Result<KclValue, KclError> {
+    let sketch_group: SketchGroup = args.get_sketch_group()?;
     let x = inner_profile_start_x(sketch_group)?;
     args.make_user_val_from_f64(x)
 }
 
+/// Extract the provided 2-dimensional sketch group's profile's origin's 'x'
+/// value.
+///
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
@@ -1328,17 +1347,20 @@ pub async fn profile_start_x(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "profileStartX"
 }]
-pub(crate) fn inner_profile_start_x(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+pub(crate) fn inner_profile_start_x(sketch_group: SketchGroup) -> Result<f64, KclError> {
     Ok(sketch_group.start.to[0])
 }
 
 /// Returns the Y component of the sketch profile start point.
-pub async fn profile_start_y(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+pub async fn profile_start_y(args: Args) -> Result<KclValue, KclError> {
+    let sketch_group: SketchGroup = args.get_sketch_group()?;
     let x = inner_profile_start_y(sketch_group)?;
     args.make_user_val_from_f64(x)
 }
 
+/// Extract the provided 2-dimensional sketch group's profile's origin's 'y'
+/// value.
+///
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
@@ -1348,15 +1370,15 @@ pub async fn profile_start_y(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "profileStartY"
 }]
-pub(crate) fn inner_profile_start_y(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+pub(crate) fn inner_profile_start_y(sketch_group: SketchGroup) -> Result<f64, KclError> {
     Ok(sketch_group.start.to[1])
 }
 
 /// Returns the sketch profile start point.
-pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+pub async fn profile_start(args: Args) -> Result<KclValue, KclError> {
+    let sketch_group: SketchGroup = args.get_sketch_group()?;
     let point = inner_profile_start(sketch_group)?;
-    Ok(MemoryItem::UserVal(UserVal {
+    Ok(KclValue::UserVal(UserVal {
         value: serde_json::to_value(point).map_err(|e| {
             KclError::Type(KclErrorDetails {
                 message: format!("Failed to convert point to json: {}", e),
@@ -1367,6 +1389,9 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
     }))
 }
 
+/// Extract the provided 2-dimensional sketch group's profile's origin
+/// value.
+///
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
@@ -1379,20 +1404,21 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "profileStart"
 }]
-pub(crate) fn inner_profile_start(sketch_group: Box<SketchGroup>) -> Result<[f64; 2], KclError> {
+pub(crate) fn inner_profile_start(sketch_group: SketchGroup) -> Result<[f64; 2], KclError> {
     Ok(sketch_group.start.to)
 }
 
 /// Close the current sketch.
-pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
-    let (sketch_group, tag): (Box<SketchGroup>, Option<TagDeclarator>) = args.get_sketch_group_and_optional_tag()?;
+pub async fn close(args: Args) -> Result<KclValue, KclError> {
+    let (sketch_group, tag): (SketchGroup, Option<TagDeclarator>) = args.get_sketch_group_and_optional_tag()?;
 
     let new_sketch_group = inner_close(sketch_group, tag, args).await?;
 
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Close the current sketch.
+/// Construct a line segment from the current origin back to the profile's
+/// origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 ///
 /// ```no_run
 /// startSketchOn('XZ')
@@ -1416,10 +1442,10 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
     name = "close",
 }]
 pub(crate) async fn inner_close(
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
     let to: Point2d = sketch_group.start.from.into();
 
@@ -1490,15 +1516,25 @@ pub enum ArcData {
 }
 
 /// Draw an arc.
-pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (ArcData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn arc(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (ArcData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_arc(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an arc.
+/// Starting at the current sketch's origin, draw a curved line segment along
+/// an imaginary circle of the specified radius.
+///
+/// The arc is constructed such that the current position of the sketch is
+/// placed along an imaginary circle of the specified radius, at angleStart
+/// degrees. The resulting arc is the segment of the imaginary circle from
+/// that origin point to angleEnd, radius away from the center of the imaginary
+/// circle.
+///
+/// Unless this makes a lot of sense and feels like what you're looking
+/// for to construct your shape, you're likely looking for tangentialArc.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -1517,10 +1553,10 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 }]
 pub(crate) async fn inner_arc(
     data: ArcData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
@@ -1598,20 +1634,24 @@ pub enum TangentialArcData {
         /// Offset of the arc, in degrees.
         offset: f64,
     },
-    /// A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-    Point([f64; 2]),
 }
 
 /// Draw a tangential arc.
-pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (TangentialArcData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn tangential_arc(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (TangentialArcData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_tangential_arc(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an arc.
+/// Starting at the current sketch's origin, draw a curved line segment along
+/// some part of an imaginary circle of the specified radius.
+///
+/// The arc is constructed such that the last line segment is placed tangent
+/// to the imaginary circle of the specified radius. The resulting arc is the
+/// segment of the imaginary circle from that tangent point for 'offset'
+/// degrees along the imaginary circle.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -1634,47 +1674,63 @@ pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_tangential_arc(
     data: TangentialArcData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
+    // next set of lines is some undocumented voodoo from get_tangential_arc_to_info
+    let tangent_info = sketch_group.get_tangential_info_from_paths(); //this function desperately needs some documentation
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
+    };
 
     let id = uuid::Uuid::new_v4();
 
-    let to = match &data {
+    let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
+            // KCL stdlib types use degrees.
+            let offset = Angle::from_degrees(offset);
+
             // Calculate the end point from the angle and radius.
-            let end_angle = Angle::from_degrees(*offset);
-            let start_angle = Angle::from_degrees(0.0);
-            let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
+            // atan2 outputs radians.
+            let previous_end_tangent = Angle::from_radians(f64::atan2(
+                from.y - tan_previous_point[1],
+                from.x - tan_previous_point[0],
+            ));
+            // make sure the arc center is on the correct side to guarantee deterministic behavior
+            // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
+            let ccw = offset.degrees() > 0.0;
+            let tangent_to_arc_start_angle = if ccw {
+                // CCW turn
+                Angle::from_degrees(-90.0)
+            } else {
+                // CW turn
+                Angle::from_degrees(90.0)
+            };
+            // may need some logic and / or modulo on the various angle values to prevent them from going "backwards"
+            // but the above logic *should* capture that behavior
+            let start_angle = previous_end_tangent + tangent_to_arc_start_angle;
+            let end_angle = start_angle + offset;
+            let (center, to) = arc_center_and_end(from, start_angle, end_angle, radius);
 
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::ExtendPath {
                     path: sketch_group.id,
-                    segment: kittycad::types::PathSegment::TangentialArc {
-                        radius: *radius,
-                        offset: Angle {
-                            unit: kittycad::types::UnitAngle::Degrees,
-                            value: *offset,
-                        },
-                    },
+                    segment: kittycad::types::PathSegment::TangentialArc { radius, offset },
                 },
             )
             .await?;
-            to.into()
-        }
-        TangentialArcData::Point(to) => {
-            args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
-
-            *to
+            (center, to.into(), ccw)
         }
     };
 
-    let to = [from.x + to[0], from.y + to[1]];
-
     let current_path = Path::TangentialArc {
+        ccw,
+        center: center.into(),
         base: BasePath {
             from: from.into(),
             to,
@@ -1710,36 +1766,27 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
     }
 }
 
-fn too_few_args(source_range: SourceRange) -> KclError {
-    KclError::Syntax(KclErrorDetails {
-        source_ranges: vec![source_range],
-        message: "too few arguments".to_owned(),
-    })
-}
-
-fn get_arg<I: Iterator>(it: &mut I, src: SourceRange) -> Result<I::Item, KclError> {
-    it.next().ok_or_else(|| too_few_args(src))
-}
-
 /// Draw a tangential arc to a specific point.
-pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
-    let src = args.source_range;
-
-    // Get arguments to function call
-    let mut it = args.args.iter();
-    let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
-    let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
-    let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
-        memory_item.get_json_opt()?
-    } else {
-        None
-    };
+pub async fn tangential_arc_to(args: Args) -> Result<KclValue, KclError> {
+    let (to, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
+        super::args::FromArgs::from_args(&args, 0)?;
 
     let new_sketch_group = inner_tangential_arc_to(to, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw an arc.
+/// Draw a tangential arc to point some distance away..
+pub async fn tangential_arc_to_relative(args: Args) -> Result<KclValue, KclError> {
+    let (delta, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
+        super::args::FromArgs::from_args(&args, 0)?;
+
+    let new_sketch_group = inner_tangential_arc_to_relative(delta, sketch_group, tag, args).await?;
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
+}
+
+/// Starting at the current sketch's origin, draw a curved line segment along
+/// some part of an imaginary circle until it reaches the desired (x, y)
+/// coordinates.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -1759,10 +1806,10 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_tangential_arc_to(
     to: [f64; 2],
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from: Point2d = sketch_group.current_pen_position()?;
     let tangent_info = sketch_group.get_tangential_info_from_paths();
     let tan_previous_point = if tangent_info.is_center {
@@ -1806,6 +1853,90 @@ async fn inner_tangential_arc_to(
     Ok(new_sketch_group)
 }
 
+/// Starting at the current sketch's origin, draw a curved line segment along
+/// some part of an imaginary circle until it reaches a point the given (x, y)
+/// distance away.
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle: 45,
+///     length: 10,
+///   }, %)
+///   |> tangentialArcToRelative([0, -10], %)
+///   |> line([-10, 0], %)
+///   |> close(%)
+///
+/// const example = extrude(10, exampleSketch)
+/// ```
+#[stdlib {
+    name = "tangentialArcToRelative",
+}]
+async fn inner_tangential_arc_to_relative(
+    delta: [f64; 2],
+    sketch_group: SketchGroup,
+    tag: Option<TagDeclarator>,
+    args: Args,
+) -> Result<SketchGroup, KclError> {
+    let from: Point2d = sketch_group.current_pen_position()?;
+    let tangent_info = sketch_group.get_tangential_info_from_paths();
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
+    };
+    let [dx, dy] = delta;
+    let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+        arc_start_point: [from.x, from.y],
+        arc_end_point: [from.x + dx, from.y + dy],
+        tan_previous_point,
+        obtuse: true,
+    });
+
+    if result.center[0].is_infinite() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message:
+                "could not sketch tangential arc, because its center would be infinitely far away in the X direction"
+                    .to_owned(),
+        }));
+    } else if result.center[1].is_infinite() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message:
+                "could not sketch tangential arc, because its center would be infinitely far away in the Y direction"
+                    .to_owned(),
+        }));
+    }
+
+    let id = uuid::Uuid::new_v4();
+    args.batch_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
+
+    let current_path = Path::TangentialArcTo {
+        base: BasePath {
+            from: from.into(),
+            to: delta,
+            tag: tag.clone(),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        center: dbg!(result.center),
+        ccw: result.ccw > 0,
+    };
+
+    let mut new_sketch_group = sketch_group.clone();
+    if let Some(tag) = &tag {
+        new_sketch_group.add_tag(tag, &current_path);
+    }
+
+    new_sketch_group.value.push(current_path);
+
+    Ok(new_sketch_group)
+}
+
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1820,15 +1951,17 @@ pub struct BezierData {
 }
 
 /// Draw a bezier curve.
-pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group, tag): (BezierData, Box<SketchGroup>, Option<TagDeclarator>) =
+pub async fn bezier_curve(args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_group, tag): (BezierData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
     let new_sketch_group = inner_bezier_curve(data, sketch_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Draw a bezier curve.
+/// Draw a smooth, continuous, curved line segment from the current origin to
+/// the desired (x, y), using a number of control points to shape the curve's
+/// shape.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
@@ -1849,10 +1982,10 @@ pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_bezier_curve(
     data: BezierData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.current_pen_position()?;
 
     let relative = true;
@@ -1910,14 +2043,14 @@ async fn inner_bezier_curve(
 }
 
 /// Use a sketch to cut a hole in another sketch.
-pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
-    let (hole_sketch_group, sketch_group): (SketchGroupSet, Box<SketchGroup>) = args.get_sketch_groups()?;
+pub async fn hole(args: Args) -> Result<KclValue, KclError> {
+    let (hole_sketch_group, sketch_group): (SketchGroupSet, SketchGroup) = args.get_sketch_groups()?;
 
     let new_sketch_group = inner_hole(hole_sketch_group, sketch_group, args).await?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
-/// Use a sketch to cut a hole in another sketch.
+/// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XY')
@@ -1953,10 +2086,10 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_hole(
     hole_sketch_group: SketchGroupSet,
-    sketch_group: Box<SketchGroup>,
+    sketch_group: SketchGroup,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
-    let hole_sketch_groups: Vec<Box<SketchGroup>> = hole_sketch_group.into();
+) -> Result<SketchGroup, KclError> {
+    let hole_sketch_groups: Vec<SketchGroup> = hole_sketch_group.into();
     for hole_sketch_group in hole_sketch_groups {
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),

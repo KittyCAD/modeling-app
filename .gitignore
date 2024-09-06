@@ -39,6 +39,7 @@ src/wasm-lib/grackle/test_json_output
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
 e2e/playwright/temp2.png
+e2e/playwright/temp3.png
 # exports from snapshot-tests.spec.ts "exports of each format should work"
 e2e/playwright/export-snapshots/*
 !e2e/playwright/export-snapshots/*.png
@@ -48,15 +49,20 @@ e2e/playwright/export-snapshots/*
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/src/lang/std/artifactMapCache
 
 
 ## generated files
 src/**/*.typegen.ts
-src-tauri/gen
 
 src/wasm-lib/grackle/stdlib_cube_partial.json
 Mac_App_Distribution.provisionprofile
 
 *.tsbuildinfo
+src/wasm-lib/pkg
 
 venv
+.vite/
+
+# electron
+out/

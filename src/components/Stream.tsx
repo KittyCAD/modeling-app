@@ -11,21 +11,31 @@ import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 import { useAppStream } from 'AppState'
 import {
+  EngineCommandManagerEvents,
   EngineConnectionStateType,
   DisconnectingType,
 } from 'lang/std/engineConnection'
+import { useRouteLoaderData } from 'react-router-dom'
+import { PATHS } from 'lib/paths'
+import { IndexLoaderData } from 'lib/types'
+
+enum StreamState {
+  Playing = 'playing',
+  Paused = 'paused',
+  Resuming = 'resuming',
+  Unset = 'unset',
+}
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [isFirstRender, setIsFirstRender] = useState(kclManager.isFirstRender)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send, context } = useModelingContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
-  const [isFreezeFrame, setIsFreezeFrame] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
+  const [streamState, setStreamState] = useState(StreamState.Unset)
+  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   const IDLE = settings.context.app.streamIdleMode.current
 
@@ -33,15 +43,43 @@ export const Stream = () => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
 
+  /**
+   * Execute code and show a "building scene message"
+   * in Stream.tsx in the meantime.
+   *
+   * I would like for this to live somewhere more central,
+   * but it seems to me that we need the video element ref
+   * to be able to play the video after the code has been
+   * executed. If we can find a way to do this from a more
+   * central place, we can move this code there.
+   */
+  async function executeCodeAndPlayStream() {
+    kclManager.executeCode(true).then(() => {
+      videoRef.current?.play().catch((e) => {
+        console.warn('Video playing was prevented', e, videoRef.current)
+      })
+      setStreamState(StreamState.Playing)
+    })
+  }
+
+  /**
+   * Subscribe to execute code when the file changes
+   * but only if the scene is already ready.
+   * See onSceneReady for the initial scene setup.
+   */
+  useEffect(() => {
+    if (engineCommandManager.engineConnection?.isReady() && file?.path) {
+      console.log('execute on file change')
+      executeCodeAndPlayStream()
+    }
+  }, [file?.path, engineCommandManager.engineConnection])
+
   useEffect(() => {
     if (
       immediateState.type === EngineConnectionStateType.Disconnecting &&
       immediateState.value.type === DisconnectingType.Pause
     ) {
-      setIsPaused(true)
-    }
-    if (immediateState.type === EngineConnectionStateType.Connecting) {
-      setIsPaused(false)
+      setStreamState(StreamState.Paused)
     }
   }, [immediateState])
 
@@ -76,8 +114,11 @@ export const Stream = () => {
     let timeoutIdIdleA: ReturnType<typeof setTimeout> | undefined = undefined
 
     const teardown = () => {
+      // Already paused
+      if (streamState === StreamState.Paused) return
+
       videoRef.current?.pause()
-      setIsFreezeFrame(true)
+      setStreamState(StreamState.Paused)
       sceneInfra.modelingSend({ type: 'Cancel' })
       // Give video time to pause
       window.requestAnimationFrame(() => {
@@ -91,7 +132,7 @@ export const Stream = () => {
         timeoutIdIdleA = setTimeout(teardown, IDLE_TIME_MS)
       } else if (!engineCommandManager.engineConnection?.isReady()) {
         clearTimeout(timeoutIdIdleA)
-        engineCommandManager.engineConnection?.connect(true)
+        setStreamState(StreamState.Resuming)
       }
     }
 
@@ -106,10 +147,15 @@ export const Stream = () => {
     let timeoutIdIdleB: ReturnType<typeof setTimeout> | undefined = undefined
 
     const onAnyInput = () => {
-      // Clear both timers
-      clearTimeout(timeoutIdIdleA)
-      clearTimeout(timeoutIdIdleB)
-      timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+      if (streamState === StreamState.Playing) {
+        // Clear both timers
+        clearTimeout(timeoutIdIdleA)
+        clearTimeout(timeoutIdIdleB)
+        timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
+      }
+      if (streamState === StreamState.Paused) {
+        setStreamState(StreamState.Resuming)
+      }
     }
 
     if (IDLE) {
@@ -124,7 +170,20 @@ export const Stream = () => {
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
+    /**
+     * Add a listener to execute code and play the stream
+     * on initial stream setup.
+     */
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.SceneReady,
+      executeCodeAndPlayStream
+    )
+
     return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.SceneReady,
+        executeCodeAndPlayStream
+      )
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
       })
@@ -152,19 +211,21 @@ export const Stream = () => {
         )
       }
     }
-  }, [IDLE])
+  }, [IDLE, streamState])
 
+  /**
+   * Play the vid
+   */
   useEffect(() => {
-    setIsFirstRender(kclManager.isFirstRender)
-    if (!kclManager.isFirstRender)
+    if (!kclManager.isExecuting) {
       setTimeout(() =>
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
       )
-    setIsFreezeFrame(!kclManager.isFirstRender)
-  }, [kclManager.isFirstRender])
+    }
+  }, [kclManager.isExecuting])
 
   useEffect(() => {
     if (
@@ -175,6 +236,7 @@ export const Stream = () => {
     if (!videoRef.current) return
     if (!mediaStream) return
 
+    // The browser complains if we try to load a new stream without pausing first.
     // Do not immediately play the stream!
     try {
       videoRef.current.srcObject = mediaStream
@@ -288,7 +350,8 @@ export const Stream = () => {
       <ClientSideScene
         cameraControls={settings.context.modeling.mouseControls.current}
       />
-      {isPaused && (
+      {(streamState === StreamState.Paused ||
+        streamState === StreamState.Resuming) && (
         <div className="text-center absolute inset-0">
           <div
             className="flex flex-col items-center justify-center h-screen"
@@ -310,19 +373,22 @@ export const Stream = () => {
                 />
               </svg>
             </div>
-            <p className="text-base mt-2 text-primary bold">Paused</p>
+            <p className="text-base mt-2 text-primary bold">
+              {streamState === StreamState.Paused && 'Paused'}
+              {streamState === StreamState.Resuming && 'Resuming'}
+            </p>
           </div>
         </div>
       )}
-      {(!isNetworkOkay || isLoading || isFirstRender) && !isFreezeFrame && (
+      {(!isNetworkOkay || isLoading) && (
         <div className="text-center absolute inset-0">
           <Loading>
             {!isNetworkOkay && !isLoading ? (
               <span data-testid="loading-stream">Stream disconnected...</span>
-            ) : !isLoading && isFirstRender ? (
-              <span data-testid="loading-stream">Building scene...</span>
             ) : (
-              <span data-testid="loading-stream">Loading stream...</span>
+              !isLoading && (
+                <span data-testid="loading-stream">Loading stream...</span>
+              )
             )}
           </Loading>
         </div>

@@ -12,9 +12,8 @@ import {
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
-import { open } from '@tauri-apps/plugin-dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 
@@ -63,8 +62,8 @@ export class Setting<T = unknown> {
   get user(): T | undefined {
     return this._user
   }
-  set user(v: T) {
-    this._user = this.validate(v) ? v : this._user
+  set user(v: T | undefined) {
+    this._user = v !== undefined ? (this.validate(v) ? v : this._user) : v
     this.current = this.resolve()
   }
   /**
@@ -73,8 +72,8 @@ export class Setting<T = unknown> {
   get project(): T | undefined {
     return this._project
   }
-  set project(v: T) {
-    this._project = this.validate(v) ? v : this._project
+  set project(v: T | undefined) {
+    this._project = v !== undefined ? (this.validate(v) ? v : this._project) : v
     this.current = this.resolve()
   }
   /**
@@ -114,6 +113,7 @@ export function createSettings() {
        * The overall appearance of the app: light, dark, or system
        */
       theme: new Setting<Themes>({
+        hideOnLevel: 'project',
         defaultValue: Themes.System,
         description: 'The overall appearance of the app',
         validate: (v) => isEnumMember(v, Themes),
@@ -192,7 +192,8 @@ export function createSettings() {
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
-        validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
+        validate: (v) =>
+          typeof v === 'string' && (v.length > 0 || !isDesktop()),
         Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (
@@ -206,24 +207,23 @@ export function createSettings() {
               />
               <button
                 onClick={async () => {
-                  // In Tauri end-to-end tests we can't control the file picker,
+                  // In desktop end-to-end tests we can't control the file picker,
                   // so we seed the new directory value in the element's dataset
-                  const newValue =
-                    inputRef.current && inputRef.current.dataset.testValue
-                      ? inputRef.current.dataset.testValue
-                      : await open({
-                          directory: true,
-                          recursive: true,
-                          defaultPath: value,
-                          title: 'Choose a new project directory',
-                        })
+                  const inputRefVal = inputRef.current?.dataset.testValue
                   if (
-                    newValue &&
-                    newValue !== null &&
-                    newValue !== value &&
-                    !Array.isArray(newValue)
+                    inputRef.current &&
+                    inputRefVal &&
+                    !Array.isArray(inputRefVal)
                   ) {
-                    updateValue(newValue)
+                    updateValue(inputRefVal)
+                  } else {
+                    const newPath = await window.electron.open({
+                      properties: ['openDirectory', 'createDirectory'],
+                      defaultPath: value,
+                      title: 'Choose a new project directory',
+                    })
+                    if (newPath.canceled) return
+                    updateValue(newPath.filePaths[0])
                   }
                 }}
                 className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"

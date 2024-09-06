@@ -6,7 +6,7 @@ import {
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
-  Value,
+  Expr,
   Literal,
   PipeSubstitution,
   Identifier,
@@ -17,7 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  SketchGroup,
+  sketchGroupFromKclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -195,10 +195,7 @@ export function findUniqueName(
   return findUniqueName(searchStr, name, pad, index + 1)
 }
 
-export function mutateArrExp(
-  node: Value,
-  updateWith: ArrayExpression
-): boolean {
+export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {
       if (isLiteralArrayOrStatic(element)) {
@@ -211,7 +208,7 @@ export function mutateArrExp(
 }
 
 export function mutateObjExpProp(
-  node: Value,
+  node: Expr,
   updateWith: Literal | ArrayExpression,
   key: string
 ): boolean {
@@ -254,7 +251,7 @@ export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
   shouldPipe = false,
-  distance = createLiteral(4) as Value
+  distance = createLiteral(4) as Expr
 ):
   | {
       modifiedAst: Program
@@ -566,6 +563,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: nonCodeMetaEmpty(),
     elements,
   }
 }
@@ -579,7 +577,7 @@ export function createPipeExpression(
     end: 0,
     digest: null,
     body,
-    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
+    nonCodeMeta: nonCodeMetaEmpty(),
   }
 }
 
@@ -608,13 +606,14 @@ export function createVariableDeclaration(
 }
 
 export function createObjectExpression(properties: {
-  [key: string]: Value
+  [key: string]: Expr
 }): ObjectExpression {
   return {
     type: 'ObjectExpression',
     start: 0,
     end: 0,
     digest: null,
+    nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
@@ -983,7 +982,11 @@ export async function deleteFromSelection(
           if (err(parent)) {
             return
           }
-          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
+          const sketchToPreserve = sketchGroupFromKclValue(
+            programMemory.get(sketchName),
+            sketchName
+          )
+          if (err(sketchToPreserve)) return sketchToPreserve
           console.log('sketchName', sketchName)
           // Can't kick off multiple requests at once as getFaceDetails
           // is three engine calls in one and they conflict
@@ -1062,4 +1065,8 @@ export async function deleteFromSelection(
   }
 
   return new Error('Selection not recognised, could not delete')
+}
+
+const nonCodeMetaEmpty = () => {
+  return { nonCodeNodes: {}, start: [], digest: null }
 }

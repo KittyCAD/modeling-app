@@ -11,6 +11,8 @@ import {
 
 import { engineCommandManager } from '../lib/singletons'
 
+import { Spinner } from './Spinner'
+
 const Loading = ({ children }: React.PropsWithChildren) => {
   const [error, setError] = useState<ConnectionError>(ConnectionError.Unset)
 
@@ -47,7 +49,7 @@ const Loading = ({ children }: React.PropsWithChildren) => {
         onConnectionStateChange as EventListener
       )
     }
-  }, [])
+  }, [engineCommandManager, engineCommandManager.engineConnection])
 
   useEffect(() => {
     // Don't set long loading time if there's a more severe error
@@ -65,17 +67,7 @@ const Loading = ({ children }: React.PropsWithChildren) => {
       className="body-bg flex flex-col items-center justify-center h-screen"
       data-testid="loading"
     >
-      <svg viewBox="0 0 10 10" className="w-8 h-8">
-        <circle
-          cx="5"
-          cy="5"
-          r="4"
-          stroke="var(--primary)"
-          fill="none"
-          strokeDasharray="4, 4"
-          className="animate-spin origin-center"
-        />
-      </svg>
+      <Spinner />
       <p className="text-base mt-4 text-primary">{children || 'Loading'}</p>
       <p
         className={

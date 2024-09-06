@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::KclError,
-    executor::MemoryItem,
+    executor::KclValue,
     std::{Args, SketchGroup, SketchSurface},
 };
 
@@ -22,15 +22,16 @@ pub enum SketchSurfaceOrGroup {
 }
 
 /// Sketch a circle.
-pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn circle(args: Args) -> Result<KclValue, KclError> {
     let (center, radius, sketch_surface_or_group, tag): ([f64; 2], f64, SketchSurfaceOrGroup, Option<TagDeclarator>) =
         args.get_circle_args()?;
 
     let sketch_group = inner_circle(center, radius, sketch_surface_or_group, tag, args).await?;
-    Ok(MemoryItem::SketchGroup(sketch_group))
+    Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
-/// Sketch a circle.
+/// Construct a 2-dimensional circle, of the specified radius, centered at
+/// the provided (x, y) origin point.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("-XZ")
@@ -49,6 +50,7 @@ pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> hole(circle([0, 15], 5, %), %)
 ///
 /// const example = extrude(5, exampleSketch)
+/// ```
 #[stdlib {
     name = "circle",
 }]
@@ -58,7 +60,7 @@ async fn inner_circle(
     sketch_surface_or_group: SketchSurfaceOrGroup,
     tag: Option<TagDeclarator>,
     args: Args,
-) -> Result<Box<SketchGroup>, KclError> {
+) -> Result<SketchGroup, KclError> {
     let sketch_surface = match sketch_surface_or_group {
         SketchSurfaceOrGroup::SketchSurface(surface) => surface,
         SketchSurfaceOrGroup::SketchGroup(group) => group.on,

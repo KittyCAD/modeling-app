@@ -1,5 +1,5 @@
-import type { FileEntry, IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import type { IndexLoaderData } from 'lib/types'
+import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import styles from './FileTree.module.css'
-import { sortProject } from 'lib/tauriFS'
+import { sortProject } from 'lib/desktopFS'
 import { FILE_EXT } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { codeManager, kclManager } from 'lib/singletons'
@@ -20,6 +20,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
+import { FileEntry } from 'lib/project'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -44,7 +45,7 @@ function RenameForm({
       data: {
         oldName: fileOrDir.name || '',
         newName: inputRef.current?.value || fileOrDir.name || '',
-        isDir: fileOrDir.children !== undefined,
+        isDir: fileOrDir.children !== null,
       },
     })
   }
@@ -61,6 +62,7 @@ function RenameForm({
       <label>
         <span className="sr-only">Rename file</span>
         <input
+          data-testid="file-rename-field"
           ref={inputRef}
           type="text"
           autoFocus
@@ -90,7 +92,7 @@ function DeleteFileTreeItemDialog({
   const { send } = useFileContext()
   return (
     <DeleteConfirmationDialog
-      title={`Delete ${fileOrDir.children !== undefined ? 'folder' : 'file'}`}
+      title={`Delete ${fileOrDir.children !== null ? 'folder' : 'file'}`}
       onDismiss={() => setIsOpen(false)}
       onConfirm={() => {
         send({ type: 'Delete file', data: fileOrDir })
@@ -99,7 +101,7 @@ function DeleteFileTreeItemDialog({
     >
       <p className="my-4">
         This will permanently delete "{fileOrDir.name || 'this file'}"
-        {fileOrDir.children !== undefined ? ' and all of its contents. ' : '. '}
+        {fileOrDir.children !== null ? ' and all of its contents. ' : '. '}
       </p>
       <p className="my-4">
         Are you sure you want to delete "{fileOrDir.name || 'this file'}
@@ -165,7 +167,7 @@ const FileTreeItem = ({
   }
 
   function handleClick() {
-    if (fileOrDir.children !== undefined) return // Don't open directories
+    if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
       // Import non-kcl files
@@ -176,24 +178,22 @@ const FileTreeItem = ({
       )
       codeManager.writeToFile()
 
-      kclManager.isFirstRender = true
-      kclManager.executeCode(true).then(() => {
-        kclManager.isFirstRender = false
-      })
+      // Prevent seeing the model built one piece at a time when changing files
+      kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
       onFileOpen(fileOrDir.path, project?.path || null)
 
       // Open kcl files
-      navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
+      navigate(`${PATHS.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }
     onNavigateToFile?.()
   }
 
   return (
     <div className="contents" ref={itemRef}>
-      {fileOrDir.children === undefined ? (
+      {fileOrDir.children === null ? (
         <li
           className={
             'group m-0 p-0 border-solid border-0 hover:bg-primary/5 focus-within:bg-primary/5 dark:hover:bg-primary/20 dark:focus-within:bg-primary/20 ' +
@@ -355,10 +355,18 @@ function FileTreeContextMenu({
     <ContextMenu
       menuTargetElement={itemRef}
       items={[
-        <ContextMenuItem onClick={onRename} hotkey="Enter">
+        <ContextMenuItem
+          data-testid="context-menu-rename"
+          onClick={onRename}
+          hotkey="Enter"
+        >
           Rename
         </ContextMenuItem>,
-        <ContextMenuItem onClick={onDelete} hotkey={metaKey + ' + Del'}>
+        <ContextMenuItem
+          data-testid="context-menu-delete"
+          onClick={onDelete}
+          hotkey={metaKey + ' + Del'}
+        >
           Delete
         </ContextMenuItem>,
       ]}
@@ -381,20 +389,27 @@ export const FileTreeMenu = () => {
   const { send } = useFileContext()
 
   async function createFile() {
-    send({ type: 'Create file', data: { name: '', makeDir: false } })
+    send({
+      type: 'Create file',
+      data: { name: '', makeDir: false },
+    })
   }
 
   async function createFolder() {
-    send({ type: 'Create file', data: { name: '', makeDir: true } })
+    send({
+      type: 'Create file',
+      data: { name: '', makeDir: true },
+    })
   }
 
-  useHotkeyWrapper(['meta + n'], createFile)
-  useHotkeyWrapper(['meta + shift + n'], createFolder)
+  useHotkeyWrapper(['mod + n'], createFile)
+  useHotkeyWrapper(['mod + shift + n'], createFolder)
 
   return (
     <>
       <ActionButton
         Element="button"
+        data-testid="create-file-button"
         iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
@@ -410,6 +425,7 @@ export const FileTreeMenu = () => {
 
       <ActionButton
         Element="button"
+        data-testid="create-folder-button"
         iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',
@@ -446,7 +462,7 @@ export const FileTreeInner = ({
 }: {
   onNavigateToFile?: () => void
 }) => {
-  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
   const documentHasFocus = useDocumentHasFocus()
@@ -457,7 +473,10 @@ export const FileTreeInner = ({
   }, [documentHasFocus])
 
   return (
-    <div className="overflow-auto max-h-full pb-12">
+    <div
+      className="overflow-auto pb-12 absolute inset-0"
+      data-testid="file-pane-scroll-container"
+    >
       <ul
         className="m-0 p-0 text-sm"
         onClickCapture={(e) => {

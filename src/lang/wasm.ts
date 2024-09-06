@@ -16,14 +16,13 @@ import init, {
   parse_app_settings,
   parse_project_settings,
   default_project_settings,
-  parse_project_route,
+  base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
-import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
-import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
+import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
@@ -33,13 +32,14 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { DeepPartial } from 'lib/types'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
-export type { Value } from '../wasm-lib/kcl/bindings/Value'
+export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
 export type { MemberExpression } from '../wasm-lib/kcl/bindings/MemberExpression'
 export type { PipeExpression } from '../wasm-lib/kcl/bindings/PipeExpression'
@@ -81,24 +81,19 @@ export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
 export type { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
-export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
+export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
-  const baseUrl =
-    typeof window === 'undefined'
-      ? 'http://127.0.0.1:3000'
-      : window.location.origin.includes('tauri://localhost')
-      ? 'tauri://localhost' // custom protocol for macOS
-      : window.location.origin.includes('tauri.localhost')
-      ? 'http://tauri.localhost' // fallback for Windows
-      : window.location.origin.includes('localhost')
-      ? 'http://localhost:3000'
-      : window.location.origin && window.location.origin !== 'null'
-      ? window.location.origin
-      : 'http://localhost:3000'
-  const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
-  console.log(`Full URL for WASM: ${fullUrl}`)
+  // For when we're in electron (file based) or web server (network based)
+  // For some reason relative paths don't work as expected. Otherwise we would
+  // just do /wasm_lib_bg.wasm. In particular, the issue arises when the path
+  // is used from within worker.ts.
+  const fullUrl = document.location.protocol.includes('http')
+    ? document.location.origin + '/wasm_lib_bg.wasm'
+    : document.location.protocol +
+      document.location.pathname.split('/').slice(0, -1).join('/') +
+      '/wasm_lib_bg.wasm'
 
   return fullUrl
 }
@@ -128,6 +123,7 @@ export const parse = (code: string | Error): Program | Error => {
     const program: Program = parse_wasm(code)
     return program
   } catch (e: any) {
+    // throw e
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
@@ -140,7 +136,7 @@ export const parse = (code: string | Error): Program | Error => {
 export type PathToNode = [string | number, string][]
 
 interface Memory {
-  [key: string]: MemoryItem
+  [key: string]: KclValue
 }
 
 type EnvironmentRef = number
@@ -159,7 +155,7 @@ function emptyEnvironment(): Environment {
 interface RawProgramMemory {
   environments: Environment[]
   currentEnv: EnvironmentRef
-  return: ProgramReturn | null
+  return: KclValue | null
 }
 
 /**
@@ -170,7 +166,7 @@ interface RawProgramMemory {
 export class ProgramMemory {
   private environments: Environment[]
   private currentEnv: EnvironmentRef
-  private return: ProgramReturn | null
+  private return: KclValue | null
 
   /**
    * Empty memory doesn't include prelude definitions.
@@ -186,7 +182,7 @@ export class ProgramMemory {
   constructor(
     environments: Environment[] = [emptyEnvironment()],
     currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
-    returnVal: ProgramReturn | null = null
+    returnVal: KclValue | null = null
   ) {
     this.environments = environments
     this.currentEnv = currentEnv
@@ -215,7 +211,7 @@ export class ProgramMemory {
     return false
   }
 
-  get(name: string): MemoryItem | null {
+  get(name: string): KclValue | null {
     let envRef = this.currentEnv
     while (true) {
       const env = this.environments[envRef]
@@ -230,7 +226,7 @@ export class ProgramMemory {
     return null
   }
 
-  set(name: string, value: MemoryItem): Error | null {
+  set(name: string, value: KclValue): Error | null {
     if (this.environments.length === 0) {
       return new Error('No environment to set memory in')
     }
@@ -240,14 +236,14 @@ export class ProgramMemory {
   }
 
   /**
-   * Returns a new ProgramMemory with only `MemoryItem`s that pass the
+   * Returns a new ProgramMemory with only `KclValue`s that pass the
    * predicate.  Values are deep copied.
    *
    * Note: Return value of the returned ProgramMemory is always null.
    */
   filterVariables(
     keepPrelude: boolean,
-    predicate: (value: MemoryItem) => boolean
+    predicate: (value: KclValue) => boolean
   ): ProgramMemory | Error {
     const environments: Environment[] = []
     for (const [i, env] of this.environments.entries()) {
@@ -290,8 +286,8 @@ export class ProgramMemory {
    *
    * This should only be used to display in the MemoryPane UI.
    */
-  visibleEntries(): Map<string, MemoryItem> {
-    const map = new Map<string, MemoryItem>()
+  visibleEntries(): Map<string, KclValue> {
+    const map = new Map<string, KclValue>()
     let envRef = this.currentEnv
     while (true) {
       const env = this.environments[envRef]
@@ -314,7 +310,7 @@ export class ProgramMemory {
    */
   hasSketchOrExtrudeGroup(): boolean {
     for (const node of this.visibleEntries().values()) {
-      if (node.type === 'ExtrudeGroup' || node.type === 'SketchGroup') {
+      if (node.type === 'ExtrudeGroup' || node.value?.type === 'SketchGroup') {
         return true
       }
     }
@@ -331,6 +327,28 @@ export class ProgramMemory {
       currentEnv: this.currentEnv,
       return: this.return,
     }
+  }
+}
+
+// TODO: In the future, make the parameter be a KclValue.
+export function sketchGroupFromKclValue(
+  obj: any,
+  varName: string | null
+): SketchGroup | Error {
+  if (obj?.value?.type === 'SketchGroup') return obj.value
+  if (obj?.value?.type === 'ExtrudeGroup') return obj.value.sketchGroup
+  if (obj?.type === 'ExtrudeGroup') return obj.sketchGroup
+  if (!varName) {
+    varName = 'a KCL value'
+  }
+  const actualType = obj?.value?.type ?? obj?.type
+  if (actualType) {
+    console.log(obj)
+    return new Error(
+      `Expected ${varName} to be a sketchGroup or extrudeGroup, but it was ${actualType} instead.`
+    )
+  } else {
+    return new Error(`Expected ${varName} to be a sketchGroup, but it wasn't.`)
   }
 }
 
@@ -570,27 +588,34 @@ export function tomlStringify(toml: any): string | Error {
   return toml_stringify(JSON.stringify(toml))
 }
 
-export function defaultAppSettings(): Configuration | Error {
+export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
 }
 
-export function parseAppSettings(toml: string): Configuration | Error {
+export function parseAppSettings(
+  toml: string
+): DeepPartial<Configuration> | Error {
   return parse_app_settings(toml)
 }
 
-export function defaultProjectSettings(): ProjectConfiguration | Error {
+export function defaultProjectSettings():
+  | DeepPartial<ProjectConfiguration>
+  | Error {
   return default_project_settings()
 }
 
 export function parseProjectSettings(
   toml: string
-): ProjectConfiguration | Error {
+): DeepPartial<ProjectConfiguration> | Error {
   return parse_project_settings(toml)
 }
 
-export function parseProjectRoute(
-  configuration: Configuration,
-  route_str: string
-): ProjectRoute | Error {
-  return parse_project_route(JSON.stringify(configuration), route_str)
+export function base64Decode(base64: string): ArrayBuffer | Error {
+  try {
+    const decoded = base64_decode(base64)
+    return new Uint8Array(decoded).buffer
+  } catch (e) {
+    console.error('Caught error decoding base64 string: ' + e)
+    return new Error('Caught error decoding base64 string: ' + e)
+  }
 }

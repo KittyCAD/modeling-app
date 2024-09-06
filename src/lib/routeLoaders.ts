@@ -1,7 +1,7 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
 import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
-import { isTauri } from './isTauri'
-import { getProjectMetaByRouteId, paths } from './paths'
+import { getProjectMetaByRouteId, PATHS } from './paths'
+import { isDesktop } from './isDesktop'
 import { BROWSER_PATH } from 'lib/paths'
 import {
   BROWSER_FILE_NAME,
@@ -10,15 +10,13 @@ import {
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { sep } from '@tauri-apps/api/path'
-import { readTextFile } from '@tauri-apps/plugin-fs'
-import { codeManager, kclManager } from 'lib/singletons'
+import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
   getProjectInfo,
-  initializeProjectDirectory,
+  ensureProjectDirectoryExists,
   listProjects,
-} from './tauri'
+} from './desktop'
 import { createSettings } from './settings/initialSettings'
 
 // The root loader simply resolves the settings and any errors that
@@ -38,11 +36,11 @@ export const settingsLoader: LoaderFunction = async ({
       configuration
     )
     if (projectPathData) {
-      const { project_path } = projectPathData
+      const { projectPath } = projectPathData
       const { settings: s } = await loadAndValidateSettings(
-        project_path || undefined
+        projectPath || undefined
       )
-      settings = s
+      return s
     }
   }
 
@@ -54,7 +52,7 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const { settings } = await loadAndValidateSettings()
   const onboardingStatus = settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
-    paths.ONBOARDING.INDEX
+    PATHS.ONBOARDING.INDEX
   )
   // '' is the initial state, 'done' and 'dismissed' are the final states
   const hasValidOnboardingStatus =
@@ -65,16 +63,17 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 
   if (shouldRedirectToOnboarding) {
     return redirect(
-      makeUrlPathRelative(paths.ONBOARDING.INDEX) + onboardingStatus.slice(1)
+      makeUrlPathRelative(PATHS.ONBOARDING.INDEX) + onboardingStatus.slice(1)
     )
   }
 
   return settingsLoader(args)
 }
 
-export const fileLoader: LoaderFunction = async ({
-  params,
-}): Promise<FileLoaderData | Response> => {
+export const fileLoader: LoaderFunction = async (
+  routerData
+): Promise<FileLoaderData | Response> => {
+  const { params } = routerData
   let { configuration } = await loadAndValidateSettings()
 
   const projectPathData = await getProjectMetaByRouteId(
@@ -84,49 +83,75 @@ export const fileLoader: LoaderFunction = async ({
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   if (!isBrowserProject && projectPathData) {
-    const { project_name, project_path, current_file_name, current_file_path } =
+    const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
 
-    if (!current_file_name || !current_file_path || !project_name) {
-      return redirect(
-        `${paths.FILE}/${encodeURIComponent(
-          `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
-        )}`
-      )
+    const urlObj = new URL(routerData.request.url)
+    let code = ''
+
+    if (!urlObj.pathname.endsWith('/settings')) {
+      const fallbackFile = isDesktop()
+        ? (await getProjectInfo(projectPath)).default_file
+        : ''
+      let fileExists = isDesktop()
+      if (currentFilePath && fileExists) {
+        try {
+          await window.electron.stat(currentFilePath)
+        } catch (e) {
+          if (e === 'ENOENT') {
+            fileExists = false
+          }
+        }
+      }
+
+      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+        return redirect(
+          `${PATHS.FILE}/${encodeURIComponent(
+            isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
+          )}`
+        )
+      }
+
+      code = await window.electron.readFile(currentFilePath)
+      code = normalizeLineEndings(code)
+
+      // Update both the state and the editor's code.
+      // We explicitly do not write to the file here since we are loading from
+      // the file system and not the editor.
+      codeManager.updateCurrentFilePath(currentFilePath)
+      codeManager.updateCodeStateEditor(code)
     }
-
-    // TODO: PROJECT_ENTRYPOINT is hardcoded
-    // until we support setting a project's entrypoint file
-    const code = await readTextFile(current_file_path)
-
-    // Update both the state and the editor's code.
-    // We explicitly do not write to the file here since we are loading from
-    // the file system and not the editor.
-    codeManager.updateCurrentFilePath(current_file_path)
-    codeManager.updateCodeStateEditor(code)
-    // We don't want to call await on execute code since we don't want to block the UI
-    kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
-    fileSystemManager.dir = project_path
+    fileSystemManager.dir = projectPath
+
+    const defaultProjectData = {
+      name: projectName || 'unnamed',
+      path: projectPath,
+      children: [],
+      kcl_file_count: 0,
+      directory_count: 0,
+      metadata: null,
+      default_file: projectPath,
+    }
+
+    const maybeProjectInfo = isDesktop()
+      ? await getProjectInfo(projectPath)
+      : null
+
+    console.log('maybeProjectInfo', {
+      maybeProjectInfo,
+      defaultProjectData,
+      projectPathData,
+    })
 
     const projectData: IndexLoaderData = {
       code,
-      project: isTauri()
-        ? await getProjectInfo(project_path, configuration)
-        : {
-            name: project_name,
-            path: project_path,
-            children: [],
-            kcl_file_count: 0,
-            directory_count: 0,
-            metadata: null,
-            default_file: project_path,
-          },
+      project: maybeProjectInfo ?? defaultProjectData,
       file: {
-        name: current_file_name,
-        path: current_file_path,
+        name: currentFileName || '',
+        path: currentFilePath || '',
         children: [],
       },
     }
@@ -156,12 +181,12 @@ export const fileLoader: LoaderFunction = async ({
 export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
-  if (!isTauri()) {
-    return redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+  if (!isDesktop()) {
+    return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
   const { configuration } = await loadAndValidateSettings()
 
-  const projectDir = await initializeProjectDirectory(configuration)
+  const projectDir = await ensureProjectDirectoryExists(configuration)
 
   if (projectDir) {
     const projects = await listProjects(configuration)
@@ -174,4 +199,8 @@ export const homeLoader: LoaderFunction = async (): Promise<
       projects: [],
     }
   }
+}
+
+const normalizeLineEndings = (str: string, normalized = '\n') => {
+  return str.replace(/\r?\n/g, normalized)
 }

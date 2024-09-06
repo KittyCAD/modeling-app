@@ -27,7 +27,7 @@ pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> anyhow::Resu
     // Save the snapshot locally, to that temporary file.
     std::fs::write(&output_file, snapshot.contents.0)?;
     // Decode the snapshot, return it.
-    let img = image::io::Reader::open(output_file).unwrap().decode()?;
+    let img = image::ImageReader::open(output_file).unwrap().decode()?;
     Ok(img)
 }
 
@@ -63,6 +63,7 @@ async fn new_context(units: UnitLength) -> anyhow::Result<ExecutorContext> {
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
+            replay: None,
         },
     )
     .await?;

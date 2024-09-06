@@ -1,4 +1,4 @@
-import { MouseGuard } from 'lib/cameraControls'
+import { cameraMouseDragGuards, MouseGuard } from 'lib/cameraControls'
 import {
   Euler,
   MathUtils,
@@ -21,7 +21,7 @@ import {
   EngineCommandManager,
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
@@ -81,24 +81,7 @@ export class CameraControls {
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
   pendingPan: Vector2 | null = null
-  interactionGuards: MouseGuard = {
-    pan: {
-      description: 'Right click + Shift + drag or middle click + drag',
-      callback: (e) => !!(e.buttons & 4) && !e.ctrlKey,
-    },
-    zoom: {
-      description: 'Scroll wheel or Right click + Ctrl + drag',
-      dragCallback: (e) => e.button === 2 && e.ctrlKey,
-      scrollCallback: () => true,
-    },
-    rotate: {
-      description: 'Right click + drag',
-      callback: (e) => {
-        console.log('event', e)
-        return !!(e.buttons & 2)
-      },
-    },
-  }
+  interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
   isFovAnimationInProgress = false
   fovBeforeOrtho = 45
   get isPerspective() {

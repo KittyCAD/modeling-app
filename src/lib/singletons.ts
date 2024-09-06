@@ -4,6 +4,7 @@ import EditorManager from 'editor/manager'
 import { KclManager } from 'lang/KclSingleton'
 import CodeManager from 'lang/codeManager'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { uuidv4 } from './utils'
 
 export const codeManager = new CodeManager()
 
@@ -15,7 +16,7 @@ window.tearDown = engineCommandManager.tearDown
 
 // This needs to be after codeManager is created.
 export const kclManager = new KclManager(engineCommandManager)
-kclManager.isFirstRender = true
+engineCommandManager.kclManager = kclManager
 
 engineCommandManager.getAstCb = () => kclManager.ast
 
@@ -40,4 +41,14 @@ if (typeof window !== 'undefined') {
   ;(window as any).enableFillet = () => {
     ;(window as any)._enableFillet = true
   }
+  ;(window as any).zoomToFit = () =>
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'zoom_to_fit',
+        object_ids: [], // leave empty to zoom to all objects
+        padding: 0.2, // padding around the objects
+      },
+    })
 }

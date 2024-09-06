@@ -8,10 +8,11 @@ import {
   PipeExpression,
   CallExpression,
   VariableDeclarator,
-  Value,
+  Expr,
   Literal,
   VariableDeclaration,
   Identifier,
+  sketchGroupFromKclValue,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -72,8 +73,8 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 
 export function createFirstArg(
   sketchFn: ToolTip,
-  val: Value | [Value, Value] | [Value, Value, Value]
-): Value | Error {
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+): Expr | Error {
   if (Array.isArray(val)) {
     if (
       [
@@ -338,7 +339,7 @@ export const lineTo: SketchLineHelper = {
     if (err(nodeMeta)) return nodeMeta
     const { node: pipe } = nodeMeta
 
-    const newVals: [Value, Value] = [
+    const newVals: [Expr, Expr] = [
       createLiteral(roundOff(to[0], 2)),
       createLiteral(roundOff(to[1], 2)),
     ]
@@ -1009,9 +1010,12 @@ export const angledLineOfXLength: SketchLineHelper = {
     const { node: varDec } = nodeMeta2
 
     const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.get(variableName)
-    if (!sketch || sketch.type !== 'SketchGroup') {
-      return new Error('not a SketchGroup')
+    const sketch = sketchGroupFromKclValue(
+      previousProgramMemory?.get(variableName),
+      variableName
+    )
+    if (err(sketch)) {
+      return sketch
     }
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
@@ -1105,10 +1109,11 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
     const { node: varDec } = nodeMeta2
     const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.get(variableName)
-    if (!sketch || sketch.type !== 'SketchGroup') {
-      return new Error('not a SketchGroup')
-    }
+    const sketch = sketchGroupFromKclValue(
+      previousProgramMemory?.get(variableName),
+      variableName
+    )
+    if (err(sketch)) return sketch
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
@@ -1443,7 +1448,11 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const { node: varDec } = nodeMeta2
     const varName = varDec.declarations[0].id.name
-    const sketchGroup = previousProgramMemory.get(varName) as SketchGroup
+    const sketchGroup = sketchGroupFromKclValue(
+      previousProgramMemory.get(varName),
+      varName
+    )
+    if (err(sketchGroup)) return sketchGroup
     const intersectPath = sketchGroup.value.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
     )
@@ -1839,7 +1848,7 @@ export function getTagFromCallExpression(
   return new Error(`"${callExp.callee.name}" is not a sketch line helper`)
 }
 
-function isAngleLiteral(lineArugement: Value): boolean {
+function isAngleLiteral(lineArugement: Expr): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
@@ -1907,8 +1916,8 @@ export function getXComponent(
 
 function getFirstArgValuesForXYFns(callExpression: CallExpression):
   | {
-      val: [Value, Value]
-      tag?: Value
+      val: [Expr, Expr]
+      tag?: Expr
     }
   | Error {
   // used for lineTo, line
@@ -1929,8 +1938,8 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression):
 
 function getFirstArgValuesForAngleFns(callExpression: CallExpression):
   | {
-      val: [Value, Value]
-      tag?: Value
+      val: [Expr, Expr]
+      tag?: Expr
     }
   | Error {
   // used for angledLine, angledLineOfXLength, angledLineToX, angledLineOfYLength, angledLineToY
@@ -1957,8 +1966,8 @@ function getFirstArgValuesForAngleFns(callExpression: CallExpression):
 }
 
 function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
-  val: Value
-  tag?: Value
+  val: Expr
+  tag?: Expr
 } {
   // used for xLine, yLine, xLineTo, yLineTo
   const firstArg = callExpression.arguments[0]
@@ -1988,8 +1997,8 @@ const getAngledLineThatIntersects = (
   callExp: CallExpression
 ):
   | {
-      val: [Value, Value, Value]
-      tag?: Value
+      val: [Expr, Expr, Expr]
+      tag?: Expr
     }
   | Error => {
   const firstArg = callExp.arguments[0]
@@ -2011,8 +2020,8 @@ const getAngledLineThatIntersects = (
 
 export function getFirstArg(callExp: CallExpression):
   | {
-      val: Value | [Value, Value] | [Value, Value, Value]
-      tag?: Value
+      val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+      tag?: Expr
     }
   | Error {
   const name = callExp?.callee?.name

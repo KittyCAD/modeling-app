@@ -1,7 +1,9 @@
 import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
+import { machineManager } from 'lib/machineManager'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
@@ -22,6 +24,9 @@ export type ModelingCommandSchema = {
     type: OutputTypeKey
     storage?: StorageUnion
   }
+  Make: {
+    machine: components['schemas']['MachineInfoResponse']
+  }
   Extrude: {
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
@@ -34,6 +39,9 @@ export type ModelingCommandSchema = {
   }
   'change tool': {
     tool: SketchTool
+  }
+  'Text-to-CAD': {
+    prompt: string
   }
 }
 
@@ -160,6 +168,40 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  Make: {
+    hide: 'web',
+    displayName: 'Make',
+    description:
+      'Export the current part and send to a 3D printer on the network.',
+    icon: 'printer3d',
+    needsReview: true,
+    args: {
+      machine: {
+        inputType: 'options',
+        required: true,
+        valueSummary: (machine: components['schemas']['MachineInfoResponse']) =>
+          machine.make_model.model ||
+          machine.make_model.manufacturer ||
+          'Unknown Machine',
+        options: () => {
+          return Object.entries(machineManager.machines).map(
+            ([_, machine]) => ({
+              name: `${machine.id} (${
+                machine.make_model.model || machine.make_model.manufacturer
+              }) via ${machineManager.machineApiIp || 'the local network'}`,
+              isCurrent: false,
+              value: machine as components['schemas']['MachineInfoResponse'],
+            })
+          )
+        },
+        defaultValue: () => {
+          return Object.values(
+            machineManager.machines
+          )[0] as components['schemas']['MachineInfoResponse']
+        },
+      },
+    },
+  },
   Extrude: {
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
@@ -202,7 +244,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'default',
           'line-end',
           'line-mid',
-          'extrude-wall', // to fix: accespts only this selection type
+          'extrude-wall', // to fix: accepts only this selection type
+          'solid2D',
           'start-cap',
           'end-cap',
           'point',
@@ -218,6 +261,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  'Text-to-CAD': {
+    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
+    icon: 'chat',
+    args: {
+      prompt: {
+        inputType: 'text',
         required: true,
       },
     },

@@ -7,6 +7,7 @@ on:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
+      - 'src/wasm-lib/**.kcl'
       - .github/workflows/cargo-test.yml
 
   pull_request:
@@ -15,6 +16,7 @@ on:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
+      - 'src/wasm-lib/**.kcl'
       - .github/workflows/cargo-test.yml
   workflow_dispatch:
 permissions: read-all
@@ -36,11 +38,6 @@ jobs:
         with:
           toolchain: stable
           override: true
-      - name: install dependencies
-        if: matrix.dir ==  'src-tauri'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
       - name: Install vector
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh

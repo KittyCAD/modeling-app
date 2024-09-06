@@ -40,7 +40,7 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Value, VariableKind},
+    ast::types::{Expr, VariableKind},
     executor::SourceRange,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
@@ -370,7 +370,7 @@ impl Backend {
                         crate::walk::Node::VariableDeclarator(variable) => {
                             let sr: SourceRange = (&variable.id).into();
                             if sr.contains(source_range.start()) {
-                                if let Value::FunctionExpression(_) = &variable.init {
+                                if let Expr::FunctionExpression(_) = &variable.init {
                                     let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                                     *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
                                         Some(index) => index,

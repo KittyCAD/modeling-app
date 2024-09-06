@@ -2,13 +2,13 @@ import { Popover, Transition } from '@headlessui/react'
 import { ActionButton, ActionButtonProps } from './ActionButton'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo, useState } from 'react'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { Models } from '@kittycad/lib'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
 import usePlatform from 'hooks/usePlatform'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { CustomIcon } from './CustomIcon'
 
 type User = Models['User_type']
@@ -33,16 +33,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             <>
               <span className="flex-1">User settings</span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isTauri() ? '' : '⬆'
+                isDesktop() ? '' : '⬆'
               },`}</kbd>
             </>
           ),
           'data-testid': 'user-settings',
           onClick: () => {
-            const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=user')
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_USER
+              : PATHS.HOME + PATHS.SETTINGS_USER
+            navigate(targetPath)
           },
         },
         {
@@ -50,10 +50,10 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           children: 'Keyboard shortcuts',
           onClick: () => {
-            const targetPath = location.pathname.includes(paths.FILE)
-              ? filePath + paths.SETTINGS
-              : paths.HOME + paths.SETTINGS
-            navigate(targetPath + '?tab=keybindings')
+            const targetPath = location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.SETTINGS_KEYBINDINGS
+              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+            navigate(targetPath)
           },
         },
         {
@@ -217,7 +217,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   </p>
                   {displayedName !== user.email && (
                     <p
-                      className="m-0 text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                      className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
                       data-testid="email"
                     >
                       {user.email}

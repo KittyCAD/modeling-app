@@ -8,6 +8,7 @@ export const MAX_PADDING = 7
  * This is available for users to edit as a setting.
  */
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
 /** Name given the temporary file in the browser version of the app */
@@ -55,3 +56,19 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+/** localStorage key for the playwright test-specific app settings file */
+export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
+
+export const DEFAULT_HOST = 'https://api.zoo.dev'
+export const SETTINGS_FILE_NAME = 'settings.toml'
+export const TOKEN_FILE_NAME = 'token.txt'
+export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
+export const COOKIE_NAME = '__Secure-next-auth.session-token'
+
+/** localStorage key to determine if we're in Playwright tests */
+export const PLAYWRIGHT_KEY = 'playwright'
+
+/** Custom error message to match when rejectAllModelCommands is called
+ * allows us to match if the execution of executeAst was interrupted */
+export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE =
+  'Force interrupt, executionIsStale, new AST requested'

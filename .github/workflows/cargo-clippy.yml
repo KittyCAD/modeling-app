@@ -25,9 +25,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir: ['src/wasm-lib', 'src-tauri']
+        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@just
       - name: Install latest rust
         uses: actions-rs/toolchain@v1
         with:
@@ -35,31 +36,13 @@ jobs:
             override: true
             components: clippy
 
-      - name: install dependencies
-        if: matrix.dir ==  'src-tauri'
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev \
-            webkit2gtk-driver \
-            libsoup-3.0-dev \
-            libjavascriptcoregtk-4.1-dev \
-            libwebkit2gtk-4.1-dev \
-            at-spi2-core \
-            xvfb
-          yarn install
-          yarn build:wasm
-          yarn build:local
-
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
 
       - name: Run clippy
         run: |
           cd "${{ matrix.dir }}"
-          cargo clippy --all --tests --benches -- -D warnings
+          just lint
       # If this fails, run "cargo check" to update Cargo.lock,
       # then add Cargo.lock to the PR.
       - name: Check Cargo.lock doesn't need updating

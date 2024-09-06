@@ -2,21 +2,21 @@ import { MouseEventHandler, useEffect, useMemo, useRef } from 'react'
 import { uuidv4 } from 'lib/utils'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import { EngineCommand } from 'lang/std/artifactMap'
+import { EngineCommand } from 'lang/std/artifactGraph'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { paths } from 'lib/paths'
+import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
-import { engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
@@ -28,8 +28,8 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 
 export function App() {
-  useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
+  useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
@@ -50,7 +50,7 @@ export function App() {
   const token = auth?.context?.token
 
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, token),
+    () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
 
@@ -62,8 +62,8 @@ export function App() {
     e.preventDefault()
   })
   useHotkeyWrapper(
-    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
-    () => navigate(filePath + paths.SETTINGS),
+    [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
+    () => navigate(filePath + PATHS.SETTINGS),
     {
       splitKey: '|',
     }
@@ -118,6 +118,15 @@ export function App() {
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
           (context.store?.buttonDownInStream ? ' pointer-events-none' : '')
+        }
+        // Override the electron window draggable region behavior as well
+        // when the button is down in the stream
+        style={
+          isDesktop() && context.store?.buttonDownInStream
+            ? ({
+                '-webkit-app-region': 'no-drag',
+              } as React.CSSProperties)
+            : {}
         }
         project={{ project, file }}
         enableMenu={true}

@@ -1,11 +1,12 @@
 import { styleTags, tags as t } from '@lezer/highlight'
 
-export const klcHighlight = styleTags({
+export const kclHighlight = styleTags({
   'fn var let const': t.definitionKeyword,
   return: t.controlKeyword,
   'true false': t.bool,
   nil: t.null,
   'AddOp MultOp ExpOp': t.arithmeticOperator,
+  BangOp: t.logicOperator,
   CompOp: t.logicOperator,
   'Equals Arrow': t.definitionOperator,
   PipeOperator: t.controlOperator,
