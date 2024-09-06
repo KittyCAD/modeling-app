@@ -224,6 +224,8 @@ jobs:
             --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
             --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-win.msi" \
             --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-win.msi" \
+            --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
+            --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -240,6 +242,12 @@ jobs:
                 },
                 "msi-x64": {
                   "url": $windows_x64_url
+                },
+                "appimage-arm64": {
+                  "url": $linux_arm64_url
+                },
+                "appimage-x64": {
+                  "url": $linux_x64_url
                 }
               }
             }' > last_download.json
@@ -319,7 +327,7 @@ jobs:
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to public bucket for tauri
-        uses: google-github-actions/upload-cloud-storage@v2.1.1
+        uses: google-github-actions/upload-cloud-storage@v2.2.0
         with:
           path: "out/tauri/${{ env.VERSION }}" 
           glob: '*/Zoo*'
@@ -327,7 +335,7 @@ jobs:
           destination: ${{ env.BUCKET_DIR_TAURI }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket for tauri
-        uses: google-github-actions/upload-cloud-storage@v2.1.1
+        uses: google-github-actions/upload-cloud-storage@v2.2.0
         with:
           path: last_update.json
           destination: ${{ env.BUCKET_DIR }}

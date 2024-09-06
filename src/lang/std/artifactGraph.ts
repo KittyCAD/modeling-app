@@ -3,6 +3,8 @@ import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
 
+export type ArtifactId = string
+
 interface CommonCommandProperties {
   range: SourceRange
   pathToNode: PathToNode
@@ -10,7 +12,7 @@ interface CommonCommandProperties {
 
 export interface PlaneArtifact {
   type: 'plane'
-  pathIds: Array<string>
+  pathIds: Array<ArtifactId>
   codeRef: CommonCommandProperties
 }
 export interface PlaneArtifactRich {
@@ -21,16 +23,16 @@ export interface PlaneArtifactRich {
 
 export interface PathArtifact {
   type: 'path'
-  planeId: string
-  segIds: Array<string>
-  extrusionId: string
-  solid2dId?: string
+  planeId: ArtifactId
+  segIds: Array<ArtifactId>
+  extrusionId: ArtifactId
+  solid2dId?: ArtifactId
   codeRef: CommonCommandProperties
 }
 
 interface solid2D {
   type: 'solid2D'
-  pathId: string
+  pathId: ArtifactId
 }
 export interface PathArtifactRich {
   type: 'path'
@@ -42,10 +44,10 @@ export interface PathArtifactRich {
 
 interface SegmentArtifact {
   type: 'segment'
-  pathId: string
-  surfaceId: string
-  edgeIds: Array<string>
-  edgeCutId?: string
+  pathId: ArtifactId
+  surfaceId: ArtifactId
+  edgeIds: Array<ArtifactId>
+  edgeCutId?: ArtifactId
   codeRef: CommonCommandProperties
 }
 interface SegmentArtifactRich {
@@ -59,9 +61,9 @@ interface SegmentArtifactRich {
 
 interface ExtrusionArtifact {
   type: 'extrusion'
-  pathId: string
-  surfaceIds: Array<string>
-  edgeIds: Array<string>
+  pathId: ArtifactId
+  surfaceIds: Array<ArtifactId>
+  edgeIds: Array<ArtifactId>
   codeRef: CommonCommandProperties
 }
 interface ExtrusionArtifactRich {
@@ -74,23 +76,23 @@ interface ExtrusionArtifactRich {
 
 interface WallArtifact {
   type: 'wall'
-  segId: string
-  edgeCutEdgeIds: Array<string>
-  extrusionId: string
-  pathIds: Array<string>
+  segId: ArtifactId
+  edgeCutEdgeIds: Array<ArtifactId>
+  extrusionId: ArtifactId
+  pathIds: Array<ArtifactId>
 }
 interface CapArtifact {
   type: 'cap'
   subType: 'start' | 'end'
-  edgeCutEdgeIds: Array<string>
-  extrusionId: string
-  pathIds: Array<string>
+  edgeCutEdgeIds: Array<ArtifactId>
+  extrusionId: ArtifactId
+  pathIds: Array<ArtifactId>
 }
 
 interface ExtrudeEdge {
   type: 'extrudeEdge'
-  segId: string
-  extrusionId: string
+  segId: ArtifactId
+  extrusionId: ArtifactId
   subType: 'opposite' | 'adjacent'
 }
 
@@ -98,16 +100,16 @@ interface ExtrudeEdge {
 interface EdgeCut {
   type: 'edgeCut'
   subType: 'fillet' | 'chamfer'
-  consumedEdgeId: string
-  edgeIds: Array<string>
-  surfaceId: string
+  consumedEdgeId: ArtifactId
+  edgeIds: Array<ArtifactId>
+  surfaceId: ArtifactId
   codeRef: CommonCommandProperties
 }
 
 interface EdgeCutEdge {
   type: 'edgeCutEdge'
-  edgeCutId: string
-  surfaceId: string
+  edgeCutId: ArtifactId
+  surfaceId: ArtifactId
 }
 
 export type Artifact =
@@ -122,7 +124,7 @@ export type Artifact =
   | EdgeCutEdge
   | solid2D
 
-export type ArtifactGraph = Map<string, Artifact>
+export type ArtifactGraph = Map<ArtifactId, Artifact>
 
 export type EngineCommand = Models['WebSocketRequest_type']
 
@@ -149,7 +151,7 @@ export function createArtifactGraph({
   responseMap: ResponseMap
   ast: Program
 }) {
-  const myMap = new Map<string, Artifact>()
+  const myMap = new Map<ArtifactId, Artifact>()
 
   /** see docstring for {@link getArtifactsToUpdate} as to why this is needed */
   let currentPlaneId = ''
@@ -166,7 +168,7 @@ export function createArtifactGraph({
     const artifactsToUpdate = getArtifactsToUpdate({
       orderedCommand,
       responseMap,
-      getArtifact: (id: string) => myMap.get(id),
+      getArtifact: (id: ArtifactId) => myMap.get(id),
       currentPlaneId,
       ast,
     })
@@ -224,11 +226,11 @@ export function getArtifactsToUpdate({
   orderedCommand: OrderedCommand
   responseMap: ResponseMap
   /** Passing in a getter because we don't wan this function to update the map directly */
-  getArtifact: (id: string) => Artifact | undefined
-  currentPlaneId: string
+  getArtifact: (id: ArtifactId) => Artifact | undefined
+  currentPlaneId: ArtifactId
   ast: Program
 }): Array<{
-  id: string
+  id: ArtifactId
   artifact: Artifact
 }> {
   const pathToNode = getNodePathFromSourceRange(ast, range)
@@ -514,7 +516,7 @@ export function filterArtifacts<T extends Artifact['type'][]>(
         (!predicate ||
           predicate(value as Extract<Artifact, { type: T[number] }>))
     )
-  ) as Map<string, Extract<Artifact, { type: T[number] }>>
+  ) as Map<ArtifactId, Extract<Artifact, { type: T[number] }>>
 }
 
 export function getArtifactsOfTypes<T extends Artifact['type'][]>(
@@ -528,7 +530,7 @@ export function getArtifactsOfTypes<T extends Artifact['type'][]>(
     predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
   },
   map: ArtifactGraph
-): Map<string, Extract<Artifact, { type: T[number] }>> {
+): Map<ArtifactId, Extract<Artifact, { type: T[number] }>> {
   return new Map(
     [...map].filter(
       ([key, value]) =>
@@ -537,7 +539,7 @@ export function getArtifactsOfTypes<T extends Artifact['type'][]>(
         (!predicate ||
           predicate(value as Extract<Artifact, { type: T[number] }>))
     )
-  ) as Map<string, Extract<Artifact, { type: T[number] }>>
+  ) as Map<ArtifactId, Extract<Artifact, { type: T[number] }>>
 }
 
 export function getArtifactOfTypes<T extends Artifact['type'][]>(
@@ -545,7 +547,7 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
     key,
     types,
   }: {
-    key: string
+    key: ArtifactId
     types: T
   },
   map: ArtifactGraph
@@ -718,7 +720,7 @@ export function getExtrudeEdgeCodeRef(
 }
 
 export function getExtrusionFromSuspectedExtrudeSurface(
-  id: string,
+  id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): ExtrusionArtifact | Error {
   const artifact = getArtifactOfTypes(
@@ -733,7 +735,7 @@ export function getExtrusionFromSuspectedExtrudeSurface(
 }
 
 export function getExtrusionFromSuspectedPath(
-  id: string,
+  id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): ExtrusionArtifact | Error {
   const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)

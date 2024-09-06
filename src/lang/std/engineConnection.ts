@@ -1252,6 +1252,10 @@ export type CommandLog =
       type: 'execution-done'
       data: null
     }
+  | {
+      type: 'export-done'
+      data: null
+    }
 
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
@@ -1918,7 +1922,13 @@ export class EngineCommandManager extends EventTarget {
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
         this.pendingExport = {
-          resolve,
+          resolve: (passThrough) => {
+            this.addCommandLog({
+              type: 'export-done',
+              data: null,
+            })
+            resolve(passThrough)
+          },
           reject: (reason: string) => {
             this.exportIntent = null
             reject(reason)
