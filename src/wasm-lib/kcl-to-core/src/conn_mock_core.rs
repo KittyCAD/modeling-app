@@ -1,11 +1,13 @@
 use anyhow::Result;
 use kcl_lib::{errors::KclError, executor::DefaultPlanes};
-use tokio::sync::RwLock;
-use kittycad::types::{ModelingCmd, OkModelingCmdResponse, OkWebSocketResponseData, PathSegment::*, WebSocketRequest, WebSocketResponse};
+use kittycad::types::{
+    ModelingCmd, OkModelingCmdResponse, OkWebSocketResponseData, PathSegment::*, WebSocketRequest, WebSocketResponse,
+};
 use std::{
     collections::HashMap,
     sync::{Arc, Mutex},
 };
+use tokio::sync::RwLock;
 
 const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
 const NEED_PLANES: bool = true;
@@ -80,16 +82,7 @@ impl EngineConnection {
                     {plane_id}->setHidden();
                     scene->addSceneObject({plane_id});
                 "#,
-                    origin.x,
-                    origin.y,
-                    origin.z,
-                    x_axis.x,
-                    x_axis.y,
-                    x_axis.z,
-                    y_axis.x,
-                    y_axis.y,
-                    y_axis.z,
-                    size
+                    origin.x, origin.y, origin.z, x_axis.x, x_axis.y, x_axis.z, y_axis.x, y_axis.y, y_axis.z, size
                 )
             }
             ModelingCmd::StartPath {} => {
@@ -146,7 +139,7 @@ impl EngineConnection {
                         center.y,
                         relative
                     )
-                },
+                }
                 kittycad::types::PathSegment::TangentialArcTo {
                     angle_snap_increment: _,
                     to,
@@ -160,7 +153,7 @@ impl EngineConnection {
                         to.y,
                         to.z,
                     )
-                },
+                }
                 _ => {
                     format!("//{:?}", cmd)
                 }
@@ -183,7 +176,7 @@ impl EngineConnection {
                 format!(
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->extrudeToSolid3D({} * scaleFactor, true);
-                "#,                    
+                "#,
                     distance
                 )
             }
@@ -205,8 +198,9 @@ impl EngineConnection {
                 format!(
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->revolveToSolid3D(nullopt, glm::dvec3 {{ {ox}, {oy}, {oz} }} * scaleFactor, glm::dvec3 {{ {ax}, {ay}, {az} }}, {axis_is_2d}, {angle}, {tolerance});
-                "#)
-            }                            
+                "#
+                )
+            }
             ModelingCmd::Solid2DAddHole { hole_id, object_id } => {
                 format!(
                     r#"scene->getSceneObject(Utils::UUID("{object_id}"))->get<Model::Brep::Solid2D>()->addHole(
@@ -254,7 +248,7 @@ impl EngineConnection {
                 entity_id: _,
                 axis: _,
                 num_repetitions: _,
-                spacing: _,                                
+                spacing: _,
             } => {
                 // let num_transforms = transforms.len();
                 // let num_repetitions = transform.iter().map(|t| if t.replicate { 1 } else { 0 } ).sum();
@@ -263,7 +257,7 @@ impl EngineConnection {
                 //     r#"
                 //     std::vector<std::optional<Scene::Scene::LinearPatternTransform>> transforms_{cpp_id}({num_transforms});
                 // "#);
-                    
+
                 // for t in transform {
                 //     translations_xyz.push(t.translate.x.to_millimeters(state.units));
                 //     translations_xyz.push(t.translate.y.to_millimeters(state.units));
@@ -272,7 +266,7 @@ impl EngineConnection {
                 //     scale_xyz.push(t.scale.y);
                 //     scale_xyz.push(t.scale.z);
                 // }
-    
+
                 // let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
                 // this_response = OkModelingCmdResponse::EntityLinearPattern {
@@ -300,7 +294,7 @@ impl EngineConnection {
             }
         };
 
-        ( new_code, this_response )
+        (new_code, this_response)
     }
 }
 
@@ -419,10 +413,7 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                     errors: None,
                 })
             }
-            WebSocketRequest::ModelingCmdReq {
-                cmd,
-                cmd_id,
-            } => {
+            WebSocketRequest::ModelingCmdReq { cmd, cmd_id } => {
                 //also handle unbatched requests inline
                 let (new_code, this_response);
 
@@ -445,22 +436,22 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                 }
 
                 Ok(WebSocketResponse {
-                request_id: Some(id),
-                resp: Some(OkWebSocketResponseData::Modeling {
-                    modeling_response: this_response,
-                }),
-                success: Some(true),
-                errors: None,
-            })},
-            _ => {
-                Ok(WebSocketResponse {
+                    request_id: Some(id),
+                    resp: Some(OkWebSocketResponseData::Modeling {
+                        modeling_response: this_response,
+                    }),
+                    success: Some(true),
+                    errors: None,
+                })
+            }
+            _ => Ok(WebSocketResponse {
                 request_id: Some(id),
                 resp: Some(OkWebSocketResponseData::Modeling {
                     modeling_response: OkModelingCmdResponse::Empty {},
                 }),
                 success: Some(true),
                 errors: None,
-            })},
+            }),
         }
     }
 }
