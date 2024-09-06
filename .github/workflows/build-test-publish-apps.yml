@@ -81,8 +81,6 @@ jobs:
       CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
       CSC_FOR_PULL_REQUEST: true
-      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-      TAURI_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
       VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       WINDOWS_CERTIFICATE_THUMBPRINT: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
@@ -142,37 +140,12 @@ jobs:
       - name: List artifacts in out/
         run: ls -R out
 
-      - name: Prepare the tauri update bundles (macOS)
-        if: ${{ env.BUILD_RELEASE && matrix.os == 'macos-14' }}
-        run: |
-          for ARCH in arm64 x64; do
-            TAURI_DIR=out/tauri/$VERSION/macos
-            TEMP_DIR=temp/$ARCH
-            mkdir -p $TAURI_DIR
-            mkdir -p $TEMP_DIR
-            unzip out/*-$ARCH-mac.zip -d $TEMP_DIR
-            tar -czvf "$TAURI_DIR/Zoo Modeling App-$ARCH.app.tar.gz" -C $TEMP_DIR "Zoo Modeling App.app" 
-            yarn tauri signer sign "$TAURI_DIR/Zoo Modeling App-$ARCH.app.tar.gz"
-          done
-          ls -R out
-
-      - name: Prepare the tauri update bundles (Windows)
-        if: ${{ env.BUILD_RELEASE && matrix.os == 'windows-2022' }}
-        run: |
-          $env:TAURI_DIR="out/tauri/${env:VERSION}/nsis"
-          mkdir -p ${env:TAURI_DIR}
-          $env:OUT_FILE="${env:TAURI_DIR}/Zoo Modeling App_${env:VERSION_NO_V}_x64-setup.nsis.zip"
-          7z a -mm=Copy "${env:OUT_FILE}" ./out/*-x64-win.exe
-          yarn tauri signer sign "${env:OUT_FILE}"
-          ls -R out
-
       - uses: actions/upload-artifact@v3
         with:
           name: out-${{ matrix.os }}
           path: |
             out/Zoo*.*
             out/latest*.yml
-            out/tauri
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
@@ -192,8 +165,6 @@ jobs:
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
       BUCKET_DIR: ${{ github.event_name == 'schedule' && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app' }}
       WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-      BUCKET_DIR_TAURI: 'dl.kittycad.io/releases/modeling-app/tauri-compat'
-      WEBSITE_DIR_TAURI: 'dl.zoo.dev/releases/modeling-app/tauri-compat'
       URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/checkout@v4
@@ -212,7 +183,7 @@ jobs:
         with:
           name: out-ubuntu-22.04
           path: out
-      
+
       - name: Generate the download static endpoint
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
@@ -253,44 +224,6 @@ jobs:
             }' > last_download.json
             cat last_download.json
 
-      - name: Generate the update static endpoint for tauri
-        run: |
-          TAURI_DIR=out/tauri/$VERSION
-          MAC_ARM64_SIG=`cat $TAURI_DIR/macos/*-arm64.app.tar.gz.sig`
-          MAC_X64_SIG=`cat $TAURI_DIR/macos/*-x64.app.tar.gz.sig`
-          WINDOWS_SIG=`cat $TAURI_DIR/nsis/*.nsis.zip.sig`
-          RELEASE_DIR=https://${WEBSITE_DIR_TAURI}/${VERSION}
-          jq --null-input \
-            --arg version "${VERSION}" \
-            --arg pub_date "${PUB_DATE}" \
-            --arg notes "${NOTES}" \
-            --arg mac_arm64_sig "$MAC_ARM64_SIG" \
-            --arg mac_arm64_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}-arm64.app.tar.gz" \
-            --arg mac_x64_sig "$MAC_X64_SIG" \
-            --arg mac_x64_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}-x64.app.tar.gz" \
-            --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/nsis/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64-setup.nsis.zip" \
-            '{
-              "version": $version,
-              "pub_date": $pub_date,
-              "notes": $notes,
-              "platforms": {
-                "darwin-x86_64": {
-                  "signature": $mac_x64_sig,
-                  "url": $mac_x64_url
-                },
-                "darwin-aarch64": {
-                  "signature": $mac_arm64_sig,
-                  "url": $mac_arm64_url
-                },
-                "windows-x86_64": {
-                  "signature": $windows_sig,
-                  "url": $windows_url
-                }
-              }
-            }' > last_update.json
-            cat last_update.json
-
       - name: List artifacts
         run: "ls -R out"
 
@@ -318,26 +251,12 @@ jobs:
           path: out
           glob: 'latest*'
           parent: false
-          destination: ${{ env.BUCKET_DIR }} 
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v2.2.0
         with:
           path: last_download.json
-          destination: ${{ env.BUCKET_DIR }}
-
-      - name: Upload release files to public bucket for tauri
-        uses: google-github-actions/upload-cloud-storage@v2.2.0
-        with:
-          path: "out/tauri/${{ env.VERSION }}" 
-          glob: '*/Zoo*'
-          parent: false
-          destination: ${{ env.BUCKET_DIR_TAURI }}/${{ env.VERSION }}
-
-      - name: Upload update endpoint to public bucket for tauri
-        uses: google-github-actions/upload-cloud-storage@v2.2.0
-        with:
-          path: last_update.json
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to Github
