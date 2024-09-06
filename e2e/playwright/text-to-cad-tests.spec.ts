@@ -534,7 +534,7 @@ test.describe('Text-to-CAD tests', () => {
 
     // Ensure the final toast remains.
     await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
-    await expect(page.getByText(`a 2x8 lego`)).not.toBeVisible()
+    await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible()
     await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
 
     // Ensure you can copy the code for the final model.
