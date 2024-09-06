@@ -50,13 +50,13 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
 }
 
 fn block_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = ("/*", take_until(0.., "*/"), "*/").recognize();
+    let inner = ("/*", take_until(0.., "*/"), "*/").take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::BlockComment, value.to_string()))
 }
 
 fn line_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).recognize();
+    let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::LineComment, value.to_string()))
 }
@@ -68,7 +68,7 @@ fn number(i: &mut Located<&str>) -> PResult<Token> {
         // No digits before the decimal point.
         ('.', digit1).map(|_| ()),
     ));
-    let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
+    let (value, range) = number_parser.take().with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Number, value.to_string()))
 }
 
@@ -84,7 +84,7 @@ fn inner_word(i: &mut Located<&str>) -> PResult<()> {
 }
 
 fn word(i: &mut Located<&str>) -> PResult<Token> {
-    let (value, range) = inner_word.recognize().with_span().parse_next(i)?;
+    let (value, range) = inner_word.take().with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Word, value.to_string()))
 }
 
@@ -162,9 +162,9 @@ fn inner_single_quote(i: &mut Located<&str>) -> PResult<()> {
 }
 
 fn string(i: &mut Located<&str>) -> PResult<Token> {
-    let single_quoted_string = ('\'', inner_single_quote.recognize(), '\'');
-    let double_quoted_string = ('"', inner_double_quote.recognize(), '"');
-    let either_quoted_string = alt((single_quoted_string.recognize(), double_quoted_string.recognize()));
+    let single_quoted_string = ('\'', inner_single_quote.take(), '\'');
+    let double_quoted_string = ('"', inner_double_quote.take(), '"');
+    let either_quoted_string = alt((single_quoted_string.take(), double_quoted_string.take()));
     let (value, range): (&str, _) = either_quoted_string.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::String, value.to_string()))
 }
