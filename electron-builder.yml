@@ -79,5 +79,5 @@ linux:
 
 publish:
   - provider: generic
-    url: https://dl.zoo.dev/releases/modeling-app/test/electron-builder
+    url: https://dl.zoo.dev/releases/modeling-app/test/cut-release-v0.25.1-updater-test
     channel: latest

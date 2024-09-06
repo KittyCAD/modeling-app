@@ -157,7 +157,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [prepare-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
