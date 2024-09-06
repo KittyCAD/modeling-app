@@ -170,5 +170,5 @@ async fn inner_loft(
     .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
-    do_post_extrude(sketch_groups[0].clone(), 0.0, id, args).await
+    do_post_extrude(sketch_groups[0].clone(), 0.0, args).await
 }

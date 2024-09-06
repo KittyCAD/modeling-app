@@ -45,7 +45,7 @@ jobs:
 
       # TODO: see if we can fetch from main instead if no diff at src/wasm-lib
       - name: Run build:wasm
-        run: "yarn build:wasm${{ env.BUILD_RELEASE == 'true' && '-dev' || ''}}"
+        run: "yarn build:wasm"
 
       - name: Set nightly version
         if: github.event_name == 'schedule'
@@ -157,7 +157,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    # if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [prepare-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
@@ -246,6 +246,15 @@ jobs:
           parent: false
           destination: ${{ env.BUCKET_DIR }}
 
+      # TODO: remove workaround introduced in https://github.com/KittyCAD/modeling-app/issues/3817
+      - name: Upload release files to public bucket (test/electron-builder workaround)
+        uses: google-github-actions/upload-cloud-storage@v2.2.0
+        with:
+          path: out
+          glob: 'Zoo*'
+          parent: false
+          destination: '${{ env.BUCKET_DIR }}/test/electron-builder'
+
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v2.2.0
         with:
@@ -253,6 +262,15 @@ jobs:
           glob: 'latest*'
           parent: false
           destination: ${{ env.BUCKET_DIR }}
+
+      # TODO: remove workaround introduced in https://github.com/KittyCAD/modeling-app/issues/3817
+      - name: Upload update endpoint to public bucket (test/electron-builder workaround)
+        uses: google-github-actions/upload-cloud-storage@v2.2.0
+        with:
+          path: out
+          glob: 'latest*'
+          parent: false
+          destination: '${{ env.BUCKET_DIR }}/test/electron-builder'
 
       - name: Upload download endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v2.2.0
