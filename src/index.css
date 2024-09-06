@@ -56,11 +56,6 @@ body.dark {
   .dark .body-bg {
     @apply bg-chalkboard-100;
   }
-
-  body {
-    scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
-    @apply text-chalkboard-10;
-  }
 }
 
 select {
@@ -300,32 +295,11 @@ code {
 }
 
 @layer utilities {
-  /* Modified from the very helpful https://www.transition.style/#in:circle:hesitate */
-  @keyframes circle-in-hesitate {
-    0% {
-      clip-path: circle(
-        var(--circle-size-start, 0%) at var(--circle-x, 50%)
-          var(--circle-y, 50%)
-      );
-    }
-    40% {
-      clip-path: circle(
-        var(--circle-size-mid, 40%) at var(--circle-x, 50%) var(--circle-y, 50%)
-      );
-    }
-    100% {
-      clip-path: circle(
-        var(--circle-size-end, 125%) at var(--circle-x, 50%)
-          var(--circle-y, 50%)
-      );
-    }
-  }
-
-  .in-circle-hesitate {
-    animation: var(--circle-duration, 2.5s)
-      var(--circle-timing, cubic-bezier(0.25, 1, 0.3, 1)) circle-in-hesitate
-      both;
-  }
+  /* 
+    This is where your own custom Tailwind utility classes can go,
+    which lets you use them with @apply in your CSS, and get 
+    autocomplete in classNames in your JSX.
+  */
 }
 
 #code-mirror-override .cm-scroller,
