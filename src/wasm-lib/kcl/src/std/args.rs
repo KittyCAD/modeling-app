@@ -52,7 +52,7 @@ impl Args {
                 fs: Arc::new(crate::fs::FileManager::new()),
                 stdlib: Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                is_mock: true,
+                context_type: crate::executor::ContextType::Mock,
             },
             current_program_memory: ProgramMemory::default(),
             dynamic_state: DynamicState::default(),
