@@ -12,7 +12,7 @@ use crate::{
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
-const DEFAULT_V_DEGREE: u32 = 1;
+const DEFAULT_V_DEGREE: u32 = 2;
 
 /// Data for a loft.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -97,6 +97,39 @@ pub async fn loft(args: Args) -> Result<KclValue, KclError> {
 ///     |> circle([0, 100], 20, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
+/// ```
+///
+/// ```no_run
+/// // Loft a square, a circle, and another circle with options.
+/// const squareSketch = startSketchOn('XY')
+///     |> startProfileAt([-100, 200], %)
+///     |> line([200, 0], %)
+///     |> line([0, -200], %)
+///     |> line([-200, 0], %)
+///     |> lineTo([profileStartX(%), profileStartY(%)], %)
+///     |> close(%)
+///
+/// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
+///     |> circle([0, 100], 50, %)
+///
+/// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
+///     |> circle([0, 100], 20, %)
+///
+/// loft([squareSketch, circleSketch0, circleSketch1], {
+///     // This can be set to override the automatically determined
+///     // topological base curve, which is usually the first section encountered.
+///     baseCurveIndex: 0,
+///     // Attempt to approximate rational curves (such as arcs) using a bezier.
+///     // This will remove banding around interpolations between arcs and non-arcs.
+///     // It may produce errors in other scenarios Over time, this field won't be necessary.
+///     bezApproximateRational: false,
+///     // Tolerance for the loft operation.
+///     tolerance: 0.000001,
+///     // Degree of the interpolation. Must be greater than zero.
+///     // For example, use 2 for quadratic, or 3 for cubic interpolation in
+///     // the V direction. This defaults to 2, if not specified.
+///     vDegree: 2,
+/// })
 /// ```
 #[stdlib {
     name = "loft",

@@ -488,7 +488,7 @@ layout: manual
             buf.push_str(&fn_docs);
 
             // Write the file.
-            expectorate::assert_contents(&format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
+            expectorate::assert_contents(format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
         }
     }
 
