@@ -1,8 +1,10 @@
 //! Functions related to extruding.
 
+use std::collections::HashMap;
+
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ExtrusionFaceCapType;
+use kittycad::types::{ExtrusionFaceCapType, ExtrusionFaceInfo};
 use schemars::JsonSchema;
 use uuid::Uuid;
 
@@ -217,26 +219,11 @@ pub(crate) async fn do_post_extrude(
         .await?;
     }
 
-    // Create a hashmap for quick id lookup
-    let mut face_id_map = std::collections::HashMap::new();
-    // creating fake ids for start and end caps is to make extrudes mock-execute safe
-    let (mut start_cap_id, mut end_cap_id) = if args.ctx.is_mock {
-        (Some(Uuid::new_v4()), Some(Uuid::new_v4()))
-    } else {
-        (None, None)
-    };
-    for face_info in face_infos {
-        match face_info.cap {
-            ExtrusionFaceCapType::Bottom => start_cap_id = face_info.face_id,
-            ExtrusionFaceCapType::Top => end_cap_id = face_info.face_id,
-            ExtrusionFaceCapType::None => {
-                if let Some(curve_id) = face_info.curve_id {
-                    face_id_map.insert(curve_id, face_info.face_id);
-                }
-            }
-        }
-    }
-
+    let Faces {
+        sides: face_id_map,
+        start_cap_id,
+        end_cap_id,
+    } = analyze_faces(&args, face_infos);
     // Iterate over the sketch_group.value array and add face_id to GeoMeta
     let new_value = sketch_group
         .value
@@ -299,4 +286,38 @@ pub(crate) async fn do_post_extrude(
         end_cap_id,
         edge_cuts: vec![],
     }))
+}
+
+#[derive(Default)]
+struct Faces {
+    /// Maps curve ID to face ID for each side.
+    sides: HashMap<Uuid, Option<Uuid>>,
+    /// Top face ID.
+    end_cap_id: Option<Uuid>,
+    /// Bottom face ID.
+    start_cap_id: Option<Uuid>,
+}
+
+fn analyze_faces(args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
+    let mut faces = Faces {
+        sides: HashMap::with_capacity(face_infos.len()),
+        ..Default::default()
+    };
+    if args.ctx.is_mock {
+        // Create fake IDs for start and end caps, to make extrudes mock-execute safe
+        faces.start_cap_id = Some(Uuid::new_v4());
+        faces.end_cap_id = Some(Uuid::new_v4());
+    }
+    for face_info in face_infos {
+        match face_info.cap {
+            ExtrusionFaceCapType::Bottom => faces.start_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Top => faces.end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::None => {
+                if let Some(curve_id) = face_info.curve_id {
+                    faces.sides.insert(curve_id, face_info.face_id);
+                }
+            }
+        }
+    }
+    faces
 }
