@@ -288,7 +288,7 @@ test.describe('Testing settings', () => {
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
-        await page.reload()
+        await page.reload({ waitUntil: 'domcontentloaded' })
 
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         await settingsCloseButton.click()
@@ -368,18 +368,16 @@ test.describe('Testing settings', () => {
       })
 
       const {
-        panesOpen,
+        openKclCodePanel,
+        openFilePanel,
         createAndSelectProject,
         pasteCodeInEditor,
-        clickPane,
         createNewFileAndSelect,
         editorTextMatches,
       } = await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
-
-      await panesOpen([])
 
       await test.step('Precondition: No projects exist', async () => {
         await expect(page.getByTestId('home-section')).toBeVisible()
@@ -389,14 +387,14 @@ test.describe('Testing settings', () => {
 
       await createAndSelectProject('project-000')
 
-      await clickPane('code')
+      await openKclCodePanel()
       const kclCube = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/cube.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
 
-      await clickPane('files')
+      await openFilePanel()
       await createNewFileAndSelect('2.kcl')
 
       const kclCylinder = await fsp.readFile(
