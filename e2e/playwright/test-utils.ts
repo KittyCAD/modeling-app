@@ -548,13 +548,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFileAndSelect: async (name: string) => {
       return test?.step(`Create a file named ${name}, select it`, async () => {
+        await openFilePanel(page)
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
-        await page
+        const newFile = page
           .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
-          .click()
+
+        await expect(newFile).toBeVisible()
+        await newFile.click()
       })
     },
 

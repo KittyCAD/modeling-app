@@ -288,7 +288,7 @@ test.describe('Testing settings', () => {
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
-        await page.reload()
+        await page.reload({ waitUntil: 'domcontentloaded' })
 
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         await settingsCloseButton.click()
