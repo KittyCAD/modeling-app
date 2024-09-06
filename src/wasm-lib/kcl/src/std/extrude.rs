@@ -112,7 +112,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         // Disable the sketch mode.
         args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
-        extrude_groups.push(do_post_extrude(sketch_group.clone(), length, id, args.clone()).await?);
+        extrude_groups.push(do_post_extrude(sketch_group.clone(), length, args.clone()).await?);
     }
 
     Ok(extrude_groups.into())
@@ -121,7 +121,6 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
 pub(crate) async fn do_post_extrude(
     sketch_group: SketchGroup,
     length: f64,
-    id: Uuid,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Bring the object to the front of the scene.
@@ -165,7 +164,7 @@ pub(crate) async fn do_post_extrude(
 
     let solid3d_info = args
         .send_modeling_cmd(
-            id,
+            uuid::Uuid::new_v4(),
             kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo {
                 edge_id,
                 object_id: sketch_group.id,
