@@ -735,7 +735,7 @@ test(
       await expect(projectMenuButton).toContainText('main.kcl')
       await textToCadFileButton.click()
       // File can be navigated and loaded assuming a specific KCL comment is loaded into the KCL code pane
-      await expect(textToCadFileButton).toBeVisible({ timeout: 20_000 })
+      await expect(textToCadComment).toBeVisible({ timeout: 20_000 })
       await expect(projectMenuButton).toContainText(textToCadFileName)
     })
 
