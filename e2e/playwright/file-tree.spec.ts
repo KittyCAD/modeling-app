@@ -112,7 +112,8 @@ test.describe('when using the file tree to', () => {
       })
 
       const {
-        panesOpen,
+        openKclCodePanel,
+        openFilePanel,
         createAndSelectProject,
         pasteCodeInEditor,
         createNewFileAndSelect,
@@ -124,9 +125,9 @@ test.describe('when using the file tree to', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
-      await panesOpen(['files', 'code'])
-
       await createAndSelectProject('project-000')
+      await openKclCodePanel()
+      await openFilePanel()
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/cube.kcl',
