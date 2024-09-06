@@ -194,7 +194,8 @@ describe('testing createArtifactGraph', () => {
 
     it('there should be two extrusions, for the original and the sketchOnFace, the first extrusion should have 6 sides of the cube', () => {
       const extrusions = [
-        ...filterArtifacts({ types: ['extrusion'] }, theMap),
+        // TODO KEVIN: subtype matching?
+        ...filterArtifacts({ types: ['sweep'] }, theMap),
       ].map((extrusion) => expandExtrusion(extrusion[1], theMap))
       expect(extrusions).toHaveLength(2)
       extrusions.forEach((extrusion, index) => {
