@@ -13,10 +13,7 @@ export default function Sketching() {
     async function clearEditor() {
       // We do want to update both the state and editor here.
       codeManager.updateCodeStateEditor('')
-      kclManager.isFirstRender = true
-      await kclManager.executeCode(true).then(() => {
-        kclManager.isFirstRender = false
-      })
+      await kclManager.executeCode(true)
     }
 
     clearEditor()

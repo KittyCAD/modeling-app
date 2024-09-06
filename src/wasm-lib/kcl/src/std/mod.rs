@@ -9,8 +9,10 @@ pub mod fillet;
 pub mod helix;
 pub mod import;
 pub mod kcl_stdlib;
+pub mod loft;
 pub mod math;
 pub mod patterns;
+pub mod planes;
 pub mod polar;
 pub mod revolve;
 pub mod segment;
@@ -98,6 +100,8 @@ lazy_static! {
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
+        Box::new(crate::std::loft::Loft),
+        Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
@@ -484,7 +488,7 @@ layout: manual
             buf.push_str(&fn_docs);
 
             // Write the file.
-            expectorate::assert_contents(&format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
+            expectorate::assert_contents(format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
         }
     }
 

@@ -1,7 +1,10 @@
 //! Functions related to extruding.
 
+use std::collections::HashMap;
+
 use anyhow::Result;
 use derive_docs::stdlib;
+use kittycad::types::{ExtrusionFaceCapType, ExtrusionFaceInfo};
 use schemars::JsonSchema;
 use uuid::Uuid;
 
@@ -90,7 +93,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
                 adjust_camera: false,
                 planar_normal: if let SketchSurface::Plane(plane) = &sketch_group.on {
                     // We pass in the normal for the plane here.
-                    Some(plane.z_axis.clone().into())
+                    Some(plane.z_axis.into())
                 } else {
                     None
                 },
@@ -98,7 +101,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         )
         .await?;
 
-        args.send_modeling_cmd(
+        args.batch_modeling_cmd(
             id,
             kittycad::types::ModelingCmd::Extrude {
                 target: sketch_group.id,
@@ -111,7 +114,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         // Disable the sketch mode.
         args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
-        extrude_groups.push(do_post_extrude(sketch_group.clone(), length, id, args.clone()).await?);
+        extrude_groups.push(do_post_extrude(sketch_group.clone(), length, args.clone()).await?);
     }
 
     Ok(extrude_groups.into())
@@ -120,7 +123,6 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
 pub(crate) async fn do_post_extrude(
     sketch_group: SketchGroup,
     length: f64,
-    id: Uuid,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Bring the object to the front of the scene.
@@ -164,7 +166,7 @@ pub(crate) async fn do_post_extrude(
 
     let solid3d_info = args
         .send_modeling_cmd(
-            id,
+            uuid::Uuid::new_v4(),
             kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo {
                 edge_id,
                 object_id: sketch_group.id,
@@ -181,91 +183,95 @@ pub(crate) async fn do_post_extrude(
         vec![]
     };
 
-    for face_info in face_infos.iter() {
-        if face_info.cap == kittycad::types::ExtrusionFaceCapType::None {
+    for (curve_id, face_id) in face_infos
+        .iter()
+        .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
+        .filter_map(|face_info| {
             if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
-                args.batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
-                        edge_id: curve_id,
-                        object_id: sketch_group.id,
-                        face_id,
-                    },
-                )
-                .await?;
-
-                args.batch_modeling_cmd(
-                    uuid::Uuid::new_v4(),
-                    kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
-                        edge_id: curve_id,
-                        object_id: sketch_group.id,
-                        face_id,
-                    },
-                )
-                .await?;
+                Some((curve_id, face_id))
+            } else {
+                None
             }
-        }
+        })
+    {
+        // Batch these commands, because the Rust code doesn't actually care about the outcome.
+        // So, there's no need to await them.
+        // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
+        // uses this to build the artifact graph, which the UI needs.
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
+                edge_id: curve_id,
+                object_id: sketch_group.id,
+                face_id,
+            },
+        )
+        .await?;
+
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
+                edge_id: curve_id,
+                object_id: sketch_group.id,
+                face_id,
+            },
+        )
+        .await?;
     }
 
-    // Create a hashmap for quick id lookup
-    let mut face_id_map = std::collections::HashMap::new();
-    // creating fake ids for start and end caps is to make extrudes mock-execute safe
-    let mut start_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
-    let mut end_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
-
-    for face_info in face_infos {
-        match face_info.cap {
-            kittycad::types::ExtrusionFaceCapType::Bottom => start_cap_id = face_info.face_id,
-            kittycad::types::ExtrusionFaceCapType::Top => end_cap_id = face_info.face_id,
-            _ => {
-                if let Some(curve_id) = face_info.curve_id {
-                    face_id_map.insert(curve_id, face_info.face_id);
-                }
-            }
-        }
-    }
-
+    let Faces {
+        sides: face_id_map,
+        start_cap_id,
+        end_cap_id,
+    } = analyze_faces(&args, face_infos);
     // Iterate over the sketch_group.value array and add face_id to GeoMeta
-    let mut new_value: Vec<ExtrudeSurface> = Vec::new();
-    for path in sketch_group.value.iter() {
-        if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
-            match path {
-                Path::TangentialArc { .. } | Path::TangentialArcTo { .. } | Path::Circle { .. } => {
-                    let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
-                        face_id: *actual_face_id,
-                        tag: path.get_base().tag.clone(),
-                        geo_meta: GeoMeta {
-                            id: path.get_base().geo_meta.id,
-                            metadata: path.get_base().geo_meta.metadata.clone(),
-                        },
-                    });
-                    new_value.push(extrude_surface);
+    let new_value = sketch_group
+        .value
+        .iter()
+        .flat_map(|path| {
+            if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
+                match path {
+                    Path::TangentialArc { .. } | Path::TangentialArcTo { .. } | Path::Circle { .. } => {
+                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
+                            face_id: *actual_face_id,
+                            tag: path.get_base().tag.clone(),
+                            geo_meta: GeoMeta {
+                                id: path.get_base().geo_meta.id,
+                                metadata: path.get_base().geo_meta.metadata.clone(),
+                            },
+                        });
+                        Some(extrude_surface)
+                    }
+                    Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                            face_id: *actual_face_id,
+                            tag: path.get_base().tag.clone(),
+                            geo_meta: GeoMeta {
+                                id: path.get_base().geo_meta.id,
+                                metadata: path.get_base().geo_meta.metadata.clone(),
+                            },
+                        });
+                        Some(extrude_surface)
+                    }
                 }
-                Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
-                    let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                        face_id: *actual_face_id,
-                        tag: path.get_base().tag.clone(),
-                        geo_meta: GeoMeta {
-                            id: path.get_base().geo_meta.id,
-                            metadata: path.get_base().geo_meta.metadata.clone(),
-                        },
-                    });
-                    new_value.push(extrude_surface);
-                }
+            } else if args.ctx.is_mock {
+                // Only pre-populate the extrude surface if we are in mock mode.
+
+                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                    // pushing this values with a fake face_id to make extrudes mock-execute safe
+                    face_id: Uuid::new_v4(),
+                    tag: path.get_base().tag.clone(),
+                    geo_meta: GeoMeta {
+                        id: path.get_base().geo_meta.id,
+                        metadata: path.get_base().geo_meta.metadata.clone(),
+                    },
+                });
+                Some(extrude_surface)
+            } else {
+                None
             }
-        } else if args.ctx.is_mock {
-            // Only pre-populate the extrude surface if we are in mock mode.
-            new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                // pushing this values with a fake face_id to make extrudes mock-execute safe
-                face_id: Uuid::new_v4(),
-                tag: path.get_base().tag.clone(),
-                geo_meta: GeoMeta {
-                    id: path.get_base().geo_meta.id,
-                    metadata: path.get_base().geo_meta.metadata.clone(),
-                },
-            }));
-        }
-    }
+        })
+        .collect();
 
     Ok(Box::new(ExtrudeGroup {
         // Ok so you would think that the id would be the id of the extrude group,
@@ -273,11 +279,45 @@ pub(crate) async fn do_post_extrude(
         // sketch group.
         id: sketch_group.id,
         value: new_value,
-        sketch_group: sketch_group.clone(),
+        meta: sketch_group.meta.clone(),
+        sketch_group,
         height: length,
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
-        meta: sketch_group.meta,
     }))
+}
+
+#[derive(Default)]
+struct Faces {
+    /// Maps curve ID to face ID for each side.
+    sides: HashMap<Uuid, Option<Uuid>>,
+    /// Top face ID.
+    end_cap_id: Option<Uuid>,
+    /// Bottom face ID.
+    start_cap_id: Option<Uuid>,
+}
+
+fn analyze_faces(args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
+    let mut faces = Faces {
+        sides: HashMap::with_capacity(face_infos.len()),
+        ..Default::default()
+    };
+    if args.ctx.is_mock {
+        // Create fake IDs for start and end caps, to make extrudes mock-execute safe
+        faces.start_cap_id = Some(Uuid::new_v4());
+        faces.end_cap_id = Some(Uuid::new_v4());
+    }
+    for face_info in face_infos {
+        match face_info.cap {
+            ExtrusionFaceCapType::Bottom => faces.start_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Top => faces.end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::None => {
+                if let Some(curve_id) = face_info.curve_id {
+                    faces.sides.insert(curve_id, face_info.face_id);
+                }
+            }
+        }
+    }
+    faces
 }

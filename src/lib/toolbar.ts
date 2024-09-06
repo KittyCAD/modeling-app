@@ -129,12 +129,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'loft',
         onClick: () => console.error('Loft not yet implemented'),
         icon: 'loft',
-        status: 'unavailable',
+        status: 'kcl-only',
         title: 'Loft',
         hotkey: 'L',
         description:
           'Create a 3D body by blending between two or more sketches.',
         links: [
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/loft',
+          },
           {
             label: 'GitHub discussion',
             url: 'https://github.com/KittyCAD/modeling-app/discussions/613',

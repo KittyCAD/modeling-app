@@ -358,6 +358,7 @@ const sketch001 = startSketchAt([-0, -0])
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
+          ;(window as any).playwrightSkipFilePicker = true
         },
         {
           code: bracket,
@@ -393,20 +394,22 @@ const sketch001 = startSketchAt([-0, -0])
       await test.step('The second export is blocked', async () => {
         // Find the toast.
         // Look out for the toast message
-        await expect(exportingToastMessage).toBeVisible()
-        await expect(alreadyExportingToastMessage).toBeVisible()
-
-        await page.waitForTimeout(1000)
+        await Promise.all([
+          expect(exportingToastMessage.first()).toBeVisible(),
+          expect(alreadyExportingToastMessage).toBeVisible(),
+        ])
       })
 
       await test.step('The first export still succeeds', async () => {
-        await expect(exportingToastMessage).not.toBeVisible()
-        await expect(errorToastMessage).not.toBeVisible()
-        await expect(engineErrorToastMessage).not.toBeVisible()
-
-        await expect(successToastMessage).toBeVisible()
-
-        await expect(alreadyExportingToastMessage).not.toBeVisible()
+        await Promise.all([
+          expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+          expect(errorToastMessage).not.toBeVisible(),
+          expect(engineErrorToastMessage).not.toBeVisible(),
+          expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
+          expect(alreadyExportingToastMessage).not.toBeVisible({
+            timeout: 15_000,
+          }),
+        ])
       })
     })
 
@@ -419,10 +422,12 @@ const sketch001 = startSketchAt([-0, -0])
       await expect(exportingToastMessage).toBeVisible()
 
       // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible()
-      await expect(errorToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
-      await expect(alreadyExportingToastMessage).not.toBeVisible()
+      await Promise.all([
+        expect(exportingToastMessage).not.toBeVisible(),
+        expect(errorToastMessage).not.toBeVisible(),
+        expect(engineErrorToastMessage).not.toBeVisible(),
+        expect(alreadyExportingToastMessage).not.toBeVisible(),
+      ])
 
       await expect(successToastMessage).toBeVisible()
     })

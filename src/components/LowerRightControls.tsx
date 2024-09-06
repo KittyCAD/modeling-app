@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow, { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
+import { ModelStateIndicator } from './ModelStateIndicator'
 
 export function LowerRightControls({
   children,
@@ -65,6 +66,7 @@ export function LowerRightControls({
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
+        {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
           onClick={openExternalBrowserIfDesktop(
             `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`

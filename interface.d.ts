@@ -30,8 +30,6 @@ export interface IElectronAPI {
   join: typeof path.join
   sep: typeof path.sep
   rename: (prev: string, next: string) => typeof fs.rename
-  setBaseUrl: (value: string) => void
-  loadProjectAtStartup: () => Promise<ProjectState | null>
   packageJson: {
     name: string
   }

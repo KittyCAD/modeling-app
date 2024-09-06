@@ -112,7 +112,8 @@ test.describe('when using the file tree to', () => {
       })
 
       const {
-        panesOpen,
+        openKclCodePanel,
+        openFilePanel,
         createAndSelectProject,
         pasteCodeInEditor,
         createNewFileAndSelect,
@@ -124,9 +125,9 @@ test.describe('when using the file tree to', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
-      await panesOpen(['files', 'code'])
-
       await createAndSelectProject('project-000')
+      await openKclCodePanel()
+      await openFilePanel()
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/cube.kcl',
@@ -199,6 +200,80 @@ test.describe('when using the file tree to', () => {
       })
 
       await electronApp.close()
+    }
+  )
+
+  test(
+    'loading small file, then large, then back to small',
+    {
+      tag: '@electron',
+    },
+    async ({ browser: _ }, testInfo) => {
+      const { page } = await setupElectron({
+        testInfo,
+      })
+
+      const {
+        panesOpen,
+        createAndSelectProject,
+        pasteCodeInEditor,
+        createNewFile,
+        openDebugPanel,
+        closeDebugPanel,
+        expectCmdLog,
+      } = await getUtils(page, test)
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
+
+      await panesOpen(['files', 'code'])
+      await createAndSelectProject('project-000')
+
+      // Create a small file
+      const kclCube = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/cube.kcl',
+        'utf-8'
+      )
+      // pasted into main.kcl
+      await pasteCodeInEditor(kclCube)
+
+      // Create a large lego file
+      await createNewFile('lego')
+      const legoFile = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'lego.kcl' }),
+      })
+      await expect(legoFile).toBeVisible({ timeout: 60_000 })
+      await legoFile.click()
+      const kclLego = await fsp.readFile(
+        'src/wasm-lib/tests/executor/inputs/lego.kcl',
+        'utf-8'
+      )
+      await pasteCodeInEditor(kclLego)
+      const mainFile = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'main.kcl' }),
+      })
+
+      // Open settings and enable the debug panel
+      await page
+        .getByRole('link', {
+          name: 'settings Settings',
+        })
+        .click()
+      await page.locator('#showDebugPanel').getByText('OffOn').click()
+      await page.getByTestId('settings-close-button').click()
+
+      await test.step('swap between small and large files', async () => {
+        await openDebugPanel()
+        // Previously created a file so we need to start back at main.kcl
+        await mainFile.click()
+        await expectCmdLog('[data-message-type="execution-done"]', 60_000)
+        // Click the large file
+        await legoFile.click()
+        // Once it is building, click back to the smaller file
+        await mainFile.click()
+        await expectCmdLog('[data-message-type="execution-done"]', 60_000)
+        await closeDebugPanel()
+      })
     }
   )
 })

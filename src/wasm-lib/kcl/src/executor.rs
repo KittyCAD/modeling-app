@@ -995,20 +995,20 @@ impl SketchSurface {
     }
     pub(crate) fn x_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.x_axis.clone(),
-            SketchSurface::Face(face) => face.x_axis.clone(),
+            SketchSurface::Plane(plane) => plane.x_axis,
+            SketchSurface::Face(face) => face.x_axis,
         }
     }
     pub(crate) fn y_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.y_axis.clone(),
-            SketchSurface::Face(face) => face.y_axis.clone(),
+            SketchSurface::Plane(plane) => plane.y_axis,
+            SketchSurface::Face(face) => face.y_axis,
         }
     }
     pub(crate) fn z_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.z_axis.clone(),
-            SketchSurface::Face(face) => face.z_axis.clone(),
+            SketchSurface::Plane(plane) => plane.z_axis,
+            SketchSurface::Face(face) => face.z_axis,
         }
     }
 }
@@ -1304,7 +1304,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -1313,6 +1313,7 @@ pub struct Point3d {
 }
 
 impl Point3d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0, z: 0.0 };
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
