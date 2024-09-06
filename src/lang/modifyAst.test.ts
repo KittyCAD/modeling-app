@@ -20,6 +20,7 @@ import {
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
+import { SimplifiedVarValue, VarValueKeys } from './std/stdTypes'
 
 beforeAll(async () => {
   await initPromise
@@ -638,11 +639,21 @@ describe('Testing removeSingleConstraintInfo', () => {
         code.indexOf(lineOfInterest) + lineOfInterest.length,
       ]
       const pathToNode = getNodePathFromSourceRange(ast, range)
+      let argPosition: SimplifiedVarValue
+      if (key === 'arrayIndex' && typeof value === 'number') {
+        argPosition = { type: 'arrayItem', argIndex: 0, index: value ? 0 : 1 }
+      } else if (key === 'objectProperty' && typeof value === 'string') {
+        argPosition = {
+          type: 'objectProperty',
+          key: value as VarValueKeys,
+          argIndex: 0,
+        }
+      } else {
+        throw new Error('argPosition is undefined')
+      }
       const mod = removeSingleConstraintInfo(
-        {
-          pathToCallExp: pathToNode,
-          [key]: value,
-        },
+        pathToNode,
+        argPosition,
         ast,
         programMemory
       )
@@ -675,12 +686,22 @@ describe('Testing removeSingleConstraintInfo', () => {
         code.indexOf(lineOfInterest) + 1,
         code.indexOf(lineOfInterest) + lineOfInterest.length,
       ]
+      let argPosition: SimplifiedVarValue
+      if (key === 'arrayIndex' && typeof value === 'number') {
+        argPosition = { type: 'arrayItem', argIndex: 0, index: value ? 0 : 1 }
+      } else if (key === 'objectProperty' && typeof value === 'string') {
+        argPosition = {
+          type: 'objectProperty',
+          key: value as VarValueKeys,
+          argIndex: 0,
+        }
+      } else {
+        throw new Error('argPosition is undefined')
+      }
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const mod = removeSingleConstraintInfo(
-        {
-          pathToCallExp: pathToNode,
-          [key]: value,
-        },
+        pathToNode,
+        argPosition,
         ast,
         programMemory
       )

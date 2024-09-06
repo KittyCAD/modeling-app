@@ -40,7 +40,6 @@ import { InstanceProps, create } from 'react-modal-promise'
 import { executeAst } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
-  makeRemoveSingleConstraintInput,
   removeSingleConstraintInfo,
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
@@ -515,6 +514,11 @@ const ConstraintSymbol = ({
       displayName: 'Intersection Offset',
       iconName: 'intersection-offset',
     },
+    radius: {
+      varName: 'radius',
+      displayName: 'Radius',
+      iconName: 'dimension',
+    },
 
     // implicit constraints
     vertical: {
@@ -605,13 +609,10 @@ const ConstraintSymbol = ({
               if (trap(_node1)) return Promise.reject(_node1)
               const shallowPath = _node1.shallowPath
 
-              const input = makeRemoveSingleConstraintInput(
-                argPosition,
-                shallowPath
-              )
-              if (!input || !context.sketchDetails) return
+              if (!context.sketchDetails || !argPosition) return
               const transform = removeSingleConstraintInfo(
-                input,
+                shallowPath,
+                argPosition,
                 kclManager.ast,
                 kclManager.programMemory
               )

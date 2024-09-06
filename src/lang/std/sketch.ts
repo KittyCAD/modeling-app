@@ -9,7 +9,6 @@ import {
   CallExpression,
   VariableDeclarator,
   Expr,
-  Literal,
   VariableDeclaration,
   Identifier,
   sketchGroupFromKclValue,
@@ -18,9 +17,9 @@ import {
   getNodeFromPath,
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
+  getObjExpProperty,
 } from 'lang/queryAst'
 import {
-  LineInputsType,
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
 } from 'lang/std/sketchcombos'
@@ -31,13 +30,12 @@ import {
   SketchLineHelper,
   TransformCallback,
   ConstrainInfo,
-  RawValues,
   ArrayItemInput,
   ObjectPropertyInput,
   SingleValueInput,
-  VarValueKeys,
-  ArrayOrObjItemInput,
   AddTagInfo,
+  SegmentInputs,
+  SimplifiedVarValue,
 } from 'lang/std/stdTypes'
 
 import {
@@ -55,6 +53,11 @@ import { roundOff, getLength, getAngle } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+
+const STRAIGHT_SEGMENT_ERR = new Error(
+  'Invalid input, expected "straight-segment"'
+)
+const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
 
 export type Coords2d = [number, number]
 
@@ -109,6 +112,7 @@ type AbbreviatedInput =
   | ArrayItemInput<any>['index']
   | ObjectPropertyInput<any>['key']
   | SingleValueInput<any>['type']
+  | SimplifiedVarValue
   | undefined
 
 const constrainInfo = (
@@ -126,11 +130,13 @@ const constrainInfo = (
   sourceRange: d,
   argPosition:
     g === 'singleValue'
-      ? { type: 'singleValue' }
-      : typeof g === 'number'
-      ? { type: 'arrayItem', index: g }
+      ? { type: 'singleValue', argIndex: 0 }
+      : g === 1 || g === 0
+      ? { type: 'arrayItem', index: g, argIndex: 0 }
       : typeof g === 'string'
-      ? { type: 'objectProperty', key: g }
+      ? { type: 'objectProperty', key: g, argIndex: 0 }
+      : g && 'type' in g
+      ? g
       : undefined,
   pathToNode: e,
   stdLibFnName: f,
@@ -270,45 +276,6 @@ const horzVertConstraintInfoHelper = (
   ]
 }
 
-function arrayRawValuesHelper(a: Array<[Literal, LineInputsType]>): RawValues {
-  return a.map(
-    ([literal, argType], index): ArrayItemInput<Literal> => ({
-      type: 'arrayItem',
-      index: index === 0 ? 0 : 1,
-      argType,
-      value: literal,
-    })
-  )
-}
-
-function arrOrObjectRawValuesHelper(
-  a: Array<[Literal, LineInputsType, VarValueKeys]>
-): RawValues {
-  return a.map(
-    ([literal, argType, key], index): ArrayOrObjItemInput<Literal> => ({
-      type: 'arrayOrObjItem',
-      // key: argType,w
-      index: index === 0 ? 0 : 1,
-      key,
-      argType,
-      value: literal,
-    })
-  )
-}
-
-function singleRawValueHelper(
-  literal: Literal,
-  argType: LineInputsType
-): RawValues {
-  return [
-    {
-      type: 'singleValue',
-      argType,
-      value: literal,
-    },
-  ]
-}
-
 function getTag(index = 2): SketchLineHelper['getTag'] {
   return (callExp: CallExpression) => {
     if (callExp.type !== 'CallExpression')
@@ -325,11 +292,13 @@ export const lineTo: SketchLineHelper = {
   add: ({
     node,
     pathToNode,
-    to,
+    input,
     createCallback,
     replaceExisting,
     referencedSegment,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const to = input.to
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
@@ -351,11 +320,28 @@ export const lineTo: SketchLineHelper = {
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
     if (replaceExisting && createCallback) {
       const { callExp, valueUsedInTransform } = createCallback(
-        newVals,
-        arrayRawValuesHelper([
-          [createLiteral(roundOff(to[0], 2)), 'xAbsolute'],
-          [createLiteral(roundOff(to[1], 2)), 'yAbsolute'],
-        ]),
+        [
+          {
+            varExpression: createLiteral(roundOff(to[0], 2)),
+            varDetails: {
+              type: 'arrayItem',
+              index: 0,
+              argType: 'xAbsolute',
+              value: createLiteral(roundOff(to[0], 2)),
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: createLiteral(roundOff(to[1], 2)),
+            varDetails: {
+              type: 'arrayItem',
+              index: 1,
+              argType: 'yAbsolute',
+              value: createLiteral(roundOff(to[1], 2)),
+              argIndex: 0,
+            },
+          },
+        ],
         referencedSegment
       )
       pipe.body[callIndex] = callExp
@@ -372,7 +358,9 @@ export const lineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -407,13 +395,14 @@ export const line: SketchLineHelper = {
     node,
     previousProgramMemory,
     pathToNode,
-    to,
-    from,
+    input,
     replaceExisting,
     referencedSegment,
     createCallback,
     spliceBetween,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<PipeExpression | CallExpression>(
       _node,
@@ -459,11 +448,28 @@ export const line: SketchLineHelper = {
     if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
-        [newXVal, newYVal],
-        arrayRawValuesHelper([
-          [createLiteral(roundOff(to[0] - from[0], 2)), 'xRelative'],
-          [createLiteral(roundOff(to[1] - from[1], 2)), 'yRelative'],
-        ]),
+        [
+          {
+            varExpression: createLiteral(roundOff(to[0] - from[0], 2)),
+            varDetails: {
+              type: 'arrayItem',
+              index: 0,
+              argType: 'xRelative',
+              value: createLiteral(roundOff(to[0] - from[0], 2)),
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: createLiteral(roundOff(to[1] - from[1], 2)),
+            varDetails: {
+              type: 'arrayItem',
+              index: 0,
+              argType: 'yRelative',
+              value: createLiteral(roundOff(to[1] - from[1], 2)),
+              argIndex: 0,
+            },
+          },
+        ],
         referencedSegment
       )
       pipe.body[callIndex] = callExp
@@ -496,7 +502,9 @@ export const line: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -530,7 +538,9 @@ export const line: SketchLineHelper = {
 }
 
 export const xLineTo: SketchLineHelper = {
-  add: ({ node, pathToNode, to, replaceExisting, createCallback }) => {
+  add: ({ node, pathToNode, input, replaceExisting, createCallback }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const _node1 = getNode<PipeExpression>('PipeExpression')
@@ -541,10 +551,17 @@ export const xLineTo: SketchLineHelper = {
 
     if (replaceExisting && createCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback(
-        [newVal, newVal],
-        singleRawValueHelper(newVal, 'xAbsolute')
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          varExpression: createLiteral(roundOff(to[0], 2)),
+          varDetails: {
+            type: 'singleValue',
+            argType: 'xAbsolute',
+            value: createLiteral(roundOff(to[0], 2)),
+            argIndex: 0,
+          },
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -562,7 +579,9 @@ export const xLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -591,7 +610,9 @@ export const xLineTo: SketchLineHelper = {
 }
 
 export const yLineTo: SketchLineHelper = {
-  add: ({ node, pathToNode, to, replaceExisting, createCallback }) => {
+  add: ({ node, pathToNode, input, replaceExisting, createCallback }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const _node1 = getNode<PipeExpression>('PipeExpression')
@@ -602,10 +623,17 @@ export const yLineTo: SketchLineHelper = {
 
     if (replaceExisting && createCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback(
-        [newVal, newVal],
-        singleRawValueHelper(newVal, 'yAbsolute')
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          varExpression: newVal,
+          varDetails: {
+            type: 'singleValue',
+            argType: 'yAbsolute',
+            value: newVal,
+            argIndex: 0,
+          },
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -623,7 +651,9 @@ export const yLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -652,7 +682,9 @@ export const yLineTo: SketchLineHelper = {
 }
 
 export const xLine: SketchLineHelper = {
-  add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
+  add: ({ node, pathToNode, input, replaceExisting, createCallback }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const _node1 = getNode<PipeExpression>('PipeExpression')
@@ -660,14 +692,20 @@ export const xLine: SketchLineHelper = {
     const { node: pipe } = _node1
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
-    const firstArg = newVal
 
     if (replaceExisting && createCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback(
-        [firstArg, firstArg],
-        singleRawValueHelper(firstArg, 'xRelative')
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          varExpression: newVal,
+          varDetails: {
+            type: 'singleValue',
+            argType: 'xRelative',
+            value: newVal,
+            argIndex: 0,
+          },
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -677,13 +715,15 @@ export const xLine: SketchLineHelper = {
     }
 
     const newLine = createCallExpression('xLine', [
-      firstArg,
+      newVal,
       createPipeSubstitution(),
     ])
     pipe.body = [...pipe.body, newLine]
     return { modifiedAst: _node, pathToNode }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -712,7 +752,9 @@ export const xLine: SketchLineHelper = {
 }
 
 export const yLine: SketchLineHelper = {
-  add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
+  add: ({ node, pathToNode, input, replaceExisting, createCallback }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const _node1 = getNode<PipeExpression>('PipeExpression')
@@ -721,10 +763,17 @@ export const yLine: SketchLineHelper = {
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
     if (replaceExisting && createCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback(
-        [newVal, newVal],
-        singleRawValueHelper(newVal, 'yRelative')
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          varExpression: newVal,
+          varDetails: {
+            type: 'singleValue',
+            argType: 'yRelative',
+            value: newVal,
+            argIndex: 0,
+          },
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -740,7 +789,9 @@ export const yLine: SketchLineHelper = {
     pipe.body = [...pipe.body, newLine]
     return { modifiedAst: _node, pathToNode }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -772,11 +823,13 @@ export const tangentialArcTo: SketchLineHelper = {
   add: ({
     node,
     pathToNode,
-    to,
+    input,
     createCallback,
     replaceExisting,
     referencedSegment,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const _node1 = getNode<PipeExpression | CallExpression>('PipeExpression')
@@ -796,11 +849,28 @@ export const tangentialArcTo: SketchLineHelper = {
     if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
-        [toX, toY],
-        arrayRawValuesHelper([
-          [createLiteral(roundOff(to[0], 2)), 'xAbsolute'],
-          [createLiteral(roundOff(to[1], 2)), 'yAbsolute'],
-        ]),
+        [
+          {
+            varExpression: toX,
+            varDetails: {
+              type: 'arrayItem',
+              index: 0,
+              argType: 'xRelative',
+              value: toX,
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: toY,
+            varDetails: {
+              type: 'arrayItem',
+              index: 1,
+              argType: 'yAbsolute',
+              value: toY,
+              argIndex: 0,
+            },
+          },
+        ],
         referencedSegment
       )
       pipe.body[callIndex] = callExp
@@ -832,7 +902,9 @@ export const tangentialArcTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -899,16 +971,198 @@ export const tangentialArcTo: SketchLineHelper = {
     ]
   },
 }
+export const circle: SketchLineHelper = {
+  add: ({ node, pathToNode, input, createCallback, replaceExisting }) => {
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+
+    const { center, radius } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: pipe } = nodeMeta
+
+    const x = createLiteral(roundOff(center[0], 2))
+    const y = createLiteral(roundOff(center[1], 2))
+
+    const radiusExp = createLiteral(roundOff(radius, 2))
+
+    if (replaceExisting && createCallback) {
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          varExpression: x,
+          varDetails: {
+            type: 'objectPropertyArray',
+            index: 0,
+            key: 'center',
+            argType: 'xAbsolute',
+            value: x,
+            argIndex: 0,
+          },
+        },
+        {
+          varExpression: y,
+          varDetails: {
+            type: 'objectPropertyArray',
+            index: 1,
+            key: 'center',
+            argType: 'yAbsolute',
+            value: y,
+            argIndex: 0,
+          },
+        },
+        {
+          varExpression: radiusExp,
+          varDetails: {
+            type: 'objectProperty',
+            key: 'radius',
+            argType: 'radius',
+            value: radiusExp,
+            argIndex: 0,
+          },
+        },
+      ])
+
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      pipe.body[callIndex] = callExp
+
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    return new Error('not implemented')
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    const { center, radius } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression, shallowPath } = nodeMeta
+
+    const firstArg = callExpression.arguments?.[0]
+    const newCenter = createArrayExpression([
+      createLiteral(roundOff(center[0])),
+      createLiteral(roundOff(center[1])),
+    ])
+    mutateObjExpProp(firstArg, newCenter, 'center')
+    const newRadius = createLiteral(roundOff(radius))
+    mutateObjExpProp(firstArg, newRadius, 'radius')
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  },
+  getTag: getTag(3),
+  addTag: addTag(3),
+  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
+    if (callExp.type !== 'CallExpression') return []
+    const firstArg = callExp.arguments?.[0]
+    if (firstArg.type !== 'ObjectExpression') return []
+    const centerDetails = getObjExpProperty(firstArg, 'center')
+    const radiusDetails = getObjExpProperty(firstArg, 'radius')
+    if (!centerDetails || !radiusDetails) return []
+    if (centerDetails.exp.type !== 'ArrayExpression') return []
+
+    const pathToCenterArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [centerDetails.index, 'index'],
+      ['value', 'Property'],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToRadiusLiteral: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [radiusDetails.index, 'index'],
+      ['value', 'Property'],
+    ]
+    const pathToXArg: PathToNode = [
+      ...pathToCenterArrayExpression,
+      [0, 'index'],
+    ]
+    const pathToYArg: PathToNode = [
+      ...pathToCenterArrayExpression,
+      [1, 'index'],
+    ]
+
+    return [
+      constrainInfo(
+        'radius',
+        isNotLiteralArrayOrStatic(radiusDetails.exp),
+        code.slice(radiusDetails.exp.start, radiusDetails.exp.end),
+        'circle',
+        {
+          type: 'objectProperty',
+          key: 'radius',
+          argIndex: 0,
+        },
+        [radiusDetails.exp.start, radiusDetails.exp.end],
+        pathToRadiusLiteral
+      ),
+      {
+        stdLibFnName: 'circle',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(centerDetails.exp.elements[0]),
+        sourceRange: [
+          centerDetails.exp.elements[0].start,
+          centerDetails.exp.elements[0].end,
+        ],
+        pathToNode: pathToXArg,
+        value: code.slice(
+          centerDetails.exp.elements[0].start,
+          centerDetails.exp.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'center',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(centerDetails.exp.elements[1]),
+        sourceRange: [
+          centerDetails.exp.elements[1].start,
+          centerDetails.exp.elements[1].end,
+        ],
+        pathToNode: pathToYArg,
+        value: code.slice(
+          centerDetails.exp.elements[1].start,
+          centerDetails.exp.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'center',
+        },
+      },
+    ]
+  },
+}
 export const angledLine: SketchLineHelper = {
   add: ({
     node,
     pathToNode,
-    to,
-    from,
+    input,
     createCallback,
     replaceExisting,
     referencedSegment,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const _node1 = getNode<PipeExpression>('PipeExpression')
@@ -925,11 +1179,30 @@ export const angledLine: SketchLineHelper = {
     if (replaceExisting && createCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
-        [newAngleVal, newLengthVal],
-        arrOrObjectRawValuesHelper([
-          [newAngleVal, 'angle', 'angle'],
-          [newLengthVal, 'length', 'length'],
-        ]),
+        [
+          {
+            varExpression: newAngleVal,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 0,
+              key: 'angle',
+              argType: 'angle',
+              value: newAngleVal,
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: newLengthVal,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 1,
+              key: 'length',
+              argType: 'length',
+              value: newLengthVal,
+              argIndex: 0,
+            },
+          },
+        ],
         referencedSegment
       )
       pipe.body[callIndex] = callExp
@@ -946,7 +1219,9 @@ export const angledLine: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -988,11 +1263,12 @@ export const angledLineOfXLength: SketchLineHelper = {
     node,
     previousProgramMemory,
     pathToNode,
-    to,
-    from,
+    input,
     createCallback,
     replaceExisting,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
@@ -1020,13 +1296,30 @@ export const angledLineOfXLength: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
     const newLine = createCallback
-      ? createCallback(
-          [angle, xLength],
-          arrOrObjectRawValuesHelper([
-            [angle, 'angle', 'angle'],
-            [xLength, 'xRelative', 'length'],
-          ])
-        ).callExp
+      ? createCallback([
+          {
+            varExpression: angle,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 0,
+              key: 'angle',
+              argType: 'angle',
+              value: angle,
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: xLength,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 1,
+              key: 'length',
+              argType: 'xRelative',
+              value: xLength,
+              argIndex: 0,
+            },
+          },
+        ]).callExp
       : createCallExpression('angledLineOfXLength', [
           createArrayExpression([angle, xLength]),
           createPipeSubstitution(),
@@ -1042,7 +1335,9 @@ export const angledLineOfXLength: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -1088,11 +1383,12 @@ export const angledLineOfYLength: SketchLineHelper = {
     node,
     previousProgramMemory,
     pathToNode,
-    to,
-    from,
+    input,
     createCallback,
     replaceExisting,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
@@ -1118,13 +1414,30 @@ export const angledLineOfYLength: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
     const newLine = createCallback
-      ? createCallback(
-          [angle, yLength],
-          arrOrObjectRawValuesHelper([
-            [angle, 'angle', 'angle'],
-            [yLength, 'yRelative', 'length'],
-          ])
-        ).callExp
+      ? createCallback([
+          {
+            varExpression: angle,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 0,
+              key: 'angle',
+              argType: 'angle',
+              value: angle,
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: yLength,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 1,
+              key: 'length',
+              argType: 'yRelative',
+              value: yLength,
+              argIndex: 0,
+            },
+          },
+        ]).callExp
       : createCallExpression('angledLineOfYLength', [
           createArrayExpression([angle, yLength]),
           createPipeSubstitution(),
@@ -1140,7 +1453,9 @@ export const angledLineOfYLength: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -1185,12 +1500,13 @@ export const angledLineToX: SketchLineHelper = {
   add: ({
     node,
     pathToNode,
-    to,
-    from,
+    input,
     createCallback,
     replaceExisting,
     referencedSegment,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
@@ -1204,11 +1520,30 @@ export const angledLineToX: SketchLineHelper = {
     const xArg = createLiteral(roundOff(to[0], 2))
     if (replaceExisting && createCallback) {
       const { callExp, valueUsedInTransform } = createCallback(
-        [angle, xArg],
-        arrOrObjectRawValuesHelper([
-          [angle, 'angle', 'angle'],
-          [xArg, 'xAbsolute', 'to'],
-        ]),
+        [
+          {
+            varExpression: angle,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 0,
+              key: 'angle',
+              argType: 'angle',
+              value: angle,
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: xArg,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 1,
+              key: 'to',
+              argType: 'xAbsolute',
+              value: xArg,
+              argIndex: 0,
+            },
+          },
+        ],
         referencedSegment
       )
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -1230,7 +1565,9 @@ export const angledLineToX: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -1273,12 +1610,13 @@ export const angledLineToY: SketchLineHelper = {
   add: ({
     node,
     pathToNode,
-    to,
-    from,
+    input,
     createCallback,
     replaceExisting,
     referencedSegment,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
@@ -1294,11 +1632,30 @@ export const angledLineToY: SketchLineHelper = {
 
     if (replaceExisting && createCallback) {
       const { callExp, valueUsedInTransform } = createCallback(
-        [angle, yArg],
-        arrOrObjectRawValuesHelper([
-          [angle, 'angle', 'angle'],
-          [yArg, 'yAbsolute', 'to'],
-        ]),
+        [
+          {
+            varExpression: angle,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 0,
+              key: 'angle',
+              argType: 'angle',
+              value: angle,
+              argIndex: 0,
+            },
+          },
+          {
+            varExpression: yArg,
+            varDetails: {
+              type: 'arrayOrObjItem',
+              index: 1,
+              key: 'to',
+              argType: 'yAbsolute',
+              value: yArg,
+              argIndex: 0,
+            },
+          },
+        ],
         referencedSegment
       )
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -1320,7 +1677,9 @@ export const angledLineToY: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -1363,12 +1722,13 @@ export const angledLineThatIntersects: SketchLineHelper = {
   add: ({
     node,
     pathToNode,
-    to,
-    from,
+    input,
     createCallback,
     replaceExisting,
     referencedSegment,
   }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
@@ -1396,23 +1756,28 @@ export const angledLineThatIntersects: SketchLineHelper = {
     )
 
     if (replaceExisting && createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback(
-        [angle, offset],
-        [
-          {
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          varExpression: angle,
+          varDetails: {
             type: 'objectProperty',
             key: 'angle',
-            value: angle,
             argType: 'angle',
+            value: angle,
+            argIndex: 0,
           },
-          {
+        },
+        {
+          varExpression: offset,
+          varDetails: {
             type: 'objectProperty',
             key: 'offset',
-            value: offset,
             argType: 'intersectionOffset',
+            value: offset,
+            argIndex: 0,
           },
-        ]
-      )
+        },
+      ])
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       pipe.body[callIndex] = callExp
       return {
@@ -1423,7 +1788,9 @@ export const angledLineThatIntersects: SketchLineHelper = {
     }
     return new Error('not implemented')
   },
-  updateArgs: ({ node, pathToNode, to, from, previousProgramMemory }) => {
+  updateArgs: ({ node, pathToNode, input, previousProgramMemory }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to, from } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -1559,8 +1926,10 @@ export const angledLineThatIntersects: SketchLineHelper = {
 export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
   node,
   pathToNode,
-  to,
+  input,
 }) => {
+  if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+  const { to } = input
   const _node = { ...node }
   const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
   if (err(nodeMeta)) {
@@ -1609,8 +1978,12 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
+  circle,
 } as const
 
+/**
+ * @deprecated Use {@link changeSketchArguments} instead
+ */
 export function changeCircleArguments(
   node: Program,
   programMemory: ProgramMemory,
@@ -1630,8 +2003,10 @@ export function changeCircleArguments(
       createLiteral(roundOff(center[1])),
     ])
     const newRadius = createLiteral(roundOff(radius))
-    callExpression.arguments[0] = newCenter
-    callExpression.arguments[1] = newRadius
+    callExpression.arguments[0] = createObjectExpression({
+      center: newCenter,
+      radius: newRadius,
+    })
     return {
       modifiedAst: _node,
       pathToNode: shallowPath,
@@ -1645,8 +2020,7 @@ export function changeSketchArguments(
   node: Program,
   programMemory: ProgramMemory,
   sourceRange: SourceRange,
-  args: [number, number],
-  from: [number, number]
+  input: SegmentInputs
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
@@ -1665,8 +2039,7 @@ export function changeSketchArguments(
       node: _node,
       previousProgramMemory: programMemory,
       pathToNode: shallowPath,
-      to: args,
-      from,
+      input,
     })
   }
 
@@ -1714,8 +2087,7 @@ export function compareVec2Epsilon2(
 interface CreateLineFnCallArgs {
   node: Program
   programMemory: ProgramMemory
-  to: [number, number]
-  from: [number, number]
+  input: SegmentInputs
   fnName: ToolTip
   pathToNode: PathToNode
   spliceBetween?: boolean
@@ -1724,10 +2096,9 @@ interface CreateLineFnCallArgs {
 export function addNewSketchLn({
   node: _node,
   programMemory: previousProgramMemory,
-  to,
   fnName,
   pathToNode,
-  from,
+  input,
   spliceBetween = false,
 }: CreateLineFnCallArgs):
   | {
@@ -1751,8 +2122,7 @@ export function addNewSketchLn({
     node,
     previousProgramMemory,
     pathToNode,
-    to,
-    from,
+    input,
     replaceExisting: false,
     spliceBetween,
   })
@@ -1814,8 +2184,7 @@ export function replaceSketchLine({
   programMemory,
   pathToNode: _pathToNode,
   fnName,
-  to,
-  from,
+  input,
   createCallback,
   referencedSegment,
 }: {
@@ -1823,8 +2192,7 @@ export function replaceSketchLine({
   programMemory: ProgramMemory
   pathToNode: PathToNode
   fnName: ToolTip
-  to: [number, number]
-  from: [number, number]
+  input: SegmentInputs
   createCallback: TransformCallback
   referencedSegment?: Path
 }):
@@ -1834,8 +2202,8 @@ export function replaceSketchLine({
       pathToNode: PathToNode
     }
   | Error {
-  if (![...toolTips, 'intersect'].includes(fnName)) {
-    return new Error('not a tooltip')
+  if (![...toolTips, 'intersect', 'circle'].includes(fnName)) {
+    return new Error(`The following function name  is not tooltip: ${fnName}`)
   }
   const _node = { ...node }
 
@@ -1845,8 +2213,7 @@ export function replaceSketchLine({
     previousProgramMemory: programMemory,
     pathToNode: _pathToNode,
     referencedSegment,
-    to,
-    from,
+    input,
     replaceExisting: true,
     createCallback,
   })
@@ -2023,6 +2390,32 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   }
 }
 
+const getCircle = (
+  callExp: CallExpression
+):
+  | {
+      val: [Expr, Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  const firstArg = callExp.arguments[0]
+  if (firstArg.type === 'ObjectExpression') {
+    const centerDetails = getObjExpProperty(firstArg, 'center')
+    const radiusDetails = getObjExpProperty(firstArg, 'radius')
+    const tag = callExp.arguments[2]
+    if (centerDetails?.exp?.type === 'ArrayExpression' && radiusDetails) {
+      return {
+        val: [
+          centerDetails?.exp.elements[0],
+          centerDetails?.exp.elements[1],
+          radiusDetails.exp,
+        ],
+        tag,
+      }
+    }
+  }
+  return new Error('expected ArrayExpression or ObjectExpression')
+}
 const getAngledLineThatIntersects = (
   callExp: CallExpression
 ):
@@ -2081,6 +2474,9 @@ export function getFirstArg(callExp: CallExpression):
   if (['tangentialArcTo'].includes(name)) {
     // TODO probably needs it's own implementation
     return getFirstArgValuesForXYFns(callExp)
+  }
+  if (name === 'circle') {
+    return getCircle(callExp)
   }
   return new Error('unexpected call expression: ' + name)
 }

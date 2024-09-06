@@ -89,6 +89,7 @@ import {
   createArrayExpression,
   createCallExpressionStdLib,
   createLiteral,
+  createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
   findUniqueName,
@@ -108,6 +109,7 @@ import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
+import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -665,8 +667,11 @@ export class SceneEntities {
     const mod = addNewSketchLn({
       node: _ast,
       programMemory: kclManager.programMemory,
-      to: [lastSeg.to[0], lastSeg.to[1]],
-      from: [lastSeg.to[0], lastSeg.to[1]],
+      input: {
+        type: 'straight-segment',
+        to: [lastSeg.to[0], lastSeg.to[1]],
+        from: [lastSeg.to[0], lastSeg.to[1]],
+      },
       fnName: segmentName,
       pathToNode: sketchPathToNode,
     })
@@ -736,8 +741,11 @@ export class SceneEntities {
           const tmp = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
-            to: [intersection2d.x, intersection2d.y],
-            from: [lastSegment.to[0], lastSegment.to[1]],
+            input: {
+              type: 'straight-segment',
+              to: [intersection2d.x, intersection2d.y],
+              from: [lastSegment.to[0], lastSegment.to[1]],
+            },
             fnName:
               lastSegment.type === 'TangentialArcTo'
                 ? 'tangentialArcTo'
@@ -962,11 +970,13 @@ export class SceneEntities {
     startSketchOn[0].init = createPipeExpression([
       startSketchOnInit,
       createCallExpressionStdLib('circle', [
-        createArrayExpression([
-          createLiteral(roundOff(circleCenter[0])),
-          createLiteral(roundOff(circleCenter[1])),
-        ]),
-        createLiteral(1),
+        createObjectExpression({
+          center: createArrayExpression([
+            createLiteral(roundOff(circleCenter[0])),
+            createLiteral(roundOff(circleCenter[1])),
+          ]),
+          radius: createLiteral(1),
+        }),
         createPipeSubstitution(),
       ]),
     ])
@@ -1147,8 +1157,11 @@ export class SceneEntities {
             const mod = addNewSketchLn({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
-              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-              from: [prevSegment.from[0], prevSegment.from[1]],
+              input: {
+                type: 'straight-segment',
+                to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
+                from: [prevSegment.from[0], prevSegment.from[1]],
+              },
               // TODO assuming it's always a straight segments being added
               // as this is easiest, and we'll need to add "tabbing" behavior
               // to support other segment types
@@ -1293,41 +1306,55 @@ export class SceneEntities {
       modded = updateStartProfileAtArgs({
         node: modifiedAst,
         pathToNode,
-        to: dragTo,
-        from,
+        input: {
+          type: 'straight-segment',
+          to: dragTo,
+          from,
+        },
         previousProgramMemory: kclManager.programMemory,
       })
     } else if (group.name === CIRCLE_SEGMENT && subGroup?.name === ARROWHEAD) {
       // is dragging the radius handle
-      modded = changeCircleArguments(
+
+      modded = changeSketchArguments(
         modifiedAst,
         kclManager.programMemory,
-        getNodePathFromSourceRange(modifiedAst, [node.start, node.end]),
-        group.userData.center,
-        Math.sqrt(
-          (group.userData.center[0] - dragTo[0]) ** 2 +
-            (group.userData.center[0] - dragTo[0]) ** 2
-        )
+        [node.start, node.end],
+        {
+          type: 'arc-segment',
+          from,
+          center: group.userData.center,
+          radius: Math.sqrt(
+            (group.userData.center[0] - dragTo[0]) ** 2 +
+              (group.userData.center[0] - dragTo[0]) ** 2
+          ),
+        }
       )
     } else if (
       group.name === CIRCLE_SEGMENT &&
       subGroup?.name === CIRCLE_CENTER_HANDLE
     ) {
-      // is dragging the center handle
-      modded = changeCircleArguments(
+      modded = changeSketchArguments(
         modifiedAst,
         kclManager.programMemory,
-        getNodePathFromSourceRange(modifiedAst, [node.start, node.end]),
-        dragTo,
-        group.userData.radius
+        [node.start, node.end],
+        {
+          type: 'arc-segment',
+          from,
+          center: dragTo,
+          radius: group.userData.radius,
+        }
       )
     } else {
       modded = changeSketchArguments(
         modifiedAst,
         kclManager.programMemory,
         [node.start, node.end],
-        dragTo,
-        from
+        {
+          type: 'straight-segment',
+          from,
+          to: dragTo,
+        }
       )
     }
     if (trap(modded)) return
@@ -1683,7 +1710,7 @@ export class SceneEntities {
         arrowGroup,
         group,
         isHandlesVisible,
-        from,
+        from: to,
         to: [center[0], center[1]],
         angle,
       })

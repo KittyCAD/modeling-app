@@ -43,6 +43,16 @@ export function getSketchSegmentFromSourceRange(
       index: number
     }
   | Error {
+  const lineIndex = sketchGroup.value.findIndex(
+    ({ __geoMeta: { sourceRange } }: Path) =>
+      sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
+  )
+  const line = sketchGroup.value[lineIndex]
+  if (line)
+    return {
+      segment: line,
+      index: lineIndex,
+    }
   const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
   if (
     startSourceRange &&
@@ -51,17 +61,7 @@ export function getSketchSegmentFromSourceRange(
     sketchGroup.start
   )
     return { segment: { ...sketchGroup.start, type: 'Base' }, index: -1 }
-
-  const lineIndex = sketchGroup.value.findIndex(
-    ({ __geoMeta: { sourceRange } }: Path) =>
-      sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
-  )
-  const line = sketchGroup.value[lineIndex]
-  if (!line) return new Error('could not find matching line')
-  return {
-    segment: line,
-    index: lineIndex,
-  }
+  return new Error('could not find matching segment')
 }
 
 export function isSketchVariablesLinked(
