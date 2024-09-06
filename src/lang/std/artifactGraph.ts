@@ -25,7 +25,7 @@ export interface PathArtifact {
   type: 'path'
   planeId: ArtifactId
   segIds: Array<ArtifactId>
-  extrusionId: ArtifactId
+  sweepId: ArtifactId
   solid2dId?: ArtifactId
   codeRef: CommonCommandProperties
 }
@@ -38,7 +38,7 @@ export interface PathArtifactRich {
   type: 'path'
   plane: PlaneArtifact | WallArtifact
   segments: Array<SegmentArtifact>
-  extrusion: SweepArtifact
+  sweep: SweepArtifact
   codeRef: CommonCommandProperties
 }
 
@@ -80,21 +80,22 @@ interface WallArtifact {
   type: 'wall'
   segId: ArtifactId
   edgeCutEdgeIds: Array<ArtifactId>
-  extrusionId: ArtifactId
+  sweepId: ArtifactId
   pathIds: Array<ArtifactId>
 }
 interface CapArtifact {
   type: 'cap'
   subType: 'start' | 'end'
   edgeCutEdgeIds: Array<ArtifactId>
-  extrusionId: ArtifactId
+  sweepId: ArtifactId
   pathIds: Array<ArtifactId>
 }
 
+// TODO KEVIN: ExtrudeEdge into SweepEdge?
 interface ExtrudeEdge {
   type: 'extrudeEdge'
   segId: ArtifactId
-  extrusionId: ArtifactId
+  sweepId: ArtifactId
   subType: 'opposite' | 'adjacent'
 }
 
@@ -259,7 +260,7 @@ export function getArtifactsToUpdate({
             type: 'wall',
             segId: existingPlane.segId,
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
-            extrusionId: existingPlane.extrusionId,
+            sweepId: existingPlane.sweepId,
             pathIds: existingPlane.pathIds,
           },
         },
@@ -276,7 +277,7 @@ export function getArtifactsToUpdate({
         type: 'path',
         segIds: [],
         planeId: currentPlaneId,
-        extrusionId: '',
+        sweepId: '',
         codeRef: { range, pathToNode },
       },
     })
@@ -296,7 +297,7 @@ export function getArtifactsToUpdate({
           type: 'wall',
           segId: plane.segId,
           edgeCutEdgeIds: plane.edgeCutEdgeIds,
-          extrusionId: plane.extrusionId,
+          sweepId: plane.sweepId,
           pathIds: [id],
         },
       })
@@ -356,7 +357,7 @@ export function getArtifactsToUpdate({
     if (path?.type === 'path')
       returnArr.push({
         id: cmd.target,
-        artifact: { ...path, extrusionId: id },
+        artifact: { ...path, sweepId: id },
       })
     return returnArr
   } else if (
@@ -379,7 +380,7 @@ export function getArtifactsToUpdate({
                 type: 'wall',
                 segId: curve_id,
                 edgeCutEdgeIds: [],
-                extrusionId: path.extrusionId,
+                sweepId: path.sweepId,
                 pathIds: [],
               },
             })
@@ -387,12 +388,12 @@ export function getArtifactsToUpdate({
               id: curve_id,
               artifact: { ...seg, surfaceId: face_id },
             })
-            const extrusion = getArtifact(path.extrusionId)
-            if (extrusion?.type === 'sweep') {
+            const sweep = getArtifact(path.sweepId)
+            if (sweep?.type === 'sweep') {
               returnArr.push({
-                id: path.extrusionId,
+                id: path.sweepId,
                 artifact: {
-                  ...extrusion,
+                  ...sweep,
                   surfaceIds: [face_id],
                 },
               })
@@ -411,17 +412,17 @@ export function getArtifactsToUpdate({
               type: 'cap',
               subType: cap === 'bottom' ? 'start' : 'end',
               edgeCutEdgeIds: [],
-              extrusionId: path.extrusionId,
+              sweepId: path.sweepId,
               pathIds: [],
             },
           })
           // TODO KEVIN:  rename extrusionId to sweepId?
-          const extrusion = getArtifact(path.extrusionId)
-          if (extrusion?.type !== 'sweep') return
+          const sweep = getArtifact(path.sweepId)
+          if (sweep?.type !== 'sweep') return
           returnArr.push({
-            id: path.extrusionId,
+            id: path.sweepId,
             artifact: {
-              ...extrusion,
+              ...sweep,
               surfaceIds: [face_id],
             },
           })
@@ -445,9 +446,9 @@ export function getArtifactsToUpdate({
     const wall = getArtifact(cmd.face_id)
     if (wall?.type !== 'wall') return returnArr
     // TODO KEVIN: Rename extrusion to sweep
-    const extrusion = getArtifact(wall.extrusionId)
-    if (extrusion?.type !== 'sweep') return returnArr
-    const path = getArtifact(extrusion.pathId)
+    const sweep = getArtifact(wall.sweepId)
+    if (sweep?.type !== 'sweep') return returnArr
+    const path = getArtifact(sweep.pathId)
     if (path?.type !== 'path') return returnArr
     const segment = getArtifact(cmd.edge_id)
     if (segment?.type !== 'segment') return returnArr
@@ -462,7 +463,7 @@ export function getArtifactsToUpdate({
               ? 'adjacent'
               : 'opposite',
           segId: cmd.edge_id,
-          extrusionId: path.extrusionId,
+          sweepId: path.sweepId,
         },
       },
       {
@@ -473,9 +474,9 @@ export function getArtifactsToUpdate({
         },
       },
       {
-        id: path.extrusionId,
+        id: path.sweepId,
         artifact: {
-          ...extrusion,
+          ...sweep,
           edgeIds: [response.data.modeling_response.data.edge],
         },
       },
@@ -589,9 +590,9 @@ export function expandPath(
     artifactGraph
   )
   // TODO KEVIN: rename
-  const extrusion = getArtifactOfTypes(
+  const sweep = getArtifactOfTypes(
     {
-      key: path.extrusionId,
+      key: path.sweepId,
       types: ['sweep'],
     },
     artifactGraph
@@ -600,31 +601,31 @@ export function expandPath(
     { key: path.planeId, types: ['plane', 'wall'] },
     artifactGraph
   )
-  if (err(extrusion)) return extrusion
+  if (err(sweep)) return sweep
   if (err(plane)) return plane
   return {
     type: 'path',
     segments: Array.from(segs.values()),
-    extrusion,
+    sweep,
     plane,
     codeRef: path.codeRef,
   }
 }
 
 export function expandExtrusion(
-  extrusion: SweepArtifact,
+  sweep: SweepArtifact,
   artifactGraph: ArtifactGraph
 ): SweepArtifactRich | Error {
   const surfs = getArtifactsOfTypes(
-    { keys: extrusion.surfaceIds, types: ['wall', 'cap'] },
+    { keys: sweep.surfaceIds, types: ['wall', 'cap'] },
     artifactGraph
   )
   const edges = getArtifactsOfTypes(
-    { keys: extrusion.edgeIds, types: ['extrudeEdge'] },
+    { keys: sweep.edgeIds, types: ['extrudeEdge'] },
     artifactGraph
   )
   const path = getArtifactOfTypes(
-    { key: extrusion.pathId, types: ['path'] },
+    { key: sweep.pathId, types: ['path'] },
     artifactGraph
   )
   if (err(path)) return path
@@ -634,7 +635,7 @@ export function expandExtrusion(
     surfaces: Array.from(surfs.values()),
     edges: Array.from(edges.values()),
     path,
-    codeRef: extrusion.codeRef,
+    codeRef: sweep.codeRef,
   }
 }
 
@@ -679,13 +680,13 @@ export function getCapCodeRef(
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
   // TODO KEVIN: Rename
-  const extrusion = getArtifactOfTypes(
-    { key: cap.extrusionId, types: ['sweep'] },
+  const sweep = getArtifactOfTypes(
+    { key: cap.sweepId, types: ['sweep'] },
     artifactGraph
   )
-  if (err(extrusion)) return extrusion
+  if (err(sweep)) return sweep
   const path = getArtifactOfTypes(
-    { key: extrusion.pathId, types: ['path'] },
+    { key: sweep.pathId, types: ['path'] },
     artifactGraph
   )
   if (err(path)) return path
@@ -739,7 +740,7 @@ export function getExtrusionFromSuspectedExtrudeSurface(
   if (err(artifact)) return artifact
   // TODO KEVIN: rename extrusion to sweep
   return getArtifactOfTypes(
-    { key: artifact.extrusionId, types: ['sweep'] },
+    { key: artifact.sweepId, types: ['sweep'] },
     artifactGraph
   )
 }
@@ -752,7 +753,7 @@ export function getExtrusionFromSuspectedPath(
   if (err(path)) return path
   // TODO KEVIN: rename extrusion to sweep
   return getArtifactOfTypes(
-    { key: path.extrusionId, types: ['sweep'] },
+    { key: path.sweepId, types: ['sweep'] },
     artifactGraph
   )
 }

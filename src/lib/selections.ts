@@ -575,7 +575,7 @@ function codeToIdSelections(
         ) {
           const extrusion = getArtifactOfTypes(
             {
-              key: entry.artifact.extrusionId,
+              key: entry.artifact.sweepId,
               // TODO KEVIN: extrusion to sweep
               types: ['sweep'],
             },
