@@ -109,7 +109,6 @@ import { getThemeColorForThreeJs } from 'lib/theme'
 import { err, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
-import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
