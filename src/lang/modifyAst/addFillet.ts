@@ -31,7 +31,7 @@ import {
   sketchLineHelperMap,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
-import { Selections, canFilletSelection } from 'lib/selections'
+import { Selections__old, canFilletSelection } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
   ArtifactGraph,
@@ -45,7 +45,7 @@ import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
 
 export function applyFilletToSelection(
   ast: Program,
-  selection: Selections,
+  selection: Selections__old,
   radius: KclCommandValue
 ): void | Error {
   // 1. clone ast
@@ -63,7 +63,7 @@ export function applyFilletToSelection(
 
 export function modifyAstWithFilletAndTag(
   ast: Program,
-  selection: Selections,
+  selection: Selections__old,
   radius: KclCommandValue
 ): { modifiedAst: Program; pathToFilletNode: Array<PathToNode> } | Error {
   const astResult = insertRadiusIntoAst(ast, radius)
@@ -130,7 +130,7 @@ function insertRadiusIntoAst(
 
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
-  selection: Selections,
+  selection: Selections__old,
   programMemory: ProgramMemory,
   artifactGraph: ArtifactGraph
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
@@ -447,7 +447,7 @@ export const hasValidFilletSelection = ({
   ast,
   code,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   ast: Program
   code: string
 }) => {

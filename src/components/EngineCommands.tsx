@@ -21,6 +21,7 @@ export const EngineCommands = () => {
   const [engineCommands, clearEngineCommands] = useEngineCommands()
   const [containsFilter, setContainsFilter] = useState('')
   const [customCmd, setCustomCmd] = useState('')
+  console.log(JSON.stringify(engineCommands, null, 2))
   return (
     <div>
       <input
@@ -64,7 +65,10 @@ export const EngineCommands = () => {
           )
         })}
       </div>
-      <button data-testid="clear-commands" onClick={clearEngineCommands}>
+      <button
+        data-testid="clear-commands"
+        onClick={() => clearEngineCommands()}
+      >
         Clear
       </button>
       <br />

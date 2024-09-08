@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { Program, ProgramMemory, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -15,7 +15,7 @@ import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 
 export function horzVertInfo(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   horOrVert: 'vertical' | 'horizontal'
 ):
   | {
@@ -53,7 +53,7 @@ export function horzVertInfo(
 }
 
 export function applyConstraintHorzVert(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   horOrVert: 'vertical' | 'horizontal',
   ast: Program,
   programMemory: ProgramMemory

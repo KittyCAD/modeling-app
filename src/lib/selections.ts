@@ -28,6 +28,7 @@ import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 import { PathToNodeMap } from 'lang/std/sketchcombos'
 import { err } from 'lib/trap'
 import {
+  Artifact,
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
@@ -41,7 +42,8 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
-export type Selection = {
+/** @deprecated Use {@link Artifact} instead. */
+export type Selection__old = {
   type:
     | 'default'
     | 'line-end'
@@ -58,9 +60,29 @@ export type Selection = {
     | 'all'
   range: SourceRange
 }
+/** @deprecated Use {@link Selection} instead. */
+export type Selections__old = {
+  otherSelections: Axis[]
+  codeBasedSelections: Selection__old[]
+}
 export type Selections = {
   otherSelections: Axis[]
-  codeBasedSelections: Selection[]
+  graphSelections: Artifact[]
+}
+
+/** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
+ * this function should only be used for backwards compatibility with old functions.
+ */
+export function convertSelectionToOld(selection: Selection__old): Artifact {
+  return {} as Artifact
+  // TODO implementation
+}
+/** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
+ * this function should only be used for backwards compatibility with old functions.
+ */
+export function convertSelectionsToOld(selection: Selections__old): Selections {
+  // TODO implementation
+  return { otherSelections: [], graphSelections: [] }
 }
 
 export async function getEventForSelectWithPoint({
@@ -211,7 +233,7 @@ export function getEventForSegmentSelection(
 export function handleSelectionBatch({
   selections,
 }: {
-  selections: Selections
+  selections: Selections__old
 }): {
   engineEvents: Models['WebSocketRequest_type'][]
   codeMirrorSelection: EditorSelection
@@ -252,7 +274,7 @@ export function handleSelectionBatch({
   }
 }
 
-type SelectionToEngine = { type: Selection['type']; id: string }
+type SelectionToEngine = { type: Selection__old['type']; id: string }
 
 export function processCodeMirrorRanges({
   codeMirrorRanges,
@@ -260,7 +282,7 @@ export function processCodeMirrorRanges({
   isShiftDown,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   isShiftDown: boolean
 }): null | {
   modelingEvent: ModelingMachineEvent
@@ -276,7 +298,7 @@ export function processCodeMirrorRanges({
     })
 
   if (!isChange) return null
-  const codeBasedSelections: Selections['codeBasedSelections'] =
+  const codeBasedSelections: Selections__old['codeBasedSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
       return {
         type: 'default',
@@ -303,7 +325,7 @@ export function processCodeMirrorRanges({
   }
 }
 
-function updateSceneObjectColors(codeBasedSelections: Selection[]) {
+function updateSceneObjectColors(codeBasedSelections: Selection__old[]) {
   const updated = kclManager.ast
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
@@ -358,7 +380,7 @@ function resetAndSetEngineEntitySelectionCmds(
   ]
 }
 
-export function isSketchPipe(selectionRanges: Selections) {
+export function isSketchPipe(selectionRanges: Selections__old) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactGraph,
@@ -367,14 +389,14 @@ export function isSketchPipe(selectionRanges: Selections) {
 }
 
 export function isSelectionLastLine(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   code: string,
   i = 0
 ) {
   return selectionRanges.codeBasedSelections[i].range[1] === code.length
 }
 
-export function isRangeBetweenCharacters(selectionRanges: Selections) {
+export function isRangeBetweenCharacters(selectionRanges: Selections__old) {
   return (
     selectionRanges.codeBasedSelections.length === 1 &&
     selectionRanges.codeBasedSelections[0].range[0] === 0 &&
@@ -383,11 +405,14 @@ export function isRangeBetweenCharacters(selectionRanges: Selections) {
 }
 
 export type CommonASTNode = {
-  selection: Selection
+  selection: Selection__old
   ast: Program
 }
 
-function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
+function buildCommonNodeFromSelection(
+  selectionRanges: Selections__old,
+  i: number
+) {
   return {
     selection: selectionRanges.codeBasedSelections[i],
     ast: kclManager.ast,
@@ -420,7 +445,7 @@ function nodeHasCircle(node: CommonASTNode) {
   })
 }
 
-export function canSweepSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections__old) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
@@ -433,7 +458,7 @@ export function canSweepSelection(selection: Selections) {
   )
 }
 
-export function canFilletSelection(selection: Selections) {
+export function canFilletSelection(selection: Selections__old) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   ) // TODO FILLET DUMMY PLACEHOLDER
@@ -444,7 +469,7 @@ export function canFilletSelection(selection: Selections) {
   )
 }
 
-function canExtrudeSelectionItem(selection: Selections, i: number) {
+function canExtrudeSelectionItem(selection: Selections__old, i: number) {
   const isolatedSelection = {
     ...selection,
     codeBasedSelections: [selection.codeBasedSelections[i]],
@@ -459,7 +484,7 @@ function canExtrudeSelectionItem(selection: Selections, i: number) {
 }
 
 // This accounts for non-geometry selections under "other"
-export type ResolvedSelectionType = [Selection['type'] | 'other', number]
+export type ResolvedSelectionType = [Selection__old['type'] | 'other', number]
 
 /**
  * In the future, I'd like this function to properly return the type of each selected entity based on
@@ -469,7 +494,7 @@ export type ResolvedSelectionType = [Selection['type'] | 'other', number]
  * @returns
  */
 export function getSelectionType(
-  selection?: Selections
+  selection?: Selections__old
 ): ResolvedSelectionType[] {
   if (!selection) return []
   const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
@@ -486,7 +511,7 @@ export function getSelectionType(
 }
 
 export function getSelectionTypeDisplayText(
-  selection?: Selections
+  selection?: Selections__old
 ): string | null {
   const selectionsByType = getSelectionType(selection)
 
@@ -518,7 +543,7 @@ export function canSubmitSelectionArg(
 }
 
 function codeToIdSelections(
-  codeBasedSelections: Selection[]
+  codeBasedSelections: Selection__old[]
 ): SelectionToEngine[] {
   return codeBasedSelections
     .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
@@ -684,13 +709,13 @@ export async function sendSelectEventToEngine(
 
 export function updateSelections(
   pathToNodeMap: PathToNodeMap,
-  prevSelectionRanges: Selections,
+  prevSelectionRanges: Selections__old,
   ast: Program | Error
-): Selections | Error {
+): Selections__old | Error {
   if (err(ast)) return ast
 
   const newSelections = Object.entries(pathToNodeMap)
-    .map(([index, pathToNode]): Selection | undefined => {
+    .map(([index, pathToNode]): Selection__old | undefined => {
       const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
@@ -699,7 +724,7 @@ export function updateSelections(
         type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
       }
     })
-    .filter((x?: Selection) => x !== undefined) as Selection[]
+    .filter((x?: Selection__old) => x !== undefined) as Selection__old[]
 
   return {
     codeBasedSelections:

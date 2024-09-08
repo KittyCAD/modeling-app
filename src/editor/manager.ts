@@ -2,7 +2,11 @@ import { EditorView, ViewUpdate } from '@codemirror/view'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
 import { engineCommandManager } from 'lib/singletons'
 import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
-import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
+import {
+  Selections__old,
+  Selection__old,
+  processCodeMirrorRanges,
+} from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
@@ -31,7 +35,7 @@ export default class EditorManager {
   private _copilotEnabled: boolean = true
 
   private _isShiftDown: boolean = false
-  private _selectionRanges: Selections = {
+  private _selectionRanges: Selections__old = {
     otherSelections: [],
     codeBasedSelections: [],
   }
@@ -73,7 +77,7 @@ export default class EditorManager {
     this._isShiftDown = isShiftDown
   }
 
-  set selectionRanges(selectionRanges: Selections) {
+  set selectionRanges(selectionRanges: Selections__old) {
     this._selectionRanges = selectionRanges
   }
 
@@ -97,7 +101,7 @@ export default class EditorManager {
     return this._highlightRange
   }
 
-  setHighlightRange(selections: Array<Selection['range']>): void {
+  setHighlightRange(selections: Array<Selection__old['range']>): void {
     this._highlightRange = selections
 
     const selectionsWithSafeEnds = selections.map((s): [number, number] => {
@@ -203,7 +207,7 @@ export default class EditorManager {
     return false
   }
 
-  selectRange(selections: Selections) {
+  selectRange(selections: Selections__old) {
     if (selections.codeBasedSelections.length === 0) {
       return
     }

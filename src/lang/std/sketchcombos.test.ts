@@ -9,7 +9,7 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
@@ -87,8 +87,8 @@ function getConstraintTypeFromSourceHelper2(
 }
 
 function makeSelections(
-  codeBaseSelections: Selections['codeBasedSelections']
-): Selections {
+  codeBaseSelections: Selections__old['codeBasedSelections']
+): Selections__old {
   return {
     codeBasedSelections: codeBaseSelections,
     otherSelections: [],
@@ -208,7 +208,7 @@ const part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
       .map((ln) => {
@@ -299,7 +299,7 @@ const part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
       .map((ln) => {
@@ -361,7 +361,7 @@ const part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
       .map((ln) => {
@@ -434,7 +434,7 @@ const part001 = startSketchOn('XY')
        segEndY(seg01) + 2.93
      ], %) // xRelative`)
     })
-    it('testing for yRelative to horizontal distance', async () => {
+    it.only('testing for yRelative to horizontal distance', async () => {
       const expectedCode = await helperThing(
         inputScript,
         ['// base selection', '// yRelative'],
@@ -456,7 +456,7 @@ async function helperThing(
   const ast = parse(inputScript)
   if (err(ast)) return Promise.reject(ast)
 
-  const selectionRanges: Selections['codeBasedSelections'] = inputScript
+  const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
       linesOfInterest.some((lineOfInterest) => ln.includes(lineOfInterest))

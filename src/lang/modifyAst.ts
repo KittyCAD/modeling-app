@@ -1,5 +1,5 @@
-import { Selection } from 'lib/selections'
 import { err, reportRejection, trap } from 'lib/trap'
+import { Selection__old } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -762,7 +762,7 @@ export function createBinaryExpressionWithUnary([left, right]: [
 
 export function giveSketchFnCallTag(
   ast: Program,
-  range: Selection['range'],
+  range: Selection__old['range'],
   tag?: string
 ):
   | {
@@ -836,7 +836,7 @@ export function moveValueIntoNewVariablePath(
 export function moveValueIntoNewVariable(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: Selection__old['range'],
   variableName: string
 ): {
   modifiedAst: Program
@@ -955,7 +955,7 @@ export function removeSingleConstraintInfo(
 
 export async function deleteFromSelection(
   ast: Program,
-  selection: Selection,
+  selection: Selection__old,
   programMemory: ProgramMemory,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)

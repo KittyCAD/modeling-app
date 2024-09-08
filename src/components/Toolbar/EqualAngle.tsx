@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -18,7 +18,7 @@ import { TransformInfo } from 'lang/std/stdTypes'
 export function equalAngleInfo({
   selectionRanges,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 }):
   | {
       transforms: TransformInfo[]
@@ -82,7 +82,7 @@ export function equalAngleInfo({
 export function applyConstraintEqualAngle({
   selectionRanges,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 }):
   | {
       modifiedAst: Program
