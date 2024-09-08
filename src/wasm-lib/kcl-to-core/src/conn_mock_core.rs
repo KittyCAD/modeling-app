@@ -310,7 +310,6 @@ fn generate_repl_uuids(count: usize) -> Vec<uuid::Uuid> {
     repl_ids
 }
 
-#[allow(clippy::needless_range_loop)]
 fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> String {
     let mut codegen = String::new();
 
