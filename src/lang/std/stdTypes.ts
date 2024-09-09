@@ -137,7 +137,7 @@ type _VarValue<T> =
  * Which is why a union type is used that can be type narrowed using the {@link RawArg.type} property
  * {@link RawArg.expr} is common to all of these types
  */
-type InputArg = _VarValue<Expr>
+export type InputArg = _VarValue<Expr>
 
 /**
  * {@link RawArg.expr} is the literal equivalent of whatever current expression is
@@ -147,7 +147,7 @@ type InputArg = _VarValue<Expr>
  */
 type RawArg = _VarValue<Literal>
 
-type InputArgs = Array<InputArg>
+export type InputArgs = Array<InputArg>
 
 // /**
 //  * The literal equivalent of whatever current expression is
@@ -174,13 +174,8 @@ export type SimplifiedArgDetails =
       index: 0 | 1
     }
 
-export interface SegmentInput {
-  varExpression: Expr
-  varDetails: InputArg
-}
-
 export type TransformCallback = (
-  inputs: SegmentInput[],
+  inputs: InputArgs,
   referencedSegment?: Path
 ) => {
   callExp: Expr

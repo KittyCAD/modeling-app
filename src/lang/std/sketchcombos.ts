@@ -1,5 +1,6 @@
 import {
-  SegmentInput,
+  InputArg,
+  InputArgs,
   SimplifiedArgDetails,
   TransformCallback,
 } from './stdTypes'
@@ -161,7 +162,7 @@ function intersectCallWrapper({
 export type TransformInfo = {
   tooltip: ToolTip
   createNode: (a: {
-    inputs: SegmentInput[]
+    inputs: InputArgs
     referenceSegName: string
     tag?: Expr
     forceValueUsedInTransform?: Expr
@@ -188,13 +189,8 @@ const xyLineSetLength =
       ? forceValueUsedInTransform
       : referenceSeg
       ? segRef
-      : args[0].varExpression
-    return createCallWrapper(
-      xOrY,
-      lineVal,
-      tag,
-      getArgLiteralVal(args[0].varExpression)
-    )
+      : args[0].expr
+    return createCallWrapper(xOrY, lineVal, tag, getArgLiteralVal(args[0].expr))
   }
 
 const basicAngledLineCreateNode =
@@ -203,27 +199,25 @@ const basicAngledLineCreateNode =
     valToForce: 'ang' | 'len' | 'none' = 'none',
     varValToUse: 'ang' | 'len' | 'none' = 'none'
   ): TransformInfo['createNode'] =>
-  (
-    { referenceSegName, tag, forceValueUsedInTransform, inputs } //, varValA, varValB }) =>
-  ) =>
+  ({ referenceSegName, tag, forceValueUsedInTransform, inputs }) =>
   (args, path) => {
     const refAng = path ? getAngle(path?.from, path?.to) : 0
     const nonForcedAng =
       varValToUse === 'ang'
-        ? inputs[0].varExpression
+        ? inputs[0].expr
         : referenceSeg === 'ang'
         ? getClosesAngleDirection(
-            args[0].varExpression,
+            args[0].expr,
             refAng,
             createSegAngle(referenceSegName) as BinaryPart
           )
-        : args[0].varExpression
+        : args[0].expr
     const nonForcedLen =
       varValToUse === 'len'
-        ? inputs[1].varExpression
+        ? inputs[1].expr
         : referenceSeg === 'len'
         ? createSegLen(referenceSegName)
-        : args[1].varExpression
+        : args[1].expr
     const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
     const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
     return createCallWrapper(
@@ -233,9 +227,7 @@ const basicAngledLineCreateNode =
         shouldForceLen ? forceValueUsedInTransform : nonForcedLen,
       ],
       tag,
-      getArgLiteralVal(
-        valToForce === 'ang' ? args[0].varExpression : args[1].varExpression
-      )
+      getArgLiteralVal(valToForce === 'ang' ? args[0].expr : args[1].expr)
     )
   }
 const angledLineAngleCreateNode: TransformInfo['createNode'] =
@@ -243,7 +235,7 @@ const angledLineAngleCreateNode: TransformInfo['createNode'] =
   () =>
     createCallWrapper(
       'angledLine',
-      [inputs[0].varExpression, createSegLen(referenceSegName)],
+      [inputs[0].expr, createSegLen(referenceSegName)],
       tag
     )
 
@@ -317,7 +309,7 @@ const setHorzVertDistanceCreateNode =
   ({ referenceSegName, tag, forceValueUsedInTransform }) => {
     return (args, referencedSegment) => {
       const valueUsedInTransform = roundOff(
-        getArgLiteralVal(args?.[index].varExpression) -
+        getArgLiteralVal(args?.[index].expr) -
           (referencedSegment?.to?.[index] || 0),
         2
       )
@@ -331,9 +323,7 @@ const setHorzVertDistanceCreateNode =
       }
       return createCallWrapper(
         'lineTo',
-        !index
-          ? [finalValue, args[1].varExpression]
-          : [args[0].varExpression, finalValue],
+        !index ? [finalValue, args[1].expr] : [args[0].expr, finalValue],
         tag,
         valueUsedInTransform
       )
@@ -347,7 +337,7 @@ const setHorzVertDistanceForAngleLineCreateNode =
   ({ referenceSegName, tag, forceValueUsedInTransform, inputs }) => {
     return (args, referencedSegment) => {
       const valueUsedInTransform = roundOff(
-        getArgLiteralVal(args?.[1].varExpression) -
+        getArgLiteralVal(args?.[1].expr) -
           (referencedSegment?.to?.[index] || 0),
         2
       )
@@ -358,7 +348,7 @@ const setHorzVertDistanceForAngleLineCreateNode =
       ])
       return createCallWrapper(
         xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
-        [inputs[0].varExpression, binExp],
+        [inputs[0].expr, binExp],
         tag,
         valueUsedInTransform
       )
@@ -374,7 +364,7 @@ const setAbsDistanceCreateNode =
   ({ tag, forceValueUsedInTransform }) =>
   (args) => {
     const valueUsedInTransform = roundOff(
-      getArgLiteralVal(args?.[index].varExpression),
+      getArgLiteralVal(args?.[index].expr),
       2
     )
     const val =
@@ -390,7 +380,7 @@ const setAbsDistanceCreateNode =
     }
     return createCallWrapper(
       'lineTo',
-      !index ? [val, args[1].varExpression] : [args[0].varExpression, val],
+      !index ? [val, args[1].expr] : [args[0].expr, val],
       tag,
       valueUsedInTransform
     )
@@ -399,16 +389,13 @@ const setAbsDistanceForAngleLineCreateNode =
   (xOrY: 'x' | 'y'): TransformInfo['createNode'] =>
   ({ tag, forceValueUsedInTransform, inputs }) => {
     return (args) => {
-      const valueUsedInTransform = roundOff(
-        getArgLiteralVal(args?.[1].varExpression),
-        2
-      )
+      const valueUsedInTransform = roundOff(getArgLiteralVal(args?.[1].expr), 2)
       const val =
         (forceValueUsedInTransform as BinaryPart) ||
         createLiteral(valueUsedInTransform)
       return createCallWrapper(
         xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
-        [inputs[0].varExpression, val],
+        [inputs[0].expr, val],
         tag,
         valueUsedInTransform
       )
@@ -421,7 +408,7 @@ const setHorVertDistanceForXYLines =
     return (args, referencedSegment) => {
       const index = xOrY === 'x' ? 0 : 1
       const valueUsedInTransform = roundOff(
-        getArgLiteralVal(args?.[index].varExpression) -
+        getArgLiteralVal(args?.[index].expr) -
           (referencedSegment?.to?.[index] || 0),
         2
       )
@@ -442,7 +429,7 @@ const setHorVertDistanceForXYLines =
 const setHorzVertDistanceConstraintLineCreateNode =
   (isX: boolean): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, inputs }) => {
-    let varVal = isX ? inputs[1].varExpression : inputs[0].varExpression
+    let varVal = isX ? inputs[1].expr : inputs[0].expr
     varVal = isExprBinaryPart(varVal) ? varVal : createLiteral(0)
     const varValBinExp = createBinaryExpressionWithUnary([
       createLastSeg(!isX),
@@ -451,7 +438,7 @@ const setHorzVertDistanceConstraintLineCreateNode =
 
     return (args, referencedSegment) => {
       const makeBinExp = (index: 0 | 1) => {
-        const arg = getArgLiteralVal(args?.[index].varExpression)
+        const arg = getArgLiteralVal(args?.[index].expr)
         return createBinaryExpressionWithUnary([
           createSegEnd(referenceSegName, isX),
           createLiteral(
@@ -471,15 +458,11 @@ const setAngledIntersectLineForLines: TransformInfo['createNode'] =
   ({ referenceSegName, tag, forceValueUsedInTransform }) =>
   (args) => {
     const valueUsedInTransform = roundOff(
-      args[1].varExpression.type === 'Literal'
-        ? Number(args[1].varExpression.value)
-        : 0,
+      args[1].expr.type === 'Literal' ? Number(args[1].expr.value) : 0,
       2
     )
     const angle =
-      args[0].varExpression.type === 'Literal'
-        ? Number(args[0].varExpression.value)
-        : 0
+      args[0].expr.type === 'Literal' ? Number(args[0].expr.value) : 0
     const varNamMap: { [key: number]: string } = {
       0: 'ZERO',
       90: 'QUARTER_TURN',
@@ -504,14 +487,12 @@ const setAngledIntersectForAngledLines: TransformInfo['createNode'] =
   ({ referenceSegName, tag, forceValueUsedInTransform, inputs }) =>
   (args) => {
     const valueUsedInTransform = roundOff(
-      args[1].varExpression.type === 'Literal'
-        ? Number(args[1].varExpression.value)
-        : 0,
+      args[1].expr.type === 'Literal' ? Number(args[1].expr.value) : 0,
       2
     )
     return intersectCallWrapper({
       fnName: 'angledLineThatIntersects',
-      angleVal: inputs[0].varExpression,
+      angleVal: inputs[0].expr,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
       intersectTag: createIdentifier(referenceSegName),
@@ -529,9 +510,8 @@ const setAngleBetweenCreateNode =
         : 0
       let valueUsedInTransform = roundOff(
         normaliseAngle(
-          (args[0].varExpression.type === 'Literal'
-            ? Number(args[0].varExpression.value)
-            : 0) - refAngle
+          (args[0].expr.type === 'Literal' ? Number(args[0].expr.value) : 0) -
+            refAngle
         )
       )
       let firstHalfValue = createSegAngle(referenceSegName) as BinaryPart
@@ -555,10 +535,10 @@ const setAngleBetweenCreateNode =
           ? 'angledLineToX'
           : 'angledLineToY',
         tranformToType === 'none'
-          ? [binExp, args[1].varExpression]
+          ? [binExp, args[1].expr]
           : tranformToType === 'xAbs'
-          ? [binExp, inputs[0].varExpression]
-          : [binExp, inputs[1].varExpression],
+          ? [binExp, inputs[0].expr]
+          : [binExp, inputs[1].expr],
         tag,
         valueUsedInTransform
       )
@@ -573,12 +553,12 @@ const transformMap: TransformMap = {
         createNode: ({ referenceSegName, inputs, tag }) => {
           const [minVal, legLenVal] = getMinAndSegLenVals(
             referenceSegName,
-            inputs[0].varExpression
+            inputs[0].expr
           )
           return (args) =>
             createCallWrapper(
               'line',
-              [minVal, getSignedLeg(args[1].varExpression, legLenVal)],
+              [minVal, getSignedLeg(args[1].expr, legLenVal)],
               tag
             )
         },
@@ -588,7 +568,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           () =>
-            createCallWrapper('xLine', inputs[0].varExpression, tag),
+            createCallWrapper('xLine', inputs[0].expr, tag),
       },
       setVertDistance: {
         tooltip: 'lineTo',
@@ -601,12 +581,12 @@ const transformMap: TransformMap = {
         createNode: ({ referenceSegName, inputs, tag }) => {
           const [minVal, legLenVal] = getMinAndSegLenVals(
             referenceSegName,
-            inputs[1].varExpression
+            inputs[1].expr
           )
           return (args) =>
             createCallWrapper(
               'line',
-              [getSignedLeg(args[0].varExpression, legLenVal), minVal],
+              [getSignedLeg(args[0].expr, legLenVal), minVal],
               tag
             )
         },
@@ -616,7 +596,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           () =>
-            createCallWrapper('yLine', inputs[1].varExpression, tag),
+            createCallWrapper('yLine', inputs[1].expr, tag),
       },
       setHorzDistance: {
         tooltip: 'lineTo',
@@ -633,7 +613,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('xLine', args[0].varExpression, tag),
+            createCallWrapper('xLine', args[0].expr, tag),
       },
       vertical: {
         tooltip: 'yLine',
@@ -642,7 +622,7 @@ const transformMap: TransformMap = {
           (args) =>
             createCallWrapper(
               'yLine',
-              getInputOfType(args, 'yRelative').varExpression,
+              getInputOfType(args, 'yRelative').expr,
               tag
             ),
       },
@@ -695,7 +675,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('xLineTo', args[0].varExpression, tag),
+            createCallWrapper('xLineTo', args[0].expr, tag),
       },
       vertical: {
         tooltip: 'yLineTo',
@@ -704,7 +684,7 @@ const transformMap: TransformMap = {
           (args) =>
             createCallWrapper(
               'yLineTo',
-              getInputOfType(args, 'yAbsolute').varExpression,
+              getInputOfType(args, 'yAbsolute').expr,
               tag
             ),
       },
@@ -719,18 +699,15 @@ const transformMap: TransformMap = {
               'angleToMatchLengthX',
               [
                 createIdentifier(referenceSegName),
-                inputs[0].varExpression,
+                inputs[0].expr,
                 createPipeSubstitution(),
               ]
             )
             return createCallWrapper(
               'angledLineToX',
               [
-                getAngleLengthSign(
-                  args[0].varExpression,
-                  angleToMatchLengthXCall
-                ),
-                inputs[0].varExpression,
+                getAngleLengthSign(args[0].expr, angleToMatchLengthXCall),
+                inputs[0].expr,
               ],
               tag
             )
@@ -741,7 +718,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           () =>
-            createCallWrapper('xLineTo', inputs[0].varExpression, tag),
+            createCallWrapper('xLineTo', inputs[0].expr, tag),
       },
       setAngleBetween: {
         tooltip: 'angledLineToX',
@@ -758,18 +735,15 @@ const transformMap: TransformMap = {
               'angleToMatchLengthY',
               [
                 createIdentifier(referenceSegName),
-                inputs[1].varExpression,
+                inputs[1].expr,
                 createPipeSubstitution(),
               ]
             )
             return createCallWrapper(
               'angledLineToY',
               [
-                getAngleLengthSign(
-                  args[0].varExpression,
-                  angleToMatchLengthYCall
-                ),
-                inputs[1].varExpression,
+                getAngleLengthSign(args[0].expr, angleToMatchLengthYCall),
+                inputs[1].expr,
               ],
               tag
             )
@@ -780,7 +754,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           () =>
-            createCallWrapper('yLineTo', inputs[1].varExpression, tag),
+            createCallWrapper('yLineTo', inputs[1].expr, tag),
       },
       setAngle: {
         tooltip: 'angledLineToY',
@@ -789,12 +763,9 @@ const transformMap: TransformMap = {
           (args) => {
             return createCallWrapper(
               'angledLineToY',
-              [
-                forceValueUsedInTransform || args[0].varExpression,
-                inputs[1].varExpression,
-              ],
+              [forceValueUsedInTransform || args[0].expr, inputs[1].expr],
               tag,
-              getArgLiteralVal(args[0].varExpression)
+              getArgLiteralVal(args[0].expr)
             )
           },
       },
@@ -813,7 +784,7 @@ const transformMap: TransformMap = {
           () =>
             createCallWrapper(
               'angledLine',
-              [inputs[0].varExpression, createSegLen(referenceSegName)],
+              [inputs[0].expr, createSegLen(referenceSegName)],
               tag
             ),
       },
@@ -858,7 +829,7 @@ const transformMap: TransformMap = {
           (args) =>
             createCallWrapper(
               'yLine',
-              getInputOfType(args, 'yRelative').varExpression,
+              getInputOfType(args, 'yRelative').expr,
               tag
             ),
       },
@@ -867,7 +838,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('xLine', args[0].varExpression, tag),
+            createCallWrapper('xLine', args[0].expr, tag),
       },
     },
     length: {
@@ -876,13 +847,8 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           ([arg0]) => {
-            const expr = inputs[1].varExpression
-            if (
-              !(
-                arg0.varExpression.type === 'Literal' &&
-                Number(arg0.varExpression.value) < 0
-              )
-            )
+            const expr = inputs[1].expr
+            if (!(arg0.expr.type === 'Literal' && Number(arg0.expr.value) < 0))
               return createCallWrapper('yLine', expr, tag)
             if (isExprBinaryPart(expr))
               return createCallWrapper(
@@ -899,13 +865,8 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           ([arg0]) => {
-            const expr = inputs[1].varExpression
-            if (
-              !(
-                arg0.varExpression.type === 'Literal' &&
-                Number(arg0.varExpression.value) < 0
-              )
-            )
+            const expr = inputs[1].expr
+            if (!(arg0.expr.type === 'Literal' && Number(arg0.expr.value) < 0))
               return createCallWrapper('xLine', expr, tag)
             if (isExprBinaryPart(expr))
               return createCallWrapper(
@@ -938,7 +899,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('xLine', args[0].varExpression, tag),
+            createCallWrapper('xLine', args[0].expr, tag),
       },
     },
     angle: {
@@ -953,12 +914,12 @@ const transformMap: TransformMap = {
         createNode: ({ referenceSegName, inputs, tag }) => {
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
-            getInputOfType(inputs, 'xRelative').varExpression
+            getInputOfType(inputs, 'xRelative').expr
           )
           return (args) =>
             createCallWrapper(
               'angledLineOfXLength',
-              [getLegAng(args[0].varExpression, legAngle), minVal],
+              [getLegAng(args[0].expr, legAngle), minVal],
               tag
             )
         },
@@ -968,13 +929,8 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           ([arg0]) => {
-            const expr = inputs[1].varExpression
-            if (
-              !(
-                arg0.varExpression.type === 'Literal' &&
-                Number(arg0.varExpression.value) < 0
-              )
-            )
+            const expr = inputs[1].expr
+            if (!(arg0.expr.type === 'Literal' && Number(arg0.expr.value) < 0))
               return createCallWrapper('xLine', expr, tag)
             if (isExprBinaryPart(expr))
               return createCallWrapper(
@@ -1001,7 +957,7 @@ const transformMap: TransformMap = {
           (args) =>
             createCallWrapper(
               'yLine',
-              getInputOfType(args, 'yRelative').varExpression,
+              getInputOfType(args, 'yRelative').expr,
               tag
             ),
       },
@@ -1018,13 +974,13 @@ const transformMap: TransformMap = {
         createNode: ({ referenceSegName, inputs, tag }) => {
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
-            inputs[1].varExpression,
+            inputs[1].expr,
             'legAngY'
           )
           return (args) =>
             createCallWrapper(
               'angledLineOfXLength',
-              [getLegAng(args[0].varExpression, legAngle), minVal],
+              [getLegAng(args[0].expr, legAngle), minVal],
               tag
             )
         },
@@ -1034,13 +990,8 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           ([arg0]) => {
-            const expr = inputs[1].varExpression
-            if (
-              !(
-                arg0.varExpression.type === 'Literal' &&
-                Number(arg0.varExpression.value) < 0
-              )
-            )
+            const expr = inputs[1].expr
+            if (!(arg0.expr.type === 'Literal' && Number(arg0.expr.value) < 0))
               return createCallWrapper('yLine', expr, tag)
             if (isExprBinaryPart(expr))
               return createCallWrapper(
@@ -1065,7 +1016,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('xLineTo', args[0].varExpression, tag),
+            createCallWrapper('xLineTo', args[0].expr, tag),
       },
     },
     angle: {
@@ -1084,18 +1035,15 @@ const transformMap: TransformMap = {
               'angleToMatchLengthX',
               [
                 createIdentifier(referenceSegName),
-                inputs[1].varExpression,
+                inputs[1].expr,
                 createPipeSubstitution(),
               ]
             )
             return createCallWrapper(
               'angledLineToX',
               [
-                getAngleLengthSign(
-                  args[0].varExpression,
-                  angleToMatchLengthXCall
-                ),
-                inputs[1].varExpression,
+                getAngleLengthSign(args[0].expr, angleToMatchLengthXCall),
+                inputs[1].expr,
               ],
               tag
             )
@@ -1106,7 +1054,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           ([arg0]) =>
-            createCallWrapper('xLineTo', inputs[1].varExpression, tag),
+            createCallWrapper('xLineTo', inputs[1].expr, tag),
       },
     },
   },
@@ -1123,7 +1071,7 @@ const transformMap: TransformMap = {
           (args) =>
             createCallWrapper(
               'yLineTo',
-              getInputOfType(args, 'yAbsolute').varExpression,
+              getInputOfType(args, 'yAbsolute').expr,
               tag
             ),
       },
@@ -1144,18 +1092,15 @@ const transformMap: TransformMap = {
               'angleToMatchLengthY',
               [
                 createIdentifier(referenceSegName),
-                inputs[1].varExpression,
+                inputs[1].expr,
                 createPipeSubstitution(),
               ]
             )
             return createCallWrapper(
               'angledLineToY',
               [
-                getAngleLengthSign(
-                  args[0].varExpression,
-                  angleToMatchLengthXCall
-                ),
-                inputs[1].varExpression,
+                getAngleLengthSign(args[0].expr, angleToMatchLengthXCall),
+                inputs[1].expr,
               ],
               tag
             )
@@ -1166,7 +1111,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ inputs, tag }) =>
           () =>
-            createCallWrapper('yLineTo', inputs[1].varExpression, tag),
+            createCallWrapper('yLineTo', inputs[1].expr, tag),
       },
     },
   },
@@ -1177,7 +1122,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ referenceSegName, tag }) =>
           (arg) => {
-            const argVal = getArgLiteralVal(arg[0].varExpression)
+            const argVal = getArgLiteralVal(arg[0].expr)
             const segLen = createSegLen(referenceSegName) // as BinaryPart
             if (argVal > 0)
               return createCallWrapper('xLine', segLen, tag, argVal)
@@ -1217,7 +1162,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ referenceSegName, tag }) =>
           (arg) => {
-            const argVal = getArgLiteralVal(arg[0].varExpression)
+            const argVal = getArgLiteralVal(arg[0].expr)
             let segLen = createSegLen(referenceSegName) as BinaryPart
             if (argVal < 0) segLen = createUnaryExpression(segLen)
             return createCallWrapper('yLine', segLen, tag, argVal)
@@ -1301,18 +1246,14 @@ export function getRemoveConstraintsTransform(
     createNode:
       ({ tag, referenceSegName }) =>
       (args) => {
-        return createCallWrapper(
-          'line',
-          [args[0].varExpression, args[1].varExpression],
-          tag
-        )
+        return createCallWrapper('line', [args[0].expr, args[1].expr], tag)
         // The following commented changes values to hardcode, but keeps the line type the same, maybe that's useful?
 
         //   if (name === 'angledLineThatIntersects') {
         //     return intersectCallWrapper({
         //       fnName: name,
-        //       angleVal: args[0].varExpression,
-        //       offsetVal: args[1].varExpression,
+        //       angleVal: args[0].expr,
+        //       offsetVal: args[1].expr,
         //       intersectTag: createIdentifier(referenceSegName),
         //       tag,
         //     })
@@ -1388,25 +1329,21 @@ export function removeSingleConstraint({
         // the inputDetails, input where we should use the rawValue(s)
 
         if (inputDetails.type === 'arrayItem') {
-          const values = inputs.map(({ varDetails: varValue }) => {
+          const values = inputs.map((arg) => {
             if (
               !(
-                (varValue.type === 'arrayItem' ||
-                  varValue.type === 'arrayOrObjItem') &&
-                varValue.index === inputDetails.index
+                (arg.type === 'arrayItem' || arg.type === 'arrayOrObjItem') &&
+                arg.index === inputDetails.index
               )
             )
-              return varValue.expr
+              return arg.expr
             const literal = rawValues.find(
               (rawValue) =>
-                (rawValue.varDetails.type === 'arrayItem' ||
-                  rawValue.varDetails.type === 'arrayOrObjItem') &&
-                rawValue.varDetails.index === inputDetails.index
-            )?.varDetails?.expr
-            return (
-              (varValue.index === inputDetails.index && literal) ||
-              varValue.expr
-            )
+                (rawValue.type === 'arrayItem' ||
+                  rawValue.type === 'arrayOrObjItem') &&
+                rawValue.index === inputDetails.index
+            )?.expr
+            return (arg.index === inputDetails.index && literal) || arg.expr
           })
           return createStdlibCallExpression(
             callExp.node.callee.name as any,
@@ -1422,54 +1359,52 @@ export function removeSingleConstraint({
             [key: string]: Parameters<typeof createArrayExpression>[0]
           } = {}
           const otherThing: Parameters<typeof createObjectExpression>[0] = {}
-          inputs.forEach(({ varDetails: varValue, varExpression }) => {
+          inputs.forEach((arg) => {
             if (
-              varValue.type !== 'objectProperty' &&
-              varValue.type !== 'arrayOrObjItem' &&
-              varValue.type !== 'arrayInObject'
+              arg.type !== 'objectProperty' &&
+              arg.type !== 'arrayOrObjItem' &&
+              arg.type !== 'arrayInObject'
             )
               return
             const rawLiteralArrayInObject = rawValues.find(
               (rawValue) =>
-                rawValue.varDetails.type === 'arrayInObject' &&
-                rawValue.varDetails.key === inputDetails.key &&
-                rawValue.varDetails.index ===
-                  (varValue.type === 'arrayInObject' ? varValue.index : -1)
+                rawValue.type === 'arrayInObject' &&
+                rawValue.key === inputDetails.key &&
+                rawValue.index ===
+                  (arg.type === 'arrayInObject' ? arg.index : -1)
             )
             const rawLiteralObjProp = rawValues.find(
               (rawValue) =>
-                (rawValue.varDetails.type === 'objectProperty' ||
-                  rawValue.varDetails.type === 'arrayOrObjItem' ||
-                  rawValue.varDetails.type === 'arrayInObject') &&
-                rawValue.varDetails.key === inputDetails.key
+                (rawValue.type === 'objectProperty' ||
+                  rawValue.type === 'arrayOrObjItem' ||
+                  rawValue.type === 'arrayInObject') &&
+                rawValue.key === inputDetails.key
             )
             if (
               inputDetails.type === 'arrayInObject' &&
-              rawLiteralArrayInObject?.varDetails.type === 'arrayInObject' &&
-              rawLiteralArrayInObject?.varDetails.index ===
-                inputDetails.index &&
-              rawLiteralArrayInObject?.varDetails.key === inputDetails.key
+              rawLiteralArrayInObject?.type === 'arrayInObject' &&
+              rawLiteralArrayInObject?.index === inputDetails.index &&
+              rawLiteralArrayInObject?.key === inputDetails.key
             ) {
-              if (!arrayDetailsNameBetterLater[varValue.key])
-                arrayDetailsNameBetterLater[varValue.key] = []
+              if (!arrayDetailsNameBetterLater[arg.key])
+                arrayDetailsNameBetterLater[arg.key] = []
               arrayDetailsNameBetterLater[inputDetails.key][
                 inputDetails.index
-              ] = rawLiteralArrayInObject.varDetails.expr
+              ] = rawLiteralArrayInObject.expr
             } else if (
               inputDetails.type === 'objectProperty' &&
-              (rawLiteralObjProp?.varDetails.type === 'objectProperty' ||
-                rawLiteralObjProp?.varDetails.type === 'arrayOrObjItem') &&
-              rawLiteralObjProp?.varDetails.key === inputDetails.key &&
-              varValue.key === inputDetails.key
+              (rawLiteralObjProp?.type === 'objectProperty' ||
+                rawLiteralObjProp?.type === 'arrayOrObjItem') &&
+              rawLiteralObjProp?.key === inputDetails.key &&
+              arg.key === inputDetails.key
             ) {
-              otherThing[inputDetails.key] = rawLiteralObjProp.varDetails.expr
-            } else if (varValue.type === 'arrayInObject') {
-              if (!arrayDetailsNameBetterLater[varValue.key])
-                arrayDetailsNameBetterLater[varValue.key] = []
-              arrayDetailsNameBetterLater[varValue.key][varValue.index] =
-                varExpression
-            } else if (varValue.type === 'objectProperty') {
-              otherThing[varValue.key] = varExpression
+              otherThing[inputDetails.key] = rawLiteralObjProp.expr
+            } else if (arg.type === 'arrayInObject') {
+              if (!arrayDetailsNameBetterLater[arg.key])
+                arrayDetailsNameBetterLater[arg.key] = []
+              arrayDetailsNameBetterLater[arg.key][arg.index] = arg.expr
+            } else if (arg.type === 'objectProperty') {
+              otherThing[arg.key] = arg.expr
             }
           })
           const createObjParam: Parameters<typeof createObjectExpression>[0] =
@@ -1492,7 +1427,7 @@ export function removeSingleConstraint({
 
         return createCallWrapper(
           callExp.node.callee.name as any,
-          rawValues[0].varDetails.expr,
+          rawValues[0].expr,
           tag
         )
       },
@@ -1787,7 +1722,7 @@ export function transformAstSketchLines({
         _referencedSegmentNameVal.type === 'Identifier' &&
         String(_referencedSegmentNameVal.name)) ||
       ''
-    const inputs: SegmentInput[] = []
+    const inputs: InputArgs = []
 
     getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
       if (
@@ -1802,43 +1737,31 @@ export function transformAstSketchLines({
 
       if (a?.argPosition?.type === 'arrayItem') {
         inputs.push({
-          varDetails: {
-            type: 'arrayItem',
-            index: a.argPosition.index,
-            expr: nodeMeta.node,
-            argType: a.type,
-          },
-          varExpression: nodeMeta.node,
+          type: 'arrayItem',
+          index: a.argPosition.index,
+          expr: nodeMeta.node,
+          argType: a.type,
         })
       } else if (a?.argPosition?.type === 'objectProperty') {
         inputs.push({
-          varDetails: {
-            type: 'objectProperty',
-            key: a.argPosition.key,
-            expr: nodeMeta.node,
-            argType: a.type,
-          },
-          varExpression: nodeMeta.node,
+          type: 'objectProperty',
+          key: a.argPosition.key,
+          expr: nodeMeta.node,
+          argType: a.type,
         })
       } else if (a?.argPosition?.type === 'singleValue') {
         inputs.push({
-          varDetails: {
-            type: 'singleValue',
-            argType: a.type,
-            expr: nodeMeta.node,
-          },
-          varExpression: nodeMeta.node,
+          type: 'singleValue',
+          argType: a.type,
+          expr: nodeMeta.node,
         })
       } else if (a?.argPosition?.type === 'arrayInObject') {
         inputs.push({
-          varDetails: {
-            type: 'arrayInObject',
-            key: a.argPosition.key,
-            index: a.argPosition.index,
-            expr: nodeMeta.node,
-            argType: a.type,
-          },
-          varExpression: nodeMeta.node,
+          type: 'arrayInObject',
+          key: a.argPosition.key,
+          index: a.argPosition.index,
+          expr: nodeMeta.node,
+          argType: a.type,
         })
       }
     })
@@ -2039,9 +1962,6 @@ function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   return false
 }
 
-function getInputOfType(
-  a: SegmentInput[],
-  b: LineInputsType | 'radius'
-): SegmentInput {
-  return a.find(({ varDetails }) => varDetails.argType === b) || a[0]
+function getInputOfType(a: InputArgs, b: LineInputsType | 'radius'): InputArg {
+  return a.find(({ argType }) => argType === b) || a[0]
 }

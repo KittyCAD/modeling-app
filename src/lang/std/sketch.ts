@@ -324,22 +324,16 @@ export const lineTo: SketchLineHelper = {
       const { callExp, valueUsedInTransform } = createCallback(
         [
           {
-            varExpression: createLiteral(roundOff(to[0], 2)),
-            varDetails: {
-              type: 'arrayItem',
-              index: 0,
-              argType: 'xAbsolute',
-              expr: createLiteral(roundOff(to[0], 2)),
-            },
+            type: 'arrayItem',
+            index: 0,
+            argType: 'xAbsolute',
+            expr: createLiteral(roundOff(to[0], 2)),
           },
           {
-            varExpression: createLiteral(roundOff(to[1], 2)),
-            varDetails: {
-              type: 'arrayItem',
-              index: 1,
-              argType: 'yAbsolute',
-              expr: createLiteral(roundOff(to[1], 2)),
-            },
+            type: 'arrayItem',
+            index: 1,
+            argType: 'yAbsolute',
+            expr: createLiteral(roundOff(to[1], 2)),
           },
         ],
         referencedSegment
@@ -450,22 +444,16 @@ export const line: SketchLineHelper = {
       const { callExp, valueUsedInTransform } = createCallback(
         [
           {
-            varExpression: createLiteral(roundOff(to[0] - from[0], 2)),
-            varDetails: {
-              type: 'arrayItem',
-              index: 0,
-              argType: 'xRelative',
-              expr: createLiteral(roundOff(to[0] - from[0], 2)),
-            },
+            type: 'arrayItem',
+            index: 0,
+            argType: 'xRelative',
+            expr: createLiteral(roundOff(to[0] - from[0], 2)),
           },
           {
-            varExpression: createLiteral(roundOff(to[1] - from[1], 2)),
-            varDetails: {
-              type: 'arrayItem',
-              index: 1,
-              argType: 'yRelative',
-              expr: createLiteral(roundOff(to[1] - from[1], 2)),
-            },
+            type: 'arrayItem',
+            index: 1,
+            argType: 'yRelative',
+            expr: createLiteral(roundOff(to[1] - from[1], 2)),
           },
         ],
         referencedSegment
@@ -557,12 +545,9 @@ export const xLineTo: SketchLineHelper = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback([
         {
-          varExpression: createLiteral(roundOff(to[0], 2)),
-          varDetails: {
-            type: 'singleValue',
-            argType: 'xAbsolute',
-            expr: createLiteral(roundOff(to[0], 2)),
-          },
+          type: 'singleValue',
+          argType: 'xAbsolute',
+          expr: createLiteral(roundOff(to[0], 2)),
         },
       ])
       pipe.body[callIndex] = callExp
@@ -634,12 +619,9 @@ export const yLineTo: SketchLineHelper = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback([
         {
-          varExpression: newVal,
-          varDetails: {
-            type: 'singleValue',
-            argType: 'yAbsolute',
-            expr: newVal,
-          },
+          type: 'singleValue',
+          argType: 'yAbsolute',
+          expr: newVal,
         },
       ])
       pipe.body[callIndex] = callExp
@@ -711,12 +693,9 @@ export const xLine: SketchLineHelper = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback([
         {
-          varExpression: newVal,
-          varDetails: {
-            type: 'singleValue',
-            argType: 'xRelative',
-            expr: newVal,
-          },
+          type: 'singleValue',
+          argType: 'xRelative',
+          expr: newVal,
         },
       ])
       pipe.body[callIndex] = callExp
@@ -784,12 +763,9 @@ export const yLine: SketchLineHelper = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback([
         {
-          varExpression: newVal,
-          varDetails: {
-            type: 'singleValue',
-            argType: 'yRelative',
-            expr: newVal,
-          },
+          type: 'singleValue',
+          argType: 'yRelative',
+          expr: newVal,
         },
       ])
       pipe.body[callIndex] = callExp
@@ -869,22 +845,16 @@ export const tangentialArcTo: SketchLineHelper = {
       const { callExp, valueUsedInTransform } = createCallback(
         [
           {
-            varExpression: toX,
-            varDetails: {
-              type: 'arrayItem',
-              index: 0,
-              argType: 'xRelative',
-              expr: toX,
-            },
+            type: 'arrayItem',
+            index: 0,
+            argType: 'xRelative',
+            expr: toX,
           },
           {
-            varExpression: toY,
-            varDetails: {
-              type: 'arrayItem',
-              index: 1,
-              argType: 'yAbsolute',
-              expr: toY,
-            },
+            type: 'arrayItem',
+            index: 1,
+            argType: 'yAbsolute',
+            expr: toY,
           },
         ],
         referencedSegment
@@ -1016,33 +986,24 @@ export const circle: SketchLineHelper = {
     if (replaceExisting && createCallback) {
       const { callExp, valueUsedInTransform } = createCallback([
         {
-          varExpression: x,
-          varDetails: {
-            type: 'arrayInObject',
-            index: 0,
-            key: 'center',
-            argType: 'xAbsolute',
-            expr: x,
-          },
+          type: 'arrayInObject',
+          index: 0,
+          key: 'center',
+          argType: 'xAbsolute',
+          expr: x,
         },
         {
-          varExpression: y,
-          varDetails: {
-            type: 'arrayInObject',
-            index: 1,
-            key: 'center',
-            argType: 'yAbsolute',
-            expr: y,
-          },
+          type: 'arrayInObject',
+          index: 1,
+          key: 'center',
+          argType: 'yAbsolute',
+          expr: y,
         },
         {
-          varExpression: radiusExp,
-          varDetails: {
-            type: 'objectProperty',
-            key: 'radius',
-            argType: 'radius',
-            expr: radiusExp,
-          },
+          type: 'objectProperty',
+          key: 'radius',
+          argType: 'radius',
+          expr: radiusExp,
         },
       ])
 
@@ -1196,24 +1157,18 @@ export const angledLine: SketchLineHelper = {
       const { callExp, valueUsedInTransform } = createCallback(
         [
           {
-            varExpression: newAngleVal,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 0,
-              key: 'angle',
-              argType: 'angle',
-              expr: newAngleVal,
-            },
+            type: 'arrayOrObjItem',
+            index: 0,
+            key: 'angle',
+            argType: 'angle',
+            expr: newAngleVal,
           },
           {
-            varExpression: newLengthVal,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 1,
-              key: 'length',
-              argType: 'length',
-              expr: newLengthVal,
-            },
+            type: 'arrayOrObjItem',
+            index: 1,
+            key: 'length',
+            argType: 'length',
+            expr: newLengthVal,
           },
         ],
         referencedSegment
@@ -1311,24 +1266,18 @@ export const angledLineOfXLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback([
           {
-            varExpression: angle,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 0,
-              key: 'angle',
-              argType: 'angle',
-              expr: angle,
-            },
+            type: 'arrayOrObjItem',
+            index: 0,
+            key: 'angle',
+            argType: 'angle',
+            expr: angle,
           },
           {
-            varExpression: xLength,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 1,
-              key: 'length',
-              argType: 'xRelative',
-              expr: xLength,
-            },
+            type: 'arrayOrObjItem',
+            index: 1,
+            key: 'length',
+            argType: 'xRelative',
+            expr: xLength,
           },
         ]).callExp
       : createCallExpression('angledLineOfXLength', [
@@ -1427,24 +1376,18 @@ export const angledLineOfYLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback([
           {
-            varExpression: angle,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 0,
-              key: 'angle',
-              argType: 'angle',
-              expr: angle,
-            },
+            type: 'arrayOrObjItem',
+            index: 0,
+            key: 'angle',
+            argType: 'angle',
+            expr: angle,
           },
           {
-            varExpression: yLength,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 1,
-              key: 'length',
-              argType: 'yRelative',
-              expr: yLength,
-            },
+            type: 'arrayOrObjItem',
+            index: 1,
+            key: 'length',
+            argType: 'yRelative',
+            expr: yLength,
           },
         ]).callExp
       : createCallExpression('angledLineOfYLength', [
@@ -1531,24 +1474,18 @@ export const angledLineToX: SketchLineHelper = {
       const { callExp, valueUsedInTransform } = createCallback(
         [
           {
-            varExpression: angle,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 0,
-              key: 'angle',
-              argType: 'angle',
-              expr: angle,
-            },
+            type: 'arrayOrObjItem',
+            index: 0,
+            key: 'angle',
+            argType: 'angle',
+            expr: angle,
           },
           {
-            varExpression: xArg,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 1,
-              key: 'to',
-              argType: 'xAbsolute',
-              expr: xArg,
-            },
+            type: 'arrayOrObjItem',
+            index: 1,
+            key: 'to',
+            argType: 'xAbsolute',
+            expr: xArg,
           },
         ],
         referencedSegment
@@ -1641,24 +1578,18 @@ export const angledLineToY: SketchLineHelper = {
       const { callExp, valueUsedInTransform } = createCallback(
         [
           {
-            varExpression: angle,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 0,
-              key: 'angle',
-              argType: 'angle',
-              expr: angle,
-            },
+            type: 'arrayOrObjItem',
+            index: 0,
+            key: 'angle',
+            argType: 'angle',
+            expr: angle,
           },
           {
-            varExpression: yArg,
-            varDetails: {
-              type: 'arrayOrObjItem',
-              index: 1,
-              key: 'to',
-              argType: 'yAbsolute',
-              expr: yArg,
-            },
+            type: 'arrayOrObjItem',
+            index: 1,
+            key: 'to',
+            argType: 'yAbsolute',
+            expr: yArg,
           },
         ],
         referencedSegment
@@ -1763,22 +1694,16 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (replaceExisting && createCallback) {
       const { callExp, valueUsedInTransform } = createCallback([
         {
-          varExpression: angle,
-          varDetails: {
-            type: 'objectProperty',
-            key: 'angle',
-            argType: 'angle',
-            expr: angle,
-          },
+          type: 'objectProperty',
+          key: 'angle',
+          argType: 'angle',
+          expr: angle,
         },
         {
-          varExpression: offset,
-          varDetails: {
-            type: 'objectProperty',
-            key: 'offset',
-            argType: 'intersectionOffset',
-            expr: offset,
-          },
+          type: 'objectProperty',
+          key: 'offset',
+          argType: 'intersectionOffset',
+          expr: offset,
         },
       ])
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
