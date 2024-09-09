@@ -200,7 +200,7 @@ describe('testing createArtifactGraph', () => {
       expect(extrusions).toHaveLength(2)
       extrusions.forEach((extrusion, index) => {
         if (err(extrusion)) throw extrusion
-        expect(extrusion.type).toBe('extrusion')
+        expect(extrusion.type).toBe('sweep')
         const firstExtrusionIsACubeIE6Sides = 6
         const secondExtrusionIsATriangularPrismIE5Sides = 5
         expect(extrusion.surfaces.length).toBe(
