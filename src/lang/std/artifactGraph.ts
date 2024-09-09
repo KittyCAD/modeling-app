@@ -59,6 +59,7 @@ interface SegmentArtifactRich {
   codeRef: CommonCommandProperties
 }
 
+/** A Sweep is a more generic term for extrude, revolve, loft and sweep*/
 interface SweepArtifact {
   type: 'sweep'
   subType: 'extrusion' | 'revolve'
@@ -91,7 +92,6 @@ interface CapArtifact {
   pathIds: Array<ArtifactId>
 }
 
-// TODO KEVIN: ExtrudeEdge into SweepEdge?
 interface ExtrudeEdge {
   type: 'extrudeEdge'
   segId: ArtifactId
@@ -416,7 +416,6 @@ export function getArtifactsToUpdate({
               pathIds: [],
             },
           })
-          // TODO KEVIN:  rename extrusionId to sweepId?
           const sweep = getArtifact(path.sweepId)
           if (sweep?.type !== 'sweep') return
           returnArr.push({
@@ -445,7 +444,6 @@ export function getArtifactsToUpdate({
   ) {
     const wall = getArtifact(cmd.face_id)
     if (wall?.type !== 'wall') return returnArr
-    // TODO KEVIN: Rename extrusion to sweep
     const sweep = getArtifact(wall.sweepId)
     if (sweep?.type !== 'sweep') return returnArr
     const path = getArtifact(sweep.pathId)
@@ -738,7 +736,6 @@ export function getExtrusionFromSuspectedExtrudeSurface(
     artifactGraph
   )
   if (err(artifact)) return artifact
-  // TODO KEVIN: rename extrusion to sweep
   return getArtifactOfTypes(
     { key: artifact.sweepId, types: ['sweep'] },
     artifactGraph
@@ -751,7 +748,6 @@ export function getExtrusionFromSuspectedPath(
 ): SweepArtifact | Error {
   const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
   if (err(path)) return path
-  // TODO KEVIN: rename extrusion to sweep
   return getArtifactOfTypes(
     { key: path.sweepId, types: ['sweep'] },
     artifactGraph
