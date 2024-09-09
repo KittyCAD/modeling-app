@@ -292,12 +292,7 @@ function getTag(index = 2): SketchLineHelper['getTag'] {
 }
 
 export const lineTo: SketchLineHelper = {
-  add: ({
-    node,
-    pathToNode,
-    segmentInput,
-    replaceExistingCallback: createCallback,
-  }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const to = segmentInput.to
     const _node = { ...node }
@@ -319,8 +314,8 @@ export const lineTo: SketchLineHelper = {
       createPipeSubstitution(),
     ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-    if (createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([
+    if (replaceExistingCallback) {
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'arrayItem',
           index: 0,
@@ -386,7 +381,7 @@ export const line: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     segmentInput,
-    replaceExistingCallback: createCallback,
+    replaceExistingCallback,
     spliceBetween,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
@@ -410,7 +405,11 @@ export const line: SketchLineHelper = {
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
 
-    if (spliceBetween && !createCallback && pipe.type === 'PipeExpression') {
+    if (
+      spliceBetween &&
+      !replaceExistingCallback &&
+      pipe.type === 'PipeExpression'
+    ) {
       const callExp = createCallExpression('line', [
         createArrayExpression([newXVal, newYVal]),
         createPipeSubstitution(),
@@ -433,9 +432,9 @@ export const line: SketchLineHelper = {
       }
     }
 
-    if (createCallback && pipe.type !== 'CallExpression') {
+    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback([
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'arrayItem',
           index: 0,
@@ -515,7 +514,7 @@ export const line: SketchLineHelper = {
 }
 
 export const xLineTo: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback: createCallback }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
     const _node = { ...node }
@@ -526,9 +525,9 @@ export const xLineTo: SketchLineHelper = {
 
     const newVal = createLiteral(roundOff(to[0], 2))
 
-    if (createCallback) {
+    if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback([
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'singleValue',
           argType: 'xAbsolute',
@@ -583,7 +582,7 @@ export const xLineTo: SketchLineHelper = {
 }
 
 export const yLineTo: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback: createCallback }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
     const _node = { ...node }
@@ -594,9 +593,9 @@ export const yLineTo: SketchLineHelper = {
 
     const newVal = createLiteral(roundOff(to[1], 2))
 
-    if (createCallback) {
+    if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback([
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'singleValue',
           argType: 'yAbsolute',
@@ -651,7 +650,7 @@ export const yLineTo: SketchLineHelper = {
 }
 
 export const xLine: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback: createCallback }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -662,9 +661,9 @@ export const xLine: SketchLineHelper = {
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
 
-    if (createCallback) {
+    if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback([
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'singleValue',
           argType: 'xRelative',
@@ -717,7 +716,7 @@ export const xLine: SketchLineHelper = {
 }
 
 export const yLine: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback: createCallback }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -726,9 +725,9 @@ export const yLine: SketchLineHelper = {
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
-    if (createCallback) {
+    if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback([
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'singleValue',
           argType: 'yRelative',
@@ -781,12 +780,7 @@ export const yLine: SketchLineHelper = {
 }
 
 export const tangentialArcTo: SketchLineHelper = {
-  add: ({
-    node,
-    pathToNode,
-    segmentInput,
-    replaceExistingCallback: createCallback,
-  }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
     const _node = { ...node }
@@ -805,9 +799,9 @@ export const tangentialArcTo: SketchLineHelper = {
     const toX = createLiteral(roundOff(to[0], 2))
     const toY = createLiteral(roundOff(to[1], 2))
 
-    if (createCallback && pipe.type !== 'CallExpression') {
+    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback([
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'arrayItem',
           index: 0,
@@ -920,7 +914,7 @@ export const tangentialArcTo: SketchLineHelper = {
   },
 }
 export const circle: SketchLineHelper = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback: createCallback }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
 
     const { center, radius } = segmentInput
@@ -939,8 +933,8 @@ export const circle: SketchLineHelper = {
 
     const radiusExp = createLiteral(roundOff(radius, 2))
 
-    if (createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([
+    if (replaceExistingCallback) {
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'arrayInObject',
           index: 0,
@@ -1085,12 +1079,7 @@ export const circle: SketchLineHelper = {
   },
 }
 export const angledLine: SketchLineHelper = {
-  add: ({
-    node,
-    pathToNode,
-    segmentInput,
-    replaceExistingCallback: createCallback,
-  }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -1106,9 +1095,9 @@ export const angledLine: SketchLineHelper = {
       createPipeSubstitution(),
     ])
 
-    if (createCallback) {
+    if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback([
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'arrayOrObjItem',
           index: 0,
@@ -1183,7 +1172,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     segmentInput,
-    replaceExistingCallback: createCallback,
+    replaceExistingCallback,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
@@ -1213,8 +1202,8 @@ export const angledLineOfXLength: SketchLineHelper = {
     }
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
-    const newLine = createCallback
-      ? createCallback([
+    const newLine = replaceExistingCallback
+      ? replaceExistingCallback([
           {
             type: 'arrayOrObjItem',
             index: 0,
@@ -1235,7 +1224,7 @@ export const angledLineOfXLength: SketchLineHelper = {
           createPipeSubstitution(),
         ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-    if (createCallback) {
+    if (replaceExistingCallback) {
       pipe.body[callIndex] = newLine
     } else {
       pipe.body = [...pipe.body, newLine]
@@ -1294,7 +1283,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     segmentInput,
-    replaceExistingCallback: createCallback,
+    replaceExistingCallback,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
@@ -1322,8 +1311,8 @@ export const angledLineOfYLength: SketchLineHelper = {
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
-    const newLine = createCallback
-      ? createCallback([
+    const newLine = replaceExistingCallback
+      ? replaceExistingCallback([
           {
             type: 'arrayOrObjItem',
             index: 0,
@@ -1344,7 +1333,7 @@ export const angledLineOfYLength: SketchLineHelper = {
           createPipeSubstitution(),
         ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-    if (createCallback) {
+    if (replaceExistingCallback) {
       pipe.body[callIndex] = newLine
     } else {
       pipe.body = [...pipe.body, newLine]
@@ -1398,12 +1387,7 @@ export const angledLineOfYLength: SketchLineHelper = {
 }
 
 export const angledLineToX: SketchLineHelper = {
-  add: ({
-    node,
-    pathToNode,
-    segmentInput,
-    replaceExistingCallback: createCallback,
-  }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -1417,8 +1401,8 @@ export const angledLineToX: SketchLineHelper = {
     const { node: pipe } = nodeMeta
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xArg = createLiteral(roundOff(to[0], 2))
-    if (createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([
+    if (replaceExistingCallback) {
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'arrayOrObjItem',
           index: 0,
@@ -1495,12 +1479,7 @@ export const angledLineToX: SketchLineHelper = {
 }
 
 export const angledLineToY: SketchLineHelper = {
-  add: ({
-    node,
-    pathToNode,
-    segmentInput,
-    replaceExistingCallback: createCallback,
-  }) => {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -1516,8 +1495,8 @@ export const angledLineToY: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yArg = createLiteral(roundOff(to[1], 2))
 
-    if (createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([
+    if (replaceExistingCallback) {
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'arrayOrObjItem',
           index: 0,
@@ -1598,7 +1577,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     node,
     pathToNode,
     segmentInput,
-    replaceExistingCallback: createCallback,
+    replaceExistingCallback,
     referencedSegment,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
@@ -1629,8 +1608,8 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     )
 
-    if (createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([
+    if (replaceExistingCallback) {
+      const { callExp, valueUsedInTransform } = replaceExistingCallback([
         {
           type: 'objectProperty',
           key: 'angle',
@@ -2050,7 +2029,7 @@ export function replaceSketchLine({
   pathToNode: _pathToNode,
   fnName,
   segmentInput,
-  createCallback,
+  replaceExistingCallback,
   referencedSegment,
 }: {
   node: Program
@@ -2058,7 +2037,9 @@ export function replaceSketchLine({
   pathToNode: PathToNode
   fnName: ToolTip
   segmentInput: SegmentInputs
-  createCallback: (rawArgs: RawArgs) => ReturnType<CreateStdLibSketchCallExpr>
+  replaceExistingCallback: (
+    rawArgs: RawArgs
+  ) => ReturnType<CreateStdLibSketchCallExpr>
   referencedSegment?: Path
 }):
   | {
@@ -2079,7 +2060,7 @@ export function replaceSketchLine({
     pathToNode: _pathToNode,
     referencedSegment,
     segmentInput,
-    replaceExistingCallback: createCallback,
+    replaceExistingCallback,
   })
   if (err(addRetVal)) return addRetVal
 

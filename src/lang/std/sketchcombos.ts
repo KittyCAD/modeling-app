@@ -1745,7 +1745,7 @@ export function transformAstSketchLines({
               from,
             },
 
-      createCallback: (rawArgs) =>
+      replaceExistingCallback: (rawArgs) =>
         callBack({
           referenceSegName: _referencedSegmentName,
           inputs,

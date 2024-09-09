@@ -51,11 +51,10 @@ interface ArcSegmentInput {
  */
 export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
 
-
 /**
  * Interface for adding or replacing a sketch stblib call expression to a sketch.
  * Replacing normally means adding or removing a constraint
- * 
+ *
  * @property segmentInput - The input segment data, which can be either a straight segment or an arc segment.
  * @property replaceExistingCallback - An optional callback function to replace an existing call expression,
  * if not provided, a new call expression will be added using segMentInput values.
@@ -64,7 +63,9 @@ export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
  */
 interface addCall extends ModifyAstBase {
   segmentInput: SegmentInputs
-  replaceExistingCallback?: (rawArgs: RawArgs) => ReturnType<CreateStdLibSketchCallExpr>
+  replaceExistingCallback?: (
+    rawArgs: RawArgs
+  ) => ReturnType<CreateStdLibSketchCallExpr>
   referencedSegment?: Path
   spliceBetween?: boolean
 }
