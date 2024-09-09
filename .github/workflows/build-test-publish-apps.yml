@@ -193,8 +193,8 @@ jobs:
             --arg notes "${NOTES}" \
             --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-mac.dmg" \
             --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
-            --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-win.msi" \
-            --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-win.msi" \
+            --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-win.exe" \
+            --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-win.exe" \
             --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
             --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
             '{
@@ -208,10 +208,10 @@ jobs:
                 "dmg-x64": {
                   "url": $mac_x64_url
                 },
-                "msi-arm64": {
+                "exe-arm64": {
                   "url": $windows_arm64_url
                 },
-                "msi-x64": {
+                "exe-x64": {
                   "url": $windows_x64_url
                 },
                 "appimage-arm64": {
