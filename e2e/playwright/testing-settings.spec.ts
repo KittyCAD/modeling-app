@@ -552,4 +552,70 @@ test.describe('Testing settings', () => {
       await changeUnitOfMeasureInGizmo('m', 'Meters')
     })
   })
+
+  test('Changing theme in sketch mode', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 0], %)
+  |> line([0, 5], %)
+  |> line([-5, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+`
+      )
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    // Selectors and constants
+    const editSketchButton = page.getByRole('button', { name: 'Edit Sketch' })
+    const lineToolButton = page.getByTestId('line')
+    const segmentOverlays = page.getByTestId('segment-overlay')
+    const sketchOriginLocation = { x: 600, y: 250 }
+    const darkThemeSegmentColor: [number, number, number] = [215, 215, 215]
+    const lightThemeSegmentColor: [number, number, number] = [90, 90, 90]
+
+    await test.step(`Get into sketch mode`, async () => {
+      await u.waitForAuthSkipAppStart()
+      await page.mouse.click(700, 200)
+      await expect(editSketchButton).toBeVisible()
+      await editSketchButton.click()
+
+      // We use the line tool as a proxy for sketch mode
+      await expect(lineToolButton).toBeVisible()
+      await expect(segmentOverlays).toHaveCount(4)
+      // but we allow more time to pass for animating to the sketch
+      await page.waitForTimeout(1000)
+    })
+
+    await test.step(`Check the sketch line color before`, async () => {
+      await expect
+        .poll(() =>
+          u.getGreatestPixDiff(sketchOriginLocation, darkThemeSegmentColor)
+        )
+        .toBeLessThan(15)
+    })
+
+    await test.step(`Change theme to light using command palette`, async () => {
+      await page.keyboard.press('ControlOrMeta+K')
+      await page.getByRole('option', { name: 'theme' }).click()
+      await page.getByRole('option', { name: 'light' }).click()
+      await expect(page.getByText('theme to "light"')).toBeVisible()
+
+      // Make sure we haven't left sketch mode
+      await expect(lineToolButton).toBeVisible()
+    })
+
+    await test.step(`Check the sketch line color after`, async () => {
+      await expect
+        .poll(() =>
+          u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
+        )
+        .toBeLessThan(15)
+    })
+  })
 })
