@@ -1483,9 +1483,11 @@ export class SceneEntities {
     Object.values(this.activeSegments).forEach((group) => {
       group.userData.baseColor = newColorThreeJs
       group.traverse((child) => {
-        if (child instanceof Mesh) {
-          const mat = child.material as MeshBasicMaterial
-          mat.color.set(newColorThreeJs)
+        if (
+          child instanceof Mesh &&
+          child.material instanceof MeshBasicMaterial
+        ) {
+          child.material.color.set(newColorThreeJs)
         }
       })
     })
