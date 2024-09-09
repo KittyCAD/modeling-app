@@ -1018,7 +1018,7 @@ export const circle: SketchLineHelper = {
         {
           varExpression: x,
           varDetails: {
-            type: 'objectPropertyArray',
+            type: 'arrayInObject',
             index: 0,
             key: 'center',
             argType: 'xAbsolute',
@@ -1028,7 +1028,7 @@ export const circle: SketchLineHelper = {
         {
           varExpression: y,
           varDetails: {
-            type: 'objectPropertyArray',
+            type: 'arrayInObject',
             index: 1,
             key: 'center',
             argType: 'yAbsolute',

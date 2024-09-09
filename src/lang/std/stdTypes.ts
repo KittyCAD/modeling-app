@@ -112,8 +112,8 @@ export interface ArrayOrObjItemInput<T> {
   value: T
 }
 
-export interface ObjectPropertyArrayInput<T> {
-  type: 'objectPropertyArray'
+export interface ArrayInObject<T> {
+  type: 'arrayInObject'
   key: VarValueKeys
   argType: LineInputsType | 'radius'
   index: 0 | 1
@@ -125,7 +125,7 @@ export type _VarValue<T> =
   | ArrayItemInput<T>
   | ObjectPropertyInput<T>
   | ArrayOrObjItemInput<T>
-  | ObjectPropertyArrayInput<T>
+  | ArrayInObject<T>
 
 export type VarValue = _VarValue<Expr>
 export type RawValue = _VarValue<Literal>

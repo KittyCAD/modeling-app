@@ -1422,15 +1422,15 @@ export function removeSingleConstraint({
             if (
               varValue.type !== 'objectProperty' &&
               varValue.type !== 'arrayOrObjItem' &&
-              varValue.type !== 'objectPropertyArray'
+              varValue.type !== 'arrayInObject'
             )
               return
             const rawLiteralArrayInObject = rawValues.find(
               (rawValue) =>
-                rawValue.varDetails.type === 'objectPropertyArray' &&
+                rawValue.varDetails.type === 'arrayInObject' &&
                 rawValue.varDetails.key === inputDetails.key &&
                 rawValue.varDetails.index ===
-                  (varValue.type === 'objectPropertyArray'
+                  (varValue.type === 'arrayInObject'
                     ? varValue.index
                     : -1)
             )
@@ -1438,13 +1438,13 @@ export function removeSingleConstraint({
               (rawValue) =>
                 (rawValue.varDetails.type === 'objectProperty' ||
                   rawValue.varDetails.type === 'arrayOrObjItem' ||
-                  rawValue.varDetails.type === 'objectPropertyArray') &&
+                  rawValue.varDetails.type === 'arrayInObject') &&
                 rawValue.varDetails.key === inputDetails.key
             )
             if (
               inputDetails.type === 'arrayInObject' &&
               rawLiteralArrayInObject?.varDetails.type ===
-                'objectPropertyArray' &&
+                'arrayInObject' &&
               rawLiteralArrayInObject?.varDetails.index ===
                 inputDetails.index &&
               rawLiteralArrayInObject?.varDetails.key === inputDetails.key
@@ -1462,7 +1462,7 @@ export function removeSingleConstraint({
               varValue.key === inputDetails.key
             ) {
               otherThing[inputDetails.key] = rawLiteralObjProp.varDetails.value
-            } else if (varValue.type === 'objectPropertyArray') {
+            } else if (varValue.type === 'arrayInObject') {
               if (!arrayDetailsNameBetterLater[varValue.key])
                 arrayDetailsNameBetterLater[varValue.key] = []
               arrayDetailsNameBetterLater[varValue.key][varValue.index] =
@@ -1831,7 +1831,7 @@ export function transformAstSketchLines({
       } else if (a?.argPosition?.type === 'arrayInObject') {
         inputs.push({
           varDetails: {
-            type: 'objectPropertyArray',
+            type: 'arrayInObject',
             key: a.argPosition.key,
             index: a.argPosition.index,
             value: nodeMeta.node,
