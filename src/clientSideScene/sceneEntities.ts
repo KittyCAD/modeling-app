@@ -102,7 +102,7 @@ import {
   getRectangleCallExpressions,
   updateRectangleSketch,
 } from 'lib/rectangleTool'
-import { getThemeColorForThreeJs } from 'lib/theme'
+import { getThemeColorForThreeJs, Themes } from 'lib/theme'
 import { err, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
@@ -1464,6 +1464,23 @@ export class SceneEntities {
         from,
         to,
       })
+  }
+  /**
+   * Update the base color of each of the THREEjs meshes
+   * that represent each of the sketch segments, to get the
+   * latest value from `sceneInfra._theme`
+   */
+  updateSegmentBaseColor(newColor: Themes.Light | Themes.Dark) {
+    const newColorThreeJs = getThemeColorForThreeJs(newColor)
+    Object.values(this.activeSegments).forEach((group) => {
+      group.userData.baseColor = newColorThreeJs
+      group.traverse((child) => {
+        if (child instanceof Mesh) {
+          const mat = child.material as MeshBasicMaterial
+          mat.color.set(newColorThreeJs)
+        }
+      })
+    })
   }
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)

@@ -17,7 +17,12 @@ import decamelize from 'decamelize'
 import { Actor, AnyStateMachine, ContextFrom, Prop, StateFrom } from 'xstate'
 import { isDesktop } from 'lib/isDesktop'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
+import {
+  kclManager,
+  sceneInfra,
+  engineCommandManager,
+  sceneEntitiesManager,
+} from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
@@ -135,6 +140,7 @@ export const SettingsAuthProviderBase = ({
         setClientTheme: ({ context }) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
+          sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
         },
         setEngineEdges: ({ context }) => {
           engineCommandManager.sendSceneCommand({
