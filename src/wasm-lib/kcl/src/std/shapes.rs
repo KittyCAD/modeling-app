@@ -9,11 +9,9 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{BasePath, GeoMeta, KclValue, Path, Point2d, SketchGroup, SketchSurface},
+    executor::{BasePath, GeoMeta, KclValue, Path, SketchGroup, SketchSurface},
     std::Args,
 };
-
-use super::utils::arc_center_and_end;
 
 /// A sketch surface or a sketch group.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -87,8 +85,6 @@ async fn inner_circle(
     )
     .await?;
 
-    let from: Point2d = sketch_group.current_pen_position()?;
-
     let angle_start = Angle::from_degrees(0.0);
     let angle_end = Angle::from_degrees(360.0);
 
@@ -118,8 +114,8 @@ async fn inner_circle(
 
     let current_path = Path::Circle {
         base: BasePath {
-            from: data.center.into(),
-            to: data.center.into(),
+            from: data.center,
+            to: data.center,
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
@@ -127,7 +123,7 @@ async fn inner_circle(
             },
         },
         radius: data.radius,
-        center: data.center.into(),
+        center: data.center,
         ccw: angle_start.degrees() < angle_end.degrees(),
     };
 

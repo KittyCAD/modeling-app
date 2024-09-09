@@ -14,8 +14,6 @@ use crate::{
     std::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg},
 };
 
-use super::shapes::Circle;
-
 #[derive(Debug, Clone)]
 pub struct Args {
     pub args: Vec<KclValue>,
