@@ -66,7 +66,7 @@ interface ArcSegmentInput {
 export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
 
 interface addCall extends ModifyAstBase {
-  input: SegmentInputs
+  segmentInput: SegmentInputs
   referencedSegment?: Path
   replaceExisting?: boolean
   createCallback?: TransformCallback // TODO: #29 probably should not be optional
@@ -90,21 +90,18 @@ export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType | 'radius'
   value: T
-  argIndex: number
 }
 export interface ArrayItemInput<T> {
   type: 'arrayItem'
   index: 0 | 1
   argType: LineInputsType | 'radius'
   value: T
-  argIndex: number
 }
 export interface ObjectPropertyInput<T> {
   type: 'objectProperty'
   key: VarValueKeys
   argType: LineInputsType | 'radius'
   value: T
-  argIndex: number
 }
 
 export interface ArrayOrObjItemInput<T> {
@@ -113,7 +110,6 @@ export interface ArrayOrObjItemInput<T> {
   index: 0 | 1
   argType: LineInputsType | 'radius'
   value: T
-  argIndex: number
 }
 
 export interface ObjectPropertyArrayInput<T> {
@@ -122,7 +118,6 @@ export interface ObjectPropertyArrayInput<T> {
   argType: LineInputsType | 'radius'
   index: 0 | 1
   value: T
-  argIndex: number
 }
 
 export type _VarValue<T> =
@@ -141,10 +136,9 @@ export type RawValues = Array<RawValue>
 export type SimplifiedVarValue =
   | {
       type: 'singleValue'
-      argIndex: number
     }
-  | { type: 'arrayItem'; index: 0 | 1; argIndex: number }
-  | { type: 'objectProperty'; key: VarValueKeys; argIndex: number }
+  | { type: 'arrayItem'; index: 0 | 1 }
+  | { type: 'objectProperty'; key: VarValueKeys }
   | {
       type: 'arrayInObject'
       key: VarValueKeys
@@ -157,7 +151,6 @@ export interface SegmentInput {
 }
 
 export type TransformCallback = (
-  // args: Array<Expr>,
   inputs: SegmentInput[],
   referencedSegment?: Path
 ) => {

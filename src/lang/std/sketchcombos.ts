@@ -1806,7 +1806,6 @@ export function transformAstSketchLines({
             index: a.argPosition.index,
             value: nodeMeta.node,
             argType: a.type,
-            argIndex: a.argPosition.argIndex,
           },
           varExpression: nodeMeta.node,
         })
@@ -1817,7 +1816,6 @@ export function transformAstSketchLines({
             key: a.argPosition.key,
             value: nodeMeta.node,
             argType: a.type,
-            argIndex: a.argPosition.argIndex,
           },
           varExpression: nodeMeta.node,
         })
@@ -1827,7 +1825,6 @@ export function transformAstSketchLines({
             type: 'singleValue',
             argType: a.type,
             value: nodeMeta.node,
-            argIndex: a.argPosition.argIndex,
           },
           varExpression: nodeMeta.node,
         })
@@ -1839,7 +1836,6 @@ export function transformAstSketchLines({
             index: a.argPosition.index,
             value: nodeMeta.node,
             argType: a.type,
-            argIndex: 0,
           },
           varExpression: nodeMeta.node,
         })
@@ -1885,7 +1881,7 @@ export function transformAstSketchLines({
       pathToNode: _pathToNode,
       referencedSegment,
       fnName: transformTo || (callExp.node.callee.name as ToolTip),
-      input:
+      segmentInput:
         seg.type === 'Circle'
           ? {
               type: 'arc-segment',
