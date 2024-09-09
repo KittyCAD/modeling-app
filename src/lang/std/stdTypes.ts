@@ -9,21 +9,7 @@ import {
   CallExpression,
   Literal,
 } from '../wasm'
-import { EngineCommandManager } from './engineConnection'
 import { LineInputsType } from './sketchcombos'
-
-export interface InternalFirstArg {
-  programMemory: ProgramMemory
-  name?: string
-  sourceRange: SourceRange
-  engineCommandManager: EngineCommandManager
-  code: string
-}
-
-export interface PathReturn {
-  programMemory: ProgramMemory
-  currentPath: Path
-}
 
 export interface ModifyAstBase {
   node: Program
@@ -65,12 +51,21 @@ interface ArcSegmentInput {
  */
 export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
 
+
+/**
+ * Interface for adding or replacing a sketch stblib call expression to a sketch.
+ * Replacing normally means adding or removing a constraint
+ * 
+ * @property segmentInput - The input segment data, which can be either a straight segment or an arc segment.
+ * @property replaceExistingCallback - An optional callback function to replace an existing call expression,
+ * if not provided, a new call expression will be added using segMentInput values.
+ * @property referencedSegment - An optional path to a referenced segment.
+ * @property spliceBetween=false - Defaults to false. Normal behavior is to add a new callExpression to the end of the pipeExpression.
+ */
 interface addCall extends ModifyAstBase {
   segmentInput: SegmentInputs
+  replaceExistingCallback?: (rawArgs: RawArgs) => ReturnType<CreateStdLibSketchCallExpr>
   referencedSegment?: Path
-  replaceExisting?: boolean
-  createCallback?: (rawArgs: RawArgs) => ReturnType<CreateStdLibSketchCallExpr>
-  /// defaults to false, normal behavior  is to add a new callExpression to the end of the pipeExpression
   spliceBetween?: boolean
 }
 
