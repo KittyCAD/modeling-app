@@ -80,14 +80,3 @@ export function trap<T>(
     })
   return true
 }
-
-/**
- * Trap an error, suppressing it from the user.  Trapping is the opposite of
- * propagating an error.  We should propagate errors in low-level functions and
- * trap at the top level.
- */
-export function trapSuppressed<T>(
-  value: ExcludeErr<T> | Error
-): value is Error {
-  return trap(value, { suppress: true })
-}
