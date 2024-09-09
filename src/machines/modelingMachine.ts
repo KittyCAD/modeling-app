@@ -524,7 +524,7 @@ export const modelingMachine = setup({
     }),
     'AST extrude': ({ context: { store }, event }) => {
       if (event.type !== 'Extrude') return
-      (async () => {
+      ;(async () => {
         if (!event.data) return
         const { selection, distance } = event.data
         let ast = kclManager.ast
@@ -534,7 +534,11 @@ export const modelingMachine = setup({
           distance.insertIndex !== undefined
         ) {
           const newBody = [...ast.body]
-          newBody.splice(distance.insertIndex, 0, distance.variableDeclarationAst)
+          newBody.splice(
+            distance.insertIndex,
+            0,
+            distance.variableDeclarationAst
+          )
           ast.body = newBody
         }
         const pathToNode = getNodePathFromSourceRange(
@@ -572,7 +576,7 @@ export const modelingMachine = setup({
       })().catch(reportRejection)
     },
     'AST delete selection': ({ context: { selectionRanges } }) => {
-      (async () => {
+      ;(async () => {
         let ast = kclManager.ast
 
         const modifiedAst = await deleteFromSelection(
