@@ -198,7 +198,6 @@ export class SceneEntities {
         segment.userData.to &&
         segment.userData.center &&
         segment.userData.radius &&
-        segment.userData.prevSegment &&
         segment.userData.type === CIRCLE_SEGMENT
       ) {
         callbacks.push(
