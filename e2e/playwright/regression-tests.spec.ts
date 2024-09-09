@@ -75,7 +75,8 @@ const sketch001 = startSketchAt([-0, -0])
 
     await page.setViewportSize({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await page.goto('/')
+    await u.waitForPageLoad()
 
     await test.step('Check arrow down works', async () => {
       await page.getByRole('button', { name: 'Commands ⌘K' }).click()
