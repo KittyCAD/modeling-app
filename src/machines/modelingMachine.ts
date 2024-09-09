@@ -1160,10 +1160,12 @@ export const modelingMachine = createMachine(
         if (!event.data) return
 
         // Extract inputs
+        // let ast = kclManager.ast
         const { selection, radius } = event.data
 
         // Apply fillet to selection
         const applyFilletToSelectionResult = applyFilletToSelection(
+          // ast,
           selection,
           radius
         )
