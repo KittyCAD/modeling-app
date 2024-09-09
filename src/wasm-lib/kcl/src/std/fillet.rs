@@ -44,7 +44,7 @@ impl EdgeReference {
     pub fn get_engine_id(&self, args: &Args) -> Result<uuid::Uuid, KclError> {
         match self {
             EdgeReference::Uuid(uuid) => Ok(*uuid),
-            EdgeReference::Tag(tag) => Ok(args.get_tag_engine_info(&tag)?.id),
+            EdgeReference::Tag(tag) => Ok(args.get_tag_engine_info(tag)?.id),
         }
     }
 }
