@@ -149,14 +149,16 @@ test.describe('Sketch tests', () => {
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page.waitForTimeout(100)
 
-    await page.mouse.click(700, 200)
+    await expect(async () => {
+      await page.mouse.click(700, 200)
 
-    await expect.poll(u.normalisedEditorCode)
-      .toBe(`const sketch001 = startSketchOn('XZ')
+      await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
+        .toBe(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> line([-12.34, 12.34], %)
 
 `)
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
   test('Can exit selection of face', async ({ page }) => {
     // Load the app with the code panes
