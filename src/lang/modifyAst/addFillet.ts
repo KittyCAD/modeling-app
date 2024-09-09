@@ -49,6 +49,21 @@ export function applyFilletToSelection(
 ): void | Error {
   // 1. get AST
   let ast = kclManager.ast
+
+  // 2. modify ast clone with fillet and tag
+  const result = modifyAstWithFilletAndTag(ast, selection, radius)
+  if (err(result)) return result
+  const { modifiedAst, pathToFilletNode } = result
+
+  // 3. update ast
+  updateAstAndFocus(modifiedAst, pathToFilletNode)
+}
+
+function modifyAstWithFilletAndTag(
+  ast: Program,
+  selection: Selections,
+  radius: KclCommandValue
+): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
   const astResult = insertRadiusIntoAst(ast, radius)
   if (err(astResult)) return astResult
 
@@ -77,8 +92,7 @@ export function applyFilletToSelection(
   if (trap(addFilletResult)) return addFilletResult
   const { modifiedAst, pathToFilletNode } = addFilletResult
 
-  // 4. update ast
-  updateAstAndFocus(modifiedAst, pathToFilletNode)
+  return { modifiedAst, pathToFilletNode }
 }
 
 function insertRadiusIntoAst(

@@ -95,7 +95,7 @@ export function App() {
     })
 
     const newCmdId = uuidv4()
-    if (state.matches('idle.showPlanes')) return
+    if (state.matches({ idle: 'showPlanes' })) return
     if (context.store?.buttonDownInStream !== undefined) return
     debounceSocketSend({
       type: 'modeling_cmd_req',
