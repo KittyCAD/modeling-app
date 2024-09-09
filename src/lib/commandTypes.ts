@@ -1,11 +1,6 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
-import {
-  AnyStateMachine,
-  ContextFrom,
-  EventFrom,
-  InterpreterFrom,
-} from 'xstate'
+import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
 import { Selection } from './selections'
 import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
@@ -186,7 +181,7 @@ export type CommandArgument<
         machineContext?: ContextFrom<T>
       ) => boolean)
   skip?: boolean
-  machineActor: InterpreterFrom<T>
+  machineActor: Actor<T>
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */

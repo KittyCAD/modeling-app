@@ -19,6 +19,7 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
+import { reportRejection } from 'lib/trap'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -87,28 +88,30 @@ const createWindow = (filePath?: string): BrowserWindow => {
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
   } else {
-    getProjectPathAtStartup(filePath).then((projectPath) => {
-      const startIndex = path.join(
-        __dirname,
-        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-      )
+    getProjectPathAtStartup(filePath)
+      .then(async (projectPath) => {
+        const startIndex = path.join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+        )
 
-      if (projectPath === null) {
-        newWindow.loadFile(startIndex)
-        return
-      }
+        if (projectPath === null) {
+          await newWindow.loadFile(startIndex)
+          return
+        }
 
-      console.log('Loading file', projectPath)
+        console.log('Loading file', projectPath)
 
-      const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-      console.log('Full URL', fullUrl)
+        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+        console.log('Full URL', fullUrl)
 
-      newWindow.loadFile(startIndex, {
-        hash: fullUrl,
+        await newWindow.loadFile(startIndex, {
+          hash: fullUrl,
+        })
       })
-    })
+      .catch(reportRejection)
   }
 
   // Open the DevTools.
@@ -175,6 +178,7 @@ ipcMain.handle('login', async (event, host) => {
 
   const handle = await client.deviceAuthorization()
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   shell.openExternal(handle.verification_uri_complete)
 
   // Wait for the user to login.
@@ -241,12 +245,12 @@ export async function checkForUpdates(autoUpdater: AppUpdater) {
   console.log(result)
 }
 
-app.on('ready', async () => {
+app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
-  checkForUpdates(autoUpdater)
+  checkForUpdates(autoUpdater).catch(reportRejection)
   const fifteenMinutes = 15 * 60 * 1000
   setInterval(() => {
-    checkForUpdates(autoUpdater)
+    checkForUpdates(autoUpdater).catch(reportRejection)
   }, fifteenMinutes)
 
   autoUpdater.on('update-available', (info) => {

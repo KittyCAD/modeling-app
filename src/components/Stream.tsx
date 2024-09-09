@@ -53,9 +53,10 @@ export const Stream = () => {
    * executed. If we can find a way to do this from a more
    * central place, we can move this code there.
    */
-  async function executeCodeAndPlayStream() {
-    kclManager.executeCode(true).then(() => {
-      videoRef.current?.play().catch((e) => {
+  function executeCodeAndPlayStream() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    kclManager.executeCode(true).then(async () => {
+      await videoRef.current?.play().catch((e) => {
         console.warn('Video playing was prevented', e, videoRef.current)
       })
       setStreamState(StreamState.Playing)
@@ -218,12 +219,12 @@ export const Stream = () => {
    */
   useEffect(() => {
     if (!kclManager.isExecuting) {
-      setTimeout(() =>
+      setTimeout(() => {
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
-      )
+      })
     }
   }, [kclManager.isExecuting])
 
@@ -287,9 +288,10 @@ export const Stream = () => {
       },
     })
     if (state.matches('Sketch')) return
-    if (state.matches('idle.showPlanes')) return
+    if (state.matches({ idle: 'showPlanes' })) return
 
     if (!context.store?.didDragInStream && btnName(e).left) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sendSelectEventToEngine(
         e,
         videoRef.current,

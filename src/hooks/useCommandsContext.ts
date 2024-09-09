@@ -1,6 +1,10 @@
 import { CommandsContext } from 'components/CommandBar/CommandBarProvider'
-import { useContext } from 'react'
 
 export const useCommandsContext = () => {
-  return useContext(CommandsContext)
+  const commandBarActor = CommandsContext.useActorRef()
+  const commandBarState = CommandsContext.useSelector((state) => state)
+  return {
+    commandBarSend: commandBarActor.send,
+    commandBarState,
+  }
 }

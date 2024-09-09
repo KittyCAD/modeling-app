@@ -8,6 +8,7 @@ import { editorShortcutMeta } from './KclEditorPane'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { kclManager } from 'lib/singletons'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { reportRejection } from 'lib/trap'
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
@@ -47,7 +48,9 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           {convertToVarEnabled && (
             <Menu.Item>
               <button
-                onClick={() => handleConvertToVarClick()}
+                onClick={() => {
+                  handleConvertToVarClick().catch(reportRejection)
+                }}
                 className={styles.button}
               >
                 <span>Convert to Variable</span>
