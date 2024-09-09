@@ -11,6 +11,8 @@ import { CustomIcon } from 'components/CustomIcon'
 import { Link } from 'react-router-dom'
 import { APP_VERSION } from './Settings'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -104,7 +106,7 @@ const SignIn = () => {
             </p>
             {isDesktop() ? (
               <button
-                onClick={signInDesktop}
+                onClick={toSync(signInDesktop, reportRejection)}
                 className={
                   'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
                   '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'

@@ -50,7 +50,7 @@ import {
   applyConstraintAxisAlign,
 } from 'components/Toolbar/SetAbsDistance'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
@@ -492,13 +492,15 @@ export const modelingMachine = setup({
         }
       }
     ),
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     'hide default planes': () => kclManager.hidePlanes(),
     'reset sketch metadata': assign({
       sketchDetails: null,
       sketchEnginePathId: '',
       sketchPlaneId: '',
     }),
-    'reset camera position': () =>
+    'reset camera position': () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -508,7 +510,8 @@ export const modelingMachine = setup({
           vantage: { x: 0, y: -1250, z: 580 },
           up: { x: 0, y: 0, z: 1 },
         },
-      }),
+      })
+    },
     'set new sketch metadata': assign(({ event }) => {
       if (
         event.type !== 'xstate.done.actor.animate-to-sketch' &&
@@ -519,77 +522,85 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'AST extrude': async ({ context: { store }, event }) => {
+    'AST extrude': ({ context: { store }, event }) => {
       if (event.type !== 'Extrude') return
-      if (!event.data) return
-      const { selection, distance } = event.data
-      let ast = kclManager.ast
-      if (
-        'variableName' in distance &&
-        distance.variableName &&
-        distance.insertIndex !== undefined
-      ) {
-        const newBody = [...ast.body]
-        newBody.splice(distance.insertIndex, 0, distance.variableDeclarationAst)
-        ast.body = newBody
-      }
-      const pathToNode = getNodePathFromSourceRange(
-        ast,
-        selection.codeBasedSelections[0].range
-      )
-      const extrudeSketchRes = extrudeSketch(
-        ast,
-        pathToNode,
-        false,
-        'variableName' in distance
-          ? distance.variableIdentifierAst
-          : distance.valueAst
-      )
-      if (trap(extrudeSketchRes)) return
-      const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
+      ;(async () => {
+        if (!event.data) return
+        const { selection, distance } = event.data
+        let ast = kclManager.ast
+        if (
+          'variableName' in distance &&
+          distance.variableName &&
+          distance.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(
+            distance.insertIndex,
+            0,
+            distance.variableDeclarationAst
+          )
+          ast.body = newBody
+        }
+        const pathToNode = getNodePathFromSourceRange(
+          ast,
+          selection.codeBasedSelections[0].range
+        )
+        const extrudeSketchRes = extrudeSketch(
+          ast,
+          pathToNode,
+          false,
+          'variableName' in distance
+            ? distance.variableIdentifierAst
+            : distance.valueAst
+        )
+        if (trap(extrudeSketchRes)) return
+        const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
-      store.videoElement?.pause()
-      const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-        focusPath: pathToExtrudeArg,
-        zoomToFit: true,
-        zoomOnRangeAndType: {
-          range: selection.codeBasedSelections[0].range,
-          type: 'path',
-        },
-      })
-      if (!engineCommandManager.engineConnection?.idleMode) {
-        store.videoElement?.play().catch((e) => {
-          console.warn('Video playing was prevented', e)
+        store.videoElement?.pause()
+        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+          focusPath: pathToExtrudeArg,
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.codeBasedSelections[0].range,
+            type: 'path',
+          },
         })
-      }
-      if (updatedAst?.selections) {
-        editorManager.selectRange(updatedAst?.selections)
-      }
+        if (!engineCommandManager.engineConnection?.idleMode) {
+          store.videoElement?.play().catch((e) => {
+            console.warn('Video playing was prevented', e)
+          })
+        }
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
+        }
+      })().catch(reportRejection)
     },
-    'AST delete selection': async ({ context: { selectionRanges } }) => {
-      let ast = kclManager.ast
+    'AST delete selection': ({ context: { selectionRanges } }) => {
+      ;(async () => {
+        let ast = kclManager.ast
 
-      const modifiedAst = await deleteFromSelection(
-        ast,
-        selectionRanges.codeBasedSelections[0],
-        kclManager.programMemory,
-        getFaceDetails
-      )
-      if (err(modifiedAst)) return
+        const modifiedAst = await deleteFromSelection(
+          ast,
+          selectionRanges.codeBasedSelections[0],
+          kclManager.programMemory,
+          getFaceDetails
+        )
+        if (err(modifiedAst)) return
 
-      const testExecute = await executeAst({
-        ast: modifiedAst,
-        useFakeExecutor: true,
-        engineCommandManager,
-      })
-      if (testExecute.errors.length) {
-        toast.error('Unable to delete part')
-        return
-      }
+        const testExecute = await executeAst({
+          ast: modifiedAst,
+          useFakeExecutor: true,
+          engineCommandManager,
+        })
+        if (testExecute.errors.length) {
+          toast.error('Unable to delete part')
+          return
+        }
 
-      await kclManager.updateAst(modifiedAst, true)
+        await kclManager.updateAst(modifiedAst, true)
+      })().catch(reportRejection)
     },
-    'AST fillet': async ({ event }) => {
+    'AST fillet': ({ event }) => {
       if (event.type !== 'Fillet') return
       if (!event.data) return
 
@@ -635,16 +646,18 @@ export const modelingMachine = setup({
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
         })
-      })()
+      })().catch(reportRejection)
     },
     'tear down client sketch': () => {
       if (sceneEntitiesManager.activeSegments) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         sceneEntitiesManager.tearDownSketch({ removeAxis: false })
       }
     },
     'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
     'set up draft line': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.setUpDraftSegment(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
@@ -655,6 +668,7 @@ export const modelingMachine = setup({
     },
     'set up draft arc': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.setUpDraftSegment(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
@@ -683,6 +697,7 @@ export const modelingMachine = setup({
     'set up draft rectangle': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Add rectangle origin') return
       if (!sketchDetails || !event.data) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.setupDraftRectangle(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
@@ -693,6 +708,7 @@ export const modelingMachine = setup({
     },
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.setUpDraftSegment(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
@@ -702,7 +718,10 @@ export const modelingMachine = setup({
         false
       )
     },
-    'show default planes': () => kclManager.showPlanes(),
+    'show default planes': () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.showPlanes()
+    },
     'setup noPoints onClick listener': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
 
@@ -732,7 +751,8 @@ export const modelingMachine = setup({
     'engineToClient cam sync direction': () => {
       sceneInfra.camControls.syncDirection = 'engineToClient'
     },
-    'set selection filter to faces only': () =>
+    'set selection filter to faces only': () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -740,13 +760,15 @@ export const modelingMachine = setup({
           type: 'set_selection_filter',
           filter: ['face', 'object'],
         },
-      }),
+      })
+    },
     'set selection filter to defaults': () =>
       kclManager.defaultSelectionFilter(),
     'Delete segment': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
-      return deleteSegment({
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deleteSegment({
         pathToNode: event.data,
         sketchDetails,
       })

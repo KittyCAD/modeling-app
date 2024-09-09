@@ -57,6 +57,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       icon: 'printer3d',
       iconClassName: '!p-0',
       keybinding: 'Ctrl + Shift + M',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
         commandBarSend({
           type: 'Find and select command',
