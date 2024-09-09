@@ -151,12 +151,14 @@ export type SimplifiedVarValue =
       index: 0 | 1
     }
 
+export interface SegmentInput {
+  varExpression: Expr
+  varDetails: VarValue
+}
+
 export type TransformCallback = (
   // args: Array<Expr>,
-  inputs: {
-    varExpression: Expr
-    varDetails: VarValue
-  }[],
+  inputs: SegmentInput[],
   referencedSegment?: Path
 ) => {
   callExp: Expr

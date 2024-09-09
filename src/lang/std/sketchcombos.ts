@@ -1,4 +1,4 @@
-import { SimplifiedVarValue, TransformCallback, VarValue } from './stdTypes'
+import { SegmentInput, SimplifiedVarValue, TransformCallback } from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
 import { Selections, Selection } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
@@ -157,11 +157,7 @@ function intersectCallWrapper({
 export type TransformInfo = {
   tooltip: ToolTip
   createNode: (a: {
-    // TODO: this type is used in a few places, should be extracted
-    inputs: {
-      varExpression: Expr
-      varDetails: VarValue
-    }[]
+    inputs: SegmentInput[]
     referenceSegName: string
     tag?: Expr
     forceValueUsedInTransform?: Expr
@@ -640,7 +636,11 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLine', args[0].varExpression, tag),
+            createCallWrapper(
+              'yLine',
+              getInputOfType(args, 'yRelative').varExpression,
+              tag
+            ),
       },
       setHorzDistance: {
         tooltip: 'lineTo',
@@ -698,7 +698,11 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLineTo', args[0].varExpression, tag),
+            createCallWrapper(
+              'yLineTo',
+              getInputOfType(args, 'yAbsolute').varExpression,
+              tag
+            ),
       },
     },
     xAbsolute: {
@@ -848,7 +852,11 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLine', args[0].varExpression, tag),
+            createCallWrapper(
+              'yLine',
+              getInputOfType(args, 'yRelative').varExpression,
+              tag
+            ),
       },
       horizontal: {
         tooltip: 'xLine',
@@ -939,12 +947,9 @@ const transformMap: TransformMap = {
       equalLength: {
         tooltip: 'angledLineOfXLength',
         createNode: ({ referenceSegName, inputs, tag }) => {
-          const input =
-            inputs.find((a) => a.varDetails.argType === 'xRelative') ||
-            inputs[0]
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
-            input.varExpression
+            getInputOfType(inputs, 'xRelative').varExpression
           )
           return (args) =>
             createCallWrapper(
@@ -990,7 +995,11 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLine', args[0].varExpression, tag),
+            createCallWrapper(
+              'yLine',
+              getInputOfType(args, 'yRelative').varExpression,
+              tag
+            ),
       },
     },
     angle: {
@@ -1108,7 +1117,11 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLineTo', args[0].varExpression, tag),
+            createCallWrapper(
+              'yLineTo',
+              getInputOfType(args, 'yAbsolute').varExpression,
+              tag
+            ),
       },
     },
     angle: {
@@ -1773,11 +1786,7 @@ export function transformAstSketchLines({
         _referencedSegmentNameVal.type === 'Identifier' &&
         String(_referencedSegmentNameVal.name)) ||
       ''
-    // TODO: this type is used in a few places, should be extracted
-    const inputs: {
-      varExpression: Expr
-      varDetails: VarValue
-    }[] = []
+    const inputs: SegmentInput[] = []
 
     getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
       if (
@@ -2031,4 +2040,11 @@ function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   )
     return true
   return false
+}
+
+function getInputOfType(
+  a: SegmentInput[],
+  b: LineInputsType | 'radius'
+): SegmentInput {
+  return a.find(({ varDetails }) => varDetails.argType === b) || a[0]
 }
