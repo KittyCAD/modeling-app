@@ -282,7 +282,7 @@ async fn inner_revolve(
             .await?;
         }
         AxisOrEdgeReference::Edge(edge) => {
-            let edge_id = edge.get_engine_id(&sketch_group, &args)?;
+            let edge_id = edge.get_engine_id(&args)?;
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::RevolveAboutEdge {

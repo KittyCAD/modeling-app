@@ -7,8 +7,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, SketchGroup, SketchGroupSet},
+    errors::KclError,
+    executor::{KclValue, SketchGroup, SketchGroupSet},
     std::{revolve::AxisOrEdgeReference, Args},
 };
 
@@ -24,11 +24,11 @@ pub struct MirrorData {
 /// Mirror a sketch or set of sketches.
 ///
 /// Only works on 2D sketches for now.
-pub async fn mirror(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn mirror(args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group_set): (MirrorData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     let sketch_groups = inner_mirror(data, sketch_group_set, args).await?;
-    Ok(MemoryItem::SketchGroups { value: sketch_groups })
+    Ok(sketch_groups.into())
 }
 
 /// Mirror a sketch or set of sketches.
@@ -69,30 +69,38 @@ async fn inner_mirror(
         return Ok(starting_sketch_groups);
     }
 
-    let (axis, origin) = match data.axis {
-        AxisOrEdgeReference::Axis(axis) => axis.axis_and_origin()?,
-        AxisOrEdgeReference::Edge(_edge) => {
-            //let _edge_id = edge.get_engine_id(&sketch_group, &args)?;
-            // TODO: Implement this engine side.
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Mirroring by edge or path is not yet implemented".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+    match data.axis {
+        AxisOrEdgeReference::Axis(axis) => {
+            let (axis, origin) = axis.axis_and_origin()?;
+
+            args.batch_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                ModelingCmd::EntityMirror {
+                    ids: starting_sketch_groups
+                        .iter()
+                        .map(|sketch_group| sketch_group.id)
+                        .collect(),
+                    axis,
+                    point: origin,
+                },
+            )
+            .await?;
+        }
+        AxisOrEdgeReference::Edge(edge) => {
+            let edge_id = edge.get_engine_id(&args)?;
+            args.batch_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                ModelingCmd::EntityMirrorAcrossEdge {
+                    ids: starting_sketch_groups
+                        .iter()
+                        .map(|sketch_group| sketch_group.id)
+                        .collect(),
+                    edge_id,
+                },
+            )
+            .await?;
         }
     };
-
-    args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::EntityMirror {
-            ids: starting_sketch_groups
-                .iter()
-                .map(|sketch_group| sketch_group.id)
-                .collect(),
-            axis,
-            point: origin,
-        },
-    )
-    .await?;
 
     Ok(starting_sketch_groups)
 }

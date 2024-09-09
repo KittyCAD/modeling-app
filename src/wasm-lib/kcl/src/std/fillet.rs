@@ -41,22 +41,10 @@ pub enum EdgeReference {
 }
 
 impl EdgeReference {
-    pub fn get_engine_id(&self, sketch_group: &SketchGroup, args: &Args) -> Result<uuid::Uuid, KclError> {
+    pub fn get_engine_id(&self, args: &Args) -> Result<uuid::Uuid, KclError> {
         match self {
             EdgeReference::Uuid(uuid) => Ok(*uuid),
-            EdgeReference::Tag(tag) => Ok(sketch_group
-                .value
-                .iter()
-                .find(|p| p.get_name() == *tag)
-                .ok_or_else(|| {
-                    KclError::Type(KclErrorDetails {
-                        message: format!("No edge found with tag: `{}`", tag),
-                        source_ranges: vec![args.source_range],
-                    })
-                })?
-                .get_base()
-                .geo_meta
-                .id),
+            EdgeReference::Tag(tag) => Ok(args.get_tag_engine_info(&tag)?.id),
         }
     }
 }
@@ -149,7 +137,7 @@ async fn inner_fillet(
     let mut extrude_group = extrude_group.clone();
     let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
-        let edge_id = tag.get_engine_id(&extrude_group.sketch_group, &args)?;
+        let edge_id = edge_tag.get_engine_id(&args)?;
 
         let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(
