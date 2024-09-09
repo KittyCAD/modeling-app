@@ -20,7 +20,7 @@ import {
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
-import { SimplifiedVarValue, VarValueKeys } from './std/stdTypes'
+import { SimplifiedArgDetails, VarValueKeys } from './std/stdTypes'
 
 beforeAll(async () => {
   await initPromise
@@ -639,7 +639,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         code.indexOf(lineOfInterest) + lineOfInterest.length,
       ]
       const pathToNode = getNodePathFromSourceRange(ast, range)
-      let argPosition: SimplifiedVarValue
+      let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
         argPosition = {
           type: 'arrayItem',
@@ -692,7 +692,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         code.indexOf(lineOfInterest) + 1,
         code.indexOf(lineOfInterest) + lineOfInterest.length,
       ]
-      let argPosition: SimplifiedVarValue
+      let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
         argPosition = {
           type: 'arrayItem',

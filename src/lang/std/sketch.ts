@@ -35,7 +35,7 @@ import {
   SingleValueInput,
   AddTagInfo,
   SegmentInputs,
-  SimplifiedVarValue,
+  SimplifiedArgDetails,
 } from 'lang/std/stdTypes'
 
 import {
@@ -112,7 +112,7 @@ type AbbreviatedInput =
   | ArrayItemInput<any>['index']
   | ObjectPropertyInput<any>['key']
   | SingleValueInput<any>['type']
-  | SimplifiedVarValue
+  | SimplifiedArgDetails
   | undefined
 
 const constrainInfo = (
@@ -329,7 +329,7 @@ export const lineTo: SketchLineHelper = {
               type: 'arrayItem',
               index: 0,
               argType: 'xAbsolute',
-              value: createLiteral(roundOff(to[0], 2)),
+              expr: createLiteral(roundOff(to[0], 2)),
             },
           },
           {
@@ -338,7 +338,7 @@ export const lineTo: SketchLineHelper = {
               type: 'arrayItem',
               index: 1,
               argType: 'yAbsolute',
-              value: createLiteral(roundOff(to[1], 2)),
+              expr: createLiteral(roundOff(to[1], 2)),
             },
           },
         ],
@@ -455,7 +455,7 @@ export const line: SketchLineHelper = {
               type: 'arrayItem',
               index: 0,
               argType: 'xRelative',
-              value: createLiteral(roundOff(to[0] - from[0], 2)),
+              expr: createLiteral(roundOff(to[0] - from[0], 2)),
             },
           },
           {
@@ -464,7 +464,7 @@ export const line: SketchLineHelper = {
               type: 'arrayItem',
               index: 1,
               argType: 'yRelative',
-              value: createLiteral(roundOff(to[1] - from[1], 2)),
+              expr: createLiteral(roundOff(to[1] - from[1], 2)),
             },
           },
         ],
@@ -561,7 +561,7 @@ export const xLineTo: SketchLineHelper = {
           varDetails: {
             type: 'singleValue',
             argType: 'xAbsolute',
-            value: createLiteral(roundOff(to[0], 2)),
+            expr: createLiteral(roundOff(to[0], 2)),
           },
         },
       ])
@@ -638,7 +638,7 @@ export const yLineTo: SketchLineHelper = {
           varDetails: {
             type: 'singleValue',
             argType: 'yAbsolute',
-            value: newVal,
+            expr: newVal,
           },
         },
       ])
@@ -715,7 +715,7 @@ export const xLine: SketchLineHelper = {
           varDetails: {
             type: 'singleValue',
             argType: 'xRelative',
-            value: newVal,
+            expr: newVal,
           },
         },
       ])
@@ -788,7 +788,7 @@ export const yLine: SketchLineHelper = {
           varDetails: {
             type: 'singleValue',
             argType: 'yRelative',
-            value: newVal,
+            expr: newVal,
           },
         },
       ])
@@ -874,7 +874,7 @@ export const tangentialArcTo: SketchLineHelper = {
               type: 'arrayItem',
               index: 0,
               argType: 'xRelative',
-              value: toX,
+              expr: toX,
             },
           },
           {
@@ -883,7 +883,7 @@ export const tangentialArcTo: SketchLineHelper = {
               type: 'arrayItem',
               index: 1,
               argType: 'yAbsolute',
-              value: toY,
+              expr: toY,
             },
           },
         ],
@@ -1022,7 +1022,7 @@ export const circle: SketchLineHelper = {
             index: 0,
             key: 'center',
             argType: 'xAbsolute',
-            value: x,
+            expr: x,
           },
         },
         {
@@ -1032,7 +1032,7 @@ export const circle: SketchLineHelper = {
             index: 1,
             key: 'center',
             argType: 'yAbsolute',
-            value: y,
+            expr: y,
           },
         },
         {
@@ -1041,7 +1041,7 @@ export const circle: SketchLineHelper = {
             type: 'objectProperty',
             key: 'radius',
             argType: 'radius',
-            value: radiusExp,
+            expr: radiusExp,
           },
         },
       ])
@@ -1202,7 +1202,7 @@ export const angledLine: SketchLineHelper = {
               index: 0,
               key: 'angle',
               argType: 'angle',
-              value: newAngleVal,
+              expr: newAngleVal,
             },
           },
           {
@@ -1212,7 +1212,7 @@ export const angledLine: SketchLineHelper = {
               index: 1,
               key: 'length',
               argType: 'length',
-              value: newLengthVal,
+              expr: newLengthVal,
             },
           },
         ],
@@ -1317,7 +1317,7 @@ export const angledLineOfXLength: SketchLineHelper = {
               index: 0,
               key: 'angle',
               argType: 'angle',
-              value: angle,
+              expr: angle,
             },
           },
           {
@@ -1327,7 +1327,7 @@ export const angledLineOfXLength: SketchLineHelper = {
               index: 1,
               key: 'length',
               argType: 'xRelative',
-              value: xLength,
+              expr: xLength,
             },
           },
         ]).callExp
@@ -1433,7 +1433,7 @@ export const angledLineOfYLength: SketchLineHelper = {
               index: 0,
               key: 'angle',
               argType: 'angle',
-              value: angle,
+              expr: angle,
             },
           },
           {
@@ -1443,7 +1443,7 @@ export const angledLineOfYLength: SketchLineHelper = {
               index: 1,
               key: 'length',
               argType: 'yRelative',
-              value: yLength,
+              expr: yLength,
             },
           },
         ]).callExp
@@ -1537,7 +1537,7 @@ export const angledLineToX: SketchLineHelper = {
               index: 0,
               key: 'angle',
               argType: 'angle',
-              value: angle,
+              expr: angle,
             },
           },
           {
@@ -1547,7 +1547,7 @@ export const angledLineToX: SketchLineHelper = {
               index: 1,
               key: 'to',
               argType: 'xAbsolute',
-              value: xArg,
+              expr: xArg,
             },
           },
         ],
@@ -1647,7 +1647,7 @@ export const angledLineToY: SketchLineHelper = {
               index: 0,
               key: 'angle',
               argType: 'angle',
-              value: angle,
+              expr: angle,
             },
           },
           {
@@ -1657,7 +1657,7 @@ export const angledLineToY: SketchLineHelper = {
               index: 1,
               key: 'to',
               argType: 'yAbsolute',
-              value: yArg,
+              expr: yArg,
             },
           },
         ],
@@ -1768,7 +1768,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
             type: 'objectProperty',
             key: 'angle',
             argType: 'angle',
-            value: angle,
+            expr: angle,
           },
         },
         {
@@ -1777,7 +1777,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
             type: 'objectProperty',
             key: 'offset',
             argType: 'intersectionOffset',
-            value: offset,
+            expr: offset,
           },
         },
       ])

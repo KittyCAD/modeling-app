@@ -1,4 +1,8 @@
-import { SegmentInput, SimplifiedVarValue, TransformCallback } from './stdTypes'
+import {
+  SegmentInput,
+  SimplifiedArgDetails,
+  TransformCallback,
+} from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
 import { Selections, Selection } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
@@ -1355,7 +1359,7 @@ export function removeSingleConstraint({
   ast,
 }: {
   pathToCallExp: PathToNode
-  inputDetails: SimplifiedVarValue
+  inputDetails: SimplifiedArgDetails
   ast: Program
 }): TransformInfo | false {
   const callExp = getNodeFromPath<CallExpression>(
@@ -1392,16 +1396,16 @@ export function removeSingleConstraint({
                 varValue.index === inputDetails.index
               )
             )
-              return varValue.value
+              return varValue.expr
             const literal = rawValues.find(
               (rawValue) =>
                 (rawValue.varDetails.type === 'arrayItem' ||
                   rawValue.varDetails.type === 'arrayOrObjItem') &&
                 rawValue.varDetails.index === inputDetails.index
-            )?.varDetails?.value
+            )?.varDetails?.expr
             return (
               (varValue.index === inputDetails.index && literal) ||
-              varValue.value
+              varValue.expr
             )
           })
           return createStdlibCallExpression(
@@ -1430,9 +1434,7 @@ export function removeSingleConstraint({
                 rawValue.varDetails.type === 'arrayInObject' &&
                 rawValue.varDetails.key === inputDetails.key &&
                 rawValue.varDetails.index ===
-                  (varValue.type === 'arrayInObject'
-                    ? varValue.index
-                    : -1)
+                  (varValue.type === 'arrayInObject' ? varValue.index : -1)
             )
             const rawLiteralObjProp = rawValues.find(
               (rawValue) =>
@@ -1443,8 +1445,7 @@ export function removeSingleConstraint({
             )
             if (
               inputDetails.type === 'arrayInObject' &&
-              rawLiteralArrayInObject?.varDetails.type ===
-                'arrayInObject' &&
+              rawLiteralArrayInObject?.varDetails.type === 'arrayInObject' &&
               rawLiteralArrayInObject?.varDetails.index ===
                 inputDetails.index &&
               rawLiteralArrayInObject?.varDetails.key === inputDetails.key
@@ -1453,7 +1454,7 @@ export function removeSingleConstraint({
                 arrayDetailsNameBetterLater[varValue.key] = []
               arrayDetailsNameBetterLater[inputDetails.key][
                 inputDetails.index
-              ] = rawLiteralArrayInObject.varDetails.value
+              ] = rawLiteralArrayInObject.varDetails.expr
             } else if (
               inputDetails.type === 'objectProperty' &&
               (rawLiteralObjProp?.varDetails.type === 'objectProperty' ||
@@ -1461,7 +1462,7 @@ export function removeSingleConstraint({
               rawLiteralObjProp?.varDetails.key === inputDetails.key &&
               varValue.key === inputDetails.key
             ) {
-              otherThing[inputDetails.key] = rawLiteralObjProp.varDetails.value
+              otherThing[inputDetails.key] = rawLiteralObjProp.varDetails.expr
             } else if (varValue.type === 'arrayInObject') {
               if (!arrayDetailsNameBetterLater[varValue.key])
                 arrayDetailsNameBetterLater[varValue.key] = []
@@ -1491,7 +1492,7 @@ export function removeSingleConstraint({
 
         return createCallWrapper(
           callExp.node.callee.name as any,
-          rawValues[0].varDetails.value,
+          rawValues[0].varDetails.expr,
           tag
         )
       },
@@ -1804,7 +1805,7 @@ export function transformAstSketchLines({
           varDetails: {
             type: 'arrayItem',
             index: a.argPosition.index,
-            value: nodeMeta.node,
+            expr: nodeMeta.node,
             argType: a.type,
           },
           varExpression: nodeMeta.node,
@@ -1814,7 +1815,7 @@ export function transformAstSketchLines({
           varDetails: {
             type: 'objectProperty',
             key: a.argPosition.key,
-            value: nodeMeta.node,
+            expr: nodeMeta.node,
             argType: a.type,
           },
           varExpression: nodeMeta.node,
@@ -1824,7 +1825,7 @@ export function transformAstSketchLines({
           varDetails: {
             type: 'singleValue',
             argType: a.type,
-            value: nodeMeta.node,
+            expr: nodeMeta.node,
           },
           varExpression: nodeMeta.node,
         })
@@ -1834,7 +1835,7 @@ export function transformAstSketchLines({
             type: 'arrayInObject',
             key: a.argPosition.key,
             index: a.argPosition.index,
-            value: nodeMeta.node,
+            expr: nodeMeta.node,
             argType: a.type,
           },
           varExpression: nodeMeta.node,

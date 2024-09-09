@@ -89,51 +89,80 @@ export type VarValueKeys =
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType | 'radius'
-  value: T
+  expr: T
 }
 export interface ArrayItemInput<T> {
   type: 'arrayItem'
   index: 0 | 1
   argType: LineInputsType | 'radius'
-  value: T
+  expr: T
 }
 export interface ObjectPropertyInput<T> {
   type: 'objectProperty'
   key: VarValueKeys
   argType: LineInputsType | 'radius'
-  value: T
+  expr: T
 }
 
-export interface ArrayOrObjItemInput<T> {
+interface ArrayOrObjItemInput<T> {
   type: 'arrayOrObjItem'
   key: VarValueKeys
   index: 0 | 1
   argType: LineInputsType | 'radius'
-  value: T
+  expr: T
 }
 
-export interface ArrayInObject<T> {
+interface ArrayInObject<T> {
   type: 'arrayInObject'
   key: VarValueKeys
   argType: LineInputsType | 'radius'
   index: 0 | 1
-  value: T
+  expr: T
 }
 
-export type _VarValue<T> =
+type _VarValue<T> =
   | SingleValueInput<T>
   | ArrayItemInput<T>
   | ObjectPropertyInput<T>
   | ArrayOrObjItemInput<T>
   | ArrayInObject<T>
 
-export type VarValue = _VarValue<Expr>
-export type RawValue = _VarValue<Literal>
+/**
+ * {@link RawArg.expr} is the current expression for each of the args for a segment
+ * i.e. if the expression is 5 + 6, {@link RawArg.expr} will be that binary expression
+ *
+ * Other properties on this type describe how the args are defined for this particular segment
+ * i.e. line uses [x, y] style inputs, while angledLine uses either [angle, length] or {angle, length}
+ * and circle uses {center: [x, y], radius: number}
+ * Which is why a union type is used that can be type narrowed using the {@link RawArg.type} property
+ * {@link RawArg.expr} is common to all of these types
+ */
+type InputArg = _VarValue<Expr>
 
-export type VarValues = Array<VarValue>
-export type RawValues = Array<RawValue>
+/**
+ * {@link RawArg.expr} is the literal equivalent of whatever current expression is
+ * i.e. if the expression is 5 + 6, the literal would be 11
+ * but of course works for expressions like myVar + someFn() etc too
+ * This is useful in cases where we want to "un-constrain" inputs to segments
+ */
+type RawArg = _VarValue<Literal>
 
-export type SimplifiedVarValue =
+type InputArgs = Array<InputArg>
+
+// /**
+//  * The literal equivalent of whatever current expression is
+//  * i.e. if the expression is 5 + 6, the literal would be 11
+//  * but of course works for expressions like myVar + someFn() etc too
+//  * This is useful in cases where we want to "un-constrain" inputs to segments
+//  */
+type RawArgs = Array<RawArg>
+
+/**
+ * Serves the same role as {@link InputArg} on {@link RawArg}
+ * but without the {@link RawArg.expr} property, since it is not needed
+ * when we only need to know where there arg is.
+ */
+export type SimplifiedArgDetails =
   | {
       type: 'singleValue'
     }
@@ -147,7 +176,7 @@ export type SimplifiedVarValue =
 
 export interface SegmentInput {
   varExpression: Expr
-  varDetails: VarValue
+  varDetails: InputArg
 }
 
 export type TransformCallback = (
@@ -171,7 +200,7 @@ export interface ConstrainInfo {
   pathToNode: PathToNode
   value: string
   calculatedValue?: any
-  argPosition?: SimplifiedVarValue
+  argPosition?: SimplifiedArgDetails
 }
 
 export interface SketchLineHelper {

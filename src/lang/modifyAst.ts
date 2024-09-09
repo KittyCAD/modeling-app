@@ -38,7 +38,7 @@ import {
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import { SimplifiedVarValue } from './std/stdTypes'
+import { SimplifiedArgDetails } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 
@@ -831,7 +831,7 @@ export function deleteSegmentFromPipeExpression(
 
 export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
-  varValue: SimplifiedVarValue,
+  varValue: SimplifiedArgDetails,
   ast: Program,
   programMemory: ProgramMemory
 ):
