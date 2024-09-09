@@ -641,11 +641,20 @@ describe('Testing removeSingleConstraintInfo', () => {
       const pathToNode = getNodePathFromSourceRange(ast, range)
       let argPosition: SimplifiedVarValue
       if (key === 'arrayIndex' && typeof value === 'number') {
-        argPosition = { type: 'arrayItem', argIndex: 0, index: value ? 0 : 1 }
+        argPosition = {
+          type: 'arrayItem',
+          index: value === 0 ? 0 : 1,
+          argIndex: 0,
+        }
       } else if (key === 'objectProperty' && typeof value === 'string') {
         argPosition = {
           type: 'objectProperty',
           key: value as VarValueKeys,
+          argIndex: 0,
+        }
+      } else if (key === '') {
+        argPosition = {
+          type: 'singleValue',
           argIndex: 0,
         }
       } else {
@@ -688,7 +697,11 @@ describe('Testing removeSingleConstraintInfo', () => {
       ]
       let argPosition: SimplifiedVarValue
       if (key === 'arrayIndex' && typeof value === 'number') {
-        argPosition = { type: 'arrayItem', argIndex: 0, index: value ? 0 : 1 }
+        argPosition = {
+          type: 'arrayItem',
+          argIndex: 0,
+          index: value === 0 ? 0 : 1,
+        }
       } else if (key === 'objectProperty' && typeof value === 'string') {
         argPosition = {
           type: 'objectProperty',

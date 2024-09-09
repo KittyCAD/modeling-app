@@ -131,12 +131,10 @@ const constrainInfo = (
   argPosition:
     g === 'singleValue'
       ? { type: 'singleValue', argIndex: 0 }
-      : g === 1 || g === 0
+      : typeof g === 'number'
       ? { type: 'arrayItem', index: g, argIndex: 0 }
       : typeof g === 'string'
       ? { type: 'objectProperty', key: g, argIndex: 0 }
-      : g && 'type' in g
-      ? g
       : undefined,
   pathToNode: e,
   stdLibFnName: f,
@@ -163,8 +161,12 @@ const commonConstraintInfoHelper = (
   const firstArg = callExp.arguments?.[0]
   const isArr = firstArg.type === 'ArrayExpression'
   if (!isArr && firstArg.type !== 'ObjectExpression') return []
+  const pipeExpressionIndex = pathToNode.findIndex(
+    (x) => x[1] === 'PipeExpression'
+  )
+  const pathToBase = pathToNode.slice(0, pipeExpressionIndex + 2)
   const pathToArrayExpression: PathToNode = [
-    ...pathToNode,
+    ...pathToBase,
     ['arguments', 'CallExpression'],
     [0, 'index'],
     isArr
@@ -463,7 +465,7 @@ export const line: SketchLineHelper = {
             varExpression: createLiteral(roundOff(to[1] - from[1], 2)),
             varDetails: {
               type: 'arrayItem',
-              index: 0,
+              index: 1,
               argType: 'yRelative',
               value: createLiteral(roundOff(to[1] - from[1], 2)),
               argIndex: 0,

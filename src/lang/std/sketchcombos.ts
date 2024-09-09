@@ -442,9 +442,8 @@ const setHorVertDistanceForXYLines =
 const setHorzVertDistanceConstraintLineCreateNode =
   (isX: boolean): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, inputs }) => {
-    const varVal = (
-      isX ? inputs[0].varExpression : inputs[1].varExpression
-    ) as BinaryPart
+    let varVal = isX ? inputs[1].varExpression : inputs[0].varExpression
+    varVal = isExprBinaryPart(varVal) ? varVal : createLiteral(0)
     const varValBinExp = createBinaryExpressionWithUnary([
       createLastSeg(!isX),
       varVal,
@@ -641,7 +640,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLine', args[1].varExpression, tag),
+            createCallWrapper('yLine', args[0].varExpression, tag),
       },
       setHorzDistance: {
         tooltip: 'lineTo',
@@ -699,7 +698,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLineTo', args[1].varExpression, tag),
+            createCallWrapper('yLineTo', args[0].varExpression, tag),
       },
     },
     xAbsolute: {
@@ -849,7 +848,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLine', args[1].varExpression, tag),
+            createCallWrapper('yLine', args[0].varExpression, tag),
       },
       horizontal: {
         tooltip: 'xLine',
@@ -940,9 +939,12 @@ const transformMap: TransformMap = {
       equalLength: {
         tooltip: 'angledLineOfXLength',
         createNode: ({ referenceSegName, inputs, tag }) => {
+          const input =
+            inputs.find((a) => a.varDetails.argType === 'xRelative') ||
+            inputs[0]
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
-            inputs[0].varExpression
+            input.varExpression
           )
           return (args) =>
             createCallWrapper(
@@ -988,7 +990,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLine', args[1].varExpression, tag),
+            createCallWrapper('yLine', args[0].varExpression, tag),
       },
     },
     angle: {
@@ -1106,7 +1108,7 @@ const transformMap: TransformMap = {
         createNode:
           ({ tag }) =>
           (args) =>
-            createCallWrapper('yLineTo', args[1].varExpression, tag),
+            createCallWrapper('yLineTo', args[0].varExpression, tag),
       },
     },
     angle: {
@@ -1371,22 +1373,23 @@ export function removeSingleConstraint({
         if (inputDetails.type === 'arrayItem') {
           const values = inputs.map(({ varDetails: varValue }) => {
             if (
-              (varValue.type === 'arrayItem' ||
-                varValue.type === 'arrayOrObjItem') &&
-              varValue.index === inputDetails.index
-            ) {
-              const literal = rawValues.find(
-                (rawValue) =>
-                  (rawValue.varDetails.type === 'arrayItem' ||
-                    rawValue.varDetails.type === 'arrayOrObjItem') &&
-                  rawValue.varDetails.index === inputDetails.index
-              )?.varDetails?.value
-              return (
-                (varValue.index === inputDetails.index && literal) ||
-                varValue.value
+              !(
+                (varValue.type === 'arrayItem' ||
+                  varValue.type === 'arrayOrObjItem') &&
+                varValue.index === inputDetails.index
               )
-            }
-            return varValue.value
+            )
+              return varValue.value
+            const literal = rawValues.find(
+              (rawValue) =>
+                (rawValue.varDetails.type === 'arrayItem' ||
+                  rawValue.varDetails.type === 'arrayOrObjItem') &&
+                rawValue.varDetails.index === inputDetails.index
+            )?.varDetails?.value
+            return (
+              (varValue.index === inputDetails.index && literal) ||
+              varValue.value
+            )
           })
           return createStdlibCallExpression(
             callExp.node.callee.name as any,
@@ -1440,7 +1443,8 @@ export function removeSingleConstraint({
               ] = rawLiteralArrayInObject.varDetails.value
             } else if (
               inputDetails.type === 'objectProperty' &&
-              rawLiteralObjProp?.varDetails.type === 'objectProperty' &&
+              (rawLiteralObjProp?.varDetails.type === 'objectProperty' ||
+                rawLiteralObjProp?.varDetails.type === 'arrayOrObjItem') &&
               rawLiteralObjProp?.varDetails.key === inputDetails.key &&
               varValue.key === inputDetails.key
             ) {
