@@ -243,13 +243,13 @@ const FileTreeItem = ({
                   onClickCapture={(e) =>
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }
                   onFocusCapture={(e) =>
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
@@ -296,13 +296,13 @@ const FileTreeItem = ({
                   onClickCapture={(e) => {
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }}
                   onFocusCapture={(e) =>
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }
                 >
@@ -482,7 +482,7 @@ export const FileTreeInner = ({
         onClickCapture={(e) => {
           fileSend({
             type: 'Set selected directory',
-            data: fileContext.project,
+            directory: fileContext.project,
           })
         }}
       >

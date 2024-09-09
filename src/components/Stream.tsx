@@ -287,7 +287,7 @@ export const Stream = () => {
       },
     })
     if (state.matches('Sketch')) return
-    if (state.matches('idle.showPlanes')) return
+    if (state.matches({ idle: 'showPlanes' })) return
 
     if (!context.store?.didDragInStream && btnName(e).left) {
       sendSelectEventToEngine(
