@@ -3,6 +3,7 @@ import { SourceRange } from '../lang/wasm'
 import { v4 } from 'uuid'
 import { isDesktop } from './isDesktop'
 import { AnyMachineSnapshot } from 'xstate'
+import { AsyncFn } from './types'
 
 export const uuidv4 = v4
 
@@ -105,21 +106,6 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
 
   return deferred
 }
-
-/**
- * Replace a function's return type with another type.
- */
-type WithReturnType<F extends (...args: any[]) => any, NewReturn> = (
-  ...args: Parameters<F>
-) => NewReturn
-
-/**
- * Assert that a function type is async, preserving its parameter types.
- */
-type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
-  F,
-  Promise<unknown>
->
 
 /**
  * Wrap an async function so that it can be called in a sync context, catching
