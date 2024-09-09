@@ -26,7 +26,7 @@ import { sendTelemetry } from 'lib/textToCad'
 import { Themes } from 'lib/theme'
 import { ActionButton } from './ActionButton'
 import { commandBarMachine } from 'machines/commandBarMachine'
-import { EventData, EventFrom } from 'xstate'
+import { EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { reportRejection } from 'lib/trap'
 
@@ -46,7 +46,7 @@ export function ToastTextToCadError({
   prompt: string
   commandBarSend: (
     event: EventFrom<typeof commandBarMachine>,
-    data?: EventData
+    data?: unknown
   ) => void
 }) {
   return (
@@ -113,7 +113,7 @@ export function ToastTextToCadSuccess({
   token?: string
   fileMachineSend: (
     event: EventFrom<typeof fileMachine>,
-    data?: EventData
+    data?: unknown
   ) => void
   settings: {
     theme: Themes

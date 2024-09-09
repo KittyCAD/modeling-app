@@ -14,13 +14,7 @@ import {
   Themes,
 } from 'lib/theme'
 import decamelize from 'decamelize'
-import {
-  AnyStateMachine,
-  ContextFrom,
-  InterpreterFrom,
-  Prop,
-  StateFrom,
-} from 'xstate'
+import { Actor, AnyStateMachine, ContextFrom, Prop, StateFrom } from 'xstate'
 import { isDesktop } from 'lib/isDesktop'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
@@ -40,7 +34,7 @@ import { reportRejection } from 'lib/trap'
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
   context: ContextFrom<T>
-  send: Prop<InterpreterFrom<T>, 'send'>
+  send: Prop<Actor<T>, 'send'>
 }
 
 type SettingsAuthContextType = {
@@ -51,7 +45,7 @@ type SettingsAuthContextType = {
 // a little hacky for sure, open to changing it
 // this implies that we should only even have one instance of this provider mounted at any one time
 // but I think that's a safe assumption
-let settingsStateRef: (typeof settingsMachine)['context'] | undefined
+let settingsStateRef: ContextFrom<typeof settingsMachine> | undefined
 export const getSettingsState = () => settingsStateRef
 
 export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
@@ -102,21 +96,19 @@ export const SettingsAuthProviderBase = ({
   const { commandBarSend } = useCommandsContext()
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
-    settingsMachine,
-    {
-      context: loadedSettings,
+    settingsMachine.provide({
       actions: {
         //TODO: batch all these and if that's difficult to do from tsx,
         // make it easy to do
 
-        setClientSideSceneUnits: (context, event) => {
+        setClientSideSceneUnits: ({ context, event }) => {
           const newBaseUnit =
             event.type === 'set.modeling.defaultUnit'
               ? (event.data.value as BaseUnit)
               : context.modeling.defaultUnit.current
           sceneInfra.baseUnit = newBaseUnit
         },
-        setEngineTheme: (context) => {
+        setEngineTheme: ({ context }) => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
@@ -138,16 +130,16 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
-        setEngineScaleGridVisibility: (context) => {
+        setEngineScaleGridVisibility: ({ context }) => {
           engineCommandManager.setScaleGridVisibility(
             context.modeling.showScaleGrid.current
           )
         },
-        setClientTheme: (context) => {
+        setClientTheme: ({ context }) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
         },
-        setEngineEdges: (context) => {
+        setEngineEdges: ({ context }) => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
@@ -158,7 +150,8 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
-        toastSuccess: (_, event) => {
+        toastSuccess: ({ event }) => {
+          if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
             string
@@ -180,7 +173,7 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': (context, event) => {
+        'Execute AST': ({ context, event }) => {
           try {
             const allSettingsIncludesUnitChange =
               event.type === 'Set all settings' &&
@@ -209,12 +202,13 @@ export const SettingsAuthProviderBase = ({
             console.error('Error executing AST after settings change', e)
           }
         },
+        persistSettings: ({ context }) => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          saveSettings(context, loadedProject?.project?.path)
+        },
       },
-      services: {
-        'Persist settings': (context) =>
-          saveSettings(context, loadedProject?.project?.path),
-      },
-    }
+    }),
+    { input: loadedSettings }
   )
   settingsStateRef = settingsState.context
 
@@ -297,19 +291,22 @@ export const SettingsAuthProviderBase = ({
   }, [settingsState.context.textEditor.blinkingCursor.current])
 
   // Auth machine setup
-  const [authState, authSend, authActor] = useMachine(authMachine, {
-    actions: {
-      goToSignInPage: () => {
-        navigate(PATHS.SIGN_IN)
-        logout().catch(reportRejection)
+  const [authState, authSend, authActor] = useMachine(
+    authMachine.provide({
+      actions: {
+        goToSignInPage: () => {
+          navigate(PATHS.SIGN_IN)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          logout()
+        },
+        goToIndexPage: () => {
+          if (location.pathname.includes(PATHS.SIGN_IN)) {
+            navigate(PATHS.INDEX)
+          }
+        },
       },
-      goToIndexPage: () => {
-        if (location.pathname.includes(PATHS.SIGN_IN)) {
-          navigate(PATHS.INDEX)
-        }
-      },
-    },
-  })
+    })
+  )
 
   useStateMachineCommands({
     machineId: 'auth',

@@ -16,7 +16,7 @@ type ToolbarMode = {
 }
 
 export interface ToolbarItemCallbackProps {
-  modelingStateMatches: StateFrom<typeof modelingMachine>['matches']
+  modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
   sketchPathId: string | false
@@ -84,7 +84,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
-        disabled: (state) => !state.can('Extrude'),
+        disabled: (state) => !state.can({ type: 'Extrude' }),
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',
@@ -129,12 +129,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'loft',
         onClick: () => console.error('Loft not yet implemented'),
         icon: 'loft',
-        status: 'unavailable',
+        status: 'kcl-only',
         title: 'Loft',
         hotkey: 'L',
         description:
           'Create a 3D body by blending between two or more sketches.',
         links: [
+          {
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/loft',
+          },
           {
             label: 'GitHub discussion',
             url: 'https://github.com/KittyCAD/modeling-app/discussions/613',
@@ -151,7 +155,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'fillet3d',
         status: DEV ? 'available' : 'kcl-only',
-        disabled: (state) => !state.can('Fillet'),
+        disabled: (state) => !state.can({ type: 'Fillet' }),
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
@@ -268,7 +272,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         disableHotkey: (state) =>
           !(
-            state.matches('Sketch.SketchIdle') ||
+            state.matches({ Sketch: 'SketchIdle' }) ||
             state.matches('Sketch no face')
           ),
         icon: 'arrowLeft',
@@ -282,33 +286,37 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'line',
-        onClick: ({ modelingStateMatches: matches, modelingSend }) =>
+        onClick: ({ modelingState, modelingSend }) =>
           modelingSend({
             type: 'change tool',
             data: {
-              tool: !matches('Sketch.Line tool') ? 'line' : 'none',
+              tool: !modelingState.matches({ Sketch: 'Line tool' })
+                ? 'line'
+                : 'none',
             },
           }),
         icon: 'line',
         status: 'available',
         disabled: (state) =>
           state.matches('Sketch no face') ||
-          state.matches('Sketch.Rectangle tool.Awaiting second corner'),
+          state.matches({
+            Sketch: { 'Rectangle tool': 'Awaiting second corner' },
+          }),
         title: 'Line',
         hotkey: (state) =>
-          state.matches('Sketch.Line tool') ? ['Esc', 'L'] : 'L',
+          state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
         description: 'Start drawing straight lines',
         links: [],
-        isActive: (state) => state.matches('Sketch.Line tool'),
+        isActive: (state) => state.matches({ Sketch: 'Line tool' }),
       },
       [
         {
           id: 'tangential-arc',
-          onClick: ({ modelingStateMatches, modelingSend }) =>
+          onClick: ({ modelingState, modelingSend }) =>
             modelingSend({
               type: 'change tool',
               data: {
-                tool: !modelingStateMatches('Sketch.Tangential arc to')
+                tool: !modelingState.matches({ Sketch: 'Tangential arc to' })
                   ? 'tangentialArc'
                   : 'none',
               },
@@ -317,13 +325,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           disabled: (state) =>
             !isEditingExistingSketch(state.context) &&
-            !state.matches('Sketch.Tangential arc to'),
+            !state.matches({ Sketch: 'Tangential arc to' }),
           title: 'Tangential Arc',
           hotkey: (state) =>
-            state.matches('Sketch.Tangential arc to') ? ['Esc', 'A'] : 'A',
+            state.matches({ Sketch: 'Tangential arc to' }) ? ['Esc', 'A'] : 'A',
           description: 'Start drawing an arc tangent to the current segment',
           links: [],
-          isActive: (state) => state.matches('Sketch.Tangential arc to'),
+          isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
         },
         {
           id: 'three-point-arc',
@@ -384,11 +392,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'corner-rectangle',
-          onClick: ({ modelingStateMatches, modelingSend }) =>
+          onClick: ({ modelingState, modelingSend }) =>
             modelingSend({
               type: 'change tool',
               data: {
-                tool: !modelingStateMatches('Sketch.Rectangle tool')
+                tool: !modelingState.matches({ Sketch: 'Rectangle tool' })
                   ? 'rectangle'
                   : 'none',
               },
@@ -397,13 +405,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           disabled: (state) =>
             !canRectangleTool(state.context) &&
-            !state.matches('Sketch.Rectangle tool'),
+            !state.matches({ Sketch: 'Rectangle tool' }),
           title: 'Corner rectangle',
           hotkey: (state) =>
-            state.matches('Sketch.Rectangle tool') ? ['Esc', 'R'] : 'R',
+            state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
           description: 'Start drawing a rectangle',
           links: [],
-          isActive: (state) => state.matches('Sketch.Rectangle tool'),
+          isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
         },
         {
           id: 'center-rectangle',
@@ -452,9 +460,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-length',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain length') &&
-              state.can('Constrain length')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain length' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain length' }),
@@ -469,9 +476,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-angle',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain angle') &&
-              state.can('Constrain angle')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain angle' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain angle' }),
@@ -485,9 +491,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-vertical',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Make segment vertical') &&
-              state.can('Make segment vertical')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Make segment vertical' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Make segment vertical' }),
@@ -502,9 +507,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-horizontal',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Make segment horizontal') &&
-              state.can('Make segment horizontal')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Make segment horizontal' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Make segment horizontal' }),
@@ -519,9 +523,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-parallel',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain parallel') &&
-              state.can('Constrain parallel')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain parallel' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain parallel' }),
@@ -535,9 +538,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-equal-length',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain equal length') &&
-              state.can('Constrain equal length')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain equal length' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain equal length' }),
@@ -551,9 +553,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-horizontal-distance',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain horizontal distance') &&
-              state.can('Constrain horizontal distance')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain horizontal distance' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain horizontal distance' }),
@@ -567,9 +568,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-vertical-distance',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain vertical distance') &&
-              state.can('Constrain vertical distance')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain vertical distance' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain vertical distance' }),
@@ -583,9 +583,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-absolute-x',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain ABS X') &&
-              state.can('Constrain ABS X')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain ABS X' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain ABS X' }),
@@ -599,9 +598,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-absolute-y',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain ABS Y') &&
-              state.can('Constrain ABS Y')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain ABS Y' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain ABS Y' }),
@@ -615,9 +613,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-perpendicular-distance',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain perpendicular distance') &&
-              state.can('Constrain perpendicular distance')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain perpendicular distance' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain perpendicular distance' }),
@@ -632,9 +629,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-align-horizontal',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain horizontally align') &&
-              state.can('Constrain horizontally align')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain horizontally align' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain horizontally align' }),
@@ -648,9 +644,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-align-vertical',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain vertically align') &&
-              state.can('Constrain vertically align')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain vertically align' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain vertically align' }),
@@ -664,9 +659,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'snap-to-x',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain snap to X') &&
-              state.can('Constrain snap to X')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain snap to X' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain snap to X' }),
@@ -680,9 +674,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'snap-to-y',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain snap to Y') &&
-              state.can('Constrain snap to Y')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain snap to Y' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain snap to Y' }),
@@ -696,9 +689,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'constraint-remove',
           disabled: (state) =>
             !(
-              state.matches('Sketch.SketchIdle') &&
-              state.nextEvents.includes('Constrain remove constraints') &&
-              state.can('Constrain remove constraints')
+              state.matches({ Sketch: 'SketchIdle' }) &&
+              state.can({ type: 'Constrain remove constraints' })
             ),
           onClick: ({ modelingSend }) =>
             modelingSend({ type: 'Constrain remove constraints' }),

@@ -553,13 +553,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFileAndSelect: async (name: string) => {
       return test?.step(`Create a file named ${name}, select it`, async () => {
+        await openFilePanel(page)
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
-        await page
+        const newFile = page
           .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
-          .click()
+
+        await expect(newFile).toBeVisible()
+        await newFile.click()
       })
     },
 
@@ -590,6 +593,15 @@ export async function getUtils(page: Page, test_?: typeof test) {
       })
     },
 
+    /**
+     * @deprecated Sorry I don't have time to fix this right now, but runs like
+     * the one linked below show me that setting the open panes in this manner is not reliable.
+     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
+     * or you can imperatively open the panes with functions like {openKclCodePanel}
+     * (or we can make a general openPane function that takes a paneId).,
+     * but having a separate initScript does not seem to work reliably.
+     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
+     */
     panesOpen: async (paneIds: PaneId[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(

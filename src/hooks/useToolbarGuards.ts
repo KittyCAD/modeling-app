@@ -8,7 +8,7 @@ import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { useModelingContext } from './useModelingContext'
-import { PathToNode, SourceRange, parse, recast } from 'lang/wasm'
+import { PathToNode, SourceRange } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { toSync } from 'lib/utils'
 
@@ -24,8 +24,7 @@ export function useConvertToVariable(range?: SourceRange) {
   }, [enable])
 
   useEffect(() => {
-    const parsed = parse(recast(ast))
-    if (trap(parsed)) return
+    const parsed = ast
 
     const meta = isNodeSafeToReplace(
       parsed,

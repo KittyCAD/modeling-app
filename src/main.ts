@@ -2,7 +2,14 @@
 // template that ElectronJS provides.
 
 import dotenv from 'dotenv'
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  nativeTheme,
+} from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
@@ -76,6 +83,7 @@ const createWindow = (filePath?: string): BrowserWindow => {
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
     frame: os.platform() !== 'darwin',
     titleBarStyle: 'hiddenInset',
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
   })
 
   // and load the index.html of the app.

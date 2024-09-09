@@ -6,7 +6,7 @@ import {
 import { VITE_KC_API_BASE_URL } from 'env'
 import toast from 'react-hot-toast'
 import { FILE_EXT } from './constants'
-import { ContextFrom, EventData, EventFrom } from 'xstate'
+import { ContextFrom, EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { NavigateFunction } from 'react-router-dom'
 import crossPlatformFetch from './crossPlatformFetch'
@@ -65,12 +65,12 @@ interface TextToKclProps {
   trimmedPrompt: string
   fileMachineSend: (
     type: EventFrom<typeof fileMachine>,
-    data?: EventData
+    data?: unknown
   ) => unknown
   navigate: NavigateFunction
   commandBarSend: (
     type: EventFrom<typeof commandBarMachine>,
-    data?: EventData
+    data?: unknown
   ) => unknown
   context: ContextFrom<typeof fileMachine>
   token?: string

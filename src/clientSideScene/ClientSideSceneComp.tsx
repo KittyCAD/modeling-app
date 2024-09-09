@@ -124,9 +124,9 @@ export const ClientSideScene = ({
     } else if (context.mouseState.type === 'isDragging') {
       cursor = 'grabbing'
     } else if (
-      state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to') ||
-      state.matches('Sketch.Rectangle tool')
+      state.matches({ Sketch: 'Line tool' }) ||
+      state.matches({ Sketch: 'Tangential arc to' }) ||
+      state.matches({ Sketch: 'Rectangle tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -214,9 +214,9 @@ const Overlay = ({
     overlay.visible &&
     typeof context?.segmentHoverMap?.[pathToNodeString] === 'number' &&
     !(
-      state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to') ||
-      state.matches('Sketch.Rectangle tool')
+      state.matches({ Sketch: 'Line tool' }) ||
+      state.matches({ Sketch: 'Tangential arc to' }) ||
+      state.matches({ Sketch: 'Rectangle tool' })
     )
 
   return (
