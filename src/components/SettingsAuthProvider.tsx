@@ -29,7 +29,6 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
 import { saveSettings } from 'lib/settings/settingsUtils'
-import { reportRejection } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
