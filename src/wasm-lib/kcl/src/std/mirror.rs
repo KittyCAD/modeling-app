@@ -52,6 +52,34 @@ pub async fn mirror(args: Args) -> Result<KclValue, KclError> {
 ///   |> circle([20, 20], 1, %)
 ///   |> mirror({axis: 'Y'}, %)
 /// ```
+///
+/// ```no_run
+/// const helper001 = startSketchOn('XZ')
+///  |> startProfileAt([0, 0], %)
+///  |> line([10, 0], %, $edge001)
+///
+/// const sketch001 = startSketchOn('XZ')
+///  |> circle([20, 20], 1, %)
+///  |> mirror({axis: edge001}, %)
+/// ```
+///
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///   |> startProfileAt([10, 0], %)
+///   |> line([5, -5], %)
+///   |> line([5, 5], %)
+///   |> lineTo([profileStartX(%), profileStartY(%)], %)
+///   |> close(%)
+///
+/// const part001 = mirror({
+///   axis: {
+///     custom: {
+///       axis: [0.0, 1.0, 0.0],
+///       origin: [0.0, 0.0, 0.0]
+///     }
+///   }
+/// }, sketch001)
+/// ```
 #[stdlib {
     name = "mirror",
 }]
