@@ -10,8 +10,8 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
-  TransformInfo,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'

@@ -9,8 +9,8 @@ import {
   PathToNodeMap,
   getTransformInfos,
   transformAstSketchLines,
-  TransformInfo,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,

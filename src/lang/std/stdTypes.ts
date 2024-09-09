@@ -69,7 +69,7 @@ interface addCall extends ModifyAstBase {
   segmentInput: SegmentInputs
   referencedSegment?: Path
   replaceExisting?: boolean
-  createCallback?: TransformCallback // TODO: #29 probably should not be optional
+  createCallback?: (rawArgs: RawArgs) => ReturnType<CreateStdLibSketchCallExpr>
   /// defaults to false, normal behavior  is to add a new callExpression to the end of the pipeExpression
   spliceBetween?: boolean
 }
@@ -149,13 +149,13 @@ type RawArg = _VarValue<Literal>
 
 export type InputArgs = Array<InputArg>
 
-// /**
-//  * The literal equivalent of whatever current expression is
-//  * i.e. if the expression is 5 + 6, the literal would be 11
-//  * but of course works for expressions like myVar + someFn() etc too
-//  * This is useful in cases where we want to "un-constrain" inputs to segments
-//  */
-type RawArgs = Array<RawArg>
+/**
+ * The literal equivalent of whatever current expression is
+ * i.e. if the expression is 5 + 6, the literal would be 11
+ * but of course works for expressions like myVar + someFn() etc too
+ * This is useful in cases where we want to "un-constrain" inputs to segments
+ */
+export type RawArgs = Array<RawArg>
 
 /**
  * Serves the same role as {@link InputArg} on {@link RawArg}
@@ -174,12 +174,21 @@ export type SimplifiedArgDetails =
       index: 0 | 1
     }
 
-export type TransformCallback = (
-  inputs: InputArgs,
+export type CreateStdLibSketchCallExpr = (args: {
+  inputs: InputArgs
+  referenceSegName: string
+  tag?: Expr
+  forceValueUsedInTransform?: Expr
+  rawArgs: InputArgs
   referencedSegment?: Path
-) => {
+}) => {
   callExp: Expr
   valueUsedInTransform?: number
+}
+
+export type TransformInfo = {
+  tooltip: ToolTip
+  createNode: CreateStdLibSketchCallExpr
 }
 
 export interface ConstrainInfo {

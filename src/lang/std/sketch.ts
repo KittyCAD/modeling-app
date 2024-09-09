@@ -28,7 +28,6 @@ import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 
 import {
   SketchLineHelper,
-  TransformCallback,
   ConstrainInfo,
   ArrayItemInput,
   ObjectPropertyInput,
@@ -36,6 +35,8 @@ import {
   AddTagInfo,
   SegmentInputs,
   SimplifiedArgDetails,
+  RawArgs,
+  CreateStdLibSketchCallExpr,
 } from 'lang/std/stdTypes'
 
 import {
@@ -321,23 +322,20 @@ export const lineTo: SketchLineHelper = {
     ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
     if (replaceExisting && createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback(
-        [
-          {
-            type: 'arrayItem',
-            index: 0,
-            argType: 'xAbsolute',
-            expr: createLiteral(roundOff(to[0], 2)),
-          },
-          {
-            type: 'arrayItem',
-            index: 1,
-            argType: 'yAbsolute',
-            expr: createLiteral(roundOff(to[1], 2)),
-          },
-        ],
-        referencedSegment
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          type: 'arrayItem',
+          index: 0,
+          argType: 'xAbsolute',
+          expr: createLiteral(roundOff(to[0], 2)),
+        },
+        {
+          type: 'arrayItem',
+          index: 1,
+          argType: 'yAbsolute',
+          expr: createLiteral(roundOff(to[1], 2)),
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -441,23 +439,20 @@ export const line: SketchLineHelper = {
 
     if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback(
-        [
-          {
-            type: 'arrayItem',
-            index: 0,
-            argType: 'xRelative',
-            expr: createLiteral(roundOff(to[0] - from[0], 2)),
-          },
-          {
-            type: 'arrayItem',
-            index: 1,
-            argType: 'yRelative',
-            expr: createLiteral(roundOff(to[1] - from[1], 2)),
-          },
-        ],
-        referencedSegment
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          type: 'arrayItem',
+          index: 0,
+          argType: 'xRelative',
+          expr: createLiteral(roundOff(to[0] - from[0], 2)),
+        },
+        {
+          type: 'arrayItem',
+          index: 1,
+          argType: 'yRelative',
+          expr: createLiteral(roundOff(to[1] - from[1], 2)),
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -842,23 +837,20 @@ export const tangentialArcTo: SketchLineHelper = {
 
     if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback(
-        [
-          {
-            type: 'arrayItem',
-            index: 0,
-            argType: 'xRelative',
-            expr: toX,
-          },
-          {
-            type: 'arrayItem',
-            index: 1,
-            argType: 'yAbsolute',
-            expr: toY,
-          },
-        ],
-        referencedSegment
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          type: 'arrayItem',
+          index: 0,
+          argType: 'xRelative',
+          expr: toX,
+        },
+        {
+          type: 'arrayItem',
+          index: 1,
+          argType: 'yAbsolute',
+          expr: toY,
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -1154,25 +1146,22 @@ export const angledLine: SketchLineHelper = {
 
     if (replaceExisting && createCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      const { callExp, valueUsedInTransform } = createCallback(
-        [
-          {
-            type: 'arrayOrObjItem',
-            index: 0,
-            key: 'angle',
-            argType: 'angle',
-            expr: newAngleVal,
-          },
-          {
-            type: 'arrayOrObjItem',
-            index: 1,
-            key: 'length',
-            argType: 'length',
-            expr: newLengthVal,
-          },
-        ],
-        referencedSegment
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          type: 'arrayOrObjItem',
+          index: 0,
+          key: 'angle',
+          argType: 'angle',
+          expr: newAngleVal,
+        },
+        {
+          type: 'arrayOrObjItem',
+          index: 1,
+          key: 'length',
+          argType: 'length',
+          expr: newLengthVal,
+        },
+      ])
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
@@ -1471,25 +1460,22 @@ export const angledLineToX: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xArg = createLiteral(roundOff(to[0], 2))
     if (replaceExisting && createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback(
-        [
-          {
-            type: 'arrayOrObjItem',
-            index: 0,
-            key: 'angle',
-            argType: 'angle',
-            expr: angle,
-          },
-          {
-            type: 'arrayOrObjItem',
-            index: 1,
-            key: 'to',
-            argType: 'xAbsolute',
-            expr: xArg,
-          },
-        ],
-        referencedSegment
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          type: 'arrayOrObjItem',
+          index: 0,
+          key: 'angle',
+          argType: 'angle',
+          expr: angle,
+        },
+        {
+          type: 'arrayOrObjItem',
+          index: 1,
+          key: 'to',
+          argType: 'xAbsolute',
+          expr: xArg,
+        },
+      ])
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       pipe.body[callIndex] = callExp
       return {
@@ -1575,25 +1561,22 @@ export const angledLineToY: SketchLineHelper = {
     const yArg = createLiteral(roundOff(to[1], 2))
 
     if (replaceExisting && createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback(
-        [
-          {
-            type: 'arrayOrObjItem',
-            index: 0,
-            key: 'angle',
-            argType: 'angle',
-            expr: angle,
-          },
-          {
-            type: 'arrayOrObjItem',
-            index: 1,
-            key: 'to',
-            argType: 'yAbsolute',
-            expr: yArg,
-          },
-        ],
-        referencedSegment
-      )
+      const { callExp, valueUsedInTransform } = createCallback([
+        {
+          type: 'arrayOrObjItem',
+          index: 0,
+          key: 'angle',
+          argType: 'angle',
+          expr: angle,
+        },
+        {
+          type: 'arrayOrObjItem',
+          index: 1,
+          key: 'to',
+          argType: 'yAbsolute',
+          expr: yArg,
+        },
+      ])
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       pipe.body[callIndex] = callExp
       return {
@@ -2121,7 +2104,7 @@ export function replaceSketchLine({
   pathToNode: PathToNode
   fnName: ToolTip
   segmentInput: SegmentInputs
-  createCallback: TransformCallback
+  createCallback: (rawArgs: RawArgs) => ReturnType<CreateStdLibSketchCallExpr>
   referencedSegment?: Path
 }):
   | {
@@ -2151,13 +2134,16 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
-export function addTagForSketchOnFace(a: AddTagInfo, expressionName: string) {
+export function addTagForSketchOnFace(
+  tagInfo: AddTagInfo,
+  expressionName: string
+) {
   if (expressionName === 'close') {
-    return addTag(1)(a)
+    return addTag(1)(tagInfo)
   }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
-    return addTag(a)
+    return addTag(tagInfo)
   }
   return new Error(`"${expressionName}" is not a sketch line helper`)
 }
