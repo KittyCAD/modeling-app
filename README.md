@@ -94,7 +94,7 @@ Third-Party Cookies".
 To spin up the desktop app, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
 
 ```
-yarn electron:start
+yarn tron:start
 ```
 
 This will start the application and hot-reload on changed.
