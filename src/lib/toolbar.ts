@@ -3,6 +3,7 @@ import { DEV } from 'env'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import {
   canRectangleOrCircleTool,
+  isClosedSketch,
   isEditingExistingSketch,
   modelingMachine,
 } from 'machines/modelingMachine'
@@ -297,7 +298,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         disabled: (state) =>
           state.matches('Sketch no face') ||
-          state.matches('Sketch.Rectangle tool.Awaiting second corner'),
+          state.matches('Sketch.Rectangle tool.Awaiting second corner') ||
+          state.matches('Sketch.Circle tool.Awaiting Radius') ||
+          isClosedSketch(state.context),
         title: 'Line',
         hotkey: (state) =>
           state.matches('Sketch.Line tool') ? ['Esc', 'L'] : 'L',
@@ -320,8 +323,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'arc',
           status: 'available',
           disabled: (state) =>
-            !isEditingExistingSketch(state.context) &&
-            !state.matches('Sketch.Tangential arc to'),
+            (!isEditingExistingSketch(state.context) &&
+              !state.matches('Sketch.Tangential arc to')) ||
+            state.matches('Sketch.Rectangle tool.Awaiting second corner') ||
+            state.matches('Sketch.Circle tool.Awaiting Radius') ||
+            isClosedSketch(state.context),
           title: 'Tangential Arc',
           hotkey: (state) =>
             state.matches('Sketch.Tangential arc to') ? ['Esc', 'A'] : 'A',

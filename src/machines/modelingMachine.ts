@@ -1744,3 +1744,25 @@ export function canRectangleOrCircleTool({
   if (err(node)) return false
   return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
 }
+
+/** If the sketch contains `close` or `circle` stdlib functions it must be closed */
+export function isClosedSketch({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  const node = getNodeFromPath<VariableDeclaration>(
+    kclManager.ast,
+    sketchDetails?.sketchPathToNode || [],
+    'VariableDeclaration'
+  )
+  // This should not be returning false, and it should be caught
+  // but we need to simulate old behavior to move on.
+  if (err(node)) return false
+  if (node.node?.declarations?.[0]?.init.type !== 'PipeExpression') return false
+  return node.node.declarations[0].init.body.some(
+    (yo) =>
+      yo.type === 'CallExpression' &&
+      (yo.callee.name === 'close' || yo.callee.name === 'circle')
+  )
+}
