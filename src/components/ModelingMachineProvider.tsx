@@ -210,7 +210,8 @@ export const ModelingMachineProvider = ({
                     pathToNodeString,
                   },
                 })
-              }, 800) as unknown as number
+                // overlay timeout is 1s
+              }, 1000) as unknown as number
               return {
                 ...segmentHoverMap,
                 [pathToNodeString]: timeoutId,

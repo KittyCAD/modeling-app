@@ -1105,11 +1105,7 @@ export const circle: SketchLineHelper = {
         isNotLiteralArrayOrStatic(radiusDetails.exp),
         code.slice(radiusDetails.exp.start, radiusDetails.exp.end),
         'circle',
-        {
-          type: 'objectProperty',
-          key: 'radius',
-          argIndex: 0,
-        },
+        'radius',
         [radiusDetails.exp.start, radiusDetails.exp.end],
         pathToRadiusLiteral
       ),
