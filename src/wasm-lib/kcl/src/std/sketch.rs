@@ -2059,8 +2059,8 @@ pub async fn hole(args: Args) -> Result<KclValue, KclError> {
 ///   |> line([5, 0], %)
 ///   |> line([0, -5], %)
 ///   |> close(%)
-///   |> hole(circle([1, 1], .25, %), %)
-///   |> hole(circle([1, 4], .25, %), %)
+///   |> hole(circle({ center: [1, 1], radius: .25 }, %), %)
+///   |> hole(circle({ center: [1, 4], radius: .25 }, %), %)
 ///
 /// const example = extrude(1, exampleSketch)
 /// ```
@@ -2077,7 +2077,7 @@ pub async fn hole(args: Args) -> Result<KclValue, KclError> {
 ///   }
 ///
 ///  const exampleSketch = startSketchOn('-XZ')
-///     |> circle([0, 0], 3, %)
+///     |> circle({ center: [0, 0], radius: 3 }, %)
 ///     |> hole(squareHoleSketch(), %)
 ///  const example = extrude(1, exampleSketch)
 /// ```

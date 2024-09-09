@@ -50,7 +50,7 @@ pub async fn int(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')
-///   |> circle([0, 0], 2, %)
+///   |> circle({ center: [0, 0], radius: 2 }, %)
 /// const extrude001 = extrude(5, sketch001)
 ///
 /// const pattern01 = patternTransform(int(ceil(5 / 2)), (id) => {

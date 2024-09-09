@@ -48,7 +48,7 @@ pub async fn circle(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("-XZ")
-///   |> circle([0, 0], 10, %)
+///   |> circle({ center: [0, 0], radius: 10 }, %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
@@ -60,7 +60,7 @@ pub async fn circle(args: Args) -> Result<KclValue, KclError> {
 ///   |> line([0, 30], %)
 ///   |> line([-30, 0], %)
 ///   |> close(%)
-///   |> hole(circle([0, 15], 5, %), %)
+///   |> hole(circle({ center: [0, 15], radius: 5 }, %), %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```

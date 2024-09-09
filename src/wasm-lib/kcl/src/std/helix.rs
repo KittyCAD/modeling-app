@@ -42,7 +42,7 @@ pub async fn helix(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// const part001 = startSketchOn('XY')
-///   |> circle([5, 5], 10, %)
+///   |> circle({ center: [5, 5], radius: 10 }, %)
 ///   |> extrude(10, %)
 ///   |> helix({
 ///     angleStart: 0,
