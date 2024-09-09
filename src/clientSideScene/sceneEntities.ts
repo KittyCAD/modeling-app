@@ -1312,7 +1312,12 @@ export class SceneEntities {
         },
         previousProgramMemory: kclManager.programMemory,
       })
-    } else if (group.name === CIRCLE_SEGMENT && subGroup?.name === ARROWHEAD) {
+    } else if (
+      group.name === CIRCLE_SEGMENT &&
+      // !subGroup treats grabbing the outer circumference of the circle
+      // as a drag of the center handle
+      (!subGroup || subGroup?.name === ARROWHEAD)
+    ) {
       // is dragging the radius handle
 
       modded = changeSketchArguments(
