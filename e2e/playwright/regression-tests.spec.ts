@@ -79,7 +79,7 @@ const sketch001 = startSketchAt([-0, -0])
     await u.waitForPageLoad()
 
     await test.step('Check arrow down works', async () => {
-      await page.getByRole('button', { name: 'Commands ⌘K' }).click()
+      await page.getByTestId('command-bar-open-button').click()
 
       await page
         .getByRole('option', { name: 'floppy disk arrow Export' })
@@ -103,7 +103,7 @@ const sketch001 = startSketchAt([-0, -0])
 
     await test.step('Check arrow up works', async () => {
       // theme in test is dark, which is the second option, which means we can test arrow up
-      await page.getByRole('button', { name: 'Commands ⌘K' }).click()
+      await page.getByTestId('command-bar-open-button').click()
 
       await page.getByText('The overall appearance of the').click()
 
