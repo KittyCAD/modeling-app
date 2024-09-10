@@ -129,8 +129,8 @@ export class KclManager {
     if (!isExecuting && this.executeIsStale) {
       const args = this.executeIsStale
       this.executeIsStale = null
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.executeAst(args)
-    } else {
     }
     this._isExecutingCallback(isExecuting)
   }
@@ -154,6 +154,7 @@ export class KclManager {
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(() => {
       this.ast = this.safeParse(codeManager.code) || this.ast
     })
@@ -400,9 +401,11 @@ export class KclManager {
     // Update the code state and the editor.
     codeManager.updateCodeStateEditor(code)
     // Write back to the file system.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     codeManager.writeToFile()
 
     // execute the code.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.executeCode()
   }
   // There's overlapping responsibility between updateAst and executeAst.
@@ -541,6 +544,7 @@ function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   programMemory.hasSketchOrExtrudeGroup() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',

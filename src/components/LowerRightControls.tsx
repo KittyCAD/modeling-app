@@ -12,6 +12,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow, { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
 import { ModelStateIndicator } from './ModelStateIndicator'
+import { reportRejection } from 'lib/trap'
 
 export function LowerRightControls({
   children,
@@ -25,7 +26,7 @@ export function LowerRightControls({
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
-  async function reportbug(event: {
+  function reportbug(event: {
     preventDefault: () => void
     stopPropagation: () => void
   }) {
@@ -34,7 +35,9 @@ export function LowerRightControls({
 
     if (!coreDumpManager) {
       // open default reporting option
-      openWindow('https://github.com/KittyCAD/modeling-app/issues/new/choose')
+      openWindow(
+        'https://github.com/KittyCAD/modeling-app/issues/new/choose'
+      ).catch(reportRejection)
     } else {
       toast
         .promise(
@@ -56,7 +59,7 @@ export function LowerRightControls({
           if (err) {
             openWindow(
               'https://github.com/KittyCAD/modeling-app/issues/new/choose'
-            )
+            ).catch(reportRejection)
           }
         })
     }

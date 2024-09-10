@@ -64,6 +64,7 @@ export async function executeAst({
   try {
     if (!useFakeExecutor) {
       engineCommandManager.endSession()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.startNewSession()
     }
     const programMemory = await (useFakeExecutor

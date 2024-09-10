@@ -13,6 +13,7 @@ export default function FutureWork() {
   useDemoCode()
   useEffect(() => {
     send({ type: 'Cancel' }) // in case the user hit 'Next' while still in sketch mode
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     sceneInfra.camControls.resetCameraPosition()
   }, [send])
 
