@@ -594,10 +594,12 @@ export const modelingMachine = setup({
       if (!event.data) return
 
       // Extract inputs
+      const ast = kclManager.ast
       const { selection, radius } = event.data
 
       // Apply fillet to selection
       const applyFilletToSelectionResult = applyFilletToSelection(
+        ast,
         selection,
         radius
       )
@@ -788,6 +790,7 @@ export const modelingMachine = setup({
     'Set sketchDetails': () => {},
     'sketch exit execute': () => {},
   },
+  // end actions
   actors: {
     'do-constrain-remove-constraint': fromPromise(
       async ({
