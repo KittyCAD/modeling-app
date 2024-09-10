@@ -50,14 +50,6 @@ body.dark {
   @apply text-chalkboard-10;
 }
 
-@media (prefers-color-scheme: dark) {
-  body,
-  .body-bg,
-  .dark .body-bg {
-    @apply bg-chalkboard-100;
-  }
-}
-
 select {
   @apply bg-chalkboard-20;
 }

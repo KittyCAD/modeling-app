@@ -160,7 +160,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
                 // Update the folding ranges, since the AST has changed.
                 // This is a hack since codemirror does not support async foldService.
                 // When they do we can delete this.
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.updateFoldingRanges()
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.requestSemanticTokens()
                 break
               case 'kcl/memoryUpdated':

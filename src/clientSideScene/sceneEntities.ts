@@ -106,7 +106,7 @@ import {
   updateRectangleSketch,
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs } from 'lib/theme'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 
@@ -351,6 +351,7 @@ export class SceneEntities {
       )
     }
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         if (!args) return
         if (args.mouseEvent.which !== 1) return
@@ -692,6 +693,7 @@ export class SceneEntities {
         draftExpressionsIndices,
       })
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         if (!args) return
         if (args.mouseEvent.which !== 1) return
@@ -762,7 +764,7 @@ export class SceneEntities {
         if (profileStart) {
           sceneInfra.modelingSend({ type: 'CancelSketch' })
         } else {
-          this.setUpDraftSegment(
+          await this.setUpDraftSegment(
             sketchPathToNode,
             forward,
             up,
@@ -837,6 +839,7 @@ export class SceneEntities {
     })
 
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
         const pathToNodeTwo = structuredClone(sketchPathToNode)
@@ -884,6 +887,7 @@ export class SceneEntities {
           this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
         )
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
@@ -1103,9 +1107,11 @@ export class SceneEntities {
   }) => {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
           await this.tearDownSketch({ removeAxis: false })
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchPathToNode: pathToNode,
             maybeModdedAst: kclManager.ast,
@@ -1122,6 +1128,7 @@ export class SceneEntities {
           })
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onDrag: async ({
         selected,
         intersectionPoint,
@@ -1172,6 +1179,7 @@ export class SceneEntities {
 
             await kclManager.executeAstMock(mod.modifiedAst)
             await this.tearDownSketch({ removeAxis: false })
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchPathToNode: pathToNode,
               maybeModdedAst: kclManager.ast,
@@ -1420,7 +1428,7 @@ export class SceneEntities {
         )
       )
       sceneInfra.overlayCallbacks(callBacks)
-    })()
+    })().catch(reportRejection)
   }
 
   /**

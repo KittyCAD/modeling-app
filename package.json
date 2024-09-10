@@ -34,7 +34,7 @@
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
     "@xstate/inspect": "^0.8.0",
-    "@xstate/react": "^3.2.2",
+    "@xstate/react": "^4.1.1",
     "bonjour-service": "^1.2.1",
     "codemirror": "^6.0.1",
     "decamelize": "^6.0.0",
@@ -64,7 +64,7 @@
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.0.8",
     "web-vitals": "^3.5.2",
-    "xstate": "^4.38.2"
+    "xstate": "^5.17.4"
   },
   "scripts": {
     "start": "vite",

@@ -56,6 +56,7 @@ export function applyFilletToSelection(
   const { modifiedAst, pathToFilletNode } = result
 
   // 3. update ast
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   updateAstAndFocus(modifiedAst, pathToFilletNode)
 }
 

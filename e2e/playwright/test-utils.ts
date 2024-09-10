@@ -27,6 +27,7 @@ import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isArray } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -439,46 +440,50 @@ export async function getUtils(page: Page, test_?: typeof test) {
       }
       return maxDiff
     },
-    doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
-      new Promise(async (resolve) => {
-        await page.screenshot({
-          path: './e2e/playwright/temp1.png',
-          fullPage: true,
-        })
-        await fn()
-        const isImageDiff = async () => {
+    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
+      new Promise<boolean>((resolve) => {
+        ;(async () => {
           await page.screenshot({
-            path: './e2e/playwright/temp2.png',
+            path: './e2e/playwright/temp1.png',
             fullPage: true,
           })
-          const screenshot1 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp1.png')
-          )
-          const screenshot2 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp2.png')
-          )
-          const actualDiffCount = pixelMatch(
-            screenshot1.data,
-            screenshot2.data,
-            null,
-            screenshot1.width,
-            screenshot2.height
-          )
-          return actualDiffCount > diffCount
-        }
-
-        // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-        let count = 0
-        const interval = setInterval(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
+          await fn()
+          const isImageDiff = async () => {
+            await page.screenshot({
+              path: './e2e/playwright/temp2.png',
+              fullPage: true,
+            })
+            const screenshot1 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp1.png')
+            )
+            const screenshot2 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp2.png')
+            )
+            const actualDiffCount = pixelMatch(
+              screenshot1.data,
+              screenshot2.data,
+              null,
+              screenshot1.width,
+              screenshot2.height
+            )
+            return actualDiffCount > diffCount
           }
-        }, 50)
+
+          // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
+          let count = 0
+          const interval = setInterval(() => {
+            ;(async () => {
+              count++
+              if (await isImageDiff()) {
+                clearInterval(interval)
+                resolve(true)
+              } else if (count > 100) {
+                clearInterval(interval)
+                resolve(false)
+              }
+            })().catch(reportRejection)
+          }, 50)
+        })().catch(reportRejection)
       }),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
