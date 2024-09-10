@@ -20,11 +20,8 @@ import {
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
-  STRAIGHT_SEGMENT,
-  TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
-  PROFILE_START,
-  CIRCLE_SEGMENT,
+  SEGMENT_BODIES_PLUS_PROFILE_START,
 } from 'clientSideScene/sceneEntities'
 import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
@@ -163,12 +160,7 @@ export async function getEventForSelectWithPoint({
 export function getEventForSegmentSelection(
   obj: Object3D<Object3DEventMap>
 ): ModelingMachineEvent | null {
-  const group = getParentGroup(obj, [
-    STRAIGHT_SEGMENT,
-    TANGENTIAL_ARC_TO_SEGMENT,
-    CIRCLE_SEGMENT,
-    PROFILE_START,
-  ])
+  const group = getParentGroup(obj, SEGMENT_BODIES_PLUS_PROFILE_START)
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
   if (!group && !axisGroup) return null
   if (axisGroup?.userData.type === AXIS_GROUP) {
@@ -305,15 +297,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   const updated = kclManager.ast
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
-    if (
-      ![
-        STRAIGHT_SEGMENT,
-        TANGENTIAL_ARC_TO_SEGMENT,
-        PROFILE_START,
-        CIRCLE_SEGMENT,
-      ].includes(segmentGroup?.name)
-    )
-      return
+    if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
     const nodeMeta = getNodeFromPath<CallExpression>(
       updated,
       segmentGroup.userData.pathToNode,

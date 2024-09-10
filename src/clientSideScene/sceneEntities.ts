@@ -129,6 +129,15 @@ export const CIRCLE_CENTER_HANDLE = 'circle-center-handle'
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
+export const SEGMENT_BODIES = [
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  CIRCLE_SEGMENT,
+]
+export const SEGMENT_BODIES_PLUS_PROFILE_START = [
+  ...SEGMENT_BODIES,
+  PROFILE_START,
+]
 
 type Vec3Array = [number, number, number]
 
@@ -1264,12 +1273,7 @@ export class SceneEntities {
       ? new Vector2(profileStart.position.x, profileStart.position.y)
       : _intersection2d
 
-    const group = getParentGroup(object, [
-      STRAIGHT_SEGMENT,
-      TANGENTIAL_ARC_TO_SEGMENT,
-      PROFILE_START,
-      CIRCLE_SEGMENT,
-    ])
+    const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [ARROWHEAD, CIRCLE_CENTER_HANDLE])
     if (!group) return
     const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
@@ -1917,12 +1921,10 @@ export class SceneEntities {
           mat.color.set(obj.userData.baseColor)
           mat.color.offsetHSL(0, 0, 0.5)
         }
-        const parent = getParentGroup(selected, [
-          STRAIGHT_SEGMENT,
-          TANGENTIAL_ARC_TO_SEGMENT,
-          CIRCLE_SEGMENT,
-          PROFILE_START,
-        ])
+        const parent = getParentGroup(
+          selected,
+          SEGMENT_BODIES_PLUS_PROFILE_START
+        )
         if (parent?.userData?.pathToNode) {
           const updatedAst = parse(recast(kclManager.ast))
           if (trap(updatedAst)) return
@@ -1983,12 +1985,10 @@ export class SceneEntities {
       },
       onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
         editorManager.setHighlightRange([[0, 0]])
-        const parent = getParentGroup(selected, [
-          STRAIGHT_SEGMENT,
-          TANGENTIAL_ARC_TO_SEGMENT,
-          CIRCLE_SEGMENT,
-          PROFILE_START,
-        ])
+        const parent = getParentGroup(
+          selected,
+          SEGMENT_BODIES_PLUS_PROFILE_START
+        )
         if (parent) {
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -2184,11 +2184,7 @@ function prepareTruncatedMemoryAndAst(
 
 export function getParentGroup(
   object: any,
-  stopAt: string[] = [
-    STRAIGHT_SEGMENT,
-    TANGENTIAL_ARC_TO_SEGMENT,
-    CIRCLE_SEGMENT,
-  ]
+  stopAt: string[] = SEGMENT_BODIES
 ): Group | null {
   if (stopAt.includes(object?.userData?.type)) {
     return object
@@ -2235,11 +2231,7 @@ function colorSegment(object: any, color: number) {
     })
     return
   }
-  const straightSegmentBody = getParentGroup(object, [
-    STRAIGHT_SEGMENT,
-    TANGENTIAL_ARC_TO_SEGMENT,
-    CIRCLE_SEGMENT,
-  ])
+  const straightSegmentBody = getParentGroup(object, SEGMENT_BODIES)
   if (straightSegmentBody) {
     straightSegmentBody.traverse((child) => {
       if (child instanceof Mesh && !child.userData.ignoreColorChange) {
