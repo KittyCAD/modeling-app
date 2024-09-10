@@ -230,7 +230,7 @@ export const AllSettingsFields = forwardRef(
                   bgClassName: 'bg-destroy-70',
                 }}
               >
-                Restore default settings
+                Reset {searchParamTab}-level settings
               </ActionButton>
             </div>
           </SettingsSection>

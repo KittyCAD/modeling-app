@@ -162,9 +162,10 @@ test.describe('Testing settings', () => {
     // Selectors and constants
     const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
     const userSettingsTab = page.getByRole('radio', { name: 'User' })
-    const resetButton = page.getByRole('button', {
-      name: 'Restore default settings',
-    })
+    const resetButton = (level: SettingsLevel) =>
+      page.getByRole('button', {
+        name: `Reset ${level}-level settings`,
+      })
     const themeColorSetting = page.locator('#themeColor').getByRole('slider')
     const settingValues = {
       default: '259',
@@ -198,7 +199,7 @@ test.describe('Testing settings', () => {
 
     await test.step('Reset project settings', async () => {
       // Click the reset settings button.
-      await resetButton.click()
+      await resetButton('project').click()
 
       await expect(resetToast('project')).toBeVisible()
       await expect(resetToast('project')).not.toBeVisible()
@@ -220,7 +221,7 @@ test.describe('Testing settings', () => {
 
     await test.step('Reset user settings', async () => {
       // Click the reset settings button.
-      await resetButton.click()
+      await resetButton('user').click()
 
       await expect(resetToast('user')).toBeVisible()
       await expect(resetToast('user')).not.toBeVisible()
