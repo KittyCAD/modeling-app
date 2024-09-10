@@ -436,25 +436,37 @@ test.describe('Testing settings', () => {
 
   test('Changing modeling default unit', async ({ page }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
-
-    const userSettingsTab = page.getByRole('radio', { name: 'User' })
-
-    // Open the settings modal with lower-right button
-    await page.getByRole('link', { name: 'Settings' }).last().click()
-    await expect(
-      page.getByRole('heading', { name: 'Settings', exact: true })
-    ).toBeVisible()
-
-    const resetButton = page.getByRole('button', {
-      name: 'Restore default settings',
+    await test.step(`Test setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await page
+        .getByRole('button', { name: 'Start Sketch' })
+        .waitFor({ state: 'visible' })
     })
-    // Default unit should be mm
-    await resetButton.click()
+
+    // Selectors and constants
+    const userSettingsTab = page.getByRole('radio', { name: 'User' })
+    const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
+    const defaultUnitSection = page.getByText(
+      'default unitRoll back default unitRoll back to match'
+    )
+    const defaultUnitRollbackButton = page.getByRole('button', {
+      name: 'Roll back default unit',
+    })
+
+    await test.step(`Open the settings modal`, async () => {
+      await page.getByRole('link', { name: 'Settings' }).last().click()
+      await expect(
+        page.getByRole('heading', { name: 'Settings', exact: true })
+      ).toBeVisible()
+    })
+
+    await test.step(`Reset unit setting`, async () => {
+      await userSettingsTab.click()
+      await defaultUnitSection.hover()
+      await defaultUnitRollbackButton.click()
+      await projectSettingsTab.click()
+    })
 
     await test.step('Change modeling default unit within project tab', async () => {
       const changeUnitOfMeasureInProjectTab = async (unitOfMeasure: string) => {
