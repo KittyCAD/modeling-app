@@ -360,6 +360,7 @@ export const executor = async (
 ): Promise<ProgramMemory> => {
   if (err(programMemory)) return Promise.reject(programMemory)
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
@@ -569,6 +570,7 @@ export async function coreDump(
        a new GitHub issue for the user.
      */
     if (openGithubIssue && dump.github_issue_url) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       openWindow(dump.github_issue_url)
     } else {
       console.error(

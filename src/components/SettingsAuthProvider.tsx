@@ -108,6 +108,7 @@ export const SettingsAuthProviderBase = ({
           sceneInfra.baseUnit = newBaseUnit
         },
         setEngineTheme: ({ context }) => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
             type: 'modeling_cmd_req',
@@ -118,6 +119,7 @@ export const SettingsAuthProviderBase = ({
           })
 
           const opposingTheme = getOppositeTheme(context.app.theme.current)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
             type: 'modeling_cmd_req',
@@ -137,6 +139,7 @@ export const SettingsAuthProviderBase = ({
           sceneInfra.theme = opposingTheme
         },
         setEngineEdges: ({ context }) => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
             type: 'modeling_cmd_req',
@@ -186,6 +189,7 @@ export const SettingsAuthProviderBase = ({
               resetSettingsIncludesUnitChange
             ) {
               // Unit changes requires a re-exec of code
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               kclManager.executeCode(true)
             } else {
               // For any future logging we'd like to do
@@ -197,8 +201,10 @@ export const SettingsAuthProviderBase = ({
             console.error('Error executing AST after settings change', e)
           }
         },
-        persistSettings: ({ context }) =>
-          saveSettings(context, loadedProject?.project?.path),
+        persistSettings: ({ context }) => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          saveSettings(context, loadedProject?.project?.path)
+        },
       },
     }),
     { input: loadedSettings }
@@ -289,6 +295,7 @@ export const SettingsAuthProviderBase = ({
       actions: {
         goToSignInPage: () => {
           navigate(PATHS.SIGN_IN)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           logout()
         },
         goToIndexPage: () => {
@@ -330,13 +337,11 @@ export const SettingsAuthProviderBase = ({
 
 export default SettingsAuthProvider
 
-export function logout() {
+export async function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  return (
-    !isDesktop() &&
-    fetch(withBaseUrl('/logout'), {
-      method: 'POST',
-      credentials: 'include',
-    })
-  )
+  if (isDesktop()) return Promise.resolve(null)
+  return fetch(withBaseUrl('/logout'), {
+    method: 'POST',
+    credentials: 'include',
+  })
 }

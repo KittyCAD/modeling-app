@@ -285,8 +285,9 @@ export default class EditorManager {
 
     this._lastEvent = { event: stringEvent, time: Date.now() }
     this._modelingSend(eventInfo.modelingEvent)
-    eventInfo.engineEvents.forEach((event) =>
+    eventInfo.engineEvents.forEach((event) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand(event)
-    )
+    })
   }
 }

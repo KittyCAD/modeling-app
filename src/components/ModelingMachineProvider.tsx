@@ -73,7 +73,7 @@ import { EditorSelection, Transaction } from '@codemirror/state'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
@@ -152,14 +152,17 @@ export const ModelingMachineProvider = ({
 
             store.videoElement?.pause()
 
-            kclManager.executeCode().then(() => {
-              if (engineCommandManager.engineConnection?.idleMode) return
+            kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.engineConnection?.idleMode) return
 
-              store.videoElement?.play().catch((e) => {
-                console.warn('Video playing was prevented', e)
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
               })
-            })
-          })()
+              .catch(reportRejection)
+          })().catch(reportRejection)
         },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
@@ -316,9 +319,10 @@ export const ModelingMachineProvider = ({
               })
               codeMirrorSelection && dispatchSelection(codeMirrorSelection)
               engineEvents &&
-                engineEvents.forEach((event) =>
+                engineEvents.forEach((event) => {
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
                   engineCommandManager.sendSceneCommand(event)
-                )
+                })
               updateSceneObjectColors()
 
               return {
@@ -349,9 +353,10 @@ export const ModelingMachineProvider = ({
                   selections,
                 })
               engineEvents &&
-                engineEvents.forEach((event) =>
+                engineEvents.forEach((event) => {
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
                   engineCommandManager.sendSceneCommand(event)
-                )
+                })
               updateSceneObjectColors()
               return {
                 selectionRanges: selections,
@@ -378,7 +383,7 @@ export const ModelingMachineProvider = ({
             return {}
           }
         ),
-        Make: async ({ event }) => {
+        Make: ({ event }) => {
           if (event.type !== 'Make') return
           // Check if we already have an export intent.
           if (engineCommandManager.exportIntent) {
@@ -410,19 +415,21 @@ export const ModelingMachineProvider = ({
           }
 
           // Artificially delay the export in playwright tests
-          toast.promise(
-            exportFromEngine({
-              format: format,
-            }),
+          toast
+            .promise(
+              exportFromEngine({
+                format: format,
+              }),
 
-            {
-              loading: 'Starting print...',
-              success: 'Started print successfully',
-              error: 'Error while starting print',
-            }
-          )
+              {
+                loading: 'Starting print...',
+                success: 'Started print successfully',
+                error: 'Error while starting print',
+              }
+            )
+            .catch(reportRejection)
         },
-        'Engine export': async ({ event }) => {
+        'Engine export': ({ event }) => {
           if (event.type !== 'Export') return
           if (engineCommandManager.exportIntent) {
             toast.error('Already exporting')
@@ -474,23 +481,25 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          toast.promise(
-            exportFromEngine({
-              format: format as Models['OutputFormat_type'],
-            }),
-            {
-              loading: 'Exporting...',
-              success: 'Exported successfully',
-              error: 'Error while exporting',
-            }
-          )
+          toast
+            .promise(
+              exportFromEngine({
+                format: format as Models['OutputFormat_type'],
+              }),
+              {
+                loading: 'Exporting...',
+                success: 'Exported successfully',
+                error: 'Error while exporting',
+              }
+            )
+            .catch(reportRejection)
         },
-        'Submit to Text-to-CAD API': async ({ event }) => {
+        'Submit to Text-to-CAD API': ({ event }) => {
           if (event.type !== 'Text-to-CAD') return
           const trimmedPrompt = event.data.prompt.trim()
           if (!trimmedPrompt) return
 
-          void submitAndAwaitTextToKcl({
+          submitAndAwaitTextToKcl({
             trimmedPrompt,
             fileMachineSend,
             navigate,
@@ -501,7 +510,7 @@ export const ModelingMachineProvider = ({
               theme: theme.current,
               highlightEdges: highlightEdges.current,
             },
-          })
+          }).catch(reportRejection)
         },
       },
       guards: {

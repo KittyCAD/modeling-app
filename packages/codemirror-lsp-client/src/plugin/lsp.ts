@@ -117,6 +117,7 @@ export class LanguageServerPlugin implements PluginValue {
 
     this.processLspNotification = options.processLspNotification
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.initialize({
       documentText: this.getDocText(),
     })
@@ -149,6 +150,7 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   async initialize({ documentText }: { documentText: string }) {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     if (this.client.initializePromise) {
       await this.client.initializePromise
     }
@@ -162,7 +164,9 @@ export class LanguageServerPlugin implements PluginValue {
       },
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.requestSemanticTokens()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.updateFoldingRanges()
   }
 
@@ -225,7 +229,9 @@ export class LanguageServerPlugin implements PluginValue {
         contentChanges: [{ text: this.view.state.doc.toString() }],
       })
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.requestSemanticTokens()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.updateFoldingRanges()
     } catch (e) {
       console.error(e)
