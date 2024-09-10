@@ -46,7 +46,7 @@ import {
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 import { roundOff } from 'lib/utils'
 
-export function profileStart({
+export function createProfileStartHandle({
   from,
   id,
   pathToNode,

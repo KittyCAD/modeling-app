@@ -34,13 +34,11 @@ import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { LineInputsType } from 'lang/std/sketchcombos'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
 import { executeAst } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
-  makeRemoveSingleConstraintInput,
   removeSingleConstraintInfo,
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
@@ -542,12 +540,10 @@ const ConstraintSymbol = ({
       iconName: 'dimension',
     },
   }
-  const varName =
-    _type in varNameMap ? varNameMap[_type as LineInputsType].varName : 'var'
-  const name: CustomIconName = varNameMap[_type as LineInputsType].iconName
-  const displayName = varNameMap[_type as LineInputsType]?.displayName
-  const implicitDesc =
-    varNameMap[_type as LineInputsType]?.implicitConstraintDesc
+  const varName = _type in varNameMap ? varNameMap[_type].varName : 'var'
+  const name: CustomIconName = varNameMap[_type].iconName
+  const displayName = varNameMap[_type]?.displayName
+  const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
 
   const _node = useMemo(
     () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
@@ -604,13 +600,10 @@ const ConstraintSymbol = ({
               if (trap(_node1)) return Promise.reject(_node1)
               const shallowPath = _node1.shallowPath
 
-              const input = makeRemoveSingleConstraintInput(
-                argPosition,
-                shallowPath
-              )
-              if (!input || !context.sketchDetails) return
+              if (!context.sketchDetails || !argPosition) return
               const transform = removeSingleConstraintInfo(
-                input,
+                shallowPath,
+                argPosition,
                 kclManager.ast,
                 kclManager.programMemory
               )

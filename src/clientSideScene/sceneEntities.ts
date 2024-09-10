@@ -63,7 +63,7 @@ import { executeAst } from 'lang/langHelpers'
 import {
   createArcGeometry,
   dashedStraight,
-  profileStart,
+  createProfileStartHandle,
   straightSegment,
   tangentialArcToSegment,
 } from './segments'
@@ -121,6 +121,11 @@ export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
+export const SEGMENT_BODIES = [STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT]
+export const SEGMENT_BODIES_PLUS_PROFILE_START = [
+  ...SEGMENT_BODIES,
+  PROFILE_START,
+]
 
 type Vec3Array = [number, number, number]
 
@@ -421,7 +426,7 @@ export class SceneEntities {
       maybeModdedAst,
       sketchGroup.start.__geoMeta.sourceRange
     )
-    const _profileStart = profileStart({
+    const _profileStart = createProfileStartHandle({
       from: sketchGroup.start.from,
       id: sketchGroup.start.__geoMeta.id,
       pathToNode: segPathToNode,
@@ -602,16 +607,19 @@ export class SceneEntities {
       kclManager.programMemory.get(variableDeclarationName),
       variableDeclarationName
     )
-    if (err(sg)) return sg
-    const lastSeg = sg.value?.slice(-1)[0] || sg.start
+    if (err(sg)) return Promise.reject(sg)
+    const lastSeg = sg?.value?.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
 
     const mod = addNewSketchLn({
       node: _ast,
       programMemory: kclManager.programMemory,
-      to: [lastSeg.to[0], lastSeg.to[1]],
-      from: [lastSeg.to[0], lastSeg.to[1]],
+      input: {
+        type: 'straight-segment',
+        to: lastSeg.to,
+        from: lastSeg.to,
+      },
       fnName: segmentName,
       pathToNode: sketchPathToNode,
     })
@@ -682,8 +690,11 @@ export class SceneEntities {
           const tmp = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
-            to: [intersection2d.x, intersection2d.y],
-            from: [lastSegment.to[0], lastSegment.to[1]],
+            input: {
+              type: 'straight-segment',
+              from: [lastSegment.to[0], lastSegment.to[1]],
+              to: [intersection2d.x, intersection2d.y],
+            },
             fnName:
               lastSegment.type === 'TangentialArcTo'
                 ? 'tangentialArcTo'
@@ -950,8 +961,11 @@ export class SceneEntities {
             const mod = addNewSketchLn({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
-              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-              from: [prevSegment.from[0], prevSegment.from[1]],
+              input: {
+                type: 'straight-segment',
+                to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
+                from: prevSegment.from,
+              },
               // TODO assuming it's always a straight segments being added
               // as this is easiest, and we'll need to add "tabbing" behavior
               // to support other segment types
@@ -1072,7 +1086,7 @@ export class SceneEntities {
       group.userData.from[0],
       group.userData.from[1],
     ]
-    const to: [number, number] = [intersection2d.x, intersection2d.y]
+    const dragTo: [number, number] = [intersection2d.x, intersection2d.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
     const _node = getNodeFromPath<CallExpression>(
@@ -1095,8 +1109,11 @@ export class SceneEntities {
       modded = updateStartProfileAtArgs({
         node: modifiedAst,
         pathToNode,
-        to,
-        from,
+        input: {
+          type: 'straight-segment',
+          to: dragTo,
+          from,
+        },
         previousProgramMemory: kclManager.programMemory,
       })
     } else {
@@ -1104,8 +1121,11 @@ export class SceneEntities {
         modifiedAst,
         kclManager.programMemory,
         [node.start, node.end],
-        to,
-        from
+        {
+          type: 'straight-segment',
+          from,
+          to: dragTo,
+        }
       )
     }
     if (trap(modded)) return
