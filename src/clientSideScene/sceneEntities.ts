@@ -643,7 +643,6 @@ export class SceneEntities {
     segmentName: 'line' | 'tangentialArcTo' = 'line',
     shouldTearDown = true
   ) => {
-    // try {
     const _ast = structuredClone(kclManager.ast)
 
     const _node1 = getNodeFromPath<VariableDeclaration>(
@@ -668,8 +667,8 @@ export class SceneEntities {
       programMemory: kclManager.programMemory,
       input: {
         type: 'straight-segment',
-        to: [lastSeg.to[0], lastSeg.to[1]],
-        from: [lastSeg.to[0], lastSeg.to[1]],
+        to: lastSeg.to,
+        from: lastSeg.to,
       },
       fnName: segmentName,
       pathToNode: sketchPathToNode,
@@ -744,7 +743,7 @@ export class SceneEntities {
             input: {
               type: 'straight-segment',
               to: [intersection2d.x, intersection2d.y],
-              from: [lastSegment.to[0], lastSegment.to[1]],
+              from: lastSegment.to,
             },
             fnName:
               lastSegment.type === 'TangentialArcTo'
@@ -1165,7 +1164,7 @@ export class SceneEntities {
               input: {
                 type: 'straight-segment',
                 to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-                from: [prevSegment.from[0], prevSegment.from[1]],
+                from: prevSegment.from,
               },
               // TODO assuming it's always a straight segments being added
               // as this is easiest, and we'll need to add "tabbing" behavior
@@ -1326,7 +1325,6 @@ export class SceneEntities {
       (!subGroup || subGroup?.name === ARROWHEAD)
     ) {
       // is dragging the radius handle
-
       modded = changeSketchArguments(
         modifiedAst,
         kclManager.programMemory,
@@ -1715,7 +1713,6 @@ export class SceneEntities {
         scale,
       })
     }
-    const angle = 0
     return () =>
       sceneInfra.updateOverlayDetails({
         arrowGroup,
@@ -1723,7 +1720,7 @@ export class SceneEntities {
         isHandlesVisible,
         from: to,
         to: [center[0], center[1]],
-        angle,
+        angle: Math.PI / 4,
       })
   }
   throttledUpdateDashedArcGeo = throttle(

@@ -20,7 +20,7 @@ import {
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
-import { SimplifiedArgDetails, VarValueKeys } from './std/stdTypes'
+import { SimplifiedArgDetails, InputArgKeys } from './std/stdTypes'
 
 beforeAll(async () => {
   await initPromise
@@ -648,7 +648,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       } else if (key === 'objectProperty' && typeof value === 'string') {
         argPosition = {
           type: 'objectProperty',
-          key: value as VarValueKeys,
+          key: value as InputArgKeys,
         }
       } else if (key === '') {
         argPosition = {
@@ -701,7 +701,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       } else if (key === 'objectProperty' && typeof value === 'string') {
         argPosition = {
           type: 'objectProperty',
-          key: value as VarValueKeys,
+          key: value as InputArgKeys,
         }
       } else {
         throw new Error('argPosition is undefined')

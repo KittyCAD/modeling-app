@@ -831,7 +831,7 @@ export function deleteSegmentFromPipeExpression(
 
 export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
-  varValue: SimplifiedArgDetails,
+  argDetails: SimplifiedArgDetails,
   ast: Program,
   programMemory: ProgramMemory
 ):
@@ -842,7 +842,7 @@ export function removeSingleConstraintInfo(
   | false {
   const transform = removeSingleConstraint({
     pathToCallExp,
-    inputDetails: varValue,
+    inputDetails: argDetails,
     ast,
   })
   if (!transform) return false

@@ -72,7 +72,7 @@ interface updateArgs extends ModifyAstBase {
   input: SegmentInputs
 }
 
-export type VarValueKeys =
+export type InputArgKeys =
   | 'angle'
   | 'offset'
   | 'length'
@@ -93,14 +93,14 @@ export interface ArrayItemInput<T> {
 }
 export interface ObjectPropertyInput<T> {
   type: 'objectProperty'
-  key: VarValueKeys
+  key: InputArgKeys
   argType: LineInputsType
   expr: T
 }
 
 interface ArrayOrObjItemInput<T> {
   type: 'arrayOrObjItem'
-  key: VarValueKeys
+  key: InputArgKeys
   index: 0 | 1
   argType: LineInputsType
   expr: T
@@ -108,13 +108,13 @@ interface ArrayOrObjItemInput<T> {
 
 interface ArrayInObject<T> {
   type: 'arrayInObject'
-  key: VarValueKeys
+  key: InputArgKeys
   argType: LineInputsType
   index: 0 | 1
   expr: T
 }
 
-type _VarValue<T> =
+type _InputArg<T> =
   | SingleValueInput<T>
   | ArrayItemInput<T>
   | ObjectPropertyInput<T>
@@ -131,7 +131,7 @@ type _VarValue<T> =
  * Which is why a union type is used that can be type narrowed using the {@link RawArg.type} property
  * {@link RawArg.expr} is common to all of these types
  */
-export type InputArg = _VarValue<Expr>
+export type InputArg = _InputArg<Expr>
 
 /**
  * {@link RawArg.expr} is the literal equivalent of whatever current expression is
@@ -139,7 +139,7 @@ export type InputArg = _VarValue<Expr>
  * but of course works for expressions like myVar + someFn() etc too
  * This is useful in cases where we want to "un-constrain" inputs to segments
  */
-type RawArg = _VarValue<Literal>
+type RawArg = _InputArg<Literal>
 
 export type InputArgs = Array<InputArg>
 
@@ -161,10 +161,10 @@ export type SimplifiedArgDetails =
       type: 'singleValue'
     }
   | { type: 'arrayItem'; index: 0 | 1 }
-  | { type: 'objectProperty'; key: VarValueKeys }
+  | { type: 'objectProperty'; key: InputArgKeys }
   | {
       type: 'arrayInObject'
-      key: VarValueKeys
+      key: InputArgKeys
       index: 0 | 1
     }
 
