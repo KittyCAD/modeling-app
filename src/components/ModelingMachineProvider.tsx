@@ -50,8 +50,7 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineCommandConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
-  STRAIGHT_SEGMENT,
-  TANGENTIAL_ARC_TO_SEGMENT,
+  SEGMENT_BODIES,
   getParentGroup,
   getSketchOrientationDetails,
 } from 'clientSideScene/sceneEntities'
@@ -168,10 +167,7 @@ export const ModelingMachineProvider = ({
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {
             if (event.data.type === 'isHovering') {
-              const parent = getParentGroup(event.data.on, [
-                STRAIGHT_SEGMENT,
-                TANGENTIAL_ARC_TO_SEGMENT,
-              ])
+              const parent = getParentGroup(event.data.on, SEGMENT_BODIES)
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
               if (!parent || !pathToNode) return context.segmentHoverMap
@@ -187,10 +183,10 @@ export const ModelingMachineProvider = ({
               event.data.type === 'idle' &&
               context.mouseState.type === 'isHovering'
             ) {
-              const mouseOnParent = getParentGroup(context.mouseState.on, [
-                STRAIGHT_SEGMENT,
-                TANGENTIAL_ARC_TO_SEGMENT,
-              ])
+              const mouseOnParent = getParentGroup(
+                context.mouseState.on,
+                SEGMENT_BODIES
+              )
               if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
                 return context.segmentHoverMap
               const pathToNodeString = JSON.stringify(
@@ -204,8 +200,8 @@ export const ModelingMachineProvider = ({
                     pathToNodeString,
                   },
                 })
-                // overlay timeout
-              }, 800) as unknown as number
+                // overlay timeout is 1s
+              }, 1000) as unknown as number
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: timeoutId,

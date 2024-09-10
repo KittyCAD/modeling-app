@@ -124,7 +124,8 @@ export const ClientSideScene = ({
     } else if (
       state.matches({ Sketch: 'Line tool' }) ||
       state.matches({ Sketch: 'Tangential arc to' }) ||
-      state.matches({ Sketch: 'Rectangle tool' })
+      state.matches({ Sketch: 'Rectangle tool' }) ||
+      state.matches({ Sketch: 'Circle tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -511,6 +512,11 @@ const ConstraintSymbol = ({
       varName: 'perpDist',
       displayName: 'Intersection Offset',
       iconName: 'intersection-offset',
+    },
+    radius: {
+      varName: 'radius',
+      displayName: 'Radius',
+      iconName: 'dimension',
     },
 
     // implicit constraints

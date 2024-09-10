@@ -58,6 +58,8 @@ import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
 import { ToolbarModeName } from 'lib/toolbar'
+import { quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { Vector3 } from 'three'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -156,7 +158,12 @@ export interface Store {
   openPanes: SidebarType[]
 }
 
-export type SketchTool = 'line' | 'tangentialArc' | 'rectangle' | 'none'
+export type SketchTool =
+  | 'line'
+  | 'tangentialArc'
+  | 'rectangle'
+  | 'circle'
+  | 'none'
 
 export type ModelingMachineEvent =
   | {
@@ -209,6 +216,10 @@ export type ModelingMachineEvent =
       data: [x: number, y: number]
     }
   | {
+      type: 'Add circle origin'
+      data: [x: number, y: number]
+    }
+  | {
       type: 'xstate.done.actor.animate-to-face'
       output: SketchDetails
     }
@@ -241,6 +252,7 @@ export type ModelingMachineEvent =
       }
     }
   | { type: 'Finish rectangle' }
+  | { type: 'Finish circle' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
 
@@ -458,7 +470,10 @@ export const modelingMachine = setup({
       isEditingExistingSketch({ sketchDetails }),
 
     'next is rectangle': ({ context: { sketchDetails, currentTool } }) =>
-      currentTool === 'rectangle' && canRectangleTool({ sketchDetails }),
+      currentTool === 'rectangle' &&
+      canRectangleOrCircleTool({ sketchDetails }),
+    'next is circle': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'circle' && canRectangleOrCircleTool({ sketchDetails }),
     'next is line': ({ context }) => context.currentTool === 'line',
     'next is none': ({ context }) => context.currentTool === 'none',
   },
@@ -699,11 +714,59 @@ export const modelingMachine = setup({
         },
       })
     },
+    'listen for circle origin': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      sceneEntitiesManager.createIntersectionPlane()
+      const quaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
+
+      // Position the click raycast plane
+      if (sceneEntitiesManager.intersectionPlane) {
+        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+          quaternion
+        )
+        sceneEntitiesManager.intersectionPlane.position.copy(
+          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+        )
+      }
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
+          if (!args) return
+          if (args.mouseEvent.which !== 1) return
+          const { intersectionPoint } = args
+          if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode)
+            return
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add circle origin',
+              data: [twoD.x, twoD.y],
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
+    },
     'set up draft rectangle': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Add rectangle origin') return
       if (!sketchDetails || !event.data) return
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.setupDraftRectangle(
+        sketchDetails.sketchPathToNode,
+        sketchDetails.zAxis,
+        sketchDetails.yAxis,
+        sketchDetails.origin,
+        event.data
+      )
+    },
+    'set up draft circle': ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'Add circle origin') return
+      if (!sketchDetails || !event.data) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.setupDraftCircle(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -1813,9 +1876,42 @@ export const modelingMachine = setup({
               target: 'Tangential arc to',
               guard: 'next is tangential arc',
             },
+            {
+              target: 'Circle tool',
+              guard: 'next is circle',
+            },
           ],
 
           entry: 'assign tool in context',
+        },
+        'Circle tool': {
+          on: {
+            'change tool': 'Change Tool',
+          },
+
+          states: {
+            'Awaiting origin': {
+              on: {
+                'Add circle origin': {
+                  target: 'Awaiting Radius',
+                  actions: 'set up draft circle',
+                },
+              },
+            },
+
+            'Awaiting Radius': {
+              on: {
+                'Finish circle': 'Finished Circle',
+              },
+            },
+
+            'Finished Circle': {
+              always: '#Modeling.Sketch.SketchIdle',
+            },
+          },
+
+          initial: 'Awaiting origin',
+          entry: 'listen for circle origin',
         },
       },
 
@@ -1954,10 +2050,13 @@ export function isEditingExistingSketch({
     (item) =>
       item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
   )
-  return hasStartProfileAt && pipeExpression.body.length > 2
+  const hasCircle = pipeExpression.body.some(
+    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+  )
+  return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
 }
 
-export function canRectangleTool({
+export function canRectangleOrCircleTool({
   sketchDetails,
 }: {
   sketchDetails: SketchDetails | null
@@ -1971,4 +2070,26 @@ export function canRectangleTool({
   // but we need to simulate old behavior to move on.
   if (err(node)) return false
   return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
+}
+
+/** If the sketch contains `close` or `circle` stdlib functions it must be closed */
+export function isClosedSketch({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  const node = getNodeFromPath<VariableDeclaration>(
+    kclManager.ast,
+    sketchDetails?.sketchPathToNode || [],
+    'VariableDeclaration'
+  )
+  // This should not be returning false, and it should be caught
+  // but we need to simulate old behavior to move on.
+  if (err(node)) return false
+  if (node.node?.declarations?.[0]?.init.type !== 'PipeExpression') return false
+  return node.node.declarations[0].init.body.some(
+    (yo) =>
+      yo.type === 'CallExpression' &&
+      (yo.callee.name === 'close' || yo.callee.name === 'circle')
+  )
 }

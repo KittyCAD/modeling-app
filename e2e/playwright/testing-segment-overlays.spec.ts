@@ -774,6 +774,80 @@ const part001 = startSketchOn('XZ')
         locator: '[data-overlay-toolbar-index="12"]',
       })
     })
+    test('for segment [circle]', async ({ page }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const part001 = startSketchOn('XZ')
+  |> circle({ center: [1 + 0, 0], radius: 8 }, %)
+        `
+        )
+        localStorage.setItem('disableAxis', 'true')
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
+
+      await page
+        .getByText('circle({ center: [1 + 0, 0], radius: 8 }, %)')
+        .click()
+      await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(500)
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
+
+      const clickUnconstrained = _clickUnconstrained(page)
+      const clickConstrained = _clickConstrained(page)
+
+      const hoverPos = { x: 789, y: 114 } as const
+      let ang = await u.getAngle('[data-overlay-index="0"]')
+      console.log('angl', ang)
+      console.log('circle center x')
+      await clickConstrained({
+        hoverPos,
+        constraintType: 'xAbsolute',
+        expectBeforeUnconstrained:
+          'circle({ center: [1 + 0, 0], radius: 8 }, %)',
+        expectAfterUnconstrained: 'circle({ center: [1, 0], radius: 8 }, %)',
+        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        ang: ang + 105,
+        steps: 6,
+        locator: '[data-overlay-toolbar-index="0"]',
+      })
+      console.log('circle center y')
+      await clickUnconstrained({
+        hoverPos,
+        constraintType: 'yAbsolute',
+        expectBeforeUnconstrained:
+          'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        expectAfterUnconstrained:
+          'circle({ center: [xAbs001, yAbs001], radius: 8 }, %)',
+        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        ang: ang + 105,
+        steps: 10,
+        locator: '[data-overlay-toolbar-index="0"]',
+      })
+      console.log('circle radius')
+      await clickUnconstrained({
+        hoverPos,
+        constraintType: 'radius',
+        expectBeforeUnconstrained:
+          'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        expectAfterUnconstrained:
+          'circle({ center: [xAbs001, 0], radius: radius001 }, %)',
+        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        ang: ang + 105,
+        steps: 10,
+        locator: '[data-overlay-toolbar-index="0"]',
+      })
+    })
   })
   test.describe('Testing deleting a segment', () => {
     const _deleteSegmentSequence =

@@ -262,7 +262,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-    timeout-minutes: 40
+    timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
