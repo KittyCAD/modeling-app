@@ -6,6 +6,8 @@ import React, { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const { auth } = useSettingsAuthContext()
@@ -50,11 +52,12 @@ export const RefreshButton = ({ children }: React.PropsWithChildren) => {
         // Window may not be available in some environments
         window?.location.reload()
       })
+      .catch(reportRejection)
   }
 
   return (
     <button
-      onClick={refresh}
+      onClick={toSync(refresh, reportRejection)}
       className="p-1 m-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 rounded-full border border-solid border-chalkboard-20 dark:border-chalkboard-90"
     >
       <CustomIcon name="exclamationMark" className="w-5 h-5" />

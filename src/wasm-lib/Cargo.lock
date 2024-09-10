@@ -620,9 +620,9 @@ dependencies = [
 
 [[package]]
 name = "dashmap"
-version = "6.0.1"
+version = "6.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "804c8821570c3f8b70230c2ba75ffa5c0f9a4189b9a432b6656c536712acae28"
+checksum = "5041cc499144891f3790297212f32a74fb938e5136a14943f338ef9e0ae276cf"
 dependencies = [
  "cfg-if",
  "crossbeam-utils",
@@ -1345,7 +1345,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.13"
+version = "0.2.14"
 dependencies = [
  "anyhow",
  "approx",
@@ -1357,7 +1357,7 @@ dependencies = [
  "clap",
  "convert_case",
  "criterion",
- "dashmap 6.0.1",
+ "dashmap 6.1.0",
  "databake",
  "derive-docs",
  "expectorate",
@@ -1399,7 +1399,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "winnow 0.5.40",
+ "winnow",
  "zip",
 ]
 
@@ -3117,7 +3117,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "winnow 0.6.18",
+ "winnow",
 ]
 
 [[package]]
@@ -3799,15 +3799,6 @@ name = "windows_x86_64_msvc"
 version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32b752e52a2da0ddfbdbcc6fceadfeede4c939ed16d13e648833a61dfb611ed8"
-
-[[package]]
-name = "winnow"
-version = "0.5.40"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f593a95398737aeed53e489c785df13f3618e41dbcd6718c6addbf1395aa6876"
-dependencies = [
- "memchr",
-]
 
 [[package]]
 name = "winnow"
