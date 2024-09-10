@@ -288,7 +288,7 @@ test.describe('Testing settings', () => {
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
-        await page.reload()
+        await page.reload({ waitUntil: 'domcontentloaded' })
 
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         await settingsCloseButton.click()
@@ -304,51 +304,107 @@ test.describe('Testing settings', () => {
   )
 
   test(
+    `Load desktop app with no settings file`,
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        // This is what makes no settings file get created
+        cleanProjectDir: false,
+        testInfo,
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Selectors and constants
+      const errorHeading = page.getByRole('heading', {
+        name: 'An unextected error occurred',
+      })
+      const projectDirLink = page.getByText('Loaded from')
+
+      // If the app loads without exploding we're in the clear
+      await expect(errorHeading).not.toBeVisible()
+      await expect(projectDirLink).toBeVisible()
+
+      await electronApp.close()
+    }
+  )
+
+  test(
+    `Load desktop app with a settings file, but no project directory setting`,
+    { tag: '@electron' },
+    async ({ browser: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        appSettings: {
+          app: {
+            themeColor: '259',
+          },
+        },
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Selectors and constants
+      const errorHeading = page.getByRole('heading', {
+        name: 'An unextected error occurred',
+      })
+      const projectDirLink = page.getByText('Loaded from')
+
+      // If the app loads without exploding we're in the clear
+      await expect(errorHeading).not.toBeVisible()
+      await expect(projectDirLink).toBeVisible()
+
+      await electronApp.close()
+    }
+  )
+
+  test(
     `Closing settings modal should go back to the original file being viewed`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
       const { electronApp, page } = await setupElectron({
         testInfo,
-        folderSetupFn: async () => {},
+        folderSetupFn: async (dir) => {
+          const bracketDir = join(dir, 'project-000')
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('cube.kcl'),
+            join(bracketDir, 'main.kcl')
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(bracketDir, '2.kcl')
+          )
+        },
       })
+      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
+      const kclCylinder = await fsp.readFile(
+        executorInputPath('cylinder.kcl'),
+        'utf8'
+      )
 
       const {
-        panesOpen,
-        createAndSelectProject,
-        pasteCodeInEditor,
-        clickPane,
-        createNewFileAndSelect,
+        openKclCodePanel,
+        openFilePanel,
+        waitForPageLoad,
+        selectFile,
         editorTextMatches,
       } = await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
-      await panesOpen([])
-
-      await test.step('Precondition: No projects exist', async () => {
+      await test.step('Precondition: Open to second project file', async () => {
         await expect(page.getByTestId('home-section')).toBeVisible()
-        const projectLinksPre = page.getByTestId('project-link')
-        await expect(projectLinksPre).toHaveCount(0)
+        await page.getByText('project-000').click()
+        await waitForPageLoad()
+        await openKclCodePanel()
+        await openFilePanel()
+        await editorTextMatches(kclCube)
+
+        await selectFile('2.kcl')
+        await editorTextMatches(kclCylinder)
       })
-
-      await createAndSelectProject('project-000')
-
-      await clickPane('code')
-      const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCube)
-
-      await clickPane('files')
-      await createNewFileAndSelect('2.kcl')
-
-      const kclCylinder = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCylinder)
 
       const settingsOpenButton = page.getByRole('link', {
         name: 'settings Settings',
@@ -357,6 +413,9 @@ test.describe('Testing settings', () => {
 
       await test.step('Open and close settings', async () => {
         await settingsOpenButton.click()
+        await expect(
+          page.getByRole('heading', { name: 'Settings', exact: true })
+        ).toBeVisible()
         await settingsCloseButton.click()
       })
 

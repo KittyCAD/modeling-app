@@ -8,7 +8,6 @@ import {
   parseProjectSettings,
 } from 'lang/wasm'
 import {
-  DEFAULT_HOST,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
@@ -462,29 +461,60 @@ export const readProjectSettingsFile = async (
  */
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
+  const initialProjectDirConfig: DeepPartial<
+    Configuration['settings']['project']
+  > = { directory: await getInitialDefaultDir() }
 
   // The file exists, read it and parse it.
   if (window.electron.exists(settingsPath)) {
     const configToml = await window.electron.readFile(settingsPath)
-    const configObj = parseAppSettings(configToml)
-    if (err(configObj)) {
-      return Promise.reject(configObj)
+    const parsedAppConfig = parseAppSettings(configToml)
+    if (err(parsedAppConfig)) {
+      return Promise.reject(parsedAppConfig)
     }
 
-    return configObj
+    const hasProjectDirectorySetting =
+      parsedAppConfig.settings?.project?.directory ||
+      parsedAppConfig.settings?.app?.project_directory
+
+    if (hasProjectDirectorySetting) {
+      return parsedAppConfig
+    } else {
+      // inject the default project directory setting
+      const mergedConfig: DeepPartial<Configuration> = {
+        ...parsedAppConfig,
+        settings: {
+          ...parsedAppConfig.settings,
+          project: Object.assign(
+            {},
+            parsedAppConfig.settings?.project,
+            initialProjectDirConfig
+          ),
+        },
+      }
+      return mergedConfig
+    }
   }
 
   // The file doesn't exist, create a new one.
-  // This defaultAppConfig is truly an empty object every time.
   const defaultAppConfig = defaultAppSettings()
   if (err(defaultAppConfig)) {
     return Promise.reject(defaultAppConfig)
   }
-  const initialDirConfig: DeepPartial<Configuration> = {
-    settings: { project: { directory: await getInitialDefaultDir() } },
+
+  // inject the default project directory setting
+  const mergedDefaultConfig: DeepPartial<Configuration> = {
+    ...defaultAppConfig,
+    settings: {
+      ...defaultAppConfig.settings,
+      project: Object.assign(
+        {},
+        defaultAppConfig.settings?.project,
+        initialProjectDirConfig
+      ),
+    },
   }
-  const config = Object.assign(defaultAppConfig, initialDirConfig)
-  return config
+  return mergedDefaultConfig
 }
 
 export const writeAppSettingsFile = async (tomlStr: string) => {
@@ -525,28 +555,6 @@ export const getUser = async (
   token: string,
   hostname: string
 ): Promise<Models['User_type']> => {
-  // Use the host passed in if it's set.
-  // Otherwise, use the default host.
-  const host = !hostname ? DEFAULT_HOST : hostname
-
-  // Change the baseURL to the one we want.
-  let baseurl = host
-  if (!(host.indexOf('http://') === 0) && !(host.indexOf('https://') === 0)) {
-    baseurl = `https://${host}`
-    if (host.indexOf('localhost') === 0) {
-      baseurl = `http://${host}`
-    }
-  }
-
-  // Use kittycad library to fetch the user info from /user/me
-  if (baseurl !== DEFAULT_HOST) {
-    // The TypeScript generated library uses environment variables for this
-    // because it was intended for NodeJS.
-    // Needs to stay like this because window.electron.kittycad needs it
-    // internally.
-    window.electron.setBaseUrl(baseurl)
-  }
-
   try {
     const user = await window.electron.kittycad('users.get_user_self', {
       client: { token },

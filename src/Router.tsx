@@ -41,6 +41,7 @@ import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
+import { reportRejection } from 'lib/trap'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -69,19 +70,6 @@ const router = createRouter([
         path: PATHS.INDEX,
         loader: async () => {
           const onDesktop = isDesktop()
-          if (onDesktop) {
-            const projectStartupFile =
-              await window.electron.loadProjectAtStartup()
-            if (projectStartupFile !== null) {
-              // Redirect to the file if we have a file path.
-              if (projectStartupFile.length > 0) {
-                return redirect(
-                  PATHS.FILE + '/' + encodeURIComponent(projectStartupFile)
-                )
-              }
-            }
-          }
-
           return onDesktop
             ? redirect(PATHS.HOME)
             : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
@@ -186,21 +174,23 @@ function CoreDump() {
     []
   )
   useHotkeyWrapper(['mod + shift + .'], () => {
-    toast.promise(
-      coreDump(coreDumpManager, true),
-      {
-        loading: 'Starting core dump...',
-        success: 'Core dump completed successfully',
-        error: 'Error while exporting core dump',
-      },
-      {
-        success: {
-          // Note: this extended duration is especially important for Playwright e2e testing
-          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-          duration: 6000,
+    toast
+      .promise(
+        coreDump(coreDumpManager, true),
+        {
+          loading: 'Starting core dump...',
+          success: 'Core dump completed successfully',
+          error: 'Error while exporting core dump',
         },
-      }
-    )
+        {
+          success: {
+            // Note: this extended duration is especially important for Playwright e2e testing
+            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+            duration: 6000,
+          },
+        }
+      )
+      .catch(reportRejection)
   })
   return null
 }

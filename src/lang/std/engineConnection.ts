@@ -18,6 +18,7 @@ import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
+import { reportRejection } from 'lib/trap'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -388,11 +389,12 @@ class EngineConnection extends EventTarget {
         default:
           if (this.isConnecting()) break
           // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect()
+          if (!this.pingPongSpan.ping) this.connect().catch(reportRejection)
           break
       }
     }, pingIntervalMs)
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.connect()
   }
 
@@ -1252,6 +1254,10 @@ export type CommandLog =
       type: 'execution-done'
       data: null
     }
+  | {
+      type: 'export-done'
+      data: null
+    }
 
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
@@ -1460,6 +1466,7 @@ export class EngineCommandManager extends EventTarget {
       })
     )
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
       // Set the stream background color
       // This takes RGBA values from 0-1
@@ -1476,6 +1483,7 @@ export class EngineCommandManager extends EventTarget {
 
       // Sets the default line colors
       const opposingTheme = getOppositeTheme(this.settings.theme)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.sendSceneCommand({
         cmd_id: uuidv4(),
         type: 'modeling_cmd_req',
@@ -1486,6 +1494,7 @@ export class EngineCommandManager extends EventTarget {
       })
 
       // Set the edge lines visibility
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -1496,6 +1505,7 @@ export class EngineCommandManager extends EventTarget {
       })
 
       this._camControlsCameraChange()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.sendSceneCommand({
         // CameraControls subscribes to default_camera_get_settings response events
         // firing this at connection ensure the camera's are synced initially
@@ -1508,6 +1518,7 @@ export class EngineCommandManager extends EventTarget {
       // We want modify the grid first because we don't want it to flash.
       // Ideally these would already be default hidden in engine (TODO do
       // that) https://github.com/KittyCAD/engine/issues/2282
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.modifyGrid(!this.settings.showScaleGrid)?.then(async () => {
         await this.initPlanes()
         setIsStreamReady(true)
@@ -1711,6 +1722,7 @@ export class EngineCommandManager extends EventTarget {
         this.onEngineConnectionNewTrack as EventListener
       )
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineConnection?.connect()
     }
     this.engineConnection.addEventListener(
@@ -1918,7 +1930,13 @@ export class EngineCommandManager extends EventTarget {
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
         this.pendingExport = {
-          resolve,
+          resolve: (passThrough) => {
+            this.addCommandLog({
+              type: 'export-done',
+              data: null,
+            })
+            resolve(passThrough)
+          },
           reject: (reason: string) => {
             this.exportIntent = null
             reject(reason)
@@ -2115,6 +2133,7 @@ export class EngineCommandManager extends EventTarget {
    * @param visible - whether to show or hide the scale grid
    */
   setScaleGridVisibility(visible: boolean) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.modifyGrid(!visible)
   }
 

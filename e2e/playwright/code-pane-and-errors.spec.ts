@@ -27,9 +27,19 @@ test.describe('Code pane and errors', () => {
     const u = await getUtils(page)
 
     // Load the app with the working starter code
-    await page.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, bracket)
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `// Extruded Triangle
+const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 0], %)
+  |> line([-5, 10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)`
+      )
+    })
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -261,10 +271,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
     })
 
     // If they're open by default, we're not actually testing anything.
@@ -292,16 +299,7 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
     })
 
     await test.step('All panes opened before should be visible', async () => {

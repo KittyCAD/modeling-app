@@ -27,6 +27,7 @@ import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isArray } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -439,46 +440,50 @@ export async function getUtils(page: Page, test_?: typeof test) {
       }
       return maxDiff
     },
-    doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
-      new Promise(async (resolve) => {
-        await page.screenshot({
-          path: './e2e/playwright/temp1.png',
-          fullPage: true,
-        })
-        await fn()
-        const isImageDiff = async () => {
+    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
+      new Promise<boolean>((resolve) => {
+        ;(async () => {
           await page.screenshot({
-            path: './e2e/playwright/temp2.png',
+            path: './e2e/playwright/temp1.png',
             fullPage: true,
           })
-          const screenshot1 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp1.png')
-          )
-          const screenshot2 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp2.png')
-          )
-          const actualDiffCount = pixelMatch(
-            screenshot1.data,
-            screenshot2.data,
-            null,
-            screenshot1.width,
-            screenshot2.height
-          )
-          return actualDiffCount > diffCount
-        }
-
-        // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-        let count = 0
-        const interval = setInterval(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
+          await fn()
+          const isImageDiff = async () => {
+            await page.screenshot({
+              path: './e2e/playwright/temp2.png',
+              fullPage: true,
+            })
+            const screenshot1 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp1.png')
+            )
+            const screenshot2 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp2.png')
+            )
+            const actualDiffCount = pixelMatch(
+              screenshot1.data,
+              screenshot2.data,
+              null,
+              screenshot1.width,
+              screenshot2.height
+            )
+            return actualDiffCount > diffCount
           }
-        }, 50)
+
+          // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
+          let count = 0
+          const interval = setInterval(() => {
+            ;(async () => {
+              count++
+              if (await isImageDiff()) {
+                clearInterval(interval)
+                resolve(true)
+              } else if (count > 100) {
+                clearInterval(interval)
+                resolve(false)
+              }
+            })().catch(reportRejection)
+          }, 50)
+        })().catch(reportRejection)
       }),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
@@ -548,13 +553,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFileAndSelect: async (name: string) => {
       return test?.step(`Create a file named ${name}, select it`, async () => {
+        await openFilePanel(page)
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
-        await page
+        const newFile = page
           .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
-          .click()
+
+        await expect(newFile).toBeVisible()
+        await newFile.click()
       })
     },
 
@@ -585,6 +593,15 @@ export async function getUtils(page: Page, test_?: typeof test) {
       })
     },
 
+    /**
+     * @deprecated Sorry I don't have time to fix this right now, but runs like
+     * the one linked below show me that setting the open panes in this manner is not reliable.
+     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
+     * or you can imperatively open the panes with functions like {openKclCodePanel}
+     * (or we can make a general openPane function that takes a paneId).,
+     * but having a separate initScript does not seem to work reliably.
+     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
+     */
     panesOpen: async (paneIds: PaneId[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
@@ -852,10 +869,12 @@ export async function setupElectron({
   testInfo,
   folderSetupFn,
   cleanProjectDir = true,
+  appSettings,
 }: {
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
+  appSettings?: Partial<SaveSettingsPayload>
 }) {
   // create or otherwise clear the folder
   const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -889,15 +908,19 @@ export async function setupElectron({
 
   if (cleanProjectDir) {
     const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = TOML.stringify({
-      ...TEST_SETTINGS,
-      settings: {
-        app: {
-          ...TEST_SETTINGS.app,
-          projectDirectory: projectDirName,
-        },
-      },
-    })
+    const settingsOverrides = TOML.stringify(
+      appSettings
+        ? { settings: appSettings }
+        : {
+            ...TEST_SETTINGS,
+            settings: {
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+              },
+            },
+          }
+    )
     await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
   }
 

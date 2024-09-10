@@ -294,6 +294,13 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
+    pub(crate) fn get_sketch_groups_and_data<'a, T>(&'a self) -> Result<(Vec<SketchGroup>, Option<T>), KclError>
+    where
+        T: FromArgs<'a> + serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
+    {
+        FromArgs::from_args(self, 0)
+    }
+
     pub(crate) fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
@@ -357,6 +364,13 @@ impl Args {
     }
 
     pub(crate) fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, SketchGroup), KclError> {
+        FromArgs::from_args(self, 0)
+    }
+
+    pub(crate) fn get_data_and_float<'a, T>(&'a self) -> Result<(T, f64), KclError>
+    where
+        T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
+    {
         FromArgs::from_args(self, 0)
     }
 
@@ -495,6 +509,9 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
+        if crate::ast::types::KclNone::from_mem_item(arg).is_some() {
+            return Ok(None);
+        }
         let Some(val) = T::from_mem_item(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
@@ -617,9 +634,12 @@ impl_from_arg_via_json!(super::revolve::RevolveData);
 impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
+impl_from_arg_via_json!(crate::std::loft::LoftData);
+impl_from_arg_via_json!(crate::std::planes::StandardPlane);
 impl_from_arg_via_json!(SketchGroup);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
+impl_from_arg_via_json!(crate::ast::types::KclNone);
 impl_from_arg_via_json!(u32);
 impl_from_arg_via_json!(u64);
 impl_from_arg_via_json!(f64);
@@ -684,5 +704,15 @@ impl<'a> FromKclValue<'a> for SketchSurface {
             KclValue::Face(sg) => Some(Self::Face(sg.clone())),
             _ => None,
         }
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<SketchGroup> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::UserVal(uv) = arg else {
+            return None;
+        };
+
+        uv.get::<Vec<SketchGroup>>().map(|x| x.0)
     }
 }

@@ -16,6 +16,8 @@ import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 /**
  * A setting that can be set at the user or project level
@@ -206,7 +208,7 @@ export function createSettings() {
                 ref={inputRef}
               />
               <button
-                onClick={async () => {
+                onClick={toSync(async () => {
                   // In desktop end-to-end tests we can't control the file picker,
                   // so we seed the new directory value in the element's dataset
                   const inputRefVal = inputRef.current?.dataset.testValue
@@ -225,7 +227,7 @@ export function createSettings() {
                     if (newPath.canceled) return
                     updateValue(newPath.filePaths[0])
                   }
-                }}
+                }, reportRejection)}
                 className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
                 data-testid="project-directory-button"
               >

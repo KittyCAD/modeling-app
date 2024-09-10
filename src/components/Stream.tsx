@@ -53,13 +53,12 @@ export const Stream = () => {
    * executed. If we can find a way to do this from a more
    * central place, we can move this code there.
    */
-  async function executeCodeAndPlayStream() {
-    kclManager.isFirstRender = true
-    kclManager.executeCode(true).then(() => {
-      videoRef.current?.play().catch((e) => {
+  function executeCodeAndPlayStream() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    kclManager.executeCode(true).then(async () => {
+      await videoRef.current?.play().catch((e) => {
         console.warn('Video playing was prevented', e, videoRef.current)
       })
-      kclManager.isFirstRender = false
       setStreamState(StreamState.Playing)
     })
   }
@@ -219,15 +218,15 @@ export const Stream = () => {
    * Play the vid
    */
   useEffect(() => {
-    if (!kclManager.isFirstRender) {
-      setTimeout(() =>
+    if (!kclManager.isExecuting) {
+      setTimeout(() => {
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
-      )
+      })
     }
-  }, [kclManager.isFirstRender])
+  }, [kclManager.isExecuting])
 
   useEffect(() => {
     if (
@@ -289,9 +288,10 @@ export const Stream = () => {
       },
     })
     if (state.matches('Sketch')) return
-    if (state.matches('idle.showPlanes')) return
+    if (state.matches({ idle: 'showPlanes' })) return
 
     if (!context.store?.didDragInStream && btnName(e).left) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sendSelectEventToEngine(
         e,
         videoRef.current,
@@ -382,15 +382,15 @@ export const Stream = () => {
           </div>
         </div>
       )}
-      {(!isNetworkOkay || isLoading || kclManager.isFirstRender) && (
+      {(!isNetworkOkay || isLoading) && (
         <div className="text-center absolute inset-0">
           <Loading>
-            {!isNetworkOkay && !isLoading && !kclManager.isFirstRender ? (
+            {!isNetworkOkay && !isLoading ? (
               <span data-testid="loading-stream">Stream disconnected...</span>
-            ) : !isLoading && kclManager.isFirstRender ? (
-              <span data-testid="loading-stream">Building scene...</span>
             ) : (
-              <span data-testid="loading-stream">Loading stream...</span>
+              !isLoading && (
+                <span data-testid="loading-stream">Loading stream...</span>
+              )
             )}
           </Loading>
         </div>
