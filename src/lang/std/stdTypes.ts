@@ -82,19 +82,19 @@ export type VarValueKeys =
   | 'center'
 export interface SingleValueInput<T> {
   type: 'singleValue'
-  argType: LineInputsType | 'radius'
+  argType: LineInputsType
   expr: T
 }
 export interface ArrayItemInput<T> {
   type: 'arrayItem'
   index: 0 | 1
-  argType: LineInputsType | 'radius'
+  argType: LineInputsType
   expr: T
 }
 export interface ObjectPropertyInput<T> {
   type: 'objectProperty'
   key: VarValueKeys
-  argType: LineInputsType | 'radius'
+  argType: LineInputsType
   expr: T
 }
 
@@ -102,14 +102,14 @@ interface ArrayOrObjItemInput<T> {
   type: 'arrayOrObjItem'
   key: VarValueKeys
   index: 0 | 1
-  argType: LineInputsType | 'radius'
+  argType: LineInputsType
   expr: T
 }
 
 interface ArrayInObject<T> {
   type: 'arrayInObject'
   key: VarValueKeys
-  argType: LineInputsType | 'radius'
+  argType: LineInputsType
   index: 0 | 1
   expr: T
 }

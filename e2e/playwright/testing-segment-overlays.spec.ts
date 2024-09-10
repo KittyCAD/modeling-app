@@ -40,7 +40,6 @@ test.describe('Testing segment overlays', () => {
           | 'horizontal'
           | 'vertical'
           | 'tangentialWithPrevious'
-          | 'radius'
           | LineInputsType
         expectBeforeUnconstrained: string
         expectAfterUnconstrained: string
@@ -122,7 +121,6 @@ test.describe('Testing segment overlays', () => {
           | 'horizontal'
           | 'vertical'
           | 'tangentialWithPrevious'
-          | 'radius'
           | LineInputsType
         expectBeforeUnconstrained: string
         expectAfterUnconstrained: string

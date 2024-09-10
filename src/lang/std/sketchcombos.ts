@@ -59,6 +59,7 @@ export type LineInputsType =
   | 'length'
   | 'intersectionOffset'
   | 'intersectionTag'
+  | 'radius'
 
 export type ConstraintType =
   | 'equalLength'
