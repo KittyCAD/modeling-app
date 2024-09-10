@@ -375,11 +375,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'circle-center',
-          onClick: ({ modelingStateMatches, modelingSend }) =>
+          onClick: ({ modelingState, modelingSend }) =>
             modelingSend({
               type: 'change tool',
               data: {
-                tool: !modelingStateMatches('Sketch.Circle tool')
+                tool: !modelingState.matches({ Sketch: 'Circle tool' })
                   ? 'circle'
                   : 'none',
               },
@@ -389,8 +389,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           title: 'Center circle',
           disabled: (state) =>
             !canRectangleOrCircleTool(state.context) &&
-            !state.matches('Sketch.Circle tool'),
-          isActive: (state) => state.matches('Sketch.Circle tool'),
+            !state.matches({ Sketch: 'Circle tool' }),
+          isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
           showTitle: false,
           description: 'Start drawing a circle from its center',
           links: [
