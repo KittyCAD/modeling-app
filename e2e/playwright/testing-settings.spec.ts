@@ -8,7 +8,7 @@ import {
   tearDown,
   executorInputPath,
 } from './test-utils'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
 
@@ -171,6 +171,8 @@ test.describe('Testing settings', () => {
       user: '120',
       project: '50',
     }
+    const resetToast = (level: SettingsLevel) =>
+      page.getByText(`${level}-level settings were reset`)
 
     await test.step(`Open the settings modal`, async () => {
       await page.getByRole('link', { name: 'Settings' }).last().click()
@@ -198,10 +200,8 @@ test.describe('Testing settings', () => {
       // Click the reset settings button.
       await resetButton.click()
 
-      await expect(page.getByText('Settings restored to default')).toBeVisible()
-      await expect(
-        page.getByText('Settings restored to default')
-      ).not.toBeVisible()
+      await expect(resetToast('project')).toBeVisible()
+      await expect(resetToast('project')).not.toBeVisible()
 
       // Verify it is now set to the inherited user value
       await expect(themeColorSetting).toHaveValue(settingValues.user)
@@ -221,6 +221,9 @@ test.describe('Testing settings', () => {
     await test.step('Reset user settings', async () => {
       // Click the reset settings button.
       await resetButton.click()
+
+      await expect(resetToast('user')).toBeVisible()
+      await expect(resetToast('user')).not.toBeVisible()
 
       // Verify it is now set to the default value
       await expect(themeColorSetting).toHaveValue(settingValues.default)

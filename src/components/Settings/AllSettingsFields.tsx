@@ -214,14 +214,15 @@ export const AllSettingsFields = forwardRef(
               )}
               <ActionButton
                 Element="button"
-                onClick={toSync(async () => {
-                  const defaultDirectory = await getInitialDefaultDir()
+                onClick={() => {
                   send({
                     type: 'Reset settings',
-                    defaultDirectory,
+                    level: searchParamTab,
                   })
-                  toast.success('Settings restored to default')
-                }, reportRejection)}
+                  toast.success(
+                    `Your ${searchParamTab}-level settings were reset`
+                  )
+                }}
                 iconStart={{
                   icon: 'refresh',
                   size: 'sm',
