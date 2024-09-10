@@ -63,9 +63,7 @@ export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
  */
 interface addCall extends ModifyAstBase {
   segmentInput: SegmentInputs
-  replaceExistingCallback?: (
-    rawArgs: RawArgs
-  ) => ReturnType<CreateStdLibSketchCallExpr>
+  replaceExistingCallback?: (rawArgs: RawArgs) => CreatedSketchExprResult
   referencedSegment?: Path
   spliceBetween?: boolean
 }
@@ -170,17 +168,31 @@ export type SimplifiedArgDetails =
       index: 0 | 1
     }
 
-export type CreateStdLibSketchCallExpr = (args: {
-  inputs: InputArgs
-  referenceSegName: string
-  tag?: Expr
-  forceValueUsedInTransform?: Expr
-  rawArgs: InputArgs
-  referencedSegment?: Path
-}) => {
+/**
+ * Represents the result of creating a sketch expression (line, tangentialArcTo, angledLine, circle, etc.).
+ *
+ * @property {Expr} callExp - This is the main result; recasting the expression should give the user the new function call.
+ * @property {number} [valueUsedInTransform] - Aside from `callExp`, we also return the number used in the transform, which is useful for constraints.
+ * For example, when adding a "horizontal distance" constraint, we don't want the segments to move, just constrain them in place.
+ * So the second segment will probably be something like `lineTo([segEndX($firstSegTag) + someLiteral, 123], %)` where `someLiteral` is
+ * the value of the current horizontal distance, that we calculate to constrain the second segment without it moving.
+ * We can run the ast-mod to get this constraint `valueUsedInTransform` without applying the mod so that we can surface this to the user in a modal.
+ * We show them the modal where they can specify the distance they want to constrain to.
+ * We pre-fill this with the current value `valueUsedInTransform`, which they can accept or change, and we'll use that to apply the final ast-mod.
+ */
+export interface CreatedSketchExprResult {
   callExp: Expr
   valueUsedInTransform?: number
 }
+
+export type CreateStdLibSketchCallExpr = (args: {
+  inputs: InputArgs
+  rawArgs: RawArgs
+  referenceSegName: string
+  tag?: Expr
+  forceValueUsedInTransform?: Expr
+  referencedSegment?: Path
+}) => CreatedSketchExprResult
 
 export type TransformInfo = {
   tooltip: ToolTip

@@ -36,7 +36,7 @@ import {
   SegmentInputs,
   SimplifiedArgDetails,
   RawArgs,
-  CreateStdLibSketchCallExpr,
+  CreatedSketchExprResult,
 } from 'lang/std/stdTypes'
 
 import {
@@ -2037,9 +2037,7 @@ export function replaceSketchLine({
   pathToNode: PathToNode
   fnName: ToolTip
   segmentInput: SegmentInputs
-  replaceExistingCallback: (
-    rawArgs: RawArgs
-  ) => ReturnType<CreateStdLibSketchCallExpr>
+  replaceExistingCallback: (rawArgs: RawArgs) => CreatedSketchExprResult
   referencedSegment?: Path
 }):
   | {

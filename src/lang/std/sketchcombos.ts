@@ -1,4 +1,5 @@
 import {
+  CreatedSketchExprResult,
   CreateStdLibSketchCallExpr,
   InputArg,
   InputArgs,
@@ -17,6 +18,7 @@ import {
   PathToNode,
   ProgramMemory,
   sketchGroupFromKclValue,
+  Literal,
 } from '../wasm'
 import {
   getNodeFromPath,
@@ -78,7 +80,7 @@ function createCallWrapper(
   val: [Expr, Expr] | Expr,
   tag?: Expr,
   valueUsedInTransform?: number
-): ReturnType<CreateStdLibSketchCallExpr> {
+): CreatedSketchExprResult {
   const args =
     tooltip === 'circle'
       ? []
@@ -116,7 +118,7 @@ function createStdlibCallExpression(
   val: Expr,
   tag?: Expr,
   valueUsedInTransform?: number
-): ReturnType<CreateStdLibSketchCallExpr> {
+): CreatedSketchExprResult {
   const args = [val, createPipeSubstitution()]
   if (tag) {
     args.push(tag)
@@ -141,7 +143,7 @@ function intersectCallWrapper({
   intersectTag: Expr
   tag?: Expr
   valueUsedInTransform?: number
-}): ReturnType<CreateStdLibSketchCallExpr> {
+}): CreatedSketchExprResult {
   const firstArg: any = {
     angle: angleVal,
     offset: offsetVal,
@@ -261,13 +263,11 @@ const getMinAndSegAngVals = (
   return [minVal, legAngle]
 }
 
-const getSignedLeg = (arg: Expr, legLenVal: BinaryPart) =>
-  arg.type === 'Literal' && Number(arg.value) < 0
-    ? createUnaryExpression(legLenVal)
-    : legLenVal
+const getSignedLeg = (arg: Literal, legLenVal: BinaryPart) =>
+  Number(arg.value) < 0 ? createUnaryExpression(legLenVal) : legLenVal
 
-const getLegAng = (arg: Expr, legAngleVal: BinaryPart) => {
-  const ang = (arg.type === 'Literal' && Number(arg.value)) || 0
+const getLegAng = (arg: Literal, legAngleVal: BinaryPart) => {
+  const ang = Number(arg.value) || 0
   const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
   const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
   const binExp = createBinaryExpressionWithUnary([
@@ -277,18 +277,18 @@ const getLegAng = (arg: Expr, legAngleVal: BinaryPart) => {
   return truncatedTo90 === 0 ? legAngleVal : binExp
 }
 
-const getAngleLengthSign = (arg: Expr, legAngleVal: BinaryPart) => {
-  const ang = (arg.type === 'Literal' && Number(arg.value)) || 0
+const getAngleLengthSign = (arg: Literal, legAngleVal: BinaryPart) => {
+  const ang = Number(arg.value) || 0
   const normalisedAngle = ((ang % 180) + 180) % 180 // between 0 and 180
   return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
 }
 
 function getClosesAngleDirection(
-  arg: Expr,
+  arg: Literal,
   refAngle: number,
   angleVal: BinaryPart
 ) {
-  const currentAng = (arg.type === 'Literal' && Number(arg.value)) || 0
+  const currentAng = Number(arg.value) || 0
   const angDiff = Math.abs(currentAng - refAngle)
   const normalisedAngle = ((angDiff % 360) + 360) % 360 // between 0 and 180
   return normalisedAngle > 90
@@ -454,11 +454,8 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
   forceValueUsedInTransform,
   rawArgs: args,
 }) => {
-  const valueUsedInTransform = roundOff(
-    args[1].expr.type === 'Literal' ? Number(args[1].expr.value) : 0,
-    2
-  )
-  const angle = args[0].expr.type === 'Literal' ? Number(args[0].expr.value) : 0
+  const valueUsedInTransform = roundOff(Number(args[1].expr.value) || 0, 2)
+  const angle = Number(args[0].expr.value) || 0
   const varNamMap: { [key: number]: string } = {
     0: 'ZERO',
     90: 'QUARTER_TURN',
@@ -485,10 +482,7 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
   inputs,
   rawArgs: args,
 }) => {
-  const valueUsedInTransform = roundOff(
-    args[1].expr.type === 'Literal' ? Number(args[1].expr.value) : 0,
-    2
-  )
+  const valueUsedInTransform = roundOff(Number(args[1].expr.value) || 0, 2)
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
     angleVal: inputs[0].expr,
@@ -513,10 +507,7 @@ const setAngleBetweenCreateNode =
       ? getAngle(referencedSegment?.from, referencedSegment?.to)
       : 0
     let valueUsedInTransform = roundOff(
-      normaliseAngle(
-        (args[0].expr.type === 'Literal' ? Number(args[0].expr.value) : 0) -
-          refAngle
-      )
+      normaliseAngle((Number(args[0].expr.value) || 0) - refAngle)
     )
     let firstHalfValue = createSegAngle(referenceSegName) as BinaryPart
     if (Math.abs(valueUsedInTransform) > 90) {
@@ -824,9 +815,7 @@ const transformMap: TransformMap = {
         tooltip: 'yLine',
         createNode: ({ inputs, tag, rawArgs: args }) => {
           const expr = inputs[1].expr
-          if (
-            !(args[0].expr.type === 'Literal' && Number(args[0].expr.value) < 0)
-          )
+          if (Number(args[0].expr.value) >= 0)
             return createCallWrapper('yLine', expr, tag)
           if (isExprBinaryPart(expr))
             return createCallWrapper('yLine', createUnaryExpression(expr), tag)
@@ -838,9 +827,7 @@ const transformMap: TransformMap = {
         tooltip: 'xLine',
         createNode: ({ inputs, tag, rawArgs: args }) => {
           const expr = inputs[1].expr
-          if (
-            !(args[0].expr.type === 'Literal' && Number(args[0].expr.value) < 0)
-          )
+          if (Number(args[0].expr.value) >= 0)
             return createCallWrapper('xLine', expr, tag)
           if (isExprBinaryPart(expr))
             return createCallWrapper('xLine', createUnaryExpression(expr), tag)
@@ -895,9 +882,7 @@ const transformMap: TransformMap = {
         tooltip: 'xLine',
         createNode: ({ inputs, tag, rawArgs: args }) => {
           const expr = inputs[1].expr
-          if (
-            !(args[0].expr.type === 'Literal' && Number(args[0].expr.value) < 0)
-          )
+          if (Number(args[0].expr.value) >= 0)
             return createCallWrapper('xLine', expr, tag)
           if (isExprBinaryPart(expr))
             return createCallWrapper('xLine', createUnaryExpression(expr), tag)
@@ -949,9 +934,7 @@ const transformMap: TransformMap = {
         tooltip: 'yLine',
         createNode: ({ inputs, tag, rawArgs: args }) => {
           const expr = inputs[1].expr
-          if (
-            !(args[0].expr.type === 'Literal' && Number(args[0].expr.value) < 0)
-          )
+          if (Number(args[0].expr.value) >= 0)
             return createCallWrapper('yLine', expr, tag)
           if (isExprBinaryPart(expr))
             return createCallWrapper('yLine', createUnaryExpression(expr), tag)
@@ -1806,8 +1789,8 @@ function createLastSeg(isX: boolean): CallExpression {
   ])
 }
 
-function getArgLiteralVal(arg: Expr): number {
-  return arg?.type === 'Literal' ? Number(arg.value) : 0
+function getArgLiteralVal(arg: Literal): number {
+  return Number(arg.value) || 0
 }
 
 export type ConstraintLevel = 'free' | 'partial' | 'full'
