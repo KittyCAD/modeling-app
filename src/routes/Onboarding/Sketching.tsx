@@ -16,6 +16,7 @@ export default function Sketching() {
       await kclManager.executeCode(true)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     clearEditor()
   }, [])
 

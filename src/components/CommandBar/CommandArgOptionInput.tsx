@@ -71,6 +71,17 @@ function CommandArgOptionInput({
     inputRef.current?.focus()
     inputRef.current?.select()
   }, [inputRef])
+  useEffect(() => {
+    // work around to make sure the user doesn't have to press the down arrow key to focus the first option
+    // instead this makes it move from the first hit
+    const downArrowEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      keyCode: 40,
+      which: 40,
+      bubbles: true,
+    })
+    inputRef?.current?.dispatchEvent(downArrowEvent)
+  }, [])
 
   // Filter the options based on the query,
   // resetting the query when the options change

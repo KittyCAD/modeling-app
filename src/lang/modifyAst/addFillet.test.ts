@@ -37,7 +37,7 @@ beforeAll(async () => {
       setMediaStream: () => {},
       setIsStreamReady: () => {},
       modifyGrid: async () => {},
-      callbackOnEngineLiteConnect: async () => {
+      callbackOnEngineLiteConnect: () => {
         resolve(true)
       },
     })
