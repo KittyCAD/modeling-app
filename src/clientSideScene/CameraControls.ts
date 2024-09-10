@@ -398,7 +398,7 @@ export class CameraControls {
           const zoomFudgeFactor = 2280
           distance = zoomFudgeFactor / (this.camera.zoom * 45)
         }
-        const panSpeed = (distance / 1000 / 45) * this.perpsectiveFovBeforeOrtho
+        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
         this.pendingPan.x += -deltaMove.x * panSpeed
         this.pendingPan.y += deltaMove.y * panSpeed
       }
