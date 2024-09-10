@@ -5,7 +5,7 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Expr, parse, recast } from 'lang/wasm'
+import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
@@ -300,8 +300,7 @@ export function processCodeMirrorRanges({
 }
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
-  const updated = parse(recast(kclManager.ast))
-  if (err(updated)) return
+  const updated = kclManager.ast
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (

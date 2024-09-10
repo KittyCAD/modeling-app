@@ -52,7 +52,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     e.preventDefault()
     commandBarSend({
       type: 'Submit command',
-      data: argumentsToSubmit,
+      output: argumentsToSubmit,
     })
   }
 

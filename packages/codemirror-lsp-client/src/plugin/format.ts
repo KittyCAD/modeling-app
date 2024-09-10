@@ -12,6 +12,7 @@ export default function lspFormatExt(
       run: (view: EditorView) => {
         let value = view.plugin(plugin)
         if (!value) return false
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         value.requestFormatting()
         return true
       },

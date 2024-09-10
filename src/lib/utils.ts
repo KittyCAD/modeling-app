@@ -2,6 +2,8 @@ import { SourceRange } from '../lang/wasm'
 
 import { v4 } from 'uuid'
 import { isDesktop } from './isDesktop'
+import { AnyMachineSnapshot } from 'xstate'
+import { AsyncFn } from './types'
 
 export const uuidv4 = v4
 
@@ -103,6 +105,28 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
   }
 
   return deferred
+}
+
+/**
+ * Wrap an async function so that it can be called in a sync context, catching
+ * rejections.
+ *
+ * It's common to want to run an async function in a sync context, like an event
+ * handler or callback.  But we want to catch errors.
+ *
+ * Note: The returned function doesn't block.  This isn't magic.
+ *
+ * @param onReject This callback type is from Promise.prototype.catch.
+ */
+export function toSync<F extends AsyncFn<F>>(
+  fn: F,
+  onReject: (
+    reason: any
+  ) => void | PromiseLike<void | null | undefined> | null | undefined
+): (...args: Parameters<F>) => void {
+  return (...args: Parameters<F>) => {
+    fn(...args).catch(onReject)
+  }
 }
 
 export function getNormalisedCoordinates({
@@ -207,4 +231,8 @@ export function isReducedMotion(): boolean {
 
 export function XOR(bool1: boolean, bool2: boolean): boolean {
   return (bool1 || bool2) && !(bool1 && bool2)
+}
+
+export function getActorNextEvents(snapshot: AnyMachineSnapshot) {
+  return [...new Set([...snapshot._nodes.flatMap((sn) => sn.ownEvents)])]
 }

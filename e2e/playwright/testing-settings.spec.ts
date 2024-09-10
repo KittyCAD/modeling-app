@@ -288,7 +288,7 @@ test.describe('Testing settings', () => {
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
-        await page.reload()
+        await page.reload({ waitUntil: 'domcontentloaded' })
 
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         await settingsCloseButton.click()
@@ -364,46 +364,47 @@ test.describe('Testing settings', () => {
     async ({ browser: _ }, testInfo) => {
       const { electronApp, page } = await setupElectron({
         testInfo,
-        folderSetupFn: async () => {},
+        folderSetupFn: async (dir) => {
+          const bracketDir = join(dir, 'project-000')
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('cube.kcl'),
+            join(bracketDir, 'main.kcl')
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(bracketDir, '2.kcl')
+          )
+        },
       })
+      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
+      const kclCylinder = await fsp.readFile(
+        executorInputPath('cylinder.kcl'),
+        'utf8'
+      )
 
       const {
-        panesOpen,
-        createAndSelectProject,
-        pasteCodeInEditor,
-        clickPane,
-        createNewFileAndSelect,
+        openKclCodePanel,
+        openFilePanel,
+        waitForPageLoad,
+        selectFile,
         editorTextMatches,
       } = await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
       page.on('console', console.log)
 
-      await panesOpen([])
-
-      await test.step('Precondition: No projects exist', async () => {
+      await test.step('Precondition: Open to second project file', async () => {
         await expect(page.getByTestId('home-section')).toBeVisible()
-        const projectLinksPre = page.getByTestId('project-link')
-        await expect(projectLinksPre).toHaveCount(0)
+        await page.getByText('project-000').click()
+        await waitForPageLoad()
+        await openKclCodePanel()
+        await openFilePanel()
+        await editorTextMatches(kclCube)
+
+        await selectFile('2.kcl')
+        await editorTextMatches(kclCylinder)
       })
-
-      await createAndSelectProject('project-000')
-
-      await clickPane('code')
-      const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCube)
-
-      await clickPane('files')
-      await createNewFileAndSelect('2.kcl')
-
-      const kclCylinder = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCylinder)
 
       const settingsOpenButton = page.getByRole('link', {
         name: 'settings Settings',
@@ -412,6 +413,9 @@ test.describe('Testing settings', () => {
 
       await test.step('Open and close settings', async () => {
         await settingsOpenButton.click()
+        await expect(
+          page.getByRole('heading', { name: 'Settings', exact: true })
+        ).toBeVisible()
         await settingsCloseButton.click()
       })
 
@@ -546,6 +550,72 @@ test.describe('Testing settings', () => {
       await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
       await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
       await changeUnitOfMeasureInGizmo('m', 'Meters')
+    })
+  })
+
+  test('Changing theme in sketch mode', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 0], %)
+  |> line([0, 5], %)
+  |> line([-5, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+`
+      )
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    // Selectors and constants
+    const editSketchButton = page.getByRole('button', { name: 'Edit Sketch' })
+    const lineToolButton = page.getByTestId('line')
+    const segmentOverlays = page.getByTestId('segment-overlay')
+    const sketchOriginLocation = { x: 600, y: 250 }
+    const darkThemeSegmentColor: [number, number, number] = [215, 215, 215]
+    const lightThemeSegmentColor: [number, number, number] = [90, 90, 90]
+
+    await test.step(`Get into sketch mode`, async () => {
+      await u.waitForAuthSkipAppStart()
+      await page.mouse.click(700, 200)
+      await expect(editSketchButton).toBeVisible()
+      await editSketchButton.click()
+
+      // We use the line tool as a proxy for sketch mode
+      await expect(lineToolButton).toBeVisible()
+      await expect(segmentOverlays).toHaveCount(4)
+      // but we allow more time to pass for animating to the sketch
+      await page.waitForTimeout(1000)
+    })
+
+    await test.step(`Check the sketch line color before`, async () => {
+      await expect
+        .poll(() =>
+          u.getGreatestPixDiff(sketchOriginLocation, darkThemeSegmentColor)
+        )
+        .toBeLessThan(15)
+    })
+
+    await test.step(`Change theme to light using command palette`, async () => {
+      await page.keyboard.press('ControlOrMeta+K')
+      await page.getByRole('option', { name: 'theme' }).click()
+      await page.getByRole('option', { name: 'light' }).click()
+      await expect(page.getByText('theme to "light"')).toBeVisible()
+
+      // Make sure we haven't left sketch mode
+      await expect(lineToolButton).toBeVisible()
+    })
+
+    await test.step(`Check the sketch line color after`, async () => {
+      await expect
+        .poll(() =>
+          u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
+        )
+        .toBeLessThan(15)
     })
   })
 })

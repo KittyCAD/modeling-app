@@ -21,6 +21,8 @@ import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import { bracket } from 'lib/exampleKcl'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -80,11 +82,13 @@ export const onboardingRoutes = [
 export function useDemoCode() {
   useEffect(() => {
     if (!editorManager.editorView || codeManager.code === bracket) return
-    setTimeout(async () => {
-      codeManager.updateCodeStateEditor(bracket)
-      await kclManager.executeCode(true)
-      await codeManager.writeToFile()
-    })
+    setTimeout(
+      toSync(async () => {
+        codeManager.updateCodeStateEditor(bracket)
+        await kclManager.executeCode(true)
+        await codeManager.writeToFile()
+      }, reportRejection)
+    )
   }, [editorManager.editorView])
 }
 
