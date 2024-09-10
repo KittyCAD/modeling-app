@@ -154,12 +154,12 @@ test.describe('Testing settings', () => {
 
   test('Project and user settings can be reset', async ({ page }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
+    await test.step(`Setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+    })
 
+    // Selectors and constants
     const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
     const userSettingsTab = page.getByRole('radio', { name: 'User' })
     const resetButton = page.getByRole('button', {
@@ -172,11 +172,12 @@ test.describe('Testing settings', () => {
       project: '50',
     }
 
-    // Open the settings modal with lower-right button
-    await page.getByRole('link', { name: 'Settings' }).last().click()
-    await expect(
-      page.getByRole('heading', { name: 'Settings', exact: true })
-    ).toBeVisible()
+    await test.step(`Open the settings modal`, async () => {
+      await page.getByRole('link', { name: 'Settings' }).last().click()
+      await expect(
+        page.getByRole('heading', { name: 'Settings', exact: true })
+      ).toBeVisible()
+    })
 
     await test.step('Set up theme color', async () => {
       // Verify we're looking at the project-level settings,
@@ -203,29 +204,31 @@ test.describe('Testing settings', () => {
       ).not.toBeVisible()
 
       // Verify it is now set to the inherited user value
-      await expect(themeColorSetting).toHaveValue(settingValues.default)
+      await expect(themeColorSetting).toHaveValue(settingValues.user)
 
-      // Check that the user setting also rolled back
-      await userSettingsTab.click()
-      await expect(themeColorSetting).toHaveValue(settingValues.default)
-      await projectSettingsTab.click()
+      await test.step(`Check that the user settings did not change`, async () => {
+        await userSettingsTab.click()
+        await expect(themeColorSetting).toHaveValue(settingValues.user)
+      })
 
-      // Set project-level value to 50 again to test the user-level reset
-      await themeColorSetting.fill(settingValues.project)
-      await userSettingsTab.click()
+      await test.step(`Set project-level again to test the user-level reset`, async () => {
+        await projectSettingsTab.click()
+        await themeColorSetting.fill(settingValues.project)
+        await userSettingsTab.click()
+      })
     })
 
     await test.step('Reset user settings', async () => {
-      // Change the setting and click the reset settings button.
-      await themeColorSetting.fill(settingValues.user)
+      // Click the reset settings button.
       await resetButton.click()
 
       // Verify it is now set to the default value
       await expect(themeColorSetting).toHaveValue(settingValues.default)
 
-      // Check that the project setting also changed
-      await projectSettingsTab.click()
-      await expect(themeColorSetting).toHaveValue(settingValues.default)
+      await test.step(`Check that the project settings did not change`, async () => {
+        await projectSettingsTab.click()
+        await expect(themeColorSetting).toHaveValue(settingValues.project)
+      })
     })
   })
 
