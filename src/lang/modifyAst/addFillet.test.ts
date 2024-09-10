@@ -547,6 +547,81 @@ const extrude001 = extrude(-15, sketch001)
       expectedCode
     )
   })
+  it('It should be able to add a new fillet when the extrude variable previously had an fillet', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)` // <--- one fillet already there on input code
+    const segmentSnippets = ['line([20, 0], %)']
+    const radiusValue = 3
+    const expectedCode = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %, $seg02)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)
+  |> fillet({ radius: 3, tags: [seg02] }, %)` // <-- able to add a new one
+
+    await runModifyAstWithFilletAndTagTest(
+      code,
+      segmentSnippets,
+      radiusValue,
+      expectedCode
+    )
+  })
+  it('It should be able to add a new fillet to 2 bodies', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+const sketch002 = startSketchOn('XY')
+  |> startProfileAt([30, 10], %)
+  |> line([15, 0], %)
+  |> line([0, -15], %)
+  |> line([-15, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude002 = extrude(-25, sketch002)` // <--- body 2
+    const segmentSnippets = ['line([0, -20], %)', 'line([0, -15], %)']
+    const radiusValue = 3
+    const expectedCode = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %, $seg01)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)
+const sketch002 = startSketchOn('XY')
+  |> startProfileAt([30, 10], %)
+  |> line([15, 0], %)
+  |> line([0, -15], %, $seg02)
+  |> line([-15, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude002 = extrude(-25, sketch002)
+  |> fillet({ radius: 3, tags: [seg02] }, %)` // <-- able to add a new one
+
+    await runModifyAstWithFilletAndTagTest(
+      code,
+      segmentSnippets,
+      radiusValue,
+      expectedCode
+    )
+  })
 })
 
 describe('Testing isTagUsedInFillet', () => {
