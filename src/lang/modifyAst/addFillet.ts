@@ -43,11 +43,11 @@ import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
  * Apply Fillet To Selection
  */
 
-export function applyFilletToSelection(
+export async function applyFilletToSelection(
   ast: Program,
   selection: Selections,
   radius: KclCommandValue
-): void | Error {
+): Promise <void | Error> {
   // 1. clone ast
   let clonedAst = structuredClone(ast)
 
@@ -57,7 +57,6 @@ export function applyFilletToSelection(
   const { modifiedAst, pathToFilletNode } = result
 
   // 3. update ast
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   updateAstAndFocus(modifiedAst, pathToFilletNode)
 }
 
