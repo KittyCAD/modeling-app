@@ -262,11 +262,7 @@ export const Stream = () => {
 
     if (btnName(e).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sendSelectEventToEngine(
-        e,
-        videoRef.current,
-        context.store?.streamDimensions
-      )
+      sendSelectEventToEngine(e, videoRef.current)
     }
   }
 
