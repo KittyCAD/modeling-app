@@ -114,7 +114,9 @@ class StraightSegment implements SegmentUtils {
     sceneInfra,
     prevSegment,
   }) => {
-    const baseColor = getThemeColorForThreeJs(theme)
+    const baseColor =
+      callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
+    const color = isSelected ? 0x0000ff : baseColor
     const meshType = isDraftSegment
       ? STRAIGHT_SEGMENT_DASH
       : STRAIGHT_SEGMENT_BODY
@@ -130,7 +132,7 @@ class StraightSegment implements SegmentUtils {
       bevelEnabled: false,
       extrudePath: line,
     })
-    const body = new MeshBasicMaterial({ color: baseColor })
+    const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
 
     mesh.userData.type = meshType
@@ -155,7 +157,7 @@ class StraightSegment implements SegmentUtils {
     // Segment decorators that only apply to non-close segments
     if (callExpName !== 'close') {
       // an arrowhead that appears at the end of the segment
-      const arrowGroup = createArrowhead(scale, theme, baseColor)
+      const arrowGroup = createArrowhead(scale, theme, color)
       // A length indicator that appears at the midpoint of the segment
       const lengthIndicatorGroup = createLengthIndicator({
         from,
@@ -322,9 +324,10 @@ class TangentialArcToSegment implements SegmentUtils {
       scale,
     })
     const baseColor = getThemeColorForThreeJs(theme)
-    const body = new MeshBasicMaterial({ color: baseColor })
+    const color = isSelected ? 0x0000ff : baseColor
+    const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
-    const arrowGroup = createArrowhead(scale, theme, baseColor)
+    const arrowGroup = createArrowhead(scale, theme, color)
     const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
 
     group.name = TANGENTIAL_ARC_TO_SEGMENT
