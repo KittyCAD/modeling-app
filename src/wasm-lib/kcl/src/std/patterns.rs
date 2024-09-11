@@ -398,6 +398,61 @@ pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
 ///       distance: 6
 ///     }, %)
 /// ```
+///
+/// ```no_run
+/// // Pattern a whole sketch on face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in the "case" here since we want to pattern the whole sketch.
+/// // And the case was the base of the sketch.
+/// patternLinear3d({
+///     axis: [1, 0, 0],
+///     distance: 250,
+///     repetitions:2,
+/// }, case)
+/// ```
+///
+/// ```no_run
+/// // Pattern an object on a face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in "thing1" here since we want to pattern just this object on the face.
+/// patternLinear3d({
+///     axis: [0, 1, 0],
+///     distance: 10,
+///     repetitions:2,
+/// }, thing1)
+/// ```
 #[stdlib {
     name = "patternLinear3d",
 }]
@@ -661,6 +716,65 @@ pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
 ///        arcDegrees: 360,
 ///        rotateDuplicates: true
 ///      }, %)
+/// ```
+///
+/// ```no_run
+/// // Pattern a whole sketch on face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in the "case" here since we want to pattern the whole sketch.
+/// // And the case was the base of the sketch.
+/// patternCircular3d({
+///     arcDegrees: 360,
+///     axis: [0,0,10],
+///     center: [200,100,0],
+///     repetitions: 2,
+///     rotateDuplicates: false,
+/// }, case)
+/// ```
+///
+/// ```no_run
+/// // Pattern an object on a face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in "thing1" here since we want to pattern just this object on the face.
+/// patternCircular3d({
+///     arcDegrees: 360,
+///     axis: [0,0,10],
+///     center: [0,0,0],
+///     repetitions: 2,
+///     rotateDuplicates: false,
+/// }, thing1)
 /// ```
 #[stdlib {
     name = "patternCircular3d",
