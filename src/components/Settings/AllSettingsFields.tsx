@@ -12,7 +12,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
-import { getInitialDefaultDir } from 'lib/desktop'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
 import { PATHS } from 'lib/paths'
@@ -214,14 +213,15 @@ export const AllSettingsFields = forwardRef(
               )}
               <ActionButton
                 Element="button"
-                onClick={toSync(async () => {
-                  const defaultDirectory = await getInitialDefaultDir()
+                onClick={() => {
                   send({
                     type: 'Reset settings',
-                    defaultDirectory,
+                    level: searchParamTab,
                   })
-                  toast.success('Settings restored to default')
-                }, reportRejection)}
+                  toast.success(
+                    `Your ${searchParamTab}-level settings were reset`
+                  )
+                }}
                 iconStart={{
                   icon: 'refresh',
                   size: 'sm',
@@ -229,7 +229,7 @@ export const AllSettingsFields = forwardRef(
                   bgClassName: 'bg-destroy-70',
                 }}
               >
-                Restore default settings
+                Reset {searchParamTab}-level settings
               </ActionButton>
             </div>
           </SettingsSection>

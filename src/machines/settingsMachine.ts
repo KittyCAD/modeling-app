@@ -8,6 +8,11 @@ import {
   SettingsPaths,
   WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
+import {
+  configurationToSettingsPayload,
+  projectConfigurationToSettingsPayload,
+  setSettingsAtLevel,
+} from 'lib/settings/settingsUtils'
 
 export const settingsMachine = setup({
   types: {
@@ -24,7 +29,10 @@ export const settingsMachine = setup({
           type: 'set.modeling.units'
           data: { level: SettingsLevel; value: BaseUnit }
         }
-      | { type: 'Reset settings'; defaultDirectory: string }
+      | {
+          type: 'Reset settings'
+          level: SettingsLevel
+        }
       | { type: 'Set all settings'; settings: typeof settings },
   },
   actions: {
@@ -37,17 +45,16 @@ export const settingsMachine = setup({
     setClientSideSceneUnits: () => {},
     persistSettings: () => {},
     resetSettings: assign(({ context, event }) => {
-      if (!('defaultDirectory' in event)) return {}
-      // Reset everything except onboarding status,
-      // which should be preserved
-      const newSettings = createSettings()
-      if (context.app.onboardingStatus.user) {
-        newSettings.app.onboardingStatus.user =
-          context.app.onboardingStatus.user
-      }
-      // We instead pass in the default directory since it's asynchronous
-      // to re-initialize, and that can be done by the caller.
-      newSettings.app.projectDirectory.default = event.defaultDirectory
+      if (!('level' in event)) return {}
+
+      // Create a new, blank payload
+      const newPayload =
+        event.level === 'user'
+          ? configurationToSettingsPayload({})
+          : projectConfigurationToSettingsPayload({})
+
+      // Reset the settings at that level
+      const newSettings = setSettingsAtLevel(context, event.level, newPayload)
 
       return newSettings
     }),
