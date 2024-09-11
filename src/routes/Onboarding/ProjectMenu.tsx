@@ -1,10 +1,8 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { isDesktop } from 'lib/isDesktop'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function ProjectMenu() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EXPORT)
   const onDesktop = isDesktop()

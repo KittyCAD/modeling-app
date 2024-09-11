@@ -1,4 +1,3 @@
-import { useModelingContext } from 'hooks/useModelingContext'
 import {
   kbdClasses,
   OnboardingButtons,
@@ -10,7 +9,6 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export default function OnboardingCodeEditor() {
   useDemoCode()
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PARAMETRIC_MODELING)
 

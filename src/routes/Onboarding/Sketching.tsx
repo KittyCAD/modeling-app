@@ -2,10 +2,8 @@ import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect } from 'react'
 import { codeManager, kclManager } from 'lib/singletons'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function Sketching() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.FUTURE_WORK)
 

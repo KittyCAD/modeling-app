@@ -1,11 +1,9 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect, useState } from 'react'
-import { useModelingContext } from 'hooks/useModelingContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 export default function UserMenu() {
-  const { context } = useModelingContext()
   const { auth } = useSettingsAuthContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PROJECT_MENU)

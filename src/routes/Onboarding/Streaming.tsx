@@ -1,9 +1,7 @@
-import { useModelingContext } from 'hooks/useModelingContext'
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export default function Streaming() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EDITOR)
 

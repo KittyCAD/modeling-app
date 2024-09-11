@@ -7,10 +7,8 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { SettingsSection } from 'components/Settings/SettingsSection'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function Units() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.STREAMING)
   const {

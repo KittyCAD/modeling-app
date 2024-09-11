@@ -7,11 +7,9 @@ import {
 } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { bracketWidthConstantLine } from 'lib/exampleKcl'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function OnboardingInteractiveNumbers() {
   useDemoCode()
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.COMMAND_K)
 

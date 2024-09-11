@@ -3,11 +3,9 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()
-  const { context } = useModelingContext()
   const {
     settings: {
       context: {

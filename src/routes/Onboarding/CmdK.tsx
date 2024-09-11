@@ -1,12 +1,10 @@
 import usePlatform from 'hooks/usePlatform'
 import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useModelingContext } from 'hooks/useModelingContext'
 import { hotkeyDisplay } from 'lib/hotkeyWrapper'
 import { COMMAND_PALETTE_HOTKEY } from 'components/CommandBar/CommandBar'
 
 export default function CmdK() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.USER_MENU)
   const platformName = usePlatform()

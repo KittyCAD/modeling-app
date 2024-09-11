@@ -1,10 +1,8 @@
 import { APP_NAME } from 'lib/constants'
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function Export() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.SKETCHING)
 
