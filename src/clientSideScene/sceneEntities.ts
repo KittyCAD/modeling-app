@@ -1,10 +1,8 @@
 import {
   BoxGeometry,
   DoubleSide,
-  ExtrudeGeometry,
   Group,
   Intersection,
-  LineCurve3,
   Mesh,
   MeshBasicMaterial,
   Object3D,
@@ -15,7 +13,6 @@ import {
   Points,
   Quaternion,
   Scene,
-  Shape,
   Vector2,
   Vector3,
 } from 'three'
@@ -27,8 +24,6 @@ import {
   OnClickCallbackArgs,
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
-  SEGMENT_LENGTH_LABEL,
-  SEGMENT_LENGTH_LABEL_TEXT,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
@@ -37,7 +32,6 @@ import {
 import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
   CallExpression,
-  getTangentialArcToInfo,
   parse,
   Path,
   PathToNode,
@@ -61,8 +55,6 @@ import {
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
 import {
-  createArcGeometry,
-  dashedStraight,
   createProfileStartHandle,
   straightSegment,
   tangentialArcToSegment,
@@ -74,13 +66,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import {
-  isArray,
-  isOverlap,
-  normaliseAngle,
-  roundOff,
-  throttle,
-} from 'lib/utils'
+import { isArray, isOverlap, roundOff } from 'lib/utils'
 import {
   addStartProfileAt,
   createArrayExpression,
@@ -91,7 +77,6 @@ import {
   findUniqueName,
 } from 'lang/modifyAst'
 import { Selections, getEventForSegmentSelection } from 'lib/selections'
-import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
@@ -126,6 +111,11 @@ export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   ...SEGMENT_BODIES,
   PROFILE_START,
 ]
+
+const segmentUtils = {
+  straightSegment,
+  tangentialArcToSegment,
+} as const
 
 type Vec3Array = [number, number, number]
 
@@ -165,11 +155,13 @@ export class SceneEntities {
         segment.userData.type === STRAIGHT_SEGMENT
       ) {
         callbacks.push(
-          this.updateStraightSegment({
+          segmentUtils.straightSegment.updateSegment({
+            prevSegment: segment.userData.prevSegment,
             from: segment.userData.from,
             to: segment.userData.to,
             group: segment,
             scale: factor,
+            sceneInfra,
           })
         )
       }
@@ -181,12 +173,13 @@ export class SceneEntities {
         segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
       ) {
         callbacks.push(
-          this.updateTangentialArcToSegment({
+          segmentUtils.tangentialArcToSegment.updateSegment({
             prevSegment: segment.userData.prevSegment,
             from: segment.userData.from,
             to: segment.userData.to,
             group: segment,
             scale: factor,
+            sceneInfra,
           })
         )
       }
@@ -482,8 +475,9 @@ export class SceneEntities {
       const callExpName = _node1.node?.callee?.name
 
       if (segment.type === 'TangentialArcTo') {
-        seg = tangentialArcToSegment({
+        seg = segmentUtils.tangentialArcToSegment.createSegment({
           prevSegment: sketchGroup.value[index - 1],
+          callExpName,
           from: segment.from,
           to: segment.to,
           id: segment.__geoMeta.id,
@@ -495,16 +489,18 @@ export class SceneEntities {
           isSelected,
         })
         callbacks.push(
-          this.updateTangentialArcToSegment({
+          segmentUtils.tangentialArcToSegment.updateSegment({
             prevSegment: sketchGroup.value[index - 1],
             from: segment.from,
             to: segment.to,
             group: seg,
             scale: factor,
+            sceneInfra,
           })
         )
       } else {
-        seg = straightSegment({
+        seg = segmentUtils.straightSegment.createSegment({
+          prevSegment: sketchGroup.value[index - 1],
           from: segment.from,
           to: segment.to,
           id: segment.__geoMeta.id,
@@ -517,11 +513,13 @@ export class SceneEntities {
           isSelected,
         })
         callbacks.push(
-          this.updateStraightSegment({
+          segmentUtils.straightSegment.updateSegment({
+            prevSegment: sketchGroup.value[index - 1],
             from: segment.from,
             to: segment.to,
             group: seg,
             scale: factor,
+            sceneInfra,
           })
         )
       }
@@ -1229,19 +1227,22 @@ export class SceneEntities {
         : perspScale(sceneInfra.camControls.camera, group)) /
       sceneInfra._baseUnitMultiplier
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-      return this.updateTangentialArcToSegment({
+      return segmentUtils.tangentialArcToSegment.updateSegment({
         prevSegment: sgPaths[index - 1],
         from: segment.from,
         to: segment.to,
         group: group,
         scale: factor,
+        sceneInfra,
       })
     } else if (type === STRAIGHT_SEGMENT) {
-      return this.updateStraightSegment({
+      return segmentUtils.straightSegment.updateSegment({
         from: segment.from,
         to: segment.to,
         group,
         scale: factor,
+        prevSegment: sgPaths[index - 1],
+        sceneInfra,
       })
     } else if (type === PROFILE_START) {
       group.position.set(segment.from[0], segment.from[1], 0)
@@ -1250,242 +1251,6 @@ export class SceneEntities {
     return () => null
   }
 
-  updateTangentialArcToSegment({
-    prevSegment,
-    from,
-    to,
-    group,
-    scale = 1,
-  }: {
-    prevSegment: SketchGroup['value'][number]
-    from: [number, number]
-    to: [number, number]
-    group: Group
-    scale?: number
-  }): () => SegmentOverlayPayload | null {
-    group.userData.from = from
-    group.userData.to = to
-    group.userData.prevSegment = prevSegment
-    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
-    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
-
-    const previousPoint =
-      prevSegment?.type === 'TangentialArcTo'
-        ? getTangentPointFromPreviousArc(
-            prevSegment.center,
-            prevSegment.ccw,
-            prevSegment.to
-          )
-        : prevSegment.from
-
-    const arcInfo = getTangentialArcToInfo({
-      arcStartPoint: from,
-      arcEndPoint: to,
-      tanPreviousPoint: previousPoint,
-      obtuse: true,
-    })
-
-    const pxLength = arcInfo.arcLength / scale
-    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
-    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
-
-    const hoveredParent =
-      sceneInfra.hoveredObject &&
-      getParentGroup(sceneInfra.hoveredObject, [TANGENTIAL_ARC_TO_SEGMENT])
-    let isHandlesVisible = !shouldHideIdle
-    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
-      isHandlesVisible = !shouldHideHover
-    }
-
-    if (arrowGroup) {
-      arrowGroup.position.set(to[0], to[1], 0)
-
-      const arrowheadAngle =
-        arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
-      arrowGroup.quaternion.setFromUnitVectors(
-        new Vector3(0, 1, 0),
-        new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
-      )
-      arrowGroup.scale.set(scale, scale, scale)
-      arrowGroup.visible = isHandlesVisible
-    }
-
-    if (extraSegmentGroup) {
-      const circumferenceInPx = (2 * Math.PI * arcInfo.radius) / scale
-      const extraSegmentAngleDelta =
-        (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
-      const extraSegmentAngle =
-        arcInfo.startAngle + (arcInfo.ccw ? 1 : -1) * extraSegmentAngleDelta
-      const extraSegmentOffset = new Vector2(
-        Math.cos(extraSegmentAngle) * arcInfo.radius,
-        Math.sin(extraSegmentAngle) * arcInfo.radius
-      )
-      extraSegmentGroup.position.set(
-        arcInfo.center[0] + extraSegmentOffset.x,
-        arcInfo.center[1] + extraSegmentOffset.y,
-        0
-      )
-      extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
-    }
-
-    const tangentialArcToSegmentBody = group.children.find(
-      (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
-    ) as Mesh
-
-    if (tangentialArcToSegmentBody) {
-      const newGeo = createArcGeometry({ ...arcInfo, scale })
-      tangentialArcToSegmentBody.geometry = newGeo
-    }
-    const tangentialArcToSegmentBodyDashed = group.children.find(
-      (child) => child.userData.type === TANGENTIAL_ARC_TO__SEGMENT_DASH
-    ) as Mesh
-    if (tangentialArcToSegmentBodyDashed) {
-      // consider throttling the whole updateTangentialArcToSegment
-      // if there are more perf considerations going forward
-      this.throttledUpdateDashedArcGeo({
-        ...arcInfo,
-        mesh: tangentialArcToSegmentBodyDashed,
-        isDashed: true,
-        scale,
-      })
-    }
-    const angle = normaliseAngle(
-      (arcInfo.endAngle * 180) / Math.PI + (arcInfo.ccw ? 90 : -90)
-    )
-    return () =>
-      sceneInfra.updateOverlayDetails({
-        arrowGroup,
-        group,
-        isHandlesVisible,
-        from,
-        to,
-        angle,
-      })
-  }
-  throttledUpdateDashedArcGeo = throttle(
-    (
-      args: Parameters<typeof createArcGeometry>[0] & {
-        mesh: Mesh
-        scale: number
-      }
-    ) => (args.mesh.geometry = createArcGeometry(args)),
-    1000 / 30
-  )
-  updateStraightSegment({
-    from,
-    to,
-    group,
-    scale = 1,
-  }: {
-    from: [number, number]
-    to: [number, number]
-    group: Group
-    scale?: number
-  }): () => SegmentOverlayPayload | null {
-    group.userData.from = from
-    group.userData.to = to
-    const shape = new Shape()
-    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
-    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
-    const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
-
-    const length = Math.sqrt(
-      Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
-    )
-
-    const pxLength = length / scale
-    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
-    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
-
-    const hoveredParent =
-      sceneInfra.hoveredObject &&
-      getParentGroup(sceneInfra.hoveredObject, [STRAIGHT_SEGMENT])
-    let isHandlesVisible = !shouldHideIdle
-    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
-      isHandlesVisible = !shouldHideHover
-    }
-
-    if (arrowGroup) {
-      arrowGroup.position.set(to[0], to[1], 0)
-
-      const dir = new Vector3()
-        .subVectors(
-          new Vector3(to[0], to[1], 0),
-          new Vector3(from[0], from[1], 0)
-        )
-        .normalize()
-      arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
-      arrowGroup.scale.set(scale, scale, scale)
-      arrowGroup.visible = isHandlesVisible
-    }
-
-    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
-    if (extraSegmentGroup) {
-      const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
-        .normalize()
-        .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
-      extraSegmentGroup.position.set(
-        from[0] + offsetFromBase.x,
-        from[1] + offsetFromBase.y,
-        0
-      )
-      extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
-    }
-
-    if (labelGroup) {
-      const labelWrapper = labelGroup.getObjectByName(
-        SEGMENT_LENGTH_LABEL_TEXT
-      ) as CSS2DObject
-      const labelWrapperElem = labelWrapper.element as HTMLDivElement
-      const label = labelWrapperElem.children[0] as HTMLParagraphElement
-      label.innerText = `${roundOff(length)}`
-      label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
-      const slope = (to[1] - from[1]) / (to[0] - from[0])
-      let slopeAngle = ((Math.atan(slope) * 180) / Math.PI) * -1
-      label.style.setProperty('--degree', `${slopeAngle}deg`)
-      label.style.setProperty('--x', `0px`)
-      label.style.setProperty('--y', `0px`)
-      labelWrapper.position.set((from[0] + to[0]) / 2, (from[1] + to[1]) / 2, 0)
-      labelGroup.visible = isHandlesVisible
-    }
-
-    const straightSegmentBody = group.children.find(
-      (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
-    ) as Mesh
-    if (straightSegmentBody) {
-      const line = new LineCurve3(
-        new Vector3(from[0], from[1], 0),
-        new Vector3(to[0], to[1], 0)
-      )
-      straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
-        steps: 2,
-        bevelEnabled: false,
-        extrudePath: line,
-      })
-    }
-    const straightSegmentBodyDashed = group.children.find(
-      (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
-    ) as Mesh
-    if (straightSegmentBodyDashed) {
-      straightSegmentBodyDashed.geometry = dashedStraight(
-        from,
-        to,
-        shape,
-        scale
-      )
-    }
-    return () =>
-      sceneInfra.updateOverlayDetails({
-        arrowGroup,
-        group,
-        isHandlesVisible,
-        from,
-        to,
-      })
-  }
   /**
    * Update the base color of each of the THREEjs meshes
    * that represent each of the sketch segments, to get the
@@ -1604,19 +1369,22 @@ export class SceneEntities {
               : perspScale(sceneInfra.camControls.camera, parent)) /
             sceneInfra._baseUnitMultiplier
           if (parent.name === STRAIGHT_SEGMENT) {
-            this.updateStraightSegment({
+            segmentUtils.straightSegment.updateSegment({
               from: parent.userData.from,
               to: parent.userData.to,
               group: parent,
               scale: factor,
+              prevSegment: parent.userData.prevSegment,
+              sceneInfra,
             })
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            this.updateTangentialArcToSegment({
+            segmentUtils.tangentialArcToSegment.updateSegment({
               prevSegment: parent.userData.prevSegment,
               from: parent.userData.from,
               to: parent.userData.to,
               group: parent,
               scale: factor,
+              sceneInfra,
             })
           }
           return
@@ -1639,19 +1407,22 @@ export class SceneEntities {
               : perspScale(sceneInfra.camControls.camera, parent)) /
             sceneInfra._baseUnitMultiplier
           if (parent.name === STRAIGHT_SEGMENT) {
-            this.updateStraightSegment({
+            segmentUtils.straightSegment.updateSegment({
               from: parent.userData.from,
               to: parent.userData.to,
               group: parent,
               scale: factor,
+              prevSegment: parent.userData.prevSegment,
+              sceneInfra,
             })
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            this.updateTangentialArcToSegment({
+            segmentUtils.tangentialArcToSegment.updateSegment({
               prevSegment: parent.userData.prevSegment,
               from: parent.userData.from,
               to: parent.userData.to,
               group: parent,
               scale: factor,
+              sceneInfra,
             })
           }
         }

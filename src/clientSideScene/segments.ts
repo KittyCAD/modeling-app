@@ -26,6 +26,7 @@ import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
   EXTRA_SEGMENT_HANDLE,
   EXTRA_SEGMENT_OFFSET_PX,
+  HIDE_HOVER_SEGMENT_LENGTH,
   HIDE_SEGMENT_LENGTH,
   PROFILE_START,
   SEGMENT_WIDTH_PX,
@@ -35,16 +36,456 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
+  getParentGroup,
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
   ARROWHEAD,
+  SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
 } from './sceneInfra'
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
-import { roundOff } from 'lib/utils'
+import { normaliseAngle, roundOff } from 'lib/utils'
+import { SegmentOverlayPayload } from 'machines/modelingMachine'
+
+interface SegmentUtils {
+  createSegment: (args: {
+    from: Coords2d
+    to: Coords2d
+    prevSegment: SketchGroup['value'][number]
+    id: string
+    pathToNode: PathToNode
+    isDraftSegment?: boolean
+    scale?: number
+    callExpName: string
+    texture: Texture
+    theme: Themes
+    isSelected?: boolean
+  }) => Group
+  updateSegment: (args: {
+    from: [number, number]
+    to: [number, number]
+    prevSegment: SketchGroup['value'][number]
+    group: Group
+    sceneInfra: SceneInfra
+    scale?: number
+  }) => () => SegmentOverlayPayload | null
+}
+
+export const straightSegment: SegmentUtils = {
+  createSegment: ({
+    from,
+    to,
+    id,
+    pathToNode,
+    isDraftSegment,
+    scale = 1,
+    callExpName,
+    texture,
+    theme,
+    isSelected = false,
+  }) => {
+    const segmentGroup = new Group()
+
+    const shape = new Shape()
+    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
+    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+
+    let geometry
+    if (isDraftSegment) {
+      geometry = dashedStraight(from, to, shape, scale)
+    } else {
+      const line = new LineCurve3(
+        new Vector3(from[0], from[1], 0),
+        new Vector3(to[0], to[1], 0)
+      )
+
+      geometry = new ExtrudeGeometry(shape, {
+        steps: 2,
+        bevelEnabled: false,
+        extrudePath: line,
+      })
+    }
+
+    const baseColor =
+      callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
+    const color = isSelected ? 0x0000ff : baseColor
+    const body = new MeshBasicMaterial({ color })
+    const mesh = new Mesh(geometry, body)
+    mesh.userData.type = isDraftSegment
+      ? STRAIGHT_SEGMENT_DASH
+      : STRAIGHT_SEGMENT_BODY
+    mesh.name = STRAIGHT_SEGMENT_BODY
+
+    segmentGroup.userData = {
+      type: STRAIGHT_SEGMENT,
+      id,
+      from,
+      to,
+      pathToNode,
+      isSelected,
+      callExpName,
+      baseColor,
+    }
+    segmentGroup.name = STRAIGHT_SEGMENT
+    segmentGroup.add(mesh)
+
+    const length = Math.sqrt(
+      Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
+    )
+    const pxLength = length / scale
+    const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
+
+    // All segment types get an extra segment handle,
+    // Which is a little plus sign that appears at the origin of the segment
+    // and can be dragged to insert a new segment
+    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const directionVector = new Vector2(
+      to[0] - from[0],
+      to[1] - from[1]
+    ).normalize()
+    const offsetFromBase = directionVector.multiplyScalar(
+      EXTRA_SEGMENT_OFFSET_PX * scale
+    )
+    extraSegmentGroup.position.set(
+      from[0] + offsetFromBase.x,
+      from[1] + offsetFromBase.y,
+      0
+    )
+    extraSegmentGroup.visible = !shouldHide
+    segmentGroup.add(extraSegmentGroup)
+
+    // Segment decorators that only apply to non-close segments
+    if (callExpName !== 'close') {
+      // an arrowhead that appears at the end of the segment
+      const arrowGroup = createArrowhead(scale, theme, color)
+      arrowGroup.position.set(to[0], to[1], 0)
+      const dir = new Vector3()
+        .subVectors(
+          new Vector3(to[0], to[1], 0),
+          new Vector3(from[0], from[1], 0)
+        )
+        .normalize()
+      arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+      arrowGroup.visible = !shouldHide
+      segmentGroup.add(arrowGroup)
+
+      // A length indicator that appears at the midpoint of the segment
+      const lengthIndicatorGroup = createLengthIndicator({
+        from,
+        to,
+        scale,
+        length,
+      })
+      segmentGroup.add(lengthIndicatorGroup)
+    }
+
+    return segmentGroup
+  },
+  updateSegment: ({ from, to, group, scale = 1, sceneInfra }) => {
+    group.userData.from = from
+    group.userData.to = to
+    const shape = new Shape()
+    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
+
+    const length = Math.sqrt(
+      Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
+    )
+
+    const pxLength = length / scale
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [STRAIGHT_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
+
+    if (arrowGroup) {
+      arrowGroup.position.set(to[0], to[1], 0)
+
+      const dir = new Vector3()
+        .subVectors(
+          new Vector3(to[0], to[1], 0),
+          new Vector3(from[0], from[1], 0)
+        )
+        .normalize()
+      arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+      arrowGroup.scale.set(scale, scale, scale)
+      arrowGroup.visible = isHandlesVisible
+    }
+
+    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
+    if (extraSegmentGroup) {
+      const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+        .normalize()
+        .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
+      extraSegmentGroup.position.set(
+        from[0] + offsetFromBase.x,
+        from[1] + offsetFromBase.y,
+        0
+      )
+      extraSegmentGroup.scale.set(scale, scale, scale)
+      extraSegmentGroup.visible = isHandlesVisible
+    }
+
+    if (labelGroup) {
+      const labelWrapper = labelGroup.getObjectByName(
+        SEGMENT_LENGTH_LABEL_TEXT
+      ) as CSS2DObject
+      const labelWrapperElem = labelWrapper.element as HTMLDivElement
+      const label = labelWrapperElem.children[0] as HTMLParagraphElement
+      label.innerText = `${roundOff(length)}`
+      label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+      const slope = (to[1] - from[1]) / (to[0] - from[0])
+      let slopeAngle = ((Math.atan(slope) * 180) / Math.PI) * -1
+      label.style.setProperty('--degree', `${slopeAngle}deg`)
+      label.style.setProperty('--x', `0px`)
+      label.style.setProperty('--y', `0px`)
+      labelWrapper.position.set((from[0] + to[0]) / 2, (from[1] + to[1]) / 2, 0)
+      labelGroup.visible = isHandlesVisible
+    }
+
+    const straightSegmentBody = group.children.find(
+      (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
+    ) as Mesh
+    if (straightSegmentBody) {
+      const line = new LineCurve3(
+        new Vector3(from[0], from[1], 0),
+        new Vector3(to[0], to[1], 0)
+      )
+      straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
+        steps: 2,
+        bevelEnabled: false,
+        extrudePath: line,
+      })
+    }
+    const straightSegmentBodyDashed = group.children.find(
+      (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
+    ) as Mesh
+    if (straightSegmentBodyDashed) {
+      straightSegmentBodyDashed.geometry = dashedStraight(
+        from,
+        to,
+        shape,
+        scale
+      )
+    }
+    return () =>
+      sceneInfra.updateOverlayDetails({
+        arrowGroup,
+        group,
+        isHandlesVisible,
+        from,
+        to,
+      })
+  },
+}
+
+export const tangentialArcToSegment: SegmentUtils = {
+  createSegment: ({
+    prevSegment,
+    from,
+    to,
+    id,
+    pathToNode,
+    isDraftSegment,
+    scale = 1,
+    texture,
+    theme,
+    isSelected,
+  }) => {
+    const group = new Group()
+
+    const previousPoint =
+      prevSegment?.type === 'TangentialArcTo'
+        ? getTangentPointFromPreviousArc(
+            prevSegment.center,
+            prevSegment.ccw,
+            prevSegment.to
+          )
+        : prevSegment.from
+
+    const { center, radius, startAngle, endAngle, ccw, arcLength } =
+      getTangentialArcToInfo({
+        arcStartPoint: from,
+        arcEndPoint: to,
+        tanPreviousPoint: previousPoint,
+        obtuse: true,
+      })
+
+    const geometry = createArcGeometry({
+      center,
+      radius,
+      startAngle,
+      endAngle,
+      ccw,
+      isDashed: isDraftSegment,
+      scale,
+    })
+
+    const baseColor = getThemeColorForThreeJs(theme)
+    const color = isSelected ? 0x0000ff : baseColor
+    const body = new MeshBasicMaterial({ color })
+    const mesh = new Mesh(geometry, body)
+    const meshName = isDraftSegment
+      ? TANGENTIAL_ARC_TO__SEGMENT_DASH
+      : TANGENTIAL_ARC_TO_SEGMENT_BODY
+    mesh.userData.type = meshName
+    mesh.name = meshName
+
+    group.userData = {
+      type: TANGENTIAL_ARC_TO_SEGMENT,
+      id,
+      from,
+      to,
+      prevSegment,
+      pathToNode,
+      isSelected,
+      baseColor,
+    }
+    group.name = TANGENTIAL_ARC_TO_SEGMENT
+
+    const arrowGroup = createArrowhead(scale, theme, color)
+    arrowGroup.position.set(to[0], to[1], 0)
+    const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
+    arrowGroup.quaternion.setFromUnitVectors(
+      new Vector3(0, 1, 0),
+      new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+    )
+    const pxLength = arcLength / scale
+    const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
+    arrowGroup.visible = !shouldHide
+
+    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const circumferenceInPx = (2 * Math.PI * radius) / scale
+    const extraSegmentAngleDelta =
+      (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
+    const extraSegmentAngle =
+      startAngle + (ccw ? 1 : -1) * extraSegmentAngleDelta
+    const extraSegmentOffset = new Vector2(
+      Math.cos(extraSegmentAngle) * radius,
+      Math.sin(extraSegmentAngle) * radius
+    )
+    extraSegmentGroup.position.set(
+      center[0] + extraSegmentOffset.x,
+      center[1] + extraSegmentOffset.y,
+      0
+    )
+
+    extraSegmentGroup.visible = !shouldHide
+
+    group.add(mesh, arrowGroup, extraSegmentGroup)
+
+    return group
+  },
+  updateSegment: ({ prevSegment, from, to, group, scale = 1, sceneInfra }) => {
+    group.userData.from = from
+    group.userData.to = to
+    group.userData.prevSegment = prevSegment
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
+
+    const previousPoint =
+      prevSegment?.type === 'TangentialArcTo'
+        ? getTangentPointFromPreviousArc(
+            prevSegment.center,
+            prevSegment.ccw,
+            prevSegment.to
+          )
+        : prevSegment.from
+
+    const arcInfo = getTangentialArcToInfo({
+      arcStartPoint: from,
+      arcEndPoint: to,
+      tanPreviousPoint: previousPoint,
+      obtuse: true,
+    })
+
+    const pxLength = arcInfo.arcLength / scale
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [TANGENTIAL_ARC_TO_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
+
+    if (arrowGroup) {
+      arrowGroup.position.set(to[0], to[1], 0)
+
+      const arrowheadAngle =
+        arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+      arrowGroup.quaternion.setFromUnitVectors(
+        new Vector3(0, 1, 0),
+        new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+      )
+      arrowGroup.scale.set(scale, scale, scale)
+      arrowGroup.visible = isHandlesVisible
+    }
+
+    if (extraSegmentGroup) {
+      const circumferenceInPx = (2 * Math.PI * arcInfo.radius) / scale
+      const extraSegmentAngleDelta =
+        (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
+      const extraSegmentAngle =
+        arcInfo.startAngle + (arcInfo.ccw ? 1 : -1) * extraSegmentAngleDelta
+      const extraSegmentOffset = new Vector2(
+        Math.cos(extraSegmentAngle) * arcInfo.radius,
+        Math.sin(extraSegmentAngle) * arcInfo.radius
+      )
+      extraSegmentGroup.position.set(
+        arcInfo.center[0] + extraSegmentOffset.x,
+        arcInfo.center[1] + extraSegmentOffset.y,
+        0
+      )
+      extraSegmentGroup.scale.set(scale, scale, scale)
+      extraSegmentGroup.visible = isHandlesVisible
+    }
+
+    const tangentialArcToSegmentBody = group.children.find(
+      (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
+    ) as Mesh
+
+    if (tangentialArcToSegmentBody) {
+      const newGeo = createArcGeometry({ ...arcInfo, scale })
+      tangentialArcToSegmentBody.geometry = newGeo
+    }
+    const tangentialArcToSegmentBodyDashed = group.getObjectByName(
+      TANGENTIAL_ARC_TO__SEGMENT_DASH
+    )
+    if (tangentialArcToSegmentBodyDashed instanceof Mesh) {
+      tangentialArcToSegmentBodyDashed.geometry = createArcGeometry({
+        ...arcInfo,
+        isDashed: true,
+        scale,
+      })
+    }
+    const angle = normaliseAngle(
+      (arcInfo.endAngle * 180) / Math.PI + (arcInfo.ccw ? 90 : -90)
+    )
+    return () =>
+      sceneInfra.updateOverlayDetails({
+        arrowGroup,
+        group,
+        isHandlesVisible,
+        from,
+        to,
+        angle,
+      })
+  },
+}
 
 export function createProfileStartHandle({
   from,
@@ -83,127 +524,6 @@ export function createProfileStartHandle({
   group.position.set(from[0], from[1], 0)
   group.scale.set(scale, scale, scale)
   return group
-}
-
-export function straightSegment({
-  from,
-  to,
-  id,
-  pathToNode,
-  isDraftSegment,
-  scale = 1,
-  callExpName,
-  texture,
-  theme,
-  isSelected = false,
-}: {
-  from: Coords2d
-  to: Coords2d
-  id: string
-  pathToNode: PathToNode
-  isDraftSegment?: boolean
-  scale?: number
-  callExpName: string
-  texture: Texture
-  theme: Themes
-  isSelected?: boolean
-}): Group {
-  const segmentGroup = new Group()
-
-  const shape = new Shape()
-  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
-  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
-
-  let geometry
-  if (isDraftSegment) {
-    geometry = dashedStraight(from, to, shape, scale)
-  } else {
-    const line = new LineCurve3(
-      new Vector3(from[0], from[1], 0),
-      new Vector3(to[0], to[1], 0)
-    )
-
-    geometry = new ExtrudeGeometry(shape, {
-      steps: 2,
-      bevelEnabled: false,
-      extrudePath: line,
-    })
-  }
-
-  const baseColor =
-    callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-  const color = isSelected ? 0x0000ff : baseColor
-  const body = new MeshBasicMaterial({ color })
-  const mesh = new Mesh(geometry, body)
-  mesh.userData.type = isDraftSegment
-    ? STRAIGHT_SEGMENT_DASH
-    : STRAIGHT_SEGMENT_BODY
-  mesh.name = STRAIGHT_SEGMENT_BODY
-
-  segmentGroup.userData = {
-    type: STRAIGHT_SEGMENT,
-    id,
-    from,
-    to,
-    pathToNode,
-    isSelected,
-    callExpName,
-    baseColor,
-  }
-  segmentGroup.name = STRAIGHT_SEGMENT
-  segmentGroup.add(mesh)
-
-  const length = Math.sqrt(
-    Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
-  )
-  const pxLength = length / scale
-  const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
-
-  // All segment types get an extra segment handle,
-  // Which is a little plus sign that appears at the origin of the segment
-  // and can be dragged to insert a new segment
-  const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
-  const directionVector = new Vector2(
-    to[0] - from[0],
-    to[1] - from[1]
-  ).normalize()
-  const offsetFromBase = directionVector.multiplyScalar(
-    EXTRA_SEGMENT_OFFSET_PX * scale
-  )
-  extraSegmentGroup.position.set(
-    from[0] + offsetFromBase.x,
-    from[1] + offsetFromBase.y,
-    0
-  )
-  extraSegmentGroup.visible = !shouldHide
-  segmentGroup.add(extraSegmentGroup)
-
-  // Segment decorators that only apply to non-close segments
-  if (callExpName !== 'close') {
-    // an arrowhead that appears at the end of the segment
-    const arrowGroup = createArrowhead(scale, theme, color)
-    arrowGroup.position.set(to[0], to[1], 0)
-    const dir = new Vector3()
-      .subVectors(
-        new Vector3(to[0], to[1], 0),
-        new Vector3(from[0], from[1], 0)
-      )
-      .normalize()
-    arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
-    arrowGroup.visible = !shouldHide
-    segmentGroup.add(arrowGroup)
-
-    // A length indicator that appears at the midpoint of the segment
-    const lengthIndicatorGroup = createLengthIndicator({
-      from,
-      to,
-      scale,
-      length,
-    })
-    segmentGroup.add(lengthIndicatorGroup)
-  }
-
-  return segmentGroup
 }
 
 function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
@@ -298,111 +618,6 @@ function createLengthIndicator({
   lengthIndicatorText.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
   lengthIndicatorGroup.add(cssObject)
   return lengthIndicatorGroup
-}
-
-export function tangentialArcToSegment({
-  prevSegment,
-  from,
-  to,
-  id,
-  pathToNode,
-  isDraftSegment,
-  scale = 1,
-  texture,
-  theme,
-  isSelected,
-}: {
-  prevSegment: SketchGroup['value'][number]
-  from: Coords2d
-  to: Coords2d
-  id: string
-  pathToNode: PathToNode
-  isDraftSegment?: boolean
-  scale?: number
-  texture: Texture
-  theme: Themes
-  isSelected?: boolean
-}): Group {
-  const group = new Group()
-
-  const previousPoint =
-    prevSegment?.type === 'TangentialArcTo'
-      ? getTangentPointFromPreviousArc(
-          prevSegment.center,
-          prevSegment.ccw,
-          prevSegment.to
-        )
-      : prevSegment.from
-
-  const { center, radius, startAngle, endAngle, ccw, arcLength } =
-    getTangentialArcToInfo({
-      arcStartPoint: from,
-      arcEndPoint: to,
-      tanPreviousPoint: previousPoint,
-      obtuse: true,
-    })
-
-  const geometry = createArcGeometry({
-    center,
-    radius,
-    startAngle,
-    endAngle,
-    ccw,
-    isDashed: isDraftSegment,
-    scale,
-  })
-
-  const baseColor = getThemeColorForThreeJs(theme)
-  const color = isSelected ? 0x0000ff : baseColor
-  const body = new MeshBasicMaterial({ color })
-  const mesh = new Mesh(geometry, body)
-  mesh.userData.type = isDraftSegment
-    ? TANGENTIAL_ARC_TO__SEGMENT_DASH
-    : TANGENTIAL_ARC_TO_SEGMENT_BODY
-
-  group.userData = {
-    type: TANGENTIAL_ARC_TO_SEGMENT,
-    id,
-    from,
-    to,
-    prevSegment,
-    pathToNode,
-    isSelected,
-    baseColor,
-  }
-  group.name = TANGENTIAL_ARC_TO_SEGMENT
-
-  const arrowGroup = createArrowhead(scale, theme, color)
-  arrowGroup.position.set(to[0], to[1], 0)
-  const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
-  arrowGroup.quaternion.setFromUnitVectors(
-    new Vector3(0, 1, 0),
-    new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
-  )
-  const pxLength = arcLength / scale
-  const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
-  arrowGroup.visible = !shouldHide
-
-  const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
-  const circumferenceInPx = (2 * Math.PI * radius) / scale
-  const extraSegmentAngleDelta =
-    (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
-  const extraSegmentAngle = startAngle + (ccw ? 1 : -1) * extraSegmentAngleDelta
-  const extraSegmentOffset = new Vector2(
-    Math.cos(extraSegmentAngle) * radius,
-    Math.sin(extraSegmentAngle) * radius
-  )
-  extraSegmentGroup.position.set(
-    center[0] + extraSegmentOffset.x,
-    center[1] + extraSegmentOffset.y,
-    0
-  )
-
-  extraSegmentGroup.visible = !shouldHide
-
-  group.add(mesh, arrowGroup, extraSegmentGroup)
-
-  return group
 }
 
 export function createArcGeometry({
