@@ -1948,6 +1948,7 @@ export async function getSketchOrientationDetails(
 export async function getFaceDetails(
   entityId: string
 ): Promise<Models['GetSketchModePlane_type']> {
+  // TODO mode engine connection to allow batching returns and batch the following
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
