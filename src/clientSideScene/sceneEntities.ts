@@ -465,11 +465,11 @@ export class SceneEntities {
       if (err(_node1)) return
       const callExpName = _node1.node?.callee?.name
 
-      const createSegment =
+      const initSegment =
         segment.type === 'TangentialArcTo'
-          ? segmentUtils.tangentialArcTo.create
-          : segmentUtils.straight.create
-      const { group: _group, callback } = createSegment({
+          ? segmentUtils.tangentialArcTo.init
+          : segmentUtils.straight.init
+      const { group: _group, updateOverlaysCallback: callback } = initSegment({
         prevSegment: sketchGroup.value[index - 1],
         callExpName,
         from: segment.from,

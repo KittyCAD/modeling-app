@@ -76,19 +76,31 @@ interface UpdateSegmentArgs {
 
 interface CreateSegmentResult {
   group: Group
-  callback: () => SegmentOverlayPayload | null
+  updateOverlaysCallback: () => SegmentOverlayPayload | null
 }
 interface SegmentUtils {
-  create: (args: CreateSegmentArgs) => CreateSegmentResult
-  update: (args: UpdateSegmentArgs) => CreateSegmentResult['callback']
+  /**
+   * the init is responsible for adding all of the correct entities to the group with important details like `mesh.name = ...`
+   * as these act like handles later
+   *
+   * It's **Not** responsible for doing all calculations to size and position the entities as this would be duplicated in the update function
+   * Which should instead be called at the end of the init function
+   */
+  init: (args: CreateSegmentArgs) => CreateSegmentResult
+  /**
+   * The update function is responsible for updating the group with the correct size and position of the entities
+   * It should be called at the end of the init function and return a callback that can be used to update the overlay
+   *
+   * It returns a callback for updating the overlays, this is so the overlays do not have to update at the same pace threeJs does
+   * This is useful for performance reasons
+   */
+  update: (
+    args: UpdateSegmentArgs
+  ) => CreateSegmentResult['updateOverlaysCallback']
 }
 
 class StraightSegment implements SegmentUtils {
-  constructor() {
-    this.create = this.create.bind(this)
-    this.update = this.update.bind(this)
-  }
-  create({
+  init: SegmentUtils['init'] = ({
     from,
     to,
     id,
@@ -101,39 +113,29 @@ class StraightSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
-  }: CreateSegmentArgs): CreateSegmentResult {
-    const segmentGroup = new Group()
-
-    const shape = new Shape()
-    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
-    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
-
-    let geometry
-    if (isDraftSegment) {
-      geometry = dashedStraight(from, to, shape, scale)
-    } else {
-      const line = new LineCurve3(
-        new Vector3(from[0], from[1], 0),
-        new Vector3(to[0], to[1], 0)
-      )
-
-      geometry = new ExtrudeGeometry(shape, {
-        steps: 2,
-        bevelEnabled: false,
-        extrudePath: line,
-      })
-    }
-
-    const baseColor =
-      callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
-    const body = new MeshBasicMaterial({ color })
-    const mesh = new Mesh(geometry, body)
-    mesh.userData.type = isDraftSegment
+  }) => {
+    const baseColor = getThemeColorForThreeJs(theme)
+    const meshType = isDraftSegment
       ? STRAIGHT_SEGMENT_DASH
       : STRAIGHT_SEGMENT_BODY
-    mesh.name = STRAIGHT_SEGMENT_BODY
 
+    const segmentGroup = new Group()
+    const shape = new Shape()
+    const line = new LineCurve3(
+      new Vector3(from[0], from[1], 0),
+      new Vector3(to[0], to[1], 0)
+    )
+    const geometry = new ExtrudeGeometry(shape, {
+      steps: 2,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+    const body = new MeshBasicMaterial({ color: baseColor })
+    const mesh = new Mesh(geometry, body)
+
+    mesh.userData.type = meshType
+    mesh.name = meshType
+    segmentGroup.name = STRAIGHT_SEGMENT
     segmentGroup.userData = {
       type: STRAIGHT_SEGMENT,
       id,
@@ -144,62 +146,31 @@ class StraightSegment implements SegmentUtils {
       callExpName,
       baseColor,
     }
-    segmentGroup.name = STRAIGHT_SEGMENT
-    segmentGroup.add(mesh)
-
-    const length = Math.sqrt(
-      Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
-    )
-    const pxLength = length / scale
-    const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
 
     // All segment types get an extra segment handle,
     // Which is a little plus sign that appears at the origin of the segment
     // and can be dragged to insert a new segment
     const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
-    const directionVector = new Vector2(
-      to[0] - from[0],
-      to[1] - from[1]
-    ).normalize()
-    const offsetFromBase = directionVector.multiplyScalar(
-      EXTRA_SEGMENT_OFFSET_PX * scale
-    )
-    extraSegmentGroup.position.set(
-      from[0] + offsetFromBase.x,
-      from[1] + offsetFromBase.y,
-      0
-    )
-    extraSegmentGroup.visible = !shouldHide
-    segmentGroup.add(extraSegmentGroup)
 
     // Segment decorators that only apply to non-close segments
     if (callExpName !== 'close') {
       // an arrowhead that appears at the end of the segment
-      const arrowGroup = createArrowhead(scale, theme, color)
-      arrowGroup.position.set(to[0], to[1], 0)
-      const dir = new Vector3()
-        .subVectors(
-          new Vector3(to[0], to[1], 0),
-          new Vector3(from[0], from[1], 0)
-        )
-        .normalize()
-      arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
-      arrowGroup.visible = !shouldHide
-      segmentGroup.add(arrowGroup)
-
+      const arrowGroup = createArrowhead(scale, theme, baseColor)
       // A length indicator that appears at the midpoint of the segment
       const lengthIndicatorGroup = createLengthIndicator({
         from,
         to,
         scale,
-        length,
       })
+      segmentGroup.add(arrowGroup)
       segmentGroup.add(lengthIndicatorGroup)
     }
 
+    segmentGroup.add(mesh, extraSegmentGroup)
+
     return {
       group: segmentGroup,
-      callback: this.update({
+      updateOverlaysCallback: this.update({
         prevSegment,
         from,
         to,
@@ -210,13 +181,13 @@ class StraightSegment implements SegmentUtils {
     }
   }
 
-  update({
+  update: SegmentUtils['update'] = ({
     from,
     to,
     group,
     scale = 1,
     sceneInfra,
-  }: UpdateSegmentArgs): () => SegmentOverlayPayload | null {
+  }) => {
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
@@ -323,11 +294,7 @@ class StraightSegment implements SegmentUtils {
 }
 
 class TangentialArcToSegment implements SegmentUtils {
-  constructor() {
-    this.create = this.create.bind(this)
-    this.update = this.update.bind(this)
-  }
-  create({
+  init: SegmentUtils['init'] = ({
     prevSegment,
     from,
     to,
@@ -339,46 +306,30 @@ class TangentialArcToSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
-  }: CreateSegmentArgs): CreateSegmentResult {
-    const group = new Group()
-
-    const previousPoint =
-      prevSegment?.type === 'TangentialArcTo'
-        ? getTangentPointFromPreviousArc(
-            prevSegment.center,
-            prevSegment.ccw,
-            prevSegment.to
-          )
-        : prevSegment.from
-
-    const { center, radius, startAngle, endAngle, ccw, arcLength } =
-      getTangentialArcToInfo({
-        arcStartPoint: from,
-        arcEndPoint: to,
-        tanPreviousPoint: previousPoint,
-        obtuse: true,
-      })
-
-    const geometry = createArcGeometry({
-      center,
-      radius,
-      startAngle,
-      endAngle,
-      ccw,
-      isDashed: isDraftSegment,
-      scale,
-    })
-
-    const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
-    const body = new MeshBasicMaterial({ color })
-    const mesh = new Mesh(geometry, body)
+  }) => {
     const meshName = isDraftSegment
       ? TANGENTIAL_ARC_TO__SEGMENT_DASH
       : TANGENTIAL_ARC_TO_SEGMENT_BODY
+
+    const group = new Group()
+    const geometry = createArcGeometry({
+      center: [0, 0],
+      radius: 1,
+      startAngle: 0,
+      endAngle: 1,
+      ccw: true,
+      isDashed: isDraftSegment,
+      scale,
+    })
+    const baseColor = getThemeColorForThreeJs(theme)
+    const body = new MeshBasicMaterial({ color: baseColor })
+    const mesh = new Mesh(geometry, body)
+    const arrowGroup = createArrowhead(scale, theme, baseColor)
+    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+
+    group.name = TANGENTIAL_ARC_TO_SEGMENT
     mesh.userData.type = meshName
     mesh.name = meshName
-
     group.userData = {
       type: TANGENTIAL_ARC_TO_SEGMENT,
       id,
@@ -389,42 +340,12 @@ class TangentialArcToSegment implements SegmentUtils {
       isSelected,
       baseColor,
     }
-    group.name = TANGENTIAL_ARC_TO_SEGMENT
-
-    const arrowGroup = createArrowhead(scale, theme, color)
-    arrowGroup.position.set(to[0], to[1], 0)
-    const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
-    arrowGroup.quaternion.setFromUnitVectors(
-      new Vector3(0, 1, 0),
-      new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
-    )
-    const pxLength = arcLength / scale
-    const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
-    arrowGroup.visible = !shouldHide
-
-    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
-    const circumferenceInPx = (2 * Math.PI * radius) / scale
-    const extraSegmentAngleDelta =
-      (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
-    const extraSegmentAngle =
-      startAngle + (ccw ? 1 : -1) * extraSegmentAngleDelta
-    const extraSegmentOffset = new Vector2(
-      Math.cos(extraSegmentAngle) * radius,
-      Math.sin(extraSegmentAngle) * radius
-    )
-    extraSegmentGroup.position.set(
-      center[0] + extraSegmentOffset.x,
-      center[1] + extraSegmentOffset.y,
-      0
-    )
-
-    extraSegmentGroup.visible = !shouldHide
 
     group.add(mesh, arrowGroup, extraSegmentGroup)
 
     return {
       group,
-      callback: this.update({
+      updateOverlaysCallback: this.update({
         prevSegment,
         from,
         to,
@@ -435,14 +356,14 @@ class TangentialArcToSegment implements SegmentUtils {
     }
   }
 
-  update({
+  update: SegmentUtils['update'] = ({
     prevSegment,
     from,
     to,
     group,
     scale = 1,
     sceneInfra,
-  }: UpdateSegmentArgs): () => SegmentOverlayPayload | null {
+  }) => {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
@@ -642,12 +563,12 @@ function createLengthIndicator({
   from,
   to,
   scale,
-  length,
+  length = 0.1,
 }: {
   from: Coords2d
   to: Coords2d
   scale: number
-  length: number
+  length?: number
 }) {
   const lengthIndicatorGroup = new Group()
   lengthIndicatorGroup.name = SEGMENT_LENGTH_LABEL
