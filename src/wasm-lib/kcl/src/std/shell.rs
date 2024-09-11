@@ -36,6 +36,7 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 /// face, leaving it open in that direction.
 ///
 /// ```no_run
+/// // Remove the end face for the extrusion.
 /// const firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -52,6 +53,7 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 /// ```
 ///
 /// ```no_run
+/// // Remove the start face for the extrusion.
 /// const firstSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -68,6 +70,7 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 /// ```
 ///
 /// ```no_run
+/// // Remove a tagged face and the end face for the extrusion.
 /// const firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -81,6 +84,69 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 ///     faces: [myTag],
 ///     thickness: 0.25,
 /// }, firstSketch)
+/// ```
+///
+/// ```no_run
+/// // Remove multiple faces at once.
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %, $myTag)
+///     |> close(%)
+///     |> extrude(6, %)
+///
+/// // Remove a tagged face and the end face for the extrusion.
+/// shell({
+///     faces: [myTag, 'end'],
+///     thickness: 0.25,
+/// }, firstSketch)
+/// ```
+///
+/// ```no_run
+/// // Shell a sketch on face.
+/// let size = 100
+/// const case = startSketchOn('-XZ')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We put "case" in the shell function to shell the entire object.
+/// shell({ faces: ['start'], thickness: 5 }, case)
+/// ```
+///
+/// ```no_run
+/// // Shell a sketch on face object on the end face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We put "thing1" in the shell function to shell the end face of the object.
+/// shell({ faces: ['end'], thickness: 5 }, thing1)
 /// ```
 #[stdlib {
     name = "shell",
