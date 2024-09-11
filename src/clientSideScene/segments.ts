@@ -49,10 +49,11 @@ import {
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 import { normaliseAngle, roundOff } from 'lib/utils'
 import { SegmentOverlayPayload } from 'machines/modelingMachine'
+import { SegmentInputs } from 'lang/std/stdTypes'
+import { err } from 'lib/trap'
 
 interface CreateSegmentArgs {
-  from: Coords2d
-  to: Coords2d
+  input: SegmentInputs
   prevSegment: SketchGroup['value'][number]
   id: string
   pathToNode: PathToNode
@@ -66,8 +67,7 @@ interface CreateSegmentArgs {
 }
 
 interface UpdateSegmentArgs {
-  from: [number, number]
-  to: [number, number]
+  input: SegmentInputs
   prevSegment: SketchGroup['value'][number]
   group: Group
   sceneInfra: SceneInfra
@@ -78,7 +78,8 @@ interface CreateSegmentResult {
   group: Group
   updateOverlaysCallback: () => SegmentOverlayPayload | null
 }
-interface SegmentUtils {
+
+export interface SegmentUtils {
   /**
    * the init is responsible for adding all of the correct entities to the group with important details like `mesh.name = ...`
    * as these act like handles later
@@ -86,7 +87,7 @@ interface SegmentUtils {
    * It's **Not** responsible for doing all calculations to size and position the entities as this would be duplicated in the update function
    * Which should instead be called at the end of the init function
    */
-  init: (args: CreateSegmentArgs) => CreateSegmentResult
+  init: (args: CreateSegmentArgs) => CreateSegmentResult | Error
   /**
    * The update function is responsible for updating the group with the correct size and position of the entities
    * It should be called at the end of the init function and return a callback that can be used to update the overlay
@@ -96,13 +97,12 @@ interface SegmentUtils {
    */
   update: (
     args: UpdateSegmentArgs
-  ) => CreateSegmentResult['updateOverlaysCallback']
+  ) => CreateSegmentResult['updateOverlaysCallback'] | Error
 }
 
 class StraightSegment implements SegmentUtils {
   init: SegmentUtils['init'] = ({
-    from,
-    to,
+    input,
     id,
     pathToNode,
     isDraftSegment,
@@ -114,6 +114,9 @@ class StraightSegment implements SegmentUtils {
     sceneInfra,
     prevSegment,
   }) => {
+    if (input.type !== 'straight-segment')
+      return new Error('Invalid segment type')
+    const { from, to } = input
     const baseColor =
       callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
     const color = isSelected ? 0x0000ff : baseColor
@@ -169,27 +172,30 @@ class StraightSegment implements SegmentUtils {
     }
 
     segmentGroup.add(mesh, extraSegmentGroup)
+    let updateOverlaysCallback = this.update({
+      prevSegment,
+      input,
+      group: segmentGroup,
+      scale,
+      sceneInfra,
+    })
+    if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
     return {
       group: segmentGroup,
-      updateOverlaysCallback: this.update({
-        prevSegment,
-        from,
-        to,
-        group: segmentGroup,
-        scale,
-        sceneInfra,
-      }),
+      updateOverlaysCallback,
     }
   }
 
   update: SegmentUtils['update'] = ({
-    from,
-    to,
+    input,
     group,
     scale = 1,
     sceneInfra,
   }) => {
+    if (input.type !== 'straight-segment')
+      return new Error('Invalid segment type')
+    const { from, to } = input
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
@@ -298,8 +304,7 @@ class StraightSegment implements SegmentUtils {
 class TangentialArcToSegment implements SegmentUtils {
   init: SegmentUtils['init'] = ({
     prevSegment,
-    from,
-    to,
+    input,
     id,
     pathToNode,
     isDraftSegment,
@@ -309,6 +314,9 @@ class TangentialArcToSegment implements SegmentUtils {
     isSelected,
     sceneInfra,
   }) => {
+    if (input.type !== 'straight-segment')
+      return new Error('Invalid segment type')
+    const { from, to } = input
     const meshName = isDraftSegment
       ? TANGENTIAL_ARC_TO__SEGMENT_DASH
       : TANGENTIAL_ARC_TO_SEGMENT_BODY
@@ -345,28 +353,31 @@ class TangentialArcToSegment implements SegmentUtils {
     }
 
     group.add(mesh, arrowGroup, extraSegmentGroup)
+    const updateOverlaysCallback = this.update({
+      prevSegment,
+      input,
+      group,
+      scale,
+      sceneInfra,
+    })
+    if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
     return {
       group,
-      updateOverlaysCallback: this.update({
-        prevSegment,
-        from,
-        to,
-        group,
-        scale,
-        sceneInfra,
-      }),
+      updateOverlaysCallback,
     }
   }
 
   update: SegmentUtils['update'] = ({
     prevSegment,
-    from,
-    to,
+    input,
     group,
     scale = 1,
     sceneInfra,
   }) => {
+    if (input.type !== 'straight-segment')
+      return new Error('Invalid segment type')
+    const { from, to } = input
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment

@@ -54,7 +54,11 @@ import {
 } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
-import { createProfileStartHandle, segmentUtils } from './segments'
+import {
+  createProfileStartHandle,
+  SegmentUtils,
+  segmentUtils,
+} from './segments'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -140,40 +144,35 @@ export class SceneEntities {
           ? orthoFactor
           : perspScale(sceneInfra.camControls.camera, segment)) /
         sceneInfra._baseUnitMultiplier
+      const input = {
+        type: 'straight-segment',
+        from: segment.userData.from,
+        to: segment.userData.to,
+      } as const
+      let update: SegmentUtils['update'] | null = null
       if (
         segment.userData.from &&
         segment.userData.to &&
         segment.userData.type === STRAIGHT_SEGMENT
       ) {
-        callbacks.push(
-          segmentUtils.straight.update({
-            prevSegment: segment.userData.prevSegment,
-            from: segment.userData.from,
-            to: segment.userData.to,
-            group: segment,
-            scale: factor,
-            sceneInfra,
-          })
-        )
+        update = segmentUtils.straight.update
       }
-
       if (
         segment.userData.from &&
         segment.userData.to &&
         segment.userData.prevSegment &&
         segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
       ) {
-        callbacks.push(
-          segmentUtils.tangentialArcTo.update({
-            prevSegment: segment.userData.prevSegment,
-            from: segment.userData.from,
-            to: segment.userData.to,
-            group: segment,
-            scale: factor,
-            sceneInfra,
-          })
-        )
+        update = segmentUtils.tangentialArcTo.update
       }
+      const callBack = update?.({
+        prevSegment: segment.userData.prevSegment,
+        input,
+        group: segment,
+        scale: factor,
+        sceneInfra,
+      })
+      callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
         segment.scale.set(factor, factor, factor)
       }
@@ -469,11 +468,14 @@ export class SceneEntities {
         segment.type === 'TangentialArcTo'
           ? segmentUtils.tangentialArcTo.init
           : segmentUtils.straight.init
-      const { group: _group, updateOverlaysCallback: callback } = initSegment({
+      const result = initSegment({
         prevSegment: sketchGroup.value[index - 1],
         callExpName,
-        from: segment.from,
-        to: segment.to,
+        input: {
+          type: 'straight-segment',
+          from: segment.from,
+          to: segment.to,
+        },
         id: segment.__geoMeta.id,
         pathToNode: segPathToNode,
         isDraftSegment,
@@ -483,8 +485,10 @@ export class SceneEntities {
         isSelected,
         sceneInfra,
       })
+      if (err(result)) return
+      const { group: _group, updateOverlaysCallback } = result
       seg = _group
-      callbacks.push(callback)
+      callbacks.push(updateOverlaysCallback)
       seg.layers.set(SKETCH_LAYER)
       seg.traverse((child) => {
         child.layers.set(SKETCH_LAYER)
@@ -1188,25 +1192,30 @@ export class SceneEntities {
         ? orthoFactor
         : perspScale(sceneInfra.camControls.camera, group)) /
       sceneInfra._baseUnitMultiplier
+    const input = {
+      type: 'straight-segment',
+      from: segment.from,
+      to: segment.to,
+    } as const
+    let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-      return segmentUtils.tangentialArcTo.update({
-        prevSegment: sgPaths[index - 1],
-        from: segment.from,
-        to: segment.to,
-        group: group,
-        scale: factor,
-        sceneInfra,
-      })
+      update = segmentUtils.tangentialArcTo.update
     } else if (type === STRAIGHT_SEGMENT) {
-      return segmentUtils.straight.update({
-        from: segment.from,
-        to: segment.to,
+      update = segmentUtils.straight.update
+    }
+    const callBack =
+      update &&
+      !err(update) &&
+      update({
+        input,
         group,
         scale: factor,
         prevSegment: sgPaths[index - 1],
         sceneInfra,
       })
-    } else if (type === PROFILE_START) {
+    if (callBack && !err(callBack)) return callBack
+
+    if (type === PROFILE_START) {
       group.position.set(segment.from[0], segment.from[1], 0)
       group.scale.set(factor, factor, factor)
     }
@@ -1325,30 +1334,30 @@ export class SceneEntities {
           }
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
+          const input = {
+            type: 'straight-segment',
+            from: parent.userData.from,
+            to: parent.userData.to,
+          } as const
           const factor =
             (sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
               : perspScale(sceneInfra.camControls.camera, parent)) /
             sceneInfra._baseUnitMultiplier
+          let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
-            segmentUtils.straight.update({
-              from: parent.userData.from,
-              to: parent.userData.to,
-              group: parent,
-              scale: factor,
-              prevSegment: parent.userData.prevSegment,
-              sceneInfra,
-            })
+            update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            segmentUtils.tangentialArcTo.update({
+            update = segmentUtils.tangentialArcTo.update
+          }
+          update &&
+            update({
               prevSegment: parent.userData.prevSegment,
-              from: parent.userData.from,
-              to: parent.userData.to,
+              input,
               group: parent,
               scale: factor,
               sceneInfra,
             })
-          }
           return
         }
         editorManager.setHighlightRange([[0, 0]])
@@ -1363,30 +1372,30 @@ export class SceneEntities {
         if (parent) {
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
+          const input = {
+            type: 'straight-segment',
+            from: parent.userData.from,
+            to: parent.userData.to,
+          } as const
           const factor =
             (sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
               : perspScale(sceneInfra.camControls.camera, parent)) /
             sceneInfra._baseUnitMultiplier
+          let update: SegmentUtils['update'] | null = null
           if (parent.name === STRAIGHT_SEGMENT) {
-            segmentUtils.straight.update({
-              from: parent.userData.from,
-              to: parent.userData.to,
-              group: parent,
-              scale: factor,
-              prevSegment: parent.userData.prevSegment,
-              sceneInfra,
-            })
+            update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            segmentUtils.tangentialArcTo.update({
+            update = segmentUtils.tangentialArcTo.update
+          }
+          update &&
+            update({
               prevSegment: parent.userData.prevSegment,
-              from: parent.userData.from,
-              to: parent.userData.to,
+              input,
               group: parent,
               scale: factor,
               sceneInfra,
             })
-          }
         }
         const isSelected = parent?.userData?.isSelected
         colorSegment(
