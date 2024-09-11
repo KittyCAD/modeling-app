@@ -16,6 +16,7 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 import { getNextFileName } from './desktopFS'
 import { reportRejection } from './trap'
 import { toSync } from './utils'
+import { CameraSystem } from './cameraControls'
 
 export async function submitTextToCadPrompt(
   prompt: string,
@@ -77,6 +78,7 @@ interface TextToKclProps {
   settings: {
     theme: Themes
     highlightEdges: boolean
+    mouseControls: CameraSystem
   }
 }
 

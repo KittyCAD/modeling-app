@@ -5,7 +5,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { PATHS } from 'lib/paths'
 import toast from 'react-hot-toast'
 import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Box3,
   Color,
@@ -15,6 +15,7 @@ import {
   LineSegments,
   Mesh,
   MeshBasicMaterial,
+  MOUSE,
   OrthographicCamera,
   Scene,
   Vector3,
@@ -29,6 +30,15 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 import { EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { reportRejection } from 'lib/trap'
+import {
+  CameraControls,
+  CameraInteractionType,
+} from 'clientSideScene/CameraControls'
+import {
+  cameraMouseDragGuards,
+  CameraSystem,
+  MouseGuard,
+} from 'lib/cameraControls'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -118,8 +128,14 @@ export function ToastTextToCadSuccess({
   settings: {
     theme: Themes
     highlightEdges: boolean
+    mouseControls: CameraSystem
   }
 }) {
+  const interactionGuards = useMemo(
+    () => cameraMouseDragGuards[settings.mouseControls],
+    [settings.mouseControls]
+  )
+  const controlsRef = useRef<OrbitControls | null>(null)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const animationRequestRef = useRef<number>()
@@ -168,8 +184,59 @@ export function ToastTextToCadSuccess({
     const ambientLight = new DirectionalLight(new Color('white'), 8.0)
     scene.add(ambientLight)
     const camera = createCamera()
+    // Because this listener is registered before the OrbitControls are created,
+    // it runs first and can block the OrbitControls from working.
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      if (!controlsRef.current) return
+      const newInteractionType = getCameraInteractionType({
+        interactionGuards,
+        event: e,
+      })
+      console.log('newInteractionType', newInteractionType)
+
+      if (newInteractionType === 'none') {
+        e.stopImmediatePropagation()
+      }
+
+      /**
+       * Update the OrbitControls to enable only the current interaction type.
+       * This is a hack to override the interaction types of the OrbitControls
+       * to match ours. In the future, we should roll our own class based on OrbitControls,
+       * which can handle interaction guards that are more complex than just mouse buttons.
+       */
+      if (newInteractionType === 'pan') {
+        controlsRef.current.enablePan = true
+        controlsRef.current.enableZoom = false
+        controlsRef.current.enableRotate = false
+        controlsRef.current.mouseButtons = {
+          LEFT: MOUSE.PAN,
+          MIDDLE: MOUSE.PAN,
+          RIGHT: MOUSE.PAN,
+        }
+      } else if (newInteractionType === 'zoom') {
+        controlsRef.current.enablePan = false
+        controlsRef.current.enableZoom = true
+        controlsRef.current.enableRotate = false
+        controlsRef.current.mouseButtons = {
+          LEFT: MOUSE.DOLLY,
+          MIDDLE: MOUSE.DOLLY,
+          RIGHT: MOUSE.DOLLY,
+        }
+      } else if (newInteractionType === 'rotate') {
+        controlsRef.current.enablePan = false
+        controlsRef.current.enableZoom = false
+        controlsRef.current.enableRotate = true
+        controlsRef.current.mouseButtons = {
+          LEFT: MOUSE.ROTATE,
+          MIDDLE: MOUSE.ROTATE,
+          RIGHT: MOUSE.ROTATE,
+        }
+      }
+
+      controls.update()
+    })
     const controls = new OrbitControls(camera, renderer.domElement)
-    controls.enableDamping = true
+    controlsRef.current = controls
     const loader = new GLTFLoader()
     const dracoLoader = new DRACOLoader()
     dracoLoader.setDecoderPath('/examples/jsm/libs/draco/')
@@ -270,7 +337,7 @@ export function ToastTextToCadSuccess({
   }, [])
 
   return (
-    <div className="flex gap-4 min-w-80" ref={wrapperRef}>
+    <div className="flex gap-4 min-w-80 user-select-none" ref={wrapperRef}>
       <div
         className="flex-none overflow-hidden"
         style={{ width: CANVAS_SIZE + 'px', height: CANVAS_SIZE + 'px' }}
@@ -410,4 +477,23 @@ function traverseSceneToStyleObjects({
       scene.add(lines)
     }
   })
+}
+
+function getCameraInteractionType({
+  interactionGuards,
+  event,
+}: {
+  interactionGuards: MouseGuard
+  event: MouseEvent
+}): CameraInteractionType | 'none' {
+  if (interactionGuards.pan.callback(event)) {
+    return 'pan'
+  }
+  if (interactionGuards.zoom.dragCallback(event)) {
+    return 'zoom'
+  }
+  if (interactionGuards.rotate.callback(event)) {
+    return 'rotate'
+  }
+  return 'none'
 }

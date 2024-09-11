@@ -34,7 +34,7 @@ const FRAMES_TO_ANIMATE_IN = 30
 
 const tempQuaternion = new Quaternion() // just used for maths
 
-type interactionType = 'pan' | 'rotate' | 'zoom'
+export type CameraInteractionType = 'pan' | 'rotate' | 'zoom'
 
 interface ThreeCamValues {
   position: Vector3
@@ -1219,8 +1219,8 @@ function _getInteractionType(
   enablePan: boolean,
   enableRotate: boolean,
   enableZoom: boolean
-): interactionType | 'none' {
-  let state: interactionType | 'none' = 'none'
+): CameraInteractionType | 'none' {
+  let state: CameraInteractionType | 'none' = 'none'
   if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
   if (enableRotate && interactionGuards.rotate.callback(event)) return 'rotate'
   if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'

@@ -105,7 +105,7 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: { defaultUnit, highlightEdges, showScaleGrid, mouseControls },
       },
     },
   } = useSettingsAuthContext()
@@ -509,6 +509,7 @@ export const ModelingMachineProvider = ({
             settings: {
               theme: theme.current,
               highlightEdges: highlightEdges.current,
+              mouseControls: mouseControls.current,
             },
           }).catch(reportRejection)
         },

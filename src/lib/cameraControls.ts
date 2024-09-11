@@ -6,7 +6,7 @@ const META =
   PLATFORM === 'macos' ? 'Cmd' : PLATFORM === 'windows' ? 'Win' : 'Super'
 const ALT = PLATFORM === 'macos' ? 'Option' : 'Alt'
 
-const noModifiersPressed = (e: React.MouseEvent) =>
+const noModifiersPressed = (e: React.MouseEvent | MouseEvent) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
 
 export type CameraSystem =
@@ -53,14 +53,14 @@ export function mouseControlsToCameraSystem(
 
 interface MouseGuardHandler {
   description: string
-  callback: (e: React.MouseEvent) => boolean
+  callback: (e: React.MouseEvent | MouseEvent) => boolean
   lenientDragStartButton?: number
 }
 
 interface MouseGuardZoomHandler {
   description: string
-  dragCallback: (e: React.MouseEvent) => boolean
-  scrollCallback: (e: React.MouseEvent) => boolean
+  dragCallback: (e: React.MouseEvent | MouseEvent) => boolean
+  scrollCallback: (e: React.MouseEvent | MouseEvent) => boolean
   lenientDragStartButton?: number
 }
 
@@ -70,7 +70,7 @@ export interface MouseGuard {
   rotate: MouseGuardHandler
 }
 
-export const btnName = (e: React.MouseEvent) => ({
+export const btnName = (e: React.MouseEvent | MouseEvent) => ({
   middle: !!(e.buttons & 4) || e.button === 1,
   right: !!(e.buttons & 2) || e.button === 2,
   left: !!(e.buttons & 1) || e.button === 0,
