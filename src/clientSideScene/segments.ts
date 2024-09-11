@@ -51,7 +51,7 @@ import { normaliseAngle, roundOff } from 'lib/utils'
 import { SegmentOverlayPayload } from 'machines/modelingMachine'
 
 interface SegmentUtils {
-  createSegment: (args: {
+  create: (args: {
     from: Coords2d
     to: Coords2d
     prevSegment: SketchGroup['value'][number]
@@ -64,7 +64,7 @@ interface SegmentUtils {
     theme: Themes
     isSelected?: boolean
   }) => Group
-  updateSegment: (args: {
+  update: (args: {
     from: [number, number]
     to: [number, number]
     prevSegment: SketchGroup['value'][number]
@@ -75,7 +75,7 @@ interface SegmentUtils {
 }
 
 export const straightSegment: SegmentUtils = {
-  createSegment: ({
+  create: ({
     from,
     to,
     id,
@@ -184,7 +184,7 @@ export const straightSegment: SegmentUtils = {
 
     return segmentGroup
   },
-  updateSegment: ({ from, to, group, scale = 1, sceneInfra }) => {
+  update: ({ from, to, group, scale = 1, sceneInfra }) => {
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
@@ -291,7 +291,7 @@ export const straightSegment: SegmentUtils = {
 }
 
 export const tangentialArcToSegment: SegmentUtils = {
-  createSegment: ({
+  create: ({
     prevSegment,
     from,
     to,
@@ -387,7 +387,7 @@ export const tangentialArcToSegment: SegmentUtils = {
 
     return group
   },
-  updateSegment: ({ prevSegment, from, to, group, scale = 1, sceneInfra }) => {
+  update: ({ prevSegment, from, to, group, scale = 1, sceneInfra }) => {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
@@ -794,3 +794,8 @@ export function dashedStraight(
   geo.userData.type = 'dashed'
   return geo
 }
+
+export const segmentUtils = {
+  straight: straightSegment,
+  tangentialArcTo: tangentialArcToSegment,
+} as const

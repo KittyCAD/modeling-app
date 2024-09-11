@@ -54,11 +54,7 @@ import {
 } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
-import {
-  createProfileStartHandle,
-  straightSegment,
-  tangentialArcToSegment,
-} from './segments'
+import { createProfileStartHandle, segmentUtils } from './segments'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -112,11 +108,6 @@ export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   PROFILE_START,
 ]
 
-const segmentUtils = {
-  straightSegment,
-  tangentialArcToSegment,
-} as const
-
 type Vec3Array = [number, number, number]
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
@@ -155,7 +146,7 @@ export class SceneEntities {
         segment.userData.type === STRAIGHT_SEGMENT
       ) {
         callbacks.push(
-          segmentUtils.straightSegment.updateSegment({
+          segmentUtils.straight.update({
             prevSegment: segment.userData.prevSegment,
             from: segment.userData.from,
             to: segment.userData.to,
@@ -173,7 +164,7 @@ export class SceneEntities {
         segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
       ) {
         callbacks.push(
-          segmentUtils.tangentialArcToSegment.updateSegment({
+          segmentUtils.tangentialArcTo.update({
             prevSegment: segment.userData.prevSegment,
             from: segment.userData.from,
             to: segment.userData.to,
@@ -475,7 +466,7 @@ export class SceneEntities {
       const callExpName = _node1.node?.callee?.name
 
       if (segment.type === 'TangentialArcTo') {
-        seg = segmentUtils.tangentialArcToSegment.createSegment({
+        seg = segmentUtils.tangentialArcTo.create({
           prevSegment: sketchGroup.value[index - 1],
           callExpName,
           from: segment.from,
@@ -489,7 +480,7 @@ export class SceneEntities {
           isSelected,
         })
         callbacks.push(
-          segmentUtils.tangentialArcToSegment.updateSegment({
+          segmentUtils.tangentialArcTo.update({
             prevSegment: sketchGroup.value[index - 1],
             from: segment.from,
             to: segment.to,
@@ -499,7 +490,7 @@ export class SceneEntities {
           })
         )
       } else {
-        seg = segmentUtils.straightSegment.createSegment({
+        seg = segmentUtils.straight.create({
           prevSegment: sketchGroup.value[index - 1],
           from: segment.from,
           to: segment.to,
@@ -513,7 +504,7 @@ export class SceneEntities {
           isSelected,
         })
         callbacks.push(
-          segmentUtils.straightSegment.updateSegment({
+          segmentUtils.straight.update({
             prevSegment: sketchGroup.value[index - 1],
             from: segment.from,
             to: segment.to,
@@ -1227,7 +1218,7 @@ export class SceneEntities {
         : perspScale(sceneInfra.camControls.camera, group)) /
       sceneInfra._baseUnitMultiplier
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-      return segmentUtils.tangentialArcToSegment.updateSegment({
+      return segmentUtils.tangentialArcTo.update({
         prevSegment: sgPaths[index - 1],
         from: segment.from,
         to: segment.to,
@@ -1236,7 +1227,7 @@ export class SceneEntities {
         sceneInfra,
       })
     } else if (type === STRAIGHT_SEGMENT) {
-      return segmentUtils.straightSegment.updateSegment({
+      return segmentUtils.straight.update({
         from: segment.from,
         to: segment.to,
         group,
@@ -1369,7 +1360,7 @@ export class SceneEntities {
               : perspScale(sceneInfra.camControls.camera, parent)) /
             sceneInfra._baseUnitMultiplier
           if (parent.name === STRAIGHT_SEGMENT) {
-            segmentUtils.straightSegment.updateSegment({
+            segmentUtils.straight.update({
               from: parent.userData.from,
               to: parent.userData.to,
               group: parent,
@@ -1378,7 +1369,7 @@ export class SceneEntities {
               sceneInfra,
             })
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            segmentUtils.tangentialArcToSegment.updateSegment({
+            segmentUtils.tangentialArcTo.update({
               prevSegment: parent.userData.prevSegment,
               from: parent.userData.from,
               to: parent.userData.to,
@@ -1407,7 +1398,7 @@ export class SceneEntities {
               : perspScale(sceneInfra.camControls.camera, parent)) /
             sceneInfra._baseUnitMultiplier
           if (parent.name === STRAIGHT_SEGMENT) {
-            segmentUtils.straightSegment.updateSegment({
+            segmentUtils.straight.update({
               from: parent.userData.from,
               to: parent.userData.to,
               group: parent,
@@ -1416,7 +1407,7 @@ export class SceneEntities {
               sceneInfra,
             })
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
-            segmentUtils.tangentialArcToSegment.updateSegment({
+            segmentUtils.tangentialArcTo.update({
               prevSegment: parent.userData.prevSegment,
               from: parent.userData.from,
               to: parent.userData.to,
