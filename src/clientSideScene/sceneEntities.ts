@@ -465,55 +465,26 @@ export class SceneEntities {
       if (err(_node1)) return
       const callExpName = _node1.node?.callee?.name
 
-      if (segment.type === 'TangentialArcTo') {
-        seg = segmentUtils.tangentialArcTo.create({
-          prevSegment: sketchGroup.value[index - 1],
-          callExpName,
-          from: segment.from,
-          to: segment.to,
-          id: segment.__geoMeta.id,
-          pathToNode: segPathToNode,
-          isDraftSegment,
-          scale: factor,
-          texture: sceneInfra.extraSegmentTexture,
-          theme: sceneInfra._theme,
-          isSelected,
-        })
-        callbacks.push(
-          segmentUtils.tangentialArcTo.update({
-            prevSegment: sketchGroup.value[index - 1],
-            from: segment.from,
-            to: segment.to,
-            group: seg,
-            scale: factor,
-            sceneInfra,
-          })
-        )
-      } else {
-        seg = segmentUtils.straight.create({
-          prevSegment: sketchGroup.value[index - 1],
-          from: segment.from,
-          to: segment.to,
-          id: segment.__geoMeta.id,
-          pathToNode: segPathToNode,
-          isDraftSegment,
-          scale: factor,
-          callExpName,
-          texture: sceneInfra.extraSegmentTexture,
-          theme: sceneInfra._theme,
-          isSelected,
-        })
-        callbacks.push(
-          segmentUtils.straight.update({
-            prevSegment: sketchGroup.value[index - 1],
-            from: segment.from,
-            to: segment.to,
-            group: seg,
-            scale: factor,
-            sceneInfra,
-          })
-        )
-      }
+      const createSegment =
+        segment.type === 'TangentialArcTo'
+          ? segmentUtils.tangentialArcTo.create
+          : segmentUtils.straight.create
+      const { group: _group, callback } = createSegment({
+        prevSegment: sketchGroup.value[index - 1],
+        callExpName,
+        from: segment.from,
+        to: segment.to,
+        id: segment.__geoMeta.id,
+        pathToNode: segPathToNode,
+        isDraftSegment,
+        scale: factor,
+        texture: sceneInfra.extraSegmentTexture,
+        theme: sceneInfra._theme,
+        isSelected,
+        sceneInfra,
+      })
+      seg = _group
+      callbacks.push(callback)
       seg.layers.set(SKETCH_LAYER)
       seg.traverse((child) => {
         child.layers.set(SKETCH_LAYER)

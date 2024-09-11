@@ -50,32 +50,45 @@ import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 import { normaliseAngle, roundOff } from 'lib/utils'
 import { SegmentOverlayPayload } from 'machines/modelingMachine'
 
-interface SegmentUtils {
-  create: (args: {
-    from: Coords2d
-    to: Coords2d
-    prevSegment: SketchGroup['value'][number]
-    id: string
-    pathToNode: PathToNode
-    isDraftSegment?: boolean
-    scale?: number
-    callExpName: string
-    texture: Texture
-    theme: Themes
-    isSelected?: boolean
-  }) => Group
-  update: (args: {
-    from: [number, number]
-    to: [number, number]
-    prevSegment: SketchGroup['value'][number]
-    group: Group
-    sceneInfra: SceneInfra
-    scale?: number
-  }) => () => SegmentOverlayPayload | null
+interface CreateSegmentArgs {
+  from: Coords2d
+  to: Coords2d
+  prevSegment: SketchGroup['value'][number]
+  id: string
+  pathToNode: PathToNode
+  isDraftSegment?: boolean
+  scale?: number
+  callExpName: string
+  texture: Texture
+  theme: Themes
+  isSelected?: boolean
+  sceneInfra: SceneInfra
 }
 
-export const straightSegment: SegmentUtils = {
-  create: ({
+interface UpdateSegmentArgs {
+  from: [number, number]
+  to: [number, number]
+  prevSegment: SketchGroup['value'][number]
+  group: Group
+  sceneInfra: SceneInfra
+  scale?: number
+}
+
+interface CreateSegmentResult {
+  group: Group
+  callback: () => SegmentOverlayPayload | null
+}
+interface SegmentUtils {
+  create: (args: CreateSegmentArgs) => CreateSegmentResult
+  update: (args: UpdateSegmentArgs) => CreateSegmentResult['callback']
+}
+
+class StraightSegment implements SegmentUtils {
+  constructor() {
+    this.create = this.create.bind(this)
+    this.update = this.update.bind(this)
+  }
+  create({
     from,
     to,
     id,
@@ -86,7 +99,9 @@ export const straightSegment: SegmentUtils = {
     texture,
     theme,
     isSelected = false,
-  }) => {
+    sceneInfra,
+    prevSegment,
+  }: CreateSegmentArgs): CreateSegmentResult {
     const segmentGroup = new Group()
 
     const shape = new Shape()
@@ -182,9 +197,26 @@ export const straightSegment: SegmentUtils = {
       segmentGroup.add(lengthIndicatorGroup)
     }
 
-    return segmentGroup
-  },
-  update: ({ from, to, group, scale = 1, sceneInfra }) => {
+    return {
+      group: segmentGroup,
+      callback: this.update({
+        prevSegment,
+        from,
+        to,
+        group: segmentGroup,
+        scale,
+        sceneInfra,
+      }),
+    }
+  }
+
+  update({
+    from,
+    to,
+    group,
+    scale = 1,
+    sceneInfra,
+  }: UpdateSegmentArgs): () => SegmentOverlayPayload | null {
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
@@ -287,11 +319,15 @@ export const straightSegment: SegmentUtils = {
         from,
         to,
       })
-  },
+  }
 }
 
-export const tangentialArcToSegment: SegmentUtils = {
-  create: ({
+class TangentialArcToSegment implements SegmentUtils {
+  constructor() {
+    this.create = this.create.bind(this)
+    this.update = this.update.bind(this)
+  }
+  create({
     prevSegment,
     from,
     to,
@@ -302,7 +338,8 @@ export const tangentialArcToSegment: SegmentUtils = {
     texture,
     theme,
     isSelected,
-  }) => {
+    sceneInfra,
+  }: CreateSegmentArgs): CreateSegmentResult {
     const group = new Group()
 
     const previousPoint =
@@ -385,9 +422,27 @@ export const tangentialArcToSegment: SegmentUtils = {
 
     group.add(mesh, arrowGroup, extraSegmentGroup)
 
-    return group
-  },
-  update: ({ prevSegment, from, to, group, scale = 1, sceneInfra }) => {
+    return {
+      group,
+      callback: this.update({
+        prevSegment,
+        from,
+        to,
+        group,
+        scale,
+        sceneInfra,
+      }),
+    }
+  }
+
+  update({
+    prevSegment,
+    from,
+    to,
+    group,
+    scale = 1,
+    sceneInfra,
+  }: UpdateSegmentArgs): () => SegmentOverlayPayload | null {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
@@ -415,7 +470,7 @@ export const tangentialArcToSegment: SegmentUtils = {
     const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
 
     const hoveredParent =
-      sceneInfra.hoveredObject &&
+      sceneInfra?.hoveredObject &&
       getParentGroup(sceneInfra.hoveredObject, [TANGENTIAL_ARC_TO_SEGMENT])
     let isHandlesVisible = !shouldHideIdle
     if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
@@ -484,7 +539,7 @@ export const tangentialArcToSegment: SegmentUtils = {
         to,
         angle,
       })
-  },
+  }
 }
 
 export function createProfileStartHandle({
@@ -796,6 +851,6 @@ export function dashedStraight(
 }
 
 export const segmentUtils = {
-  straight: straightSegment,
-  tangentialArcTo: tangentialArcToSegment,
+  straight: new StraightSegment(),
+  tangentialArcTo: new TangentialArcToSegment(),
 } as const
