@@ -29,7 +29,7 @@ export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
-  const { state, send, context } = useModelingContext()
+  const { state, send } = useModelingContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
