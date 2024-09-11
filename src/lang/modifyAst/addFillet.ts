@@ -47,7 +47,7 @@ export async function applyFilletToSelection(
   ast: Program,
   selection: Selections,
   radius: KclCommandValue
-): Promise <void | Error> {
+): Promise<void | Error> {
   // 1. clone ast
   let clonedAst = structuredClone(ast)
 

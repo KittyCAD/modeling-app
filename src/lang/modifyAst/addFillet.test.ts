@@ -60,11 +60,14 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   ): CallExpression | PipeExpression | undefined | Error {
     if (pathToExtrudeNode.length === 0) return undefined // no extrude node
 
-    const extrudeNodeResult = getNodeFromPath(ast, pathToExtrudeNode)
+    const extrudeNodeResult = getNodeFromPath<CallExpression>(
+      ast,
+      pathToExtrudeNode
+    )
     if (err(extrudeNodeResult)) {
       return extrudeNodeResult
     }
-    return extrudeNodeResult.node as CallExpression | PipeExpression
+    return extrudeNodeResult.node
   }
   function getExpectedExtrudeExpression(
     ast: Program,
@@ -76,15 +79,21 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
     ]
     const expedtedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
-    const expedtedExtrudeNodeResult = getNodeFromPath(ast, expedtedExtrudePath)
+    const expedtedExtrudeNodeResult = getNodeFromPath<VariableDeclaration>(
+      ast,
+      expedtedExtrudePath
+    )
     if (err(expedtedExtrudeNodeResult)) {
       return expedtedExtrudeNodeResult
     }
-    const expectedExtrudeNode =
-      expedtedExtrudeNodeResult.node as VariableDeclaration
-    return expectedExtrudeNode.declarations[0].init as
-      | CallExpression
-      | PipeExpression
+    const expectedExtrudeNode = expedtedExtrudeNodeResult.node
+    const init = expectedExtrudeNode.declarations[0].init
+    if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
+      return new Error(
+        'Expected extrude expression is not a CallExpression or PipeExpression'
+      )
+    }
+    return init
   }
 
   // ast
