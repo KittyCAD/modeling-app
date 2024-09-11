@@ -154,7 +154,6 @@ export type SegmentOverlayPayload =
 export interface Store {
   videoElement?: HTMLVideoElement
   buttonDownInStream: number | undefined
-  didDragInStream: boolean
   streamDimensions: { streamWidth: number; streamHeight: number }
   openPanes: SidebarType[]
 }
@@ -301,7 +300,6 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   segmentHoverMap: {},
   store: {
     buttonDownInStream: undefined,
-    didDragInStream: false,
     streamDimensions: { streamWidth: 1280, streamHeight: 720 },
     openPanes: getPersistedContext().openPanes || ['code'],
   },

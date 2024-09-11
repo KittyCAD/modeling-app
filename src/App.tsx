@@ -74,8 +74,6 @@ export function App() {
     (p) => p === onboardingStatus.current
   )
     ? 'opacity-20'
-    : context.store?.didDragInStream
-    ? 'opacity-40'
     : ''
 
   useEngineConnectionSubscriptions()

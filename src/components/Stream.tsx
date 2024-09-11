@@ -27,6 +27,7 @@ enum StreamState {
 }
 
 export const Stream = () => {
+  const [didDragInStream, setDidDragInStream] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -290,7 +291,7 @@ export const Stream = () => {
     if (state.matches('Sketch')) return
     if (state.matches({ idle: 'showPlanes' })) return
 
-    if (!context.store?.didDragInStream && btnName(e).left) {
+    if (!didDragInStream && btnName(e).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sendSelectEventToEngine(
         e,
@@ -299,12 +300,7 @@ export const Stream = () => {
       )
     }
 
-    send({
-      type: 'Set context',
-      data: {
-        didDragInStream: false,
-      },
-    })
+    setDidDragInStream(false)
     setClickCoords(undefined)
   }
 
@@ -318,13 +314,8 @@ export const Stream = () => {
       ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
       0.5
 
-    if (delta > 5 && !context.store?.didDragInStream) {
-      send({
-        type: 'Set context',
-        data: {
-          didDragInStream: true,
-        },
-      })
+    if (delta > 5 && !didDragInStream) {
+      setDidDragInStream(true)
     }
   }
 
