@@ -1904,7 +1904,6 @@ export const modelingMachine = setup({
         'enter modeling mode',
       ],
     },
-
     'Set selection': {
       reenter: false,
       actions: 'Set selection',

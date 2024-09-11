@@ -84,6 +84,7 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -144,6 +145,13 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ context: { store } }) => {
           ;(async () => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
+            })
+
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
