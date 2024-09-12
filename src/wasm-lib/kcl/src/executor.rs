@@ -23,6 +23,17 @@ use crate::{
     std::{FnAsArg, StdLib},
 };
 
+/// State for executing a program.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecState {
+    /// Program variable bindings.
+    pub memory: ProgramMemory,
+    /// Dynamic state that follows dynamic flow of the program.
+    pub dynamic_state: DynamicState,
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -227,7 +238,7 @@ impl Environment {
 /// Dynamic state that depends on the dynamic flow of the program, like the call
 /// stack.  If the language had exceptions, for example, you could store the
 /// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 pub struct DynamicState {
     pub extrude_group_ids: Vec<ExtrudeGroupLazyIds>,
 }
@@ -730,24 +741,9 @@ pub type MemoryFunction =
         memory: ProgramMemory,
         expression: Box<FunctionExpression>,
         metadata: Vec<Metadata>,
-        dynamic_state: DynamicState,
+        exec_state: &ExecState,
         ctx: ExecutorContext,
     ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>;
-
-fn force_memory_function<
-    F: Fn(
-        Vec<KclValue>,
-        ProgramMemory,
-        Box<FunctionExpression>,
-        Vec<Metadata>,
-        DynamicState,
-        ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>,
->(
-    f: F,
-) -> F {
-    f
-}
 
 impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
@@ -848,9 +844,8 @@ impl KclValue {
         else {
             return None;
         };
-        let func = func.as_ref()?;
         Some(FnAsArg {
-            func,
+            func: func.as_ref(),
             expr: expression.to_owned(),
             memory: memory.to_owned(),
         })
@@ -904,7 +899,7 @@ impl KclValue {
     pub async fn call_fn(
         &self,
         args: Vec<KclValue>,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         ctx: ExecutorContext,
     ) -> Result<Option<KclValue>, KclError> {
         let KclValue::Function {
@@ -919,21 +914,19 @@ impl KclValue {
                 source_ranges: vec![],
             }));
         };
-        let Some(func) = func else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a function: {:?}", expression),
-                source_ranges: vec![],
-            }));
-        };
-        func(
-            args,
-            closure_memory.as_ref().clone(),
-            expression.clone(),
-            meta.clone(),
-            dynamic_state.clone(),
-            ctx,
-        )
-        .await
+        if let Some(func) = func {
+            func(
+                args,
+                closure_memory.as_ref().clone(),
+                expression.clone(),
+                meta.clone(),
+                exec_state,
+                ctx,
+            )
+            .await
+        } else {
+            call_user_defined_function(args, closure_memory.as_ref(), expression.as_ref(), exec_state, &ctx).await
+        }
     }
 }
 
@@ -1356,6 +1349,14 @@ impl From<&ReturnStatement> for Metadata {
     }
 }
 
+impl From<&Expr> for Metadata {
+    fn from(expr: &Expr) -> Self {
+        Self {
+            source_range: SourceRange::from(expr),
+        }
+    }
+}
+
 /// A base path.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1773,7 +1774,7 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
-    ) -> Result<ProgramMemory, KclError> {
+    ) -> Result<ExecState, KclError> {
         self.run_with_session_data(program, memory).await.map(|x| x.0)
     }
     /// Perform the execution of a program.
@@ -1783,7 +1784,7 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
-    ) -> Result<(ProgramMemory, Option<ModelingSessionData>), KclError> {
+    ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
@@ -1794,22 +1795,19 @@ impl ExecutorContext {
                 },
             )
             .await?;
-        let mut memory = if let Some(memory) = memory {
+        let memory = if let Some(memory) = memory {
             memory.clone()
         } else {
             Default::default()
         };
-        let mut dynamic_state = DynamicState::default();
-        let final_memory = self
-            .inner_execute(
-                program,
-                &mut memory,
-                &mut dynamic_state,
-                crate::executor::BodyType::Root,
-            )
+        let mut exec_state = ExecState {
+            memory,
+            ..Default::default()
+        };
+        self.inner_execute(program, &mut exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
-        Ok((final_memory, session_data))
+        Ok((exec_state, session_data))
     }
 
     /// Execute an AST's program.
@@ -1817,10 +1815,9 @@ impl ExecutorContext {
     pub(crate) async fn inner_execute(
         &self,
         program: &crate::ast::types::Program,
-        memory: &mut ProgramMemory,
-        dynamic_state: &mut DynamicState,
+        exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<ProgramMemory, KclError> {
+    ) -> Result<(), KclError> {
         let pipe_info = PipeInfo::default();
 
         // Iterate over the body of the program.
@@ -1831,8 +1828,7 @@ impl ExecutorContext {
                     // Discard return value.
                     self.execute_expr(
                         &expression_statement.expression,
-                        memory,
-                        dynamic_state,
+                        exec_state,
                         &pipe_info,
                         &metadata,
                         StatementKind::Expression,
@@ -1848,14 +1844,13 @@ impl ExecutorContext {
                         let memory_item = self
                             .execute_expr(
                                 &declaration.init,
-                                memory,
-                                dynamic_state,
+                                exec_state,
                                 &pipe_info,
                                 &metadata,
                                 StatementKind::Declaration { name: &var_name },
                             )
                             .await?;
-                        memory.add(&var_name, memory_item, source_range)?;
+                        exec_state.memory.add(&var_name, memory_item, source_range)?;
                     }
                 }
                 BodyItem::ReturnStatement(return_statement) => {
@@ -1863,14 +1858,13 @@ impl ExecutorContext {
                     let value = self
                         .execute_expr(
                             &return_statement.argument,
-                            memory,
-                            dynamic_state,
+                            exec_state,
                             &pipe_info,
                             &metadata,
                             StatementKind::Expression,
                         )
                         .await?;
-                    memory.return_ = Some(value);
+                    exec_state.memory.return_ = Some(value);
                 }
             }
         }
@@ -1887,14 +1881,13 @@ impl ExecutorContext {
                 .await?;
         }
 
-        Ok(memory.clone())
+        Ok(())
     }
 
     pub async fn execute_expr<'a>(
         &self,
         init: &Expr,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         metadata: &Metadata,
         statement_kind: StatementKind<'a>,
@@ -1902,66 +1895,27 @@ impl ExecutorContext {
         let item = match init {
             Expr::None(none) => KclValue::from(none),
             Expr::Literal(literal) => KclValue::from(literal),
-            Expr::TagDeclarator(tag) => tag.execute(memory).await?,
+            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Identifier(identifier) => {
-                let value = memory.get(&identifier.name, identifier.into())?;
+                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
             Expr::BinaryExpression(binary_expression) => {
-                binary_expression
-                    .get_result(memory, dynamic_state, pipe_info, self)
-                    .await?
+                binary_expression.get_result(exec_state, pipe_info, self).await?
             }
             Expr::FunctionExpression(function_expression) => {
-                let mem_func = force_memory_function(
-                    |args: Vec<KclValue>,
-                     memory: ProgramMemory,
-                     function_expression: Box<FunctionExpression>,
-                     _metadata: Vec<Metadata>,
-                     mut dynamic_state: DynamicState,
-                     ctx: ExecutorContext| {
-                        Box::pin(async move {
-                            // Create a new environment to execute the function
-                            // body in so that local variables shadow variables
-                            // in the parent scope.  The new environment's
-                            // parent should be the environment of the closure.
-                            let mut body_memory = memory.clone();
-                            let closure_env = memory.current_env;
-                            let body_env = body_memory.new_env_for_call(closure_env);
-                            body_memory.current_env = body_env;
-                            let mut fn_memory = assign_args_to_params(&function_expression, args, body_memory)?;
-
-                            let result = ctx
-                                .inner_execute(
-                                    &function_expression.body,
-                                    &mut fn_memory,
-                                    &mut dynamic_state,
-                                    BodyType::Block,
-                                )
-                                .await?;
-
-                            Ok(result.return_)
-                        })
-                    },
-                );
                 // Cloning memory here is crucial for semantics so that we close
                 // over variables.  Variables defined lexically later shouldn't
                 // be available to the function body.
                 KclValue::Function {
                     expression: function_expression.clone(),
                     meta: vec![metadata.to_owned()],
-                    func: Some(mem_func),
-                    memory: Box::new(memory.clone()),
+                    func: None,
+                    memory: Box::new(exec_state.memory.clone()),
                 }
             }
-            Expr::CallExpression(call_expression) => {
-                call_expression.execute(memory, dynamic_state, pipe_info, self).await?
-            }
-            Expr::PipeExpression(pipe_expression) => {
-                pipe_expression
-                    .get_result(memory, dynamic_state, pipe_info, self)
-                    .await?
-            }
+            Expr::CallExpression(call_expression) => call_expression.execute(exec_state, pipe_info, self).await?,
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, pipe_info, self).await?,
             Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
                 StatementKind::Declaration { name } => {
                     let message = format!(
@@ -1983,20 +1937,10 @@ impl ExecutorContext {
                     }
                 },
             },
-            Expr::ArrayExpression(array_expression) => {
-                array_expression.execute(memory, dynamic_state, pipe_info, self).await?
-            }
-            Expr::ObjectExpression(object_expression) => {
-                object_expression
-                    .execute(memory, dynamic_state, pipe_info, self)
-                    .await?
-            }
-            Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-            Expr::UnaryExpression(unary_expression) => {
-                unary_expression
-                    .get_result(memory, dynamic_state, pipe_info, self)
-                    .await?
-            }
+            Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, pipe_info, self).await?,
+            Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, pipe_info, self).await?,
+            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, pipe_info, self).await?,
         };
         Ok(item)
     }
@@ -2097,6 +2041,36 @@ fn assign_args_to_params(
     Ok(fn_memory)
 }
 
+pub(crate) async fn call_user_defined_function(
+    args: Vec<KclValue>,
+    memory: &ProgramMemory,
+    function_expression: &FunctionExpression,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Option<KclValue>, KclError> {
+    // Create a new environment to execute the function body in so that local
+    // variables shadow variables in the parent scope.  The new environment's
+    // parent should be the environment of the closure.
+    let mut body_memory = memory.clone();
+    let body_env = body_memory.new_env_for_call(memory.current_env);
+    body_memory.current_env = body_env;
+    let fn_memory = assign_args_to_params(function_expression, args, body_memory)?;
+
+    // Execute the function body using the memory we just created.
+    let (result, fn_memory) = {
+        let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
+        let result = ctx
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
+            .await;
+        // Restore the previous memory.
+        let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
+
+        (result, fn_memory)
+    };
+
+    result.map(|()| fn_memory.return_)
+}
+
 pub enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
@@ -2122,9 +2096,9 @@ mod tests {
             settings: Default::default(),
             is_mock: true,
         };
-        let memory = ctx.run(&program, None).await?;
+        let exec_state = ctx.run(&program, None).await?;
 
-        Ok(memory)
+        Ok(exec_state.memory)
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.

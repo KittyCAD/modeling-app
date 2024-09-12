@@ -8,8 +8,8 @@ use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
     executor::{
-        DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata,
-        ProgramMemory, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
+        ExecState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata, SketchGroup,
+        SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
     std::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg},
 };
@@ -19,8 +19,7 @@ pub struct Args {
     pub args: Vec<KclValue>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
-    pub current_program_memory: ProgramMemory,
-    pub dynamic_state: DynamicState,
+    pub read_only_exec_state: ExecState,
 }
 
 impl Args {
@@ -28,15 +27,13 @@ impl Args {
         args: Vec<KclValue>,
         source_range: SourceRange,
         ctx: ExecutorContext,
-        current_program_memory: ProgramMemory,
-        dynamic_state: DynamicState,
+        read_only_exec_state: ExecState,
     ) -> Self {
         Self {
             args,
             source_range,
             ctx,
-            current_program_memory,
-            dynamic_state,
+            read_only_exec_state,
         }
     }
 
@@ -54,8 +51,7 @@ impl Args {
                 settings: Default::default(),
                 is_mock: true,
             },
-            current_program_memory: ProgramMemory::default(),
-            dynamic_state: DynamicState::default(),
+            read_only_exec_state: ExecState::default(),
         })
     }
 
@@ -92,7 +88,7 @@ impl Args {
         &'a self,
         tag: &'a TagIdentifier,
     ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
-        if let KclValue::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
+        if let KclValue::TagIdentifier(t) = self.read_only_exec_state.memory.get(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
@@ -148,12 +144,17 @@ impl Args {
             if !traversed_sketch_groups.contains(&sketch_group_id) {
                 // Find all the extrude groups on the same shared sketch group.
                 ids.extend(
-                    self.current_program_memory
+                    self.read_only_exec_state
+                        .memory
                         .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
                         .iter()
                         .flat_map(|eg| eg.get_all_edge_cut_ids()),
                 );
-                ids.extend(self.dynamic_state.edge_cut_ids_on_sketch_group(sketch_group_id));
+                ids.extend(
+                    self.read_only_exec_state
+                        .dynamic_state
+                        .edge_cut_ids_on_sketch_group(sketch_group_id),
+                );
                 traversed_sketch_groups.push(sketch_group_id);
             }
 

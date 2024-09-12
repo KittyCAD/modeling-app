@@ -22,8 +22,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, DynamicState, ExecutorContext, KclValue, Metadata, PipeInfo, ProgramMemory, SketchGroup, SourceRange,
-        StatementKind, TagEngineInfo, TagIdentifier, UserVal,
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, PipeInfo, SketchGroup, SourceRange, StatementKind,
+        TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -799,29 +799,24 @@ impl BinaryPart {
     #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
-                let value = memory.get(&identifier.name, identifier.into())?;
+                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression
-                    .get_result(memory, dynamic_state, pipe_info, ctx)
-                    .await
+                binary_expression.get_result(exec_state, pipe_info, ctx).await
             }
-            BinaryPart::CallExpression(call_expression) => {
-                call_expression.execute(memory, dynamic_state, pipe_info, ctx).await
-            }
+            BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, pipe_info, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression.get_result(memory, dynamic_state, pipe_info, ctx).await
+                unary_expression.get_result(exec_state, pipe_info, ctx).await
             }
-            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
+            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
         }
     }
 
@@ -1194,28 +1189,20 @@ impl CallExpression {
     #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
-        let fn_name = self.callee.name.clone();
+        let fn_name = &self.callee.name;
 
         let mut fn_args: Vec<KclValue> = Vec::with_capacity(self.arguments.len());
 
         for arg in &self.arguments {
             let metadata = Metadata {
-                source_range: SourceRange([arg.start(), arg.end()]),
+                source_range: SourceRange::from(arg),
             };
             let result = ctx
-                .execute_expr(
-                    arg,
-                    memory,
-                    dynamic_state,
-                    pipe_info,
-                    &metadata,
-                    StatementKind::Expression,
-                )
+                .execute_expr(arg, exec_state, pipe_info, &metadata, StatementKind::Expression)
                 .await?;
             fn_args.push(result);
         }
@@ -1223,8 +1210,7 @@ impl CallExpression {
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args =
-                    crate::std::Args::new(fn_args, self.into(), ctx.clone(), memory.clone(), dynamic_state.clone());
+                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), exec_state.clone());
                 let mut result = func.std_lib_fn()(args).await?;
 
                 // If the return result is a sketch group or extrude group, we want to update the
@@ -1235,7 +1221,7 @@ impl CallExpression {
                     KclValue::UserVal(ref mut uval) => {
                         uval.mutate(|sketch_group: &mut SketchGroup| {
                             for (_, tag) in sketch_group.tags.iter() {
-                                memory.update_tag(&tag.value, tag.clone())?;
+                                exec_state.memory.update_tag(&tag.value, tag.clone())?;
                             }
                             Ok::<_, KclError>(())
                         })?;
@@ -1275,7 +1261,7 @@ impl CallExpression {
                                 info.sketch_group = extrude_group.id;
                                 t.info = Some(info);
 
-                                memory.update_tag(&tag.name, t.clone())?;
+                                exec_state.memory.update_tag(&tag.name, t.clone())?;
 
                                 // update the sketch group tags.
                                 extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
@@ -1283,7 +1269,11 @@ impl CallExpression {
                         }
 
                         // Find the stale sketch group in memory and update it.
-                        if let Some(current_env) = memory.environments.get_mut(memory.current_env.index()) {
+                        if let Some(current_env) = exec_state
+                            .memory
+                            .environments
+                            .get_mut(exec_state.memory.current_env.index())
+                        {
                             current_env.update_sketch_group_tags(&extrude_group.sketch_group);
                         }
                     }
@@ -1312,7 +1302,7 @@ impl CallExpression {
                 }
 
                 // Add the arguments to the memory.
-                let mut fn_memory = memory.clone();
+                let mut fn_memory = exec_state.memory.clone();
                 for (index, param) in parts.params_required.iter().enumerate() {
                     fn_memory.add(
                         &param.identifier.name,
@@ -1336,22 +1326,31 @@ impl CallExpression {
                     }
                 }
 
-                let mut fn_dynamic_state = dynamic_state.clone();
+                let fn_dynamic_state = exec_state.dynamic_state.clone();
+                // TODO: Shouldn't we merge program memory into fn_dynamic_state
+                // here?
 
                 // Call the stdlib function
-                let p = func.function().clone().body;
-                let results = match ctx
-                    .inner_execute(&p, &mut fn_memory, &mut fn_dynamic_state, BodyType::Block)
-                    .await
-                {
-                    Ok(results) => results,
+                let p = &func.function().body;
+
+                let (exec_result, fn_memory) = {
+                    let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
+                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
+                    let result = ctx.inner_execute(p, exec_state, BodyType::Block).await;
+                    exec_state.dynamic_state = previous_dynamic_state;
+                    let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
+                    (result, fn_memory)
+                };
+
+                match exec_result {
+                    Ok(()) => {}
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
                         // function from the stdlib.
                         return Err(err.override_source_ranges(vec![self.into()]));
                     }
                 };
-                let out = results.return_;
+                let out = fn_memory.return_;
                 let result = out.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of stdlib function {} is undefined", fn_name),
@@ -1361,18 +1360,24 @@ impl CallExpression {
                 Ok(result)
             }
             FunctionKind::UserDefined => {
-                let func = memory.get(&fn_name, self.into())?;
-                let fn_dynamic_state = dynamic_state.merge(memory);
-                let result = func
-                    .call_fn(fn_args, &fn_dynamic_state, ctx.clone())
-                    .await
-                    .map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        e.add_source_ranges(vec![self.into()])
-                    })?;
+                let source_range = SourceRange::from(self);
+                // Clone the function so that we can use a mutable reference to
+                // exec_state.
+                let func = exec_state.memory.get(fn_name, source_range)?.clone();
+                let fn_dynamic_state = exec_state.dynamic_state.merge(&exec_state.memory);
 
-                let result = result.ok_or_else(|| {
-                    let mut source_ranges: Vec<SourceRange> = vec![self.into()];
+                let return_value = {
+                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
+                    let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        e.add_source_ranges(vec![source_range])
+                    });
+                    exec_state.dynamic_state = previous_dynamic_state;
+                    result?
+                };
+
+                let result = return_value.ok_or_else(move || {
+                    let mut source_ranges: Vec<SourceRange> = vec![source_range];
                     // We want to send the source range of the original function.
                     if let KclValue::Function { meta, .. } = func {
                         source_ranges = meta.iter().map(|m| m.source_range).collect();
@@ -1990,7 +1995,7 @@ impl TagDeclarator {
         }
     }
 
-    pub async fn execute(&self, memory: &mut ProgramMemory) -> Result<KclValue, KclError> {
+    pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
             info: None,
@@ -1999,7 +2004,7 @@ impl TagDeclarator {
             }],
         }));
 
-        memory.add(&self.name, memory_item.clone(), self.into())?;
+        exec_state.memory.add(&self.name, memory_item.clone(), self.into())?;
 
         Ok(self.into())
     }
@@ -2138,63 +2143,21 @@ impl ArrayExpression {
     #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
         for element in &self.elements {
-            let result = match element {
-                Expr::Literal(literal) => literal.into(),
-                Expr::TagDeclarator(tag) => tag.execute(memory).await?,
-                Expr::None(none) => none.into(),
-                Expr::Identifier(identifier) => {
-                    let value = memory.get(&identifier.name, identifier.into())?;
-                    value.clone()
-                }
-                Expr::BinaryExpression(binary_expression) => {
-                    binary_expression
-                        .get_result(memory, dynamic_state, pipe_info, ctx)
-                        .await?
-                }
-                Expr::CallExpression(call_expression) => {
-                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
-                }
-                Expr::UnaryExpression(unary_expression) => {
-                    unary_expression
-                        .get_result(memory, dynamic_state, pipe_info, ctx)
-                        .await?
-                }
-                Expr::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
-                }
-                Expr::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
-                }
-                Expr::PipeExpression(pipe_expression) => {
-                    pipe_expression
-                        .get_result(memory, dynamic_state, pipe_info, ctx)
-                        .await?
-                }
-                Expr::PipeSubstitution(pipe_substitution) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
-                        source_ranges: vec![pipe_substitution.into()],
-                    }));
-                }
-                Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Expr::FunctionExpression(function_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("FunctionExpression not implemented here: {:?}", function_expression),
-                        source_ranges: vec![function_expression.into()],
-                    }));
-                }
-            }
-            .get_json_value()?;
+            let metadata = Metadata::from(element);
+            // TODO: Carry statement kind here so that we know if we're
+            // inside a variable declaration.
+            let value = ctx
+                .execute_expr(element, exec_state, pipe_info, &metadata, StatementKind::Expression)
+                .await?;
 
-            results.push(result);
+            results.push(value.get_json_value()?);
         }
 
         Ok(KclValue::UserVal(UserVal {
@@ -2281,59 +2244,22 @@ impl ObjectExpression {
     #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         let mut object = Map::new();
         for property in &self.properties {
-            let result = match &property.value {
-                Expr::Literal(literal) => literal.into(),
-                Expr::TagDeclarator(tag) => tag.execute(memory).await?,
-                Expr::None(none) => none.into(),
-                Expr::Identifier(identifier) => {
-                    let value = memory.get(&identifier.name, identifier.into())?;
-                    value.clone()
-                }
-                Expr::BinaryExpression(binary_expression) => {
-                    binary_expression
-                        .get_result(memory, dynamic_state, pipe_info, ctx)
-                        .await?
-                }
-                Expr::CallExpression(call_expression) => {
-                    call_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
-                }
-                Expr::UnaryExpression(unary_expression) => {
-                    unary_expression
-                        .get_result(memory, dynamic_state, pipe_info, ctx)
-                        .await?
-                }
-                Expr::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
-                }
-                Expr::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, dynamic_state, pipe_info, ctx).await?
-                }
-                Expr::PipeExpression(pipe_expression) => {
-                    pipe_expression
-                        .get_result(memory, dynamic_state, pipe_info, ctx)
-                        .await?
-                }
-                Expr::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Expr::PipeSubstitution(pipe_substitution) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
-                        source_ranges: vec![pipe_substitution.into()],
-                    }));
-                }
-                Expr::FunctionExpression(function_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("FunctionExpression not implemented here: {:?}", function_expression),
-                        source_ranges: vec![function_expression.into()],
-                    }));
-                }
-            };
+            let metadata = Metadata::from(&property.value);
+            let result = ctx
+                .execute_expr(
+                    &property.value,
+                    exec_state,
+                    pipe_info,
+                    &metadata,
+                    StatementKind::Expression,
+                )
+                .await?;
 
             object.insert(property.key.name.clone(), result.get_json_value()?);
         }
@@ -2545,11 +2471,11 @@ impl MemberExpression {
         None
     }
 
-    pub fn get_result_array(&self, memory: &mut ProgramMemory, index: usize) -> Result<KclValue, KclError> {
+    pub fn get_result_array(&self, exec_state: &mut ExecState, index: usize) -> Result<KclValue, KclError> {
         let array = match &self.object {
-            MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
+            MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
             MemberObject::Identifier(identifier) => {
-                let value = memory.get(&identifier.name, identifier.into())?;
+                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
         };
@@ -2578,7 +2504,7 @@ impl MemberExpression {
         }
     }
 
-    pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<KclValue, KclError> {
+    pub fn get_result(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         #[derive(Debug)]
         enum Property {
             Number(usize),
@@ -2605,7 +2531,7 @@ impl MemberExpression {
                     Property::String(name.to_string())
                 } else {
                     // Actually evaluate memory to compute the property.
-                    let prop = memory.get(&name, property_src)?;
+                    let prop = exec_state.memory.get(&name, property_src)?;
                     let KclValue::UserVal(prop) = prop else {
                         return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: property_sr,
@@ -2667,9 +2593,9 @@ impl MemberExpression {
 
         let object = match &self.object {
             // TODO: Don't use recursion here, use a loop.
-            MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
+            MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
             MemberObject::Identifier(identifier) => {
-                let value = memory.get(&identifier.name, identifier.into())?;
+                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
         };
@@ -2829,19 +2755,18 @@ impl BinaryExpression {
     #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         let left_json_value = self
             .left
-            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .get_result(exec_state, pipe_info, ctx)
             .await?
             .get_json_value()?;
         let right_json_value = self
             .right
-            .get_result(memory, dynamic_state, pipe_info, ctx)
+            .get_result(exec_state, pipe_info, ctx)
             .await?
             .get_json_value()?;
 
@@ -3045,15 +2970,14 @@ impl UnaryExpression {
 
     pub async fn get_result(
         &self,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         if self.operator == UnaryOperator::Not {
             let value = self
                 .argument
-                .get_result(memory, dynamic_state, pipe_info, ctx)
+                .get_result(exec_state, pipe_info, ctx)
                 .await?
                 .get_json_value()?;
             let Some(bool_value) = json_as_bool(&value) else {
@@ -3074,7 +2998,7 @@ impl UnaryExpression {
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, dynamic_state, pipe_info, ctx)
+                .get_result(exec_state, pipe_info, ctx)
                 .await?
                 .get_json_value()?,
             self.into(),
@@ -3206,12 +3130,11 @@ impl PipeExpression {
 
     pub async fn get_result(
         &self,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
+        exec_state: &mut ExecState,
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
-        execute_pipe_body(memory, dynamic_state, &self.body, pipe_info, self.into(), ctx).await
+        execute_pipe_body(exec_state, &self.body, pipe_info, self.into(), ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -3224,8 +3147,7 @@ impl PipeExpression {
 
 #[async_recursion::async_recursion]
 async fn execute_pipe_body(
-    memory: &mut ProgramMemory,
-    dynamic_state: &DynamicState,
+    exec_state: &mut ExecState,
     body: &[Expr],
     pipe_info: &PipeInfo,
     source_range: SourceRange,
@@ -3246,14 +3168,7 @@ async fn execute_pipe_body(
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .execute_expr(
-            first,
-            memory,
-            dynamic_state,
-            pipe_info,
-            &meta,
-            StatementKind::Expression,
-        )
+        .execute_expr(first, exec_state, pipe_info, &meta, StatementKind::Expression)
         .await?;
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
@@ -3288,8 +3203,7 @@ async fn execute_pipe_body(
         let output = ctx
             .execute_expr(
                 expression,
-                memory,
-                dynamic_state,
+                exec_state,
                 &new_pipe_info,
                 &metadata,
                 StatementKind::Expression,

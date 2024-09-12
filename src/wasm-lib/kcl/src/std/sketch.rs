@@ -875,7 +875,7 @@ pub async fn start_sketch_at(args: Args) -> Result<KclValue, KclError> {
 async fn inner_start_sketch_at(data: [f64; 2], args: Args) -> Result<SketchGroup, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, &args).await?;
     let sketch_group = inner_start_profile_at(data, sketch_surface, None, args).await?;
     Ok(sketch_group)
 }
@@ -1009,7 +1009,7 @@ impl From<PlaneData> for Plane {
 pub async fn start_sketch_on(args: Args) -> Result<KclValue, KclError> {
     let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
 
-    match inner_start_sketch_on(data, tag, args).await? {
+    match inner_start_sketch_on(data, tag, &args).await? {
         SketchSurface::Plane(plane) => Ok(KclValue::Plane(plane)),
         SketchSurface::Face(face) => Ok(KclValue::Face(face)),
     }
@@ -1119,7 +1119,7 @@ pub async fn start_sketch_on(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "startSketchOn",
 }]
-async fn inner_start_sketch_on(data: SketchData, tag: Option<FaceTag>, args: Args) -> Result<SketchSurface, KclError> {
+async fn inner_start_sketch_on(data: SketchData, tag: Option<FaceTag>, args: &Args) -> Result<SketchSurface, KclError> {
     match data {
         SketchData::Plane(plane_data) => {
             let plane = start_sketch_on_plane(plane_data, args).await?;
@@ -1141,9 +1141,9 @@ async fn inner_start_sketch_on(data: SketchData, tag: Option<FaceTag>, args: Arg
 async fn start_sketch_on_face(
     extrude_group: Box<ExtrudeGroup>,
     tag: FaceTag,
-    args: Args,
+    args: &Args,
 ) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = tag.get_face_id(&extrude_group, &args, true).await?;
+    let extrude_plane_id = tag.get_face_id(&extrude_group, args, true).await?;
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
@@ -1157,7 +1157,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
+async fn start_sketch_on_plane(data: PlaneData, args: &Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
 
     // Get the default planes.

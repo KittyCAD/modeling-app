@@ -300,8 +300,9 @@ pub enum Primitive {
     Uuid,
 }
 
+/// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
-    pub func: &'a crate::executor::MemoryFunction,
+    pub func: Option<&'a crate::executor::MemoryFunction>,
     pub expr: Box<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }
