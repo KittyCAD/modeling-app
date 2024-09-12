@@ -10,7 +10,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
-        SourceRange, UserVal,
+        SketchSurface, SourceRange, UserVal,
     },
     function_param::FunctionParam,
     std::{types::Uint, Args},
@@ -475,12 +475,36 @@ async fn inner_pattern_linear_3d(
 
     let mut extrude_groups = Vec::new();
     for extrude_group in starting_extrude_groups.iter() {
+        // Before we pattern, we need to enable the sketch mode.
+        // We do this so if the user is patterning a sketch on a face,
+        // it patterns correctly.
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: extrude_group.sketch_group.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &extrude_group.sketch_group.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            },
+        )
+        .await?;
+
         let geometries = pattern_linear(
             LinearPattern::ThreeD(data.clone()),
             Geometry::ExtrudeGroup(extrude_group.clone()),
             args.clone(),
         )
         .await?;
+
+        // Disable the sketch mode.
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+            .await?;
 
         let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -798,12 +822,36 @@ async fn inner_pattern_circular_3d(
 
     let mut extrude_groups = Vec::new();
     for extrude_group in starting_extrude_groups.iter() {
+        // Before we pattern, we need to enable the sketch mode.
+        // We do this so if the user is patterning a sketch on a face,
+        // it patterns correctly.
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: extrude_group.sketch_group.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &extrude_group.sketch_group.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            },
+        )
+        .await?;
+
         let geometries = pattern_circular(
             CircularPattern::ThreeD(data.clone()),
             Geometry::ExtrudeGroup(extrude_group.clone()),
             args.clone(),
         )
         .await?;
+
+        // Disable the sketch mode.
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+            .await?;
 
         let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
