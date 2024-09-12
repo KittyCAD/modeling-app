@@ -24,6 +24,3 @@ once fixed in engine will just start working here with no language changes.
     chamfer cases work currently.
 
     Sketching on the chamfered face does not currently work.
-
-- **Shell**: Shell sometimes does not work when arcs or fillets are involved.
-    We are tracking the engine side bug on this.

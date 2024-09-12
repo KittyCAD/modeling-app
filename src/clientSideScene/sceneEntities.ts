@@ -28,7 +28,6 @@ import {
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   SEGMENT_LENGTH_LABEL,
-  SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
@@ -1422,20 +1421,14 @@ export class SceneEntities {
       ) as CSS2DObject
       const labelWrapperElem = labelWrapper.element as HTMLDivElement
       const label = labelWrapperElem.children[0] as HTMLParagraphElement
-      label.innerText = `${roundOff(length)}${sceneInfra._baseUnit}`
+      label.innerText = `${roundOff(length)}`
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
-      const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
-        .normalize()
-        .rotateAround(new Vector2(0, 0), Math.PI / 2)
-        .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
-      label.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
-      label.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
-      labelWrapper.position.set(
-        (from[0] + to[0]) / 2 + offsetFromMidpoint.x,
-        (from[1] + to[1]) / 2 + offsetFromMidpoint.y,
-        0
-      )
-
+      const slope = (to[1] - from[1]) / (to[0] - from[0])
+      let slopeAngle = ((Math.atan(slope) * 180) / Math.PI) * -1
+      label.style.setProperty('--degree', `${slopeAngle}deg`)
+      label.style.setProperty('--x', `0px`)
+      label.style.setProperty('--y', `0px`)
+      labelWrapper.position.set((from[0] + to[0]) / 2, (from[1] + to[1]) / 2, 0)
       labelGroup.visible = isHandlesVisible
     }
 
