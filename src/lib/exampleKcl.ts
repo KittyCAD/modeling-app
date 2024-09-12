@@ -2,7 +2,7 @@ export const bracket = `// Shelf Bracket
 // This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.
 
 // Define constants
-const sigmaAllow = 15000 // psi (6061-T6 aluminum)
+const sigmaAllow = 35000 // psi (6061-T6 aluminum)
 const width = 6 // inch
 const p = 300 // Force on shelf - lbs
 const factorOfSafety = 1.2 // FOS of 1.2
