@@ -111,6 +111,7 @@ async fn inner_chamfer(
                 radius: data.length,
                 tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
                 cut_type: Some(kittycad::types::CutType::Chamfer),
+                face_id: None,
             },
         )
         .await?;
