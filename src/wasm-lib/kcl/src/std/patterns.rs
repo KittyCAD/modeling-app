@@ -10,7 +10,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
-        SourceRange, UserVal,
+        SketchSurface, SourceRange, UserVal,
     },
     function_param::FunctionParam,
     std::{types::Uint, Args},
@@ -400,6 +400,61 @@ pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
 ///       distance: 6
 ///     }, %)
 /// ```
+///
+/// ```no_run
+/// // Pattern a whole sketch on face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in the "case" here since we want to pattern the whole sketch.
+/// // And the case was the base of the sketch.
+/// patternLinear3d({
+///     axis: [1, 0, 0],
+///     distance: 250,
+///     repetitions:2,
+/// }, case)
+/// ```
+///
+/// ```no_run
+/// // Pattern an object on a face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in "thing1" here since we want to pattern just this object on the face.
+/// patternLinear3d({
+///     axis: [0, 1, 0],
+///     distance: 10,
+///     repetitions:2,
+/// }, thing1)
+/// ```
 #[stdlib {
     name = "patternLinear3d",
 }]
@@ -422,12 +477,36 @@ async fn inner_pattern_linear_3d(
 
     let mut extrude_groups = Vec::new();
     for extrude_group in starting_extrude_groups.iter() {
+        // Before we pattern, we need to enable the sketch mode.
+        // We do this so if the user is patterning a sketch on a face,
+        // it patterns correctly.
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: extrude_group.sketch_group.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &extrude_group.sketch_group.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            },
+        )
+        .await?;
+
         let geometries = pattern_linear(
             LinearPattern::ThreeD(data.clone()),
             Geometry::ExtrudeGroup(extrude_group.clone()),
             args.clone(),
         )
         .await?;
+
+        // Disable the sketch mode.
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+            .await?;
 
         let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -664,6 +743,65 @@ pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
 ///        rotateDuplicates: true
 ///      }, %)
 /// ```
+///
+/// ```no_run
+/// // Pattern a whole sketch on face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in the "case" here since we want to pattern the whole sketch.
+/// // And the case was the base of the sketch.
+/// patternCircular3d({
+///     arcDegrees: 360,
+///     axis: [0,0,10],
+///     center: [200,100,0],
+///     repetitions: 2,
+///     rotateDuplicates: false,
+/// }, case)
+/// ```
+///
+/// ```no_run
+/// // Pattern an object on a face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We pass in "thing1" here since we want to pattern just this object on the face.
+/// patternCircular3d({
+///     arcDegrees: 360,
+///     axis: [0,0,10],
+///     center: [0,0,0],
+///     repetitions: 2,
+///     rotateDuplicates: false,
+/// }, thing1)
+/// ```
 #[stdlib {
     name = "patternCircular3d",
 }]
@@ -686,12 +824,36 @@ async fn inner_pattern_circular_3d(
 
     let mut extrude_groups = Vec::new();
     for extrude_group in starting_extrude_groups.iter() {
+        // Before we pattern, we need to enable the sketch mode.
+        // We do this so if the user is patterning a sketch on a face,
+        // it patterns correctly.
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kittycad::types::ModelingCmd::EnableSketchMode {
+                animated: false,
+                ortho: false,
+                entity_id: extrude_group.sketch_group.on.id(),
+                adjust_camera: false,
+                planar_normal: if let SketchSurface::Plane(plane) = &extrude_group.sketch_group.on {
+                    // We pass in the normal for the plane here.
+                    Some(plane.z_axis.into())
+                } else {
+                    None
+                },
+            },
+        )
+        .await?;
+
         let geometries = pattern_circular(
             CircularPattern::ThreeD(data.clone()),
             Geometry::ExtrudeGroup(extrude_group.clone()),
             args.clone(),
         )
         .await?;
+
+        // Disable the sketch mode.
+        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+            .await?;
 
         let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
