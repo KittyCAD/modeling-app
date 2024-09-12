@@ -142,6 +142,7 @@ async fn inner_fillet(
                 radius: data.radius,
                 tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                 cut_type: Some(kittycad::types::CutType::Fillet),
+                face_id: None,
             },
         )
         .await?;
