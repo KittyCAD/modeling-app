@@ -26,8 +26,9 @@ import { sendTelemetry } from 'lib/textToCad'
 import { Themes } from 'lib/theme'
 import { ActionButton } from './ActionButton'
 import { commandBarMachine } from 'machines/commandBarMachine'
-import { EventData, EventFrom } from 'xstate'
+import { EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
+import { reportRejection } from 'lib/trap'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -45,7 +46,7 @@ export function ToastTextToCadError({
   prompt: string
   commandBarSend: (
     event: EventFrom<typeof commandBarMachine>,
-    data?: EventData
+    data?: unknown
   ) => void
 }) {
   return (
@@ -112,7 +113,7 @@ export function ToastTextToCadSuccess({
   token?: string
   fileMachineSend: (
     event: EventFrom<typeof fileMachine>,
-    data?: EventData
+    data?: unknown
   ) => void
   settings: {
     theme: Themes
@@ -297,7 +298,7 @@ export function ToastTextToCadSuccess({
             name={hasCopied ? 'Close' : 'Reject'}
             onClick={() => {
               if (!hasCopied) {
-                sendTelemetry(modelId, 'rejected', token)
+                sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
               }
               if (isDesktop()) {
                 // Delete the file from the project
@@ -323,6 +324,7 @@ export function ToastTextToCadSuccess({
               }}
               name="Accept"
               onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
                 navigate(
                   `${PATHS.FILE}/${encodeURIComponent(
@@ -342,7 +344,9 @@ export function ToastTextToCadSuccess({
               }}
               name="Copy to clipboard"
               onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 navigator.clipboard.writeText(data.code || '// no code found')
                 setShowCopiedUi(true)
                 setHasCopied(true)

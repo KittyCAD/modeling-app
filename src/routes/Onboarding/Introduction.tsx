@@ -13,6 +13,8 @@ import { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { useFileContext } from 'hooks/useFileContext'
 import { useLspContext } from 'components/LspProvider'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -80,7 +82,7 @@ function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
       <OnboardingButtons
         className="mt-6"
         dismiss={dismiss}
-        next={onAccept}
+        next={toSync(onAccept, reportRejection)}
         nextText="Make a new project"
       />
     </>
@@ -102,14 +104,14 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
       <OnboardingButtons
         className="mt-6"
         dismiss={dismiss}
-        next={async () => {
+        next={toSync(async () => {
           // We do want to update both the state and editor here.
           codeManager.updateCodeStateEditor(bracket)
           await codeManager.writeToFile()
 
           await kclManager.executeCode(true)
           props.setShouldShowWarning(false)
-        }}
+        }, reportRejection)}
         nextText="Overwrite code and continue"
       />
     </>

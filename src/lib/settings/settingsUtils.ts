@@ -72,7 +72,7 @@ export function projectConfigurationToSettingsPayload(
 ): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      // do not read in `theme`, because it is blocked on the project level
       themeColor: configuration?.settings?.app?.appearance?.color
         ? configuration?.settings?.app?.appearance?.color.toString()
         : undefined,

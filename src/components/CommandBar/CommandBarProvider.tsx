@@ -1,53 +1,43 @@
-import { useMachine } from '@xstate/react'
+import { createActorContext } from '@xstate/react'
 import { editorManager } from 'lib/singletons'
 import { commandBarMachine } from 'machines/commandBarMachine'
-import { createContext, useEffect } from 'react'
-import { EventFrom, StateFrom } from 'xstate'
+import { useEffect } from 'react'
 
-type CommandsContextType = {
-  commandBarState: StateFrom<typeof commandBarMachine>
-  commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
-}
-
-export const CommandsContext = createContext<CommandsContextType>({
-  commandBarState: commandBarMachine.initialState,
-  commandBarSend: () => {},
-})
-
-export const CommandBarProvider = ({
-  children,
-}: {
-  children: React.ReactNode
-}) => {
-  const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
-    devTools: true,
+export const CommandsContext = createActorContext(
+  commandBarMachine.provide({
     guards: {
-      'Command has no arguments': (context, _event) => {
+      'Command has no arguments': ({ context }) => {
         return (
           !context.selectedCommand?.args ||
           Object.keys(context.selectedCommand?.args).length === 0
         )
       },
-      'All arguments are skippable': (context, _event) => {
+      'All arguments are skippable': ({ context }) => {
         return Object.values(context.selectedCommand!.args!).every(
           (argConfig) => argConfig.skip
         )
       },
     },
   })
+)
 
-  useEffect(() => {
-    editorManager.setCommandBarSend(commandBarSend)
-  })
-
+export const CommandBarProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
   return (
-    <CommandsContext.Provider
-      value={{
-        commandBarState,
-        commandBarSend,
-      }}
-    >
-      {children}
+    <CommandsContext.Provider>
+      <CommandBarProviderInner>{children}</CommandBarProviderInner>
     </CommandsContext.Provider>
   )
+}
+function CommandBarProviderInner({ children }: { children: React.ReactNode }) {
+  const commandBarActor = CommandsContext.useActorRef()
+
+  useEffect(() => {
+    editorManager.setCommandBarSend(commandBarActor.send)
+  })
+
+  return children
 }

@@ -22,11 +22,12 @@ import {
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import { uuidv4 } from 'lib/utils'
+import { toSync, uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
 import { isQuaternionVertical } from './helpers'
+import { reportRejection } from 'lib/trap'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -100,6 +101,7 @@ export class CameraControls {
       camProps.type === 'perspective' &&
       this.camera instanceof OrthographicCamera
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.usePerspectiveCamera()
     } else if (
       camProps.type === 'orthographic' &&
@@ -127,6 +129,7 @@ export class CameraControls {
   }
 
   throttledEngCmd = throttle((cmd: EngineCommand) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 30)
 
@@ -139,6 +142,7 @@ export class CameraControls {
         ...convertThreeCamValuesToEngineCam(threeValues),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
 
@@ -151,6 +155,7 @@ export class CameraControls {
       this.lastPerspectiveCmd &&
       Date.now() - this.lastPerspectiveCmdTime >= lastCmdDelay
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineCommandManager.sendSceneCommand(this.lastPerspectiveCmd, true)
       this.lastPerspectiveCmdTime = Date.now()
     }
@@ -218,6 +223,7 @@ export class CameraControls {
         this.useOrthographicCamera()
       }
       if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.usePerspectiveCamera()
       }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
@@ -249,6 +255,7 @@ export class CameraControls {
     const doZoom = () => {
       if (this.zoomDataFromLastFrame !== undefined) {
         this.handleStart()
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
@@ -266,6 +273,7 @@ export class CameraControls {
 
     const doMove = () => {
       if (this.moveDataFromLastFrame !== undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
@@ -459,6 +467,7 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -541,7 +550,7 @@ export class CameraControls {
     const oldFov = this.camera.fov
 
     const viewHeightFactor = (fov: number) => {
-      /*       * 
+      /*       *
               /|
              / |
             /  |
@@ -929,6 +938,7 @@ export class CameraControls {
       }
 
       if (isReducedMotion()) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         onComplete()
         return
       }
@@ -937,7 +947,7 @@ export class CameraControls {
         .to({ t: tweenEnd }, duration)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(onComplete)
+        .onComplete(toSync(onComplete, reportRejection))
         .start()
     })
   }
@@ -962,6 +972,7 @@ export class CameraControls {
             // Decrease the FOV
             currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
             this.camera.updateProjectionMatrix()
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.dollyZoom(currentFov)
             requestAnimationFrame(animateFovChange) // Continue the animation
           } else if (frameWaitOnFinish > 0) {
@@ -991,6 +1002,7 @@ export class CameraControls {
       this.lastPerspectiveFov = 4
       let currentFov = 4
       const initialCameraUp = this.camera.up.clone()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.usePerspectiveCamera()
       const tempVec = new Vector3()
 
@@ -999,6 +1011,7 @@ export class CameraControls {
           this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov) * t
         const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, t)
         this.camera.up.copy(currentUp)
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.dollyZoom(currentFov)
       }
 
@@ -1027,6 +1040,7 @@ export class CameraControls {
     this.lastPerspectiveFov = 4
     let currentFov = 4
     const initialCameraUp = this.camera.up.clone()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.usePerspectiveCamera()
     const tempVec = new Vector3()
 
@@ -1175,7 +1189,7 @@ function convertThreeCamValuesToEngineCam({
   const lookAt = buildLookAt(64 / zoom, target, position)
   return {
     center: new Vector3(lookAt.center.x, lookAt.center.y, lookAt.center.z),
-    up: new Vector3(0, 0, 1),
+    up: new Vector3(upVector.x, upVector.y, upVector.z),
     vantage: new Vector3(lookAt.eye.x, lookAt.eye.y, lookAt.eye.z),
   }
 }

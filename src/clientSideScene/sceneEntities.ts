@@ -28,7 +28,6 @@ import {
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   SEGMENT_LENGTH_LABEL,
-  SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
@@ -102,8 +101,8 @@ import {
   getRectangleCallExpressions,
   updateRectangleSketch,
 } from 'lib/rectangleTool'
-import { getThemeColorForThreeJs } from 'lib/theme'
-import { err, trap } from 'lib/trap'
+import { getThemeColorForThreeJs, Themes } from 'lib/theme'
+import { err, reportRejection, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 
@@ -324,6 +323,7 @@ export class SceneEntities {
       )
     }
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         if (!args) return
         if (args.mouseEvent.which !== 1) return
@@ -634,6 +634,7 @@ export class SceneEntities {
         draftExpressionsIndices,
       })
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         if (!args) return
         if (args.mouseEvent.which !== 1) return
@@ -701,7 +702,7 @@ export class SceneEntities {
         if (profileStart) {
           sceneInfra.modelingSend({ type: 'CancelSketch' })
         } else {
-          this.setUpDraftSegment(
+          await this.setUpDraftSegment(
             sketchPathToNode,
             forward,
             up,
@@ -771,6 +772,7 @@ export class SceneEntities {
     })
 
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
         const pathToNodeTwo = structuredClone(sketchPathToNode)
@@ -818,6 +820,7 @@ export class SceneEntities {
           this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
         )
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
@@ -892,9 +895,11 @@ export class SceneEntities {
   }) => {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     sceneInfra.setCallbacks({
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
           await this.tearDownSketch({ removeAxis: false })
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchPathToNode: pathToNode,
             maybeModdedAst: kclManager.ast,
@@ -911,6 +916,7 @@ export class SceneEntities {
           })
         }
       },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onDrag: async ({
         selected,
         intersectionPoint,
@@ -958,6 +964,7 @@ export class SceneEntities {
 
             await kclManager.executeAstMock(mod.modifiedAst)
             await this.tearDownSketch({ removeAxis: false })
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchPathToNode: pathToNode,
               maybeModdedAst: kclManager.ast,
@@ -1161,7 +1168,7 @@ export class SceneEntities {
         )
       )
       sceneInfra.overlayCallbacks(callBacks)
-    })()
+    })().catch(reportRejection)
   }
 
   /**
@@ -1414,20 +1421,14 @@ export class SceneEntities {
       ) as CSS2DObject
       const labelWrapperElem = labelWrapper.element as HTMLDivElement
       const label = labelWrapperElem.children[0] as HTMLParagraphElement
-      label.innerText = `${roundOff(length)}${sceneInfra._baseUnit}`
+      label.innerText = `${roundOff(length)}`
       label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
-      const offsetFromMidpoint = new Vector2(to[0] - from[0], to[1] - from[1])
-        .normalize()
-        .rotateAround(new Vector2(0, 0), Math.PI / 2)
-        .multiplyScalar(SEGMENT_LENGTH_LABEL_OFFSET_PX * scale)
-      label.style.setProperty('--x', `${offsetFromMidpoint.x}px`)
-      label.style.setProperty('--y', `${offsetFromMidpoint.y}px`)
-      labelWrapper.position.set(
-        (from[0] + to[0]) / 2 + offsetFromMidpoint.x,
-        (from[1] + to[1]) / 2 + offsetFromMidpoint.y,
-        0
-      )
-
+      const slope = (to[1] - from[1]) / (to[0] - from[0])
+      let slopeAngle = ((Math.atan(slope) * 180) / Math.PI) * -1
+      label.style.setProperty('--degree', `${slopeAngle}deg`)
+      label.style.setProperty('--x', `0px`)
+      label.style.setProperty('--y', `0px`)
+      labelWrapper.position.set((from[0] + to[0]) / 2, (from[1] + to[1]) / 2, 0)
       labelGroup.visible = isHandlesVisible
     }
 
@@ -1464,6 +1465,25 @@ export class SceneEntities {
         from,
         to,
       })
+  }
+  /**
+   * Update the base color of each of the THREEjs meshes
+   * that represent each of the sketch segments, to get the
+   * latest value from `sceneInfra._theme`
+   */
+  updateSegmentBaseColor(newColor: Themes.Light | Themes.Dark) {
+    const newColorThreeJs = getThemeColorForThreeJs(newColor)
+    Object.values(this.activeSegments).forEach((group) => {
+      group.userData.baseColor = newColorThreeJs
+      group.traverse((child) => {
+        if (
+          child instanceof Mesh &&
+          child.material instanceof MeshBasicMaterial
+        ) {
+          child.material.color.set(newColorThreeJs)
+        }
+      })
+    })
   }
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)

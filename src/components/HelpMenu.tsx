@@ -8,6 +8,7 @@ import { createAndOpenNewProject } from 'lib/desktopFS'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { reportRejection } from 'lib/trap'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -115,7 +116,9 @@ export function HelpMenu(props: React.PropsWithChildren) {
             if (isInProject) {
               navigate(filePath + PATHS.ONBOARDING.INDEX)
             } else {
-              createAndOpenNewProject({ onProjectOpen, navigate })
+              createAndOpenNewProject({ onProjectOpen, navigate }).catch(
+                reportRejection
+              )
             }
           }}
         >
