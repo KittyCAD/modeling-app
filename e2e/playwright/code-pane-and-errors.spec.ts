@@ -90,7 +90,7 @@ const extrude001 = extrude(5, sketch001)`
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
-    await page.getByText('}, %)').nth(3).click()
+    await page.getByText('extrude(').click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
@@ -101,7 +101,7 @@ const extrude001 = extrude(5, sketch001)`
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: ,').first()).toBeVisible()
 
     // Close the code pane
     await codePaneButton.click()
@@ -124,7 +124,7 @@ const extrude001 = extrude(5, sketch001)`
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: ,').first()).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({
