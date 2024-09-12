@@ -1210,8 +1210,8 @@ impl CallExpression {
         match ctx.stdlib.get_either(&self.callee.name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone(), exec_state.clone());
-                let mut result = func.std_lib_fn()(args).await?;
+                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
+                let mut result = func.std_lib_fn()(exec_state, args).await?;
 
                 // If the return result is a sketch group or extrude group, we want to update the
                 // memory for the tags of the group.

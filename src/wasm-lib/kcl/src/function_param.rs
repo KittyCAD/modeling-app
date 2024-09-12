@@ -14,36 +14,24 @@ pub struct FunctionParam<'a> {
     pub inner: Option<&'a MemoryFunction>,
     pub memory: ProgramMemory,
     pub fn_expr: Box<FunctionExpression>,
-    pub read_only_exec_state: ExecState,
     pub meta: Vec<Metadata>,
     pub ctx: ExecutorContext,
 }
 
 impl<'a> FunctionParam<'a> {
-    pub async fn call(&self, args: Vec<KclValue>) -> Result<Option<KclValue>, KclError> {
+    pub async fn call(&self, exec_state: &mut ExecState, args: Vec<KclValue>) -> Result<Option<KclValue>, KclError> {
         if let Some(inner) = self.inner {
             inner(
                 args,
                 self.memory.clone(),
                 self.fn_expr.clone(),
                 self.meta.clone(),
-                &self.read_only_exec_state,
+                exec_state,
                 self.ctx.clone(),
             )
             .await
         } else {
-            // TODO: We really shouldn't be cloning the read-only exec state
-            // here.  It means that any changes to the state while executing
-            // this function won't be reflected in the exec state outside of it.
-            let mut temp_exec_state = self.read_only_exec_state.clone();
-            call_user_defined_function(
-                args,
-                &self.memory,
-                self.fn_expr.as_ref(),
-                &mut temp_exec_state,
-                &self.ctx,
-            )
-            .await
+            call_user_defined_function(args, &self.memory, self.fn_expr.as_ref(), exec_state, &self.ctx).await
         }
     }
 }

@@ -1,8 +1,8 @@
 #[cfg(test)]
-mod test_examples_min {
+mod test_examples_some_function {
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_mock_example_min0() {
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nmin").unwrap();
+    async fn test_mock_example_some_function0() {
+        let tokens = crate::token::lexer("someFunction()").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let ctx = crate::executor::ExecutorContext {
@@ -20,47 +20,14 @@ mod test_examples_min {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn kcl_test_example_min0() {
-        let code = "This is another code block.\nyes sirrr.\nmin";
+    async fn kcl_test_example_some_function0() {
+        let code = "someFunction()";
         let result =
             crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
                 .await
                 .unwrap();
         twenty_twenty::assert_image(
-            &format!("tests/outputs/{}.png", "serial_test_example_min0"),
-            &result,
-            0.99,
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_mock_example_min1() {
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nmin").unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
-        let ctx = crate::executor::ExecutorContext {
-            engine: std::sync::Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new()
-                    .await
-                    .unwrap(),
-            )),
-            fs: std::sync::Arc::new(crate::fs::FileManager::new()),
-            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
-            settings: Default::default(),
-            is_mock: true,
-        };
-        ctx.run(&program, None).await.unwrap();
-    }
-
-    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn kcl_test_example_min1() {
-        let code = "This is code.\nIt does other shit.\nmin";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
-        twenty_twenty::assert_image(
-            &format!("tests/outputs/{}.png", "serial_test_example_min1"),
+            &format!("tests/outputs/{}.png", "serial_test_example_some_function0"),
             &result,
             0.99,
         );
@@ -68,15 +35,15 @@ mod test_examples_min {
 }
 
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: min\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: someFunction\nDocs"]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
-pub(crate) struct Min {}
+pub(crate) struct SomeFunction {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: min\nThis is some function.\nIt does shit."]
-pub(crate) const Min: Min = Min {};
-fn boxed_min(
+#[doc = "Std lib function: someFunction\nDocs"]
+pub(crate) const SomeFunction: SomeFunction = SomeFunction {};
+fn boxed_some_function(
     exec_state: &mut crate::executor::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
@@ -87,20 +54,20 @@ fn boxed_min(
             + '_,
     >,
 > {
-    Box::pin(min(exec_state, args))
+    Box::pin(some_function(exec_state, args))
 }
 
-impl crate::docs::StdLibFn for Min {
+impl crate::docs::StdLibFn for SomeFunction {
     fn name(&self) -> String {
-        "min".to_string()
+        "someFunction".to_string()
     }
 
     fn summary(&self) -> String {
-        "This is some function.".to_string()
+        "Docs".to_string()
     }
 
     fn description(&self) -> String {
-        "It does shit.".to_string()
+        "".to_string()
     }
 
     fn tags(&self) -> Vec<String> {
@@ -111,12 +78,7 @@ impl crate::docs::StdLibFn for Min {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        vec![crate::docs::StdLibFnArg {
-            name: "args".to_string(),
-            type_: "[number]".to_string(),
-            schema: <Vec<f64>>::json_schema(&mut generator),
-            required: true,
-        }]
+        vec![]
     }
 
     fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
@@ -125,8 +87,8 @@ impl crate::docs::StdLibFn for Min {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "number".to_string(),
-            schema: <f64>::json_schema(&mut generator),
+            type_: "i32".to_string(),
+            schema: <i32>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -140,10 +102,7 @@ impl crate::docs::StdLibFn for Min {
     }
 
     fn examples(&self) -> Vec<String> {
-        let code_blocks = vec![
-            "This is another code block.\nyes sirrr.\nmin",
-            "This is code.\nIt does other shit.\nmin",
-        ];
+        let code_blocks = vec!["someFunction()"];
         code_blocks
             .iter()
             .map(|cb| {
@@ -158,7 +117,7 @@ impl crate::docs::StdLibFn for Min {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        boxed_min
+        boxed_some_function
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
@@ -166,25 +125,10 @@ impl crate::docs::StdLibFn for Min {
     }
 }
 
-#[doc = r" This is some function."]
-#[doc = r" It does shit."]
-#[doc = r""]
-#[doc = r"     This is code."]
-#[doc = r"     It does other shit."]
-#[doc = r"     min"]
-#[doc = r""]
+#[doc = r" Docs"]
 #[doc = r" ```"]
-#[doc = r" This is another code block."]
-#[doc = r" yes sirrr."]
-#[doc = r" min"]
+#[doc = r" someFunction()"]
 #[doc = r" ```"]
-fn inner_min(#[doc = r" The args to do shit to."] args: Vec<f64>) -> f64 {
-    let mut min = std::f64::MAX;
-    for arg in args.iter() {
-        if *arg < min {
-            min = *arg;
-        }
-    }
-
-    min
+fn inner_some_function<'a>(exec_state: &mut ExecState, args: &Args) -> i32 {
+    3
 }

@@ -19,21 +19,14 @@ pub struct Args {
     pub args: Vec<KclValue>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
-    pub read_only_exec_state: ExecState,
 }
 
 impl Args {
-    pub fn new(
-        args: Vec<KclValue>,
-        source_range: SourceRange,
-        ctx: ExecutorContext,
-        read_only_exec_state: ExecState,
-    ) -> Self {
+    pub fn new(args: Vec<KclValue>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
         Self {
             args,
             source_range,
             ctx,
-            read_only_exec_state,
         }
     }
 
@@ -51,7 +44,6 @@ impl Args {
                 settings: Default::default(),
                 is_mock: true,
             },
-            read_only_exec_state: ExecState::default(),
         })
     }
 
@@ -84,11 +76,12 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
-    fn get_tag_info_from_memory<'a>(
+    fn get_tag_info_from_memory<'a, 'e>(
         &'a self,
+        exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
-        if let KclValue::TagIdentifier(t) = self.read_only_exec_state.memory.get(&tag.value, self.source_range)? {
+    ) -> Result<&'e crate::executor::TagEngineInfo, KclError> {
+        if let KclValue::TagIdentifier(t) = exec_state.memory.get(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
@@ -103,34 +96,43 @@ impl Args {
         }
     }
 
-    pub(crate) fn get_tag_engine_info<'a>(
+    pub(crate) fn get_tag_engine_info<'a, 'e>(
         &'a self,
+        exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError>
+    where
+        'e: 'a,
+    {
         if let Some(info) = &tag.info {
             return Ok(info);
         }
 
-        self.get_tag_info_from_memory(tag)
+        self.get_tag_info_from_memory(exec_state, tag)
     }
 
-    fn get_tag_engine_info_check_surface<'a>(
+    fn get_tag_engine_info_check_surface<'a, 'e>(
         &'a self,
+        exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError>
+    where
+        'e: 'a,
+    {
         if let Some(info) = &tag.info {
             if info.surface.is_some() {
                 return Ok(info);
             }
         }
 
-        self.get_tag_info_from_memory(tag)
+        self.get_tag_info_from_memory(exec_state, tag)
     }
 
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
     #[allow(clippy::vec_box)]
     pub(crate) async fn flush_batch_for_extrude_group_set(
         &self,
+        exec_state: &mut ExecState,
         extrude_groups: Vec<Box<ExtrudeGroup>>,
     ) -> Result<(), KclError> {
         // Make sure we don't traverse sketch_groups more than once.
@@ -144,17 +146,13 @@ impl Args {
             if !traversed_sketch_groups.contains(&sketch_group_id) {
                 // Find all the extrude groups on the same shared sketch group.
                 ids.extend(
-                    self.read_only_exec_state
+                    exec_state
                         .memory
                         .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
                         .iter()
                         .flat_map(|eg| eg.get_all_edge_cut_ids()),
                 );
-                ids.extend(
-                    self.read_only_exec_state
-                        .dynamic_state
-                        .edge_cut_ids_on_sketch_group(sketch_group_id),
-                );
+                ids.extend(exec_state.dynamic_state.edge_cut_ids_on_sketch_group(sketch_group_id));
                 traversed_sketch_groups.push(sketch_group_id);
             }
 
@@ -381,6 +379,7 @@ impl Args {
 
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
+        exec_state: &mut ExecState,
         tag: &TagIdentifier,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
@@ -391,7 +390,7 @@ impl Args {
             }));
         }
 
-        let engine_info = self.get_tag_engine_info_check_surface(tag)?;
+        let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
         let surface = engine_info.surface.as_ref().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
