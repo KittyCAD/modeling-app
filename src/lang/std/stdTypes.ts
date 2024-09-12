@@ -159,7 +159,7 @@ export type SimplifiedArgDetails =
  * @property {number} [valueUsedInTransform] - Aside from `callExp`, we also return the number used in the transform, which is useful for constraints.
  * For example, when adding a "horizontal distance" constraint, we don't want the segments to move, just constrain them in place.
  * So the second segment will probably be something like `lineTo([segEndX($firstSegTag) + someLiteral, 123], %)` where `someLiteral` is
- * the value of the current horizontal distance, that we calculate to constrain the second segment without it moving.
+ * the value of the current horizontal distance, That is we calculate the value needed to constrain the second segment without it moving.
  * We can run the ast-mod to get this constraint `valueUsedInTransform` without applying the mod so that we can surface this to the user in a modal.
  * We show them the modal where they can specify the distance they want to constrain to.
  * We pre-fill this with the current value `valueUsedInTransform`, which they can accept or change, and we'll use that to apply the final ast-mod.
