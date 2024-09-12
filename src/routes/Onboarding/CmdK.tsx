@@ -13,7 +13,7 @@ export default function CmdK() {
     <div className="fixed inset-0 z-50 grid items-end justify-center pointer-events-none">
       <div
         className={
-          'max-w-full xl:max-w-4xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'pointer-events-auto max-w-full xl:max-w-4xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <h2 className="text-2xl font-bold">Command Bar</h2>

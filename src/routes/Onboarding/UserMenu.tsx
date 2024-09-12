@@ -33,7 +33,7 @@ export default function UserMenu() {
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
       <div
         className={
-          'max-w-xl flex flex-col border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
+          'pointer-events-auto max-w-xl flex flex-col border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <section className="flex-1">
