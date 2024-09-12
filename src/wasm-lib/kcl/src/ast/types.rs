@@ -1284,17 +1284,18 @@ impl CallExpression {
             }
             FunctionKind::Std(func) => {
                 let function_expression = func.function();
-                let parts = function_expression.clone().into_parts().map_err(|e| {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!("Error getting parts of function: {}", e),
-                        source_ranges: vec![self.into()],
-                    })
-                })?;
-                if fn_args.len() < parts.params_required.len() || fn_args.len() > function_expression.params.len() {
+                let (required_params, optional_params) =
+                    function_expression.required_and_optional_params().map_err(|e| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!("Error getting parts of function: {}", e),
+                            source_ranges: vec![self.into()],
+                        })
+                    })?;
+                if fn_args.len() < required_params.len() || fn_args.len() > function_expression.params.len() {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!(
                             "this function expected {} arguments, got {}",
-                            parts.params_required.len(),
+                            required_params.len(),
                             fn_args.len(),
                         ),
                         source_ranges: vec![self.into()],
@@ -1303,7 +1304,7 @@ impl CallExpression {
 
                 // Add the arguments to the memory.
                 let mut fn_memory = exec_state.memory.clone();
-                for (index, param) in parts.params_required.iter().enumerate() {
+                for (index, param) in required_params.iter().enumerate() {
                     fn_memory.add(
                         &param.identifier.name,
                         fn_args.get(index).unwrap().clone(),
@@ -1311,8 +1312,8 @@ impl CallExpression {
                     )?;
                 }
                 // Add the optional arguments to the memory.
-                for (index, param) in parts.params_optional.iter().enumerate() {
-                    if let Some(arg) = fn_args.get(index + parts.params_required.len()) {
+                for (index, param) in optional_params.iter().enumerate() {
+                    if let Some(arg) = fn_args.get(index + required_params.len()) {
                         fn_memory.add(&param.identifier.name, arg.clone(), param.identifier.clone().into())?;
                     } else {
                         fn_memory.add(
@@ -3344,14 +3345,6 @@ pub struct FunctionExpression {
 
 impl_value_meta!(FunctionExpression);
 
-pub struct FunctionExpressionParts {
-    pub start: usize,
-    pub end: usize,
-    pub params_required: Vec<Parameter>,
-    pub params_optional: Vec<Parameter>,
-    pub body: Program,
-}
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct RequiredParamAfterOptionalParam(pub Parameter);
 
@@ -3386,36 +3379,28 @@ impl FunctionExpression {
         }
     });
 
-    pub fn into_parts(self) -> Result<FunctionExpressionParts, RequiredParamAfterOptionalParam> {
+    pub fn required_and_optional_params(
+        &self,
+    ) -> Result<(&[Parameter], &[Parameter]), RequiredParamAfterOptionalParam> {
         let Self {
-            start,
-            end,
+            start: _,
+            end: _,
             params,
-            body,
+            body: _,
             digest: _,
             return_type: _,
         } = self;
-        let mut params_required = Vec::with_capacity(params.len());
-        let mut params_optional = Vec::with_capacity(params.len());
+        let mut found_optional = false;
         for param in params {
             if param.optional {
-                params_optional.push(param);
-            } else {
-                if !params_optional.is_empty() {
-                    return Err(RequiredParamAfterOptionalParam(param));
-                }
-                params_required.push(param);
+                found_optional = true;
+            } else if found_optional {
+                return Err(RequiredParamAfterOptionalParam(param.clone()));
             }
         }
-        params_required.shrink_to_fit();
-        params_optional.shrink_to_fit();
-        Ok(FunctionExpressionParts {
-            start,
-            end,
-            params_required,
-            params_optional,
-            body,
-        })
+        let boundary = self.params.partition_point(|param| !param.optional);
+        // SAFETY: split_at panics if the boundary is greater than the length.
+        Ok(self.params.split_at(boundary))
     }
 
     /// Required parameters must be declared before optional parameters.
