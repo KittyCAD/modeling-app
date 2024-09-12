@@ -266,11 +266,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch-exit',
-        onClick: ({ modelingSend }) => {
+        onClick: ({ modelingSend }) =>
           modelingSend({
             type: 'Cancel',
-          })
-        },
+          }),
         disableHotkey: (state) =>
           !(
             state.matches({ Sketch: 'SketchIdle' }) ||
