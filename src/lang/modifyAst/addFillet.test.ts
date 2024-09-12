@@ -556,7 +556,7 @@ const extrude001 = extrude(-15, sketch001)
       expectedCode
     )
   })
-  it('It should be able to add a new fillet when the extrude variable previously had an fillet', async () => {
+  it('should add a fillet when the extrude variable previously had an fillet', async () => {
     const code = `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
@@ -586,7 +586,7 @@ const extrude001 = extrude(-15, sketch001)
       expectedCode
     )
   })
-  it('It should be able to add a new fillet to 2 bodies', async () => {
+  it('should add the fillets to 2 bodies', async () => {
     const code = `const sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
