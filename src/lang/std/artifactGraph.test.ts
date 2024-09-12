@@ -128,7 +128,7 @@ beforeAll(async () => {
       callbackOnEngineLiteConnect: async () => {
         const cacheEntries = Object.entries(codeToWriteCacheFor) as [
           CodeKey,
-          string
+          string,
         ][]
         const cacheToWriteToFileTemp: Partial<CacheShape> = {}
         for (const [codeKey, code] of cacheEntries) {
@@ -194,10 +194,9 @@ describe('testing createArtifactGraph', () => {
     })
 
     it('there should be two extrusions, for the original and the sketchOnFace, the first extrusion should have 6 sides of the cube', () => {
-      const extrusions = [
-        // TODO KEVIN: subtype matching?
-        ...filterArtifacts({ types: ['sweep'] }, theMap),
-      ].map((extrusion) => expandExtrusion(extrusion[1], theMap))
+      const extrusions = [...filterArtifacts({ types: ['sweep'] }, theMap)].map(
+        (extrusion) => expandExtrusion(extrusion[1], theMap)
+      )
       expect(extrusions).toHaveLength(2)
       extrusions.forEach((extrusion, index) => {
         if (err(extrusion)) throw extrusion
