@@ -295,11 +295,11 @@ test.describe('Testing Camera Movement', () => {
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
+    await hoverOverNothing()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(400)
 
-    await hoverOverNothing()
     x = 975
     y = 468
 
