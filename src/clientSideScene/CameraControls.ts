@@ -1188,7 +1188,7 @@ function convertThreeCamValuesToEngineCam({
   const lookAt = buildLookAt(64 / zoom, target, position)
   return {
     center: new Vector3(lookAt.center.x, lookAt.center.y, lookAt.center.z),
-    up: new Vector3(0, 0, 1),
+    up: new Vector3(upVector.x, upVector.y, upVector.z),
     vantage: new Vector3(lookAt.eye.x, lookAt.eye.y, lookAt.eye.z),
   }
 }

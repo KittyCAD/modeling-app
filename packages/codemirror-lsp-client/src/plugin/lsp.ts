@@ -532,7 +532,9 @@ export class LanguageServerPlugin implements PluginValue {
   processDiagnostics(params: PublishDiagnosticsParams) {
     if (params.uri !== this.getDocUri()) return
 
-    const diagnostics = params.diagnostics
+    // Commented to avoid the lint.  See TODO below.
+    // const diagnostics =
+    params.diagnostics
       .map(({ range, message, severity }) => ({
         from: posToOffset(this.view.state.doc, range.start)!,
         to: posToOffset(this.view.state.doc, range.end)!,

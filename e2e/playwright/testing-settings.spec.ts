@@ -8,7 +8,7 @@ import {
   tearDown,
   executorInputPath,
 } from './test-utils'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
 import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
 import * as TOML from '@iarna/toml'
 
@@ -154,29 +154,33 @@ test.describe('Testing settings', () => {
 
   test('Project and user settings can be reset', async ({ page }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
+    await test.step(`Setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+    })
 
+    // Selectors and constants
     const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
     const userSettingsTab = page.getByRole('radio', { name: 'User' })
-    const resetButton = page.getByRole('button', {
-      name: 'Restore default settings',
-    })
+    const resetButton = (level: SettingsLevel) =>
+      page.getByRole('button', {
+        name: `Reset ${level}-level settings`,
+      })
     const themeColorSetting = page.locator('#themeColor').getByRole('slider')
     const settingValues = {
       default: '259',
       user: '120',
       project: '50',
     }
+    const resetToast = (level: SettingsLevel) =>
+      page.getByText(`${level}-level settings were reset`)
 
-    // Open the settings modal with lower-right button
-    await page.getByRole('link', { name: 'Settings' }).last().click()
-    await expect(
-      page.getByRole('heading', { name: 'Settings', exact: true })
-    ).toBeVisible()
+    await test.step(`Open the settings modal`, async () => {
+      await page.getByRole('link', { name: 'Settings' }).last().click()
+      await expect(
+        page.getByRole('heading', { name: 'Settings', exact: true })
+      ).toBeVisible()
+    })
 
     await test.step('Set up theme color', async () => {
       // Verify we're looking at the project-level settings,
@@ -195,37 +199,40 @@ test.describe('Testing settings', () => {
 
     await test.step('Reset project settings', async () => {
       // Click the reset settings button.
-      await resetButton.click()
+      await resetButton('project').click()
 
-      await expect(page.getByText('Settings restored to default')).toBeVisible()
-      await expect(
-        page.getByText('Settings restored to default')
-      ).not.toBeVisible()
+      await expect(resetToast('project')).toBeVisible()
+      await expect(resetToast('project')).not.toBeVisible()
 
       // Verify it is now set to the inherited user value
-      await expect(themeColorSetting).toHaveValue(settingValues.default)
+      await expect(themeColorSetting).toHaveValue(settingValues.user)
 
-      // Check that the user setting also rolled back
-      await userSettingsTab.click()
-      await expect(themeColorSetting).toHaveValue(settingValues.default)
-      await projectSettingsTab.click()
+      await test.step(`Check that the user settings did not change`, async () => {
+        await userSettingsTab.click()
+        await expect(themeColorSetting).toHaveValue(settingValues.user)
+      })
 
-      // Set project-level value to 50 again to test the user-level reset
-      await themeColorSetting.fill(settingValues.project)
-      await userSettingsTab.click()
+      await test.step(`Set project-level again to test the user-level reset`, async () => {
+        await projectSettingsTab.click()
+        await themeColorSetting.fill(settingValues.project)
+        await userSettingsTab.click()
+      })
     })
 
     await test.step('Reset user settings', async () => {
-      // Change the setting and click the reset settings button.
-      await themeColorSetting.fill(settingValues.user)
-      await resetButton.click()
+      // Click the reset settings button.
+      await resetButton('user').click()
+
+      await expect(resetToast('user')).toBeVisible()
+      await expect(resetToast('user')).not.toBeVisible()
 
       // Verify it is now set to the default value
       await expect(themeColorSetting).toHaveValue(settingValues.default)
 
-      // Check that the project setting also changed
-      await projectSettingsTab.click()
-      await expect(themeColorSetting).toHaveValue(settingValues.default)
+      await test.step(`Check that the project settings did not change`, async () => {
+        await projectSettingsTab.click()
+        await expect(themeColorSetting).toHaveValue(settingValues.project)
+      })
     })
   })
 
@@ -429,25 +436,37 @@ test.describe('Testing settings', () => {
 
   test('Changing modeling default unit', async ({ page }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
-
-    const userSettingsTab = page.getByRole('radio', { name: 'User' })
-
-    // Open the settings modal with lower-right button
-    await page.getByRole('link', { name: 'Settings' }).last().click()
-    await expect(
-      page.getByRole('heading', { name: 'Settings', exact: true })
-    ).toBeVisible()
-
-    const resetButton = page.getByRole('button', {
-      name: 'Restore default settings',
+    await test.step(`Test setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await page
+        .getByRole('button', { name: 'Start Sketch' })
+        .waitFor({ state: 'visible' })
     })
-    // Default unit should be mm
-    await resetButton.click()
+
+    // Selectors and constants
+    const userSettingsTab = page.getByRole('radio', { name: 'User' })
+    const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
+    const defaultUnitSection = page.getByText(
+      'default unitRoll back default unitRoll back to match'
+    )
+    const defaultUnitRollbackButton = page.getByRole('button', {
+      name: 'Roll back default unit',
+    })
+
+    await test.step(`Open the settings modal`, async () => {
+      await page.getByRole('link', { name: 'Settings' }).last().click()
+      await expect(
+        page.getByRole('heading', { name: 'Settings', exact: true })
+      ).toBeVisible()
+    })
+
+    await test.step(`Reset unit setting`, async () => {
+      await userSettingsTab.click()
+      await defaultUnitSection.hover()
+      await defaultUnitRollbackButton.click()
+      await projectSettingsTab.click()
+    })
 
     await test.step('Change modeling default unit within project tab', async () => {
       const changeUnitOfMeasureInProjectTab = async (unitOfMeasure: string) => {
@@ -550,6 +569,72 @@ test.describe('Testing settings', () => {
       await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
       await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
       await changeUnitOfMeasureInGizmo('m', 'Meters')
+    })
+  })
+
+  test('Changing theme in sketch mode', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 0], %)
+  |> line([0, 5], %)
+  |> line([-5, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)
+`
+      )
+    })
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    // Selectors and constants
+    const editSketchButton = page.getByRole('button', { name: 'Edit Sketch' })
+    const lineToolButton = page.getByTestId('line')
+    const segmentOverlays = page.getByTestId('segment-overlay')
+    const sketchOriginLocation = { x: 600, y: 250 }
+    const darkThemeSegmentColor: [number, number, number] = [215, 215, 215]
+    const lightThemeSegmentColor: [number, number, number] = [90, 90, 90]
+
+    await test.step(`Get into sketch mode`, async () => {
+      await u.waitForAuthSkipAppStart()
+      await page.mouse.click(700, 200)
+      await expect(editSketchButton).toBeVisible()
+      await editSketchButton.click()
+
+      // We use the line tool as a proxy for sketch mode
+      await expect(lineToolButton).toBeVisible()
+      await expect(segmentOverlays).toHaveCount(4)
+      // but we allow more time to pass for animating to the sketch
+      await page.waitForTimeout(1000)
+    })
+
+    await test.step(`Check the sketch line color before`, async () => {
+      await expect
+        .poll(() =>
+          u.getGreatestPixDiff(sketchOriginLocation, darkThemeSegmentColor)
+        )
+        .toBeLessThan(15)
+    })
+
+    await test.step(`Change theme to light using command palette`, async () => {
+      await page.keyboard.press('ControlOrMeta+K')
+      await page.getByRole('option', { name: 'theme' }).click()
+      await page.getByRole('option', { name: 'light' }).click()
+      await expect(page.getByText('theme to "light"')).toBeVisible()
+
+      // Make sure we haven't left sketch mode
+      await expect(lineToolButton).toBeVisible()
+    })
+
+    await test.step(`Check the sketch line color after`, async () => {
+      await expect
+        .poll(() =>
+          u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
+        )
+        .toBeLessThan(15)
     })
   })
 })

@@ -466,10 +466,7 @@ export const modelingMachine = setup({
     'next is rectangle': ({ context: { sketchDetails, currentTool } }) =>
       currentTool === 'rectangle' && canRectangleTool({ sketchDetails }),
     'next is line': ({ context }) => context.currentTool === 'line',
-    'next is none': ({ context }) => {
-      console.log('is next none?', context)
-      return context.currentTool === 'none'
-    },
+    'next is none': ({ context }) => context.currentTool === 'none',
   },
   // end guards
   actions: {
@@ -605,10 +602,12 @@ export const modelingMachine = setup({
       if (!event.data) return
 
       // Extract inputs
+      const ast = kclManager.ast
       const { selection, radius } = event.data
 
       // Apply fillet to selection
       const applyFilletToSelectionResult = applyFilletToSelection(
+        ast,
         selection,
         radius
       )
