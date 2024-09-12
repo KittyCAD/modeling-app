@@ -87,8 +87,7 @@ const bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
       getNextAdjacentEdge(fillet3),
       getNextAdjacentEdge(fillet4)
     ],
-  }, %)
-`
+  }, %)`
 
 /**
  * @throws Error if the search text is not found in the example code.
