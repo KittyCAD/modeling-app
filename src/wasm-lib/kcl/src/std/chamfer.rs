@@ -88,10 +88,10 @@ pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
 ///     }, %, $chamfer1) // We tag the chamfer to reference it later.
 ///
 /// const sketch001 = startSketchOn(part001, chamfer1)
-///     |> startProfileAt([4.28, 3.83], %)
-///     |> line([2.17, -0.03], %)
-///     |> line([-0.07, -1.8], %)
-///     |> line([-2.07, 0.05], %)
+///     |> startProfileAt([10, 10], %)
+///     |> line([2, 0], %)
+///     |> line([0, 2], %)
+///     |> line([-2, 0], %)
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///     |> extrude(10, %)
