@@ -28,6 +28,7 @@ export const EngineStream = () => {
 
   const { overallState } = useNetworkContext()
   const { settings } = useSettingsAuthContext()
+  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   const settingsEngine = {
     theme: settings.context.app.theme.current,
@@ -47,63 +48,28 @@ export const EngineStream = () => {
 
   const streamIdleMode = settings.context.app.streamIdleMode.current
 
+  // 0.25s is the average visual reaction time for humans so we'll go a bit more
+  // so those exception people don't see.
+  const REASONABLE_TIME_TO_REFRESH_STREAM_SIZE = 100
+
+  const configure =  () => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.StartOrReconfigureEngine,
+      modelingMachineActorSend,
+      settings: settingsEngine,
+      setAppState,
+
+      // It's possible a reconnect happens as we drag the window :')
+      onMediaStream(mediaStream: MediaStream) {
+        engineStreamActor.send({
+          type: EngineStreamTransition.SetMediaStream,
+          mediaStream
+        })
+      }
+    })
+  }
+
   useEffect(() => {
-    let timestampNext: number | null = null
-    let timestampLast: number | null = null
-    let totalDelta: number = 0
-    let needsResize = false
-
-    // 0.25s is the average visual reaction time for humans so we'll go a bit more
-    // so those exception people don't see.
-    const REASONABLE_TIME_TO_REFRESH_STREAM_SIZE = 200
-
-
-    const configure =  () => {
-      engineStreamActor.send({
-        type: EngineStreamTransition.StartOrReconfigureEngine,
-        modelingMachineActorSend,
-        settings: settingsEngine,
-        setAppState,
-
-        // It's possible a reconnect happens as we drag the window :')
-        onMediaStream(mediaStream: MediaStream) {
-          engineStreamActor.send({
-            type: EngineStreamTransition.SetMediaStream,
-            mediaStream
-          })
-        }
-      })
-    }
-
-    // setTimeout is avoided here because there is no need to create and destroy
-    // timers every 10 or so frames. It's a lot. Instead we track the time
-    // between resize events and eventually fire the configure() function
-    // which will resize the stream.
-    const onResize = () => {
-      timestampNext = Date.now()
-
-      if (timestampLast) {
-        totalDelta += timestampNext - timestampLast 
-      }
-
-      if (timestampLast && totalDelta > REASONABLE_TIME_TO_REFRESH_STREAM_SIZE && needsResize) {
-        totalDelta = 0
-        timestampLast = null
-        needsResize = false
-        window.requestAnimationFrame(() => {
-          configure()
-        })
-      } else {
-        window.requestAnimationFrame(() => {
-          needsResize = true
-        })
-      }
-
-      timestampLast = timestampNext
-    }
-
-    window.addEventListener('resize', onResize)
-
     const play = () => {
       engineStreamActor.send({
         type: EngineStreamTransition.Play,
@@ -114,16 +80,35 @@ export const EngineStream = () => {
       play
     )
 
-
     return () => {
-      window.removeEventListener('resize', onResize)
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
         play
       )
-
     }
   }, [])
+
+  useEffect(() => {
+    const s = setInterval(() => {
+      const video = engineStreamState.context.videoRef?.current
+      if (!video) return
+      const canvas = engineStreamState.context.canvasRef?.current
+      if (!canvas) return
+
+      if (Math.abs(video.width - window.innerWidth) > 4 || Math.abs(video.height - window.innerHeight) > 4) {
+        clearTimeout(timeoutId.current)
+        configure()
+        timeoutId.current = setTimeout(() => {
+          engineStreamActor.send({ type: EngineStreamTransition.Pause })
+        }, IDLE_TIME_MS)
+      }
+
+    }, REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
+
+    return () => {
+      clearInterval(s)
+    }
+  }, [engineStreamState.value])
 
   // When the video and canvas element references are set, start the engine.
   useEffect(() => {
@@ -147,6 +132,18 @@ export const EngineStream = () => {
   useEffect(() => {
     engineStreamActor.send({ type: EngineStreamTransition.StartOrReconfigureEngine, modelingMachineActorSend, settings: settingsEngine, setAppState })
   }, [settings.context])
+
+  /**
+   * Subscribe to execute code when the file changes
+   * but only if the scene is already ready.
+   * See onSceneReady for the initial scene setup.
+   */
+  useEffect(() => {
+    if (engineCommandManager.engineConnection?.isReady() && file?.path) {
+      console.log('execute on file change')
+      kclManager.executeCode(true)
+    }
+  }, [file?.path, engineCommandManager.engineConnection])
 
   const IDLE_TIME_MS = 1000 * 6
 
