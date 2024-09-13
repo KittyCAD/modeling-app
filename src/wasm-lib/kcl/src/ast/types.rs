@@ -7,6 +7,7 @@ use std::{
 };
 
 use anyhow::Result;
+use async_recursion::async_recursion;
 use databake::*;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -22,7 +23,7 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, PipeInfo, SketchGroup, SourceRange, StatementKind,
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, SketchGroup, SourceRange, StatementKind,
         TagEngineInfo, TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
@@ -797,25 +798,16 @@ impl BinaryPart {
     }
 
     #[async_recursion::async_recursion]
-    pub async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValue, KclError> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
                 let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
             }
-            BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(exec_state, pipe_info, ctx).await
-            }
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, pipe_info, ctx).await,
-            BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression.get_result(exec_state, pipe_info, ctx).await
-            }
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
+            BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, ctx).await,
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
         }
     }
@@ -1187,12 +1179,7 @@ impl CallExpression {
     }
 
     #[async_recursion::async_recursion]
-    pub async fn execute(
-        &self,
-        exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValue, KclError> {
+    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee.name;
 
         let mut fn_args: Vec<KclValue> = Vec::with_capacity(self.arguments.len());
@@ -1202,7 +1189,7 @@ impl CallExpression {
                 source_range: SourceRange::from(arg),
             };
             let result = ctx
-                .execute_expr(arg, exec_state, pipe_info, &metadata, StatementKind::Expression)
+                .execute_expr(arg, exec_state, &metadata, StatementKind::Expression)
                 .await?;
             fn_args.push(result);
         }
@@ -2142,12 +2129,7 @@ impl ArrayExpression {
     }
 
     #[async_recursion::async_recursion]
-    pub async fn execute(
-        &self,
-        exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValue, KclError> {
+    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
         for element in &self.elements {
@@ -2155,7 +2137,7 @@ impl ArrayExpression {
             // TODO: Carry statement kind here so that we know if we're
             // inside a variable declaration.
             let value = ctx
-                .execute_expr(element, exec_state, pipe_info, &metadata, StatementKind::Expression)
+                .execute_expr(element, exec_state, &metadata, StatementKind::Expression)
                 .await?;
 
             results.push(value.get_json_value()?);
@@ -2243,23 +2225,12 @@ impl ObjectExpression {
     }
 
     #[async_recursion::async_recursion]
-    pub async fn execute(
-        &self,
-        exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValue, KclError> {
+    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let mut object = Map::new();
         for property in &self.properties {
             let metadata = Metadata::from(&property.value);
             let result = ctx
-                .execute_expr(
-                    &property.value,
-                    exec_state,
-                    pipe_info,
-                    &metadata,
-                    StatementKind::Expression,
-                )
+                .execute_expr(&property.value, exec_state, &metadata, StatementKind::Expression)
                 .await?;
 
             object.insert(property.key.name.clone(), result.get_json_value()?);
@@ -2754,22 +2725,9 @@ impl BinaryExpression {
     }
 
     #[async_recursion::async_recursion]
-    pub async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValue, KclError> {
-        let left_json_value = self
-            .left
-            .get_result(exec_state, pipe_info, ctx)
-            .await?
-            .get_json_value()?;
-        let right_json_value = self
-            .right
-            .get_result(exec_state, pipe_info, ctx)
-            .await?
-            .get_json_value()?;
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let left_json_value = self.left.get_result(exec_state, ctx).await?.get_json_value()?;
+        let right_json_value = self.right.get_result(exec_state, ctx).await?.get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
@@ -2969,18 +2927,9 @@ impl UnaryExpression {
         self.argument.get_constraint_level()
     }
 
-    pub async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValue, KclError> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.operator == UnaryOperator::Not {
-            let value = self
-                .argument
-                .get_result(exec_state, pipe_info, ctx)
-                .await?
-                .get_json_value()?;
+            let value = self.argument.get_result(exec_state, ctx).await?.get_json_value()?;
             let Some(bool_value) = json_as_bool(&value) else {
                 return Err(KclError::Semantic(KclErrorDetails {
                     message: format!("Cannot apply unary operator ! to non-boolean value: {}", value),
@@ -2997,11 +2946,7 @@ impl UnaryExpression {
         }
 
         let num = parse_json_number_as_f64(
-            &self
-                .argument
-                .get_result(exec_state, pipe_info, ctx)
-                .await?
-                .get_json_value()?,
+            &self.argument.get_result(exec_state, ctx).await?.get_json_value()?,
             self.into(),
         )?;
         Ok(KclValue::UserVal(UserVal {
@@ -3129,13 +3074,9 @@ impl PipeExpression {
         None
     }
 
-    pub async fn get_result(
-        &self,
-        exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
-        ctx: &ExecutorContext,
-    ) -> Result<KclValue, KclError> {
-        execute_pipe_body(exec_state, &self.body, pipe_info, self.into(), ctx).await
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -3146,37 +3087,49 @@ impl PipeExpression {
     }
 }
 
-#[async_recursion::async_recursion]
 async fn execute_pipe_body(
     exec_state: &mut ExecState,
     body: &[Expr],
-    pipe_info: &PipeInfo,
     source_range: SourceRange,
     ctx: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
-    let mut body = body.iter();
-    let first = body.next().ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
+    let Some((first, body)) = body.split_first() else {
+        return Err(KclError::Semantic(KclErrorDetails {
             message: "Pipe expressions cannot be empty".to_owned(),
             source_ranges: vec![source_range],
-        })
-    })?;
+        }));
+    };
     // Evaluate the first element in the pipeline.
-    // They use the `pipe_info` from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
+    // They use the pipe_value from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
     // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
     // of its own.
     let meta = Metadata {
         source_range: SourceRange([first.start(), first.end()]),
     };
     let output = ctx
-        .execute_expr(first, exec_state, pipe_info, &meta, StatementKind::Expression)
+        .execute_expr(first, exec_state, &meta, StatementKind::Expression)
         .await?;
+
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
-    // This means there's no more need for the previous `pipe_info` from the parent AST node above this one.
-    let mut new_pipe_info = PipeInfo::new();
-    new_pipe_info.previous_results = Some(output);
+    // This means there's no more need for the previous pipe_value from the parent AST node above this one.
+    let previous_pipe_value = std::mem::replace(&mut exec_state.pipe_value, Some(output));
     // Evaluate remaining elements.
+    let result = inner_execute_pipe_body(exec_state, body, ctx).await;
+    // Restore the previous pipe value.
+    exec_state.pipe_value = previous_pipe_value;
+
+    result
+}
+
+/// Execute the tail of a pipe expression.  exec_state.pipe_value must be set by
+/// the caller.
+#[async_recursion]
+async fn inner_execute_pipe_body(
+    exec_state: &mut ExecState,
+    body: &[Expr],
+    ctx: &ExecutorContext,
+) -> Result<KclValue, KclError> {
     for expression in body {
         match expression {
             Expr::TagDeclarator(_) => {
@@ -3202,18 +3155,12 @@ async fn execute_pipe_body(
             source_range: SourceRange([expression.start(), expression.end()]),
         };
         let output = ctx
-            .execute_expr(
-                expression,
-                exec_state,
-                &new_pipe_info,
-                &metadata,
-                StatementKind::Expression,
-            )
+            .execute_expr(expression, exec_state, &metadata, StatementKind::Expression)
             .await?;
-        new_pipe_info.previous_results = Some(output);
+        exec_state.pipe_value = Some(output);
     }
-    // Safe to unwrap here, because `newpipe_info` always has something pushed in when the `match first` executes.
-    let final_output = new_pipe_info.previous_results.unwrap();
+    // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
+    let final_output = exec_state.pipe_value.take().unwrap();
     Ok(final_output)
 }
 

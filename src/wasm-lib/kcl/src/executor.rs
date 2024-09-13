@@ -32,6 +32,9 @@ pub struct ExecState {
     pub memory: ProgramMemory,
     /// Dynamic state that follows dynamic flow of the program.
     pub dynamic_state: DynamicState,
+    /// The current value of the pipe operator returned from the previous
+    /// expression.  If we're not currently in a pipeline, this will be None.
+    pub pipe_value: Option<KclValue>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1574,25 +1577,6 @@ impl ExtrudeSurface {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct PipeInfo {
-    pub previous_results: Option<KclValue>,
-}
-
-impl PipeInfo {
-    pub fn new() -> Self {
-        Self { previous_results: None }
-    }
-}
-
-impl Default for PipeInfo {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 /// The executor context.
 /// Cloning will return another handle to the same engine connection/session,
 /// as this uses `Arc` under the hood.
@@ -1818,8 +1802,6 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<(), KclError> {
-        let pipe_info = PipeInfo::default();
-
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
@@ -1829,7 +1811,6 @@ impl ExecutorContext {
                     self.execute_expr(
                         &expression_statement.expression,
                         exec_state,
-                        &pipe_info,
                         &metadata,
                         StatementKind::Expression,
                     )
@@ -1845,7 +1826,6 @@ impl ExecutorContext {
                             .execute_expr(
                                 &declaration.init,
                                 exec_state,
-                                &pipe_info,
                                 &metadata,
                                 StatementKind::Declaration { name: &var_name },
                             )
@@ -1859,7 +1839,6 @@ impl ExecutorContext {
                         .execute_expr(
                             &return_statement.argument,
                             exec_state,
-                            &pipe_info,
                             &metadata,
                             StatementKind::Expression,
                         )
@@ -1888,7 +1867,6 @@ impl ExecutorContext {
         &self,
         init: &Expr,
         exec_state: &mut ExecState,
-        pipe_info: &PipeInfo,
         metadata: &Metadata,
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
@@ -1900,9 +1878,7 @@ impl ExecutorContext {
                 let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
-            Expr::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(exec_state, pipe_info, self).await?
-            }
+            Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 // Cloning memory here is crucial for semantics so that we close
                 // over variables.  Variables defined lexically later shouldn't
@@ -1914,8 +1890,8 @@ impl ExecutorContext {
                     memory: Box::new(exec_state.memory.clone()),
                 }
             }
-            Expr::CallExpression(call_expression) => call_expression.execute(exec_state, pipe_info, self).await?,
-            Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, pipe_info, self).await?,
+            Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
             Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
                 StatementKind::Declaration { name } => {
                     let message = format!(
@@ -1927,7 +1903,7 @@ impl ExecutorContext {
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                StatementKind::Expression => match pipe_info.previous_results.clone() {
+                StatementKind::Expression => match exec_state.pipe_value.clone() {
                     Some(x) => x,
                     None => {
                         return Err(KclError::Semantic(KclErrorDetails {
@@ -1937,10 +1913,10 @@ impl ExecutorContext {
                     }
                 },
             },
-            Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, pipe_info, self).await?,
-            Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, pipe_info, self).await?,
+            Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
+            Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
-            Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, pipe_info, self).await?,
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
