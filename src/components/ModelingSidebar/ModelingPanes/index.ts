@@ -15,6 +15,8 @@ import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
 import { useKclContext } from 'lang/KclProvider'
 import { editorManager } from 'lib/singletons'
+import { ContextFrom } from 'xstate'
+import { settingsMachine } from 'machines/settingsMachine'
 
 export type SidebarType =
   | 'code'
@@ -36,6 +38,8 @@ export interface BadgeInfo {
  */
 interface PaneCallbackProps {
   kclContext: ReturnType<typeof useKclContext>
+  settings: ContextFrom<typeof settingsMachine>
+  platform: 'web' | 'desktop'
 }
 
 export type SidebarPane = {
@@ -45,8 +49,19 @@ export type SidebarPane = {
   keybinding: string
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
-  hideOnPlatform?: 'desktop' | 'web'
+  hide?: boolean | ((props: PaneCallbackProps) => boolean);
   showBadge?: BadgeInfo
+}
+
+export type SidebarAction = {
+  id: string
+  title: string
+  icon: CustomIconName
+  iconClassName?: string // Just until we get rid of FontAwesome icons
+  keybinding: string
+  action: () => void
+  hide?: boolean | ((props: PaneCallbackProps) => boolean)
+  disable?: () => string | undefined
 }
 
 export const sidebarPanes: SidebarPane[] = [
@@ -74,7 +89,7 @@ export const sidebarPanes: SidebarPane[] = [
     Content: FileTreeInner,
     keybinding: 'Shift + F',
     Menu: FileTreeMenu,
-    hideOnPlatform: 'web',
+    hide: ({ platform }) => platform === 'web',
   },
   {
     id: 'variables',
@@ -97,5 +112,6 @@ export const sidebarPanes: SidebarPane[] = [
     icon: faBugSlash,
     Content: DebugPane,
     keybinding: 'Shift + D',
+    hide: ({ settings }) => !settings.modeling.showDebugPanel.current,
   },
 ]
