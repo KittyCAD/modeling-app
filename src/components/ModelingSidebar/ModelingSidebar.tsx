@@ -130,6 +130,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       }}
       minWidth={200}
       maxWidth={800}
+      handleWrapperClass="sidebar-resize-handles"
       handleClasses={{
         right:
           (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
