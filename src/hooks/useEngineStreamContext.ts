@@ -44,7 +44,7 @@ export interface EngineStreamContext {
   canvasRef: MutableRefObject<HTMLCanvasElement | null>,
 }
 
-function getDimensions(streamWidth: number, streamHeight: number) {
+export function getDimensions(streamWidth: number, streamHeight: number) {
   const factorOf = 4
   const maxResolution = 2160
   const ratio = Math.min(
@@ -93,6 +93,8 @@ const engineStreamMachine = setup({
 
         canvas.width = video.videoWidth
         canvas.height = video.videoHeight
+        canvas.style.width = video.videoWidth + 'px'
+        canvas.style.height = video.videoHeight + 'px'
         canvas.style.display = "block"
 
         const ctx = canvas.getContext("2d")
