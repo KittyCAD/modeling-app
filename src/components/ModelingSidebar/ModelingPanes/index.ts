@@ -1,9 +1,6 @@
 import {
   IconDefinition,
   faBugSlash,
-  faCode,
-  faCodeCommit,
-  faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
 import { CustomIconName } from 'components/CustomIcon'
@@ -68,7 +65,7 @@ export const sidebarPanes: SidebarPane[] = [
   {
     id: 'code',
     title: 'KCL Code',
-    icon: faCode,
+    icon: 'code',
     Content: KclEditorPane,
     keybinding: 'Shift + C',
     Menu: KclEditorMenu,
@@ -94,7 +91,7 @@ export const sidebarPanes: SidebarPane[] = [
   {
     id: 'variables',
     title: 'Variables',
-    icon: faSquareRootVariable,
+    icon: 'make-variable',
     Content: MemoryPane,
     Menu: MemoryPaneMenu,
     keybinding: 'Shift + V',
@@ -102,7 +99,7 @@ export const sidebarPanes: SidebarPane[] = [
   {
     id: 'logs',
     title: 'Logs',
-    icon: faCodeCommit,
+    icon: 'logs',
     Content: LogsPane,
     keybinding: 'Shift + L',
   },
