@@ -115,11 +115,11 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 ///     |> extrude(65, %)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> circle({ center: [-size / 2, -size / 2], radius: 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// const thing2 = startSketchOn(case, 'end')
-///     |> circle([size / 2, -size / 2], 25, %)
+///     |> circle({ center: [size / 2, -size / 2], radius: 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// // We put "case" in the shell function to shell the entire object.
@@ -138,11 +138,11 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 ///     |> extrude(65, %)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> circle({ center: [-size / 2, -size / 2], radius: 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// const thing2 = startSketchOn(case, 'end')
-///     |> circle([size / 2, -size / 2], 25, %)
+///     |> circle({ center: [size / 2, -size / 2], radius: 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// // We put "thing1" in the shell function to shell the end face of the object.
