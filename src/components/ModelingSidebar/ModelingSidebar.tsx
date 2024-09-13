@@ -31,7 +31,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const onboardingStatus = settings.context.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
-    context.store?.buttonDownInStream ||
     onboardingStatus.current === 'camera' ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '

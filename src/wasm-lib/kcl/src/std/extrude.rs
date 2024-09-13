@@ -106,7 +106,6 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
             kittycad::types::ModelingCmd::Extrude {
                 target: sketch_group.id,
                 distance: length,
-                cap: true,
             },
         )
         .await?;

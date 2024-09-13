@@ -59,15 +59,6 @@ export function useSetupEngineManager(
         return modifyGrid(kclManager.engineCommandManager, hidden)
       },
     })
-    modelingSend({
-      type: 'Set context',
-      data: {
-        streamDimensions: {
-          streamWidth: quadWidth,
-          streamHeight: quadHeight,
-        },
-      },
-    })
     hasSetNonZeroDimensions.current = true
   }
 
@@ -111,24 +102,10 @@ export function useSetupEngineManager(
         streamRef?.current?.offsetWidth ?? 0,
         streamRef?.current?.offsetHeight ?? 0
       )
-      if (
-        modelingContext.store.streamDimensions.streamWidth !== width ||
-        modelingContext.store.streamDimensions.streamHeight !== height
-      ) {
-        engineCommandManager.handleResize({
-          streamWidth: width,
-          streamHeight: height,
-        })
-        modelingSend({
-          type: 'Set context',
-          data: {
-            streamDimensions: {
-              streamWidth: width,
-              streamHeight: height,
-            },
-          },
-        })
-      }
+      engineCommandManager.handleResize({
+        streamWidth: width,
+        streamHeight: height,
+      })
     }, 500)
 
     const onOnline = () => {

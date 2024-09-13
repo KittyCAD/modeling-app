@@ -1824,40 +1824,6 @@ const part001 = cube([0,0], 20)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // Will return an error until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
-async fn kcl_test_sketch_on_face_of_chamfer() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-const part001 = cube([0,0], 20)
-    |> close(%, $line1)
-    |> extrude(20, %)
-  |> chamfer({
-    length: 10,
-    tags: [getOppositeEdge(line1)]
-  }, %, $chamfer1)
-
-const sketch001 = startSketchOn(part001, chamfer1)
-    |> startProfileAt([4.28, 3.83], %)
-    |> line([2.17, -0.03], %)
-    |> line([-0.07, -1.8], %)
-    |> line([-2.07, 0.05], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-    |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_of_chamfer", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_duplicate_tags_should_error() {
     let code = r#"fn triangle = (len) => {
   return startSketchOn('XY')
