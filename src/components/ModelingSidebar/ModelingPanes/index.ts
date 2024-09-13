@@ -49,7 +49,7 @@ export type SidebarPane = {
   keybinding: string
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
-  hide?: boolean | ((props: PaneCallbackProps) => boolean);
+  hide?: boolean | ((props: PaneCallbackProps) => boolean)
   showBadge?: BadgeInfo
 }
 
