@@ -69,7 +69,7 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
@@ -113,9 +113,6 @@ export const ModelingMachineProvider = ({
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
-
-  let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
 
   const { commandBarState, commandBarSend } = useCommandsContext()
 
