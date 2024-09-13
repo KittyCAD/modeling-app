@@ -31,8 +31,18 @@ test.describe('Testing selections', () => {
 
     const xAxisClick = () =>
       page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
+    const emptySpaceHover = () =>
+      test.step('Hover over empty space', async () => {
+        await page.mouse.move(700, 143, { steps: 5 })
+        await expect(page.locator('.hover-highlight')).not.toBeVisible()
+      })
     const emptySpaceClick = () =>
-      page.mouse.click(700, 343).then(() => page.waitForTimeout(100))
+      test.step(`Click in empty space`, async () => {
+        await page.mouse.click(700, 143)
+        await expect(page.locator('.cm-line').last()).toHaveClass(
+          /cm-activeLine/
+        )
+      })
     const topHorzSegmentClick = () =>
       page.mouse.click(709, 290).then(() => page.waitForTimeout(100))
     const bottomHorzSegmentClick = () =>
@@ -171,7 +181,9 @@ test.describe('Testing selections', () => {
       await emptySpaceClick()
     }
 
-    await selectionSequence()
+    await test.step(`Test hovering and selecting on fresh sketch`, async () => {
+      await selectionSequence()
+    })
 
     // hovering in fresh sketch worked, lets try exiting and re-entering
     await u.openAndClearDebugPanel()
@@ -184,16 +196,15 @@ test.describe('Testing selections', () => {
 
     // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
     await topHorzSegmentClick()
-    await page.waitForTimeout(100)
+    await emptySpaceHover()
 
     // enter sketch again
     await u.doAndWaitForCmd(
       () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
       'default_camera_get_settings'
     )
-    await page.waitForTimeout(150)
 
-    await page.waitForTimeout(300) // wait for animation
+    await page.waitForTimeout(450) // wait for animation
 
     await u.openAndClearDebugPanel()
     await u.sendCustomCmd({
@@ -220,8 +231,9 @@ test.describe('Testing selections', () => {
 
     await u.closeDebugPanel()
 
-    // hover again and check it works
-    await selectionSequence()
+    await test.step(`Test hovering and selecting on edited sketch`, async () => {
+      await selectionSequence()
+    })
   })
 
   test('Solids should be select and deletable', async ({ page }) => {
