@@ -65,7 +65,7 @@ const extrude001 = extrude(5, sketch001)`
   test('Opening and closing the code pane will consistently show error diagnostics', async ({
     page,
   }) => {
-    await page.goto('http://localhost:3000');
+    await page.goto('http://localhost:3000')
 
     const u = await getUtils(page)
 
