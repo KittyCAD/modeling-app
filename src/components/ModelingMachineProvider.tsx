@@ -415,20 +415,9 @@ export const ModelingMachineProvider = ({
             selection: { type: 'default_scene' },
           }
 
-          // Artificially delay the export in playwright tests
-          toast
-            .promise(
-              exportFromEngine({
-                format: format,
-              }),
-
-              {
-                loading: 'Starting print...',
-                success: 'Started print successfully',
-                error: 'Error while starting print',
-              }
-            )
-            .catch(reportRejection)
+          exportFromEngine({
+            format: format,
+          }).catch(reportRejection)
         },
         'Engine export': ({ event }) => {
           if (event.type !== 'Export') return
@@ -482,18 +471,9 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          toast
-            .promise(
-              exportFromEngine({
-                format: format as Models['OutputFormat_type'],
-              }),
-              {
-                loading: 'Exporting...',
-                success: 'Exported successfully',
-                error: 'Error while exporting',
-              }
-            )
-            .catch(reportRejection)
+          exportFromEngine({
+            format: format as Models['OutputFormat_type'],
+          }).catch(reportRejection)
         },
         'Submit to Text-to-CAD API': ({ event }) => {
           if (event.type !== 'Text-to-CAD') return

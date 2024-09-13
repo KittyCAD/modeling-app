@@ -6,30 +6,31 @@ import ModelingAppFile from './modelingAppFile'
 
 // Make files locally from an export call.
 export async function exportMake(data: ArrayBuffer): Promise<Response | null> {
+  const toastId = toast.loading('Starting print...')
   if (machineManager.machineCount() === 0) {
     console.error('No machines available')
-    toast.error('No machines available')
+    toast.error('No machines available', { id: toastId })
     return null
   }
 
   const machineApiIp = machineManager.machineApiIp
   if (!machineApiIp) {
     console.error('No machine api ip available')
-    toast.error('No machine api ip available')
+    toast.error('No machine api ip available', { id: toastId })
     return null
   }
 
   const currentMachine = machineManager.currentMachine
   if (!currentMachine) {
     console.error('No current machine available')
-    toast.error('No current machine available')
+    toast.error('No current machine available', { id: toastId })
     return null
   }
 
   let machineId = currentMachine?.id
   if (!machineId) {
     console.error('No machine id available', currentMachine)
-    toast.error('No machine id available')
+    toast.error('No machine id available', { id: toastId })
     return null
   }
 
@@ -58,16 +59,22 @@ export async function exportMake(data: ArrayBuffer): Promise<Response | null> {
     console.log('response', response)
 
     if (!response.ok) {
-      console.error('Error exporting', response)
+      console.error('Error while starting print', response)
       const text = await response.text()
-      toast.error('Error exporting: ' + response.statusText + ' ' + text)
+      toast.error(
+        'Error while starting print: ' + response.statusText + ' ' + text,
+        {
+          id: toastId,
+        }
+      )
       return null
     }
 
+    toast.success('Started print successfully', { id: toastId })
     return response
   } catch (error) {
-    console.error('Error exporting', error)
-    toast.error('Error exporting')
+    console.error('Error while starting print', error)
+    toast.error('Error while starting print', { id: toastId })
     return null
   }
 }

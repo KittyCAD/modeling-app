@@ -4,8 +4,10 @@ import { browserSaveFile } from './browserSaveFile'
 
 import JSZip from 'jszip'
 import ModelingAppFile from './modelingAppFile'
+import toast from 'react-hot-toast'
 
 const save_ = async (file: ModelingAppFile) => {
+  const toastId = toast.loading('Exporting...')
   try {
     if (isDesktop()) {
       const extension = file.name.split('.').pop() || null
@@ -20,6 +22,7 @@ const save_ = async (file: ModelingAppFile) => {
           file.name,
           new Uint8Array(file.contents)
         )
+        toast.success('Exported successfully', { id: toastId })
         return
       }
 
@@ -36,13 +39,17 @@ const save_ = async (file: ModelingAppFile) => {
 
       // The user canceled the save.
       // Return early.
-      if (filePathMeta.canceled) return
+      if (filePathMeta.canceled) {
+        toast.dismiss(toastId)
+        return
+      }
 
       // Write the file.
       await window.electron.writeFile(
         filePathMeta.filePath,
         new Uint8Array(file.contents)
       )
+      toast.success('Exported successfully', { id: toastId })
     } else {
       // Download the file to the user's computer.
       // Now we need to download the files to the user's downloads folder.
@@ -51,11 +58,12 @@ const save_ = async (file: ModelingAppFile) => {
       // Create a new blob.
       const blob = new Blob([new Uint8Array(file.contents)])
       // Save the file.
-      await browserSaveFile(blob, file.name)
+      await browserSaveFile(blob, file.name, toastId)
     }
   } catch (e) {
     // TODO: do something real with the error.
     console.error('export error', e)
+    toast.error('Export failed', { id: toastId })
   }
 }
 
