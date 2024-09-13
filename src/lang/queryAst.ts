@@ -936,11 +936,11 @@ export function hasExtrudableGeometry(ast: Program) {
   return Object.keys(theMap).length > 0
 }
 
-export function getObjExpProperty(
+export function getObjExprProperty(
   node: ObjectExpression,
   propName: string
-): { exp: Expr; index: number } | null {
+): { expr: Expr; index: number } | null {
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
-  return { exp: node.properties[index].value, index }
+  return { expr: node.properties[index].value, index }
 }

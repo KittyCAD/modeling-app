@@ -20,7 +20,7 @@ import {
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
-import { SimplifiedArgDetails, InputArgKeys } from './std/stdTypes'
+import { SimplifiedArgDetails } from './std/stdTypes'
 
 beforeAll(async () => {
   await initPromise
@@ -628,7 +628,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         'offset',
       ],
       ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1],
-    ])('stdlib fn: %s', async (expectedFinish, key, value) => {
+    ] as const)('stdlib fn: %s', async (expectedFinish, key, value) => {
       const ast = parse(code)
       if (err(ast)) throw ast
 
@@ -648,7 +648,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       } else if (key === 'objectProperty' && typeof value === 'string') {
         argPosition = {
           type: 'objectProperty',
-          key: value as InputArgKeys,
+          key: value,
         }
       } else if (key === '') {
         argPosition = {
@@ -701,7 +701,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       } else if (key === 'objectProperty' && typeof value === 'string') {
         argPosition = {
           type: 'objectProperty',
-          key: value as InputArgKeys,
+          key: value,
         }
       } else {
         throw new Error('argPosition is undefined')

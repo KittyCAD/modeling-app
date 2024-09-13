@@ -48,11 +48,12 @@ export function getSketchSegmentFromSourceRange(
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
   )
   const line = sketchGroup.value[lineIndex]
-  if (line)
+  if (line) {
     return {
       segment: line,
       index: lineIndex,
     }
+  }
   const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
   if (
     startSourceRange &&

@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Expr, VariableDeclarator } from '../../lang/wasm'
+import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -11,6 +11,7 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
 import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
@@ -178,11 +179,9 @@ export async function applyConstraintIntersect({
     }
   }
   // transform again but forcing certain values
-  const finalValue = removeDoubleNegatives(
-    valueNode as BinaryPart,
-    sign,
-    variableName
-  )
+  if (!isExprBinaryPart(valueNode))
+    return Promise.reject('Invalid valueNode, is not a BinaryPart')
+  const finalValue = removeDoubleNegatives(valueNode, sign, variableName)
   const transform2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges: forcedSelectionRanges,

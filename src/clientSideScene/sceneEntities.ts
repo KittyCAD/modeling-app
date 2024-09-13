@@ -809,14 +809,14 @@ export class SceneEntities {
           sketchPathToNode || [],
           'VariableDeclaration'
         )
-        if (trap(_node)) return Promise.reject(_node)
+        if (trap(_node)) return
         const sketchInit = _node.node?.declarations?.[0]?.init
 
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
 
           let _recastAst = parse(recast(_ast))
-          if (trap(_recastAst)) return Promise.reject(_recastAst)
+          if (trap(_recastAst)) return
           _ast = _recastAst
 
           // Update the primary AST and unequip the rectangle tool
@@ -836,7 +836,7 @@ export class SceneEntities {
             programMemory.get(variableDeclarationName),
             variableDeclarationName
           )
-          if (err(sketchGroup)) return sketchGroup
+          if (err(sketchGroup)) return
           const sgPaths = sketchGroup.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 

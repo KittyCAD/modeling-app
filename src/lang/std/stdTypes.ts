@@ -8,6 +8,7 @@ import {
   PathToNode,
   CallExpression,
   Literal,
+  BinaryPart,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
 
@@ -54,7 +55,9 @@ export type SegmentInputs = StraightSegmentInput // TODO ArcSegmentInput
  */
 interface addCall extends ModifyAstBase {
   segmentInput: SegmentInputs
-  replaceExistingCallback?: (rawArgs: RawArgs) => CreatedSketchExprResult
+  replaceExistingCallback?: (
+    rawArgs: RawArgs
+  ) => CreatedSketchExprResult | Error
   referencedSegment?: Path
   spliceBetween?: boolean
 }
@@ -141,17 +144,11 @@ export type RawArgs = Array<RawArg>
  * when we only need to know where there arg is.
  */
 export type SimplifiedArgDetails =
-  | {
-      type: 'singleValue'
-    }
-  | { type: 'arrayItem'; index: 0 | 1 }
-  | { type: 'objectProperty'; key: InputArgKeys }
-  | {
-      type: 'arrayInObject'
-      key: InputArgKeys
-      index: 0 | 1
-    }
-
+  | Omit<SingleValueInput<null>, 'expr' | 'argType'>
+  | Omit<ArrayItemInput<null>, 'expr' | 'argType'>
+  | Omit<ObjectPropertyInput<null>, 'expr' | 'argType'>
+  | Omit<ArrayOrObjItemInput<null>, 'expr' | 'argType'>
+  | Omit<ArrayInObject<null>, 'expr' | 'argType'>
 /**
  * Represents the result of creating a sketch expression (line, tangentialArcTo, angledLine, circle, etc.).
  *
@@ -174,9 +171,9 @@ export type CreateStdLibSketchCallExpr = (args: {
   rawArgs: RawArgs
   referenceSegName: string
   tag?: Expr
-  forceValueUsedInTransform?: Expr
+  forceValueUsedInTransform?: BinaryPart
   referencedSegment?: Path
-}) => CreatedSketchExprResult
+}) => CreatedSketchExprResult | Error
 
 export type TransformInfo = {
   tooltip: ToolTip

@@ -107,21 +107,21 @@ export class SceneInfra {
   _theme: Themes = Themes.System
   extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
-  onDragStartCallback: (arg: OnDragCallbackArgs) => any = () => {}
-  onDragEndCallback: (arg: OnDragCallbackArgs) => any = () => {}
-  onDragCallback: (arg: OnDragCallbackArgs) => any = () => {}
-  onMoveCallback: (arg: OnMoveCallbackArgs) => any = () => {}
-  onClickCallback: (arg: OnClickCallbackArgs) => any = () => {}
-  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => any = () => {}
-  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => any = () => {}
+  onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
+  onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
+  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
+  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
-    onDragStart?: (arg: OnDragCallbackArgs) => any
-    onDragEnd?: (arg: OnDragCallbackArgs) => any
-    onDrag?: (arg: OnDragCallbackArgs) => any
-    onMove?: (arg: OnMoveCallbackArgs) => any
-    onClick?: (arg: OnClickCallbackArgs) => any
-    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => any
-    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => any
+    onDragStart?: (arg: OnDragCallbackArgs) => void
+    onDragEnd?: (arg: OnDragCallbackArgs) => void
+    onDrag?: (arg: OnDragCallbackArgs) => void
+    onMove?: (arg: OnMoveCallbackArgs) => void
+    onClick?: (arg: OnClickCallbackArgs) => void
+    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
+    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
     this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
     this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback

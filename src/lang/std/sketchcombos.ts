@@ -75,6 +75,14 @@ export type ConstraintType =
   | 'yAbs'
   | 'setAngleBetween'
 
+const REF_NUM_ERR = new Error('Referenced segment does not have a to value')
+function isUndef(val: any): val is undefined {
+  return typeof val === 'undefined'
+}
+function isNum(val: any): val is number {
+  return typeof val === 'number'
+}
+
 function createCallWrapper(
   tooltip: ToolTip,
   val: [Expr, Expr] | Expr,
@@ -176,14 +184,17 @@ const xyLineSetLength =
       : referenceSeg
       ? segRef
       : args[0].expr
-    return createCallWrapper(xOrY, lineVal, tag, getArgLiteralVal(args[0].expr))
+    const literalARg = getArgLiteralVal(args[0].expr)
+    if (err(literalARg)) return literalARg
+    return createCallWrapper(xOrY, lineVal, tag, literalARg)
   }
 
+type AngLenNone = 'ang' | 'len' | 'none'
 const basicAngledLineCreateNode =
   (
-    referenceSeg: 'ang' | 'len' | 'none' = 'none',
-    valToForce: 'ang' | 'len' | 'none' = 'none',
-    varValToUse: 'ang' | 'len' | 'none' = 'none'
+    referenceSeg: AngLenNone = 'none',
+    valToForce: AngLenNone = 'none',
+    varValToUse: AngLenNone = 'none'
   ): CreateStdLibSketchCallExpr =>
   ({
     referenceSegName,
@@ -194,14 +205,15 @@ const basicAngledLineCreateNode =
     referencedSegment: path,
   }) => {
     const refAng = path ? getAngle(path?.from, path?.to) : 0
+    if (!isNum(args[0].expr.value)) return REF_NUM_ERR
     const nonForcedAng =
       varValToUse === 'ang'
         ? inputs[0].expr
         : referenceSeg === 'ang'
         ? getClosesAngleDirection(
-            args[0].expr,
+            args[0].expr.value,
             refAng,
-            createSegAngle(referenceSegName) as BinaryPart
+            createSegAngle(referenceSegName)
           )
         : args[0].expr
     const nonForcedLen =
@@ -212,6 +224,10 @@ const basicAngledLineCreateNode =
         : args[1].expr
     const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
     const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
+    const literalArg = getArgLiteralVal(
+      valToForce === 'ang' ? args[0].expr : args[1].expr
+    )
+    if (err(literalArg)) return literalArg
     return createCallWrapper(
       'angledLine',
       [
@@ -219,7 +235,7 @@ const basicAngledLineCreateNode =
         shouldForceLen ? forceValueUsedInTransform : nonForcedLen,
       ],
       tag,
-      getArgLiteralVal(valToForce === 'ang' ? args[0].expr : args[1].expr)
+      literalArg
     )
   }
 const angledLineAngleCreateNode: CreateStdLibSketchCallExpr = ({
@@ -263,8 +279,7 @@ const getMinAndSegAngVals = (
 const getSignedLeg = (arg: Literal, legLenVal: BinaryPart) =>
   Number(arg.value) < 0 ? createUnaryExpression(legLenVal) : legLenVal
 
-const getLegAng = (arg: Literal, legAngleVal: BinaryPart) => {
-  const ang = Number(arg.value) || 0
+const getLegAng = (ang: number, legAngleVal: BinaryPart) => {
   const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
   const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
   const binExp = createBinaryExpressionWithUnary([
@@ -274,18 +289,16 @@ const getLegAng = (arg: Literal, legAngleVal: BinaryPart) => {
   return truncatedTo90 === 0 ? legAngleVal : binExp
 }
 
-const getAngleLengthSign = (arg: Literal, legAngleVal: BinaryPart) => {
-  const ang = Number(arg.value) || 0
+const getAngleLengthSign = (ang: number, legAngleVal: BinaryPart) => {
   const normalisedAngle = ((ang % 180) + 180) % 180 // between 0 and 180
   return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
 }
 
 function getClosesAngleDirection(
-  arg: Literal,
+  currentAng: number,
   refAngle: number,
   angleVal: BinaryPart
 ) {
-  const currentAng = Number(arg.value) || 0
   const angDiff = Math.abs(currentAng - refAngle)
   const normalisedAngle = ((angDiff % 360) + 360) % 360 // between 0 and 180
   return normalisedAngle > 90
@@ -302,15 +315,15 @@ const setHorzVertDistanceCreateNode =
     rawArgs: args,
     referencedSegment,
   }) => {
-    const valueUsedInTransform = roundOff(
-      getArgLiteralVal(args?.[index].expr) -
-        (referencedSegment?.to?.[index] || 0),
-      2
-    )
+    const refNum = referencedSegment?.to?.[index]
+    const literalArg = getArgLiteralVal(args?.[index].expr)
+    if (err(literalArg)) return literalArg
+    if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
+
+    const valueUsedInTransform = roundOff(literalArg - refNum, 2)
     let finalValue: Expr = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, !index),
-      (forceValueUsedInTransform as BinaryPart) ||
-        createLiteral(valueUsedInTransform),
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
     if (isValueZero(forceValueUsedInTransform)) {
       finalValue = createSegEnd(referenceSegName, !index)
@@ -332,14 +345,13 @@ const setHorzVertDistanceForAngleLineCreateNode =
     rawArgs: args,
     referencedSegment,
   }) => {
-    const valueUsedInTransform = roundOff(
-      getArgLiteralVal(args?.[1].expr) - (referencedSegment?.to?.[index] || 0),
-      2
-    )
+    const refNum = referencedSegment?.to?.[index]
+    const literalArg = getArgLiteralVal(args?.[1].expr)
+    if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
+    const valueUsedInTransform = roundOff(literalArg - refNum, 2)
     const binExp = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, !index),
-      (forceValueUsedInTransform as BinaryPart) ||
-        createLiteral(valueUsedInTransform),
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
     return createCallWrapper(
       xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
@@ -356,13 +368,10 @@ const setAbsDistanceCreateNode =
     index = xOrY === 'x' ? 0 : 1
   ): CreateStdLibSketchCallExpr =>
   ({ tag, forceValueUsedInTransform, rawArgs: args }) => {
-    const valueUsedInTransform = roundOff(
-      getArgLiteralVal(args?.[index].expr),
-      2
-    )
-    const val =
-      (forceValueUsedInTransform as BinaryPart) ||
-      createLiteral(valueUsedInTransform)
+    const literalArg = getArgLiteralVal(args?.[index].expr)
+    if (err(literalArg)) return REF_NUM_ERR
+    const valueUsedInTransform = roundOff(literalArg, 2)
+    const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
     if (isXOrYLine) {
       return createCallWrapper(
         xOrY === 'x' ? 'xLineTo' : 'yLineTo',
@@ -381,10 +390,10 @@ const setAbsDistanceCreateNode =
 const setAbsDistanceForAngleLineCreateNode =
   (xOrY: 'x' | 'y'): CreateStdLibSketchCallExpr =>
   ({ tag, forceValueUsedInTransform, inputs, rawArgs: args }) => {
-    const valueUsedInTransform = roundOff(getArgLiteralVal(args?.[1].expr), 2)
-    const val =
-      (forceValueUsedInTransform as BinaryPart) ||
-      createLiteral(valueUsedInTransform)
+    const literalArg = getArgLiteralVal(args?.[1].expr)
+    if (err(literalArg)) return REF_NUM_ERR
+    const valueUsedInTransform = roundOff(literalArg, 2)
+    const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
     return createCallWrapper(
       xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
       [inputs[0].expr, val],
@@ -403,15 +412,13 @@ const setHorVertDistanceForXYLines =
     referencedSegment,
   }) => {
     const index = xOrY === 'x' ? 0 : 1
-    const valueUsedInTransform = roundOff(
-      getArgLiteralVal(args?.[index].expr) -
-        (referencedSegment?.to?.[index] || 0),
-      2
-    )
+    const refNum = referencedSegment?.to?.[index]
+    const literalArg = getArgLiteralVal(args?.[index].expr)
+    if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
+    const valueUsedInTransform = roundOff(literalArg - refNum, 2)
     const makeBinExp = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, xOrY === 'x'),
-      (forceValueUsedInTransform as BinaryPart) ||
-        createLiteral(valueUsedInTransform),
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
     return createCallWrapper(
       xOrY === 'x' ? 'xLineTo' : 'yLineTo',
@@ -433,14 +440,18 @@ const setHorzVertDistanceConstraintLineCreateNode =
 
     const makeBinExp = (index: 0 | 1) => {
       const arg = getArgLiteralVal(args?.[index].expr)
+      const refNum = referencedSegment?.to?.[index]
+      if (err(arg) || !isNum(refNum)) return REF_NUM_ERR
       return createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, isX),
-        createLiteral(roundOff(arg - (referencedSegment?.to?.[index] || 0), 2)),
+        createLiteral(roundOff(arg - refNum, 2)),
       ])
     }
+    const binExpr = isX ? makeBinExp(0) : makeBinExp(1)
+    if (err(binExpr)) return new Error('Invalid value for distance')
     return createCallWrapper(
       'lineTo',
-      isX ? [makeBinExp(0), varValBinExp] : [varValBinExp, makeBinExp(1)],
+      isX ? [binExpr, varValBinExp] : [varValBinExp, binExpr],
       tag
     )
   }
@@ -451,8 +462,10 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
   forceValueUsedInTransform,
   rawArgs: args,
 }) => {
-  const valueUsedInTransform = roundOff(Number(args[1].expr.value) || 0, 2)
-  const angle = Number(args[0].expr.value) || 0
+  const val = args[1].expr.value,
+    angle = args[0].expr.value
+  if (!isNum(val) || !isNum(angle)) return REF_NUM_ERR
+  const valueUsedInTransform = roundOff(val, 2)
   const varNamMap: { [key: number]: string } = {
     0: 'ZERO',
     90: 'QUARTER_TURN',
@@ -479,7 +492,9 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
   inputs,
   rawArgs: args,
 }) => {
-  const valueUsedInTransform = roundOff(Number(args[1].expr.value) || 0, 2)
+  const val = args[1].expr.value
+  if (!isNum(val)) return REF_NUM_ERR
+  const valueUsedInTransform = roundOff(val, 2)
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
     angleVal: inputs[0].expr,
@@ -503,10 +518,10 @@ const setAngleBetweenCreateNode =
     const refAngle = referencedSegment
       ? getAngle(referencedSegment?.from, referencedSegment?.to)
       : 0
-    let valueUsedInTransform = roundOff(
-      normaliseAngle((Number(args[0].expr.value) || 0) - refAngle)
-    )
-    let firstHalfValue = createSegAngle(referenceSegName) as BinaryPart
+    const val = args[0].expr.value
+    if (!isNum(val)) return REF_NUM_ERR
+    let valueUsedInTransform = roundOff(normaliseAngle(val - refAngle))
+    let firstHalfValue = createSegAngle(referenceSegName)
     if (Math.abs(valueUsedInTransform) > 90) {
       firstHalfValue = createBinaryExpression([
         firstHalfValue,
@@ -517,8 +532,7 @@ const setAngleBetweenCreateNode =
     }
     const binExp = createBinaryExpressionWithUnary([
       firstHalfValue,
-      (forceValueUsedInTransform as BinaryPart) ||
-        createLiteral(valueUsedInTransform),
+      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
     return createCallWrapper(
       tranformToType === 'none'
@@ -678,10 +692,11 @@ const transformMap: TransformMap = {
               createPipeSubstitution(),
             ]
           )
+          if (!isNum(args[0].expr.value)) return REF_NUM_ERR
           return createCallWrapper(
             'angledLineToX',
             [
-              getAngleLengthSign(args[0].expr, angleToMatchLengthXCall),
+              getAngleLengthSign(args[0].expr.value, angleToMatchLengthXCall),
               inputs[0].expr,
             ],
             tag
@@ -710,10 +725,11 @@ const transformMap: TransformMap = {
               createPipeSubstitution(),
             ]
           )
+          if (!isNum(args[0].expr.value)) return REF_NUM_ERR
           return createCallWrapper(
             'angledLineToY',
             [
-              getAngleLengthSign(args[0].expr, angleToMatchLengthYCall),
+              getAngleLengthSign(args[0].expr.value, angleToMatchLengthYCall),
               inputs[1].expr,
             ],
             tag
@@ -733,11 +749,13 @@ const transformMap: TransformMap = {
           forceValueUsedInTransform,
           rawArgs: args,
         }) => {
+          const val = getArgLiteralVal(args[0].expr)
+          if (err(val)) return val
           return createCallWrapper(
             'angledLineToY',
             [forceValueUsedInTransform || args[0].expr, inputs[1].expr],
             tag,
-            getArgLiteralVal(args[0].expr)
+            val
           )
         },
       },
@@ -868,9 +886,10 @@ const transformMap: TransformMap = {
             referenceSegName,
             getInputOfType(inputs, 'xRelative').expr
           )
+          if (!isNum(args[0].expr.value)) return REF_NUM_ERR
           return createCallWrapper(
             'angledLineOfXLength',
-            [getLegAng(args[0].expr, legAngle), minVal],
+            [getLegAng(args[0].expr.value, legAngle), minVal],
             tag
           )
         },
@@ -920,9 +939,10 @@ const transformMap: TransformMap = {
             inputs[1].expr,
             'legAngY'
           )
+          if (!isNum(args[0].expr.value)) return REF_NUM_ERR
           return createCallWrapper(
             'angledLineOfXLength',
-            [getLegAng(args[0].expr, legAngle), minVal],
+            [getLegAng(args[0].expr.value, legAngle), minVal],
             tag
           )
         },
@@ -971,10 +991,11 @@ const transformMap: TransformMap = {
               createPipeSubstitution(),
             ]
           )
+          if (!isNum(args[0].expr.value)) return REF_NUM_ERR
           return createCallWrapper(
             'angledLineToX',
             [
-              getAngleLengthSign(args[0].expr, angleToMatchLengthXCall),
+              getAngleLengthSign(args[0].expr.value, angleToMatchLengthXCall),
               inputs[1].expr,
             ],
             tag
@@ -1022,10 +1043,11 @@ const transformMap: TransformMap = {
               createPipeSubstitution(),
             ]
           )
+          if (!isNum(args[0].expr.value)) return REF_NUM_ERR
           return createCallWrapper(
             'angledLineToY',
             [
-              getAngleLengthSign(args[0].expr, angleToMatchLengthXCall),
+              getAngleLengthSign(args[0].expr.value, angleToMatchLengthXCall),
               inputs[1].expr,
             ],
             tag
@@ -1045,7 +1067,8 @@ const transformMap: TransformMap = {
         tooltip: 'xLine',
         createNode: ({ referenceSegName, tag, rawArgs: args }) => {
           const argVal = getArgLiteralVal(args[0].expr)
-          const segLen = createSegLen(referenceSegName) // as BinaryPart
+          if (err(argVal)) return argVal
+          const segLen = createSegLen(referenceSegName)
           if (argVal > 0) return createCallWrapper('xLine', segLen, tag, argVal)
           if (isExprBinaryPart(segLen))
             return createCallWrapper(
@@ -1082,7 +1105,8 @@ const transformMap: TransformMap = {
         tooltip: 'yLine',
         createNode: ({ referenceSegName, tag, rawArgs: args }) => {
           const argVal = getArgLiteralVal(args[0].expr)
-          let segLen = createSegLen(referenceSegName) as BinaryPart
+          if (err(argVal)) return argVal
+          let segLen = createSegLen(referenceSegName)
           if (argVal < 0) segLen = createUnaryExpression(segLen)
           return createCallWrapper('yLine', segLen, tag, argVal)
         },
@@ -1234,7 +1258,7 @@ export function removeSingleConstraint({
     tooltip: callExp.node.callee.name as any,
     createNode: ({ tag, inputs, rawArgs }) => {
       // inputs is the current values for each of the inputs
-      // rawValues is the rav 'literal' values equivalent to the inputs
+      // rawValues is the raw 'literal' values equivalent to the inputs
       // inputDetails is the one variable we're removing the constraint from
       // So we should update the call expression to use the inputs, except for
       // the inputDetails, input where we should use the rawValue(s)
@@ -1518,7 +1542,7 @@ export function transformSecondarySketchLinesTagFirst({
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   forceSegName?: string
-  forceValueUsedInTransform?: Expr
+  forceValueUsedInTransform?: BinaryPart
 }):
   | {
       modifiedAst: Program
@@ -1589,7 +1613,7 @@ export function transformAstSketchLines({
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
-  forceValueUsedInTransform?: Expr
+  forceValueUsedInTransform?: BinaryPart
   referencedSegmentRange?: Selection['range']
 }):
   | {
@@ -1757,11 +1781,11 @@ export function transformAstSketchLines({
   }
 }
 
-function createSegLen(referenceSegName: string): Expr {
+function createSegLen(referenceSegName: string): BinaryPart {
   return createCallExpression('segLen', [createIdentifier(referenceSegName)])
 }
 
-function createSegAngle(referenceSegName: string): Expr {
+function createSegAngle(referenceSegName: string): BinaryPart {
   return createCallExpression('segAng', [createIdentifier(referenceSegName)])
 }
 
@@ -1777,8 +1801,9 @@ function createLastSeg(isX: boolean): CallExpression {
   ])
 }
 
-function getArgLiteralVal(arg: Literal): number {
-  return Number(arg.value) || 0
+function getArgLiteralVal(arg: Literal): number | Error {
+  if (!isNum(arg.value)) return REF_NUM_ERR
+  return arg.value
 }
 
 export type ConstraintLevel = 'free' | 'partial' | 'full'
@@ -1850,7 +1875,7 @@ export function isNotLiteralArrayOrStatic(
   )
 }
 
-function isExprBinaryPart(expr: Expr): expr is BinaryPart {
+export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   if (
     expr.type === 'Literal' ||
     expr.type === 'Identifier' ||

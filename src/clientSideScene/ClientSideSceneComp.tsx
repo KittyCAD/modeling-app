@@ -540,7 +540,7 @@ const ConstraintSymbol = ({
       iconName: 'dimension',
     },
   }
-  const varName = _type in varNameMap ? varNameMap[_type].varName : 'var'
+  const varName = varNameMap?.[_type]?.varName || 'var'
   const name: CustomIconName = varNameMap[_type].iconName
   const displayName = varNameMap[_type]?.displayName
   const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
