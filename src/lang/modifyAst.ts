@@ -38,7 +38,7 @@ import {
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import { ConstrainInfo } from './std/stdTypes'
+import { SimplifiedArgDetails } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 
@@ -799,15 +799,10 @@ export function deleteSegmentFromPipeExpression(
     )
     if (!constraintInfo) return
 
-    const input = makeRemoveSingleConstraintInput(
-      constraintInfo.argPosition,
-      callExp.shallowPath
-    )
-    if (!input) return
+    if (!constraintInfo.argPosition) return
     const transform = removeSingleConstraintInfo(
-      {
-        ...input,
-      },
+      callExp.shallowPath,
+      constraintInfo.argPosition,
       _modifiedAst,
       programMemory
     )
@@ -834,37 +829,9 @@ export function deleteSegmentFromPipeExpression(
   return _modifiedAst
 }
 
-export function makeRemoveSingleConstraintInput(
-  argPosition: ConstrainInfo['argPosition'],
-  pathToNode: PathToNode
-): Parameters<typeof removeSingleConstraintInfo>[0] | false {
-  return argPosition?.type === 'singleValue'
-    ? {
-        pathToCallExp: pathToNode,
-      }
-    : argPosition?.type === 'arrayItem'
-    ? {
-        pathToCallExp: pathToNode,
-        arrayIndex: argPosition.index,
-      }
-    : argPosition?.type === 'objectProperty'
-    ? {
-        pathToCallExp: pathToNode,
-        objectProperty: argPosition.key,
-      }
-    : false
-}
-
 export function removeSingleConstraintInfo(
-  {
-    pathToCallExp,
-    arrayIndex,
-    objectProperty,
-  }: {
-    pathToCallExp: PathToNode
-    arrayIndex?: number
-    objectProperty?: string
-  },
+  pathToCallExp: PathToNode,
+  argDetails: SimplifiedArgDetails,
   ast: Program,
   programMemory: ProgramMemory
 ):
@@ -875,8 +842,7 @@ export function removeSingleConstraintInfo(
   | false {
   const transform = removeSingleConstraint({
     pathToCallExp,
-    arrayIndex,
-    objectProperty,
+    inputDetails: argDetails,
     ast,
   })
   if (!transform) return false
