@@ -3,6 +3,7 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
+import { isDesktop } from 'lib/isDesktop'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()
@@ -47,7 +48,9 @@ export default function OnboardingParametricModeling() {
           </p>
           <figure className="my-4 w-2/3 mx-auto">
             <img
-              src={`/onboarding-bracket${getImageTheme()}.png`}
+              src={`${
+                isDesktop() ? '.' : ''
+              }/onboarding-bracket${getImageTheme()}.png`}
               alt="Bracket"
             />
             <figcaption className="text-small italic text-center">
@@ -64,7 +67,9 @@ export default function OnboardingParametricModeling() {
           </p>
           <figure className="my-4 w-2/3 mx-auto">
             <img
-              src={`/onboarding-bracket-dimensions${getImageTheme()}.png`}
+              src={`${
+                isDesktop() ? '.' : ''
+              }/onboarding-bracket-dimensions${getImageTheme()}.png`}
               alt="Bracket Dimensions"
             />
             <figcaption className="text-small italic text-center">
