@@ -22,7 +22,7 @@ pub enum SketchSurfaceOrGroup {
     SketchGroup(Box<SketchGroup>),
 }
 
-/// Data for drawing an angled line that intersects with a given line.
+/// Data for drawing an circle
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
