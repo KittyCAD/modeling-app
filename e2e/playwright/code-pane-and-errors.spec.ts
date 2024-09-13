@@ -65,6 +65,8 @@ const extrude001 = extrude(5, sketch001)`
   test('Opening and closing the code pane will consistently show error diagnostics', async ({
     page,
   }) => {
+    await page.goto('http://localhost:3000');
+
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -90,7 +92,7 @@ const extrude001 = extrude(5, sketch001)`
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
-    await page.getByText('extrude(').click()
+    await page.getByText('thickness, bracketLeg1Sketch)').click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
