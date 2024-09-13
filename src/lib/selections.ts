@@ -617,14 +617,14 @@ function codeToIdSelections(
 
 export async function sendSelectEventToEngine(
   e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
-  el: HTMLVideoElement,
-  streamDimensions: { streamWidth: number; streamHeight: number }
+  el: HTMLVideoElement
 ) {
   const { x, y } = getNormalisedCoordinates({
     clientX: e.clientX,
     clientY: e.clientY,
     el,
-    ...streamDimensions,
+    streamWidth: el.clientWidth,
+    streamHeight: el.clientHeight,
   })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
