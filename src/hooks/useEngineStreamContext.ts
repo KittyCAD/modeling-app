@@ -21,38 +21,39 @@ import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
 
 export enum EngineStreamState {
+  Off = 'off',
+  On = 'on',
   Playing = 'playing',
   Paused = 'paused',
   Resuming = 'resuming',
-  NotSetup = 'not-setup',
-  IsSetup = 'is-setup',
-  EngineStartedOrReconfigured = 'engine-started-or-reconfigured',
 }
 
 export enum EngineStreamTransition {
-  SetContextProperty= 'set-context-property',
+  SetMediaStream = 'set-context',
   Play = 'play',
   Resume = 'resume',
   Pause = 'pause',
   StartOrReconfigureEngine = 'start-or-reconfigure-engine',
-  IsSetup = 'is-setup',
 }
 
 export interface EngineStreamContext {
+  pool: string | null,
   authToken: string | null,
-  mediaStreamRef: MutableRefObject<MediaStream | null>,
+  mediaStream: MediaStream | null,
   videoRef: MutableRefObject<HTMLVideoElement | null>,
   canvasRef: MutableRefObject<HTMLCanvasElement | null>,
 }
 
 function getDimensions(streamWidth: number, streamHeight: number) {
-  // Scaling for either portrait or landscape
-  const maxHeightResolution = streamWidth > streamHeight ? 1080 : 1920
-  const aspectRatio = 16/9
-  const height = Math.min(streamHeight, maxHeightResolution)
-  const width = height * aspectRatio
-
-  return { width, height }
+  const factorOf = 4
+  const maxResolution = 2160
+  const ratio = Math.min(
+    Math.min(maxResolution / streamWidth, maxResolution / streamHeight),
+    1.0
+  )
+  const quadWidth = Math.round((streamWidth * ratio) / factorOf) * factorOf
+  const quadHeight = Math.round((streamHeight * ratio) / factorOf) * factorOf
+  return { width: quadWidth, height: quadHeight }
 }
 
 const engineStreamMachine = setup({
@@ -61,22 +62,14 @@ const engineStreamMachine = setup({
       input: {} as EngineStreamContext,
     },
     actions: {
-      [EngineStreamTransition.SetContextProperty]({ context, event }) {
-        const nextContext = {
-          ...context,
-          ...event.value,
-        }
-        assign(nextContext)
-        return nextContext.authToken && nextContext.videoRef.current && nextContext.canvasRef.current
-      },
-      [EngineStreamTransition.Play]({ context }, params: { reconnect: boolean }) {
+      [EngineStreamTransition.Play]({ context }) {
         const canvas = context.canvasRef.current
         if (!canvas) return false
 
         const video = context.videoRef.current
         if (!video) return false
 
-        const mediaStream = context.mediaStreamRef.current
+        const mediaStream = context.mediaStream
         if (!mediaStream) return false
 
         video.style.display = "block"
@@ -86,7 +79,6 @@ const engineStreamMachine = setup({
         video.play().catch((e) => {
             console.warn('Video playing was prevented', e, video)
         }).then(() => {
-          if (params.reconnect) return
           kclManager.executeCode(true)
         })
       },
@@ -117,28 +109,42 @@ const engineStreamMachine = setup({
           // leave everything at pausing, preventing video decoders from running
           // but we can do even better by significantly reducing network
           // cards also.
-          context.mediaStreamRef.current?.getVideoTracks()[0].stop()
+          context.mediaStream?.getVideoTracks()[0].stop()
           video.srcObject = null
-          context.mediaStreamRef.current = null
+
+          engineCommandManager.tearDown({ idleMode: true })
         })
       },
-      async [EngineStreamTransition.StartOrReconfigureEngine]({ context, event: { modelingMachineActorSend, settings, setAppState } }) {
+      async [EngineStreamTransition.StartOrReconfigureEngine]({ context, event }) {
         if (!context.authToken) return
+
+        const video = context.videoRef.current
+        if (!video) return
 
         const { width, height } = getDimensions(
           window.innerWidth,
           window.innerHeight,
         )
 
-        engineCommandManager.settings = settings
+        video.width = width
+        video.height = height
+
+        const settingsNext = {
+          // override the pool param (?pool=) to request a specific engine instance
+          // from a particular pool.
+          pool: context.pool,
+          ...event.settings,
+        }
+
+        engineCommandManager.settings = settingsNext
 
         engineCommandManager.start({
-          setMediaStream: (mediaStream) => context.mediaStreamRef.current = mediaStream,
-          setIsStreamReady: (isStreamReady) => setAppState({ isStreamReady }),
+          setMediaStream: event.onMediaStream,
+          setIsStreamReady: (isStreamReady) => event.setAppState({ isStreamReady }),
           width,
           height,
           token: context.authToken,
-          settings,
+          settings: settingsNext,
           makeDefaultPlanes: () => {
             return makeDefaultPlanes(kclManager.engineCommandManager)
           },
@@ -147,7 +153,7 @@ const engineStreamMachine = setup({
           },
         })
 
-        modelingMachineActorSend({
+        event.modelingMachineActorSend({
           type: 'Set context',
           data: {
             streamDimensions: {
@@ -157,38 +163,41 @@ const engineStreamMachine = setup({
           },
         })
       },
+      async [EngineStreamTransition.Resume]({ context, event }) {
+        // engineCommandManager.engineConnection?.reattachMediaStream()
+      },
     }
   }).createMachine({
-    context: {
-      mediaStreamRef: { current: null },
-      videoRef: { current: null },
-      canvasRef: { current: null },
-      authToken: null,
-    },
-    initial: EngineStreamState.NotSetup,
+    context: (initial) => initial.input,
+    initial: EngineStreamState.Off,
     states: {
-      [EngineStreamState.NotSetup]: {
+      [EngineStreamState.Off]: {
         on: {
-          [EngineStreamTransition.SetContextProperty]: {
-            target: EngineStreamState.IsSetup,
-            actions: { type: EngineStreamTransition.SetContextProperty },
+          [EngineStreamTransition.StartOrReconfigureEngine]: {
+            target: EngineStreamState.On,
+            actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine } ]
+          }
+        }
+      },
+      [EngineStreamState.On]: {
+        on: {
+          [EngineStreamTransition.SetMediaStream]: {
+            target: EngineStreamState.On,
+            actions: [ assign({ mediaStream: ({ context, event }) => event.mediaStream }) ]
           },
-        }
-      },
-      [EngineStreamState.IsSetup]: {
-        always: {
-          target: EngineStreamState.EngineStartedOrReconfigured,
-          actions: [ { type: EngineStreamTransition.StartOrReconfigureEngine }  ]
-        }
-      },
-      [EngineStreamState.EngineStartedOrReconfigured]: {
-        always: {
-          target: EngineStreamState.Playing,
-          actions: [ { type: EngineStreamTransition.Play , params: { reconnect: false } } ]
+          [EngineStreamTransition.Play]: {
+            target: EngineStreamState.Playing,
+            actions: [ { type: EngineStreamTransition.Play } ]
+          }
         }
       },
       [EngineStreamState.Playing]: {
         on: {
+          [EngineStreamTransition.StartOrReconfigureEngine]: {
+            target: EngineStreamState.Playing,
+            reenter: true,
+            actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine } ]
+          },
           [EngineStreamTransition.Pause]: {
             target: EngineStreamState.Paused,
             actions: [ { type: EngineStreamTransition.Pause } ]
@@ -197,15 +206,22 @@ const engineStreamMachine = setup({
       },
       [EngineStreamState.Paused]: {
         on: {
-          [EngineStreamTransition.Resume]: {
+          [EngineStreamTransition.StartOrReconfigureEngine]: {
             target: EngineStreamState.Resuming,
+            actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine } ]
           },
         }
       },
       [EngineStreamState.Resuming]: {
-        always: {
-          target: EngineStreamState.Playing,
-          actions: [ { type: EngineStreamTransition.Play, params: { reconnect: true } } ]
+        on: {
+          [EngineStreamTransition.SetMediaStream]: {
+            target: EngineStreamState.Resuming,
+            actions: [ assign({ mediaStream: ({ context, event }) => event.mediaStream }) ]
+          },
+          [EngineStreamTransition.Play]: {
+            target: EngineStreamState.Playing,
+            actions: [ { type: EngineStreamTransition.Play } ]
+          }
         }
       },
     }

@@ -122,9 +122,6 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
-  let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
-
   const { commandBarState, commandBarSend } = useCommandsContext()
 
   // Settings machine setup

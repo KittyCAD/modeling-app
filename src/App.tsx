@@ -4,6 +4,7 @@ import { Stream } from './components/Stream'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData, useNavigate } from 'react-router-dom'
+import { getNormalisedCoordinates } from './lib/utils'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -32,6 +33,12 @@ export function App() {
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
   const ref = useRef<HTMLDivElement>(null)
+
+  // Stream related refs and data
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
@@ -73,21 +80,35 @@ export function App() {
   useEngineConnectionSubscriptions()
 
   return (
-    <div className="relative h-full flex flex-col" ref={ref}>
-      <AppHeader
-        className={'transition-opacity transition-duration-75 ' + paneOpacity}
-        project={{ project, file }}
-        enableMenu={true}
-      />
-      <ModalContainer />
-      <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream />
-      {/* <CamToggle /> */}
-      <LowerRightControls coreDumpManager={coreDumpManager}>
-        <UnitsMenu />
-        <Gizmo />
-        <CameraProjectionToggle />
-      </LowerRightControls>
+    <div
+      className="relative h-full flex flex-col"
+      onMouseMove={handleMouseMove}
+      ref={ref}
+    >
+        <AppHeader
+          className={'transition-opacity transition-duration-75 ' + paneOpacity}
+          project={{ project, file }}
+          enableMenu={true}
+        />
+        <ModalContainer />
+        <ModelingSidebar paneOpacity={paneOpacity} />
+        <EngineStreamContext.Provider options={{
+          input: {
+            videoRef,
+            canvasRef,
+            mediaStream: null,
+            authToken: auth?.context?.token ?? null,
+            pool
+          }
+        }}>
+          <EngineStream />
+        </EngineStreamContext.Provider>
+        {/* <CamToggle /> */}
+        <LowerRightControls coreDumpManager={coreDumpManager}>
+          <UnitsMenu />
+          <Gizmo />
+          <CameraProjectionToggle />
+        </LowerRightControls>
     </div>
   )
 }
