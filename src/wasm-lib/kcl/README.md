@@ -18,3 +18,11 @@ We've built a lot of tooling to make contributing to KCL easier. If you are inte
 10. Run `TWENTY_TWENTY=overwrite cargo nextest run --workspace --no-fail-fast` to take snapshot tests of your example code running in the engine
 11. Run `EXPECTORATE=overwrite cargo test --all generate_stdlib -- --nocapture` to generate new Markdown documentation for your function that will be used [to generate docs on our website](https://zoo.dev/docs/kcl).
 12. Create a PR in GitHub.
+
+## Bumping the version
+
+If you bump the version of kcl-lib and push it to crates, be sure to update the repos we own that use it as well. These are:
+
+- [kcl.py](https://github.com/kittycad/kcl.py)
+- [kcl-lsp](https://github.com/kittycad/kcl-lsp)
+- [cli](https://github.com/kittycad/cli)

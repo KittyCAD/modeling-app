@@ -1,5 +1,4 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -28,10 +27,9 @@ enum StreamState {
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
-  const { state, send, context } = useModelingContext()
+  const { state, send } = useModelingContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
@@ -53,13 +51,12 @@ export const Stream = () => {
    * executed. If we can find a way to do this from a more
    * central place, we can move this code there.
    */
-  async function executeCodeAndPlayStream() {
-    kclManager.isFirstRender = true
-    kclManager.executeCode(true).then(() => {
-      videoRef.current?.play().catch((e) => {
+  function executeCodeAndPlayStream() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    kclManager.executeCode(true).then(async () => {
+      await videoRef.current?.play().catch((e) => {
         console.warn('Video playing was prevented', e, videoRef.current)
       })
-      kclManager.isFirstRender = false
       setStreamState(StreamState.Playing)
     })
   }
@@ -219,15 +216,15 @@ export const Stream = () => {
    * Play the vid
    */
   useEffect(() => {
-    if (!kclManager.isFirstRender) {
-      setTimeout(() =>
+    if (!kclManager.isExecuting) {
+      setTimeout(() => {
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
-      )
+      })
     }
-  }, [kclManager.isFirstRender])
+  }, [kclManager.isExecuting])
 
   useEffect(() => {
     if (
@@ -257,74 +254,15 @@ export const Stream = () => {
     setIsLoading(false)
   }, [mediaStream])
 
-  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (!videoRef.current) return
-    if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
-
-    const { x, y } = getNormalisedCoordinates({
-      clientX: e.clientX,
-      clientY: e.clientY,
-      el: videoRef.current,
-      ...context.store?.streamDimensions,
-    })
-
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: e.button,
-      },
-    })
-    setClickCoords({ x, y })
-  }
-
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
     if (!videoRef.current) return
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: undefined,
-      },
-    })
     if (state.matches('Sketch')) return
-    if (state.matches('idle.showPlanes')) return
+    if (state.matches({ idle: 'showPlanes' })) return
 
-    if (!context.store?.didDragInStream && btnName(e).left) {
-      sendSelectEventToEngine(
-        e,
-        videoRef.current,
-        context.store?.streamDimensions
-      )
-    }
-
-    send({
-      type: 'Set context',
-      data: {
-        didDragInStream: false,
-      },
-    })
-    setClickCoords(undefined)
-  }
-
-  const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
-    if (!clickCoords) return
-
-    const delta =
-      ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
-      0.5
-
-    if (delta > 5 && !context.store?.didDragInStream) {
-      send({
-        type: 'Set context',
-        data: {
-          didDragInStream: true,
-        },
-      })
+    if (btnName(e).left) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sendSelectEventToEngine(e, videoRef.current)
     }
   }
 
@@ -333,8 +271,7 @@ export const Stream = () => {
       className="absolute inset-0 z-0"
       id="stream"
       data-testid="stream"
-      onMouseUp={handleMouseUp}
-      onMouseDown={handleMouseDown}
+      onClick={handleMouseUp}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -344,7 +281,6 @@ export const Stream = () => {
         autoPlay
         controls={false}
         onPlay={() => setIsLoading(false)}
-        onMouseMoveCapture={handleMouseMove}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
         id="video-stream"
@@ -382,15 +318,15 @@ export const Stream = () => {
           </div>
         </div>
       )}
-      {(!isNetworkOkay || isLoading || kclManager.isFirstRender) && (
+      {(!isNetworkOkay || isLoading) && (
         <div className="text-center absolute inset-0">
           <Loading>
-            {!isNetworkOkay && !isLoading && !kclManager.isFirstRender ? (
+            {!isNetworkOkay && !isLoading ? (
               <span data-testid="loading-stream">Stream disconnected...</span>
-            ) : !isLoading && kclManager.isFirstRender ? (
-              <span data-testid="loading-stream">Building scene...</span>
             ) : (
-              <span data-testid="loading-stream">Loading stream...</span>
+              !isLoading && (
+                <span data-testid="loading-stream">Loading stream...</span>
+              )
             )}
           </Loading>
         </div>

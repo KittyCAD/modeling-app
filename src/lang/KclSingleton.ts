@@ -4,6 +4,7 @@ import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
@@ -58,8 +59,6 @@ export class KclManager {
   private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
-
-  isFirstRender = true
 
   get ast() {
     return this._ast
@@ -122,6 +121,7 @@ export class KclManager {
   get isExecuting() {
     return this._isExecuting
   }
+
   set isExecuting(isExecuting) {
     this._isExecuting = isExecuting
     // If we have finished executing, but the execute is stale, we should
@@ -129,8 +129,8 @@ export class KclManager {
     if (!isExecuting && this.executeIsStale) {
       const args = this.executeIsStale
       this.executeIsStale = null
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.executeAst(args)
-    } else {
     }
     this._isExecutingCallback(isExecuting)
   }
@@ -154,6 +154,7 @@ export class KclManager {
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(() => {
       this.ast = this.safeParse(codeManager.code) || this.ast
     })
@@ -232,6 +233,12 @@ export class KclManager {
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
     if (this.isExecuting) {
       this.executeIsStale = args
+
+      // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
+      // A new executeAst will start.
+      this.engineCommandManager.rejectAllModelingCommands(
+        EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      )
       // Exit early if we are already executing.
       return
     }
@@ -245,44 +252,38 @@ export class KclManager {
     // Make sure we clear before starting again. End session will do this.
     this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
-    const { logs, errors, programMemory } = await executeAst({
+    const { logs, errors, programMemory, isInterrupted } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
     })
 
-    this.lints = await lintAst({ ast: ast })
+    // Program was not interrupted, setup the scene
+    // Do not send send scene commands if the program was interrupted, go to clean up
+    if (!isInterrupted) {
+      this.lints = await lintAst({ ast: ast })
 
-    sceneInfra.modelingSend({ type: 'code edit during sketch' })
-    defaultSelectionFilter(programMemory, this.engineCommandManager)
-    await this.engineCommandManager.waitForAllCommands()
+      sceneInfra.modelingSend({ type: 'code edit during sketch' })
+      defaultSelectionFilter(programMemory, this.engineCommandManager)
 
-    if (args.zoomToFit) {
-      let zoomObjectId: string | undefined = ''
-      if (args.zoomOnRangeAndType) {
-        zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
-          args.zoomOnRangeAndType.range,
-          args.zoomOnRangeAndType.type
-        )
+      if (args.zoomToFit) {
+        let zoomObjectId: string | undefined = ''
+        if (args.zoomOnRangeAndType) {
+          zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
+            args.zoomOnRangeAndType.range,
+            args.zoomOnRangeAndType.type
+          )
+        }
+
+        await this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'zoom_to_fit',
+            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
+            padding: 0.1, // padding around the objects
+          },
+        })
       }
-
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'zoom_to_fit',
-          object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-          padding: 0.1, // padding around the objects
-        },
-      })
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'zoom_to_fit',
-          object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-          padding: 0.1, // padding around the objects
-        },
-      })
     }
 
     this.isExecuting = false
@@ -293,7 +294,8 @@ export class KclManager {
       return
     }
     this.logs = logs
-    this.addKclErrors(errors)
+    // Do not add the errors since the program was interrupted and the error is not a real KCL error
+    this.addKclErrors(isInterrupted ? [] : errors)
     this.programMemory = programMemory
     this.ast = { ...ast }
     this._executeCallback()
@@ -301,6 +303,7 @@ export class KclManager {
       type: 'execution-done',
       data: null,
     })
+
     this._cancelTokens.delete(currentExecutionId)
   }
   // NOTE: this always updates the code state and editor.
@@ -398,7 +401,12 @@ export class KclManager {
     // Update the code state and the editor.
     codeManager.updateCodeStateEditor(code)
     // Write back to the file system.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     codeManager.writeToFile()
+
+    // execute the code.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.executeCode()
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
@@ -536,6 +544,7 @@ function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   programMemory.hasSketchOrExtrudeGroup() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',

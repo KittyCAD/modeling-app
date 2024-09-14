@@ -133,7 +133,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
           children: 'Sign out',
-          onClick: () => send('Log out'),
+          onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
       ].filter(
@@ -217,7 +217,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   </p>
                   {displayedName !== user.email && (
                     <p
-                      className="m-0 text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                      className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
                       data-testid="email"
                     >
                       {user.email}

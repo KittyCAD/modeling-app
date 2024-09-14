@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { getUtils, setupElectron, tearDown } from './test-utils'
+import { join } from 'path'
+import {
+  getUtils,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import fsp from 'fs/promises'
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -10,22 +16,19 @@ test(
   'export works on the first try',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await Promise.all([fsp.mkdir(`${dir}/bracket`, { recursive: true })])
+        const bracketDir = join(dir, 'bracket')
+        await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/bracket/other.kcl`
+            executorInputPath('router-template-slate.kcl'),
+            join(bracketDir, 'other.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           ),
         ])
       },
@@ -40,18 +43,18 @@ test(
       // open the project
       await page.getByText(`bracket`).click()
 
-      // wait for the project to load
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
       // expect zero errors in guter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
       // export the model
       const exportButton = page.getByTestId('export-pane-button')
       await expect(exportButton).toBeVisible()
+
+      // Wait for the model to finish loading
+      const modelStateIndicator = page.getByTestId(
+        'model-state-indicator-execution-done'
+      )
+      await expect(modelStateIndicator).toBeVisible({ timeout: 60000 })
 
       const gltfOption = page.getByText('glTF')
       const submitButton = page.getByText('Confirm Export')
@@ -101,7 +104,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBe(477327)
+          .toBe(477481)
 
         // clean up output.gltf
         await fsp.rm('output.gltf')

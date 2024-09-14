@@ -12,7 +12,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
-import { getInitialDefaultDir } from 'lib/desktop'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
 import { PATHS } from 'lib/paths'
@@ -20,6 +19,8 @@ import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -54,7 +55,7 @@ export const AllSettingsFields = forwardRef(
           )
         : undefined
 
-    async function restartOnboarding() {
+    function restartOnboarding() {
       send({
         type: `set.app.onboardingStatus`,
         data: { level: 'user', value: '' },
@@ -82,6 +83,7 @@ export const AllSettingsFields = forwardRef(
           }
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigateToOnboardingStart()
     }, [isFileSettings, navigate, state])
 
@@ -190,7 +192,7 @@ export const AllSettingsFields = forwardRef(
               {isDesktop() && (
                 <ActionButton
                   Element="button"
-                  onClick={async () => {
+                  onClick={toSync(async () => {
                     const paths = await getSettingsFolderPaths(
                       projectPath ? decodeURIComponent(projectPath) : undefined
                     )
@@ -199,7 +201,7 @@ export const AllSettingsFields = forwardRef(
                       return new Error('finalPath undefined')
                     }
                     window.electron.showInFolder(finalPath)
-                  }}
+                  }, reportRejection)}
                   iconStart={{
                     icon: 'folder',
                     size: 'sm',
@@ -211,13 +213,14 @@ export const AllSettingsFields = forwardRef(
               )}
               <ActionButton
                 Element="button"
-                onClick={async () => {
-                  const defaultDirectory = await getInitialDefaultDir()
+                onClick={() => {
                   send({
                     type: 'Reset settings',
-                    defaultDirectory,
+                    level: searchParamTab,
                   })
-                  toast.success('Settings restored to default')
+                  toast.success(
+                    `Your ${searchParamTab}-level settings were reset`
+                  )
                 }}
                 iconStart={{
                   icon: 'refresh',
@@ -226,7 +229,7 @@ export const AllSettingsFields = forwardRef(
                   bgClassName: 'bg-destroy-70',
                 }}
               >
-                Restore default settings
+                Reset {searchParamTab}-level settings
               </ActionButton>
             </div>
           </SettingsSection>

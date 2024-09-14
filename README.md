@@ -110,7 +110,6 @@ Which commands from setup are one off vs need to be run every time?
 The following will need to be run when checking out a new commit and guarantees the build is not stale:
 ```bash
 yarn install
-yarn wasm-prep
 yarn build:wasm-dev # or yarn build:wasm for slower but more production-like build
 yarn start # or yarn build:local && yarn serve for slower but more production-like build
 ```
@@ -189,12 +188,22 @@ For more information on fuzzing you can check out
 
 ### Playwright tests
 
+You will need a `./e2e/playwright/playwright-secrets.env` file:
+
+```bash
+$ touch ./e2e/playwright/playwright-secrets.env
+$ cat ./e2e/playwright/playwright-secrets.env
+token=<dev.zoo.dev/account/api-tokens>
+snapshottoken=<your-snapshot-token>
+```
+
 For a portable way to run Playwright you'll need Docker.
 
+#### Generic example
 After that, open a terminal and run:
 
 ```bash
-docker run --network host  --rm --init -it playwright/chrome:playwright-1.43.1
+docker run --network host  --rm --init -it playwright/chrome:playwright-x.xx.x
 ```
 
 and in another terminal, run:
@@ -203,20 +212,26 @@ and in another terminal, run:
 PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" <test suite>
 ```
 
-An example of a `<test suite>` is: `e2e/playwright/flow-tests.spec.ts`
 
-YOU WILL NEED A PLAYWRIGHT-SECRETS.ENV FILE:
+#### Specific example
 
+open a terminal and run:
 
 ```bash
-# ./e2e/playwright/playwright-secrets.env
-token=<your-token>
-snapshottoken=<your-snapshot-token>
+docker run --network host  --rm --init -it playwright/chrome:playwright-1.46.0
 ```
-then replace "your-token" with a dev token from dev.zoo.dev/account/api-tokens
+
+and in another terminal, run:
+
+```bash
+PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" e2e/playwright/command-bar-tests.spec.ts
+```
 
 run a specific test change the test from `test('...` to `test.only('...`
 (note if you commit this, the tests will instantly fail without running any of the tests)
+
+
+**Gotcha**: running the docker container with a mismatched image against your `./node_modules/playwright` will cause a failure. Make sure the versions are matched and up to date.
 
 run headed
 
@@ -335,25 +350,6 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 ```
 
 </details>
-
-### Tauri e2e tests
-
-#### Windows (local only until the CI edge version mismatch is fixed)
-
-```
-yarn install
-yarn build:wasm-dev
-cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
-yarn vite build --mode development
-yarn tauri build --debug -b
-$env:KITTYCAD_API_TOKEN="<YOUR_KITTYCAD_API_TOKEN>"
-$env:VITE_KC_API_BASE_URL="https://api.dev.zoo.dev"
-$env:E2E_TAURI_ENABLED="true"
-$env:TS_NODE_COMPILER_OPTIONS='{"module": "commonjs"}'
-$env:E2E_APPLICATION=".\src-tauri\target\debug\Zoo Modeling App.exe"
-Stop-Process -Name msedgedriver
-yarn wdio run wdio.conf.ts
-```
 
 ## KCL
 

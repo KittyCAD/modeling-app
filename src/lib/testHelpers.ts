@@ -7,7 +7,8 @@ import { EngineCommand } from 'lang/std/artifactGraph'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
+import { toSync } from './utils'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 
@@ -85,6 +86,7 @@ export async function enginelessExecutor(
     setIsStreamReady: () => {},
     setMediaStream: () => {},
   }) as any as EngineCommandManager
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   mockEngineCommandManager.startNewSession()
   const programMemory = await _executor(ast, pm, mockEngineCommandManager, true)
   await mockEngineCommandManager.waitForAllCommands()
@@ -112,7 +114,8 @@ export async function executor(
   return new Promise((resolve) => {
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
-      async () => {
+      toSync(async () => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         engineCommandManager.startNewSession()
         const programMemory = await _executor(
           ast,
@@ -121,8 +124,8 @@ export async function executor(
           false
         )
         await engineCommandManager.waitForAllCommands()
-        Promise.resolve(programMemory)
-      }
+        resolve(programMemory)
+      }, reportRejection)
     )
   })
 }

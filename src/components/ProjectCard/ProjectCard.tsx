@@ -7,7 +7,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from '../Tooltip'
 import { DeleteConfirmationDialog } from './DeleteProjectDialog'
 import { ProjectCardRenameForm } from './ProjectCardRenameForm'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 function ProjectCard({
   project,
@@ -165,10 +167,10 @@ function ProjectCard({
       {isConfirmingDelete && (
         <DeleteConfirmationDialog
           title="Delete Project"
-          onConfirm={async () => {
+          onConfirm={toSync(async () => {
             await handleDeleteProject(project)
             setIsConfirmingDelete(false)
-          }}
+          }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >
           <p className="my-4">

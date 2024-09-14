@@ -36,6 +36,7 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 /// face, leaving it open in that direction.
 ///
 /// ```no_run
+/// // Remove the end face for the extrusion.
 /// const firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -52,6 +53,7 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 /// ```
 ///
 /// ```no_run
+/// // Remove the start face for the extrusion.
 /// const firstSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -68,6 +70,7 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 /// ```
 ///
 /// ```no_run
+/// // Remove a tagged face and the end face for the extrusion.
 /// const firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -81,6 +84,69 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 ///     faces: [myTag],
 ///     thickness: 0.25,
 /// }, firstSketch)
+/// ```
+///
+/// ```no_run
+/// // Remove multiple faces at once.
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %, $myTag)
+///     |> close(%)
+///     |> extrude(6, %)
+///
+/// // Remove a tagged face and the end face for the extrusion.
+/// shell({
+///     faces: [myTag, 'end'],
+///     thickness: 0.25,
+/// }, firstSketch)
+/// ```
+///
+/// ```no_run
+/// // Shell a sketch on face.
+/// let size = 100
+/// const case = startSketchOn('-XZ')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We put "case" in the shell function to shell the entire object.
+/// shell({ faces: ['start'], thickness: 5 }, case)
+/// ```
+///
+/// ```no_run
+/// // Shell a sketch on face object on the end face.
+/// let size = 100
+/// const case = startSketchOn('XY')
+///     |> startProfileAt([-size, -size], %)
+///     |> line([2 * size, 0], %)
+///     |> line([0, 2 * size], %)
+///     |> tangentialArcTo([-size, size], %)
+///     |> close(%)
+///     |> extrude(65, %)
+///
+/// const thing1 = startSketchOn(case, 'end')
+///     |> circle([-size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// const thing2 = startSketchOn(case, 'end')
+///     |> circle([size / 2, -size / 2], 25, %)
+///     |> extrude(50, %)
+///
+/// // We put "thing1" in the shell function to shell the end face of the object.
+/// shell({ faces: ['end'], thickness: 5 }, thing1)
 /// ```
 #[stdlib {
     name = "shell",
@@ -119,9 +185,71 @@ async fn inner_shell(
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::Solid3DShellFace {
+            hollow: false,
             face_ids,
             object_id: extrude_group.id,
             shell_thickness: data.thickness,
+        },
+    )
+    .await?;
+
+    Ok(extrude_group)
+}
+
+/// Make the inside of a 3D object hollow.
+pub async fn hollow(args: Args) -> Result<KclValue, KclError> {
+    let (thickness, extrude_group): (f64, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    let extrude_group = inner_hollow(thickness, extrude_group, args).await?;
+    Ok(KclValue::ExtrudeGroup(extrude_group))
+}
+
+/// Make the inside of a 3D object hollow.
+///
+/// Remove volume from a 3-dimensional shape such that a wall of the
+/// provided thickness remains around the exterior of the shape.
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///     |> hollow (0.25, %)
+/// ```
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('-XZ')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///     |> hollow (0.5, %)
+/// ```
+#[stdlib {
+    name = "hollow",
+}]
+async fn inner_hollow(
+    thickness: f64,
+    extrude_group: Box<ExtrudeGroup>,
+    args: Args,
+) -> Result<Box<ExtrudeGroup>, KclError> {
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not do these for sketch on face, things will fail with face does not exist.
+    args.flush_batch_for_extrude_group_set(extrude_group.clone().into())
+        .await?;
+
+    args.batch_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        ModelingCmd::Solid3DShellFace {
+            hollow: true,
+            face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
+            object_id: extrude_group.id,
+            shell_thickness: thickness,
         },
     )
     .await?;
