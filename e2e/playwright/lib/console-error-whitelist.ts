@@ -235,9 +235,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     {
       name: '  - internal_engine',
-      stack: `
-
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)`,
+      stack: ``,
       message: ` Nothing to export`,
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/regression-tests.spec.ts',
