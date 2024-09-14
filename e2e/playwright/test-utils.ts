@@ -952,7 +952,7 @@ function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
       if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
         // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
         // use expect to prevent page from closing and not cleaning up
-        expect(`An error was detected in the console: \r\n message: ${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
+        expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
           
           *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
           `).toEqual('Console error detected')

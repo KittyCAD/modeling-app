@@ -235,8 +235,9 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     {
       name: '  - internal_engine',
-      stack: ``,
-      message: ` Nothing to export`,
+      stack: `
+`,
+      message: `Nothing to export`,
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/regression-tests.spec.ts',
     },
@@ -251,10 +252,8 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     {
       name: '{"kind"',
-      stack: `
-
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)`,
-      message: ` engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue(\"Force interrupt, executionIsStale, new AST requested")"}`,
+      stack: ``,
+      message: `engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue("Force interrupt, executionIsStale, new AST requested")"}`,
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
     },
