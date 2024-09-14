@@ -433,10 +433,14 @@ export function canFilletSelection(selection: Selections) {
 }
 
 function canExtrudeSelectionItem(selection: Selections, i: number) {
+  const isolatedSelection = {
+    ...selection,
+    codeBasedSelections: [selection.codeBasedSelections[i]],
+  }
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
   return (
-    !!isSketchPipe(selection) &&
+    !!isSketchPipe(isolatedSelection) &&
     nodeHasClose(commonNode) &&
     !nodeHasExtrude(commonNode)
   )
