@@ -253,7 +253,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     {
       name: '{"kind"',
       stack: ``,
-      message: `engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue("Force interrupt, executionIsStale, new AST requested")"}`,
+      message: `engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue(\\"Force interrupt, executionIsStale, new AST requested\\")"}`,
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
     },
