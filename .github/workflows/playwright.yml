@@ -422,7 +422,8 @@ jobs:
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
         IS_UBUNTU: ${{ startsWith(matrix.os, 'ubuntu') && 'true' || 'false' }}
-        GENERATE_PLAYWRIGHT_COVERAGE: true
+        # see: https://github.com/KittyCAD/modeling-app/issues/3885
+        GENERATE_PLAYWRIGHT_COVERAGE: false
         #DEBUG: 'pw:browser*'
     - name: send to axiom
       if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
