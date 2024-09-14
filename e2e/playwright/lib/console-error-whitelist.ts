@@ -223,6 +223,16 @@ export const isErrorWhitelisted = (exception: Error) => {
         'e2e/playwright/testing-camera-movement.spec.ts Zoom should be consistent when exiting or entering sketches',
       project: 'webkit',
     },
+    {
+      name: 'SecurityError',
+      stack: `SecurityError:  Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+     at <anonymous>:13:5
+     at <anonymous>:18:5
+     at <anonymous>:19:7`,
+      message: `Failed to read the 'localStorage' property from 'Window': Access is denied for this document.`,
+      project: 'Google Chrome',
+      foundInSpec: 'e2e/playwright/basic-sketch.spec.ts',
+    },
   ]
 
   const cleanString = (str: string) => str.replace(/[`"]/g, '')
