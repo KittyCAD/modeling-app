@@ -19,6 +19,7 @@ import {
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
+import { getMarks, mark } from 'lib/performance'
 
 interface ExecuteArgs {
   ast?: Program
@@ -244,6 +245,7 @@ export class KclManager {
     }
 
     const ast = args.ast || this.ast
+    mark('code/startExecuteAst')
 
     const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
@@ -305,6 +307,8 @@ export class KclManager {
     })
 
     this._cancelTokens.delete(currentExecutionId)
+    mark('code/endExecuteAst')
+    console.log(getMarks())
   }
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.

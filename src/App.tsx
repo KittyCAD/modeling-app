@@ -21,6 +21,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
+import { getMarks, mark } from 'lib/performance'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData

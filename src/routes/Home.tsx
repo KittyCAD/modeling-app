@@ -38,6 +38,7 @@ import {
 } from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
+import { getMarks, markOnce } from 'lib/performance'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -53,6 +54,7 @@ const Home = () => {
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
+    markOnce('onHomeLoad')
     kclManager.cancelAllExecutions()
   }, [])
 
