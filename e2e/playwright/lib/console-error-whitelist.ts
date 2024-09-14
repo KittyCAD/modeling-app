@@ -234,11 +234,11 @@ export const isErrorWhitelisted = (exception: Error) => {
       foundInSpec: 'e2e/playwright/basic-sketch.spec.ts',
     },
     {
-      name: ' - internal_engine',
+      name: '  - internal_engine',
       stack: `
 
           *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)`,
-      message: `Nothing to export`,
+      message: ` Nothing to export`,
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/regression-tests.spec.ts',
     },
@@ -250,6 +250,15 @@ export const isErrorWhitelisted = (exception: Error) => {
       message: `Unexpected end of JSON input`,
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/text-to-cad-tests.spec.ts',
+    },
+    {
+      name: '{"kind"',
+      stack: `
+
+          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)`,
+      message: ` engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue(\"Force interrupt, executionIsStale, new AST requested")"}`,
+      project: 'Google Chrome',
+      foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
     },
   ]
 
