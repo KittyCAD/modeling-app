@@ -1,4 +1,4 @@
-import type { FileEntry, IndexLoaderData } from 'lib/types'
+import type { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
@@ -20,6 +20,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
+import { FileEntry } from 'lib/project'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -61,6 +62,7 @@ function RenameForm({
       <label>
         <span className="sr-only">Rename file</span>
         <input
+          data-testid="file-rename-field"
           ref={inputRef}
           type="text"
           autoFocus
@@ -174,13 +176,12 @@ const FileTreeItem = ({
         `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
           codeManager.code
       )
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       codeManager.writeToFile()
 
       // Prevent seeing the model built one piece at a time when changing files
-      kclManager.isFirstRender = true
-      kclManager.executeCode(true).then(() => {
-        kclManager.isFirstRender = false
-      })
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
@@ -244,13 +245,13 @@ const FileTreeItem = ({
                   onClickCapture={(e) =>
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }
                   onFocusCapture={(e) =>
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
@@ -297,13 +298,13 @@ const FileTreeItem = ({
                   onClickCapture={(e) => {
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }}
                   onFocusCapture={(e) =>
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }
                 >
@@ -356,10 +357,18 @@ function FileTreeContextMenu({
     <ContextMenu
       menuTargetElement={itemRef}
       items={[
-        <ContextMenuItem onClick={onRename} hotkey="Enter">
+        <ContextMenuItem
+          data-testid="context-menu-rename"
+          onClick={onRename}
+          hotkey="Enter"
+        >
           Rename
         </ContextMenuItem>,
-        <ContextMenuItem onClick={onDelete} hotkey={metaKey + ' + Del'}>
+        <ContextMenuItem
+          data-testid="context-menu-delete"
+          onClick={onDelete}
+          hotkey={metaKey + ' + Del'}
+        >
           Delete
         </ContextMenuItem>,
       ]}
@@ -381,27 +390,28 @@ interface FileTreeProps {
 export const FileTreeMenu = () => {
   const { send } = useFileContext()
 
-  async function createFile() {
+  function createFile() {
     send({
       type: 'Create file',
       data: { name: '', makeDir: false },
     })
   }
 
-  async function createFolder() {
+  function createFolder() {
     send({
       type: 'Create file',
       data: { name: '', makeDir: true },
     })
   }
 
-  useHotkeyWrapper(['meta + n'], createFile)
-  useHotkeyWrapper(['meta + shift + n'], createFolder)
+  useHotkeyWrapper(['mod + n'], createFile)
+  useHotkeyWrapper(['mod + shift + n'], createFolder)
 
   return (
     <>
       <ActionButton
         Element="button"
+        data-testid="create-file-button"
         iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
@@ -417,6 +427,7 @@ export const FileTreeMenu = () => {
 
       <ActionButton
         Element="button"
+        data-testid="create-folder-button"
         iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',
@@ -473,7 +484,7 @@ export const FileTreeInner = ({
         onClickCapture={(e) => {
           fileSend({
             type: 'Set selected directory',
-            data: fileContext.project,
+            directory: fileContext.project,
           })
         }}
       >

@@ -16,6 +16,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   sketchGroupFromKclValue,
+  ObjectExpression,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -933,4 +934,13 @@ export function hasExtrudableGeometry(ast: Program) {
     },
   })
   return Object.keys(theMap).length > 0
+}
+
+export function getObjExprProperty(
+  node: ObjectExpression,
+  propName: string
+): { expr: Expr; index: number } | null {
+  const index = node.properties.findIndex(({ key }) => key.name === propName)
+  if (index === -1) return null
+  return { expr: node.properties[index].value, index }
 }

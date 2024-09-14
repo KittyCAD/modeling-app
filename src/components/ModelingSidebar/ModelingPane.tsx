@@ -1,6 +1,5 @@
 import styles from './ModelingPane.module.css'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useModelingContext } from 'hooks/useModelingContext'
 import { ActionButton } from 'components/ActionButton'
 import Tooltip from 'components/Tooltip'
 import { CustomIconName } from 'components/CustomIcon'
@@ -69,9 +68,8 @@ export const ModelingPane = ({
 }: ModelingPaneProps) => {
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
-  const { context } = useModelingContext()
   const pointerEventsCssClass =
-    context.store?.buttonDownInStream || onboardingStatus.current === 'camera'
+    onboardingStatus.current === 'camera'
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   return (

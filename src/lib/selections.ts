@@ -5,7 +5,7 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Expr, parse, recast } from 'lang/wasm'
+import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
@@ -20,10 +20,8 @@ import {
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
-  STRAIGHT_SEGMENT,
-  TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
-  PROFILE_START,
+  SEGMENT_BODIES_PLUS_PROFILE_START,
 } from 'clientSideScene/sceneEntities'
 import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
@@ -33,6 +31,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
+  getExtrudeEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -141,17 +140,27 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
+  if (_artifact.type === 'extrudeEdge') {
+    const codeRef = getExtrudeEdgeCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: codeRef.range, type: 'edge' },
+      },
+    }
+  }
   return null
 }
 
 export function getEventForSegmentSelection(
   obj: Object3D<Object3DEventMap>
 ): ModelingMachineEvent | null {
-  const group = getParentGroup(obj, [
-    STRAIGHT_SEGMENT,
-    TANGENTIAL_ARC_TO_SEGMENT,
-    PROFILE_START,
-  ])
+  const group = getParentGroup(obj, SEGMENT_BODIES_PLUS_PROFILE_START)
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
   if (!group && !axisGroup) return null
   if (axisGroup?.userData.type === AXIS_GROUP) {
@@ -285,16 +294,10 @@ export function processCodeMirrorRanges({
 }
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
-  const updated = parse(recast(kclManager.ast))
-  if (err(updated)) return
+  const updated = kclManager.ast
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
-    if (
-      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT, PROFILE_START].includes(
-        segmentGroup?.name
-      )
-    )
-      return
+    if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
     const nodeMeta = getNodeFromPath<CallExpression>(
       updated,
       segmentGroup.userData.pathToNode,
@@ -603,14 +606,14 @@ function codeToIdSelections(
 
 export async function sendSelectEventToEngine(
   e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
-  el: HTMLVideoElement,
-  streamDimensions: { streamWidth: number; streamHeight: number }
+  el: HTMLVideoElement
 ) {
   const { x, y } = getNormalisedCoordinates({
     clientX: e.clientX,
     clientY: e.clientY,
     el,
-    ...streamDimensions,
+    streamWidth: el.clientWidth,
+    streamHeight: el.clientHeight,
   })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',

@@ -16,7 +16,6 @@ import init, {
   parse_app_settings,
   parse_project_settings,
   default_project_settings,
-  parse_project_route,
   base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
@@ -33,7 +32,6 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 import { err } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
@@ -96,8 +94,6 @@ export const wasmUrl = () => {
     : document.location.protocol +
       document.location.pathname.split('/').slice(0, -1).join('/') +
       '/wasm_lib_bg.wasm'
-
-  console.log(`Full URL for WASM: ${fullUrl}`)
 
   return fullUrl
 }
@@ -340,13 +336,16 @@ export function sketchGroupFromKclValue(
   varName: string | null
 ): SketchGroup | Error {
   if (obj?.value?.type === 'SketchGroup') return obj.value
+  if (obj?.value?.type === 'ExtrudeGroup') return obj.value.sketchGroup
+  if (obj?.type === 'ExtrudeGroup') return obj.sketchGroup
   if (!varName) {
     varName = 'a KCL value'
   }
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
+    console.log(obj)
     return new Error(
-      `Expected ${varName} to be a sketchGroup, but it was ${actualType} instead.`
+      `Expected ${varName} to be a sketchGroup or extrudeGroup, but it was ${actualType} instead.`
     )
   } else {
     return new Error(`Expected ${varName} to be a sketchGroup, but it wasn't.`)
@@ -361,6 +360,7 @@ export const executor = async (
 ): Promise<ProgramMemory> => {
   if (err(programMemory)) return Promise.reject(programMemory)
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
@@ -570,6 +570,7 @@ export async function coreDump(
        a new GitHub issue for the user.
      */
     if (openGithubIssue && dump.github_issue_url) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       openWindow(dump.github_issue_url)
     } else {
       console.error(
@@ -609,13 +610,6 @@ export function parseProjectSettings(
   toml: string
 ): DeepPartial<ProjectConfiguration> | Error {
   return parse_project_settings(toml)
-}
-
-export function parseProjectRoute(
-  configuration: DeepPartial<Configuration>,
-  route_str: string
-): ProjectRoute | Error {
-  return parse_project_route(JSON.stringify(configuration), route_str)
 }
 
 export function base64Decode(base64: string): ArrayBuffer | Error {

@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod args;
+pub mod array;
 pub mod assert;
 pub mod chamfer;
 pub mod convert;
@@ -9,8 +10,10 @@ pub mod fillet;
 pub mod helix;
 pub mod import;
 pub mod kcl_stdlib;
+pub mod loft;
 pub mod math;
 pub mod patterns;
+pub mod planes;
 pub mod polar;
 pub mod revolve;
 pub mod segment;
@@ -81,6 +84,7 @@ lazy_static! {
         Box::new(crate::std::sketch::Arc),
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::TangentialArcTo),
+        Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
         Box::new(crate::std::patterns::PatternLinear2D),
@@ -88,6 +92,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::patterns::PatternTransform),
+        Box::new(crate::std::array::ArrayReduce),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
@@ -95,7 +100,10 @@ lazy_static! {
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
         Box::new(crate::std::shell::Shell),
+        Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
+        Box::new(crate::std::loft::Loft),
+        Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
@@ -482,7 +490,7 @@ layout: manual
             buf.push_str(&fn_docs);
 
             // Write the file.
-            expectorate::assert_contents(&format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
+            expectorate::assert_contents(format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
         }
     }
 

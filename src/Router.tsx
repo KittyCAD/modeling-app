@@ -33,7 +33,6 @@ import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
-import { getState, setState } from 'lib/desktop'
 import { CoreDumpManager } from 'lib/coredump'
 import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -42,6 +41,7 @@ import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
+import { reportRejection } from 'lib/trap'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -70,23 +70,6 @@ const router = createRouter([
         path: PATHS.INDEX,
         loader: async () => {
           const onDesktop = isDesktop()
-          if (onDesktop) {
-            const appState = await getState()
-
-            if (appState) {
-              // Reset the state.
-              // We do this so that we load the initial state from the cli but everything
-              // else we can ignore.
-              await setState(undefined)
-              // Redirect to the file if we have a file path.
-              if (appState.current_file) {
-                return redirect(
-                  PATHS.FILE + '/' + encodeURIComponent(appState.current_file)
-                )
-              }
-            }
-          }
-
           return onDesktop
             ? redirect(PATHS.HOME)
             : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
@@ -190,22 +173,24 @@ function CoreDump() {
     () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
-  useHotkeyWrapper(['meta + shift + .'], () => {
-    toast.promise(
-      coreDump(coreDumpManager, true),
-      {
-        loading: 'Starting core dump...',
-        success: 'Core dump completed successfully',
-        error: 'Error while exporting core dump',
-      },
-      {
-        success: {
-          // Note: this extended duration is especially important for Playwright e2e testing
-          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-          duration: 6000,
+  useHotkeyWrapper(['mod + shift + .'], () => {
+    toast
+      .promise(
+        coreDump(coreDumpManager, true),
+        {
+          loading: 'Starting core dump...',
+          success: 'Core dump completed successfully',
+          error: 'Error while exporting core dump',
         },
-      }
-    )
+        {
+          success: {
+            // Note: this extended duration is especially important for Playwright e2e testing
+            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+            duration: 6000,
+          },
+        }
+      )
+      .catch(reportRejection)
   })
   return null
 }

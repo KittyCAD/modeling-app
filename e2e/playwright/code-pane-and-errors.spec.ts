@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test'
 
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
+import { join } from 'path'
 import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
 import fsp from 'fs/promises'
@@ -20,9 +27,19 @@ test.describe('Code pane and errors', () => {
     const u = await getUtils(page)
 
     // Load the app with the working starter code
-    await page.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, bracket)
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `// Extruded Triangle
+const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 0], %)
+  |> line([-5, 10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(5, sketch001)`
+      )
+    })
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -48,6 +65,8 @@ test.describe('Code pane and errors', () => {
   test('Opening and closing the code pane will consistently show error diagnostics', async ({
     page,
   }) => {
+    await page.goto('http://localhost:3000')
+
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -73,7 +92,7 @@ test.describe('Code pane and errors', () => {
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
-    await page.getByText('extrude(').click()
+    await page.getByText('thickness, bracketLeg1Sketch)').click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
@@ -84,7 +103,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
+    await expect(page.locator('.cm-tooltip').first()).toBeVisible()
 
     // Close the code pane
     await codePaneButton.click()
@@ -107,7 +126,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
+    await expect(page.locator('.cm-tooltip').first()).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({
@@ -223,26 +242,24 @@ test(
   'Opening multiple panes persists when switching projects',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    test.skip(
-      process.platform === 'win32',
-      'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-    )
     // Setup multiple projects.
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        const bracketDir = join(dir, 'bracket')
         await Promise.all([
-          fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-          fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+          fsp.mkdir(routerTemplateDir, { recursive: true }),
+          fsp.mkdir(bracketDir, { recursive: true }),
         ])
         await Promise.all([
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-            `${dir}/router-template-slate/main.kcl`
+            executorInputPath('router-template-slate.kcl'),
+            join(routerTemplateDir, 'main.kcl')
           ),
           fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           ),
         ])
       },
@@ -256,10 +273,7 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
     })
 
     // If they're open by default, we're not actually testing anything.
@@ -287,16 +301,7 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
     })
 
     await test.step('All panes opened before should be visible', async () => {

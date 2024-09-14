@@ -2,13 +2,13 @@ import {
   expect,
   Page,
   Download,
-  TestInfo,
   BrowserContext,
+  TestInfo,
   _electron as electron,
   Locator,
+  test,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import os from 'os'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
 import { join } from 'path'
@@ -27,6 +27,8 @@ import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isErrorWhitelisted } from './lib/console-error-whitelist'
+import { isArray } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -44,6 +46,9 @@ export const commonPoints = {
   num1: 7.25,
   num2: 14.44,
 }
+
+export const editorSelector = '[role="textbox"][data-language="kcl"]'
+type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
@@ -74,11 +79,10 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
   await page.locator('.cm-content').click()
-  await page.keyboard.down(hotkey)
+  await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
-  await page.keyboard.up(hotkey)
+  await page.keyboard.up('ControlOrMeta')
   await page.keyboard.press('Backspace')
   await expect(page.locator('.cm-content')).toHaveText('')
 }
@@ -206,7 +210,7 @@ export const wiggleMove = async (
 }
 
 export const circleMove = async (
-  page: any,
+  page: Page,
   x: number,
   y: number,
   steps: number,
@@ -312,13 +316,19 @@ export function normaliseKclNumbers(code: string, ignoreZero = true): string {
   return replaceNumbers(code)
 }
 
-export async function getUtils(page: Page) {
+export async function getUtils(page: Page, test_?: typeof test) {
+  if (!test) {
+    console.warn(
+      'Some methods in getUtils requires test object as second argument'
+    )
+  }
+
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
   const cdpSession =
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
-  return {
+  const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
     waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
@@ -431,46 +441,50 @@ export async function getUtils(page: Page) {
       }
       return maxDiff
     },
-    doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
-      new Promise(async (resolve) => {
-        await page.screenshot({
-          path: './e2e/playwright/temp1.png',
-          fullPage: true,
-        })
-        await fn()
-        const isImageDiff = async () => {
+    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
+      new Promise<boolean>((resolve) => {
+        ;(async () => {
           await page.screenshot({
-            path: './e2e/playwright/temp2.png',
+            path: './e2e/playwright/temp1.png',
             fullPage: true,
           })
-          const screenshot1 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp1.png')
-          )
-          const screenshot2 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp2.png')
-          )
-          const actualDiffCount = pixelMatch(
-            screenshot1.data,
-            screenshot2.data,
-            null,
-            screenshot1.width,
-            screenshot2.height
-          )
-          return actualDiffCount > diffCount
-        }
-
-        // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-        let count = 0
-        const interval = setInterval(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
+          await fn()
+          const isImageDiff = async () => {
+            await page.screenshot({
+              path: './e2e/playwright/temp2.png',
+              fullPage: true,
+            })
+            const screenshot1 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp1.png')
+            )
+            const screenshot2 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp2.png')
+            )
+            const actualDiffCount = pixelMatch(
+              screenshot1.data,
+              screenshot2.data,
+              null,
+              screenshot1.width,
+              screenshot2.height
+            )
+            return actualDiffCount > diffCount
           }
-        }, 50)
+
+          // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
+          let count = 0
+          const interval = setInterval(() => {
+            ;(async () => {
+              count++
+              if (await isImageDiff()) {
+                clearInterval(interval)
+                resolve(true)
+              } else if (count > 100) {
+                clearInterval(interval)
+                resolve(false)
+              }
+            })().catch(reportRejection)
+          }, 50)
+        })().catch(reportRejection)
       }),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
@@ -485,7 +499,127 @@ export async function getUtils(page: Page) {
         networkOptions
       )
     },
+
+    toNormalizedCode: (text: string) => {
+      return text.replace(/\s+/g, '')
+    },
+
+    createAndSelectProject: async (hasText: string) => {
+      return test_?.step(
+        `Create and select project with text "${hasText}"`,
+        async () => {
+          await page.getByTestId('home-new-file').click()
+          const projectLinksPost = page.getByTestId('project-link')
+          await projectLinksPost.filter({ hasText }).click()
+        }
+      )
+    },
+
+    editorTextMatches: async (code: string) => {
+      const editor = page.locator(editorSelector)
+      return expect(editor).toHaveText(code, { useInnerText: true })
+    },
+
+    pasteCodeInEditor: async (code: string) => {
+      return test?.step('Paste in KCL code', async () => {
+        const editor = page.locator(editorSelector)
+        await editor.fill(code)
+        await util.editorTextMatches(code)
+      })
+    },
+
+    clickPane: async (paneId: PaneId) => {
+      return test?.step(`Open ${paneId} pane`, async () => {
+        await page.getByTestId(paneId + '-pane-button').click()
+        await expect(page.locator('#' + paneId + '-pane')).toBeVisible()
+      })
+    },
+
+    createNewFile: async (name: string) => {
+      return test?.step(`Create a file named ${name}`, async () => {
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+      })
+    },
+
+    selectFile: async (name: string) => {
+      return test?.step(`Select ${name}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click()
+      })
+    },
+
+    createNewFileAndSelect: async (name: string) => {
+      return test?.step(`Create a file named ${name}, select it`, async () => {
+        await openFilePanel(page)
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+        const newFile = page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+
+        await expect(newFile).toBeVisible()
+        await newFile.click()
+      })
+    },
+
+    renameFile: async (fromName: string, toName: string) => {
+      return test?.step(`Rename ${fromName} to ${toName}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: fromName })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-rename').click()
+        await page.getByTestId('file-rename-field').fill(toName)
+        await page.keyboard.press('Enter')
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: toName })
+          .click()
+      })
+    },
+
+    deleteFile: async (name: string) => {
+      return test?.step(`Delete ${name}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await page.getByTestId('delete-confirmation').click()
+      })
+    },
+
+    /**
+     * @deprecated Sorry I don't have time to fix this right now, but runs like
+     * the one linked below show me that setting the open panes in this manner is not reliable.
+     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
+     * or you can imperatively open the panes with functions like {openKclCodePanel}
+     * (or we can make a general openPane function that takes a paneId).,
+     * but having a separate initScript does not seem to work reliably.
+     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
+     */
+    panesOpen: async (paneIds: PaneId[]) => {
+      return test?.step(`Setting ${paneIds} panes to be open`, async () => {
+        await page.addInitScript(
+          ({ PERSIST_MODELING_CONTEXT, paneIds }) => {
+            localStorage.setItem(
+              PERSIST_MODELING_CONTEXT,
+              JSON.stringify({ openPanes: paneIds })
+            )
+          },
+          { PERSIST_MODELING_CONTEXT, paneIds }
+        )
+        await page.reload()
+      })
+    },
   }
+
+  return util
 }
 
 type TemplateOptions = Array<number | Array<number>>
@@ -506,7 +640,7 @@ const _makeTemplate = (
   templateParts: TemplateStringsArray,
   ...options: TemplateOptions
 ) => {
-  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  const length = Math.max(...options.map((a) => (isArray(a) ? a[0] : 0)))
   let reExpTemplate = ''
   for (let i = 0; i < length; i++) {
     const currentStr = templateParts.map((str, index) => {
@@ -514,7 +648,7 @@ const _makeTemplate = (
       return (
         escapeRegExp(str) +
         String(
-          Array.isArray(currentOptions)
+          isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
             ? currentOptions
@@ -668,11 +802,6 @@ export const doExport = async (
   }
 }
 
-/**
- * Gets the appropriate modifier key for the platform.
- */
-export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
-
 export async function tearDown(page: Page, testInfo: TestInfo) {
   if (testInfo.status === 'skipped') return
   if (testInfo.status === 'failed') return
@@ -706,7 +835,6 @@ export async function setup(
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-      console.log('TEST_SETTINGS.projects', settings)
     },
     {
       token: secrets.token,
@@ -740,6 +868,7 @@ export async function setup(
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
+  // Trigger a navigation, since loading file:// doesn't.
   await page.reload()
 }
 
@@ -747,10 +876,12 @@ export async function setupElectron({
   testInfo,
   folderSetupFn,
   cleanProjectDir = true,
+  appSettings,
 }: {
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
+  appSettings?: Partial<SaveSettingsPayload>
 }) {
   // create or otherwise clear the folder
   const projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -784,15 +915,19 @@ export async function setupElectron({
 
   if (cleanProjectDir) {
     const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = TOML.stringify({
-      ...TEST_SETTINGS,
-      settings: {
-        app: {
-          ...TEST_SETTINGS.app,
-          projectDirectory: projectDirName,
-        },
-      },
-    })
+    const settingsOverrides = TOML.stringify(
+      appSettings
+        ? { settings: appSettings }
+        : {
+            ...TEST_SETTINGS,
+            settings: {
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+              },
+            },
+          }
+    )
     await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
   }
 
@@ -800,7 +935,7 @@ export async function setupElectron({
 
   await setup(context, page)
 
-  return { electronApp, page }
+  return { electronApp, page, dir: projectDirName }
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
@@ -862,4 +997,34 @@ export async function isOutOfViewInScrollContainer(
     )
 
   return isOutOfView
+}
+
+export async function createProjectAndRenameIt({
+  name,
+  page,
+}: {
+  name: string
+  page: Page
+}) {
+  await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page.getByText('Successfully created')).toBeVisible()
+  await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+  await expect(page.getByText(`project-000`)).toBeVisible()
+  await page.getByText(`project-000`).hover()
+  await page.getByText(`project-000`).focus()
+
+  await page.getByLabel('sketch').first().click()
+
+  await page.waitForTimeout(100)
+
+  // type the name passed in
+  await page.keyboard.press('Backspace')
+  await page.keyboard.type(name)
+
+  await page.getByLabel('checkmark').last().click()
+}
+
+export function executorInputPath(fileName: string): string {
+  return join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
 }

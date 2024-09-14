@@ -134,7 +134,7 @@ async fn inner_pattern_transform<'a>(
     args: &'a Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::new();
+    let mut transform = Vec::with_capacity(usize::try_from(num_repetitions).unwrap());
     for i in 0..num_repetitions {
         let t = make_transform(i, &transform_function, args.source_range).await?;
         transform.push(t);
@@ -162,7 +162,7 @@ async fn inner_pattern_transform<'a>(
 async fn send_pattern_transform(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
-    transform: Vec<kittycad::types::LinearTransform>,
+    transform: Vec<kittycad::types::Transform>,
     extrude_group: &ExtrudeGroup,
     args: &Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
@@ -201,7 +201,7 @@ async fn make_transform<'a>(
     i: u32,
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
-) -> Result<kittycad::types::LinearTransform, KclError> {
+) -> Result<kittycad::types::Transform, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::UserVal(UserVal {
         value: serde_json::Value::Number(i.into()),
@@ -245,10 +245,12 @@ async fn make_transform<'a>(
         Some(x) => array_to_point3d(x, source_ranges.clone())?,
         None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
     };
-    let t = kittycad::types::LinearTransform {
+    let t = kittycad::types::Transform {
         replicate,
         scale: Some(scale.into()),
         translate: Some(translate.into()),
+        // TODO: chalmers to pipe thru to kcl.
+        rotation: None,
     };
     Ok(t)
 }

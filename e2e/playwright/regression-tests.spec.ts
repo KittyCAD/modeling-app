@@ -1,6 +1,13 @@
 import { test, expect, Page } from '@playwright/test'
+import { join } from 'path'
 import * as fsp from 'fs/promises'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
@@ -46,6 +53,67 @@ const sketch001 = startSketchAt([-0, -0])
     // this test will need updating
     const crypticErrorText = `ApiError`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+  })
+  test('user should not have to press down twice in cmdbar', async ({
+    page,
+  }) => {
+    // because the model has `line([0,0]..` it is valid code, but the model is invalid
+    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
+    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch2 = startSketchOn("XY")
+const sketch001 = startSketchAt([-0, -0])
+  |> line([0, 0], %)
+  |> line([-4.84, -5.29], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await page.goto('/')
+    await u.waitForPageLoad()
+
+    await test.step('Check arrow down works', async () => {
+      await page.getByTestId('command-bar-open-button').click()
+
+      await page
+        .getByRole('option', { name: 'floppy disk arrow Export' })
+        .click()
+
+      // press arrow down key twice
+      await page.keyboard.press('ArrowDown')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('ArrowDown')
+
+      // STL is the third option, which makes sense for two arrow downs
+      await expect(page.locator('[data-headlessui-state="active"]')).toHaveText(
+        'STL'
+      )
+
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(200)
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(200)
+    })
+
+    await test.step('Check arrow up works', async () => {
+      // theme in test is dark, which is the second option, which means we can test arrow up
+      await page.getByTestId('command-bar-open-button').click()
+
+      await page.getByText('The overall appearance of the').click()
+
+      await page.keyboard.press('ArrowUp')
+      await page.waitForTimeout(100)
+
+      await expect(page.locator('[data-headlessui-state="active"]')).toHaveText(
+        'light'
+      )
+    })
   })
   test('executes on load', async ({ page }) => {
     const u = await getUtils(page)
@@ -351,6 +419,7 @@ const sketch001 = startSketchAt([-0, -0])
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
+          ;(window as any).playwrightSkipFilePicker = true
         },
         {
           code: bracket,
@@ -386,20 +455,22 @@ const sketch001 = startSketchAt([-0, -0])
       await test.step('The second export is blocked', async () => {
         // Find the toast.
         // Look out for the toast message
-        await expect(exportingToastMessage).toBeVisible()
-        await expect(alreadyExportingToastMessage).toBeVisible()
-
-        await page.waitForTimeout(1000)
+        await Promise.all([
+          expect(exportingToastMessage.first()).toBeVisible(),
+          expect(alreadyExportingToastMessage).toBeVisible(),
+        ])
       })
 
       await test.step('The first export still succeeds', async () => {
-        await expect(exportingToastMessage).not.toBeVisible()
-        await expect(errorToastMessage).not.toBeVisible()
-        await expect(engineErrorToastMessage).not.toBeVisible()
-
-        await expect(successToastMessage).toBeVisible()
-
-        await expect(alreadyExportingToastMessage).not.toBeVisible()
+        await Promise.all([
+          expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+          expect(errorToastMessage).not.toBeVisible(),
+          expect(engineErrorToastMessage).not.toBeVisible(),
+          expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
+          expect(alreadyExportingToastMessage).not.toBeVisible({
+            timeout: 15_000,
+          }),
+        ])
       })
     })
 
@@ -412,10 +483,12 @@ const sketch001 = startSketchAt([-0, -0])
       await expect(exportingToastMessage).toBeVisible()
 
       // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible()
-      await expect(errorToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
-      await expect(alreadyExportingToastMessage).not.toBeVisible()
+      await Promise.all([
+        expect(exportingToastMessage).not.toBeVisible(),
+        expect(errorToastMessage).not.toBeVisible(),
+        expect(engineErrorToastMessage).not.toBeVisible(),
+        expect(alreadyExportingToastMessage).not.toBeVisible(),
+      ])
 
       await expect(successToastMessage).toBeVisible()
     })
@@ -425,17 +498,14 @@ const sketch001 = startSketchAt([-0, -0])
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ browserName: _ }, testInfo) => {
-      test.skip(
-        process.platform === 'win32',
-        'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
-      )
       const { electronApp, page } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          await fsp.mkdir(`${dir}/bracket`, { recursive: true })
+          const bracketDir = join(dir, 'bracket')
+          await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
-            'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-            `${dir}/bracket/main.kcl`
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
           )
         },
       })

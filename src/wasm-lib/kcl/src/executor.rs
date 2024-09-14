@@ -4,6 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use kittycad::types::ModelingSessionData;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -994,20 +995,20 @@ impl SketchSurface {
     }
     pub(crate) fn x_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.x_axis.clone(),
-            SketchSurface::Face(face) => face.x_axis.clone(),
+            SketchSurface::Plane(plane) => plane.x_axis,
+            SketchSurface::Face(face) => face.x_axis,
         }
     }
     pub(crate) fn y_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.y_axis.clone(),
-            SketchSurface::Face(face) => face.y_axis.clone(),
+            SketchSurface::Plane(plane) => plane.y_axis,
+            SketchSurface::Face(face) => face.y_axis,
         }
     }
     pub(crate) fn z_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.z_axis.clone(),
-            SketchSurface::Face(face) => face.z_axis.clone(),
+            SketchSurface::Plane(plane) => plane.z_axis,
+            SketchSurface::Face(face) => face.z_axis,
         }
     }
 }
@@ -1303,7 +1304,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, Default)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -1312,6 +1313,7 @@ pub struct Point3d {
 }
 
 impl Point3d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0, z: 0.0 };
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
@@ -1613,8 +1615,11 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
-    // Show grid?
+    /// Show grid?
     pub show_grid: bool,
+    /// Should engine store this for replay?
+    /// If so, under what name?
+    pub replay: Option<String>,
 }
 
 impl Default for ExecutorSettings {
@@ -1624,6 +1629,7 @@ impl Default for ExecutorSettings {
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
+            replay: None,
         }
     }
 }
@@ -1635,6 +1641,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1646,6 +1653,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1657,15 +1665,17 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
+    /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let ws = client
+        let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
@@ -1675,6 +1685,7 @@ impl ExecutorContext {
                 } else {
                     None
                 },
+                settings.replay.clone(),
                 if settings.show_grid { Some(true) } else { None },
                 None,
                 None,
@@ -1743,6 +1754,7 @@ impl ExecutorContext {
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
+                replay: None,
             },
         )
         .await?;
@@ -1762,6 +1774,16 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
     ) -> Result<ProgramMemory, KclError> {
+        self.run_with_session_data(program, memory).await.map(|x| x.0)
+    }
+    /// Perform the execution of a program.
+    /// You can optionally pass in some initialization memory.
+    /// Kurt uses this for partial execution.
+    pub async fn run_with_session_data(
+        &self,
+        program: &crate::ast::types::Program,
+        memory: Option<ProgramMemory>,
+    ) -> Result<(ProgramMemory, Option<ModelingSessionData>), KclError> {
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
@@ -1778,13 +1800,16 @@ impl ExecutorContext {
             Default::default()
         };
         let mut dynamic_state = DynamicState::default();
-        self.inner_execute(
-            program,
-            &mut memory,
-            &mut dynamic_state,
-            crate::executor::BodyType::Root,
-        )
-        .await
+        let final_memory = self
+            .inner_execute(
+                program,
+                &mut memory,
+                &mut dynamic_state,
+                crate::executor::BodyType::Root,
+            )
+            .await?;
+        let session_data = self.engine.get_session_data();
+        Ok((final_memory, session_data))
     }
 
     /// Execute an AST's program.
@@ -2056,10 +2081,7 @@ fn assign_args_to_params(
             if param.optional {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                let none = KclNone {
-                    start: param.identifier.start,
-                    end: param.identifier.end,
-                };
+                let none = KclNone::new(param.identifier.start, param.identifier.end);
                 fn_memory.add(
                     &param.identifier.name,
                     KclValue::from(&none),

@@ -135,13 +135,16 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
 
 fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     let mut non_code_meta = NonCodeMeta::default();
-    let (head, noncode) = terminated(
-        (expression_but_not_pipe, preceded(whitespace, opt(non_code_node))),
+    let (head, noncode): (_, Vec<_>) = terminated(
+        (
+            expression_but_not_pipe,
+            repeat(0.., preceded(whitespace, non_code_node)),
+        ),
         peek(pipe_surrounded_by_whitespace),
     )
     .context(expected("an expression, followed by the |> (pipe) operator"))
     .parse_next(i)?;
-    if let Some(nc) = noncode {
+    for nc in noncode {
         non_code_meta.insert(0, nc);
     }
     let mut values = vec![head];
@@ -545,7 +548,7 @@ fn array_end_start(i: TokenSlice) -> PResult<ArrayExpression> {
     })
 }
 
-/// Parse n..m into a vec of numbers [n, n+1, ..., m]
+/// Parse n..m into a vec of numbers [n, n+1, ..., m-1]
 fn integer_range(i: TokenSlice) -> PResult<Vec<Expr>> {
     let (token0, floor) = integer.parse_next(i)?;
     double_period.parse_next(i)?;
@@ -586,22 +589,60 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
     })
 }
 
+/// Match something that separates properties of an object.
+fn property_separator(i: TokenSlice) -> PResult<()> {
+    alt((
+        // Normally you need a comma.
+        comma_sep,
+        // But, if the array is ending, no need for a comma.
+        peek(preceded(opt(whitespace), close_brace)).void(),
+    ))
+    .parse_next(i)
+}
+
 /// Parse a KCL object value.
-fn object(i: TokenSlice) -> PResult<ObjectExpression> {
+pub(crate) fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     let start = open_brace(i)?.start;
     ignore_whitespace(i);
-    let properties = separated(0.., object_property, comma_sep)
-        .context(expected(
-            "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
-        ))
-        .parse_next(i)?;
+    let properties: Vec<_> = repeat(
+        0..,
+        alt((
+            terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
+            terminated(object_property, property_separator).map(NonCodeOr::Code),
+        )),
+    )
+    .context(expected(
+        "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
+    ))
+    .parse_next(i)?;
+
+    // Sort the object's properties from the noncode nodes.
+    let (properties, non_code_nodes): (Vec<_>, HashMap<usize, _>) = properties.into_iter().enumerate().fold(
+        (Vec::new(), HashMap::new()),
+        |(mut properties, mut non_code_nodes), (i, e)| {
+            match e {
+                NonCodeOr::NonCode(x) => {
+                    non_code_nodes.insert(i, vec![x]);
+                }
+                NonCodeOr::Code(x) => {
+                    properties.push(x);
+                }
+            }
+            (properties, non_code_nodes)
+        },
+    );
     ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
+    let non_code_meta = NonCodeMeta {
+        non_code_nodes,
+        ..Default::default()
+    };
     Ok(ObjectExpression {
         start,
         end,
         properties,
+        non_code_meta,
         digest: None,
     })
 }
@@ -886,7 +927,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
 
                 match body_items_within_function.parse_next(i) {
                     Err(ErrMode::Backtrack(_)) => {
-                        i.reset(start);
+                        i.reset(&start);
                         break;
                     }
                     Err(e) => return Err(e),
@@ -896,7 +937,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
                 }
             }
             (Err(ErrMode::Backtrack(_)), _) => {
-                i.reset(start);
+                i.reset(&start);
                 break;
             }
             (Err(e), _) => return Err(e),
@@ -1235,7 +1276,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
 
 /// Consume tokens that make up a binary expression, but don't actually return them.
 /// Why not?
-/// Because this is designed to be used with .recognize() within the `binary_expression` parser.
+/// Because this is designed to be used with .take() within the `binary_expression` parser.
 fn binary_expression_tokens(i: TokenSlice) -> PResult<Vec<BinaryExpressionToken>> {
     let first = operand.parse_next(i).map(BinaryExpressionToken::from)?;
     let remaining: Vec<_> = repeat(
@@ -1267,7 +1308,7 @@ fn binary_expression(i: TokenSlice) -> PResult<BinaryExpression> {
 }
 
 fn binary_expr_in_parens(i: TokenSlice) -> PResult<BinaryExpression> {
-    let span_with_brackets = bracketed_section.recognize().parse_next(i)?;
+    let span_with_brackets = bracketed_section.take().parse_next(i)?;
     let n = span_with_brackets.len();
     let mut span_no_brackets = &span_with_brackets[1..n - 1];
     let expr = binary_expression.parse_next(&mut span_no_brackets)?;
@@ -3056,12 +3097,6 @@ e
     }
 
     #[allow(unused)]
-    fn print_tokens(tokens: &[Token]) {
-        for (i, tok) in tokens.iter().enumerate() {
-            println!("{i:.2}: ({:?}):) '{}'", tok.token_type, tok.value.replace("\n", "\\n"));
-        }
-    }
-
     #[test]
     fn array_linesep_no_trailing_comma() {
         let program = r#"[
@@ -3259,6 +3294,7 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let tokens = crate::token::lexer($test_kcl_program).unwrap();
+                print_tokens(&tokens);
                 let actual = match program.parse(&tokens) {
                     Ok(x) => x,
                     Err(e) => panic!("could not parse test: {e:?}"),
@@ -3404,4 +3440,39 @@ mod snapshot_tests {
             // B,
         ]"
     );
+    snapshot_test!(
+        ay,
+        "let props = {
+            a: 1,
+            // b: 2,
+            c: 3,
+        }"
+    );
+    snapshot_test!(
+        az,
+        "let props = {
+            a: 1,
+            // b: 2,
+            c: 3
+        }"
+    );
+    snapshot_test!(
+        ba,
+        r#"
+const sketch001 = startSketchOn('XY')
+  // |> arc({
+  //   angleEnd: 270,
+  //   angleStart: 450,
+  // }, %)
+  |> startProfileAt(%)
+"#
+    );
+}
+
+#[allow(unused)]
+#[cfg(test)]
+pub(crate) fn print_tokens(tokens: &[Token]) {
+    for (i, tok) in tokens.iter().enumerate() {
+        println!("{i:.2}: ({:?}):) '{}'", tok.token_type, tok.value.replace("\n", "\\n"));
+    }
 }

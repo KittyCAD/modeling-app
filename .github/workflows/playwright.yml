@@ -139,7 +139,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: playwright-report-ubuntu-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
@@ -174,14 +174,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: steps.git-check.outputs.modified == 'true'
       with:
-        name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
     - uses: actions/download-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
     - name: Run playwright/chrome flow (with retries)
       id: retry
@@ -245,14 +245,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true
@@ -263,7 +263,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-    timeout-minutes: 30
+    timeout-minutes: 40
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
@@ -352,7 +352,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-ubuntu-${{ github.sha }}
+        name: test-results-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
     - name: Run electron tests (with retries)
       id: retry
@@ -382,7 +382,7 @@ jobs:
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
                     if [[ "$IS_UBUNTU" == "true" ]]; then
-                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
+                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
                     else
                       yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
                     fi
@@ -425,14 +425,14 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: test-results-electron-${{ github.sha }}
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: playwright-report-electron-${{ github.sha }}
+        name: playwright-report-electron-${{ matrix.os }}-${{ github.sha }}
         path: playwright-report/
         retention-days: 30
         overwrite: true

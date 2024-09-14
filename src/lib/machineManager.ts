@@ -1,22 +1,25 @@
 import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
+import { reportRejection } from './trap'
+import { toSync } from './utils'
 
-export type MachinesListing = {
-  [key: string]: components['schemas']['Machine']
-}
+export type MachinesListing = Array<
+  components['schemas']['MachineInfoResponse']
+>
 
 export class MachineManager {
   private _isDesktop: boolean = isDesktop()
-  private _machines: MachinesListing = {}
+  private _machines: MachinesListing = []
   private _machineApiIp: string | null = null
-  private _currentMachine: components['schemas']['Machine'] | null = null
+  private _currentMachine: components['schemas']['MachineInfoResponse'] | null =
+    null
 
   constructor() {
     if (!this._isDesktop) {
       return
     }
 
-    this.updateMachines()
+    this.updateMachines().catch(reportRejection)
   }
 
   start() {
@@ -30,11 +33,14 @@ export class MachineManager {
     let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
     const timeoutLoop = () => {
       clearTimeout(timeoutId)
-      timeoutId = setTimeout(async () => {
-        await this.updateMachineApiIp()
-        await this.updateMachines()
-        timeoutLoop()
-      }, 10000)
+      timeoutId = setTimeout(
+        toSync(async () => {
+          await this.updateMachineApiIp()
+          await this.updateMachines()
+          timeoutLoop()
+        }, reportRejection),
+        10000
+      )
     }
     timeoutLoop()
   }
@@ -44,7 +50,7 @@ export class MachineManager {
   }
 
   machineCount(): number {
-    return Object.keys(this._machines).length
+    return this._machines.length
   }
 
   get machineApiIp(): string | null {
@@ -64,11 +70,13 @@ export class MachineManager {
     return 'Machine API server was discovered, but no machines are available'
   }
 
-  get currentMachine(): components['schemas']['Machine'] | null {
+  get currentMachine(): components['schemas']['MachineInfoResponse'] | null {
     return this._currentMachine
   }
 
-  set currentMachine(machine: components['schemas']['Machine'] | null) {
+  set currentMachine(
+    machine: components['schemas']['MachineInfoResponse'] | null
+  ) {
     this._currentMachine = machine
   }
 
@@ -78,7 +86,6 @@ export class MachineManager {
     }
 
     this._machines = await window.electron.listMachines()
-    console.log('Machines:', this._machines)
   }
 
   private async updateMachineApiIp(): Promise<void> {

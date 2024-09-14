@@ -124,7 +124,7 @@ const extrude001 = extrude(-10, sketch001)`
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    await page.keyboard.press('Meta+K')
+    await page.keyboard.press('ControlOrMeta+K')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
@@ -185,7 +185,7 @@ const extrude001 = extrude(-10, sketch001)`
     await page.locator('.cm-content').click()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    await page.keyboard.press('Meta+K')
+    await page.keyboard.press('ControlOrMeta+K')
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
@@ -250,7 +250,7 @@ const extrude001 = extrude(-10, sketch001)`
     await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
-    await page.keyboard.press('Meta+K')
+    await page.keyboard.press('ControlOrMeta+K')
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it

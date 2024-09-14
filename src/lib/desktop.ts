@@ -1,8 +1,6 @@
 import { err } from 'lib/trap'
 import { Models } from '@kittycad/lib'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
-import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
-import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
+import { Project, FileEntry } from 'lib/project'
 
 import {
   defaultAppSettings,
@@ -10,16 +8,15 @@ import {
   parseProjectSettings,
 } from 'lang/wasm'
 import {
-  DEFAULT_HOST,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
+  TOKEN_FILE_NAME,
 } from './constants'
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
-export { parseProjectRoute } from 'lang/wasm'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -39,7 +36,7 @@ export async function renameProjectDirectory(
 
   // Make sure the new name does not exist.
   const newPath = window.electron.path.join(
-    projectPath.split('/').slice(0, -1).join('/'),
+    window.electron.path.dirname(projectPath),
     newName
   )
   try {
@@ -186,9 +183,9 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
     return Promise.reject(new Error(`Path ${path} is not a directory`))
   }
 
-  const pathParts = path.split(window.electron.path.sep)
+  const name = window.electron.path.basename(path)
   let entry: FileEntry = {
-    name: pathParts.slice(-1)[0],
+    name: name,
     path,
     children: [],
   }
@@ -330,7 +327,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
       new Error(`Project path is not a directory: ${projectPath}`)
     )
   }
-
   let walked = await collectAllFilesRecursiveFrom(projectPath)
   let default_file = await getDefaultKclFileForDir(projectPath, walked)
   const metadata = await window.electron.stat(projectPath)
@@ -400,6 +396,23 @@ const getAppSettingsFilePath = async () => {
   }
   return window.electron.path.join(fullPath, SETTINGS_FILE_NAME)
 }
+const getTokenFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? testSettingsPath
+    : window.electron.path.join(appConfig, getAppFolderName())
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
+}
 
 const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
@@ -443,28 +456,65 @@ export const readProjectSettingsFile = async (
   return configObj
 }
 
+/**
+ * Read the app settings file, or creates an initial one if it doesn't exist.
+ */
 export const readAppSettingsFile = async () => {
   let settingsPath = await getAppSettingsFilePath()
-  try {
-    await window.electron.stat(settingsPath)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      const config = defaultAppSettings()
-      if (err(config)) return Promise.reject(config)
-      if (!config.settings?.app)
-        return Promise.reject(new Error('config.app is falsey'))
+  const initialProjectDirConfig: DeepPartial<
+    Configuration['settings']['project']
+  > = { directory: await getInitialDefaultDir() }
 
-      config.settings.app.project_directory = await getInitialDefaultDir()
-      return config
+  // The file exists, read it and parse it.
+  if (window.electron.exists(settingsPath)) {
+    const configToml = await window.electron.readFile(settingsPath)
+    const parsedAppConfig = parseAppSettings(configToml)
+    if (err(parsedAppConfig)) {
+      return Promise.reject(parsedAppConfig)
+    }
+
+    const hasProjectDirectorySetting =
+      parsedAppConfig.settings?.project?.directory ||
+      parsedAppConfig.settings?.app?.project_directory
+
+    if (hasProjectDirectorySetting) {
+      return parsedAppConfig
+    } else {
+      // inject the default project directory setting
+      const mergedConfig: DeepPartial<Configuration> = {
+        ...parsedAppConfig,
+        settings: {
+          ...parsedAppConfig.settings,
+          project: Object.assign(
+            {},
+            parsedAppConfig.settings?.project,
+            initialProjectDirConfig
+          ),
+        },
+      }
+      return mergedConfig
     }
   }
-  const configToml = await window.electron.readFile(settingsPath)
-  const configObj = parseAppSettings(configToml)
-  if (err(configObj)) {
-    return Promise.reject(configObj)
+
+  // The file doesn't exist, create a new one.
+  const defaultAppConfig = defaultAppSettings()
+  if (err(defaultAppConfig)) {
+    return Promise.reject(defaultAppConfig)
   }
 
-  return configObj
+  // inject the default project directory setting
+  const mergedDefaultConfig: DeepPartial<Configuration> = {
+    ...defaultAppConfig,
+    settings: {
+      ...defaultAppConfig.settings,
+      project: Object.assign(
+        {},
+        defaultAppConfig.settings?.project,
+        initialProjectDirConfig
+      ),
+    },
+  }
+  return mergedDefaultConfig
 }
 
 export const writeAppSettingsFile = async (tomlStr: string) => {
@@ -473,15 +523,31 @@ export const writeAppSettingsFile = async (tomlStr: string) => {
   return window.electron.writeFile(appSettingsFilePath, tomlStr)
 }
 
-let appStateStore: ProjectState | undefined = undefined
+export const readTokenFile = async () => {
+  let settingsPath = await getTokenFilePath()
 
-export const getState = async (): Promise<ProjectState | undefined> => {
+  if (window.electron.exists(settingsPath)) {
+    const token: string = await window.electron.readFile(settingsPath)
+    if (!token) return ''
+
+    return token
+  }
+  return ''
+}
+
+export const writeTokenFile = async (token: string) => {
+  const tokenFilePath = await getTokenFilePath()
+  if (err(token)) return Promise.reject(token)
+  return window.electron.writeFile(tokenFilePath, token)
+}
+
+let appStateStore: Project | undefined = undefined
+
+export const getState = async (): Promise<Project | undefined> => {
   return Promise.resolve(appStateStore)
 }
 
-export const setState = async (
-  state: ProjectState | undefined
-): Promise<void> => {
+export const setState = async (state: Project | undefined): Promise<void> => {
   appStateStore = state
 }
 
@@ -489,28 +555,6 @@ export const getUser = async (
   token: string,
   hostname: string
 ): Promise<Models['User_type']> => {
-  // Use the host passed in if it's set.
-  // Otherwise, use the default host.
-  const host = !hostname ? DEFAULT_HOST : hostname
-
-  // Change the baseURL to the one we want.
-  let baseurl = host
-  if (!(host.indexOf('http://') === 0) && !(host.indexOf('https://') === 0)) {
-    baseurl = `https://${host}`
-    if (host.indexOf('localhost') === 0) {
-      baseurl = `http://${host}`
-    }
-  }
-
-  // Use kittycad library to fetch the user info from /user/me
-  if (baseurl !== DEFAULT_HOST) {
-    // The TypeScript generated library uses environment variables for this
-    // because it was intended for NodeJS.
-    // Needs to stay like this because window.electron.kittycad needs it
-    // internally.
-    window.electron.setBaseUrl(baseurl)
-  }
-
   try {
     const user = await window.electron.kittycad('users.get_user_self', {
       client: { token },

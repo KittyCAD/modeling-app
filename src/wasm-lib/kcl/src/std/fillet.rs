@@ -142,6 +142,7 @@ async fn inner_fillet(
                 radius: data.radius,
                 tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                 cut_type: Some(kittycad::types::CutType::Fillet),
+                face_id: None,
             },
         )
         .await?;
@@ -304,7 +305,7 @@ async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid3DGetPrevAdjacentEdge {
+            ModelingCmd::Solid3DGetNextAdjacentEdge {
                 edge_id: tagged_path.id,
                 object_id: tagged_path.sketch_group,
                 face_id,
@@ -312,7 +313,7 @@ async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<
         )
         .await?;
     let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -386,7 +387,7 @@ async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Res
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid3DGetNextAdjacentEdge {
+            ModelingCmd::Solid3DGetPrevAdjacentEdge {
                 edge_id: tagged_path.id,
                 object_id: tagged_path.sketch_group,
                 face_id,
@@ -394,7 +395,7 @@ async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Res
         )
         .await?;
     let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {

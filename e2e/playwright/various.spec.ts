@@ -1,13 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import {
-  doExport,
-  getUtils,
-  makeTemplate,
-  metaModifier,
-  setup,
-  tearDown,
-} from './test-utils'
+import { doExport, getUtils, makeTemplate, setup, tearDown } from './test-utils'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   await setup(context, page, testInfo)
@@ -16,8 +9,6 @@ test.beforeEach(async ({ context, page }, testInfo) => {
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
-
-const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
 test('Units menu', async ({ page }) => {
   const u = await getUtils(page)
@@ -157,7 +148,7 @@ test('Paste should not work unless an input is focused', async ({
 
   // Paste without the code pane focused
   await codeEditorText.blur()
-  await page.keyboard.press(`${metaModifier}+KeyV`)
+  await page.keyboard.press('ControlOrMeta+KeyV')
 
   // Show that the paste didn't work but typing did
   await expect(codeEditorText).not.toContainText(pasteContent)
@@ -166,7 +157,7 @@ test('Paste should not work unless an input is focused', async ({
   // Paste with the code editor focused
   // Following this guidance: https://github.com/microsoft/playwright/issues/8114
   await codeEditorText.focus()
-  await page.keyboard.press(`${metaModifier}+KeyV`)
+  await page.keyboard.press('ControlOrMeta+KeyV')
   await expect(
     await page.evaluate(
       () => document.querySelector('.cm-content')?.textContent
@@ -380,9 +371,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await test.step(`Type code with sketch hotkeys, shouldn't fire`, async () => {
     // Since there's code now, we have to get to the end of the line
     await page.locator('.cm-line').last().click()
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('ArrowRight')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await page.keyboard.press('Enter')
     await page.keyboard.type('//')

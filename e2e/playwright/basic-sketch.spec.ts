@@ -96,33 +96,49 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   }
 
   // deselect line tool
-  await page.getByTestId('line').click()
+  const btnLine = page.getByTestId('line')
+  const btnLineAriaPressed = await btnLine.getAttribute('aria-pressed')
+  if (btnLineAriaPressed === 'true') {
+    await btnLine.click()
+  }
+
+  await page.waitForTimeout(100)
 
   const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
   if (openPanes.includes('code')) {
     await expect
       .poll(async () => u.getGreatestPixDiff(line1, TEST_COLORS.WHITE))
       .toBeLessThan(3)
+    await page.waitForTimeout(100)
     await expect
-      .poll(() => u.getGreatestPixDiff(line1, [249, 249, 249]))
+      .poll(async () => u.getGreatestPixDiff(line1, [249, 249, 249]))
       .toBeLessThan(3)
+    await page.waitForTimeout(100)
   }
+
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
   await page.waitForTimeout(100)
+
   if (openPanes.includes('code')) {
-    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
+    await expect(
+      await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)
+    ).toBeLessThan(3)
     await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
   }
 
   // hold down shift
   await page.keyboard.down('Shift')
+  await page.waitForTimeout(100)
+
   // click between the latest two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
+  await page.waitForTimeout(100)
 
   // selected two lines therefore there should be two cursors
   if (openPanes.includes('code')) {
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
+    await page.waitForTimeout(100)
   }
 
   await page.getByRole('button', { name: 'Length: open menu' }).click()

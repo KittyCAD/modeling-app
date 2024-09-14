@@ -5,25 +5,28 @@ import { PATHS } from 'lib/paths'
 import React, { createContext } from 'react'
 import { toast } from 'react-hot-toast'
 import {
+  Actor,
   AnyStateMachine,
   ContextFrom,
-  EventFrom,
-  InterpreterFrom,
   Prop,
   StateFrom,
-  assign,
+  fromPromise,
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
-import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
+import {
+  DEFAULT_FILE_NAME,
+  DEFAULT_PROJECT_KCL_FILE,
+  FILE_EXT,
+} from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
 import { getNextDirName, getNextFileName } from 'lib/desktopFS'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
   context: ContextFrom<T>
-  send: Prop<InterpreterFrom<T>, 'send'>
+  send: Prop<Actor<T>, 'send'>
 }
 
 export const FileContext = createContext(
@@ -39,199 +42,234 @@ export const FileMachineProvider = ({
   const { commandBarSend } = useCommandsContext()
   const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
-  const [state, send] = useMachine(fileMachine, {
-    context: {
-      project,
-      selectedDirectory: project,
-    },
-    actions: {
-      navigateToFile: (context, event) => {
-        if (event.data && 'name' in event.data) {
-          commandBarSend({ type: 'Close' })
-          navigate(
-            `..${PATHS.FILE}/${encodeURIComponent(
-              context.selectedDirectory +
-                window.electron.path.sep +
-                event.data.name
-            )}`
+  const [state, send] = useMachine(
+    fileMachine.provide({
+      actions: {
+        renameToastSuccess: ({ event }) => {
+          if (event.type !== 'xstate.done.actor.rename-file') return
+          toast.success(event.output.message)
+        },
+        createToastSuccess: ({ event }) => {
+          if (event.type !== 'xstate.done.actor.create-and-open-file') return
+          toast.success(event.output.message)
+        },
+        toastSuccess: ({ event }) => {
+          if (
+            event.type !== 'xstate.done.actor.rename-file' &&
+            event.type !== 'xstate.done.actor.delete-file'
           )
-        } else if (
-          event.data &&
-          'path' in event.data &&
-          event.data.path.endsWith(FILE_EXT)
-        ) {
-          // Don't navigate to newly created directories
-          navigate(`..${PATHS.FILE}/${encodeURIComponent(event.data.path)}`)
-        }
+            return
+          toast.success(event.output.message)
+        },
+        toastError: ({ event }) => {
+          if (event.type !== 'xstate.done.actor.rename-file') return
+          toast.error(event.output.message)
+        },
+        navigateToFile: ({ context, event }) => {
+          if (event.type !== 'xstate.done.actor.create-and-open-file') return
+          if (event.output && 'name' in event.output) {
+            commandBarSend({ type: 'Close' })
+            navigate(
+              `..${PATHS.FILE}/${encodeURIComponent(
+                context.selectedDirectory +
+                  window.electron.path.sep +
+                  event.output.name
+              )}`
+            )
+          } else if (
+            event.output &&
+            'path' in event.output &&
+            event.output.path.endsWith(FILE_EXT)
+          ) {
+            // Don't navigate to newly created directories
+            navigate(`..${PATHS.FILE}/${encodeURIComponent(event.output.path)}`)
+          }
+        },
       },
-      addFileToRenamingQueue: assign({
-        itemsBeingRenamed: (context, event) => [
-          ...context.itemsBeingRenamed,
-          event.data.path,
-        ],
-      }),
-      removeFileFromRenamingQueue: assign({
-        itemsBeingRenamed: (
-          context,
-          event: EventFrom<typeof fileMachine, 'done.invoke.rename-file'>
-        ) =>
-          context.itemsBeingRenamed.filter(
-            (path) => path !== event.data.oldPath
-          ),
-      }),
-      renameToastSuccess: (_, event) => toast.success(event.data.message),
-      createToastSuccess: (_, event) => toast.success(event.data.message),
-      toastSuccess: (_, event) =>
-        event.data && toast.success((event.data || '') + ''),
-      toastError: (_, event) => toast.error((event.data || '') + ''),
-    },
-    services: {
-      readFiles: async (context: ContextFrom<typeof fileMachine>) => {
-        const newFiles = isDesktop()
-          ? (await getProjectInfo(context.project.path)).children
-          : []
-        return {
-          ...context.project,
-          children: newFiles,
-        }
-      },
-      createAndOpenFile: async (context, event) => {
-        let createdName = event.data.name.trim() || DEFAULT_FILE_NAME
-        let createdPath: string
+      actors: {
+        readFiles: fromPromise(async ({ input }) => {
+          const newFiles =
+            (isDesktop() ? (await getProjectInfo(input.path)).children : []) ??
+            []
+          return {
+            ...input,
+            children: newFiles,
+          }
+        }),
+        createAndOpenFile: fromPromise(async ({ input }) => {
+          let createdName = input.name.trim() || DEFAULT_FILE_NAME
+          let createdPath: string
 
-        if (event.data.makeDir) {
-          let { name, path } = getNextDirName({
-            entryName: createdName,
-            baseDir: context.selectedDirectory.path,
-          })
-          createdName = name
-          createdPath = path
-          await window.electron.mkdir(createdPath)
-        } else {
-          const { name, path } = getNextFileName({
-            entryName: createdName,
-            baseDir: context.selectedDirectory.path,
-          })
-          createdName = name
-          createdPath = path
-          await window.electron.writeFile(createdPath, event.data.content ?? '')
-        }
-
-        return {
-          message: `Successfully created "${createdName}"`,
-          path: createdPath,
-        }
-      },
-      createFile: async (context, event) => {
-        let createdName = event.data.name.trim() || DEFAULT_FILE_NAME
-        let createdPath: string
-
-        if (event.data.makeDir) {
-          let { name, path } = getNextDirName({
-            entryName: createdName,
-            baseDir: context.selectedDirectory.path,
-          })
-          createdName = name
-          createdPath = path
-          await window.electron.mkdir(createdPath)
-        } else {
-          const { name, path } = getNextFileName({
-            entryName: createdName,
-            baseDir: context.selectedDirectory.path,
-          })
-          createdName = name
-          createdPath = path
-          await window.electron.writeFile(createdPath, event.data.content ?? '')
-        }
-
-        return {
-          path: createdPath,
-        }
-      },
-      renameFile: async (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine, 'Rename file'>
-      ) => {
-        const { oldName, newName, isDir } = event.data
-        const name = newName
-          ? newName.endsWith(FILE_EXT) || isDir
-            ? newName
-            : newName + FILE_EXT
-          : DEFAULT_FILE_NAME
-        const oldPath = window.electron.path.join(
-          context.selectedDirectory.path,
-          oldName
-        )
-        const newPath = window.electron.path.join(
-          context.selectedDirectory.path,
-          name
-        )
-
-        window.electron.rename(oldPath, newPath)
-
-        if (!file) {
-          return Promise.reject(new Error('file is not defined'))
-        }
-
-        if (oldPath === file.path && project?.path) {
-          // If we just renamed the current file, navigate to the new path
-          navigate(`..${PATHS.FILE}/${encodeURIComponent(newPath)}`)
-        } else if (file?.path.includes(oldPath)) {
-          // If we just renamed a directory that the current file is in, navigate to the new path
-          navigate(
-            `..${PATHS.FILE}/${encodeURIComponent(
-              file.path.replace(oldPath, newPath)
-            )}`
-          )
-        }
-
-        return {
-          message: `Successfully renamed "${oldName}" to "${name}"`,
-          newPath,
-          oldPath,
-        }
-      },
-      deleteFile: async (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine, 'Delete file'>
-      ) => {
-        const isDir = !!event.data.children
-
-        if (isDir) {
-          await window.electron
-            .rm(event.data.path, {
-              recursive: true,
+          if (input.makeDir) {
+            let { name, path } = getNextDirName({
+              entryName: createdName,
+              baseDir: input.selectedDirectory.path,
             })
-            .catch((e) => console.error('Error deleting directory', e))
-        } else {
-          await window.electron
-            .rm(event.data.path)
-            .catch((e) => console.error('Error deleting file', e))
-        }
+            createdName = name
+            createdPath = path
+            await window.electron.mkdir(createdPath)
+          } else {
+            const { name, path } = getNextFileName({
+              entryName: createdName,
+              baseDir: input.selectedDirectory.path,
+            })
+            createdName = name
+            createdPath = path
+            await window.electron.writeFile(createdPath, input.content ?? '')
+          }
 
-        // If we just deleted the current file or one of its parent directories,
-        // navigate to the project root
-        if (
-          (event.data.path === file?.path ||
-            file?.path.includes(event.data.path)) &&
-          project?.path
-        ) {
-          navigate(`../${PATHS.FILE}/${encodeURIComponent(project.path)}`)
-        }
+          return {
+            message: `Successfully created "${createdName}"`,
+            path: createdPath,
+          }
+        }),
+        createFile: fromPromise(async ({ input }) => {
+          let createdName = input.name.trim() || DEFAULT_FILE_NAME
+          let createdPath: string
 
-        return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
-          event.data.name
-        }"`
+          if (input.makeDir) {
+            let { name, path } = getNextDirName({
+              entryName: createdName,
+              baseDir: input.selectedDirectory.path,
+            })
+            createdName = name
+            createdPath = path
+            await window.electron.mkdir(createdPath)
+          } else {
+            const { name, path } = getNextFileName({
+              entryName: createdName,
+              baseDir: input.selectedDirectory.path,
+            })
+            createdName = name
+            createdPath = path
+            await window.electron.writeFile(createdPath, input.content ?? '')
+          }
+
+          return {
+            path: createdPath,
+          }
+        }),
+        renameFile: fromPromise(async ({ input }) => {
+          const { oldName, newName, isDir } = input
+          const name = newName
+            ? newName.endsWith(FILE_EXT) || isDir
+              ? newName
+              : newName + FILE_EXT
+            : DEFAULT_FILE_NAME
+          const oldPath = window.electron.path.join(
+            input.selectedDirectory.path,
+            oldName
+          )
+          const newPath = window.electron.path.join(
+            input.selectedDirectory.path,
+            name
+          )
+
+          // no-op
+          if (oldPath === newPath) {
+            return {
+              message: `Old is the same as new.`,
+              newPath,
+              oldPath,
+            }
+          }
+
+          // if there are any siblings with the same name, report error.
+          const entries = await window.electron.readdir(
+            window.electron.path.dirname(newPath)
+          )
+          for (let entry of entries) {
+            if (entry === newName) {
+              return Promise.reject(new Error('Filename already exists.'))
+            }
+          }
+
+          window.electron.rename(oldPath, newPath)
+
+          if (!file) {
+            return Promise.reject(new Error('file is not defined'))
+          }
+
+          if (oldPath === file.path && project?.path) {
+            // If we just renamed the current file, navigate to the new path
+            navigate(`..${PATHS.FILE}/${encodeURIComponent(newPath)}`)
+          } else if (file?.path.includes(oldPath)) {
+            // If we just renamed a directory that the current file is in, navigate to the new path
+            navigate(
+              `..${PATHS.FILE}/${encodeURIComponent(
+                file.path.replace(oldPath, newPath)
+              )}`
+            )
+          }
+
+          return {
+            message: `Successfully renamed "${oldName}" to "${name}"`,
+            newPath,
+            oldPath,
+          }
+        }),
+        deleteFile: fromPromise(async ({ input }) => {
+          const isDir = !!input.children
+
+          if (isDir) {
+            await window.electron
+              .rm(input.path, {
+                recursive: true,
+              })
+              .catch((e) => console.error('Error deleting directory', e))
+          } else {
+            await window.electron
+              .rm(input.path)
+              .catch((e) => console.error('Error deleting file', e))
+          }
+
+          // If there are no more files at all in the project, create a main.kcl
+          // for when we navigate to the root.
+          if (!project?.path) {
+            return Promise.reject(new Error('Project path not set.'))
+          }
+
+          const entries = await window.electron.readdir(project.path)
+          const hasKclEntries =
+            entries.filter((e: string) => e.endsWith('.kcl')).length !== 0
+          if (!hasKclEntries) {
+            await window.electron.writeFile(
+              window.electron.path.join(project.path, DEFAULT_PROJECT_KCL_FILE),
+              ''
+            )
+            // Refresh the route selected above because it's possible we're on
+            // the same path on the navigate, which doesn't cause anything to
+            // refresh, leaving a stale execution state.
+            navigate(0)
+            return {
+              message: 'No more files in project, created main.kcl',
+            }
+          }
+
+          // If we just deleted the current file or one of its parent directories,
+          // navigate to the project root
+          if (
+            (input.path === file?.path || file?.path.includes(input.path)) &&
+            project?.path
+          ) {
+            navigate(`../${PATHS.FILE}/${encodeURIComponent(project.path)}`)
+          }
+
+          return {
+            message: `Successfully deleted ${isDir ? 'folder' : 'file'} "${
+              input.name
+            }"`,
+          }
+        }),
       },
-    },
-    guards: {
-      'Has at least 1 file': (_, event: EventFrom<typeof fileMachine>) => {
-        if (event.type !== 'done.invoke.read-files') return false
-        return !!event?.data?.children && event.data.children.length > 0
+    }),
+    {
+      input: {
+        project,
+        selectedDirectory: project,
       },
-      'Is not silent': (_, event) => !event.data?.silent,
-    },
-  })
+    }
+  )
 
   return (
     <FileContext.Provider

@@ -37,8 +37,7 @@ const example = extrude(10, exampleSketch)
 	offset: number,
 	// Radius of the arc. Not to be confused with Raiders of the Lost Ark.
 	radius: number,
-} |
-[number, number]
+}
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js

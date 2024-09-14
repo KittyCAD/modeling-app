@@ -1,8 +1,18 @@
 import { SourceRange } from '../lang/wasm'
 
 import { v4 } from 'uuid'
+import { isDesktop } from './isDesktop'
+import { AnyMachineSnapshot } from 'xstate'
+import { AsyncFn } from './types'
 
 export const uuidv4 = v4
+
+/**
+ * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
+ */
+export function isArray(val: any): val is unknown[] {
+  return Array.isArray(val)
+}
 
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
@@ -97,6 +107,28 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
   return deferred
 }
 
+/**
+ * Wrap an async function so that it can be called in a sync context, catching
+ * rejections.
+ *
+ * It's common to want to run an async function in a sync context, like an event
+ * handler or callback.  But we want to catch errors.
+ *
+ * Note: The returned function doesn't block.  This isn't magic.
+ *
+ * @param onReject This callback type is from Promise.prototype.catch.
+ */
+export function toSync<F extends AsyncFn<F>>(
+  fn: F,
+  onReject: (
+    reason: any
+  ) => void | PromiseLike<void | null | undefined> | null | undefined
+): (...args: Parameters<F>) => void {
+  return (...args: Parameters<F>) => {
+    fn(...args).catch(onReject)
+  }
+}
+
 export function getNormalisedCoordinates({
   clientX,
   clientY,
@@ -119,6 +151,75 @@ export function getNormalisedCoordinates({
   }
 }
 
+// TODO: Remove the empty platform type.
+export type Platform = 'macos' | 'windows' | 'linux' | ''
+
+export function platform(): Platform {
+  if (isDesktop()) {
+    const platform = window.electron.platform ?? ''
+    // https://nodejs.org/api/process.html#processplatform
+    switch (platform) {
+      case 'darwin':
+        return 'macos'
+      case 'win32':
+        return 'windows'
+      // We don't currently care to distinguish between these.
+      case 'android':
+      case 'freebsd':
+      case 'linux':
+      case 'openbsd':
+      case 'sunos':
+        return 'linux'
+      default:
+        console.error('Unknown desktop platform:', platform)
+        return ''
+    }
+  }
+
+  // navigator.platform is deprecated, but many browsers still support it, and
+  // it's more accurate than userAgent and userAgentData in Playwright.
+  if (
+    navigator.platform?.indexOf('Mac') === 0 ||
+    navigator.platform?.indexOf('iPhone') === 0 ||
+    navigator.platform?.indexOf('iPad') === 0 ||
+    // Vite tests running in HappyDOM.
+    navigator.platform?.indexOf('Darwin') >= 0
+  ) {
+    return 'macos'
+  }
+  if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
+    return 'windows'
+  }
+
+  // Chrome only, but more accurate than userAgent.
+  let userAgentDataPlatform: unknown
+  if (
+    'userAgentData' in navigator &&
+    navigator.userAgentData &&
+    typeof navigator.userAgentData === 'object' &&
+    'platform' in navigator.userAgentData
+  ) {
+    userAgentDataPlatform = navigator.userAgentData.platform
+    if (userAgentDataPlatform === 'macOS') return 'macos'
+    if (userAgentDataPlatform === 'Windows') return 'windows'
+  }
+
+  if (navigator.userAgent.indexOf('Mac') !== -1) {
+    return 'macos'
+  } else if (navigator.userAgent.indexOf('Win') !== -1) {
+    return 'windows'
+  } else if (navigator.userAgent.indexOf('Linux') !== -1) {
+    return 'linux'
+  }
+  console.error(
+    'Unknown web platform:',
+    navigator.platform,
+    userAgentDataPlatform,
+    navigator.userAgent
+  )
+  return ''
+}
+
 export function isReducedMotion(): boolean {
   return (
     typeof window !== 'undefined' &&
@@ -130,4 +231,8 @@ export function isReducedMotion(): boolean {
 
 export function XOR(bool1: boolean, bool2: boolean): boolean {
   return (bool1 || bool2) && !(bool1 && bool2)
+}
+
+export function getActorNextEvents(snapshot: AnyMachineSnapshot) {
+  return [...new Set([...snapshot._nodes.flatMap((sn) => sn.ownEvents)])]
 }

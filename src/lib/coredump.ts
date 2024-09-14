@@ -109,11 +109,13 @@ export class CoreDumpManager {
 
   getWebrtcStats(): Promise<string> {
     if (!this.engineCommandManager.engineConnection) {
-      throw new Error('Engine connection not initialized')
+      // when the engine connection is not available, return an empty object.
+      return Promise.resolve(JSON.stringify({}))
     }
 
     if (!this.engineCommandManager.engineConnection.webrtcStatsCollector) {
-      throw new Error('Engine webrtcStatsCollector not initialized')
+      // when the engine connection is not available, return an empty object.
+      return Promise.resolve(JSON.stringify({}))
     }
 
     return this.engineCommandManager.engineConnection
