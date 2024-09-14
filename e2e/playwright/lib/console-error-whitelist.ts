@@ -233,6 +233,24 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/basic-sketch.spec.ts',
     },
+    {
+      name: ' - internal_engine',
+      stack: `
+
+          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)`,
+      message: `Nothing to export`,
+      project: 'Google Chrome',
+      foundInSpec: 'e2e/playwright/regression-tests.spec.ts',
+    },
+    {
+      name: 'SyntaxError',
+      stack: `SyntaxError: Unexpected end of JSON input
+    at crossPlatformFetch (http://localhost:3000/src/lib/crossPlatformFetch.ts:34:31)
+    at async sendTelemetry (http://localhost:3000/src/lib/textToCad.ts:179:3)`,
+      message: `Unexpected end of JSON input`,
+      project: 'Google Chrome',
+      foundInSpec: 'e2e/playwright/text-to-cad-tests.spec.ts',
+    },
   ]
 
   const cleanString = (str: string) => str.replace(/[`"]/g, '')
