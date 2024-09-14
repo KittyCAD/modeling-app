@@ -821,7 +821,7 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
     for (const activePage of page.context().pages()) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await activePage.evaluate(() =>
-        (window as any).collectIstanbulCoverage(
+        (window as any)?.collectIstanbulCoverage?.(
           JSON.stringify((window as any).__coverage__)
         )
       )
@@ -875,7 +875,7 @@ export async function setup(context: BrowserContext, page: Page) {
     await context.addInitScript(() =>
       window.addEventListener('beforeunload', () =>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).collectIstanbulCoverage(
+        (window as any)?.collectIstanbulCoverage?.(
           JSON.stringify((window as any).__coverage__)
         )
       )
