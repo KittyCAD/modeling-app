@@ -70,7 +70,7 @@
     "start": "vite",
     "start:playwright-ci:unix": "GENERATE_PLAYWRIGHT_COVERAGE=true yarn start",
     "start:playwright-ci:win": "set GENERATE_PLAYWRIGHT_COVERAGE=true && yarn start",
-    "start:playwright-ci": "sh -c 'if [ \"$OS\" = \"Windows_NT\" ]; then yarn start:win; else yarn start:unix; fi'",
+    "start:playwright-ci": "sh -c 'if [ \"$OS\" = \"Windows_NT\" ]; then yarn start:playwright-ci:unix; else yarn start:playwright-ci:win; fi'",
     "start:prod": "vite preview --port=3000",
     "serve": "vite serve --port=3000",
     "build": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm && vite build",
