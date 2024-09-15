@@ -473,11 +473,14 @@ jobs:
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
-    - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       run: yarn
     - name: Ensure .all_coverage_reports directory exists
       run: mkdir -p .all_coverage_reports
+    - name: List all artifacts
+      run: |
+        echo "Available artifacts:"
+        gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[].name'
     - name: Download coverage reports from GitHub Actions Artifacts
       uses: actions/download-artifact@v4
       with:
