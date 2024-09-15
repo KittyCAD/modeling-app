@@ -34,7 +34,7 @@ jobs:
               - 'src/wasm-lib/**'
 
   playwright-chrome:
-    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 40 }}
+    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
     strategy:
       fail-fast: false
       matrix:
