@@ -259,7 +259,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
-        name: playwright-coverage-ubuntu-${{ matrix.shardIndex }}-${{ github.sha }}
+        name: playwright-coverage-${{ runner.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: .nyc_output/
         retention-days: 30
         overwrite: true
@@ -474,7 +474,8 @@ jobs:
     - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       run: yarn
-
+    - name: Ensure .all_coverage_reports directory exists
+      run: mkdir -p .all_coverage_reports
     - name: Download coverage reports from GitHub Actions Artifacts
       uses: actions/download-artifact@v4
       with:
