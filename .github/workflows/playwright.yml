@@ -480,7 +480,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: .all_coverage_reports
-        pattern: playwright-coverage*
+        pattern: playwright-coverage-*
         merge-multiple: true
 
     - name: Merge all coverage reports from all shards into a single json report
