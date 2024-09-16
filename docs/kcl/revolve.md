@@ -33,7 +33,7 @@ const part001 = startSketchOn('XY')
 ```js
 // A donut shape.
 const sketch001 = startSketchOn('XY')
-  |> circle([15, 0], 5, %)
+  |> circle({ center: [15, 0], radius: 5 }, %)
   |> revolve({ angle: 360, axis: 'y' }, %)
 ```
 
@@ -88,7 +88,7 @@ const box = startSketchOn('XY')
   |> extrude(20, %)
 
 const sketch001 = startSketchOn(box, "END")
-  |> circle([10, 10], 4, %)
+  |> circle({ center: [10, 10], radius: 4 }, %)
   |> revolve({ angle: -90, axis: 'y' }, %)
 ```
 
@@ -104,7 +104,7 @@ const box = startSketchOn('XY')
   |> extrude(20, %)
 
 const sketch001 = startSketchOn(box, "END")
-  |> circle([10, 10], 4, %)
+  |> circle({ center: [10, 10], radius: 4 }, %)
   |> revolve({
        angle: 90,
        axis: getOppositeEdge(revolveAxis)
@@ -123,7 +123,7 @@ const box = startSketchOn('XY')
   |> extrude(20, %)
 
 const sketch001 = startSketchOn(box, "END")
-  |> circle([10, 10], 4, %)
+  |> circle({ center: [10, 10], radius: 4 }, %)
   |> revolve({
        angle: 90,
        axis: getOppositeEdge(revolveAxis),
@@ -419,6 +419,26 @@ uuid |
 	type: "TangentialArc",
 } |
 {
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
+} |
+{
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -626,6 +646,26 @@ uuid |
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -953,6 +993,26 @@ uuid |
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.

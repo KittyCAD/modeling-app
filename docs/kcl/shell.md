@@ -93,11 +93,17 @@ const case = startSketchOn('-XZ')
   |> extrude(65, %)
 
 const thing1 = startSketchOn(case, 'end')
-  |> circle([-size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [-size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 const thing2 = startSketchOn(case, 'end')
-  |> circle([size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 // We put "case" in the shell function to shell the entire object.
@@ -118,11 +124,17 @@ const case = startSketchOn('XY')
   |> extrude(65, %)
 
 const thing1 = startSketchOn(case, 'end')
-  |> circle([-size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [-size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 const thing2 = startSketchOn(case, 'end')
-  |> circle([size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 // We put "thing1" in the shell function to shell the end face of the object.
@@ -504,6 +516,26 @@ shell({ faces: ['end'], thickness: 5 }, thing1)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -899,6 +931,26 @@ shell({ faces: ['end'], thickness: 5 }, thing1)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.

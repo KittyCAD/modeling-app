@@ -796,7 +796,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "Expected an argument at index 2" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 195])], message: "Expected an argument at index 1" }"#,
     );
 }
 
@@ -866,7 +866,7 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type [f64; 2] but found string (text)" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
     );
 }
 
@@ -1382,7 +1382,7 @@ const extrusion = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([444, 477])], message: "Expected 2 arguments, got 3" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([464, 497])], message: "Expected 2 arguments, got 3" }"#
     );
 }
 
