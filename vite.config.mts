@@ -3,7 +3,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import eslint from 'vite-plugin-eslint'
 import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
-import IstanbulPlugin from "vite-plugin-istanbul"
+import IstanbulPlugin from 'vite-plugin-istanbul'
 
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
@@ -62,15 +62,18 @@ const config = defineConfig({
       '@kittycad/codemirror-lsp-client': '/packages/codemirror-lsp-client/src',
     },
   },
-  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer(), ...(process.env.GENERATE_PLAYWRIGHT_COVERAGE
-    ? [
-        IstanbulPlugin({
-          include: "src/*",
-          exclude: ["node_modules", "test/"],
-          extension: [".js", ".ts", ".tsx"],
-        }),
-      ]
-    : [])],
+  plugins: [
+    react(),
+    viteTsconfigPaths(),
+    eslint(),
+    version(),
+    lezer(),
+    IstanbulPlugin({
+      include: 'src/*',
+      exclude: ['node_modules', 'test/'],
+      extension: ['.js', '.ts', '.tsx'],
+    }),
+  ],
   worker: {
     plugins: () => [viteTsconfigPaths()],
   },
