@@ -40,7 +40,7 @@ test.describe('Sketch tests', () => {
   const screwRadius = 3
   const wireRadius = 2
   const wireOffset = 0.5
-  
+
   const screwHole = startSketchOn('XY')
     ${startProfileAt1}
     |> arc({
@@ -48,7 +48,7 @@ test.describe('Sketch tests', () => {
           angle_start: 0,
           angle_end: 360
         }, %)
-  
+
   const part001 = startSketchOn('XY')
     ${startProfileAt2}
     |> xLine(width * .5, %)
@@ -57,7 +57,7 @@ test.describe('Sketch tests', () => {
     |> close(%)
     |> hole(screwHole, %)
     |> extrude(thickness, %)
-  
+
   const part002 = startSketchOn('-XZ')
     ${startProfileAt3}
     |> xLine(width / 4, %)
@@ -618,19 +618,19 @@ test.describe('Sketch tests', () => {
     await u.closeDebugPanel()
 
     await click00r(30, 0)
-    codeStr += `  |> startProfileAt([1.53, 0], %)`
+    codeStr += `  |> startProfileAt([2.03, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(30, 0)
-    codeStr += `  |> line([1.53, 0], %)`
+    codeStr += `  |> line([2.04, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 30)
-    codeStr += `  |> line([0, -1.53], %)`
+    codeStr += `  |> line([0, -2.03], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(-30, 0)
-    codeStr += `  |> line([-1.53, 0], %)`
+    codeStr += `  |> line([-2.04, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(undefined, undefined)
