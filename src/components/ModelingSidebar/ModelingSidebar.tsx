@@ -55,7 +55,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       id: 'export',
       title: 'Export part',
       icon: 'floppyDiskArrow',
-      iconClassName: '!p-0',
       keybinding: 'Ctrl + Shift + E',
       action: () =>
         commandBarSend({
@@ -67,7 +66,6 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       id: 'make',
       title: 'Make part',
       icon: 'printer3d',
-      iconClassName: '!p-0',
       keybinding: 'Ctrl + Shift + M',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
@@ -181,7 +179,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           className={
             (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
             'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
-            'bg-chalkboard-10 border border-solid border-chalkboard-20 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 '
+            'bg-chalkboard-10 border border-solid border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 shadow-sm '
           }
         >
           <ul
@@ -204,7 +202,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           </ul>
           {filteredActions.length > 0 && (
             <>
-              <hr className="w-full border-chalkboard-20 dark:border-chalkboard-80" />
+              <hr className="w-full border-chalkboard-30 dark:border-chalkboard-80" />
               <ul
                 id="sidebar-actions"
                 className="w-fit p-2 flex flex-col gap-2"
@@ -292,7 +290,7 @@ function ModelingPaneButton({
   return (
     <div id={paneConfig.id + '-button-holder'}>
       <button
-        className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
+        className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
         name={paneConfig.title}
         data-testid={paneConfig.id + '-pane-button'}
@@ -302,13 +300,9 @@ function ModelingPaneButton({
       >
         <ActionIcon
           icon={paneConfig.icon}
-          className={'p-1 ' + paneConfig.iconClassName || ''}
-          size={paneConfig.iconSize || 'sm'}
-          iconClassName={
-            paneIsOpen
-              ? ' !text-chalkboard-10'
-              : '!text-chalkboard-80 dark:!text-chalkboard-30'
-          }
+          className={paneConfig.iconClassName || ''}
+          size={paneConfig.iconSize || 'md'}
+          iconClassName={paneIsOpen ? ' !text-chalkboard-10' : ''}
           bgClassName={
             'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
           }
