@@ -128,9 +128,18 @@ export const EngineStream = () => {
     }
   }, [engineStreamState.context.canvasRef.current, engineStreamState.context.videoRef.current])
 
-  // On settings change, reconfigure the engine.
+  // On settings change, reconfigure the engine. When paused this gets really tricky,
+  // and also requires onMediaStream to be set!
   useEffect(() => {
-    engineStreamActor.send({ type: EngineStreamTransition.StartOrReconfigureEngine, modelingMachineActorSend, settings: settingsEngine, setAppState })
+    engineStreamActor.send({
+      type: EngineStreamTransition.StartOrReconfigureEngine, modelingMachineActorSend, settings: settingsEngine, setAppState,
+        onMediaStream(mediaStream: MediaStream) {
+          engineStreamActor.send({
+            type: EngineStreamTransition.SetMediaStream,
+            mediaStream
+          })
+        }
+    })
   }, [settings.context])
 
   /**

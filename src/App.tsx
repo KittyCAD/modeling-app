@@ -102,13 +102,13 @@ export function App() {
           }
         }}>
           <EngineStream />
+          {/* <CamToggle /> */}
+          <LowerRightControls coreDumpManager={coreDumpManager}>
+            <UnitsMenu />
+            <Gizmo />
+            <CameraProjectionToggle />
+          </LowerRightControls>
         </EngineStreamContext.Provider>
-        {/* <CamToggle /> */}
-        <LowerRightControls coreDumpManager={coreDumpManager}>
-          <UnitsMenu />
-          <Gizmo />
-          <CameraProjectionToggle />
-        </LowerRightControls>
     </div>
   )
 }
