@@ -1,39 +1,45 @@
 import { useEngineCommands } from './EngineCommands'
-import { Spinner } from './Spinner'
 import { CustomIcon } from './CustomIcon'
+import useEngineStreamContext, { EngineStreamState } from 'hooks/useEngineStreamContext'
 
 export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
 
+  const engineStreamActor = useEngineStreamContext.useActorRef()
+  const engineStreamState = engineStreamActor.getSnapshot()
+
   const lastCommandType = commands[commands.length - 1]?.type
 
   let className = 'w-6 h-6 '
-  let icon = <Spinner className={className} />
+  let icon = <div className={className}></div>
   let dataTestId = 'model-state-indicator'
 
-  if (lastCommandType === 'receive-reliable') {
+  if (engineStreamState.value === EngineStreamState.Paused) {
     className +=
-      'bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
+      'text-secondary'
     icon = (
       <CustomIcon
-        data-testid={dataTestId + '-receive-reliable'}
-        name="checkmark"
+        data-testid={dataTestId + '-paused'}
+        name="parallel"
+      />
+    )
+  } else if (engineStreamState.value === EngineStreamState.Resuming) {
+    className +=
+      'text-secondary'
+    icon = (
+      <CustomIcon
+        data-testid={dataTestId + '-resuming'}
+        name="parallel"
       />
     )
   } else if (lastCommandType === 'execution-done') {
     className +=
-      'border-6 border border-solid border-chalkboard-60 dark:border-chalkboard-80 bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
+      'text-secondary'
     icon = (
       <CustomIcon
         data-testid={dataTestId + '-execution-done'}
         name="checkmark"
       />
-    )
-  } else if (lastCommandType === 'export-done') {
-    className +=
-      'border-6 border border-solid border-chalkboard-60 dark:border-chalkboard-80 bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
-    icon = (
-      <CustomIcon data-testid={dataTestId + '-export-done'} name="checkmark" />
     )
   }
 
