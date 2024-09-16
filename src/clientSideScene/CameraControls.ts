@@ -95,6 +95,10 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
+  old: {
+    camera: PerspectiveCamera,
+    target: Vector3,
+  } | undefined
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -461,6 +465,7 @@ export class CameraControls {
     if (this.syncDirection === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
+
       void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -919,7 +924,34 @@ export class CameraControls {
         animated: false, // don't animate the zoom for now
       },
     })
+    this.cameraDragStartXY = {
+      x: 0,
+      y: 0,
+    }
   }
+
+  async restoreCameraPosition(): Promise<void> {
+    if (!this.old) return
+
+    this.camera = this.old.camera.clone()
+    this.target = this.old.target.clone()
+
+    void this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam({
+          isPerspective: true,
+          position: this.camera.position,
+          quaternion: this.camera.quaternion,
+          zoom: this.camera.zoom,
+          target: this.target,
+        }),
+      },
+    })
+  }
+
 
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
