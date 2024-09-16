@@ -38,7 +38,7 @@ import {
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
-  canExtrudeSelection,
+  canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
@@ -533,7 +533,7 @@ export const ModelingMachineProvider = ({
           }
           if (!isPipe) return false
 
-          return canExtrudeSelection(selectionRanges)
+          return canSweepSelection(selectionRanges)
         },
         'has valid revolve selection': ({ context: { selectionRanges } }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
@@ -553,7 +553,7 @@ export const ModelingMachineProvider = ({
           }
           if (!isPipe) return false
 
-          return canExtrudeSelection(selectionRanges)
+          return canSweepSelection(selectionRanges)
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },

@@ -414,7 +414,7 @@ function nodeHasClose(node: CommonASTNode) {
   })
 }
 
-export function canExtrudeSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )

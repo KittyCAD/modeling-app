@@ -33,7 +33,11 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { deleteFromSelection, extrudeSketch, revolveSketch} from 'lang/modifyAst'
+import {
+  deleteFromSelection,
+  extrudeSketch,
+  revolveSketch,
+} from 'lang/modifyAst'
 import { applyFilletToSelection } from 'lang/modifyAst/addFillet'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
@@ -595,9 +599,7 @@ export const modelingMachine = setup({
           ast,
           pathToNode,
           false,
-          'variableName' in angle
-            ? angle.variableIdentifierAst
-            : angle.valueAst
+          'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = revolveSketchRes
