@@ -237,6 +237,8 @@ export const EngineStream = () => {
       onContextMenuCapture={(e) => e.preventDefault()}
     >
       <video
+        autoPlay
+        muted
         key={engineStreamActor.id + 'video'}
         ref={engineStreamState.context.videoRef}
         controls={false}
