@@ -502,6 +502,18 @@ where
     }
 }
 
+impl<'a> FromArgs<'a> for KclValue {
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let Some(v) = args.args.get(i) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Argument at index {i} was missing",),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        Ok(v.to_owned())
+    }
+}
+
 impl<'a, T> FromArgs<'a> for Option<T>
 where
     T: FromKclValue<'a> + Sized,
@@ -714,5 +726,15 @@ impl<'a> FromKclValue<'a> for Vec<SketchGroup> {
         };
 
         uv.get::<Vec<SketchGroup>>().map(|x| x.0)
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<u64> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::UserVal(uv) = arg else {
+            return None;
+        };
+
+        uv.get::<Vec<u64>>().map(|x| x.0)
     }
 }

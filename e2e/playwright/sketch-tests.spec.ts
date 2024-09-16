@@ -9,8 +9,8 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
