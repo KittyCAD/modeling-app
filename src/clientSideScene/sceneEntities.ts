@@ -436,7 +436,7 @@ export class SceneEntities {
       maybeModdedAst,
       sketchGroup.start.__geoMeta.sourceRange
     )
-    if (sketchGroup?.value?.[0].type !== 'Circle') {
+    if (sketchGroup?.value?.[0]?.type !== 'Circle') {
       const _profileStart = createProfileStartHandle({
         from: sketchGroup.start.from,
         id: sketchGroup.start.__geoMeta.id,
