@@ -49,7 +49,13 @@ export function getDefineKeys(names: string[]) {
 
 export function getBuildDefine(env: ConfigEnv<'build'>) {
   const { command, forgeConfig } = env
-  const names = forgeConfig.renderer
+  const renderer = (forgeConfig && forgeConfig.renderer) ?? [
+    {
+      name: 'main_window',
+      config: 'vite.renderer.config.ts',
+    },
+  ]
+  const names = renderer
     .filter(({ name }) => name != null)
     .map(({ name }) => name!)
   const defineKeys = getDefineKeys(names)

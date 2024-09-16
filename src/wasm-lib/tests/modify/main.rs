@@ -35,12 +35,12 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
-    let memory = ctx.run(&program, None).await?;
+    let exec_state = ctx.run(&program, None).await?;
 
     // We need to get the sketch ID.
     // Get the sketch group ID from memory.
-    let KclValue::UserVal(user_val) = memory.get(name, SourceRange::default()).unwrap() else {
-        anyhow::bail!("part001 not found in memory: {:?}", memory);
+    let KclValue::UserVal(user_val) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
+        anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
     };
     let Some((sketch_group, _meta)) = user_val.get::<SketchGroup>() else {
         anyhow::bail!("part001 was not a SketchGroup");

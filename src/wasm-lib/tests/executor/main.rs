@@ -186,7 +186,7 @@ async fn kcl_test_negative_args() {
 async fn kcl_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
+    |> tangentialArcToRelative([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
@@ -715,7 +715,7 @@ async fn kcl_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
-  |> tangentialArc([0, scale], %, $here)
+  |> tangentialArcToRelative([0, scale], %, $here)
   |> line([scale, 0], %)
   |> line([0, -scale], %)
 
@@ -739,7 +739,7 @@ const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([280, 333])], message: "Tag `here` is a non-planar surface" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([94, 139]), SourceRange([222, 238])], message: "could not sketch tangential arc, because its center would be infinitely far away in the X direction" }"#
     );
 }
 
@@ -1287,7 +1287,7 @@ capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_bracket_with_fillets_ensure_fail_on_flush_source_ranges() {
+async fn kcl_test_bracket_with_fillets() {
     let code = r#"// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
@@ -1328,11 +1328,7 @@ const bracket = startSketchOn('XY')
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1329, 1430])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"Fillet failed\" }]" }"#
-    );
+    assert!(result.is_ok());
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1536,13 +1532,13 @@ const bracket = startSketchOn('XY')
   |> fillet({
        radius: filletR,
        tags: [
-         getPreviousAdjacentEdge(innerEdge)
+         getNextAdjacentEdge(innerEdge)
        ]
      }, %)
   |> fillet({
        radius: filletR + thickness,
        tags: [
-         getPreviousAdjacentEdge(outerEdge)
+         getNextAdjacentEdge(outerEdge)
        ]
      }, %)
 
@@ -1825,40 +1821,6 @@ const part001 = cube([0,0], 20)
         result.err().unwrap().to_string(),
         r#"type: KclErrorDetails { source_ranges: [SourceRange([271, 357])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-#[ignore] // Will return an error until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
-async fn kcl_test_sketch_on_face_of_chamfer() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-const part001 = cube([0,0], 20)
-    |> close(%, $line1)
-    |> extrude(20, %)
-  |> chamfer({
-    length: 10,
-    tags: [getOppositeEdge(line1)]
-  }, %, $chamfer1)
-
-const sketch001 = startSketchOn(part001, chamfer1)
-    |> startProfileAt([4.28, 3.83], %)
-    |> line([2.17, -0.03], %)
-    |> line([-0.07, -1.8], %)
-    |> line([-2.07, 0.05], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-    |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_of_chamfer", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]

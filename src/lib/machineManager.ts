@@ -1,5 +1,7 @@
 import { isDesktop } from './isDesktop'
 import { components } from './machine-api'
+import { reportRejection } from './trap'
+import { toSync } from './utils'
 
 export type MachinesListing = Array<
   components['schemas']['MachineInfoResponse']
@@ -17,7 +19,7 @@ export class MachineManager {
       return
     }
 
-    this.updateMachines()
+    this.updateMachines().catch(reportRejection)
   }
 
   start() {
@@ -31,11 +33,14 @@ export class MachineManager {
     let timeoutId: ReturnType<typeof setTimeout> | undefined = undefined
     const timeoutLoop = () => {
       clearTimeout(timeoutId)
-      timeoutId = setTimeout(async () => {
-        await this.updateMachineApiIp()
-        await this.updateMachines()
-        timeoutLoop()
-      }, 10000)
+      timeoutId = setTimeout(
+        toSync(async () => {
+          await this.updateMachineApiIp()
+          await this.updateMachines()
+          timeoutLoop()
+        }, reportRejection),
+        10000
+      )
     }
     timeoutLoop()
   }
@@ -81,7 +86,6 @@ export class MachineManager {
     }
 
     this._machines = await window.electron.listMachines()
-    console.log('Machines:', this._machines)
   }
 
   private async updateMachineApiIp(): Promise<void> {

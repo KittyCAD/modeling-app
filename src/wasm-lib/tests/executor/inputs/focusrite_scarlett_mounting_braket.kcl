@@ -55,10 +55,10 @@ const bracketBody = bs
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge(bs.tags.edge7),
-         getNextAdjacentEdge(bs.tags.edge2),
-         getNextAdjacentEdge(bs.tags.edge3),
-         getNextAdjacentEdge(bs.tags.edge6)
+         getPreviousAdjacentEdge(bs.tags.edge7),
+         getPreviousAdjacentEdge(bs.tags.edge2),
+         getPreviousAdjacentEdge(bs.tags.edge3),
+         getPreviousAdjacentEdge(bs.tags.edge6)
        ]
      }, %)
 

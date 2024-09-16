@@ -135,13 +135,16 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
 
 fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     let mut non_code_meta = NonCodeMeta::default();
-    let (head, noncode) = terminated(
-        (expression_but_not_pipe, preceded(whitespace, opt(non_code_node))),
+    let (head, noncode): (_, Vec<_>) = terminated(
+        (
+            expression_but_not_pipe,
+            repeat(0.., preceded(whitespace, non_code_node)),
+        ),
         peek(pipe_surrounded_by_whitespace),
     )
     .context(expected("an expression, followed by the |> (pipe) operator"))
     .parse_next(i)?;
-    if let Some(nc) = noncode {
+    for nc in noncode {
         non_code_meta.insert(0, nc);
     }
     let mut values = vec![head];
@@ -545,7 +548,7 @@ fn array_end_start(i: TokenSlice) -> PResult<ArrayExpression> {
     })
 }
 
-/// Parse n..m into a vec of numbers [n, n+1, ..., m]
+/// Parse n..m into a vec of numbers [n, n+1, ..., m-1]
 fn integer_range(i: TokenSlice) -> PResult<Vec<Expr>> {
     let (token0, floor) = integer.parse_next(i)?;
     double_period.parse_next(i)?;
@@ -924,7 +927,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
 
                 match body_items_within_function.parse_next(i) {
                     Err(ErrMode::Backtrack(_)) => {
-                        i.reset(start);
+                        i.reset(&start);
                         break;
                     }
                     Err(e) => return Err(e),
@@ -934,7 +937,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
                 }
             }
             (Err(ErrMode::Backtrack(_)), _) => {
-                i.reset(start);
+                i.reset(&start);
                 break;
             }
             (Err(e), _) => return Err(e),
@@ -1273,7 +1276,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
 
 /// Consume tokens that make up a binary expression, but don't actually return them.
 /// Why not?
-/// Because this is designed to be used with .recognize() within the `binary_expression` parser.
+/// Because this is designed to be used with .take() within the `binary_expression` parser.
 fn binary_expression_tokens(i: TokenSlice) -> PResult<Vec<BinaryExpressionToken>> {
     let first = operand.parse_next(i).map(BinaryExpressionToken::from)?;
     let remaining: Vec<_> = repeat(
@@ -1305,7 +1308,7 @@ fn binary_expression(i: TokenSlice) -> PResult<BinaryExpression> {
 }
 
 fn binary_expr_in_parens(i: TokenSlice) -> PResult<BinaryExpression> {
-    let span_with_brackets = bracketed_section.recognize().parse_next(i)?;
+    let span_with_brackets = bracketed_section.take().parse_next(i)?;
     let n = span_with_brackets.len();
     let mut span_no_brackets = &span_with_brackets[1..n - 1];
     let expr = binary_expression.parse_next(&mut span_no_brackets)?;
@@ -3452,6 +3455,17 @@ mod snapshot_tests {
             // b: 2,
             c: 3
         }"
+    );
+    snapshot_test!(
+        ba,
+        r#"
+const sketch001 = startSketchOn('XY')
+  // |> arc({
+  //   angleEnd: 270,
+  //   angleStart: 450,
+  // }, %)
+  |> startProfileAt(%)
+"#
     );
 }
 

@@ -14,6 +14,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
 import { appThemeToTheme } from 'lib/theme'
 import {
+  getInitialDefaultDir,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
@@ -71,7 +72,7 @@ export function projectConfigurationToSettingsPayload(
 ): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      // do not read in `theme`, because it is blocked on the project level
       themeColor: configuration?.settings?.app?.appearance?.color
         ? configuration?.settings?.app?.appearance?.color.toString()
         : undefined,
@@ -176,6 +177,11 @@ export async function loadAndValidateSettings(
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   const settings = createSettings()
+  // Because getting the default directory is async, we need to set it after
+  if (onDesktop) {
+    settings.app.projectDirectory.default = await getInitialDefaultDir()
+  }
+
   setSettingsAtLevel(
     settings,
     'user',

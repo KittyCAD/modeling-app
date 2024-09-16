@@ -2,14 +2,24 @@
 // template that ElectronJS provides.
 
 import dotenv from 'dotenv'
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  nativeTheme,
+} from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
 import * as kittycad from '@kittycad/lib/import'
+import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
+import os from 'node:os'
+import { reportRejection } from 'lib/trap'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -22,7 +32,19 @@ if (!process.env.NODE_ENV)
   console.warn(
     '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
   )
+// Default prod values
+
+// dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
+
+console.log(process.env)
+
+process.env.VITE_KC_API_WS_MODELING_URL ??=
+  'wss://api.zoo.dev/ws/modeling/commands'
+process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
+process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
+process.env.VITE_KC_SKIP_AUTH ??= 'false'
+process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -46,7 +68,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (): BrowserWindow => {
+const createWindow = (filePath?: string): BrowserWindow => {
   const newWindow = new BrowserWindow({
     autoHideMenuBar: true,
     show: false,
@@ -59,17 +81,37 @@ const createWindow = (): BrowserWindow => {
       preload: path.join(__dirname, './preload.js'),
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    frame: false,
+    frame: os.platform() !== 'darwin',
     titleBarStyle: 'hiddenInset',
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
   })
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
   } else {
-    newWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    )
+    getProjectPathAtStartup(filePath)
+      .then(async (projectPath) => {
+        const startIndex = path.join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+        )
+
+        if (projectPath === null) {
+          await newWindow.loadFile(startIndex)
+          return
+        }
+
+        console.log('Loading file', projectPath)
+
+        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+        console.log('Full URL', fullUrl)
+
+        await newWindow.loadFile(startIndex, {
+          hash: fullUrl,
+        })
+      })
+      .catch(reportRejection)
   }
 
   // Open the DevTools.
@@ -80,13 +122,11 @@ const createWindow = (): BrowserWindow => {
   return newWindow
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
+// Quit when all windows are closed, even on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 
 // This method will be called when Electron has finished
@@ -138,6 +178,7 @@ ipcMain.handle('login', async (event, host) => {
 
   const handle = await client.deviceAuthorization()
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   shell.openExternal(handle.verification_uri_complete)
 
   // Wait for the user to login.
@@ -191,7 +232,39 @@ ipcMain.handle('find_machine_api', () => {
   })
 })
 
-ipcMain.handle('loadProjectAtStartup', async () => {
+export function getAutoUpdater(): AppUpdater {
+  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
+  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
+  const { autoUpdater } = electronUpdater
+  return autoUpdater
+}
+
+export async function checkForUpdates(autoUpdater: AppUpdater) {
+  // TODO: figure out how to get the update modal back
+  const result = await autoUpdater.checkForUpdatesAndNotify()
+  console.log(result)
+}
+
+app.on('ready', () => {
+  const autoUpdater = getAutoUpdater()
+  checkForUpdates(autoUpdater).catch(reportRejection)
+  const fifteenMinutes = 15 * 60 * 1000
+  setInterval(() => {
+    checkForUpdates(autoUpdater).catch(reportRejection)
+  }, fifteenMinutes)
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('update-available', info)
+  })
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('update-downloaded', info)
+  })
+})
+
+const getProjectPathAtStartup = async (
+  filePath?: string
+): Promise<string | null> => {
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
@@ -199,52 +272,54 @@ ipcMain.handle('loadProjectAtStartup', async () => {
     return null
   }
 
-  let projectPath: string | null = null
-  // macOS: open-file events that were received before the app is ready
-  const macOpenFiles: string[] = (global as any).macOpenFiles
-  if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {
-    projectPath = macOpenFiles[0] // We only do one project at a time
-  }
-  // Reset this so we don't accidentally use it again.
-  const macOpenFilesEmpty: string[] = []
-  // @ts-ignore
-  global['macOpenFiles'] = macOpenFilesEmpty
+  let projectPath: string | null = filePath || null
+  if (projectPath === null) {
+    // macOS: open-file events that were received before the app is ready
+    const macOpenFiles: string[] = (global as any).macOpenFiles
+    if (macOpenFiles && macOpenFiles && macOpenFiles.length > 0) {
+      projectPath = macOpenFiles[0] // We only do one project at a time
+    }
+    // Reset this so we don't accidentally use it again.
+    const macOpenFilesEmpty: string[] = []
+    // @ts-ignore
+    global['macOpenFiles'] = macOpenFilesEmpty
 
-  // macOS: open-url events that were received before the app is ready
-  const getOpenUrls: string[] = (global as any).getOpenUrls
-  if (getOpenUrls && getOpenUrls.length > 0) {
-    projectPath = getOpenUrls[0] // We only do one project at a
-  }
-  // Reset this so we don't accidentally use it again.
-  // @ts-ignore
-  global['getOpenUrls'] = []
+    // macOS: open-url events that were received before the app is ready
+    const getOpenUrls: string[] = (global as any).getOpenUrls
+    if (getOpenUrls && getOpenUrls.length > 0) {
+      projectPath = getOpenUrls[0] // We only do one project at a
+    }
+    // Reset this so we don't accidentally use it again.
+    // @ts-ignore
+    global['getOpenUrls'] = []
 
-  // Check if we have a project path in the command line arguments
-  // If we do, we will load the project at that path
-  if (args._.length > 1) {
-    if (args._[1].length > 0) {
-      projectPath = args._[1]
-      // Reset all this value so we don't accidentally use it again.
-      args._[1] = ''
+    // Check if we have a project path in the command line arguments
+    // If we do, we will load the project at that path
+    if (args._.length > 1) {
+      if (args._[1].length > 0) {
+        projectPath = args._[1]
+        // Reset all this value so we don't accidentally use it again.
+        args._[1] = ''
+      }
     }
   }
 
   if (projectPath) {
     // We have a project path, load the project information.
     console.log(`Loading project at startup: ${projectPath}`)
-    try {
-      const currentFile = await getCurrentProjectFile(projectPath)
-      console.log(`Project loaded: ${currentFile}`)
-      return currentFile
-    } catch (e) {
-      console.error(e)
+    const currentFile = await getCurrentProjectFile(projectPath)
+
+    if (currentFile instanceof Error) {
+      console.error(currentFile)
+      return null
     }
 
-    return null
+    console.log(`Project loaded: ${currentFile}`)
+    return currentFile
   }
 
   return null
-})
+}
 
 function parseCLIArgs(): minimist.ParsedArgs {
   return minimist(process.argv, {})
@@ -261,10 +336,11 @@ function registerStartupListeners() {
   app.on('open-file', function (event, path) {
     event.preventDefault()
 
-    macOpenFiles.push(path)
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {
-      createWindow()
+      createWindow(path)
+    } else {
+      macOpenFiles.push(path)
     }
   })
 
@@ -280,10 +356,11 @@ function registerStartupListeners() {
   ) {
     event.preventDefault()
 
-    openUrls.push(url)
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {
-      createWindow()
+      createWindow(url)
+    } else {
+      openUrls.push(url)
     }
   }
 

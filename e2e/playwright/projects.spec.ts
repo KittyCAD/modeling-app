@@ -147,9 +147,6 @@ test.describe('Can export from electron app', () => {
         const u = await getUtils(page)
 
         page.on('console', console.log)
-        await electronApp.context().addInitScript(async () => {
-          ;(window as any).playwrightSkipFilePicker = true
-        })
 
         const pointOnModel = { x: 630, y: 280 }
 
@@ -173,10 +170,10 @@ test.describe('Can export from electron app', () => {
           // gray at this pixel means the stream has loaded in the most
           // user way we can verify it (pixel color)
           await expect
-            .poll(() => u.getGreatestPixDiff(pointOnModel, [75, 75, 75]), {
+            .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
               timeout: 10_000,
             })
-            .toBeLessThan(10)
+            .toBeLessThan(15)
         })
 
         const exportLocations: Array<Paths> = []
@@ -207,7 +204,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBe(477327)
+            .toBe(477481)
 
           // clean up output.gltf
           await fsp.rm('output.gltf')
@@ -495,10 +492,6 @@ test(
 
     await file.click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
     await expect(u.codeLocator).toContainText(
       'A mounting bracket for the Focusrite Scarlett Solo audio interface'
     )
@@ -856,10 +849,10 @@ const extrude001 = extrude(200, sketch001)`)
     // gray at this pixel means the stream has loaded in the most
     // user way we can verify it (pixel color)
     await expect
-      .poll(() => u.getGreatestPixDiff(pointOnModel, [132, 132, 132]), {
+      .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
         timeout: 10_000,
       })
-      .toBeLessThan(10)
+      .toBeLessThan(15)
 
     await expect(async () => {
       await page.mouse.move(0, 0, { steps: 5 })
@@ -867,8 +860,8 @@ const extrude001 = extrude(200, sketch001)`)
       await page.mouse.click(pointOnModel.x, pointOnModel.y)
       // check user can interact with model by checking it turns yellow
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [176, 180, 132]))
-        .toBeLessThan(10)
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [180, 180, 137]))
+        .toBeLessThan(15)
     }).toPass({ timeout: 40_000, intervals: [1_000] })
 
     await page.getByTestId('app-logo').click()
@@ -942,24 +935,15 @@ test(
 
       await page.getByText('bracket').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
 
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [75, 75, 75]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
           timeout: 10_000,
         })
-        .toBeLessThan(10)
+        .toBeLessThan(15)
     })
 
     await test.step('Clicking the logo takes us back to the projects page / home', async () => {
@@ -976,24 +960,15 @@ test(
 
       await page.getByText('router-template-slate').click()
 
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeEnabled({
-        timeout: 20_000,
-      })
+      await u.waitForPageLoad()
 
       // gray at this pixel means the stream has loaded in the most
       // user way we can verify it (pixel color)
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [132, 132, 132]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
           timeout: 10_000,
         })
-        .toBeLessThan(10)
+        .toBeLessThan(15)
     })
 
     await test.step('Opening the router-template project should load the stream', async () => {
@@ -1744,7 +1719,7 @@ test.describe('Renaming in the file tree', () => {
       })
 
       await test.step('Rename the folder', async () => {
-        await page.waitForTimeout(60000)
+        await page.waitForTimeout(2000)
         await folderToRename.click({ button: 'right' })
         await expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()

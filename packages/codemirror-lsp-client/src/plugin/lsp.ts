@@ -117,6 +117,7 @@ export class LanguageServerPlugin implements PluginValue {
 
     this.processLspNotification = options.processLspNotification
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.initialize({
       documentText: this.getDocText(),
     })
@@ -149,6 +150,7 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   async initialize({ documentText }: { documentText: string }) {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     if (this.client.initializePromise) {
       await this.client.initializePromise
     }
@@ -162,7 +164,9 @@ export class LanguageServerPlugin implements PluginValue {
       },
     })
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.requestSemanticTokens()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.updateFoldingRanges()
   }
 
@@ -225,7 +229,9 @@ export class LanguageServerPlugin implements PluginValue {
         contentChanges: [{ text: this.view.state.doc.toString() }],
       })
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.requestSemanticTokens()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.updateFoldingRanges()
     } catch (e) {
       console.error(e)
@@ -526,7 +532,9 @@ export class LanguageServerPlugin implements PluginValue {
   processDiagnostics(params: PublishDiagnosticsParams) {
     if (params.uri !== this.getDocUri()) return
 
-    const diagnostics = params.diagnostics
+    // Commented to avoid the lint.  See TODO below.
+    // const diagnostics =
+    params.diagnostics
       .map(({ range, message, severity }) => ({
         from: posToOffset(this.view.state.doc, range.start)!,
         to: posToOffset(this.view.state.doc, range.end)!,

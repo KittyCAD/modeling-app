@@ -1,12 +1,15 @@
 import { MouseEventHandler } from 'react'
 import { isDesktop } from 'lib/isDesktop'
+import { reportRejection } from './trap'
 
 export const openExternalBrowserIfDesktop = (to?: string) =>
   function (e) {
     if (isDesktop()) {
       // Ignoring because currentTarget could be a few different things
       // @ts-ignore
-      window.electron.openExternal(to || e.currentTarget?.href)
+      window.electron
+        .openExternal(to || e.currentTarget?.href)
+        .catch(reportRejection)
       e.preventDefault()
       e.stopPropagation()
       return false

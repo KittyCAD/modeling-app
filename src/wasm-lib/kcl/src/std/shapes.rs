@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::KclError,
-    executor::KclValue,
+    executor::{ExecState, KclValue},
     std::{Args, SketchGroup, SketchSurface},
 };
 
@@ -22,11 +22,11 @@ pub enum SketchSurfaceOrGroup {
 }
 
 /// Sketch a circle.
-pub async fn circle(args: Args) -> Result<KclValue, KclError> {
+pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (center, radius, sketch_surface_or_group, tag): ([f64; 2], f64, SketchSurfaceOrGroup, Option<TagDeclarator>) =
         args.get_circle_args()?;
 
-    let sketch_group = inner_circle(center, radius, sketch_surface_or_group, tag, args).await?;
+    let sketch_group = inner_circle(center, radius, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
@@ -59,15 +59,21 @@ async fn inner_circle(
     radius: f64,
     sketch_surface_or_group: SketchSurfaceOrGroup,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SketchGroup, KclError> {
     let sketch_surface = match sketch_surface_or_group {
         SketchSurfaceOrGroup::SketchSurface(surface) => surface,
         SketchSurfaceOrGroup::SketchGroup(group) => group.on,
     };
-    let mut sketch_group =
-        crate::std::sketch::inner_start_profile_at([center[0] + radius, center[1]], sketch_surface, None, args.clone())
-            .await?;
+    let mut sketch_group = crate::std::sketch::inner_start_profile_at(
+        [center[0] + radius, center[1]],
+        sketch_surface,
+        None,
+        exec_state,
+        args.clone(),
+    )
+    .await?;
 
     // Call arc.
     sketch_group = crate::std::sketch::inner_arc(
