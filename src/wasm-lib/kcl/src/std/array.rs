@@ -3,14 +3,14 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{KclValue, SketchGroup, SourceRange, UserVal},
+    executor::{ExecState, KclValue, SketchGroup, SourceRange, UserVal},
     function_param::FunctionParam,
 };
 
 use super::{args::FromArgs, Args, FnAsArg};
 
 /// For each item in an array, update a value.
-pub async fn array_reduce(args: Args) -> Result<KclValue, KclError> {
+pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (array, start, f): (Vec<u64>, SketchGroup, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
     let reduce_fn = FunctionParam {
         inner: f.func,
@@ -18,9 +18,8 @@ pub async fn array_reduce(args: Args) -> Result<KclValue, KclError> {
         meta: vec![args.source_range.into()],
         ctx: args.ctx.clone(),
         memory: *f.memory,
-        dynamic_state: args.dynamic_state.clone(),
     };
-    inner_array_reduce(array, start, reduce_fn, &args)
+    inner_array_reduce(array, start, reduce_fn, exec_state, &args)
         .await
         .map(|sg| KclValue::UserVal(UserVal::set(sg.meta.clone(), sg)))
 }
@@ -46,11 +45,12 @@ async fn inner_array_reduce<'a>(
     array: Vec<u64>,
     start: SketchGroup,
     reduce_fn: FunctionParam<'a>,
+    exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<SketchGroup, KclError> {
     let mut reduced = start;
     for i in array {
-        reduced = call_reduce_closure(i, reduced, &reduce_fn, args.source_range).await?;
+        reduced = call_reduce_closure(i, reduced, &reduce_fn, args.source_range, exec_state).await?;
     }
 
     Ok(reduced)
@@ -61,6 +61,7 @@ async fn call_reduce_closure<'a>(
     start: SketchGroup,
     reduce_fn: &FunctionParam<'a>,
     source_range: SourceRange,
+    exec_state: &mut ExecState,
 ) -> Result<SketchGroup, KclError> {
     // Call the reduce fn for this repetition.
     let reduce_fn_args = vec![
@@ -70,7 +71,7 @@ async fn call_reduce_closure<'a>(
         }),
         KclValue::new_user_val(start.meta.clone(), start),
     ];
-    let transform_fn_return = reduce_fn.call(reduce_fn_args).await?;
+    let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
