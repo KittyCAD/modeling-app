@@ -90,3 +90,4 @@ gen_test_fail!(
     "semantic: cannot use % outside a pipe expression"
 );
 gen_test!(sketch_group_in_object);
+gen_test!(add_lots);
