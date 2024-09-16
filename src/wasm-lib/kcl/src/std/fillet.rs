@@ -10,7 +10,9 @@ use uuid::Uuid;
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{EdgeCut, ExtrudeGroup, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, TagIdentifier, UserVal},
+    executor::{
+        EdgeCut, ExecState, ExtrudeGroup, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, TagIdentifier, UserVal,
+    },
     settings::types::UnitLength,
     std::Args,
 };
@@ -41,11 +43,11 @@ pub enum EdgeReference {
 }
 
 /// Create fillets on tagged paths.
-pub async fn fillet(args: Args) -> Result<KclValue, KclError> {
+pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (FilletData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
-    let extrude_group = inner_fillet(data, extrude_group, tag, args).await?;
+    let extrude_group = inner_fillet(data, extrude_group, tag, exec_state, args).await?;
     Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
@@ -112,6 +114,7 @@ async fn inner_fillet(
     data: FilletData,
     extrude_group: Box<ExtrudeGroup>,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -130,7 +133,7 @@ async fn inner_fillet(
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
+            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
         let id = uuid::Uuid::new_v4();
@@ -142,6 +145,7 @@ async fn inner_fillet(
                 radius: data.radius,
                 tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
                 cut_type: Some(kittycad::types::CutType::Fillet),
+                face_id: None,
             },
         )
         .await?;
@@ -171,10 +175,10 @@ async fn inner_fillet(
 }
 
 /// Get the opposite edge to the edge given.
-pub async fn get_opposite_edge(args: Args) -> Result<KclValue, KclError> {
+pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_opposite_edge(tag, args.clone()).await?;
+    let edge = inner_get_opposite_edge(tag, exec_state, args.clone()).await?;
     Ok(KclValue::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -216,13 +220,13 @@ pub async fn get_opposite_edge(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "getOppositeEdge",
 }]
-async fn inner_get_opposite_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = args.get_tag_engine_info(&tag)?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
+    let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -248,10 +252,10 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, args: Args) -> Result<Uuid,
 }
 
 /// Get the next adjacent edge to the edge given.
-pub async fn get_next_adjacent_edge(args: Args) -> Result<KclValue, KclError> {
+pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_next_adjacent_edge(tag, args.clone()).await?;
+    let edge = inner_get_next_adjacent_edge(tag, exec_state, args.clone()).await?;
     Ok(KclValue::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -293,13 +297,17 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "getNextAdjacentEdge",
 }]
-async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_next_adjacent_edge(
+    tag: TagIdentifier,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = args.get_tag_engine_info(&tag)?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
+    let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -330,10 +338,10 @@ async fn inner_get_next_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<
 }
 
 /// Get the previous adjacent edge to the edge given.
-pub async fn get_previous_adjacent_edge(args: Args) -> Result<KclValue, KclError> {
+pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
-    let edge = inner_get_previous_adjacent_edge(tag, args.clone()).await?;
+    let edge = inner_get_previous_adjacent_edge(tag, exec_state, args.clone()).await?;
     Ok(KclValue::UserVal(UserVal {
         value: serde_json::to_value(edge).map_err(|e| {
             KclError::Type(KclErrorDetails {
@@ -375,13 +383,17 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<KclValue, KclError
 #[stdlib {
     name = "getPreviousAdjacentEdge",
 }]
-async fn inner_get_previous_adjacent_edge(tag: TagIdentifier, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_previous_adjacent_edge(
+    tag: TagIdentifier,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Uuid, KclError> {
     if args.ctx.is_mock {
         return Ok(Uuid::new_v4());
     }
-    let tagged_path = args.get_tag_engine_info(&tag)?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let face_id = args.get_adjacent_face_to_tag(&tag, false).await?;
+    let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
         .send_modeling_cmd(
