@@ -25,5 +25,5 @@ syn = { version = "2.0.77", features = ["full"] }
 [dev-dependencies]
 anyhow = "1.0.88"
 expectorate = "1.1.0"
-pretty_assertions = "1.4.0"
+pretty_assertions = "1.4.1"
 rustfmt-wrapper = "0.2.1"
