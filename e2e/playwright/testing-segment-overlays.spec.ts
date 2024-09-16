@@ -780,7 +780,7 @@ const part001 = startSketchOn('XZ')
           'persistCode',
           `const part001 = startSketchOn('XZ')
   |> circle({ center: [1 + 0, 0], radius: 8 }, %)
-        `
+`
         )
         localStorage.setItem('disableAxis', 'true')
       })
