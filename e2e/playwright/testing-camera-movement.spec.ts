@@ -3,8 +3,8 @@ import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 import { getUtils, setup, tearDown } from './test-utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -12,8 +12,8 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test.describe('Testing Camera Movement', () => {
-  test('Can moving camera', async ({ page, context }) => {
-    test.skip(process.platform === 'darwin', 'Can moving camera')
+  test('Can move camera reliably', async ({ page, context }) => {
+    test.skip(process.platform === 'darwin', 'Can move camera reliably')
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -102,6 +102,13 @@ test.describe('Testing Camera Movement', () => {
     await bakeInRetries(async () => {
       await page.mouse.move(700, 200)
       await page.mouse.down({ button: 'right' })
+      const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
+      expect(appLogoBBox).not.toBeNull()
+      if (!appLogoBBox) throw new Error('app logo not found')
+      await page.mouse.move(
+        appLogoBBox.x + appLogoBBox.width / 2,
+        appLogoBBox.y + appLogoBBox.height / 2
+      )
       await page.mouse.move(600, 303)
       await page.mouse.up({ button: 'right' })
     }, [4, -10.5, -120])
@@ -295,11 +302,11 @@ test.describe('Testing Camera Movement', () => {
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
+    await hoverOverNothing()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     await page.waitForTimeout(400)
 
-    await hoverOverNothing()
     x = 975
     y = 468
 

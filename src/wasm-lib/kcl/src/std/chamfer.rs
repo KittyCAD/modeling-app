@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ChamferSurface, EdgeCut, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
+    executor::{ChamferSurface, EdgeCut, ExecState, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
     std::{fillet::EdgeReference, Args},
 };
 
@@ -27,11 +27,11 @@ pub struct ChamferData {
 }
 
 /// Create chamfers on tagged paths.
-pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
+pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
-    let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
+    let extrude_group = inner_chamfer(data, extrude_group, tag, exec_state, args).await?;
     Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
@@ -42,6 +42,7 @@ pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
 /// a sharp, straight transitional edge.
 ///
 /// ```no_run
+/// // Chamfer a mounting plate.
 /// const width = 20
 /// const length = 10
 /// const thickness = 1
@@ -65,6 +66,36 @@ pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
 ///     ],
 ///   }, %)
 /// ```
+///
+/// ```no_run
+/// // Sketch on the face of a chamfer.
+/// fn cube = (pos, scale) => {
+/// const sg = startSketchOn('XY')
+///     |> startProfileAt(pos, %)
+///     |> line([0, scale], %)
+///     |> line([scale, 0], %)
+///     |> line([0, -scale], %)
+///
+///     return sg
+/// }
+///
+/// const part001 = cube([0,0], 20)
+///     |> close(%, $line1)
+///     |> extrude(20, %)
+///     |> chamfer({
+///         length: 10,
+///         tags: [getOppositeEdge(line1)]
+///     }, %, $chamfer1) // We tag the chamfer to reference it later.
+///
+/// const sketch001 = startSketchOn(part001, chamfer1)
+///     |> startProfileAt([10, 10], %)
+///     |> line([2, 0], %)
+///     |> line([0, 2], %)
+///     |> line([-2, 0], %)
+///     |> lineTo([profileStartX(%), profileStartY(%)], %)
+///     |> close(%)
+///     |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "chamfer",
 }]
@@ -72,6 +103,7 @@ async fn inner_chamfer(
     data: ChamferData,
     extrude_group: Box<ExtrudeGroup>,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -99,7 +131,7 @@ async fn inner_chamfer(
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
+            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
         let id = uuid::Uuid::new_v4();
@@ -111,6 +143,7 @@ async fn inner_chamfer(
                 radius: data.length,
                 tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
                 cut_type: Some(kittycad::types::CutType::Chamfer),
+                face_id: Some(id),
             },
         )
         .await?;
@@ -124,7 +157,7 @@ async fn inner_chamfer(
 
         if let Some(ref tag) = tag {
             extrude_group.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-                face_id: edge_id,
+                face_id: id,
                 tag: Some(tag.clone()),
                 geo_meta: GeoMeta {
                     id,
