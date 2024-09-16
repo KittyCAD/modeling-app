@@ -17,6 +17,7 @@ import {
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { mark } from './performance'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -128,6 +129,7 @@ export async function createNewProjectDirectory(
 export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
+  mark('code/willListProjects')
   if (configuration === undefined) {
     configuration = await readAppSettingsFile()
   }
@@ -146,13 +148,16 @@ export async function listProjects(
       continue
     }
 
+    mark('code/willGetProjectInfo')
     const project = await getProjectInfo(projectPath)
+    mark('code/didGetProjectInfo')
     // Needs at least one file to be added to the projects list
     if (project.kcl_file_count === 0) {
       continue
     }
     projects.push(project)
   }
+  mark('code/didListProjects')
   return projects
 }
 

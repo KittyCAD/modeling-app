@@ -20,6 +20,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
+import { mark } from 'lib/performance'
 
 let mainWindow: BrowserWindow | null = null
 
