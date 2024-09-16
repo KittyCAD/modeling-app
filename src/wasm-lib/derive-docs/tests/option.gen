@@ -44,15 +44,17 @@ pub(crate) struct Show {}
 #[doc = "Std lib function: show\nThis is some function.\nIt does shit."]
 pub(crate) const Show: Show = Show {};
 fn boxed_show(
+    exec_state: &mut crate::executor::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
                 Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
-            > + Send,
+            > + Send
+            + '_,
     >,
 > {
-    Box::pin(show(args))
+    Box::pin(show(exec_state, args))
 }
 
 impl crate::docs::StdLibFn for Show {

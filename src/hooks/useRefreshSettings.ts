@@ -23,7 +23,8 @@ export function useRefreshSettings(routeId: string = PATHS.INDEX) {
   }
 
   useEffect(() => {
-    ctx.settings.send('Set all settings', {
+    ctx.settings.send({
+      type: 'Set all settings',
       settings: routeData,
     })
   }, [])

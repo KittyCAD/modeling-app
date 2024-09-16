@@ -10,8 +10,8 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
-  TransformInfo,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 

@@ -124,6 +124,7 @@ beforeAll(async () => {
       setMediaStream: () => {},
       setIsStreamReady: () => {},
       modifyGrid: async () => {},
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       callbackOnEngineLiteConnect: async () => {
         const cacheEntries = Object.entries(codeToWriteCacheFor) as [
           CodeKey,

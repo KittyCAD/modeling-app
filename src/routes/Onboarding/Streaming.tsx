@@ -1,9 +1,7 @@
-import { useModelingContext } from 'hooks/useModelingContext'
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export default function Streaming() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EDITOR)
 
@@ -11,8 +9,7 @@ export default function Streaming() {
     <div className="fixed grid justify-start items-center inset-0 z-50 pointer-events-none">
       <div
         className={
-          'max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
+          'pointer-events-auto max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <section className="flex-1 overflow-y-auto">

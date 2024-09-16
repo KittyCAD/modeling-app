@@ -5,7 +5,7 @@ import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
-import { throttle } from 'lib/utils'
+import { throttle, toSync } from 'lib/utils'
 import {
   sceneInfra,
   kclManager,
@@ -34,17 +34,15 @@ import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { LineInputsType } from 'lang/std/sketchcombos'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
 import { executeAst } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
-  makeRemoveSingleConstraintInput,
   removeSingleConstraintInfo,
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -124,9 +122,9 @@ export const ClientSideScene = ({
     } else if (context.mouseState.type === 'isDragging') {
       cursor = 'grabbing'
     } else if (
-      state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to') ||
-      state.matches('Sketch.Rectangle tool')
+      state.matches({ Sketch: 'Line tool' }) ||
+      state.matches({ Sketch: 'Tangential arc to' }) ||
+      state.matches({ Sketch: 'Rectangle tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -214,9 +212,9 @@ const Overlay = ({
     overlay.visible &&
     typeof context?.segmentHoverMap?.[pathToNodeString] === 'number' &&
     !(
-      state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to') ||
-      state.matches('Sketch.Rectangle tool')
+      state.matches({ Sketch: 'Line tool' }) ||
+      state.matches({ Sketch: 'Tangential arc to' }) ||
+      state.matches({ Sketch: 'Rectangle tool' })
     )
 
   return (
@@ -542,12 +540,10 @@ const ConstraintSymbol = ({
       iconName: 'dimension',
     },
   }
-  const varName =
-    _type in varNameMap ? varNameMap[_type as LineInputsType].varName : 'var'
-  const name: CustomIconName = varNameMap[_type as LineInputsType].iconName
-  const displayName = varNameMap[_type as LineInputsType]?.displayName
-  const implicitDesc =
-    varNameMap[_type as LineInputsType]?.implicitConstraintDesc
+  const varName = varNameMap?.[_type]?.varName || 'var'
+  const name: CustomIconName = varNameMap[_type].iconName
+  const displayName = varNameMap[_type]?.displayName
+  const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
 
   const _node = useMemo(
     () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
@@ -582,7 +578,7 @@ const ConstraintSymbol = ({
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
-        onClick={async () => {
+        onClick={toSync(async () => {
           if (!isConstrained) {
             send({
               type: 'Convert to variable',
@@ -604,25 +600,23 @@ const ConstraintSymbol = ({
               if (trap(_node1)) return Promise.reject(_node1)
               const shallowPath = _node1.shallowPath
 
-              const input = makeRemoveSingleConstraintInput(
-                argPosition,
-                shallowPath
-              )
-              if (!input || !context.sketchDetails) return
+              if (!context.sketchDetails || !argPosition) return
               const transform = removeSingleConstraintInfo(
-                input,
+                shallowPath,
+                argPosition,
                 kclManager.ast,
                 kclManager.programMemory
               )
               if (!transform) return
               const { modifiedAst } = transform
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               kclManager.updateAst(modifiedAst, true)
             } catch (e) {
               console.log('error', e)
             }
             toast.success('Constraint removed')
           }
-        }}
+        }, reportRejection)}
       >
         <CustomIcon name={name} />
       </button>
@@ -688,7 +682,7 @@ const ConstraintSymbol = ({
 
 const throttled = throttle((a: ReactCameraProperties) => {
   if (a.type === 'perspective' && a.fov) {
-    sceneInfra.camControls.dollyZoom(a.fov)
+    sceneInfra.camControls.dollyZoom(a.fov).catch(reportRejection)
   }
 }, 1000 / 15)
 
@@ -718,6 +712,7 @@ export const CamDebugSettings = () => {
           if (camSettings.type === 'perspective') {
             sceneInfra.camControls.useOrthographicCamera()
           } else {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             sceneInfra.camControls.usePerspectiveCamera(true)
           }
         }}
@@ -725,7 +720,7 @@ export const CamDebugSettings = () => {
       <div>
         <button
           onClick={() => {
-            sceneInfra.camControls.resetCameraPosition()
+            sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
           }}
         >
           Reset Camera Position

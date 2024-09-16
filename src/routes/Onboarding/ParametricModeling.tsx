@@ -3,11 +3,10 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
-import { useModelingContext } from 'hooks/useModelingContext'
+import { isDesktop } from 'lib/isDesktop'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()
-  const { context } = useModelingContext()
   const {
     settings: {
       context: {
@@ -29,8 +28,7 @@ export default function OnboardingParametricModeling() {
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
       <div
         className={
-          'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
+          'pointer-events-auto z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">
@@ -50,7 +48,9 @@ export default function OnboardingParametricModeling() {
           </p>
           <figure className="my-4 w-2/3 mx-auto">
             <img
-              src={`/onboarding-bracket${getImageTheme()}.png`}
+              src={`${
+                isDesktop() ? '.' : ''
+              }/onboarding-bracket${getImageTheme()}.png`}
               alt="Bracket"
             />
             <figcaption className="text-small italic text-center">
@@ -67,7 +67,9 @@ export default function OnboardingParametricModeling() {
           </p>
           <figure className="my-4 w-2/3 mx-auto">
             <img
-              src={`/onboarding-bracket-dimensions${getImageTheme()}.png`}
+              src={`${
+                isDesktop() ? '.' : ''
+              }/onboarding-bracket-dimensions${getImageTheme()}.png`}
               alt="Bracket Dimensions"
             />
             <figcaption className="text-small italic text-center">

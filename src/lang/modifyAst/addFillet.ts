@@ -44,22 +44,24 @@ import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
  */
 
 export function applyFilletToSelection(
+  ast: Program,
   selection: Selections,
   radius: KclCommandValue
 ): void | Error {
-  // 1. get AST
-  let ast = kclManager.ast
+  // 1. clone ast
+  let clonedAst = structuredClone(ast)
 
   // 2. modify ast clone with fillet and tag
-  const result = modifyAstWithFilletAndTag(ast, selection, radius)
+  const result = modifyAstWithFilletAndTag(clonedAst, selection, radius)
   if (err(result)) return result
   const { modifiedAst, pathToFilletNode } = result
 
   // 3. update ast
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   updateAstAndFocus(modifiedAst, pathToFilletNode)
 }
 
-function modifyAstWithFilletAndTag(
+export function modifyAstWithFilletAndTag(
   ast: Program,
   selection: Selections,
   radius: KclCommandValue
@@ -67,32 +69,41 @@ function modifyAstWithFilletAndTag(
   const astResult = insertRadiusIntoAst(ast, radius)
   if (err(astResult)) return astResult
 
-  // 2. get path
   const programMemory = kclManager.programMemory
   const artifactGraph = engineCommandManager.artifactGraph
-  const getPathToExtrudeForSegmentSelectionResult =
-    getPathToExtrudeForSegmentSelection(
-      ast,
-      selection,
-      programMemory,
-      artifactGraph
+
+  let clonedAst = structuredClone(ast)
+  let lastPathToFilletNode: PathToNode = []
+
+  for (const selectionRange of selection.codeBasedSelections) {
+    const singleSelection = {
+      codeBasedSelections: [selectionRange],
+      otherSelections: [],
+    }
+    const getPathToExtrudeForSegmentSelectionResult =
+      getPathToExtrudeForSegmentSelection(
+        clonedAst,
+        singleSelection,
+        programMemory,
+        artifactGraph
+      )
+    if (err(getPathToExtrudeForSegmentSelectionResult))
+      return getPathToExtrudeForSegmentSelectionResult
+    const { pathToSegmentNode, pathToExtrudeNode } =
+      getPathToExtrudeForSegmentSelectionResult
+
+    const addFilletResult = addFillet(
+      clonedAst,
+      pathToSegmentNode,
+      pathToExtrudeNode,
+      'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
     )
-  if (err(getPathToExtrudeForSegmentSelectionResult))
-    return getPathToExtrudeForSegmentSelectionResult
-  const { pathToSegmentNode, pathToExtrudeNode } =
-    getPathToExtrudeForSegmentSelectionResult
-
-  // 3. add fillet
-  const addFilletResult = addFillet(
-    ast,
-    pathToSegmentNode,
-    pathToExtrudeNode,
-    'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
-  )
-  if (trap(addFilletResult)) return addFilletResult
-  const { modifiedAst, pathToFilletNode } = addFilletResult
-
-  return { modifiedAst, pathToFilletNode }
+    if (trap(addFilletResult)) return addFilletResult
+    const { modifiedAst, pathToFilletNode } = addFilletResult
+    clonedAst = modifiedAst
+    lastPathToFilletNode = pathToFilletNode
+  }
+  return { modifiedAst: clonedAst, pathToFilletNode: lastPathToFilletNode }
 }
 
 function insertRadiusIntoAst(
