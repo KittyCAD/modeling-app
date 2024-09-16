@@ -268,6 +268,7 @@ jobs:
         path: "./.nyc_output/*.json"
         retention-days: 30
         overwrite: true
+        include-hidden-files: true
 
 
   playwright-electron:
