@@ -319,7 +319,7 @@ pub enum KclValue {
 
 impl KclValue {
     pub(crate) fn new_user_val<T: Serialize>(meta: Vec<Metadata>, val: T) -> Self {
-        Self::UserVal(UserVal::set(meta, val))
+        Self::UserVal(UserVal::new(meta, val))
     }
 
     pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
@@ -364,14 +364,14 @@ impl KclValue {
 
 impl From<SketchGroupSet> for KclValue {
     fn from(sg: SketchGroupSet) -> Self {
-        KclValue::UserVal(UserVal::set(sg.meta(), sg))
+        KclValue::UserVal(UserVal::new(sg.meta(), sg))
     }
 }
 
 impl From<Vec<Box<SketchGroup>>> for KclValue {
     fn from(sg: Vec<Box<SketchGroup>>) -> Self {
         let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
-        KclValue::UserVal(UserVal::set(meta, sg))
+        KclValue::UserVal(UserVal::new(meta, sg))
     }
 }
 
@@ -662,6 +662,13 @@ pub struct UserVal {
 }
 
 impl UserVal {
+    pub fn new<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self {
+            meta,
+            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
+        }
+    }
+
     /// If the UserVal matches the type `T`, return it.
     pub fn get<T: serde::de::DeserializeOwned>(&self) -> Option<(T, Vec<Metadata>)> {
         let meta = self.meta.clone();
@@ -685,16 +692,8 @@ impl UserVal {
             return Ok(());
         };
         mutate(&mut val)?;
-        *self = Self::set(meta, val);
+        *self = Self::new(meta, val);
         Ok(())
-    }
-
-    /// Put the given value into this UserVal.
-    pub fn set<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
-        Self {
-            meta,
-            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
-        }
     }
 }
 
