@@ -270,7 +270,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
         name: playwright-coverage-${{ runner.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
-        path: .nyc_output/*.json
+        path: ".nyc_output/*.json"
         retention-days: 30
         overwrite: true
 
