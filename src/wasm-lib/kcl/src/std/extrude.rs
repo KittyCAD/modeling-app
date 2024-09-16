@@ -141,11 +141,9 @@ pub(crate) async fn do_post_extrude(
         }));
     }
 
-    let edge_id = sketch_group.value.iter().find_map(|segment| {
-        match segment {
-            Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
-            _ => None,
-        }
+    let edge_id = sketch_group.value.iter().find_map(|segment| match segment {
+        Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
+        _ => None,
     });
 
     let Some(edge_id) = edge_id else {
