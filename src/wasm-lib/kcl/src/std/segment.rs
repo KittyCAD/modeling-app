@@ -6,14 +6,14 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{KclValue, SketchGroup, TagIdentifier},
+    executor::{ExecState, KclValue, SketchGroup, TagIdentifier},
     std::{utils::between, Args},
 };
 
 /// Returns the segment end of x.
-pub async fn segment_end_x(args: Args) -> Result<KclValue, KclError> {
+pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
-    let result = inner_segment_end_x(&tag, args.clone())?;
+    let result = inner_segment_end_x(&tag, exec_state, args.clone())?;
 
     args.make_user_val_from_f64(result)
 }
@@ -34,8 +34,8 @@ pub async fn segment_end_x(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "segEndX",
 }]
-fn inner_segment_end_x(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(tag)?;
+fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
@@ -47,9 +47,9 @@ fn inner_segment_end_x(tag: &TagIdentifier, args: Args) -> Result<f64, KclError>
 }
 
 /// Returns the segment end of y.
-pub async fn segment_end_y(args: Args) -> Result<KclValue, KclError> {
+pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
-    let result = inner_segment_end_y(&tag, args.clone())?;
+    let result = inner_segment_end_y(&tag, exec_state, args.clone())?;
 
     args.make_user_val_from_f64(result)
 }
@@ -71,8 +71,8 @@ pub async fn segment_end_y(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "segEndY",
 }]
-fn inner_segment_end_y(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(tag)?;
+fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
@@ -84,7 +84,7 @@ fn inner_segment_end_y(tag: &TagIdentifier, args: Args) -> Result<f64, KclError>
 }
 
 /// Returns the last segment of x.
-pub async fn last_segment_x(args: Args) -> Result<KclValue, KclError> {
+pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_x(sketch_group, args.clone())?;
 
@@ -127,7 +127,7 @@ fn inner_last_segment_x(sketch_group: SketchGroup, args: Args) -> Result<f64, Kc
 }
 
 /// Returns the last segment of y.
-pub async fn last_segment_y(args: Args) -> Result<KclValue, KclError> {
+pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_y(sketch_group, args.clone())?;
 
@@ -170,9 +170,9 @@ fn inner_last_segment_y(sketch_group: SketchGroup, args: Args) -> Result<f64, Kc
 }
 
 /// Returns the length of the segment.
-pub async fn segment_length(args: Args) -> Result<KclValue, KclError> {
+pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
-    let result = inner_segment_length(&tag, args.clone())?;
+    let result = inner_segment_length(&tag, exec_state, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -200,8 +200,8 @@ pub async fn segment_length(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "segLen",
 }]
-fn inner_segment_length(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(tag)?;
+fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
@@ -215,10 +215,10 @@ fn inner_segment_length(tag: &TagIdentifier, args: Args) -> Result<f64, KclError
 }
 
 /// Returns the angle of the segment.
-pub async fn segment_angle(args: Args) -> Result<KclValue, KclError> {
+pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
-    let result = inner_segment_angle(&tag, args.clone())?;
+    let result = inner_segment_angle(&tag, exec_state, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -240,8 +240,8 @@ pub async fn segment_angle(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "segAng",
 }]
-fn inner_segment_angle(tag: &TagIdentifier, args: Args) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(tag)?;
+fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
@@ -255,9 +255,9 @@ fn inner_segment_angle(tag: &TagIdentifier, args: Args) -> Result<f64, KclError>
 }
 
 /// Returns the angle to match the given length for x.
-pub async fn angle_to_match_length_x(args: Args) -> Result<KclValue, KclError> {
+pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch_group) = args.get_tag_to_number_sketch_group()?;
-    let result = inner_angle_to_match_length_x(&tag, to, sketch_group, args.clone())?;
+    let result = inner_angle_to_match_length_x(&tag, to, sketch_group, exec_state, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -282,9 +282,10 @@ fn inner_angle_to_match_length_x(
     tag: &TagIdentifier,
     to: f64,
     sketch_group: SketchGroup,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(tag)?;
+    let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
@@ -320,9 +321,9 @@ fn inner_angle_to_match_length_x(
 }
 
 /// Returns the angle to match the given length for y.
-pub async fn angle_to_match_length_y(args: Args) -> Result<KclValue, KclError> {
+pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch_group) = args.get_tag_to_number_sketch_group()?;
-    let result = inner_angle_to_match_length_y(&tag, to, sketch_group, args.clone())?;
+    let result = inner_angle_to_match_length_y(&tag, to, sketch_group, exec_state, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -348,9 +349,10 @@ fn inner_angle_to_match_length_y(
     tag: &TagIdentifier,
     to: f64,
     sketch_group: SketchGroup,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(tag)?;
+    let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
