@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, BasePath, GeoMeta, KclValue, Path, SketchGroup, SketchSurface},
+    executor::{BasePath, ExecState, GeoMeta, KclValue, Path, SketchGroup, SketchSurface},
     std::Args,
 };
 
