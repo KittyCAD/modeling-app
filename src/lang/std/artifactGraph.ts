@@ -54,7 +54,7 @@ interface SegmentArtifactRich {
   type: 'segment'
   path: PathArtifact
   surf: WallArtifact
-  edges: Array<ExtrudeEdge>
+  edges: Array<SweepEdge>
   edgeCut?: EdgeCut
   codeRef: CommonCommandProperties
 }
@@ -73,7 +73,7 @@ interface SweepArtifactRich {
   subType: 'extrusion' | 'revolve'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
-  edges: Array<ExtrudeEdge>
+  edges: Array<SweepEdge>
   codeRef: CommonCommandProperties
 }
 
@@ -92,8 +92,8 @@ interface CapArtifact {
   pathIds: Array<ArtifactId>
 }
 
-interface ExtrudeEdge {
-  type: 'extrudeEdge'
+interface SweepEdge {
+  type: 'sweepEdge'
   segId: ArtifactId
   sweepId: ArtifactId
   subType: 'opposite' | 'adjacent'
@@ -122,7 +122,7 @@ export type Artifact =
   | SweepArtifact
   | WallArtifact
   | CapArtifact
-  | ExtrudeEdge
+  | SweepEdge
   | EdgeCut
   | EdgeCutEdge
   | solid2D
@@ -455,7 +455,7 @@ export function getArtifactsToUpdate({
       {
         id: response.data.modeling_response.data.edge,
         artifact: {
-          type: 'extrudeEdge',
+          type: 'sweepEdge',
           subType:
             cmd.type === 'solid3d_get_prev_adjacent_edge'
               ? 'adjacent'
@@ -610,7 +610,7 @@ export function expandPath(
   }
 }
 
-export function expandExtrusion(
+export function expandSweep(
   sweep: SweepArtifact,
   artifactGraph: ArtifactGraph
 ): SweepArtifactRich | Error {
@@ -619,7 +619,7 @@ export function expandExtrusion(
     artifactGraph
   )
   const edges = getArtifactsOfTypes(
-    { keys: sweep.edgeIds, types: ['extrudeEdge'] },
+    { keys: sweep.edgeIds, types: ['sweepEdge'] },
     artifactGraph
   )
   const path = getArtifactOfTypes(
@@ -650,7 +650,7 @@ export function expandSegment(
     artifactGraph
   )
   const edges = getArtifactsOfTypes(
-    { keys: segment.edgeIds, types: ['extrudeEdge'] },
+    { keys: segment.edgeIds, types: ['sweepEdge'] },
     artifactGraph
   )
   const edgeCut = segment.edgeCutId
@@ -715,8 +715,8 @@ export function getWallCodeRef(
   return seg.codeRef
 }
 
-export function getExtrudeEdgeCodeRef(
-  edge: ExtrudeEdge,
+export function getSweepEdgeCodeRef(
+  edge: SweepEdge,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
   const seg = getArtifactOfTypes(
@@ -727,7 +727,7 @@ export function getExtrudeEdgeCodeRef(
   return seg.codeRef
 }
 
-export function getExtrusionFromSuspectedExtrudeSurface(
+export function getSweepFromSuspectedSweepSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {
@@ -742,7 +742,7 @@ export function getExtrusionFromSuspectedExtrudeSurface(
   )
 }
 
-export function getExtrusionFromSuspectedPath(
+export function getSweepFromSuspectedPath(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {

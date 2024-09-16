@@ -33,7 +33,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
-  getExtrudeEdgeCodeRef,
+  getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -142,8 +142,8 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
-  if (_artifact.type === 'extrudeEdge') {
-    const codeRef = getExtrudeEdgeCodeRef(
+  if (_artifact.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
       _artifact,
       engineCommandManager.artifactGraph
     )

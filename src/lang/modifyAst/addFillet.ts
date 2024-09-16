@@ -35,7 +35,7 @@ import { Selections, canFilletSelection } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
   ArtifactGraph,
-  getExtrusionFromSuspectedPath,
+  getSweepFromSuspectedPath,
 } from 'lang/std/artifactGraph'
 import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
 
@@ -142,7 +142,7 @@ export function getPathToExtrudeForSegmentSelection(
   )
   if (trap(sketchGroup)) return sketchGroup
 
-  const extrusion = getExtrusionFromSuspectedPath(sketchGroup.id, artifactGraph)
+  const extrusion = getSweepFromSuspectedPath(sketchGroup.id, artifactGraph)
   if (err(extrusion)) return extrusion
 
   const pathToExtrudeNode = getNodePathFromSourceRange(
