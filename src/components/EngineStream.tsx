@@ -1,29 +1,23 @@
-import { MouseEventHandler, useEffect, useRef, useState, MutableRefObject, useCallback } from 'react'
+import { MouseEventHandler, useEffect, useRef } from 'react'
 import { useAppState } from 'AppState'
-import { createMachine, createActor, setup } from 'xstate'
-import { createActorContext } from '@xstate/react'
-import { getNormalisedCoordinates } from '../lib/utils'
-import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { btnName } from 'lib/cameraControls'
+import { trap } from 'lib/trap'
 import { sendSelectEventToEngine } from 'lib/selections'
-import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
+import { kclManager, engineCommandManager } from 'lib/singletons'
 import {
   EngineCommandManagerEvents,
-  EngineConnectionStateType,
-  DisconnectingType,
 } from 'lang/std/engineConnection'
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
-import useEngineStreamContext, { EngineStreamState, EngineStreamTransition, EngineStreamContext } from 'hooks/useEngineStreamContext'
+import useEngineStreamContext, { EngineStreamState, EngineStreamTransition } from 'hooks/useEngineStreamContext'
 
 export const EngineStream = () => {
-  const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const { setAppState } = useAppState()
 
   const { overallState } = useNetworkContext()
@@ -40,7 +34,6 @@ export const EngineStream = () => {
   const {
     state: modelingMachineState,
     send: modelingMachineActorSend,
-    context: modelingMachineContext,
   } = useModelingContext()
 
   const engineStreamActor = useEngineStreamContext.useActorRef()
@@ -150,7 +143,7 @@ export const EngineStream = () => {
   useEffect(() => {
     if (engineCommandManager.engineConnection?.isReady() && file?.path) {
       console.log('execute on file change')
-      kclManager.executeCode(true)
+      void kclManager.executeCode(true).catch(trap)
     }
   }, [file?.path, engineCommandManager.engineConnection])
 
@@ -222,78 +215,15 @@ export const EngineStream = () => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
 
-  const isLoading = engineStreamState.value === EngineStreamState.Resuming
-
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!isNetworkOkay) return
     if (!engineStreamState.context.videoRef.current) return
-
-    modelingMachineActorSend({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: undefined,
-      },
-    })
     if (modelingMachineState.matches('Sketch')) return
     if (modelingMachineState.matches({ idle: 'showPlanes' })) return
 
-    if (!modelingMachineContext.store?.didDragInStream && btnName(e).left) {
-      sendSelectEventToEngine(
-        e,
-        engineStreamState.context.videoRef.current,
-        modelingMachineContext.store?.streamDimensions
-      )
-    }
-
-    modelingMachineActorSend({
-      type: 'Set context',
-      data: {
-        didDragInStream: false,
-      },
-    })
-    setClickCoords(undefined)
-  }
-
-  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (!engineStreamState.context.videoRef.current) return
-
-    if (modelingMachineState.matches('Sketch')) return
-    if (modelingMachineState.matches('Sketch no face')) return
-
-    const { x, y } = getNormalisedCoordinates({
-      clientX: e.clientX,
-      clientY: e.clientY,
-      el: engineStreamState.context.videoRef.current,
-      ...modelingMachineContext.store?.streamDimensions,
-    })
-
-    modelingMachineActorSend({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: e.button,
-      },
-    })
-
-    setClickCoords({ x, y })
-  }
-
-  const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (!clickCoords) return
-    if (modelingMachineState.matches('Sketch')) return
-    if (modelingMachineState.matches('Sketch no face')) return
-
-    const delta =
-      ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
-      0.5
-    if (delta > 5 && !modelingMachineContext.store?.didDragInStream) {
-      modelingMachineActorSend({
-        type: 'Set context',
-        data: {
-          didDragInStream: true,
-        },
-      })
+    if (btnName(e).left) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sendSelectEventToEngine(e, engineStreamState.context.videoRef.current)
     }
   }
 
@@ -303,7 +233,6 @@ export const EngineStream = () => {
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
-      onMouseDown={handleMouseDown}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -311,7 +240,6 @@ export const EngineStream = () => {
         key={engineStreamActor.id + 'video'}
         ref={engineStreamState.context.videoRef}
         controls={false}
-        onMouseMoveCapture={handleMouseMove}
         className="cursor-pointer"
         disablePictureInPicture
         id="video-stream"

@@ -14,7 +14,6 @@ import {
   modelingMachine,
   modelingMachineDefaultContext,
 } from 'machines/modelingMachine'
-import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   isCursorInSketchCommandRange,
@@ -105,13 +104,8 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
-        modeling: {
-          defaultUnit,
-          cameraProjection,
-          highlightEdges,
-          showScaleGrid,
-        },
+        app: { theme },
+        modeling: { defaultUnit, highlightEdges, cameraProjection },
       },
     },
   } = useSettingsAuthContext()
@@ -995,21 +989,6 @@ export const ModelingMachineProvider = ({
       },
       // devTools: true,
     }
-  )
-
-  useSetupEngineManager(
-    streamRef,
-    modelingSend,
-    modelingState.context,
-    {
-      pool: pool,
-      theme: theme.current,
-      highlightEdges: highlightEdges.current,
-      enableSSAO: enableSSAO.current,
-      showScaleGrid: showScaleGrid.current,
-      cameraProjection: cameraProjection.current,
-    },
-    token
   )
 
   useEffect(() => {

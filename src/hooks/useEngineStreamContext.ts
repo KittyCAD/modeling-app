@@ -1,24 +1,9 @@
 import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
-import { MouseEventHandler, useEffect, useRef, useState, MutableRefObject } from 'react'
-import { createMachine, createActor, setup, assign } from 'xstate'
+import { MutableRefObject } from 'react'
+import { setup, assign } from 'xstate'
 import { createActorContext } from '@xstate/react'
-import { getNormalisedCoordinates } from '../lib/utils'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
-import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { btnName } from 'lib/cameraControls'
-import { sendSelectEventToEngine } from 'lib/selections'
-import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
-import {
-  EngineCommandManagerEvents,
-  EngineConnectionStateType,
-  DisconnectingType,
-} from 'lang/std/engineConnection'
-import { useRouteLoaderData } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
-import { IndexLoaderData } from 'lib/types'
+import { kclManager, engineCommandManager } from 'lib/singletons'
+import { trap } from 'lib/trap'
 
 export enum EngineStreamState {
   Off = 'off',
@@ -76,10 +61,10 @@ const engineStreamMachine = setup({
         canvas.style.display = "none"
 
         video.srcObject = mediaStream
-        video.play().catch((e) => {
+        void video.play().catch((e) => {
             console.warn('Video playing was prevented', e, video)
         }).then(() => {
-          kclManager.executeCode(true)
+          kclManager.executeCode(true).catch(trap)
         })
       },
       [EngineStreamTransition.Pause]({ context }) {
