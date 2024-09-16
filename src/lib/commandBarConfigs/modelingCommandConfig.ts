@@ -213,6 +213,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
+        // TODO: These are products of an extrude
         selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
         multiple: false, // TODO: multiple selection
         required: true,

@@ -62,8 +62,8 @@ import {
 } from 'lang/modifyAst'
 import { Program, parse, recast } from 'lang/wasm'
 import {
+  doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
-  hasExtrudableGeometry,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
@@ -528,7 +528,7 @@ export const ModelingMachineProvider = ({
             // they have no selection, we should enable the button
             // so they can select the face through the cmdbar
             // BUT only if there's extrudable geometry
-            if (hasExtrudableGeometry(kclManager.ast)) return true
+            if (doesSceneHaveSweepableSketch(kclManager.ast)) return true
             return false
           }
           if (!isPipe) return false
@@ -548,7 +548,7 @@ export const ModelingMachineProvider = ({
             // they have no selection, we should enable the button
             // so they can select the face through the cmdbar
             // BUT only if there's extrudable geometry
-            if (hasExtrudableGeometry(kclManager.ast)) return true
+            if (doesSceneHaveSweepableSketch(kclManager.ast)) return true
             return false
           }
           if (!isPipe) return false
