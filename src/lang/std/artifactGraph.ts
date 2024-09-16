@@ -587,7 +587,6 @@ export function expandPath(
     { keys: path.segIds, types: ['segment'] },
     artifactGraph
   )
-  // TODO KEVIN: rename
   const sweep = getArtifactOfTypes(
     {
       key: path.sweepId,
@@ -677,7 +676,6 @@ export function getCapCodeRef(
   cap: CapArtifact,
   artifactGraph: ArtifactGraph
 ): CommonCommandProperties | Error {
-  // TODO KEVIN: Rename
   const sweep = getArtifactOfTypes(
     { key: cap.sweepId, types: ['sweep'] },
     artifactGraph
