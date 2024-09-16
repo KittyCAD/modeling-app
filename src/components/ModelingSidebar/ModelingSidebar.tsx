@@ -1,8 +1,8 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
-import { MouseEventHandler, useCallback, useMemo } from 'react'
+import { MouseEventHandler, useCallback, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { SidebarType, sidebarPanes } from './ModelingPanes'
+import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
 import { ActionIcon } from 'components/ActionIcon'
 import styles from './ModelingSidebar.module.css'
@@ -24,6 +24,10 @@ interface BadgeInfoComputed {
   onClick?: MouseEventHandler<any>
 }
 
+function getPlatformString(): 'web' | 'desktop' {
+  return isDesktop() ? 'desktop' : 'web'
+}
+
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
@@ -36,6 +40,15 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   const showDebugPanel = settings.context.modeling.showDebugPanel
+
+  const paneCallbackProps = useMemo(
+    () => ({
+      kclContext,
+      settings: settings.context,
+      platform: getPlatformString(),
+    }),
+    [kclContext.errors, settings.context]
+  )
 
   const sidebarActions: SidebarAction[] = [
     {
@@ -71,11 +84,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   ]
   const filteredActions: SidebarAction[] = sidebarActions.filter(
     (action) =>
-      (!action.hide || (action.hide instanceof Function && !action.hide())) &&
-      (!action.hideOnPlatform ||
-        (isDesktop()
-          ? action.hideOnPlatform === 'web'
-          : action.hideOnPlatform === 'desktop'))
+      !action.hide ||
+      (action.hide instanceof Function && !action.hide(paneCallbackProps))
   )
 
   //   // Filter out the debug panel if it's not supposed to be shown
@@ -87,25 +97,47 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         : sidebarPanes.filter((pane) => pane.id !== 'debug')
       ).filter(
         (pane) =>
-          !pane.hideOnPlatform ||
-          (isDesktop()
-            ? pane.hideOnPlatform === 'web'
-            : pane.hideOnPlatform === 'desktop')
+          !pane.hide ||
+          (pane.hide instanceof Function && !pane.hide(paneCallbackProps))
       ),
-    [sidebarPanes, showDebugPanel.current]
+    [sidebarPanes, paneCallbackProps]
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
     return filteredPanes.reduce((acc, pane) => {
       if (pane.showBadge) {
         acc[pane.id] = {
-          value: pane.showBadge.value({ kclContext }),
+          value: pane.showBadge.value(paneCallbackProps),
           onClick: pane.showBadge.onClick,
         }
       }
       return acc
     }, {} as Record<SidebarType, BadgeInfoComputed>)
-  }, [kclContext.errors])
+  }, [paneCallbackProps])
+
+  // Clear any hidden panes from the `openPanes` array
+  useEffect(() => {
+    const panesToReset: SidebarType[] = []
+    sidebarPanes.forEach((pane) => {
+      if (
+        pane.hide === true ||
+        (pane.hide instanceof Function && pane.hide(paneCallbackProps))
+      ) {
+        panesToReset.push(pane.id)
+      }
+    })
+
+    if (panesToReset.length > 0) {
+      send({
+        type: 'Set context',
+        data: {
+          openPanes: context.store?.openPanes.filter(
+            (pane) => !panesToReset.includes(pane)
+          ),
+        },
+      })
+    }
+  }, [settings.context])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {
@@ -130,6 +162,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       }}
       minWidth={200}
       maxWidth={800}
+      handleWrapperClass="sidebar-resize-handles"
       handleClasses={{
         right:
           (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
@@ -323,16 +356,4 @@ function ModelingPaneButton({
       )}
     </div>
   )
-}
-
-export type SidebarAction = {
-  id: string
-  title: string
-  icon: CustomIconName
-  iconClassName?: string // Just until we get rid of FontAwesome icons
-  keybinding: string
-  action: () => void
-  hideOnPlatform?: 'desktop' | 'web'
-  hide?: boolean | (() => boolean)
-  disable?: () => string | undefined
 }
