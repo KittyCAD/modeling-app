@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
-import { Stream } from './components/Stream'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
-import { getNormalisedCoordinates } from './lib/utils'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -22,6 +20,8 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
+import EngineStreamContext from 'hooks/useEngineStreamContext'
+import { EngineStream } from 'components/EngineStream'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -81,24 +81,10 @@ export function App() {
   return (
     <div
       className="relative h-full flex flex-col"
-      onMouseMove={handleMouseMove}
       ref={ref}
     >
         <AppHeader
-          className={
-            'transition-opacity transition-duration-75 ' +
-            paneOpacity +
-            (context.store?.buttonDownInStream ? ' pointer-events-none' : '')
-          }
-          // Override the electron window draggable region behavior as well
-          // when the button is down in the stream
-          style={
-            isDesktop() && context.store?.buttonDownInStream
-              ? ({
-                  '-webkit-app-region': 'no-drag',
-                } as React.CSSProperties)
-              : {}
-          }
+          className={ 'transition-opacity transition-duration-75 ' + paneOpacity }
           project={{ project, file }}
           enableMenu={true}
         />
