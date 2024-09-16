@@ -1177,8 +1177,8 @@ class EngineConnection extends EventTarget {
     })
   }
 
-  reattachMediaStream() {
-    this.pc
+  async reattachMediaStream() {
+    return this.pc
       ?.createOffer({ iceRestart: true })
       .then((offer: RTCSessionDescriptionInit) => {
         this.state = {
