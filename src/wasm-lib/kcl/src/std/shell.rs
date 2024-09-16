@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, KclValue},
+    executor::{ExecState, ExtrudeGroup, KclValue},
     std::{sketch::FaceTag, Args},
 };
 
@@ -24,10 +24,10 @@ pub struct ShellData {
 }
 
 /// Create a shell.
-pub async fn shell(args: Args) -> Result<KclValue, KclError> {
+pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group): (ShellData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
-    let extrude_group = inner_shell(data, extrude_group, args).await?;
+    let extrude_group = inner_shell(data, extrude_group, exec_state, args).await?;
     Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
@@ -154,6 +154,7 @@ pub async fn shell(args: Args) -> Result<KclValue, KclError> {
 async fn inner_shell(
     data: ShellData,
     extrude_group: Box<ExtrudeGroup>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     if data.faces.is_empty() {
@@ -165,7 +166,7 @@ async fn inner_shell(
 
     let mut face_ids = Vec::new();
     for tag in data.faces {
-        let extrude_plane_id = tag.get_face_id(&extrude_group, &args, false).await?;
+        let extrude_plane_id = tag.get_face_id(&extrude_group, exec_state, &args, false).await?;
 
         face_ids.push(extrude_plane_id);
     }
@@ -179,7 +180,7 @@ async fn inner_shell(
 
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_extrude_group_set(extrude_group.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group.clone().into())
         .await?;
 
     args.batch_modeling_cmd(
@@ -197,10 +198,10 @@ async fn inner_shell(
 }
 
 /// Make the inside of a 3D object hollow.
-pub async fn hollow(args: Args) -> Result<KclValue, KclError> {
+pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (thickness, extrude_group): (f64, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
-    let extrude_group = inner_hollow(thickness, extrude_group, args).await?;
+    let extrude_group = inner_hollow(thickness, extrude_group, exec_state, args).await?;
     Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
@@ -236,11 +237,12 @@ pub async fn hollow(args: Args) -> Result<KclValue, KclError> {
 async fn inner_hollow(
     thickness: f64,
     extrude_group: Box<ExtrudeGroup>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_extrude_group_set(extrude_group.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group.clone().into())
         .await?;
 
     args.batch_modeling_cmd(

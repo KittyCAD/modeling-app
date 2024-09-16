@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, KclValue, SketchGroup},
+    executor::{ExecState, ExtrudeGroup, KclValue, SketchGroup},
     std::{
         extrude::do_post_extrude,
         fillet::{default_tolerance, EdgeReference},
@@ -101,10 +101,10 @@ impl RevolveAxisAndOrigin {
 }
 
 /// Revolve a sketch around an axis.
-pub async fn revolve(args: Args) -> Result<KclValue, KclError> {
+pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group): (RevolveData, SketchGroup) = args.get_data_and_sketch_group()?;
 
-    let extrude_group = inner_revolve(data, sketch_group, args).await?;
+    let extrude_group = inner_revolve(data, sketch_group, exec_state, args).await?;
     Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
@@ -250,6 +250,7 @@ pub async fn revolve(args: Args) -> Result<KclValue, KclError> {
 async fn inner_revolve(
     data: RevolveData,
     sketch_group: SketchGroup,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     if let Some(angle) = data.angle {
@@ -284,7 +285,7 @@ async fn inner_revolve(
         RevolveAxis::Edge(edge) => {
             let edge_id = match edge {
                 EdgeReference::Uuid(uuid) => uuid,
-                EdgeReference::Tag(tag) => args.get_tag_engine_info(&tag)?.id,
+                EdgeReference::Tag(tag) => args.get_tag_engine_info(exec_state, &tag)?.id,
             };
             args.batch_modeling_cmd(
                 id,

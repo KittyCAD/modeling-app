@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{BasePath, GeoMeta, KclValue, Path, SketchGroup, SketchSurface},
+    executor::{ExecState, BasePath, GeoMeta, KclValue, Path, SketchGroup, SketchSurface},
     std::Args,
 };
 
@@ -35,11 +35,11 @@ pub struct CircleData {
 }
 
 /// Sketch a circle.
-pub async fn circle(args: Args) -> Result<KclValue, KclError> {
+pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_surface_or_group, tag): (CircleData, SketchSurfaceOrGroup, Option<TagDeclarator>) =
         args.get_circle_args()?;
 
-    let sketch_group = inner_circle(data, sketch_surface_or_group, tag, args).await?;
+    let sketch_group = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
@@ -71,6 +71,7 @@ async fn inner_circle(
     data: CircleData,
     sketch_surface_or_group: SketchSurfaceOrGroup,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SketchGroup, KclError> {
     let sketch_surface = match sketch_surface_or_group {
@@ -81,6 +82,7 @@ async fn inner_circle(
         [data.center[0] + data.radius, data.center[1]],
         sketch_surface,
         None,
+        exec_state,
         args.clone(),
     )
     .await?;
