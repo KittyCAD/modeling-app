@@ -548,7 +548,7 @@ fn array_end_start(i: TokenSlice) -> PResult<ArrayExpression> {
     })
 }
 
-/// Parse n..m into a vec of numbers [n, n+1, ..., m]
+/// Parse n..m into a vec of numbers [n, n+1, ..., m-1]
 fn integer_range(i: TokenSlice) -> PResult<Vec<Expr>> {
     let (token0, floor) = integer.parse_next(i)?;
     double_period.parse_next(i)?;

@@ -135,7 +135,7 @@ async fn inner_pattern_transform<'a>(
     args: &'a Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::new();
+    let mut transform = Vec::with_capacity(usize::try_from(num_repetitions).unwrap());
     for i in 0..num_repetitions {
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);

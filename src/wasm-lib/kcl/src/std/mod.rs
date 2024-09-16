@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod args;
+pub mod array;
 pub mod assert;
 pub mod chamfer;
 pub mod convert;
@@ -94,6 +95,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::patterns::PatternTransform),
+        Box::new(crate::std::array::ArrayReduce),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
