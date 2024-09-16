@@ -2,7 +2,7 @@ import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { MutableRefObject } from 'react'
 import { setup, assign } from 'xstate'
 import { createActorContext } from '@xstate/react'
-import { kclManager, engineCommandManager } from 'lib/singletons'
+import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { trap } from 'lib/trap'
 
 export enum EngineStreamState {
@@ -64,7 +64,9 @@ const engineStreamMachine = setup({
         void video.play().catch((e) => {
             console.warn('Video playing was prevented', e, video)
         }).then(() => {
-          kclManager.executeCode(true).catch(trap)
+          kclManager.executeCode(true).then(() => {
+            return sceneInfra.camControls.restoreCameraPosition()
+          }).catch(trap)
         })
       },
       [EngineStreamTransition.Pause]({ context }) {
@@ -98,6 +100,11 @@ const engineStreamMachine = setup({
           // cards also.
           context.mediaStream?.getVideoTracks()[0].stop()
           video.srcObject = null
+
+          sceneInfra.camControls.old = {
+            camera: sceneInfra.camControls.camera.clone(),
+            target: sceneInfra.camControls.target.clone()
+          }
 
           engineCommandManager.tearDown({ idleMode: true })
         })
