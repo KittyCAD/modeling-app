@@ -79,7 +79,14 @@ pub async fn assert_gt(args: Args) -> Result<KclValue, KclError> {
     name = "assertEqual",
 }]
 async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    _assert((right - left).abs() < epsilon, message, args).await
+    if (right - left).abs() < epsilon {
+        Ok(())
+    } else {
+        Err(KclError::Type(KclErrorDetails {
+            message: format!("assert failed because {left} != {right}: {message}"),
+            source_ranges: vec![args.source_range],
+        }))
+    }
 }
 
 pub async fn assert_equal(args: Args) -> Result<KclValue, KclError> {
