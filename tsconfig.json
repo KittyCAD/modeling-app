@@ -32,6 +32,6 @@
     "jsx": "react-jsx"
   },
   "include": ["src", "e2e", "packages", "*.ts"],
-  "exclude": ["node_modules", "./*.grammar", "vite.config.ts"],
+  "exclude": ["node_modules", "./*.grammar", "vite.config.mts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

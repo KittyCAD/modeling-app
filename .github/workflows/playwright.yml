@@ -261,6 +261,11 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       run: |
         echo "Artifact name: playwright-coverage-${{ runner.os }}-${{ matrix.shardIndex }}-${{ github.sha }}"
+    - name: List files in .nyc_output
+      if: ${{ !cancelled() && (success() || failure()) }}
+      run: |
+        echo "Files in .nyc_output:"
+        ls -1 .nyc_output/
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
