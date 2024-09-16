@@ -535,10 +535,8 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
-        // TODO : Update revolve selection logic from the MVP state. Copied from Extrude
-        // Multiple references to extrude functions, are these the correct ones?
-        'has valid revolve selection': ({ selectionRanges }) => {
-          // A user can begin revolving if they either have 1+ faces selected or nothing selected
+        'has valid revolve selection': ({ context: { selectionRanges } }) => {
+          // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
           const isPipe = isSketchPipe(selectionRanges)
 

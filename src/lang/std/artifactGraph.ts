@@ -337,7 +337,7 @@ export function getArtifactsToUpdate({
         })
     }
     return returnArr
-  } else if (cmd.type === 'extrude') {
+  } else if (cmd.type === 'extrude' || cmd.type === 'revolve') {
     returnArr.push({
       id,
       artifact: {

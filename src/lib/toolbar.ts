@@ -101,7 +101,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         // TODO: disabled
         // Who's state is this?
-        disabled: (state) => !state.can('Revolve'),
+        disabled: (state) => !state.can({ type: 'Revolve' }),
         icon: 'revolve',
         status: DEV ? 'available' : 'kcl-only',
         title: 'Revolve',
