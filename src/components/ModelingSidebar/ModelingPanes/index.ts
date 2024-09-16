@@ -1,7 +1,4 @@
-import {
-  IconDefinition,
-  faBugSlash,
-} from '@fortawesome/free-solid-svg-icons'
+import { IconDefinition, faBugSlash } from '@fortawesome/free-solid-svg-icons'
 import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
 import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
