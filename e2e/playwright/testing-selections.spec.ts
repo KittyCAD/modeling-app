@@ -536,15 +536,14 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     const closeEdge: Coords2d = [744, 233]
     const closeAdjacentEdge: Coords2d = [688, 123]
     const closeOppositeEdge: Coords2d = [687, 169]
-    
-    const tangentialArcEdge: Coords2d = [811, 140]
+
+    const tangentialArcEdge: Coords2d = [811, 142]
     const tangentialArcOppositeEdge: Coords2d = [820, 180]
     const tangentialArcAdjacentEdge: Coords2d = [893, 165]
 
     const straightSegmentEdge: Coords2d = [819, 369]
     const straightSegmentOppositeEdge: Coords2d = [635, 394]
     const straightSegmentAdjacentEdge: Coords2d = [679, 329]
-
 
     await page.mouse.move(nothing[0], nothing[1])
     await page.mouse.click(nothing[0], nothing[1])
@@ -568,7 +567,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
           await expect
             .poll(async () => {
               const textContents = await highlightedLocator.allTextContents()
-              return textContents.join('').replace(/\s+/g,'')
+              return textContents.join('').replace(/\s+/g, '')
             })
             .toBe(highlightCode)
           await page.mouse.move(nothing[0], nothing[1])
@@ -582,6 +581,25 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
               return activeLines.join('')
             })
             .toContain(activeLine)
+          // check pixels near the click location are yellow
+        })
+        await test.step(`check the engine agrees with selections`, async () => {
+          // ultimately the only way we know if the engine agrees with the selection from the FE
+          // perspective is if it highlights the pixels near where we clicked yellow.
+          await expect
+            .poll(async () => {
+              const RGBs = await u.getPixelRGBs({ x: coord[0], y: coord[1] }, 3)
+              for (const rgb of RGBs) {
+                const [r, g, b] = rgb
+                const RGAverage = (r + g) / 2
+                const isRedGreenSameIsh = Math.abs(r - g) < 3
+                const isBlueLessThanRG = RGAverage - b > 45
+                const isYellowy = isRedGreenSameIsh && isBlueLessThanRG
+                if (isYellowy) return true
+              }
+              return false
+            })
+            .toBeTruthy()
           await page.mouse.click(nothing[0], nothing[1])
         })
       })
@@ -597,76 +615,76 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
       'flatExtrusionFace',
       flatExtrusionFace,
       `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)extrude(5+7,%)`,
-      '}, %)',
+      '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'tangentialArcTo',
       tangentialArcTo,
       'tangentialArcTo([13.14+0,13.14],%)extrude(5+7,%)',
-      'tangentialArcTo([13.14 + 0, 13.14], %)',
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcEdge',
       tangentialArcEdge,
       `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)',
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcOppositeEdge',
       tangentialArcOppositeEdge,
       `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)',
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
     )
     await checkCodeAtHoverPosition(
       'tangentialArcAdjacentEdge',
       tangentialArcAdjacentEdge,
       `tangentialArcTo([13.14+0,13.14],%)`,
-      'tangentialArcTo([13.14 + 0, 13.14], %)',
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
     )
 
     await checkCodeAtHoverPosition(
       'close',
       close,
       'close(%)extrude(5+7,%)',
-      'close(%)',
+      'close(%)'
     )
     await checkCodeAtHoverPosition(
       'closeEdge',
       closeEdge,
       `close(%)`,
-      'close(%)',
+      'close(%)'
     )
     await checkCodeAtHoverPosition(
       'closeAdjacentEdge',
       closeAdjacentEdge,
       `close(%)`,
-      'close(%)',
+      'close(%)'
     )
     await checkCodeAtHoverPosition(
       'closeOppositeEdge',
       closeOppositeEdge,
       `close(%)`,
-      'close(%)',
+      'close(%)'
     )
 
     await checkCodeAtHoverPosition(
       'straightSegmentEdge',
       straightSegmentEdge,
       `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)',
+      'angledLineToY({ angle: 30, to: 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
       `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)',
+      'angledLineToY({ angle: 30, to: 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjancentEdge',
       straightSegmentAdjacentEdge,
       `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)',
+      'angledLineToY({ angle: 30, to: 11.14 }, %)'
     )
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
