@@ -19,6 +19,7 @@ layout: manual
 * [`angledLineToX`](kcl/angledLineToX)
 * [`angledLineToY`](kcl/angledLineToY)
 * [`arc`](kcl/arc)
+* [`arrayReduce`](kcl/arrayReduce)
 * [`asin`](kcl/asin)
 * [`assert`](kcl/assert)
 * [`assertEqual`](kcl/assertEqual)

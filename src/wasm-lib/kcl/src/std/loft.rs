@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, KclValue, SketchGroup},
+    executor::{ExecState, ExtrudeGroup, KclValue, SketchGroup},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -49,7 +49,7 @@ impl Default for LoftData {
 }
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
-pub async fn loft(args: Args) -> Result<KclValue, KclError> {
+pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (sketch_groups, data): (Vec<SketchGroup>, Option<LoftData>) = args.get_sketch_groups_and_data()?;
 
     let extrude_group = inner_loft(sketch_groups, data, args).await?;

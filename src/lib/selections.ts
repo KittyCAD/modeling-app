@@ -31,7 +31,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
-  getExtrudeEdgeCodeRef,
+  getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -52,6 +52,7 @@ export type Selection = {
     | 'end-cap'
     | 'point'
     | 'edge'
+    | 'adjacent-edge'
     | 'line'
     | 'arc'
     | 'all'
@@ -140,12 +141,21 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
-  if (_artifact.type === 'extrudeEdge') {
-    const codeRef = getExtrudeEdgeCodeRef(
+  if (_artifact.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
       _artifact,
       engineCommandManager.artifactGraph
     )
     if (err(codeRef)) return null
+    if (_artifact?.subType === 'adjacent') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: codeRef.range, type: 'adjacent-edge' },
+        },
+      }
+    }
     return {
       type: 'Set selection',
       data: {
@@ -385,10 +395,16 @@ function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
 }
 
 function nodeHasExtrude(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'extrude',
-    ...node,
-  })
+  return (
+    doesPipeHaveCallExp({
+      calleeName: 'extrude',
+      ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'revolve',
+      ...node,
+    })
+  )
 }
 
 function nodeHasClose(node: CommonASTNode) {
@@ -398,7 +414,7 @@ function nodeHasClose(node: CommonASTNode) {
   })
 }
 
-export function canExtrudeSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
@@ -557,14 +573,43 @@ function codeToIdSelections(
           }
           return
         }
+        if (type === 'edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection: { type, range, ...rest },
+            id: edge[0],
+          }
+        }
+        if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(
+            ([_, edge]) =>
+              edge.type === 'sweepEdge' && edge.subType === 'adjacent'
+          )
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection: { type, range, ...rest },
+            id: edge[0],
+          }
+        }
         if (
           (type === 'end-cap' || type === 'start-cap') &&
           entry.artifact.type === 'path'
         ) {
           const extrusion = getArtifactOfTypes(
             {
-              key: entry.artifact.extrusionId,
-              types: ['extrusion'],
+              key: entry.artifact.sweepId,
+              types: ['sweep'],
             },
             engineCommandManager.artifactGraph
           )

@@ -7,7 +7,7 @@ import {
   filterArtifacts,
   expandPlane,
   expandPath,
-  expandExtrusion,
+  expandSweep,
   ArtifactGraph,
   expandSegment,
   getArtifactsToUpdate,
@@ -194,13 +194,13 @@ describe('testing createArtifactGraph', () => {
     })
 
     it('there should be two extrusions, for the original and the sketchOnFace, the first extrusion should have 6 sides of the cube', () => {
-      const extrusions = [
-        ...filterArtifacts({ types: ['extrusion'] }, theMap),
-      ].map((extrusion) => expandExtrusion(extrusion[1], theMap))
+      const extrusions = [...filterArtifacts({ types: ['sweep'] }, theMap)].map(
+        (extrusion) => expandSweep(extrusion[1], theMap)
+      )
       expect(extrusions).toHaveLength(2)
       extrusions.forEach((extrusion, index) => {
         if (err(extrusion)) throw extrusion
-        expect(extrusion.type).toBe('extrusion')
+        expect(extrusion.type).toBe('sweep')
         const firstExtrusionIsACubeIE6Sides = 6
         const secondExtrusionIsATriangularPrismIE5Sides = 5
         expect(extrusion.surfaces.length).toBe(
@@ -535,7 +535,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'path',
         segIds: [],
         planeId: 'UUID-1',
-        extrusionId: '',
+        sweepId: '',
         codeRef: {
           pathToNode: [['body', '']],
           range: [43, 70],
@@ -544,7 +544,8 @@ describe('testing getArtifactsToUpdate', () => {
     ])
     expect(getUpdateObjects('extrude')).toEqual([
       {
-        type: 'extrusion',
+        type: 'sweep',
+        subType: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: [],
         edgeIds: [],
@@ -557,7 +558,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'path',
         segIds: expect.any(Array),
         planeId: expect.any(String),
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         codeRef: {
           range: [43, 70],
           pathToNode: [['body', '']],
@@ -580,7 +581,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'path',
         segIds: expect.any(Array),
         planeId: expect.any(String),
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         codeRef: {
           range: [43, 70],
           pathToNode: [['body', '']],
@@ -617,7 +618,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'wall',
         segId: expect.any(String),
         edgeCutEdgeIds: [],
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         pathIds: [],
       },
       {
@@ -631,7 +632,8 @@ describe('testing getArtifactsToUpdate', () => {
         },
       },
       {
-        type: 'extrusion',
+        type: 'sweep',
+        subType: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
@@ -644,7 +646,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'wall',
         segId: expect.any(String),
         edgeCutEdgeIds: [],
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         pathIds: [],
       },
       {
@@ -658,7 +660,8 @@ describe('testing getArtifactsToUpdate', () => {
         },
       },
       {
-        type: 'extrusion',
+        type: 'sweep',
+        subType: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
@@ -671,7 +674,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'wall',
         segId: expect.any(String),
         edgeCutEdgeIds: [],
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         pathIds: [],
       },
       {
@@ -686,7 +689,8 @@ describe('testing getArtifactsToUpdate', () => {
         edgeCutId: expect.any(String),
       },
       {
-        type: 'extrusion',
+        type: 'sweep',
+        subType: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
@@ -699,7 +703,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'wall',
         segId: expect.any(String),
         edgeCutEdgeIds: [],
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         pathIds: [],
       },
       {
@@ -713,7 +717,8 @@ describe('testing getArtifactsToUpdate', () => {
         },
       },
       {
-        type: 'extrusion',
+        type: 'sweep',
+        subType: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
@@ -726,11 +731,12 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'cap',
         subType: 'start',
         edgeCutEdgeIds: [],
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         pathIds: [],
       },
       {
-        type: 'extrusion',
+        type: 'sweep',
+        subType: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
@@ -743,11 +749,12 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'cap',
         subType: 'end',
         edgeCutEdgeIds: [],
-        extrusionId: expect.any(String),
+        sweepId: expect.any(String),
         pathIds: [],
       },
       {
-        type: 'extrusion',
+        type: 'sweep',
+        subType: 'extrusion',
         pathId: expect.any(String),
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),

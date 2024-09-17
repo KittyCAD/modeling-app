@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ChamferSurface, EdgeCut, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
+    executor::{ChamferSurface, EdgeCut, ExecState, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
     std::{fillet::EdgeReference, Args},
 };
 
@@ -27,11 +27,11 @@ pub struct ChamferData {
 }
 
 /// Create chamfers on tagged paths.
-pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
+pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
         args.get_data_and_extrude_group_and_tag()?;
 
-    let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
+    let extrude_group = inner_chamfer(data, extrude_group, tag, exec_state, args).await?;
     Ok(KclValue::ExtrudeGroup(extrude_group))
 }
 
@@ -103,6 +103,7 @@ async fn inner_chamfer(
     data: ChamferData,
     extrude_group: Box<ExtrudeGroup>,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     // Check if tags contains any duplicate values.
@@ -130,7 +131,7 @@ async fn inner_chamfer(
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
+            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
         let id = uuid::Uuid::new_v4();

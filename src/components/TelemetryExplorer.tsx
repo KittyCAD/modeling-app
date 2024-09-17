@@ -7,7 +7,6 @@ import {
 
 export function TelemetryExplorer() {
   const marks = getMarks()
-  console.log(marks)
   const markdownTable = printMarkDownTable(marks)
   const rawMarks = printRawMarks(marks)
   const deltaTotalTable = printDeltaTotal(marks)
@@ -15,8 +14,8 @@ export function TelemetryExplorer() {
   // TODO data-telemetry-name
   return (
     <div>
-      <h1>Marks</h1>
-      <div className="max-w-xl max-h-64 overflow-auto">
+      <h1 className="pb-4">Marks</h1>
+      <div className="max-w-xl max-h-64 overflow-auto select-all">
         {marks.map((mark, index) => {
           return (
             <pre className="text-xs" key={index}>
@@ -25,8 +24,8 @@ export function TelemetryExplorer() {
           )
         })}
       </div>
-      <h1>Startup Performance</h1>
-      <div className="max-w-xl max-h-64 overflow-auto">
+      <h1 className="pb-4">Startup Performance</h1>
+      <div className="max-w-xl max-h-64 overflow-auto select-all">
         {markdownTable.map((line, index) => {
           return (
             <pre className="text-xs" key={index}>
@@ -35,8 +34,8 @@ export function TelemetryExplorer() {
           )
         })}
       </div>
-      <h1>Delta and Totals</h1>
-      <div className="max-w-xl max-h-64 overflow-auto">
+      <h1 className="pb-4">Delta and Totals</h1>
+      <div className="max-w-xl max-h-64 overflow-auto select-all">
         {deltaTotalTable.map((line, index) => {
           return (
             <pre className="text-xs" key={index}>
@@ -45,8 +44,8 @@ export function TelemetryExplorer() {
           )
         })}
       </div>
-      <h1>Raw Marks</h1>
-      <div className="max-w-xl max-h-64 overflow-auto">
+      <h1 className="pb-4">Raw Marks</h1>
+      <div className="max-w-xl max-h-64 overflow-auto select-all">
         {rawMarks.map((line, index) => {
           return (
             <pre className="text-xs" key={index}>

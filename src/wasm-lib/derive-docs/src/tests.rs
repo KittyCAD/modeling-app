@@ -86,6 +86,32 @@ fn test_args_with_lifetime() {
 }
 
 #[test]
+fn test_args_with_exec_state() {
+    let (item, mut errors) = do_stdlib(
+        quote! {
+            name = "someFunction",
+        },
+        quote! {
+            /// Docs
+            /// ```
+            /// someFunction()
+            /// ```
+            fn inner_some_function<'a>(
+                exec_state: &mut ExecState,
+                args: &Args,
+            ) -> i32 {
+                3
+            }
+        },
+    )
+    .unwrap();
+    if let Some(e) = errors.pop() {
+        panic!("{e}");
+    }
+    expectorate::assert_contents("tests/test_args_with_exec_state.gen", &get_text_fmt(&item).unwrap());
+}
+
+#[test]
 fn test_stdlib_line_to() {
     let (item, errors) = do_stdlib(
         quote! {
