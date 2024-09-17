@@ -3,7 +3,6 @@ import {
   recast,
   initPromise,
   PathToNode,
-  Expr,
   Program,
   CallExpression,
   makeDefaultPlanes,
@@ -15,6 +14,7 @@ import {
   getPathToExtrudeForSegmentSelection,
   hasValidFilletSelection,
   isTagUsedInFillet,
+  modifyAstWithFilletAndTag,
 } from './addFillet'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
@@ -22,6 +22,7 @@ import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
+import { KclCommandValue } from 'lib/commandTypes'
 
 beforeAll(async () => {
   await initPromise
@@ -36,7 +37,7 @@ beforeAll(async () => {
       setMediaStream: () => {},
       setIsStreamReady: () => {},
       modifyGrid: async () => {},
-      callbackOnEngineLiteConnect: async () => {
+      callbackOnEngineLiteConnect: () => {
         resolve(true)
       },
     })
@@ -59,11 +60,14 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   ): CallExpression | PipeExpression | undefined | Error {
     if (pathToExtrudeNode.length === 0) return undefined // no extrude node
 
-    const extrudeNodeResult = getNodeFromPath(ast, pathToExtrudeNode)
+    const extrudeNodeResult = getNodeFromPath<CallExpression>(
+      ast,
+      pathToExtrudeNode
+    )
     if (err(extrudeNodeResult)) {
       return extrudeNodeResult
     }
-    return extrudeNodeResult.node as CallExpression | PipeExpression
+    return extrudeNodeResult.node
   }
   function getExpectedExtrudeExpression(
     ast: Program,
@@ -75,21 +79,27 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
     ]
     const expedtedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
-    const expedtedExtrudeNodeResult = getNodeFromPath(ast, expedtedExtrudePath)
+    const expedtedExtrudeNodeResult = getNodeFromPath<VariableDeclaration>(
+      ast,
+      expedtedExtrudePath
+    )
     if (err(expedtedExtrudeNodeResult)) {
       return expedtedExtrudeNodeResult
     }
-    const expectedExtrudeNode =
-      expedtedExtrudeNodeResult.node as VariableDeclaration
-    return expectedExtrudeNode.declarations[0].init as
-      | CallExpression
-      | PipeExpression
+    const expectedExtrudeNode = expedtedExtrudeNodeResult.node
+    const init = expectedExtrudeNode.declarations[0].init
+    if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
+      return new Error(
+        'Expected extrude expression is not a CallExpression or PipeExpression'
+      )
+    }
+    return init
   }
 
   // ast
   const astOrError = parse(code)
   if (err(astOrError)) return new Error('AST not found')
-  const ast = astOrError as Program
+  const ast = astOrError
 
   // selection
   const segmentRange: [number, number] = [
@@ -224,7 +234,7 @@ const runFilletTest = async (
   code: string,
   segmentSnippet: string,
   extrudeSnippet: string,
-  radius = createLiteral(5) as Expr,
+  radius = createLiteral(5),
   expectedCode: string
 ) => {
   const astOrError = parse(code)
@@ -232,7 +242,7 @@ const runFilletTest = async (
     return new Error('AST not found')
   }
 
-  const ast = astOrError as Program
+  const ast = astOrError
 
   const segmentRange: [number, number] = [
     code.indexOf(segmentSnippet),
@@ -286,7 +296,7 @@ describe('Testing addFillet', () => {
     `
     const segmentSnippet = `line([60.04, -55.72], %)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Expr
+    const radius = createLiteral(5)
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
@@ -329,7 +339,7 @@ const extrude001 = extrude(50, sketch001)
       `
     const segmentSnippet = `line([60.04, -55.72], %)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Expr
+    const radius = createLiteral(5)
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
@@ -372,7 +382,7 @@ const extrude001 = extrude(50, sketch001)
       `
     const segmentSnippet = `line([-87.24, -47.08], %, $seg03)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Expr
+    const radius = createLiteral(5)
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
@@ -414,7 +424,7 @@ const extrude001 = extrude(50, sketch001)
             |> fillet({ radius: 10, tags: [seg03] }, %)`
     const segmentSnippet = `line([60.04, -55.72], %)`
     const extrudeSnippet = `const extrude001 = extrude(50, sketch001)`
-    const radius = createLiteral(5) as Expr
+    const radius = createLiteral(5)
     const expectedCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([2.16, 49.67], %)
   |> line([101.49, 139.93], %)
@@ -434,6 +444,190 @@ const extrude001 = extrude(50, sketch001)
       segmentSnippet,
       extrudeSnippet,
       radius,
+      expectedCode
+    )
+  })
+})
+
+const runModifyAstWithFilletAndTagTest = async (
+  code: string,
+  selectionSnippets: Array<string>,
+  radiusValue: number,
+  expectedCode: string
+) => {
+  // ast
+  const astOrError = parse(code)
+  if (err(astOrError)) {
+    return new Error('AST not found')
+  }
+  const ast = astOrError
+
+  // selection
+  const segmentRanges: Array<[number, number]> = selectionSnippets.map(
+    (selectionSnippet) => [
+      code.indexOf(selectionSnippet),
+      code.indexOf(selectionSnippet) + selectionSnippet.length,
+    ]
+  )
+  const selection: Selections = {
+    codeBasedSelections: segmentRanges.map((segmentRange) => ({
+      range: segmentRange,
+      type: 'default',
+    })),
+    otherSelections: [],
+  }
+
+  // radius
+  const radius: KclCommandValue = {
+    valueAst: createLiteral(radiusValue),
+    valueText: radiusValue.toString(),
+    valueCalculated: radiusValue.toString(),
+  }
+
+  // programMemory and artifactGraph
+  await kclManager.executeAst({ ast })
+
+  // apply fillet to selection
+  const result = modifyAstWithFilletAndTag(ast, selection, radius)
+  if (err(result)) {
+    return result
+  }
+  const { modifiedAst } = result
+
+  const newCode = recast(modifiedAst)
+
+  expect(newCode).toContain(expectedCode)
+}
+describe('Testing applyFilletToSelection', () => {
+  it('should add a fillet to a specific segment after extrusion', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)`
+    const segmentSnippets = ['line([0, -20], %)']
+    const radiusValue = 3
+    const expectedCode = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %, $seg01)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)`
+
+    await runModifyAstWithFilletAndTagTest(
+      code,
+      segmentSnippets,
+      radiusValue,
+      expectedCode
+    )
+  })
+  it('should add a fillet to the 2 segments of a single extrusion', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)`
+    const segmentSnippets = ['line([20, 0], %)', 'line([-20, 0], %)']
+    const radiusValue = 3
+    const expectedCode = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %, $seg01)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg02)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)
+  |> fillet({ radius: 3, tags: [seg02] }, %)`
+
+    await runModifyAstWithFilletAndTagTest(
+      code,
+      segmentSnippets,
+      radiusValue,
+      expectedCode
+    )
+  })
+  it('should add a fillet when the extrude variable previously had an fillet', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)` // <--- one fillet already there on input code
+    const segmentSnippets = ['line([20, 0], %)']
+    const radiusValue = 3
+    const expectedCode = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %, $seg02)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)
+  |> fillet({ radius: 3, tags: [seg02] }, %)` // <-- able to add a new one
+
+    await runModifyAstWithFilletAndTagTest(
+      code,
+      segmentSnippets,
+      radiusValue,
+      expectedCode
+    )
+  })
+  it('should add the fillets to 2 bodies', async () => {
+    const code = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+const sketch002 = startSketchOn('XY')
+  |> startProfileAt([30, 10], %)
+  |> line([15, 0], %)
+  |> line([0, -15], %)
+  |> line([-15, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude002 = extrude(-25, sketch002)` // <--- body 2
+    const segmentSnippets = ['line([0, -20], %)', 'line([0, -15], %)']
+    const radiusValue = 3
+    const expectedCode = `const sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %, $seg01)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)
+const sketch002 = startSketchOn('XY')
+  |> startProfileAt([30, 10], %)
+  |> line([15, 0], %)
+  |> line([0, -15], %, $seg02)
+  |> line([-15, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+const extrude002 = extrude(-25, sketch002)
+  |> fillet({ radius: 3, tags: [seg02] }, %)` // <-- able to add a new one
+
+    await runModifyAstWithFilletAndTagTest(
+      code,
+      segmentSnippets,
+      radiusValue,
       expectedCode
     )
   })
@@ -526,7 +720,7 @@ describe('Testing button states', () => {
     if (err(astOrError)) {
       return new Error('AST not found')
     }
-    const ast = astOrError as Program
+    const ast = astOrError
 
     // selectionRanges
     const range: [number, number] = segmentSnippet

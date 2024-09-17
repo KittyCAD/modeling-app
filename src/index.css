@@ -50,19 +50,6 @@ body.dark {
   @apply text-chalkboard-10;
 }
 
-@media (prefers-color-scheme: dark) {
-  body,
-  .body-bg,
-  .dark .body-bg {
-    @apply bg-chalkboard-100;
-  }
-
-  body {
-    scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
-    @apply text-chalkboard-10;
-  }
-}
-
 select {
   @apply bg-chalkboard-20;
 }
@@ -280,7 +267,8 @@ code {
 }
 
 .segment-length-label-text {
-  transform: translate(var(--x, 0), var(--y, 0));
+  transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--degree, 0));
+  @apply font-mono body-bg px-2 pt-0.5 rounded-sm border border-chalkboard-110 dark:border-chalkboard-10;
 }
 
 @layer components {
@@ -288,7 +276,7 @@ code {
     @apply font-mono text-xs inline-block px-0.5 py-[2px] rounded;
 
     /* This is the only place in our code where layout is impacted by theme.
-     * We may not want that later, if hotkeys are possibly visible 
+     * We may not want that later, if hotkeys are possibly visible
      * while switching theme, but more padding feels better in dark mode.
      */
     @apply dark:px-1;
@@ -300,32 +288,11 @@ code {
 }
 
 @layer utilities {
-  /* Modified from the very helpful https://www.transition.style/#in:circle:hesitate */
-  @keyframes circle-in-hesitate {
-    0% {
-      clip-path: circle(
-        var(--circle-size-start, 0%) at var(--circle-x, 50%)
-          var(--circle-y, 50%)
-      );
-    }
-    40% {
-      clip-path: circle(
-        var(--circle-size-mid, 40%) at var(--circle-x, 50%) var(--circle-y, 50%)
-      );
-    }
-    100% {
-      clip-path: circle(
-        var(--circle-size-end, 125%) at var(--circle-x, 50%)
-          var(--circle-y, 50%)
-      );
-    }
-  }
-
-  .in-circle-hesitate {
-    animation: var(--circle-duration, 2.5s)
-      var(--circle-timing, cubic-bezier(0.25, 1, 0.3, 1)) circle-in-hesitate
-      both;
-  }
+  /* 
+    This is where your own custom Tailwind utility classes can go,
+    which lets you use them with @apply in your CSS, and get 
+    autocomplete in classNames in your JSX.
+  */
 }
 
 #code-mirror-override .cm-scroller,

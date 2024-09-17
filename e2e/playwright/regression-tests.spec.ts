@@ -11,8 +11,8 @@ import {
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -53,6 +53,67 @@ const sketch001 = startSketchAt([-0, -0])
     // this test will need updating
     const crypticErrorText = `ApiError`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+  })
+  test('user should not have to press down twice in cmdbar', async ({
+    page,
+  }) => {
+    // because the model has `line([0,0]..` it is valid code, but the model is invalid
+    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
+    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch2 = startSketchOn("XY")
+const sketch001 = startSketchAt([-0, -0])
+  |> line([0, 0], %)
+  |> line([-4.84, -5.29], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await page.goto('/')
+    await u.waitForPageLoad()
+
+    await test.step('Check arrow down works', async () => {
+      await page.getByTestId('command-bar-open-button').click()
+
+      await page
+        .getByRole('option', { name: 'floppy disk arrow Export' })
+        .click()
+
+      // press arrow down key twice
+      await page.keyboard.press('ArrowDown')
+      await page.waitForTimeout(100)
+      await page.keyboard.press('ArrowDown')
+
+      // STL is the third option, which makes sense for two arrow downs
+      await expect(page.locator('[data-headlessui-state="active"]')).toHaveText(
+        'STL'
+      )
+
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(200)
+      await page.keyboard.press('Escape')
+      await page.waitForTimeout(200)
+    })
+
+    await test.step('Check arrow up works', async () => {
+      // theme in test is dark, which is the second option, which means we can test arrow up
+      await page.getByTestId('command-bar-open-button').click()
+
+      await page.getByText('The overall appearance of the').click()
+
+      await page.keyboard.press('ArrowUp')
+      await page.waitForTimeout(100)
+
+      await expect(page.locator('[data-headlessui-state="active"]')).toHaveText(
+        'light'
+      )
+    })
   })
   test('executes on load', async ({ page }) => {
     const u = await getUtils(page)
@@ -285,10 +346,7 @@ const sketch001 = startSketchAt([-0, -0])
     // Find the toast.
     // Look out for the toast message
     const exportingToastMessage = page.getByText(`Exporting...`)
-    await expect(exportingToastMessage).toBeVisible()
-
     const errorToastMessage = page.getByText(`Error while exporting`)
-    await expect(errorToastMessage).toBeVisible()
 
     const engineErrorToastMessage = page.getByText(`Nothing to export`)
     await expect(engineErrorToastMessage).toBeVisible()

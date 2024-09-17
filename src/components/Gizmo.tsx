@@ -27,6 +27,7 @@ import {
 } from './ContextMenu'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from './CustomIcon'
+import { reportRejection } from 'lib/trap'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
@@ -67,7 +68,9 @@ export default function Gizmo() {
         <ContextMenuItem
           key={axisName}
           onClick={() => {
-            sceneInfra.camControls.updateCameraToAxis(axisName as AxisNames)
+            sceneInfra.camControls
+              .updateCameraToAxis(axisName as AxisNames)
+              .catch(reportRejection)
           }}
         >
           {axisSemantic} view
@@ -75,7 +78,7 @@ export default function Gizmo() {
       )),
       <ContextMenuItem
         onClick={() => {
-          sceneInfra.camControls.resetCameraPosition()
+          sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
         }}
       >
         Reset view
@@ -299,7 +302,7 @@ const initializeMouseEvents = (
   const handleClick = () => {
     if (raycasterIntersect.current) {
       const axisName = raycasterIntersect.current.object.name as AxisNames
-      sceneInfra.camControls.updateCameraToAxis(axisName)
+      sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
     }
   }
 

@@ -78,15 +78,17 @@ pub(crate) struct LineTo {}
 #[doc = "Std lib function: lineTo\nThis is some function.\nIt does shit."]
 pub(crate) const LineTo: LineTo = LineTo {};
 fn boxed_line_to(
+    exec_state: &mut crate::executor::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
                 Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
-            > + Send,
+            > + Send
+            + '_,
     >,
 > {
-    Box::pin(line_to(args))
+    Box::pin(line_to(exec_state, args))
 }
 
 impl crate::docs::StdLibFn for LineTo {

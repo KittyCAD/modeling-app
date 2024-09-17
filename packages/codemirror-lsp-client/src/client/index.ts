@@ -72,6 +72,7 @@ export class LanguageServerClient {
   async initialize() {
     // Start the client in the background.
     this.client.setNotifyFn(this.processNotifications.bind(this))
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.client.start()
 
     this.ready = true
@@ -195,6 +196,9 @@ export class LanguageServerClient {
   }
 
   private processNotifications(notification: LSP.NotificationMessage) {
-    for (const plugin of this.plugins) plugin.processNotification(notification)
+    for (const plugin of this.plugins) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      plugin.processNotification(notification)
+    }
   }
 }

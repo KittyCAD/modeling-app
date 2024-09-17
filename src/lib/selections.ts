@@ -5,7 +5,7 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Expr, parse, recast } from 'lang/wasm'
+import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
@@ -20,10 +20,8 @@ import {
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
-  STRAIGHT_SEGMENT,
-  TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
-  PROFILE_START,
+  SEGMENT_BODIES_PLUS_PROFILE_START,
 } from 'clientSideScene/sceneEntities'
 import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
@@ -33,7 +31,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
-  getExtrudeEdgeCodeRef,
+  getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -54,6 +52,7 @@ export type Selection = {
     | 'end-cap'
     | 'point'
     | 'edge'
+    | 'adjacent-edge'
     | 'line'
     | 'arc'
     | 'all'
@@ -142,12 +141,21 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
-  if (_artifact.type === 'extrudeEdge') {
-    const codeRef = getExtrudeEdgeCodeRef(
+  if (_artifact.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
       _artifact,
       engineCommandManager.artifactGraph
     )
     if (err(codeRef)) return null
+    if (_artifact?.subType === 'adjacent') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: codeRef.range, type: 'adjacent-edge' },
+        },
+      }
+    }
     return {
       type: 'Set selection',
       data: {
@@ -162,11 +170,7 @@ export async function getEventForSelectWithPoint({
 export function getEventForSegmentSelection(
   obj: Object3D<Object3DEventMap>
 ): ModelingMachineEvent | null {
-  const group = getParentGroup(obj, [
-    STRAIGHT_SEGMENT,
-    TANGENTIAL_ARC_TO_SEGMENT,
-    PROFILE_START,
-  ])
+  const group = getParentGroup(obj, SEGMENT_BODIES_PLUS_PROFILE_START)
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
   if (!group && !axisGroup) return null
   if (axisGroup?.userData.type === AXIS_GROUP) {
@@ -300,16 +304,10 @@ export function processCodeMirrorRanges({
 }
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
-  const updated = parse(recast(kclManager.ast))
-  if (err(updated)) return
+  const updated = kclManager.ast
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
-    if (
-      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT, PROFILE_START].includes(
-        segmentGroup?.name
-      )
-    )
-      return
+    if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
     const nodeMeta = getNodeFromPath<CallExpression>(
       updated,
       segmentGroup.userData.pathToNode,
@@ -397,10 +395,16 @@ function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
 }
 
 function nodeHasExtrude(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'extrude',
-    ...node,
-  })
+  return (
+    doesPipeHaveCallExp({
+      calleeName: 'extrude',
+      ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'revolve',
+      ...node,
+    })
+  )
 }
 
 function nodeHasClose(node: CommonASTNode) {
@@ -410,7 +414,7 @@ function nodeHasClose(node: CommonASTNode) {
   })
 }
 
-export function canExtrudeSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
@@ -434,10 +438,14 @@ export function canFilletSelection(selection: Selections) {
 }
 
 function canExtrudeSelectionItem(selection: Selections, i: number) {
+  const isolatedSelection = {
+    ...selection,
+    codeBasedSelections: [selection.codeBasedSelections[i]],
+  }
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
   return (
-    !!isSketchPipe(selection) &&
+    !!isSketchPipe(isolatedSelection) &&
     nodeHasClose(commonNode) &&
     !nodeHasExtrude(commonNode)
   )
@@ -456,25 +464,17 @@ export type ResolvedSelectionType = [Selection['type'] | 'other', number]
 export function getSelectionType(
   selection: Selections
 ): ResolvedSelectionType[] {
-  return selection.codeBasedSelections
-    .map((s, i) => {
-      if (canExtrudeSelectionItem(selection, i)) {
-        return ['extrude-wall', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
-      } else {
-        return ['other', 1] as ResolvedSelectionType
-      }
-    })
-    .reduce((acc, [type, count]) => {
-      const foundIndex = acc.findIndex((item) => item && item[0] === type)
+  const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
+    const singleSelection = {
+      ...selection,
+      codeBasedSelections: [selection.codeBasedSelections[i]],
+    }
+    return canExtrudeSelectionItem(singleSelection, 0)
+  }).length
 
-      if (foundIndex === -1) {
-        return [...acc, [type, count]]
-      } else {
-        const temp = [...acc]
-        temp[foundIndex][1] += count
-        return temp
-      }
-    }, [] as ResolvedSelectionType[])
+  return extrudableCount === selection.codeBasedSelections.length
+    ? [['extrude-wall', extrudableCount]]
+    : [['other', selection.codeBasedSelections.length]]
 }
 
 export function getSelectionTypeDisplayText(
@@ -569,14 +569,43 @@ function codeToIdSelections(
           }
           return
         }
+        if (type === 'edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection: { type, range, ...rest },
+            id: edge[0],
+          }
+        }
+        if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(
+            ([_, edge]) =>
+              edge.type === 'sweepEdge' && edge.subType === 'adjacent'
+          )
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection: { type, range, ...rest },
+            id: edge[0],
+          }
+        }
         if (
           (type === 'end-cap' || type === 'start-cap') &&
           entry.artifact.type === 'path'
         ) {
           const extrusion = getArtifactOfTypes(
             {
-              key: entry.artifact.extrusionId,
-              types: ['extrusion'],
+              key: entry.artifact.sweepId,
+              types: ['sweep'],
             },
             engineCommandManager.artifactGraph
           )
@@ -618,14 +647,14 @@ function codeToIdSelections(
 
 export async function sendSelectEventToEngine(
   e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
-  el: HTMLVideoElement,
-  streamDimensions: { streamWidth: number; streamHeight: number }
+  el: HTMLVideoElement
 ) {
   const { x, y } = getNormalisedCoordinates({
     clientX: e.clientX,
     clientY: e.clientY,
     el,
-    ...streamDimensions,
+    streamWidth: el.clientWidth,
+    streamHeight: el.clientHeight,
   })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
