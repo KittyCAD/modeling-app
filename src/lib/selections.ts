@@ -395,10 +395,16 @@ function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
 }
 
 function nodeHasExtrude(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'extrude',
-    ...node,
-  })
+  return (
+    doesPipeHaveCallExp({
+      calleeName: 'extrude',
+      ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'revolve',
+      ...node,
+    })
+  )
 }
 
 function nodeHasClose(node: CommonASTNode) {
@@ -408,7 +414,7 @@ function nodeHasClose(node: CommonASTNode) {
   })
 }
 
-export function canExtrudeSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )

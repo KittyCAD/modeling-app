@@ -53,9 +53,14 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
   SEGMENT: 'seg',
+  REVOLVE: 'revolve',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+
+/** The default KCL degree expression */
+export const KCL_DEFAULT_DEGREE = `360`
+
 /** localStorage key for the playwright test-specific app settings file */
 export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
