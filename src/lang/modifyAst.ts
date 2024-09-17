@@ -251,7 +251,7 @@ export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
   shouldPipe = false,
-  distance = createLiteral(4) as Expr
+  distance: Expr = createLiteral(4)
 ):
   | {
       modifiedAst: Program
@@ -346,7 +346,7 @@ export function revolveSketch(
   node: Program,
   pathToNode: PathToNode,
   shouldPipe = false,
-  angle = createLiteral(4) as Expr
+  angle: Expr = createLiteral(4)
 ):
   | {
       modifiedAst: Program
