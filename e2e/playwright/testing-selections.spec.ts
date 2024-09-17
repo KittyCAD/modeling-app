@@ -31,12 +31,14 @@ test.describe('Testing selections', () => {
 
     const xAxisClick = () =>
       page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
+    const xAxisClickAfterExitingSketch = () =>
+      page.mouse.click(639, 278).then(() => page.waitForTimeout(100))
     const emptySpaceClick = () =>
       page.mouse.click(700, 343).then(() => page.waitForTimeout(100))
     const topHorzSegmentClick = () =>
-      page.mouse.click(709, 290).then(() => page.waitForTimeout(100))
+      page.mouse.click(startXPx, 500 - PUR * 20).then(() => page.waitForTimeout(100))
     const bottomHorzSegmentClick = () =>
-      page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
+      page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10).then(() => page.waitForTimeout(100))
 
     await u.clearCommandLogs()
     await expect(
@@ -184,6 +186,7 @@ test.describe('Testing selections', () => {
 
     // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
     await topHorzSegmentClick()
+    await xAxisClickAfterExitingSketch()
     await page.waitForTimeout(100)
 
     // enter sketch again
