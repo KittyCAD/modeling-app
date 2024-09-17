@@ -963,7 +963,9 @@ class EngineConnection extends EventTarget {
               ) {
                 // Reject the promise with the error.
                 this.engineCommandManager.pendingExport.reject(errorsString)
-                toast.error(errorsString)
+                toast.error(errorsString, {
+                  id: this.engineCommandManager.pendingExport.toastId,
+                })
                 this.engineCommandManager.pendingExport = undefined
               }
             } else {

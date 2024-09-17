@@ -571,7 +571,9 @@ export const ModelingMachineProvider = ({
             else if (kclManager.ast.body.length === 0)
               errorMessage += 'due to Empty Scene'
             console.error(errorMessage)
-            toast.error(errorMessage)
+            toast.error(errorMessage, {
+              id: kclManager.engineCommandManager.pendingExport?.toastId,
+            })
             return false
           }
         },
