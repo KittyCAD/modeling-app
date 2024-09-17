@@ -16,7 +16,11 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  EXPORT_TOAST_MESSAGES,
+  MAKE_TOAST_MESSAGES,
+} from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 
@@ -1327,8 +1331,13 @@ export class EngineCommandManager extends EventTarget {
   defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
   pendingExport?: {
+    /** The id of the shared loading/success/error toast for export */
+    toastId: string
+    /** An on-success callback */
     resolve: (a: null) => void
+    /** An on-error callback */
     reject: (reason: string) => void
+    /** The engine command uuid */
     commandId: string
   }
   settings: SettingsViaQueryString
@@ -1590,7 +1599,7 @@ export class EngineCommandManager extends EventTarget {
           // because in all other cases we send JSON strings. But in the case of
           // export we send a binary blob.
           // Pass this to our export function.
-          if (this.exportIntent === null) {
+          if (this.exportIntent === null || this.pendingExport === undefined) {
             toast.error(
               'Export intent was not set, but export data was received'
             )
@@ -1602,19 +1611,22 @@ export class EngineCommandManager extends EventTarget {
 
           switch (this.exportIntent) {
             case ExportIntent.Save: {
-              exportSave(event.data).then(() => {
+              exportSave(event.data, this.pendingExport.toastId).then(() => {
                 this.pendingExport?.resolve(null)
               }, this.pendingExport?.reject)
               break
             }
             case ExportIntent.Make: {
-              exportMake(event.data).then((result) => {
-                if (result) {
-                  this.pendingExport?.resolve(null)
-                } else {
-                  this.pendingExport?.reject('Failed to make export')
-                }
-              }, this.pendingExport?.reject)
+              exportMake(event.data, this.pendingExport.toastId).then(
+                (result) => {
+                  if (result) {
+                    this.pendingExport?.resolve(null)
+                  } else {
+                    this.pendingExport?.reject('Failed to make export')
+                  }
+                },
+                this.pendingExport?.reject
+              )
               break
             }
           }
@@ -1929,7 +1941,20 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve(null)
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
+        if (this.exportIntent === null) {
+          if (this.exportIntent === null) {
+            toast.error('Export intent was not set, but export is being sent')
+            console.error('Export intent was not set, but export is being sent')
+            return
+          }
+        }
+        const toastId = toast.loading(
+          this.exportIntent === ExportIntent.Save
+            ? EXPORT_TOAST_MESSAGES.START
+            : MAKE_TOAST_MESSAGES.START
+        )
         this.pendingExport = {
+          toastId,
           resolve: (passThrough) => {
             this.addCommandLog({
               type: 'export-done',

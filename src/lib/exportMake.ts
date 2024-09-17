@@ -5,8 +5,10 @@ import { components } from './machine-api'
 import ModelingAppFile from './modelingAppFile'
 
 // Make files locally from an export call.
-export async function exportMake(data: ArrayBuffer): Promise<Response | null> {
-  const toastId = toast.loading('Starting print...')
+export async function exportMake(
+  data: ArrayBuffer,
+  toastId: string
+): Promise<Response | null> {
   if (machineManager.machineCount() === 0) {
     console.error('No machines available')
     toast.error('No machines available', { id: toastId })

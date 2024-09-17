@@ -77,3 +77,20 @@ export const PLAYWRIGHT_KEY = 'playwright'
  * allows us to match if the execution of executeAst was interrupted */
 export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE =
   'Force interrupt, executionIsStale, new AST requested'
+
+/** The messages that appear for exporting toasts */
+export const EXPORT_TOAST_MESSAGES = {
+  START: 'Exporting...',
+  SUCCESS: 'Exported successfully',
+  FAILED: 'Export failed',
+}
+
+/** The messages that appear for "make" command toasts */
+export const MAKE_TOAST_MESSAGES = {
+  START: 'Starting print...',
+  NO_MACHINES: 'No machines available',
+  NO_MACHINE_API_IP: 'No machine api ip available',
+  NO_CURRENT_MACHINE: 'No current machine available',
+  NO_MACHINE_ID: 'No machine id available',
+  ERROR_STARTING_PRINT: 'Error while starting print',
+}
