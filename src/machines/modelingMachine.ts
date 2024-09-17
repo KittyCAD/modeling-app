@@ -584,11 +584,7 @@ export const modelingMachine = setup({
           angle.insertIndex !== undefined
         ) {
           const newBody = [...ast.body]
-          newBody.splice(
-            angle.insertIndex,
-            0,
-            angle.variableDeclarationAst
-          )
+          newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
           ast.body = newBody
         }
         const pathToNode = getNodePathFromSourceRange(
@@ -602,11 +598,11 @@ export const modelingMachine = setup({
           'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst
         )
         if (trap(revolveSketchRes)) return
-        const { modifiedAst, pathToExtrudeArg } = revolveSketchRes
+        const { modifiedAst, pathToRevolveArg } = revolveSketchRes
 
         store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: pathToExtrudeArg,
+          focusPath: pathToRevolveArg,
           zoomToFit: true,
           zoomOnRangeAndType: {
             range: selection.codeBasedSelections[0].range,
