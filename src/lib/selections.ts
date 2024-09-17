@@ -569,12 +569,10 @@ function codeToIdSelections(
         }
         if (type === 'edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
           )
-          const edge = [...edges].find(
-            ([_, edge]) => edge.type === 'extrudeEdge'
-          )
+          const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
@@ -584,12 +582,12 @@ function codeToIdSelections(
         }
         if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
           )
           const edge = [...edges].find(
             ([_, edge]) =>
-              edge.type === 'extrudeEdge' && edge.subType === 'adjacent'
+              edge.type === 'sweepEdge' && edge.subType === 'adjacent'
           )
           if (!edge) return
           bestCandidate = {
