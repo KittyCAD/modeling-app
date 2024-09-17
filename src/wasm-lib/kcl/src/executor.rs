@@ -4,12 +4,21 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kittycad::types::ModelingSessionData;
+use kcmc::ok_response::{output::TakeSnapshot, OkModelingCmdResponse};
+// use kcmc::shared::PostEffectType;
+use kcmc::each_cmd as mcmd;
+use kcmc::websocket::{ModelingSessionData, OkWebSocketResponseData};
+use kcmc::{ImageFormat, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
+
+type Point2D = kcmc::shared::Point2d<f64>;
+type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
@@ -1284,7 +1293,7 @@ impl From<Point2d> for [f64; 2] {
     }
 }
 
-impl From<Point2d> for kittycad::types::Point2D {
+impl From<Point2d> for Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
     }
@@ -1315,9 +1324,18 @@ impl Point3d {
     }
 }
 
-impl From<Point3d> for kittycad::types::Point3D {
+impl From<Point3d> for Point3D {
     fn from(p: Point3d) -> Self {
         Self { x: p.x, y: p.y, z: p.z }
+    }
+}
+impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
+    fn from(p: Point3d) -> Self {
+        Self {
+            x: LengthUnit(p.x),
+            y: LengthUnit(p.y),
+            z: LengthUnit(p.z),
+        }
     }
 }
 
@@ -1687,9 +1705,9 @@ impl ExecutorContext {
             .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                &kittycad::types::ModelingCmd::EdgeLinesVisible {
+                &ModelingCmd::from(mcmd::EdgeLinesVisible {
                     hidden: !settings.highlight_edges,
-                },
+                }),
             )
             .await?;
 
@@ -1774,9 +1792,16 @@ impl ExecutorContext {
             .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                &kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.settings.units.into(),
-                },
+                &ModelingCmd::from(mcmd::SetSceneUnits {
+                    unit: match self.settings.units {
+                        UnitLength::Cm => kcmc::units::UnitLength::Centimeters,
+                        UnitLength::Ft => kcmc::units::UnitLength::Feet,
+                        UnitLength::In => kcmc::units::UnitLength::Inches,
+                        UnitLength::M => kcmc::units::UnitLength::Meters,
+                        UnitLength::Mm => kcmc::units::UnitLength::Millimeters,
+                        UnitLength::Yd => kcmc::units::UnitLength::Yards,
+                    },
+                }),
             )
             .await?;
         let memory = if let Some(memory) = memory {
@@ -1927,7 +1952,7 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<kittycad::types::TakeSnapshot> {
+    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<TakeSnapshot> {
         let _ = self.run(program, None).await?;
 
         // Zoom to fit.
@@ -1935,10 +1960,11 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::ZoomToFit {
+                ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
+                    animated: false,
                     padding: 0.1,
-                },
+                }),
             )
             .await?;
 
@@ -1948,19 +1974,19 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::TakeSnapshot {
-                    format: kittycad::types::ImageFormat::Png,
-                },
+                ModelingCmd::from(mcmd::TakeSnapshot {
+                    format: ImageFormat::Png,
+                }),
             )
             .await?;
 
-        let kittycad::types::OkWebSocketResponseData::Modeling {
-            modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
         } = resp
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok(data)
+        Ok(contents)
     }
 }
 

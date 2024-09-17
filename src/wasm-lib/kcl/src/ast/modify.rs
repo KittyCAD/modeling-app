@@ -1,6 +1,11 @@
 use std::sync::Arc;
 
-use kittycad::types::{ModelingCmd, Point3D};
+use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::shared::PathCommand;
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::ModelingCmd;
+use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     ast::types::{
@@ -12,13 +17,15 @@ use crate::{
     executor::{Point2d, SourceRange},
 };
 
+type Point3d = kcmc::shared::Point3d<f64>;
+
 #[derive(Debug)]
 /// The control point data for a curve or line.
 pub struct ControlPointData {
     /// The control points for the curve or line.
-    pub points: Vec<kittycad::types::Point3D>,
+    pub points: Vec<Point3d>,
     /// The command that created this curve or line.
-    pub command: kittycad::types::PathCommand,
+    pub command: PathCommand,
     /// The id of the curve or line.
     pub id: uuid::Uuid,
 }
@@ -77,12 +84,12 @@ pub async fn modify_ast_for_sketch(
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::PathGetInfo { path_id: sketch_id },
+            ModelingCmd::PathGetInfo(mcmd::PathGetInfo { path_id: sketch_id }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::PathGetInfo { data: path_info },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::PathGetInfo(path_info),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -101,11 +108,13 @@ pub async fn modify_ast_for_sketch(
             let h = engine.send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                ModelingCmd::CurveGetControlPoints { curve_id: *command_id },
+                ModelingCmd::from(mcmd::CurveGetControlPoints {
+                    curve_id: (*command_id).into(),
+                }),
             );
 
-            let kittycad::types::OkWebSocketResponseData::Modeling {
-                modeling_response: kittycad::types::OkModelingCmdResponse::CurveGetControlPoints { data },
+            let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::CurveGetControlPoints(data),
             } = h.await?
             else {
                 return Err(KclError::Engine(KclErrorDetails {
@@ -116,8 +125,8 @@ pub async fn modify_ast_for_sketch(
 
             control_points.push(ControlPointData {
                 points: data.control_points.clone(),
-                command: segment.command.clone(),
-                id: *command_id,
+                command: segment.command,
+                id: (*command_id).into(),
             });
         }
     }
@@ -143,7 +152,7 @@ pub async fn modify_ast_for_sketch(
             (control_point.points[1].x - last_point.x),
             (control_point.points[1].y - last_point.y),
         ]);
-        last_point = Point3D {
+        last_point = Point3d {
             x: control_point.points[1].x,
             y: control_point.points[1].y,
             z: control_point.points[1].z,
@@ -151,7 +160,7 @@ pub async fn modify_ast_for_sketch(
     }
 
     // Okay now let's recalculate the sketch from the control points.
-    let start_sketch_at_end = Point3D {
+    let start_sketch_at_end = Point3d {
         x: (first_control_points.points[1].x - first_control_points.points[0].x),
         y: (first_control_points.points[1].y - first_control_points.points[0].y),
         z: (first_control_points.points[1].z - first_control_points.points[0].z),
