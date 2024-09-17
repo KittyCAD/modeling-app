@@ -82,6 +82,8 @@ export const EngineStream = () => {
   }, [])
 
   useEffect(() => {
+    if (!streamIdleMode) return
+
     const s = setInterval(() => {
       const video = engineStreamState.context.videoRef?.current
       if (!video) return
@@ -89,11 +91,8 @@ export const EngineStream = () => {
       if (!canvas) return
 
       if (Math.abs(video.width - window.innerWidth) > 4 || Math.abs(video.height - window.innerHeight) > 4) {
-        clearTimeout(timeoutId.current)
+        timeoutStart.current = Date.now()
         configure()
-        timeoutId.current = setTimeout(() => {
-          engineStreamActor.send({ type: EngineStreamTransition.Pause })
-        }, IDLE_TIME_MS)
       }
 
     }, REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
@@ -101,7 +100,7 @@ export const EngineStream = () => {
     return () => {
       clearInterval(s)
     }
-  }, [engineStreamState.value])
+  }, [streamIdleMode, engineStreamState.value])
 
   // When the video and canvas element references are set, start the engine.
   useEffect(() => {
@@ -150,28 +149,35 @@ export const EngineStream = () => {
   const IDLE_TIME_MS = 1000 * 6
 
   // When streamIdleMode is changed, setup or teardown the timeouts
-  const timeoutId = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const timeoutStart = useRef<number | null>(null)
 
   useEffect(() => {
-    // If timeoutId is falsey, then reset it if steamIdleMode is true
-    if (streamIdleMode && !timeoutId.current) {
-      timeoutId.current = setTimeout(() => {
-        engineStreamActor.send({ type: EngineStreamTransition.Pause })
-      }, IDLE_TIME_MS)
-    } else if (!streamIdleMode) {
-      clearTimeout(timeoutId.current)
-      timeoutId.current = undefined
-    }
+    timeoutStart.current = streamIdleMode ? Date.now() : null
   }, [streamIdleMode])
 
   useEffect(() => {
-    if (!timeoutId.current) return 
+    const frameLoop = () => {
+      if (timeoutStart.current) {
+        const elapsed = Date.now() - timeoutStart.current
+        if (elapsed >= IDLE_TIME_MS) {
+          timeoutStart.current = null
+          engineStreamActor.send({ type: EngineStreamTransition.Pause })
+        }
+      }
+
+      window.requestAnimationFrame(frameLoop)
+    }
+    frameLoop()
+  }, [])
+
+  useEffect(() => {
+    if (!streamIdleMode) return 
 
     const onAnyInput = () => {
       // Just in case it happens in the middle of the user turning off 
       // idle mode.
       if (!streamIdleMode) {
-        clearTimeout(timeoutId.current)
+        timeoutStart.current = null
         return
       }
 
@@ -190,24 +196,28 @@ export const EngineStream = () => {
         })
       }
 
-      clearTimeout(timeoutId.current)
-      timeoutId.current = setTimeout(() => {
-        engineStreamActor.send({ type: EngineStreamTransition.Pause })
-      }, IDLE_TIME_MS)
+      timeoutStart.current = Date.now()
     }
 
     window.document.addEventListener('keydown', onAnyInput)
+    window.document.addEventListener('keyup', onAnyInput)
     window.document.addEventListener('mousemove', onAnyInput)
     window.document.addEventListener('mousedown', onAnyInput)
+    window.document.addEventListener('mouseup', onAnyInput)
     window.document.addEventListener('scroll', onAnyInput)
     window.document.addEventListener('touchstart', onAnyInput)
+    window.document.addEventListener('touchstop', onAnyInput)
 
     return () => {
+      timeoutStart.current = null
       window.document.removeEventListener('keydown', onAnyInput)
+      window.document.removeEventListener('keyup', onAnyInput)
       window.document.removeEventListener('mousemove', onAnyInput)
       window.document.removeEventListener('mousedown', onAnyInput)
+      window.document.removeEventListener('mouseup', onAnyInput)
       window.document.removeEventListener('scroll', onAnyInput)
       window.document.removeEventListener('touchstart', onAnyInput)
+      window.document.removeEventListener('touchstop', onAnyInput)
     }
   }, [streamIdleMode, engineStreamState.value])
 

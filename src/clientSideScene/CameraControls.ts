@@ -457,6 +457,7 @@ export class CameraControls {
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
         this.zoomDataFromLastFrame = event.deltaY
+        this.camera.zoom += event.deltaY
       } else {
         // This case will get handled when we add pan and rotate using Apple trackpad.
         console.error(
