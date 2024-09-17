@@ -415,12 +415,11 @@ export function revolveSketch(
   // but rather a separate constant for the extrusion
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
   const VariableDeclaration = createVariableDeclaration(name, revolveCall)
-
   const sketchIndexInPathToNode =
     pathToDecleration.findIndex((a) => a[0] === 'body') + 1
-  const sketchIndexInBody = pathToDecleration[
-    sketchIndexInPathToNode
-  ][0] as number
+  const sketchIndexInBody = pathToDecleration[sketchIndexInPathToNode][0]
+  if (typeof sketchIndexInBody !== 'number')
+    return new Error('expected sketchIndexInBody to be a number')
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
   const pathToRevolveArg: PathToNode = [

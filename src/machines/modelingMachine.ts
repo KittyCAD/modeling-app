@@ -585,9 +585,9 @@ export const modelingMachine = setup({
         ) {
           const newBody = [...ast.body]
           newBody.splice(
-            distance.insertIndex,
+            angle.insertIndex,
             0,
-            distance.variableDeclarationAst
+            angle.variableDeclarationAst
           )
           ast.body = newBody
         }
