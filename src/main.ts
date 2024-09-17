@@ -239,27 +239,31 @@ export function getAutoUpdater(): AppUpdater {
   return autoUpdater
 }
 
-export async function checkForUpdates(autoUpdater: AppUpdater) {
-  // TODO: figure out how to get the update modal back
-  const result = await autoUpdater.checkForUpdatesAndNotify()
-  console.log(result)
-}
-
 app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
-  checkForUpdates(autoUpdater).catch(reportRejection)
+  autoUpdater.autoDownload = false
+  autoUpdater.checkForUpdates().catch(reportRejection)
   const fifteenMinutes = 15 * 60 * 1000
   setInterval(() => {
-    checkForUpdates(autoUpdater).catch(reportRejection)
+    autoUpdater.checkForUpdates().catch(reportRejection)
   }, fifteenMinutes)
 
   autoUpdater.on('update-available', (info) => {
     console.log('update-available', info)
+    const result = dialog.showMessageBoxSync({ message: `Update ${info.version} is available.`, buttons: ['Download now', 'Later']})
+    if (result == 0) {
+      autoUpdater.downloadUpdate().catch(reportRejection)
+    }
   })
 
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
+    const result = dialog.showMessageBoxSync({ message: `Update ${info.version} is now downloaded and will install on next app launch.`, buttons: ['Relaunch now', 'Later']})
+    if (result == 0) {
+      autoUpdater.quitAndInstall()
+    }
   })
+
 })
 
 const getProjectPathAtStartup = async (
