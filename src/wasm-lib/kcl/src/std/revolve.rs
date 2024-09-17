@@ -108,7 +108,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// 2-dimensional sketch. However, unlike extrude, this creates a solid
 /// by using the extent of the sketch as its revolved around an axis rather
 /// than using the extent of the sketch linearly translated through a third
-/// dimension.
+/// dimension. Revolve occurs around a local sketch axis rather than a global axis.
 ///
 /// ```no_run
 /// const part001 = startSketchOn('XY')
