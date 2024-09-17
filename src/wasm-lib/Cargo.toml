@@ -10,7 +10,7 @@ rust-version = "1.73"
 crate-type = ["cdylib"]
 
 [dependencies]
-bson = { version = "2.11.0", features = ["uuid-1", "chrono"] }
+bson = { version = "2.12.0", features = ["uuid-1", "chrono"] }
 data-encoding = "2.6.0"
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
@@ -27,7 +27,7 @@ anyhow = "1"
 hyper = { version = "0.14.29", features = ["server", "http1"] }
 image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, default-features = true }
-pretty_assertions = "1.4.0"
+pretty_assertions = "1.4.1"
 reqwest = { version = "0.11.26", default-features = false }
 tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8"

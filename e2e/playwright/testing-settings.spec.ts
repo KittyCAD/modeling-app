@@ -9,11 +9,15 @@ import {
   executorInputPath,
 } from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
-import { TEST_SETTINGS_KEY, TEST_SETTINGS_CORRUPTED } from './storageStates'
+import {
+  TEST_SETTINGS_KEY,
+  TEST_SETTINGS_CORRUPTED,
+  TEST_SETTINGS,
+} from './storageStates'
 import * as TOML from '@iarna/toml'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -635,6 +639,84 @@ const extrude001 = extrude(5, sketch001)
           u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
         )
         .toBeLessThan(15)
+    })
+  })
+
+  test(`Turning off "Show debug panel" with debug panel open leaves no phantom panel`, async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Override beforeEach test setup
+    // with debug panel open
+    // but "show debug panel" set to false
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+        localStorage.setItem(
+          'persistModelingContext',
+          '{"openPanes":["debug"]}'
+        )
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: {
+            ...TEST_SETTINGS,
+            modeling: { ...TEST_SETTINGS.modeling, showDebugPanel: false },
+          },
+        }),
+      }
+    )
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    // Constants and locators
+    const resizeHandle = page.locator('.sidebar-resize-handles > div.block')
+    const debugPaneButton = page.getByTestId('debug-pane-button')
+    const commandsButton = page.getByRole('button', { name: 'Commands' })
+    const debugPaneOption = page.getByRole('option', {
+      name: 'Settings · modeling · show debug panel',
+    })
+
+    async function setShowDebugPanelTo(value: 'On' | 'Off') {
+      await commandsButton.click()
+      await debugPaneOption.click()
+      await page.getByRole('option', { name: value }).click()
+      await expect(
+        page.getByText(
+          `Set show debug panel to "${value === 'On'}" for this project`
+        )
+      ).toBeVisible()
+    }
+
+    await test.step(`Initial load with corrupted settings`, async () => {
+      await u.waitForAuthSkipAppStart()
+      // Check that the debug panel is not visible
+      await expect(debugPaneButton).not.toBeVisible()
+      // Check the pane resize handle wrapper is not visible
+      await expect(resizeHandle).not.toBeVisible()
+    })
+
+    await test.step(`Open code pane to verify we see the resize handles`, async () => {
+      await u.openKclCodePanel()
+      await expect(resizeHandle).toBeVisible()
+      await u.closeKclCodePanel()
+    })
+
+    await test.step(`Turn on debug panel, open it`, async () => {
+      await setShowDebugPanelTo('On')
+      await expect(debugPaneButton).toBeVisible()
+      // We want the logic to clear the phantom panel, so we shouldn't see
+      // the real panel (and therefore the resize handle) yet
+      await expect(resizeHandle).not.toBeVisible()
+      await u.openDebugPanel()
+      await expect(resizeHandle).toBeVisible()
+    })
+
+    await test.step(`Turn off debug panel setting with it open`, async () => {
+      await setShowDebugPanelTo('Off')
+      await expect(debugPaneButton).not.toBeVisible()
+      await expect(resizeHandle).not.toBeVisible()
     })
   })
 })
