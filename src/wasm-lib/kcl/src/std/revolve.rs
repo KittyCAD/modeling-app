@@ -5,6 +5,7 @@ use derive_docs::stdlib;
 use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use validator::{Validate};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -17,11 +18,12 @@ use crate::{
 };
 
 /// Data for revolution surfaces.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Validate)]
 #[ts(export)]
 pub struct RevolveData {
     /// Angle to revolve (in degrees). Default is 360.
     #[serde(default)]
+    #[validate(range(min = 0.0, max = 360.0))]
     pub angle: Option<f64>,
     /// Axis of revolution.
     pub axis: RevolveAxis,
@@ -52,18 +54,12 @@ pub enum RevolveAxisAndOrigin {
     /// Y-axis.
     #[serde(rename = "Y", alias = "y")]
     Y,
-    /// Z-axis.
-    #[serde(rename = "Z", alias = "z")]
-    Z,
     /// Flip the X-axis.
     #[serde(rename = "-X", alias = "-x")]
     NegX,
     /// Flip the Y-axis.
     #[serde(rename = "-Y", alias = "-y")]
     NegY,
-    /// Flip the Z-axis.
-    #[serde(rename = "-Z", alias = "-z")]
-    NegZ,
     Custom {
         /// The axis.
         axis: [f64; 3],
@@ -78,10 +74,8 @@ impl RevolveAxisAndOrigin {
         let (axis, origin) = match self {
             RevolveAxisAndOrigin::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
             RevolveAxisAndOrigin::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::Z => ([0.0, 0.0, 1.0], [0.0, 0.0, 0.0]),
             RevolveAxisAndOrigin::NegX => ([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
             RevolveAxisAndOrigin::NegY => ([0.0, -1.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxisAndOrigin::NegZ => ([0.0, 0.0, -1.0], [0.0, 0.0, 0.0]),
             RevolveAxisAndOrigin::Custom { axis, origin } => (*axis, *origin),
         };
 
