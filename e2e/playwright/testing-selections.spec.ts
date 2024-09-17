@@ -5,8 +5,8 @@ import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -528,11 +528,22 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await page.waitForTimeout(100)
     await u.closeDebugPanel()
 
-    const extrusionTop: Coords2d = [800, 240]
+    const extrusionTopCap: Coords2d = [800, 240]
     const flatExtrusionFace: Coords2d = [960, 160]
-    const arc: Coords2d = [840, 160]
+    const tangentialArcTo: Coords2d = [840, 160]
     const close: Coords2d = [720, 200]
     const nothing: Coords2d = [600, 200]
+    const closeEdge: Coords2d = [744, 233]
+    const closeAdjacentEdge: Coords2d = [688, 123]
+    const closeOppositeEdge: Coords2d = [687, 169]
+
+    const tangentialArcEdge: Coords2d = [811, 142]
+    const tangentialArcOppositeEdge: Coords2d = [820, 180]
+    const tangentialArcAdjacentEdge: Coords2d = [893, 165]
+
+    const straightSegmentEdge: Coords2d = [819, 369]
+    const straightSegmentOppositeEdge: Coords2d = [635, 394]
+    const straightSegmentAdjacentEdge: Coords2d = [679, 329]
 
     await page.mouse.move(nothing[0], nothing[1])
     await page.mouse.click(nothing[0], nothing[1])
@@ -540,26 +551,141 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
     await page.waitForTimeout(200)
 
-    await page.mouse.move(extrusionTop[0], extrusionTop[1])
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-    await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
+    const checkCodeAtHoverPosition = async (
+      name = '',
+      coord: Coords2d,
+      highlightCode: string,
+      activeLine = highlightCode
+    ) => {
+      await test.step(`test selection for: ${name}`, async () => {
+        const highlightedLocator = page.getByTestId('hover-highlight')
+        const activeLineLocator = page.locator('.cm-activeLine')
 
-    await page.mouse.move(arc[0], arc[1])
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-    await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
+        await test.step(`hover should highlight correct code`, async () => {
+          await page.mouse.move(coord[0], coord[1])
+          await expect(highlightedLocator.first()).toBeVisible()
+          await expect
+            .poll(async () => {
+              const textContents = await highlightedLocator.allTextContents()
+              return textContents.join('').replace(/\s+/g, '')
+            })
+            .toBe(highlightCode)
+          await page.mouse.move(nothing[0], nothing[1])
+        })
+        await test.step(`click should put the cursor in the right place`, async () => {
+          await expect(highlightedLocator.first()).not.toBeVisible()
+          await page.mouse.click(coord[0], coord[1])
+          await expect
+            .poll(async () => {
+              const activeLines = await activeLineLocator.allInnerTexts()
+              return activeLines.join('')
+            })
+            .toContain(activeLine)
+          // check pixels near the click location are yellow
+        })
+        await test.step(`check the engine agrees with selections`, async () => {
+          // ultimately the only way we know if the engine agrees with the selection from the FE
+          // perspective is if it highlights the pixels near where we clicked yellow.
+          await expect
+            .poll(async () => {
+              const RGBs = await u.getPixelRGBs({ x: coord[0], y: coord[1] }, 3)
+              for (const rgb of RGBs) {
+                const [r, g, b] = rgb
+                const RGAverage = (r + g) / 2
+                const isRedGreenSameIsh = Math.abs(r - g) < 3
+                const isBlueLessThanRG = RGAverage - b > 45
+                const isYellowy = isRedGreenSameIsh && isBlueLessThanRG
+                if (isYellowy) return true
+              }
+              return false
+            })
+            .toBeTruthy()
+          await page.mouse.click(nothing[0], nothing[1])
+        })
+      })
+    }
 
-    await page.mouse.move(close[0], close[1])
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-    await page.mouse.move(nothing[0], nothing[1])
-    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
+    await checkCodeAtHoverPosition(
+      'extrusionTopCap',
+      extrusionTopCap,
+      'startProfileAt([20,0],%)',
+      'startProfileAt([20, 0], %)'
+    )
+    await checkCodeAtHoverPosition(
+      'flatExtrusionFace',
+      flatExtrusionFace,
+      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)extrude(5+7,%)`,
+      '}, %)'
+    )
 
-    await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
-    await expect(page.getByTestId('hover-highlight')).toHaveCount(6) // multiple lines
-    await page.mouse.move(nothing[0], nothing[1])
-    await page.waitForTimeout(100)
-    await expect(page.getByTestId('hover-highlight').first()).not.toBeVisible()
+    await checkCodeAtHoverPosition(
+      'tangentialArcTo',
+      tangentialArcTo,
+      'tangentialArcTo([13.14+0,13.14],%)extrude(5+7,%)',
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
+    )
+    await checkCodeAtHoverPosition(
+      'tangentialArcEdge',
+      tangentialArcEdge,
+      `tangentialArcTo([13.14+0,13.14],%)`,
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
+    )
+    await checkCodeAtHoverPosition(
+      'tangentialArcOppositeEdge',
+      tangentialArcOppositeEdge,
+      `tangentialArcTo([13.14+0,13.14],%)`,
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
+    )
+    await checkCodeAtHoverPosition(
+      'tangentialArcAdjacentEdge',
+      tangentialArcAdjacentEdge,
+      `tangentialArcTo([13.14+0,13.14],%)`,
+      'tangentialArcTo([13.14 + 0, 13.14], %)'
+    )
+
+    await checkCodeAtHoverPosition(
+      'close',
+      close,
+      'close(%)extrude(5+7,%)',
+      'close(%)'
+    )
+    await checkCodeAtHoverPosition(
+      'closeEdge',
+      closeEdge,
+      `close(%)`,
+      'close(%)'
+    )
+    await checkCodeAtHoverPosition(
+      'closeAdjacentEdge',
+      closeAdjacentEdge,
+      `close(%)`,
+      'close(%)'
+    )
+    await checkCodeAtHoverPosition(
+      'closeOppositeEdge',
+      closeOppositeEdge,
+      `close(%)`,
+      'close(%)'
+    )
+
+    await checkCodeAtHoverPosition(
+      'straightSegmentEdge',
+      straightSegmentEdge,
+      `angledLineToY({angle:30,to:11.14},%)`,
+      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+    )
+    await checkCodeAtHoverPosition(
+      'straightSegmentOppositeEdge',
+      straightSegmentOppositeEdge,
+      `angledLineToY({angle:30,to:11.14},%)`,
+      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+    )
+    await checkCodeAtHoverPosition(
+      'straightSegmentAdjancentEdge',
+      straightSegmentAdjacentEdge,
+      `angledLineToY({angle:30,to:11.14},%)`,
+      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+    )
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,

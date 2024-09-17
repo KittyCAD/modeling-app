@@ -52,6 +52,7 @@ export type Selection = {
     | 'end-cap'
     | 'point'
     | 'edge'
+    | 'adjacent-edge'
     | 'line'
     | 'arc'
     | 'all'
@@ -146,6 +147,15 @@ export async function getEventForSelectWithPoint({
       engineCommandManager.artifactGraph
     )
     if (err(codeRef)) return null
+    if (_artifact?.subType === 'adjacent') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: codeRef.range, type: 'adjacent-edge' },
+        },
+      }
+    }
     return {
       type: 'Set selection',
       data: {
@@ -385,10 +395,16 @@ function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
 }
 
 function nodeHasExtrude(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'extrude',
-    ...node,
-  })
+  return (
+    doesPipeHaveCallExp({
+      calleeName: 'extrude',
+      ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'revolve',
+      ...node,
+    })
+  )
 }
 
 function nodeHasClose(node: CommonASTNode) {
@@ -398,7 +414,7 @@ function nodeHasClose(node: CommonASTNode) {
   })
 }
 
-export function canExtrudeSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
@@ -556,6 +572,37 @@ function codeToIdSelections(
             id: entry.artifact.surfaceId,
           }
           return
+        }
+        if (type === 'edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(
+            ([_, edge]) => edge.type === 'extrudeEdge'
+          )
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection: { type, range, ...rest },
+            id: edge[0],
+          }
+        }
+        if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(
+            ([_, edge]) =>
+              edge.type === 'extrudeEdge' && edge.subType === 'adjacent'
+          )
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection: { type, range, ...rest },
+            id: edge[0],
+          }
         }
         if (
           (type === 'end-cap' || type === 'start-cap') &&

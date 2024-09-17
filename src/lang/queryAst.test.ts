@@ -8,7 +8,7 @@ import {
   hasExtrudeSketchGroup,
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
-  hasExtrudableGeometry,
+  doesSceneHaveSweepableSketch,
   traverse,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
@@ -488,7 +488,7 @@ const sketch002 = startSketchOn(extrude001, $seg01)
   })
 })
 
-describe('Testing hasExtrudableGeometry', () => {
+describe('Testing doesSceneHaveSweepableSketch', () => {
   it('finds sketch001 pipe to be extruded', async () => {
     const exampleCode = `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
@@ -506,7 +506,7 @@ const sketch002 = startSketchOn(extrude001, $seg01)
 `
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
-    const extrudable = hasExtrudableGeometry(ast)
+    const extrudable = doesSceneHaveSweepableSketch(ast)
     expect(extrudable).toBeTruthy()
   })
   it('find sketch002 NOT pipe to be extruded', async () => {
@@ -520,7 +520,7 @@ const extrude001 = extrude(10, sketch001)
 `
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
-    const extrudable = hasExtrudableGeometry(ast)
+    const extrudable = doesSceneHaveSweepableSketch(ast)
     expect(extrudable).toBeFalsy()
   })
 })

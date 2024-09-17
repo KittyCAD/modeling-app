@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod args;
+pub mod array;
 pub mod assert;
 pub mod chamfer;
 pub mod convert;
@@ -37,11 +38,14 @@ use crate::{
     ast::types::FunctionExpression,
     docs::StdLibFn,
     errors::KclError,
-    executor::{KclValue, ProgramMemory, SketchGroup, SketchSurface},
+    executor::{ExecState, KclValue, ProgramMemory, SketchGroup, SketchSurface},
     std::kcl_stdlib::KclStdLibFn,
 };
 
-pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValue, KclError>> + Send>>;
+pub type StdFn = fn(
+    &mut ExecState,
+    Args,
+) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValue, KclError>> + Send + '_>>;
 
 pub type FnMap = HashMap<String, StdFn>;
 
@@ -91,6 +95,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternCircular2D),
         Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::patterns::PatternTransform),
+        Box::new(crate::std::array::ArrayReduce),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
@@ -226,7 +231,7 @@ pub enum FunctionKind {
 }
 
 /// Compute the length of the given leg.
-pub async fn leg_length(args: Args) -> Result<KclValue, KclError> {
+pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -246,7 +251,7 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for x.
-pub async fn leg_angle_x(args: Args) -> Result<KclValue, KclError> {
+pub async fn leg_angle_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -266,7 +271,7 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for y.
-pub async fn leg_angle_y(args: Args) -> Result<KclValue, KclError> {
+pub async fn leg_angle_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -300,8 +305,9 @@ pub enum Primitive {
     Uuid,
 }
 
+/// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
-    pub func: &'a crate::executor::MemoryFunction,
+    pub func: Option<&'a crate::executor::MemoryFunction>,
     pub expr: Box<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }
