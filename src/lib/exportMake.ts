@@ -3,6 +3,7 @@ import { machineManager } from './machineManager'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'
 import ModelingAppFile from './modelingAppFile'
+import { MAKE_TOAST_MESSAGES } from './constants'
 
 // Make files locally from an export call.
 export async function exportMake(
@@ -10,29 +11,29 @@ export async function exportMake(
   toastId: string
 ): Promise<Response | null> {
   if (machineManager.machineCount() === 0) {
-    console.error('No machines available')
-    toast.error('No machines available', { id: toastId })
+    console.error(MAKE_TOAST_MESSAGES.NO_MACHINES)
+    toast.error(MAKE_TOAST_MESSAGES.NO_MACHINES, { id: toastId })
     return null
   }
 
   const machineApiIp = machineManager.machineApiIp
   if (!machineApiIp) {
-    console.error('No machine api ip available')
-    toast.error('No machine api ip available', { id: toastId })
+    console.error(MAKE_TOAST_MESSAGES.NO_MACHINE_API_IP)
+    toast.error(MAKE_TOAST_MESSAGES.NO_MACHINE_API_IP, { id: toastId })
     return null
   }
 
   const currentMachine = machineManager.currentMachine
   if (!currentMachine) {
-    console.error('No current machine available')
-    toast.error('No current machine available', { id: toastId })
+    console.error(MAKE_TOAST_MESSAGES.NO_CURRENT_MACHINE)
+    toast.error(MAKE_TOAST_MESSAGES.NO_CURRENT_MACHINE, { id: toastId })
     return null
   }
 
   let machineId = currentMachine?.id
   if (!machineId) {
-    console.error('No machine id available', currentMachine)
-    toast.error('No machine id available', { id: toastId })
+    console.error(MAKE_TOAST_MESSAGES.NO_MACHINE_ID, currentMachine)
+    toast.error(MAKE_TOAST_MESSAGES.NO_MACHINE_ID, { id: toastId })
     return null
   }
 
@@ -61,7 +62,7 @@ export async function exportMake(
     console.log('response', response)
 
     if (!response.ok) {
-      console.error('Error while starting print', response)
+      console.error(MAKE_TOAST_MESSAGES.ERROR_STARTING_PRINT, response)
       const text = await response.text()
       toast.error(
         'Error while starting print: ' + response.statusText + ' ' + text,
@@ -72,11 +73,11 @@ export async function exportMake(
       return null
     }
 
-    toast.success('Started print successfully', { id: toastId })
+    toast.success(MAKE_TOAST_MESSAGES.SUCCESS, { id: toastId })
     return response
   } catch (error) {
-    console.error('Error while starting print', error)
-    toast.error('Error while starting print', { id: toastId })
+    console.error(MAKE_TOAST_MESSAGES.ERROR_STARTING_PRINT, error)
+    toast.error(MAKE_TOAST_MESSAGES.ERROR_STARTING_PRINT, { id: toastId })
     return null
   }
 }

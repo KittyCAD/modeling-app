@@ -93,4 +93,5 @@ export const MAKE_TOAST_MESSAGES = {
   NO_CURRENT_MACHINE: 'No current machine available',
   NO_MACHINE_ID: 'No machine id available',
   ERROR_STARTING_PRINT: 'Error while starting print',
+  SUCCESS: 'Started print successfully',
 }

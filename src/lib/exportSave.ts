@@ -5,6 +5,7 @@ import { browserSaveFile } from './browserSaveFile'
 import JSZip from 'jszip'
 import ModelingAppFile from './modelingAppFile'
 import toast from 'react-hot-toast'
+import { EXPORT_TOAST_MESSAGES } from './constants'
 
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {
@@ -21,7 +22,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
           file.name,
           new Uint8Array(file.contents)
         )
-        toast.success('Exported successfully', { id: toastId })
+        toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
         return
       }
 
@@ -48,7 +49,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
         filePathMeta.filePath,
         new Uint8Array(file.contents)
       )
-      toast.success('Exported successfully', { id: toastId })
+      toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
     } else {
       // Download the file to the user's computer.
       // Now we need to download the files to the user's downloads folder.
@@ -62,7 +63,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
   } catch (e) {
     // TODO: do something real with the error.
     console.error('export error', e)
-    toast.error('Export failed', { id: toastId })
+    toast.error(EXPORT_TOAST_MESSAGES.FAILED, { id: toastId })
   }
 }
 

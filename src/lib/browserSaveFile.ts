@@ -3,6 +3,7 @@
 // the file, but in case of where the File System Access API is supported, the
 
 import toast from 'react-hot-toast'
+import { EXPORT_TOAST_MESSAGES } from './constants'
 
 // user will get a file save dialog where they can choose where the file should be saved.
 export const browserSaveFile = async (
@@ -36,7 +37,7 @@ export const browserSaveFile = async (
       const writable = await handle.createWritable()
       await writable.write(blob)
       await writable.close()
-      toast.success('Exported successfully', { id: toastId })
+      toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
       return
     } catch (err: any) {
       // Fail silently if the user has simply canceled the dialog.
@@ -44,7 +45,7 @@ export const browserSaveFile = async (
         toast.dismiss(toastId)
       } else {
         console.error(err.name, err.message)
-        toast.error('Export failed', { id: toastId })
+        toast.error(EXPORT_TOAST_MESSAGES.FAILED, { id: toastId })
       }
       return
     }
@@ -65,5 +66,5 @@ export const browserSaveFile = async (
     URL.revokeObjectURL(blobURL)
     a.remove()
   }, 1000)
-  toast.success('Exported successfully', { id: toastId })
+  toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
 }
