@@ -344,7 +344,8 @@ export class CameraControls {
     this.camera.updateProjectionMatrix()
   }
 
-  onMouseDown = (event: MouseEvent) => {
+  onMouseDown = (event: PointerEvent) => {
+    this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
     this.mouseDownPosition.set(event.clientX, event.clientY)
     let interaction = this.getInteractionType(event)
@@ -364,7 +365,7 @@ export class CameraControls {
     }
   }
 
-  onMouseMove = (event: MouseEvent) => {
+  onMouseMove = (event: PointerEvent) => {
     if (this.isDragging) {
       this.mouseNewPosition.set(event.clientX, event.clientY)
       const deltaMove = this.mouseNewPosition
@@ -402,10 +403,29 @@ export class CameraControls {
         this.pendingPan.x += -deltaMove.x * panSpeed
         this.pendingPan.y += deltaMove.y * panSpeed
       }
+    } else {
+      /**
+       * If we're not in sketch mode and not dragging, we can highlight entities
+       * under the cursor. This recently moved from being handled in App.tsx.
+       * This might not be the right spot, but it is more consolidated.
+       */
+      if (this.syncDirection === 'engineToClient') {
+        const newCmdId = uuidv4()
+
+        this.throttledEngCmd({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'highlight_set_entity',
+            selected_at_window: { x: event.clientX, y: event.clientY },
+          },
+          cmd_id: newCmdId,
+        })
+      }
     }
   }
 
-  onMouseUp = (event: MouseEvent) => {
+  onMouseUp = (event: PointerEvent) => {
+    this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
     if (this.syncDirection === 'engineToClient') {

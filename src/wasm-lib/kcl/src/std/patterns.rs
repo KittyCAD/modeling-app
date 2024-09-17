@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
+        ExecState, ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
         SourceRange, UserVal,
     },
     function_param::FunctionParam,
@@ -77,7 +77,7 @@ impl LinearPattern {
 /// A linear pattern
 /// Each element in the pattern repeats a particular piece of geometry.
 /// The repetitions can be transformed by the `transform` parameter.
-pub async fn pattern_transform(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
 
     let extrude_groups = inner_pattern_transform(
@@ -88,9 +88,9 @@ pub async fn pattern_transform(args: Args) -> Result<KclValue, KclError> {
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
             memory: *transform.memory,
-            dynamic_state: args.dynamic_state.clone(),
         },
         extr,
+        exec_state,
         &args,
     )
     .await?;
@@ -131,18 +131,19 @@ async fn inner_pattern_transform<'a>(
     num_repetitions: u32,
     transform_function: FunctionParam<'a>,
     extrude_group_set: ExtrudeGroupSet,
+    exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::new();
+    let mut transform = Vec::with_capacity(usize::try_from(num_repetitions).unwrap());
     for i in 0..num_repetitions {
-        let t = make_transform(i, &transform_function, args.source_range).await?;
+        let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
         .await?;
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
@@ -201,6 +202,7 @@ async fn make_transform<'a>(
     i: u32,
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
+    exec_state: &mut ExecState,
 ) -> Result<kittycad::types::Transform, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::UserVal(UserVal {
@@ -208,7 +210,7 @@ async fn make_transform<'a>(
         meta: vec![source_range.into()],
     });
     let transform_fn_args = vec![repetition_num];
-    let transform_fn_return = transform_function.call(transform_fn_args).await?;
+    let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
@@ -299,7 +301,7 @@ mod tests {
 }
 
 /// A linear pattern on a 2D sketch.
-pub async fn pattern_linear_2d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group_set): (LinearPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     if data.axis == [0.0, 0.0] {
@@ -366,7 +368,7 @@ async fn inner_pattern_linear_2d(
 }
 
 /// A linear pattern on a 3D model.
-pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group_set): (LinearPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
     if data.axis == [0.0, 0.0, 0.0] {
@@ -378,7 +380,7 @@ pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
         }));
     }
 
-    let extrude_groups = inner_pattern_linear_3d(data, extrude_group_set, args).await?;
+    let extrude_groups = inner_pattern_linear_3d(data, extrude_group_set, exec_state, args).await?;
     Ok(extrude_groups.into())
 }
 
@@ -406,12 +408,13 @@ pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
     extrude_group_set: ExtrudeGroupSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
         .await?;
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
@@ -574,7 +577,7 @@ impl CircularPattern {
 }
 
 /// A circular pattern on a 2D sketch.
-pub async fn pattern_circular_2d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group_set): (CircularPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     let sketch_groups = inner_pattern_circular_2d(data, sketch_group_set, args).await?;
@@ -639,10 +642,10 @@ async fn inner_pattern_circular_2d(
 }
 
 /// A circular pattern on a 3D model.
-pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group_set): (CircularPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
-    let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, args).await?;
+    let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, exec_state, args).await?;
     Ok(extrude_groups.into())
 }
 
@@ -670,12 +673,13 @@ pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
 async fn inner_pattern_circular_3d(
     data: CircularPattern3dData,
     extrude_group_set: ExtrudeGroupSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
         .await?;
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();

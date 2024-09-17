@@ -46,6 +46,7 @@ export function createMachineCommand<
   | Command<T, typeof type, S[typeof type]>[]
   | null {
   const commandConfig = commandBarConfig && commandBarConfig[type]
+
   // There may be no command config for this event type,
   // or there may be multiple commands to create.
   if (!commandConfig) {
