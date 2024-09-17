@@ -1001,13 +1001,13 @@ const sketch002 = startSketchOn(extrude001, 'END')
      * Click the middle of the screen which should click the top face that is revolved
      * Wait till you see the line tool be enabled
      * Wait till you see the exit sketch enabled
-     * 
+     *
      * This is supposed to test that you are allowed to go into sketch mode to sketch on a revolved face
      */
 
     await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-    await expect(async () => {``
+    await expect(async () => {
       await page.mouse.click(600, 250)
       await page.waitForTimeout(1000)
       await expect(
@@ -1017,6 +1017,5 @@ const sketch002 = startSketchOn(extrude001, 'END')
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toHaveAttribute('aria-pressed', 'true')
     }).toPass({ timeout: 40_000, intervals: [1_000] })
-
   })
 })
