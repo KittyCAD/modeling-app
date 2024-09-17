@@ -259,7 +259,7 @@ export function extrudeSketch(
       pathToExtrudeArg: PathToNode
     }
   | Error {
-  const _node = { ...node }
+  const _node = structuredClone(node)
   const _node1 = getNodeFromPath(_node, pathToNode)
   if (err(_node1)) return _node1
   const { node: sketchExpression } = _node1
@@ -354,7 +354,7 @@ export function revolveSketch(
       pathToRevolveArg: PathToNode
     }
   | Error {
-  const _node = { ...node }
+  const _node = structuredClone(node)
   const _node1 = getNodeFromPath(_node, pathToNode)
   if (err(_node1)) return _node1
   const { node: sketchExpression } = _node1
