@@ -517,7 +517,6 @@ test(
     const startXPx = 600
 
     // Equip the rectangle tool
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page
       .getByRole('button', { name: 'rectangle Corner rectangle', exact: true })
       .click()
