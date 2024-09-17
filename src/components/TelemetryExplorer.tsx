@@ -1,6 +1,7 @@
 import {
   getMarks,
   printDeltaTotal,
+  printInvocationCount,
   printMarkDownTable,
   printRawMarks,
 } from 'lib/performance'
@@ -10,6 +11,7 @@ export function TelemetryExplorer() {
   const markdownTable = printMarkDownTable(marks)
   const rawMarks = printRawMarks(marks)
   const deltaTotalTable = printDeltaTotal(marks)
+  const invocationCount = printInvocationCount(marks)
   // TODO data-telemetry-type
   // TODO data-telemetry-name
   return (
@@ -47,6 +49,16 @@ export function TelemetryExplorer() {
       <h1 className="pb-4">Raw Marks</h1>
       <div className="max-w-xl max-h-64 overflow-auto select-all">
         {rawMarks.map((line, index) => {
+          return (
+            <pre className="text-xs" key={index}>
+              <code key={index}>{line}</code>
+            </pre>
+          )
+        })}
+      </div>
+      <h1 className="pb-4">Invocation Count</h1>
+      <div className="max-w-xl max-h-64 overflow-auto select-all">
+        {invocationCount.map((line, index) => {
           return (
             <pre className="text-xs" key={index}>
               <code key={index}>{line}</code>

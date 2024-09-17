@@ -111,6 +111,22 @@ export function printRawMarks(arr) {
   return lines
 }
 
+export function printInvocationCount(arr) {
+  const counts = {}
+  arr.forEach((mark) => {
+    counts[mark.name] =
+      counts[mark.name] === undefined ? 1 : counts[mark.name] + 1
+  })
+
+  const formattedCounts = Object.entries(counts).map((entry) => {
+    return {
+      name: entry[0],
+      count: entry[1],
+    }
+  })
+  return printMarkDownTable(formattedCounts)
+}
+
 function isWeb() {
   // Identify browser environment when following property is not present
   // https://nodejs.org/dist/latest-v16.x/docs/api/perf_hooks.html#performancenodetiming
