@@ -31,7 +31,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
-  getExtrudeEdgeCodeRef,
+  getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -141,8 +141,8 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
-  if (_artifact.type === 'extrudeEdge') {
-    const codeRef = getExtrudeEdgeCodeRef(
+  if (_artifact.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
       _artifact,
       engineCommandManager.artifactGraph
     )
@@ -575,12 +575,10 @@ function codeToIdSelections(
         }
         if (type === 'edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
           )
-          const edge = [...edges].find(
-            ([_, edge]) => edge.type === 'extrudeEdge'
-          )
+          const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
@@ -590,12 +588,12 @@ function codeToIdSelections(
         }
         if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
           )
           const edge = [...edges].find(
             ([_, edge]) =>
-              edge.type === 'extrudeEdge' && edge.subType === 'adjacent'
+              edge.type === 'sweepEdge' && edge.subType === 'adjacent'
           )
           if (!edge) return
           bestCandidate = {
@@ -610,8 +608,8 @@ function codeToIdSelections(
         ) {
           const extrusion = getArtifactOfTypes(
             {
-              key: entry.artifact.extrusionId,
-              types: ['extrusion'],
+              key: entry.artifact.sweepId,
+              types: ['sweep'],
             },
             engineCommandManager.artifactGraph
           )
