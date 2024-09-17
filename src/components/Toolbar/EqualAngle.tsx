@@ -10,10 +10,10 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
-  TransformInfo,
 } from '../../lang/std/sketchcombos'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { TransformInfo } from 'lang/std/stdTypes'
 
 export function equalAngleInfo({
   selectionRanges,

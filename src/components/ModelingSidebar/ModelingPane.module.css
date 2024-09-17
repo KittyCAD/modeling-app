@@ -2,7 +2,7 @@
   @apply relative z-0 rounded-r max-w-full flex-auto;
   display: grid;
   grid-template-rows: auto 1fr;
-  @apply bg-chalkboard-10/50 focus-within:bg-chalkboard-10/90 backdrop-blur-sm border border-chalkboard-20;
+  @apply bg-chalkboard-10/50 focus-within:bg-chalkboard-10/90 backdrop-blur-sm border border-chalkboard-30;
   scroll-margin-block-start: 41px;
 }
 
@@ -19,7 +19,7 @@
   @apply z-10 relative rounded-tr;
   @apply flex h-[41px] items-center justify-between gap-2 px-2;
   @apply font-mono text-xs font-bold select-none text-chalkboard-90;
-  @apply bg-chalkboard-10 border-b border-chalkboard-20;
+  @apply bg-chalkboard-10 border-b border-chalkboard-30;
 }
 
 :global(.dark) .header {

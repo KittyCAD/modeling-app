@@ -8,8 +8,8 @@ import {
   PERSIST_MODELING_CONTEXT,
 } from './test-utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {

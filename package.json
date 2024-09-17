@@ -1,6 +1,6 @@
 {
   "name": "zoo-modeling-app",
-  "version": "0.25.1",
+  "version": "0.25.2",
   "private": true,
   "productName": "Zoo Modeling App",
   "author": {
@@ -88,7 +88,7 @@
     "build:wasm": "yarn wasm-prep && cd src/wasm-lib && wasm-pack build --release --target web --out-dir pkg && cargo test -p kcl-lib export_bindings && cd ../.. && yarn isomorphic-copy-wasm && yarn fmt",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "wasm-prep": "rimraf src/wasm-lib/pkg && mkdirp src/wasm-lib/pkg && rimraf src/wasm-lib/kcl/bindings",
-    "lint": "eslint --fix src e2e",
+    "lint": "eslint --fix src e2e packages/codemirror-lsp-client",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
     "postinstall": "yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",

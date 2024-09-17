@@ -38,7 +38,7 @@ test(
     await expect(page.getByText(notFoundText).first()).not.toBeVisible()
 
     // Find the make button
-    const makeButton = page.getByRole('button', { name: 'Make' })
+    const makeButton = page.getByRole('button', { name: 'Make part' })
     // Make sure the button is visible but disabled
     await expect(makeButton).toBeVisible()
     await expect(makeButton).toBeDisabled()

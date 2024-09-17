@@ -13,13 +13,15 @@ arrays can hold objects and vice versa.
 
 `true` or `false` work when defining values.
 
-## Variable declaration
+## Constant declaration
 
-Variables are defined with the `let` keyword like so:
+Constants are defined with the `let` keyword like so:
 
 ```
 let myBool = false
 ```
+
+Currently you cannot redeclare a constant.
 
 ## Array
 

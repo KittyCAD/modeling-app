@@ -4,10 +4,15 @@ use anyhow::Result;
 use derive_docs::stdlib;
 use schemars::JsonSchema;
 
-use crate::{errors::KclError, executor::KclValue, settings::types::UnitLength, std::Args};
+use crate::{
+    errors::KclError,
+    executor::{ExecState, KclValue},
+    settings::types::UnitLength,
+    std::Args,
+};
 
 /// Millimeters conversion factor for current projects units.
-pub async fn mm(args: Args) -> Result<KclValue, KclError> {
+pub async fn mm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_mm(&args)?;
 
     args.make_user_val_from_f64(result)
@@ -48,7 +53,7 @@ fn inner_mm(args: &Args) -> Result<f64, KclError> {
 }
 
 /// Inches conversion factor for current projects units.
-pub async fn inch(args: Args) -> Result<KclValue, KclError> {
+pub async fn inch(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_inch(&args)?;
 
     args.make_user_val_from_f64(result)
@@ -89,7 +94,7 @@ fn inner_inch(args: &Args) -> Result<f64, KclError> {
 }
 
 /// Feet conversion factor for current projects units.
-pub async fn ft(args: Args) -> Result<KclValue, KclError> {
+pub async fn ft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_ft(&args)?;
 
     args.make_user_val_from_f64(result)
@@ -131,7 +136,7 @@ fn inner_ft(args: &Args) -> Result<f64, KclError> {
 }
 
 /// Meters conversion factor for current projects units.
-pub async fn m(args: Args) -> Result<KclValue, KclError> {
+pub async fn m(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_m(&args)?;
 
     args.make_user_val_from_f64(result)
@@ -173,7 +178,7 @@ fn inner_m(args: &Args) -> Result<f64, KclError> {
 }
 
 /// Centimeters conversion factor for current projects units.
-pub async fn cm(args: Args) -> Result<KclValue, KclError> {
+pub async fn cm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_cm(&args)?;
 
     args.make_user_val_from_f64(result)
@@ -215,7 +220,7 @@ fn inner_cm(args: &Args) -> Result<f64, KclError> {
 }
 
 /// Yards conversion factor for current projects units.
-pub async fn yd(args: Args) -> Result<KclValue, KclError> {
+pub async fn yd(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_yd(&args)?;
 
     args.make_user_val_from_f64(result)

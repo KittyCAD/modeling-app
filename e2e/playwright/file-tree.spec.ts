@@ -11,8 +11,8 @@ import {
 import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -117,7 +117,6 @@ test.describe('when using the file tree to', () => {
     async ({ browser: _ }, testInfo) => {
       const { electronApp, page } = await setupElectron({
         testInfo,
-        folderSetupFn: async () => {},
       })
 
       const {
@@ -160,6 +159,7 @@ test.describe('when using the file tree to', () => {
         await selectFile(kcl1)
         await editorTextMatches(kclCube)
       })
+      await page.waitForTimeout(500)
 
       await test.step(`Postcondition: ${kcl2} still exists with the original content`, async () => {
         await selectFile(kcl2)
