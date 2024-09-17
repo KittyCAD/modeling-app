@@ -19,6 +19,7 @@ import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
+import { markOnce } from 'lib/performance'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -55,8 +56,8 @@ interface WebRTCClientMetrics extends ClientMetrics {
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-  ? { type: T }
-  : { type: T; value: U }
+    ? { type: T }
+    : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -300,8 +301,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
-  60_000)
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
+    () => {},
+    60_000
+  )
   isUsingConnectionLite: boolean = false
 
   constructor({
@@ -315,6 +318,7 @@ class EngineConnection extends EventTarget {
     token?: string
     callbackOnEngineLiteConnect?: () => void
   }) {
+    markOnce('code/startInitialEngineConnect')
     super()
 
     this.engineCommandManager = engineCommandManager
@@ -770,6 +774,7 @@ class EngineConnection extends EventTarget {
             this.dispatchEvent(
               new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
             )
+            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
@@ -1373,7 +1378,7 @@ export class EngineCommandManager extends EventTarget {
   }
 
   private getAst: () => Program = () =>
-    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
+    ({ start: 0, end: 0, body: [], nonCodeMeta: {} }) as any
   set getAstCb(cb: () => Program) {
     this.getAst = cb
   }

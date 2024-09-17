@@ -308,7 +308,6 @@ export class KclManager {
 
     this._cancelTokens.delete(currentExecutionId)
     mark('code/endExecuteAst')
-    console.log(getMarks())
   }
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
