@@ -332,7 +332,6 @@ export class SceneInfra {
   }
 
   animate = () => {
-    requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       // console.log('animation frame', this.cameraControls.camera)
@@ -340,6 +339,7 @@ export class SceneInfra {
       this.renderer.render(this.scene, this.camControls.camera)
       this.labelRenderer.render(this.scene, this.camControls.camera)
     }
+    requestAnimationFrame(this.animate)
   }
 
   dispose = () => {
