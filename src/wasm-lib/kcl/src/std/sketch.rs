@@ -8,7 +8,6 @@ use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::Angle;
 use kcmc::shared::Point2d as KPoint2d;
-use kcmc::shared::Point3d as KPoint3d;
 use kcmc::ModelingCmd;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
@@ -134,12 +133,7 @@ async fn inner_line_to(
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch_group.id.into(),
             segment: PathSegment::Line {
-                end: KPoint3d {
-                    x: to[0],
-                    y: to[1],
-                    z: 0.0,
-                }
-                .map(LengthUnit),
+                end: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
                 relative: false,
             },
         }),
@@ -308,12 +302,7 @@ async fn inner_line(
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch_group.id.into(),
             segment: PathSegment::Line {
-                end: KPoint3d {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                }
-                .map(LengthUnit),
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative: true,
             },
         }),
@@ -496,12 +485,7 @@ async fn inner_angled_line(
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch_group.id.into(),
             segment: PathSegment::Line {
-                end: KPoint3d {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                }
-                .map(LengthUnit),
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
         }),
@@ -1309,12 +1293,7 @@ pub(crate) async fn inner_start_profile_at(
         id,
         ModelingCmd::from(mcmd::MovePathPen {
             path: path_id.into(),
-            to: KPoint3d {
-                x: to[0],
-                y: to[1],
-                z: 0.0,
-            }
-            .map(LengthUnit),
+            to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
         }),
     )
     .await?;
@@ -1788,12 +1767,7 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
         path: sketch_group.id.into(),
         segment: PathSegment::TangentialArcTo {
             angle_snap_increment: None,
-            to: KPoint3d {
-                x: to[0],
-                y: to[1],
-                z: 0.0,
-            }
-            .map(LengthUnit),
+            to: KPoint2d::from(*to).with_z(0.0).map(LengthUnit),
         },
     })
 }
@@ -1955,7 +1929,7 @@ async fn inner_tangential_arc_to_relative(
                 metadata: args.source_range.into(),
             },
         },
-        center: dbg!(result.center),
+        center: result.center,
         ccw: result.ccw > 0,
     };
 
@@ -2031,24 +2005,9 @@ async fn inner_bezier_curve(
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch_group.id.into(),
             segment: PathSegment::Bezier {
-                control1: KPoint3d {
-                    x: data.control1[0],
-                    y: data.control1[1],
-                    z: 0.0,
-                }
-                .map(LengthUnit),
-                control2: KPoint3d {
-                    x: data.control2[0],
-                    y: data.control2[1],
-                    z: 0.0,
-                }
-                .map(LengthUnit),
-                end: KPoint3d {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                }
-                .map(LengthUnit),
+                control1: KPoint2d::from(data.control1).with_z(0.0).map(LengthUnit),
+                control2: KPoint2d::from(data.control2).with_z(0.0).map(LengthUnit),
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
         }),
