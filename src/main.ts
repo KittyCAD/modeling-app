@@ -256,7 +256,10 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
+    .reduce(
+      (obj: any, prop: any) => obj[prop],
+      kittycad
+    )(data.args)
 })
 
 ipcMain.handle('find_machine_api', () => {
