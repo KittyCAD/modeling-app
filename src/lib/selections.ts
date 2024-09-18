@@ -443,7 +443,7 @@ function canExtrudeSelectionItem(selection: Selections, i: number) {
 
   return (
     !!isSketchPipe(selection) &&
-    nodeHasClose(commonNode) &&
+    (nodeHasClose(commonNode) || nodeHasCircle(commonNode)) &&
     !nodeHasExtrude(commonNode)
   )
 }

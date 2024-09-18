@@ -41,7 +41,7 @@ import {
   canExtrudeSelection,
   handleSelectionBatch,
   isSelectionLastLine,
-  isRangeInbetweenCharacters,
+  isRangeInbetweenCharacters as isRangeBetweenCharacters,
   isSketchPipe,
   updateSelections,
 } from 'lib/selections'
@@ -514,20 +514,18 @@ export const ModelingMachineProvider = ({
         'has valid extrude selection': ({ context: { selectionRanges } }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
-          const isPipe = isSketchPipe(selectionRanges)
-
-          if (
+          const hasNoSelection =
             selectionRanges.codeBasedSelections.length === 0 ||
-            isRangeInbetweenCharacters(selectionRanges) ||
+            isRangeBetweenCharacters(selectionRanges) ||
             isSelectionLastLine(selectionRanges, codeManager.code)
-          ) {
+
+          if (hasNoSelection) {
             // they have no selection, we should enable the button
             // so they can select the face through the cmdbar
             // BUT only if there's extrudable geometry
-            if (hasExtrudableGeometry(kclManager.ast)) return true
-            return false
+            return hasExtrudableGeometry(kclManager.ast)
           }
-          if (!isPipe) return false
+          if (!isSketchPipe(selectionRanges)) return false
 
           return canExtrudeSelection(selectionRanges)
         },

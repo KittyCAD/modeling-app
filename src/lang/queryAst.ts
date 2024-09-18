@@ -903,6 +903,7 @@ export function hasExtrudableGeometry(ast: Program) {
         let hasStartProfileAt = false
         let hasStartSketchOn = false
         let hasClose = false
+        let hasCircle = false
         for (const pipe of node.init.body) {
           if (
             pipe.type === 'CallExpression' &&
@@ -919,8 +920,15 @@ export function hasExtrudableGeometry(ast: Program) {
           if (pipe.type === 'CallExpression' && pipe.callee.name === 'close') {
             hasClose = true
           }
+          if (pipe.type === 'CallExpression' && pipe.callee.name === 'circle') {
+            hasCircle = true
+          }
         }
-        if (hasStartProfileAt && hasStartSketchOn && hasClose) {
+        if (
+          (hasStartProfileAt || hasCircle) &&
+          hasStartSketchOn &&
+          (hasClose || hasCircle)
+        ) {
           theMap[node.id.name] = true
         }
       } else if (
