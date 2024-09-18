@@ -2,7 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::{shared::CutType, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -137,14 +140,14 @@ async fn inner_chamfer(
         let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(
             id,
-            ModelingCmd::Solid3DFilletEdge {
+            ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: extrude_group.id,
-                radius: data.length,
-                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
-                cut_type: Some(kittycad::types::CutType::Chamfer),
+                radius: LengthUnit(data.length),
+                tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
+                cut_type: CutType::Chamfer,
                 face_id: Some(id),
-            },
+            }),
         )
         .await?;
 
