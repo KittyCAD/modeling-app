@@ -271,7 +271,7 @@ const Overlay = ({
               />
             ))}
           {/* delete circle is complicated by the fact it's the only segment in the
-          pipe expression. Maybe it should delete teh entire pipeExpression, however
+          pipe expression. Maybe it should delete the entire pipeExpression, however
           this will likely change soon when we implement multi-profile so we'll leave it for now
           issue: https://github.com/KittyCAD/modeling-app/issues/3910
           */}
