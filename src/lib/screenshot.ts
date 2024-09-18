@@ -1,6 +1,3 @@
-import html2canvas from 'html2canvas-pro'
-
-// Return a data URL (png format) of the screenshot of the current page.
 export default async function screenshot(): Promise<string> {
   if (typeof window === 'undefined') {
     return Promise.reject(
@@ -9,11 +6,27 @@ export default async function screenshot(): Promise<string> {
       )
     )
   }
-  return html2canvas(document.documentElement)
-    .then((canvas) => {
-      return canvas.toDataURL()
-    })
-    .catch((error) => {
-      return Promise.reject(error)
-    })
+
+  return new Promise((resolve, reject) => {
+    const canvas = document.querySelector('[data-engine]')
+    const video = document.getElementById('video-stream')
+
+    // overlay the sketch canvas as well?
+    // Update the github issue to indicate that we cannot take screenshots?
+    // Implement screenshots in electron?
+
+    if (canvas && video) {
+      const videoCanvas = document.createElement('canvas')
+      videoCanvas.width = canvas.width
+      videoCanvas.height = canvas.height
+      const context = videoCanvas.getContext('2d')
+      context.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height)
+      const url = videoCanvas.toDataURL('image/png')
+      resolve(url)
+    } else {
+      reject(
+        'no canvas or multiple canvas were found with attribute data-engine'
+      )
+    }
+  })
 }
