@@ -1,6 +1,6 @@
 import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { machineManager } from 'lib/machineManager'
@@ -31,6 +31,10 @@ export type ModelingCommandSchema = {
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
+  }
+  Revolve: {
+    selection: Selections
+    angle: KclCommandValue
   }
   Fillet: {
     // todo
@@ -209,6 +213,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
+        // TODO: These are products of an extrude
         selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
         multiple: false, // TODO: multiple selection
         required: true,
@@ -228,6 +233,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       distance: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
+  Revolve: {
+    description: 'Create a 3D body by rotating a sketch region about an axis.',
+    icon: 'revolve',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
+        multiple: false, // TODO: multiple selection
+        required: true,
+        skip: true,
+      },
+      angle: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
       },
     },

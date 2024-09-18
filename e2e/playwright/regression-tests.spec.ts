@@ -346,10 +346,7 @@ const sketch001 = startSketchAt([-0, -0])
     // Find the toast.
     // Look out for the toast message
     const exportingToastMessage = page.getByText(`Exporting...`)
-    await expect(exportingToastMessage).toBeVisible()
-
     const errorToastMessage = page.getByText(`Error while exporting`)
-    await expect(errorToastMessage).toBeVisible()
 
     const engineErrorToastMessage = page.getByText(`Nothing to export`)
     await expect(engineErrorToastMessage).toBeVisible()

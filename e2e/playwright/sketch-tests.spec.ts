@@ -40,7 +40,7 @@ test.describe('Sketch tests', () => {
   const screwRadius = 3
   const wireRadius = 2
   const wireOffset = 0.5
-  
+
   const screwHole = startSketchOn('XY')
     ${startProfileAt1}
     |> arc({
@@ -48,7 +48,7 @@ test.describe('Sketch tests', () => {
           angle_start: 0,
           angle_end: 360
         }, %)
-  
+
   const part001 = startSketchOn('XY')
     ${startProfileAt2}
     |> xLine(width * .5, %)
@@ -57,7 +57,7 @@ test.describe('Sketch tests', () => {
     |> close(%)
     |> hole(screwHole, %)
     |> extrude(thickness, %)
-  
+
   const part002 = startSketchOn('-XZ')
     ${startProfileAt3}
     |> xLine(width / 4, %)
@@ -1041,5 +1041,69 @@ const sketch002 = startSketchOn(extrude001, 'END')
     expect(
       await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
     ).toBeLessThan(3)
+  })
+
+  test('Can attempt to sketch on revolved face', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const lugHeadLength = 0.25
+        const lugDiameter = 0.5
+        const lugLength = 2
+
+        fn lug = (origin, length, diameter, plane) => {
+          const lugSketch = startSketchOn(plane)
+            |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
+            |> angledLineOfYLength({ angle: 60, length: lugHeadLength }, %)
+            |> xLineTo(0 + .001, %)
+            |> yLineTo(0, %)
+            |> close(%)
+            |> revolve({ axis: "Y" }, %)
+
+          return lugSketch
+        }
+
+        lug([0, 0], 10, .5, "XY")`
+      )
+    })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    /***
+     * Test Plan
+     * Start the sketch mode
+     * Click the middle of the screen which should click the top face that is revolved
+     * Wait till you see the line tool be enabled
+     * Wait till you see the exit sketch enabled
+     *
+     * This is supposed to test that you are allowed to go into sketch mode to sketch on a revolved face
+     */
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await expect(async () => {
+      await page.mouse.click(600, 250)
+      await page.waitForTimeout(1000)
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('button', { name: 'line Line', exact: true })
+      ).toHaveAttribute('aria-pressed', 'true')
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
 })

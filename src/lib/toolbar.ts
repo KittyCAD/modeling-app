@@ -95,9 +95,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'revolve',
-        onClick: () => console.error('Revolve not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Revolve', groupId: 'modeling' },
+          }),
+        // TODO: disabled
+        // Who's state is this?
+        disabled: (state) => !state.can({ type: 'Revolve' }),
         icon: 'revolve',
-        status: 'kcl-only',
+        status: DEV ? 'available' : 'kcl-only',
         title: 'Revolve',
         hotkey: 'R',
         description:
