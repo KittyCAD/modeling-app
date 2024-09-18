@@ -1,4 +1,4 @@
-function takeScreenShotOfVideoStreamCanvas() {
+function takeScreenshotOfVideoStreamCanvas() {
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
   if (
@@ -35,9 +35,9 @@ export default async function screenshot(): Promise<string> {
         width: canvas?.width || 500,
         height: canvas?.height || 500,
       })
-      return url !== '' ? url : takeScreenShotOfVideoStreamCanvas()
+      return url !== '' ? url : takeScreenshotOfVideoStreamCanvas()
     }
   }
 
-  return takeScreenShotOfVideoStreamCanvas()
+  return takeScreenshotOfVideoStreamCanvas()
 }
