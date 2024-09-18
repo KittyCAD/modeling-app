@@ -6,7 +6,7 @@ layout: manual
 
 Rotate a sketch around some provided axis, creating a solid from its extent.
 
-This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional sketch. However, unlike extrude, this creates a solid by using the extent of the sketch as its revolved around an axis rather than using the extent of the sketch linearly translated through a third dimension.
+This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional sketch. However, unlike extrude, this creates a solid by using the extent of the sketch as its revolved around an axis rather than using the extent of the sketch linearly translated through a third dimension. Revolve occurs around a local sketch axis rather than a global axis.
 
 ```js
 revolve(data: RevolveData, sketch_group: SketchGroup) -> ExtrudeGroup
@@ -163,10 +163,8 @@ const part001 = revolve({
 	// Axis of revolution.
 	axis: "X" |
 "Y" |
-"Z" |
 "-X" |
 "-Y" |
-"-Z" |
 {
 	custom: {
 	// The axis.
