@@ -5,7 +5,7 @@ use derive_docs::stdlib;
 use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use validator::{Validate};
+use validator::Validate;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
