@@ -384,9 +384,9 @@ async fn send_pattern_transform<T: GeometryTrait>(
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: solid.id(),
-                transform: Default::default(),
+                entity_id: solid.original_id(),
                 transforms,
+                transform: Default::default(),
             }),
         )
         .await?;
@@ -597,7 +597,9 @@ fn array_to_point2d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<P
 
 trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
+    #[allow(dead_code)]
     fn id(&self) -> Uuid;
+    fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: Self::Set) -> Result<(), KclError>;
@@ -608,9 +610,15 @@ impl GeometryTrait for Box<Sketch> {
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
     }
+
     fn id(&self) -> Uuid {
         self.id
     }
+
+    fn original_id(&self) -> Uuid {
+        self.original_id
+    }
+
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
         let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
         Ok(Point3d { x, y, z: 0.0 })
@@ -630,6 +638,11 @@ impl GeometryTrait for Box<Solid> {
     fn id(&self) -> Uuid {
         self.id
     }
+
+    fn original_id(&self) -> Uuid {
+        self.sketch.original_id
+    }
+
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
         array_to_point3d(val, source_ranges)
     }
@@ -1049,7 +1062,7 @@ async fn pattern_circular(
             id,
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
+                entity_id: geometry.original_id(),
                 center: kcmc::shared::Point3d {
                     x: LengthUnit(center[0]),
                     y: LengthUnit(center[1]),

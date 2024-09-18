@@ -160,6 +160,7 @@ const newVar = myVar + 1`
       value: {
         type: 'Sketch',
         on: expect.any(Object),
+        originalId: expect.any(String),
         start: {
           to: [0, 0],
           from: [0, 0],

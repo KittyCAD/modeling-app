@@ -111,7 +111,7 @@ async fn inner_extrude(
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Extrude {
-                target: sketch.id.into(),
+                target: dbg!(sketch.id.into()),
                 distance: LengthUnit(length),
                 faces: Default::default(),
             }),
