@@ -91,7 +91,7 @@
     "wasm-prep": "rimraf src/wasm-lib/pkg && mkdirp src/wasm-lib/pkg && rimraf src/wasm-lib/kcl/bindings",
     "lint": "eslint --fix src e2e packages/codemirror-lsp-client",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
-    "postinstall": "yarn fetch:samples && yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
+    "postinstall": "yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
     "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
