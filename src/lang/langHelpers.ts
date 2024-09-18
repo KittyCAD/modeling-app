@@ -4,6 +4,8 @@ import {
   ProgramMemory,
   programMemoryInit,
   kclLint,
+  emptyExecState,
+  ExecState,
 } from 'lang/wasm'
 import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
@@ -56,7 +58,7 @@ export async function executeAst({
 }): Promise<{
   logs: string[]
   errors: KCLError[]
-  programMemory: ProgramMemory
+  execState: ExecState
   isInterrupted: boolean
 }> {
   try {
@@ -65,7 +67,7 @@ export async function executeAst({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.startNewSession()
     }
-    const programMemory = await (useFakeExecutor
+    const execState = await (useFakeExecutor
       ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
       : _executor(ast, programMemoryInit(), engineCommandManager, false))
 
@@ -73,7 +75,7 @@ export async function executeAst({
     return {
       logs: [],
       errors: [],
-      programMemory,
+      execState,
       isInterrupted: false,
     }
   } catch (e: any) {
@@ -89,7 +91,7 @@ export async function executeAst({
       return {
         errors: [e],
         logs: [],
-        programMemory: ProgramMemory.empty(),
+        execState: emptyExecState(),
         isInterrupted,
       }
     } else {
@@ -97,7 +99,7 @@ export async function executeAst({
       return {
         logs: [e],
         errors: [],
-        programMemory: ProgramMemory.empty(),
+        execState: emptyExecState(),
         isInterrupted,
       }
     }

@@ -1,4 +1,10 @@
-import { Program, ProgramMemory, _executor, SourceRange } from '../lang/wasm'
+import {
+  Program,
+  ProgramMemory,
+  _executor,
+  SourceRange,
+  ExecState,
+} from '../lang/wasm'
 import {
   EngineCommandManager,
   EngineCommandManagerEvents,
@@ -78,7 +84,7 @@ class MockEngineCommandManager {
 export async function enginelessExecutor(
   ast: Program | Error,
   pm: ProgramMemory | Error = ProgramMemory.empty()
-): Promise<ProgramMemory> {
+): Promise<ExecState> {
   if (err(ast)) return Promise.reject(ast)
   if (err(pm)) return Promise.reject(pm)
 
@@ -88,15 +94,15 @@ export async function enginelessExecutor(
   }) as any as EngineCommandManager
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   mockEngineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, mockEngineCommandManager, true)
+  const execState = await _executor(ast, pm, mockEngineCommandManager, true)
   await mockEngineCommandManager.waitForAllCommands()
-  return programMemory
+  return execState
 }
 
 export async function executor(
   ast: Program,
   pm: ProgramMemory = ProgramMemory.empty()
-): Promise<ProgramMemory> {
+): Promise<ExecState> {
   const engineCommandManager = new EngineCommandManager()
   engineCommandManager.start({
     setIsStreamReady: () => {},
@@ -117,14 +123,9 @@ export async function executor(
       toSync(async () => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         engineCommandManager.startNewSession()
-        const programMemory = await _executor(
-          ast,
-          pm,
-          engineCommandManager,
-          false
-        )
+        const execState = await _executor(ast, pm, engineCommandManager, false)
         await engineCommandManager.waitForAllCommands()
-        resolve(programMemory)
+        resolve(execState)
       }, reportRejection)
     )
   })

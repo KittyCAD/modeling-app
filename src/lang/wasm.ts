@@ -37,6 +37,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
+import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -135,6 +136,41 @@ export const parse = (code: string | Error): Program | Error => {
 }
 
 export type PathToNode = [string | number, string][]
+
+interface RawExecState {
+  memory: RawProgramMemory
+  idGenerator: IdGenerator
+}
+
+export interface ExecState {
+  memory: ProgramMemory
+  idGenerator: IdGenerator
+}
+
+/**
+ * Create an empty ExecState.  This is useful on init to prevent needing an
+ * Option.
+ */
+export function emptyExecState(): ExecState {
+  return {
+    memory: ProgramMemory.empty(),
+    idGenerator: defaultIdGenerator(),
+  }
+}
+
+function execStateFromRaw(raw: RawExecState): ExecState {
+  return {
+    memory: ProgramMemory.fromRaw(raw.memory),
+    idGenerator: raw.idGenerator,
+  }
+}
+
+function defaultIdGenerator(): IdGenerator {
+  return {
+    nextId: 0,
+    ids: [],
+  }
+}
 
 interface Memory {
   [key: string]: KclValue
@@ -358,7 +394,7 @@ export const executor = async (
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
-): Promise<ProgramMemory> => {
+): Promise<ExecState> => {
   if (err(programMemory)) return Promise.reject(programMemory)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -380,7 +416,7 @@ export const _executor = async (
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean
-): Promise<ProgramMemory> => {
+): Promise<ExecState> => {
   if (err(programMemory)) return Promise.reject(programMemory)
 
   try {
@@ -392,7 +428,7 @@ export const _executor = async (
       baseUnit =
         (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     }
-    const memory: RawProgramMemory = await execute_wasm(
+    const execState: RawExecState = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory.toRaw()),
       baseUnit,
@@ -400,7 +436,7 @@ export const _executor = async (
       fileSystemManager,
       isMock
     )
-    return ProgramMemory.fromRaw(memory)
+    return execStateFromRaw(execState)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
