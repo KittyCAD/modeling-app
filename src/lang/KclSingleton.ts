@@ -285,16 +285,7 @@ export class KclManager {
           )
         }
 
-        await this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
+        await sceneInfra.camControls.centerModelRelativeToPanes(zoomObjectId)
       }
     }
 
