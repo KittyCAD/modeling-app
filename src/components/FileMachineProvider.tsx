@@ -123,6 +123,7 @@ export const FileMachineProvider = ({
           return {
             message: `Successfully created "${createdName}"`,
             path: createdPath,
+            shouldSetToRename: input.shouldSetToRename,
           }
         }),
         createFile: fromPromise(async ({ input }) => {
