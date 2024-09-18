@@ -9,6 +9,8 @@ import { MachinesListing } from 'lib/machineManager'
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+const takeElectronWindowScreenshot = ({ width: number, height: number }) =>
+  ipcRenderer.invoke('take.screenshot', args)
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
 const login = (host: string): Promise<string> =>
@@ -88,6 +90,7 @@ contextBridge.exposeInMainWorld('electron', {
   version: process.version,
   join: path.join,
   sep: path.sep,
+  takeElectronWindowScreenshot,
   os: {
     isMac,
     isWindows,

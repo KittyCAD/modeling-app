@@ -9,6 +9,7 @@ import {
   dialog,
   shell,
   nativeTheme,
+  desktopCapturer,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -160,6 +161,24 @@ ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
 })
 
+ipcMain.handle(
+  'take.screenshot',
+  async (event, data: { width: number; height: number }) => {
+    const sources = await desktopCapturer.getSources({
+      types: ['window'],
+      thumbnailSize: { width: data.width, height: data.height },
+    })
+
+    for (const source of sources) {
+      if (source.name === 'Zoo Modeling App') {
+        return sources[0].thumbnail.toDataURL('image/png') // The image to display the screenshot
+      }
+    }
+
+    return ''
+  }
+)
+
 ipcMain.handle('login', async (event, host) => {
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
   // We quiet ts because we are not using this in the standard way.
@@ -198,10 +217,7 @@ ipcMain.handle('login', async (event, host) => {
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
+    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
 ipcMain.handle('find_machine_api', () => {
