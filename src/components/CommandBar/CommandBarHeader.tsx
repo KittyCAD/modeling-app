@@ -92,6 +92,10 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
 
                 return (
                   <button
+                    data-testid="cmd-bar-input-tab"
+                    data-is-current-arg={
+                      argName === currentArgument?.name ? 'true' : 'false'
+                    }
                     disabled={!isReviewing && currentArgument?.name === argName}
                     onClick={() => {
                       commandBarSend({
