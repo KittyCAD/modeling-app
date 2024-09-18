@@ -7,7 +7,7 @@ use derive_docs::stdlib;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::Angle;
-use kcmc::shared::Point2d as KPoint2d;
+use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::ModelingCmd;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;

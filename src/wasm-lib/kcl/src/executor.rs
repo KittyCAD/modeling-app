@@ -4,9 +4,8 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kcmc::ok_response::{output::TakeSnapshot, OkModelingCmdResponse};
-// use kcmc::shared::PostEffectType;
 use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::{output::TakeSnapshot, OkModelingCmdResponse};
 use kcmc::websocket::{ModelingSessionData, OkWebSocketResponseData};
 use kcmc::{ImageFormat, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
