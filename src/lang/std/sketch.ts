@@ -1006,8 +1006,8 @@ export const circle: SketchLineHelper = {
       pathToNode: shallowPath,
     }
   },
-  getTag: getTag(3),
-  addTag: addTag(3),
+  getTag: getTag(),
+  addTag: addTag(),
   getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
     if (callExp.type !== 'CallExpression') return []
     const firstArg = callExp.arguments?.[0]
@@ -1864,49 +1864,25 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   circle,
 } as const
 
-/**
- * @deprecated Use {@link changeSketchArguments} instead
- */
-export function changeCircleArguments(
-  node: Program,
-  programMemory: ProgramMemory,
-  pathToNode: PathToNode,
-  center: [number, number],
-  radius: number
-): { modifiedAst: Program; pathToNode: PathToNode } | Error {
-  const _node = { ...node }
-  const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
-  if (err(nodeMeta)) return nodeMeta
-
-  const { node: callExpression, shallowPath } = nodeMeta
-
-  if (callExpression?.callee?.name === 'circle') {
-    const newCenter = createArrayExpression([
-      createLiteral(roundOff(center[0])),
-      createLiteral(roundOff(center[1])),
-    ])
-    const newRadius = createLiteral(roundOff(radius))
-    callExpression.arguments[0] = createObjectExpression({
-      center: newCenter,
-      radius: newRadius,
-    })
-    return {
-      modifiedAst: _node,
-      pathToNode: shallowPath,
-    }
-  }
-
-  return new Error(`There was a problem: ${callExpression?.callee?.name}`)
-}
-
 export function changeSketchArguments(
   node: Program,
   programMemory: ProgramMemory,
-  sourceRange: SourceRange,
+  sourceRangeOrPath:
+    | {
+        type: 'sourceRange'
+        sourceRange: SourceRange
+      }
+    | {
+        type: 'path'
+        pathToNode: PathToNode
+      },
   input: SegmentInputs
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   const _node = { ...node }
-  const thePath = getNodePathFromSourceRange(_node, sourceRange)
+  const thePath =
+    sourceRangeOrPath.type === 'sourceRange'
+      ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
+      : sourceRangeOrPath.pathToNode
   const nodeMeta = getNodeFromPath<CallExpression>(_node, thePath)
   if (err(nodeMeta)) return nodeMeta
 

@@ -522,7 +522,6 @@ class CircleSegment implements SegmentUtils {
       type: CIRCLE_SEGMENT,
       id,
       from,
-      // to,
       radius,
       center,
       ccw: true,

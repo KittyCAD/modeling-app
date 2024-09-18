@@ -63,7 +63,6 @@ import {
   addCallExpressionsToPipe,
   addCloseToPipe,
   addNewSketchLn,
-  changeCircleArguments,
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
@@ -178,7 +177,6 @@ export class SceneEntities {
       }
       if (
         segment.userData.from &&
-        segment.userData.to &&
         segment.userData.center &&
         segment.userData.radius &&
         segment.userData.type === CIRCLE_SEGMENT
@@ -965,12 +963,23 @@ export class SceneEntities {
         const y = (args.intersectionPoint.twoD.y || 0) - circleCenter[1]
 
         if (sketchInit.type === 'PipeExpression') {
-          const moddedResult = changeCircleArguments(
+          const moddedResult = changeSketchArguments(
             modded,
             kclManager.programMemory,
-            [..._node.deepPath, ['body', 'PipeExpression'], [1, 'index']],
-            circleCenter,
-            Math.sqrt(x ** 2 + y ** 2)
+            {
+              type: 'path',
+              pathToNode: [
+                ..._node.deepPath,
+                ['body', 'PipeExpression'],
+                [1, 'index'],
+              ],
+            },
+            {
+              type: 'arc-segment',
+              center: circleCenter,
+              radius: Math.sqrt(x ** 2 + y ** 2),
+              from: circleCenter,
+            }
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -1022,12 +1031,23 @@ export class SceneEntities {
 
         let modded = structuredClone(_ast)
         if (sketchInit.type === 'PipeExpression') {
-          const moddedResult = changeCircleArguments(
+          const moddedResult = changeSketchArguments(
             modded,
             kclManager.programMemory,
-            [..._node.deepPath, ['body', 'PipeExpression'], [1, 'index']],
-            circleCenter,
-            Math.sqrt(x ** 2 + y ** 2)
+            {
+              type: 'path',
+              pathToNode: [
+                ..._node.deepPath,
+                ['body', 'PipeExpression'],
+                [1, 'index'],
+              ],
+            },
+            {
+              type: 'arc-segment',
+              center: circleCenter,
+              radius: Math.sqrt(x ** 2 + y ** 2),
+              from: circleCenter,
+            }
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -1304,7 +1324,10 @@ export class SceneEntities {
       modded = changeSketchArguments(
         modifiedAst,
         kclManager.programMemory,
-        [node.start, node.end],
+        {
+          type: 'sourceRange',
+          sourceRange: [node.start, node.end],
+        },
         getChangeSketchInput()
       )
     }
@@ -1474,7 +1497,7 @@ export class SceneEntities {
   }
   private _tearDownSketch(
     callDepth = 0,
-    resolve: any,
+    resolve: (val: unknown) => void,
     reject: () => void,
     { removeAxis = true }: { removeAxis?: boolean }
   ) {
@@ -1516,7 +1539,7 @@ export class SceneEntities {
     removeAxis = true,
   }: {
     removeAxis?: boolean
-  } = {}): Promise<void | Error> {
+  } = {}) {
     // I think promisifying this is mostly a side effect of not having
     // "setupSketch" correctly capture a promise when it's done
     // so we're effectively waiting for to be finished setting up the scene just to tear it down

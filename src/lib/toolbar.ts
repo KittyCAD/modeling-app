@@ -6,6 +6,7 @@ import {
   isClosedSketch,
   isEditingExistingSketch,
   modelingMachine,
+  pipeHasCircle,
 } from 'machines/modelingMachine'
 import { EventFrom, StateFrom } from 'xstate'
 
@@ -336,8 +337,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'arc',
           status: 'available',
           disabled: (state) =>
-            !isEditingExistingSketch(state.context) &&
-            !state.matches({ Sketch: 'Tangential arc to' }),
+            (!isEditingExistingSketch(state.context) &&
+              !state.matches({ Sketch: 'Tangential arc to' })) ||
+            pipeHasCircle(state.context),
           title: 'Tangential Arc',
           hotkey: (state) =>
             state.matches({ Sketch: 'Tangential arc to' }) ? ['Esc', 'A'] : 'A',

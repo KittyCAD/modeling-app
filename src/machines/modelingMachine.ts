@@ -2114,6 +2114,26 @@ export function isEditingExistingSketch({
   )
   return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
 }
+export function pipeHasCircle({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  if (!sketchDetails?.sketchPathToNode) return false
+  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+    kclManager.ast,
+    sketchDetails.sketchPathToNode,
+    'VariableDeclarator'
+  )
+  if (err(variableDeclaration)) return false
+  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+  const pipeExpression = variableDeclaration.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const hasCircle = pipeExpression.body.some(
+    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+  )
+  return hasCircle
+}
 
 export function canRectangleOrCircleTool({
   sketchDetails,
@@ -2147,8 +2167,8 @@ export function isClosedSketch({
   if (err(node)) return false
   if (node.node?.declarations?.[0]?.init.type !== 'PipeExpression') return false
   return node.node.declarations[0].init.body.some(
-    (yo) =>
-      yo.type === 'CallExpression' &&
-      (yo.callee.name === 'close' || yo.callee.name === 'circle')
+    (node) =>
+      node.type === 'CallExpression' &&
+      (node.callee.name === 'close' || node.callee.name === 'circle')
   )
 }
