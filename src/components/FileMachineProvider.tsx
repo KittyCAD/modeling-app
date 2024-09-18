@@ -2,7 +2,7 @@ import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
-import React, { createContext, useEffect } from 'react'
+import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
 import {
   Actor,
@@ -23,6 +23,7 @@ import {
 import { getProjectInfo } from 'lib/desktop'
 import { getNextDirName, getNextFileName } from 'lib/desktopFS'
 import { kclCommands } from 'lib/kclCommands'
+import { codeManager, kclManager } from 'lib/singletons'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -272,16 +273,37 @@ export const FileMachineProvider = ({
     }
   )
 
+  const kclCommandMemo = useMemo(
+    () =>
+      kclCommands(async (data) => {
+        if (data.method === 'overwrite') {
+          codeManager.updateCodeStateEditor(data.code)
+          await kclManager.executeCode(true)
+          await codeManager.writeToFile()
+        } else if (data.method === 'newFile' && isDesktop()) {
+          send({
+            type: 'Create file',
+            data: {
+              name: data.sampleName,
+              content: data.code,
+              makeDir: false,
+            },
+          })
+        }
+      }),
+    [codeManager, kclManager, send]
+  )
+
   useEffect(() => {
-    commandBarSend({ type: 'Add commands', data: { commands: kclCommands } })
+    commandBarSend({ type: 'Add commands', data: { commands: kclCommandMemo } })
 
     return () => {
       commandBarSend({
         type: 'Remove commands',
-        data: { commands: kclCommands },
+        data: { commands: kclCommandMemo },
       })
     }
-  }, [commandBarSend])
+  }, [commandBarSend, kclCommandMemo])
 
   return (
     <FileContext.Provider
