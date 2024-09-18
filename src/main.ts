@@ -250,24 +250,26 @@ app.on('ready', () => {
 
   autoUpdater.on('update-available', (info) => {
     console.log('update-available', info)
-    const result = dialog.showMessageBoxSync({
-      message: `Update ${info.version} is available.`,
-      buttons: ['Download now', 'Later'],
-    })
-    if (result === 0) {
-      autoUpdater.downloadUpdate().catch(reportRejection)
-    }
+    mainWindow?.webContents.send('update-available', info.version)
+    // const result = dialog.showMessageBoxSync({
+    //   message: `Update ${info.version} is available.`,
+    //   buttons: ['Download now', 'Later'],
+    // })
+    // if (result === 0) {
+    //   autoUpdater.downloadUpdate().catch(reportRejection)
+    // }
   })
 
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
-    const result = dialog.showMessageBoxSync({
-      message: `Update ${info.version} is now downloaded and will install on next app launch.`,
-      buttons: ['Relaunch now', 'Later'],
-    })
-    if (result === 0) {
-      autoUpdater.quitAndInstall()
-    }
+    mainWindow?.webContents.send('update-downloaded', info.version)
+    // const result = dialog.showMessageBoxSync({
+    //   message: `Update ${info.version} is now downloaded and will install on next app launch.`,
+    //   buttons: ['Relaunch now', 'Later'],
+    // })
+    // if (result === 0) {
+    //   autoUpdater.quitAndInstall()
+    // }
   })
 })
 

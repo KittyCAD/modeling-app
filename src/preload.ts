@@ -13,6 +13,10 @@ const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
 const login = (host: string): Promise<string> =>
   ipcRenderer.invoke('login', host)
+const onUpdateAvailable = (callback: (value: string) => void) =>
+  ipcRenderer.on('update-available', (_event, value) => callback(value))
+const onUpdateDownloaded = (callback: (value: string) => void) =>
+  ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -120,4 +124,6 @@ contextBridge.exposeInMainWorld('electron', {
   kittycad,
   listMachines,
   getMachineApiIp,
+  onUpdateAvailable,
+  onUpdateDownloaded,
 })

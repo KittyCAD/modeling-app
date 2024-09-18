@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -53,3 +53,17 @@ root.render(
 reportWebVitals()
 
 isDesktop()
+
+isDesktop() &&
+  window.electron.onUpdateAvailable((version: string) => {
+    const message = `A new update (${version}) is available and will be downloaded in the background.`
+    console.log(message)
+    toast.success(message)
+  })
+
+isDesktop() &&
+  window.electron.onUpdateDownloaded((version: string) => {
+    const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
+    console.log(message)
+    toast.success(message)
+  })
