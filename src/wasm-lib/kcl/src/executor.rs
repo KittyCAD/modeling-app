@@ -466,6 +466,12 @@ impl Geometry {
             Geometry::Solid(e) => e.id,
         }
     }
+    pub fn original_id(&self) -> uuid::Uuid {
+        match self {
+            Geometry::Sketch(s) => s.original_id,
+            Geometry::Solid(e) => e.sketch.original_id,
+        }
+    }
 }
 
 /// A set of geometry.
@@ -1150,7 +1156,6 @@ pub struct Sketch {
     pub tags: HashMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
-    #[serde(skip)]
     pub original_id: uuid::Uuid,
     /// Metadata.
     #[serde(rename = "__meta")]

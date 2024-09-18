@@ -329,7 +329,7 @@ async fn send_pattern_transform(
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: solid.id,
+                entity_id: solid.sketch.original_id,
                 transform,
             }),
         )
