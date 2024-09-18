@@ -130,7 +130,11 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                           JSON.stringify(argValue)
                         )
                       ) : (
-                        <em>{argValue}</em>
+                        <em>
+                          {arg.valueSummary
+                            ? arg.valueSummary(argValue)
+                            : argValue}
+                        </em>
                       )
                     ) : null}
                     {showShortcuts && (
