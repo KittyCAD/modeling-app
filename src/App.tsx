@@ -8,7 +8,7 @@ import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
-import { codeManager, engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
@@ -36,6 +36,7 @@ export function App() {
   // Stream related refs and data
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const modelingSidebarRef = useRef<HTMLDivElement>(null)
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
@@ -58,6 +59,10 @@ export function App() {
   const {
     app: { onboardingStatus },
   } = settings.context
+
+  useEffect(() => {
+    sceneInfra.camControls.modelingSidebarRef = modelingSidebarRef
+  }, [modelingSidebarRef.current])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -89,7 +94,7 @@ export function App() {
           enableMenu={true}
         />
         <ModalContainer />
-        <ModelingSidebar paneOpacity={paneOpacity} />
+        <ModelingSidebar paneOpacity={paneOpacity} ref={modelingSidebarRef} />
         <EngineStreamContext.Provider options={{
           input: {
             videoRef,
