@@ -177,7 +177,7 @@ async fn send_pattern_transform(
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: extrude_group.id,
+                entity_id: extrude_group.sketch_group.original_id,
                 transform,
             }),
         )

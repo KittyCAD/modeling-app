@@ -412,6 +412,12 @@ impl Geometry {
             Geometry::ExtrudeGroup(e) => e.id,
         }
     }
+    pub fn original_id(&self) -> uuid::Uuid {
+        match self {
+            Geometry::SketchGroup(s) => s.original_id,
+            Geometry::ExtrudeGroup(e) => e.sketch_group.original_id,
+        }
+    }
 }
 
 /// A set of geometry.
@@ -962,7 +968,7 @@ pub struct TagEngineInfo {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct SketchGroup {
-    /// The id of the sketch group (this will change when the engine's reference to it changes.
+    /// The id of the sketch group (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
     /// The paths in the sketch group.
     pub value: Vec<Path>,
@@ -975,7 +981,6 @@ pub struct SketchGroup {
     pub tags: HashMap<String, TagIdentifier>,
     /// The original id of the sketch group. This stays the same even if the sketch group is
     /// is sketched on face etc.
-    #[serde(skip)]
     pub original_id: uuid::Uuid,
     /// Metadata.
     #[serde(rename = "__meta")]
