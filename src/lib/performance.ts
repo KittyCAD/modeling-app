@@ -1,10 +1,10 @@
 // Get the longest width of values or column name
-function columnWidth(arr, key) {
+function columnWidth(arr:{[key:string]: any}, key:string) {
   // Default as the column name
   let maxLength = key.length
 
   // for each value of that key, check if the length is longer
-  arr.forEach((value) => {
+  arr.forEach((value : any) => {
     const valueAsString = String(value[key])
     maxLength =
       valueAsString.length > maxLength ? valueAsString.length : maxLength
@@ -12,7 +12,7 @@ function columnWidth(arr, key) {
   return maxLength
 }
 
-function printHeader(columnWidths) {
+function printHeader(columnWidths: MaxWidth) {
   const headers = ['|']
   const padLeft = ' '
   Object.keys(columnWidths).forEach((key) => {
@@ -24,7 +24,7 @@ function printHeader(columnWidths) {
   return headers.join('')
 }
 
-function printDivider(columnWidths) {
+function printDivider(columnWidths: MaxWidth) {
   const headers = ['|']
   const padLeft = ' '
   Object.keys(columnWidths).forEach((key) => {
@@ -35,7 +35,7 @@ function printDivider(columnWidths) {
   return headers.join('')
 }
 
-function printRow(row, columnWidths) {
+function printRow(row:{[key:string]: any}, columnWidths: MaxWidth) {
   const _row = ['|']
   const padLeft = ' '
   Object.keys(row).forEach((key) => {
@@ -48,50 +48,62 @@ function printRow(row, columnWidths) {
   return _row.join('')
 }
 
-export function printMarkDownTable(arr) {
-  if (arr.length === 0) {
+interface MaxWidth {
+  [key: string]:number
+}
+
+export function printMarkDownTable(marks: Array<{[key:string]:any}>) {
+  if (marks.length === 0) {
     return
   }
-  const sample = arr[0]
-  const columnWidths = {}
+  const sample = marks[0]
+  const columnWidths : MaxWidth = {}
   Object.keys(sample).forEach((key) => {
-    const width = columnWidth(arr, key)
+    const width = columnWidth(marks, key)
     columnWidths[key] = width
   })
 
   const lines = []
   lines.push(printHeader(columnWidths))
   lines.push(printDivider(columnWidths))
-  arr.forEach((row) => {
+  marks.forEach((row) => {
     lines.push(printRow(row, columnWidths))
   })
   return lines
 }
 
-function computeDeltaTotal(arr) {
+interface PerformanceDeltaTotal {
+  name: string
+  startTime: number
+  delta: string
+  total: string
+}
+
+function computeDeltaTotal(marks: Array<PerformanceMark>) {
   let startTime = -1
   let total = 0
-  const deltaTotalArray = arr.map((row) => {
+  const deltaTotalArray : Array<PerformanceDeltaTotal>= marks.map((row : PerformanceMark) => {
     const delta =
       startTime === -1 ? 0 : Number(row.startTime) - Number(startTime)
     startTime = row.startTime
     total += delta
-    return {
+    const formatted : PerformanceDeltaTotal = {
       name: row.name,
       startTime: row.startTime,
       delta: delta.toFixed(2),
       total: total.toFixed(2),
     }
+    return formatted
   })
   return deltaTotalArray
 }
 
-export function printDeltaTotal(arr) {
-  const deltaTotalArray = computeDeltaTotal(arr)
+export function printDeltaTotal(marks: Array<PerformanceMark>) {
+  const deltaTotalArray = computeDeltaTotal(marks)
   return printMarkDownTable(deltaTotalArray)
 }
 
-function printRawRow(row) {
+function printRawRow(row: {[key:string]: any}) {
   const _row = ['']
   Object.keys(row).forEach((key) => {
     const value = String(row[key])
@@ -100,10 +112,10 @@ function printRawRow(row) {
   return _row.join('')
 }
 
-export function printRawMarks(arr) {
+export function printRawMarks(marks: Array<PerformanceMark>) {
   const headers = ['Name', 'Timestamp', 'Delta', 'Total', 'Detail']
   const lines = ['```', headers.join(' ')]
-  const deltaTotalArray = computeDeltaTotal(arr)
+  const deltaTotalArray = computeDeltaTotal(marks)
   deltaTotalArray.forEach((row) => {
     lines.push(printRawRow(row))
   })
@@ -111,9 +123,9 @@ export function printRawMarks(arr) {
   return lines
 }
 
-export function printInvocationCount(arr) {
-  const counts = {}
-  arr.forEach((mark) => {
+export function printInvocationCount(marks: Array<PerformanceMark>) {
+  const counts: {[key:string]: number} = {}
+  marks.forEach((mark : PerformanceMark) => {
     counts[mark.name] =
       counts[mark.name] === undefined ? 1 : counts[mark.name] + 1
   })
@@ -127,69 +139,74 @@ export function printInvocationCount(arr) {
   return printMarkDownTable(formattedCounts)
 }
 
-function isWeb() {
+function isWeb() : boolean {
   // Identify browser environment when following property is not present
   // https://nodejs.org/dist/latest-v16.x/docs/api/perf_hooks.html#performancenodetiming
   return (
     typeof performance === 'object' &&
     typeof performance.mark === 'function' &&
+    // @ts-ignore
     !performance.nodeTiming
   )
 }
 
-function isNode() {
+function isNode() : boolean {
+  // @ts-ignore
   return typeof process === 'object' && performance.nodeTiming
 }
 
-function getRuntime() {
+function getRuntime() : string {
   if (isNode()) {
     return 'nodejs'
   } else if (isWeb()) {
     return 'web'
   }
+  return 'runtime unknown, could not detect'
+}
 
-  return 'BIG NO.'
+interface PerformanceMarkDetail {
+  [key: string] : any
+}
+
+interface PerformanceMark {
+  name: string,
+  startTime: number,
+  entryType: string,
+  detail: null | PerformanceMarkDetail,
+  duration: number
 }
 
 /**
  * Detect performance API environment, either Web or Node.js
  */
 function detectEnvironment() {
-  const seenMarks = {}
-  // TODO KEVIN: Support different browsers, create a polyfill for environments that do not support performance API
+  const seenMarks : {  [key: string]: boolean} = {}
   if (isWeb() || isNode()) {
     // in a browser context, reuse performance-util
     // https://developer.mozilla.org/en-US/docs/Web/API/Performance
+    
+    function _mark (name: string, options?: PerformanceMark) {
+      const _options = {
+        ...options,
+      }
+
+      if (!_options.detail) {
+        _options.detail = {}
+      }
+      _options.detail.runtime = getRuntime()
+
+      performance.mark(name, _options)
+    }
+
     return {
-      mark(name: string, options?: MarkOptions) {
-        const _options = {
-          ...options,
-        }
-
-        if (!_options.detail) {
-          _options.detail = {}
-        }
-        _options.detail.runtime = getRuntime()
-
-        performance.mark(name, _options)
+      mark(name: string, options?: PerformanceMark) {
+        _mark(name, options)
       },
-      markOnce(name: string, options?: MarkOptions) {
-        // TODO KEVIN: call mark? instead of rewriting this...
+      markOnce(name: string, options?: PerformanceMark) {
         if (seenMarks[name]) {
-          console.log('mark has been seen! no thank you!')
           return
         }
-
-        const _options = {
-          ...options,
-        }
-
-        if (!_options.detail) {
-          _options.detail = {}
-        }
-        _options.detail.runtime = getRuntime()
-
-        performance.mark(name, _options)
+        _mark(name, options)
         seenMarks[name] = true
       },
       getMarks() {
@@ -215,14 +232,18 @@ function detectEnvironment() {
       },
     }
   } else {
+    // This would be browsers that do not support the performance API.
+    // TODO: Implement a polyfill
     console.error('No performance API found globally. Going to be a bad time.')
+    return {
+      mark () {/*no op*/},
+      markOnce () {/*no op*/},
+      getMarks() {/*no op*/}
+    }
   }
-  // TODO auto add base detail for {runtime:'web' | 'nodejs' | etc..}
-  // Do this for mark and measure
-  // Helper function to measure against code/timeOrigin
 }
 
 const env = detectEnvironment()
-export const mark = env?.mark
-export const getMarks = env?.getMarks
-export const markOnce = env?.markOnce
+export const mark = env.mark
+export const getMarks = env.getMarks
+export const markOnce = env.markOnce
