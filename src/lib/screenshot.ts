@@ -35,7 +35,6 @@ export default async function screenshot(): Promise<string> {
         width: canvas?.width || 500,
         height: canvas?.height || 500,
       })
-      console.log('url', url)
       return url !== '' ? url : takeScreenShotOfVideoStreamCanvas()
     }
   }
