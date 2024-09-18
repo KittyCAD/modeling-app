@@ -54,11 +54,17 @@ const case = startSketchOn('-XZ')
   |> extrude(65, %)
 
 const thing1 = startSketchOn(case, 'end')
-  |> circle([-size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [-size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 const thing2 = startSketchOn(case, 'end')
-  |> circle([size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 hollow(0.5, case)
