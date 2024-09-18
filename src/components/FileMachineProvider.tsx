@@ -2,7 +2,7 @@ import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
-import React, { createContext } from 'react'
+import React, { createContext, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import {
   Actor,
@@ -22,6 +22,7 @@ import {
 } from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
 import { getNextDirName, getNextFileName } from 'lib/desktopFS'
+import { kclCommands } from 'lib/kclCommands'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -270,6 +271,17 @@ export const FileMachineProvider = ({
       },
     }
   )
+
+  useEffect(() => {
+    commandBarSend({ type: 'Add commands', data: { commands: kclCommands } })
+
+    return () => {
+      commandBarSend({
+        type: 'Remove commands',
+        data: { commands: kclCommands },
+      })
+    }
+  }, [commandBarSend])
 
   return (
     <FileContext.Provider
