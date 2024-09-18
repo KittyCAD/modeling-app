@@ -74,7 +74,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                 selectedCommand.icon && (
                   <CustomIcon name={selectedCommand.icon} className="w-5 h-5" />
                 )}
-              {selectedCommand.displayName || selectedCommand.name}
+              <span data-testid="command-name">
+                {selectedCommand.displayName || selectedCommand.name}
+              </span>
             </p>
             {Object.entries(selectedCommand?.args || {})
               .filter(([_, argConfig]) =>
@@ -114,29 +116,34 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                   >
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
+                      data-test-name="arg-name"
                       className="capitalize"
                     >
                       {argName}
                     </span>
                     <span className="sr-only">:&nbsp;</span>
-                    {argValue ? (
-                      arg.inputType === 'selection' ? (
-                        getSelectionTypeDisplayText(argValue as Selections)
-                      ) : arg.inputType === 'kcl' ? (
-                        roundOff(
-                          Number((argValue as KclCommandValue).valueCalculated),
-                          4
-                        )
-                      ) : typeof argValue === 'object' ? (
-                        arg.valueSummary ? (
-                          arg.valueSummary(argValue)
+                    <span data-testid="header-arg-value">
+                      {argValue ? (
+                        arg.inputType === 'selection' ? (
+                          getSelectionTypeDisplayText(argValue as Selections)
+                        ) : arg.inputType === 'kcl' ? (
+                          roundOff(
+                            Number(
+                              (argValue as KclCommandValue).valueCalculated
+                            ),
+                            4
+                          )
+                        ) : typeof argValue === 'object' ? (
+                          arg.valueSummary ? (
+                            arg.valueSummary(argValue)
+                          ) : (
+                            JSON.stringify(argValue)
+                          )
                         ) : (
-                          JSON.stringify(argValue)
+                          <em>{argValue}</em>
                         )
-                      ) : (
-                        <em>{argValue}</em>
-                      )
-                    ) : null}
+                      ) : null}
+                    </span>
                     {showShortcuts && (
                       <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-primary dark:text-chalkboard-100">
                         <span className="sr-only">Hotkey: </span>

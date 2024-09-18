@@ -4,6 +4,29 @@ import { getUtils, setup, tearDown } from './test-utils'
 import fsp from 'fs/promises'
 import { join } from 'path'
 
+type CmdBarSerilised =
+  | {
+      stage: 'commandBarClosed'
+      // TODO no more properties needed but needs to be implemented in _serialiseCmdBar
+    }
+  | {
+      stage: 'pickCommand'
+      // TODO this will need more properties when implemented in _serialiseCmdBar
+    }
+  | {
+      stage: 'arguments'
+      currentArgKey: string
+      currentArgValue: string
+      headerArguments: Record<string, string>
+      highlightedHeaderArg: string
+      commandName: string
+    }
+  | {
+      stage: 'review'
+      headerArguments: Record<string, string>
+      commandName: string
+    }
+
 export class AuthenticatedApp {
   private readonly codeContent: Locator
   private readonly extrudeButton: Locator
@@ -47,44 +70,65 @@ export class AuthenticatedApp {
     await expect(this.extrudeButton).not.toBeDisabled()
   clickExtrudeButton = async () => await this.extrudeButton.click()
 
-  serialiseCmdBar = async (): Promise<{
-    tabNames: Array<string>
-    inReview: boolean
-    currentArg: string
-    currentTab: string
-    currentArgValue: string
-  }> => {
-    const sanitizeString = (str: string) =>
-      str.replaceAll(/\n/g, '').replaceAll(/\s+/g, ' ').trim()
+  private _serialiseCmdBar = async (): Promise<CmdBarSerilised> => {
     const reviewForm = await this.page.locator('#review-form')
-    const getTabs = () =>
-      this.page
-        .getByTestId('cmd-bar-input-tab')
-        .allInnerTexts()
-        .then((a) => a.map(sanitizeString))
+    const getHeaderArgs = async () => {
+      const inputs = await this.page.getByTestId('cmd-bar-input-tab').all()
+      const entries = await Promise.all(
+        inputs.map((input) => {
+          const key = input
+            .locator('[data-test-name="arg-name"]')
+            .innerText()
+            .then((a) => a.trim())
+          const value = input
+            .getByTestId('header-arg-value')
+            .innerText()
+            .then((a) => a.trim())
+          return Promise.all([key, value])
+        })
+      )
+      return Object.fromEntries(entries)
+    }
+    const getCommandName = () =>
+      this.page.getByTestId('command-name').textContent()
     if (await reviewForm.isVisible()) {
+      const [headerArguments, commandName] = await Promise.all([
+        getHeaderArgs(),
+        getCommandName(),
+      ])
       return {
-        tabNames: await getTabs(),
-        inReview: true,
-        currentArg: '',
-        currentTab: '',
-        currentArgValue: '',
+        stage: 'review',
+        headerArguments,
+        commandName: commandName || '',
       }
     }
-    const [currentArg, tabNames, currentTab, currentArgValue] =
-      await Promise.all([
-        this.page.getByTestId('cmd-bar-arg-name').textContent(),
-        getTabs(),
-        this.page.locator('[data-is-current-arg="true"]').textContent(),
-        this.page.getByTestId('cmd-bar-arg-value').textContent(),
-      ])
+    const [
+      currentArgKey,
+      currentArgValue,
+      headerArguments,
+      highlightedHeaderArg,
+      commandName,
+    ] = await Promise.all([
+      this.page.getByTestId('cmd-bar-arg-name').textContent(),
+      this.page.getByTestId('cmd-bar-arg-value').textContent(),
+      getHeaderArgs(),
+      this.page
+        .locator('[data-is-current-arg="true"]')
+        .locator('[data-test-name="arg-name"]')
+        .textContent(),
+      getCommandName(),
+    ])
     return {
-      currentArg: sanitizeString(currentArg || ''),
-      tabNames: tabNames,
-      currentTab: sanitizeString(currentTab || ''),
-      currentArgValue: sanitizeString(currentArgValue || ''),
-      inReview: false,
+      stage: 'arguments',
+      currentArgKey: currentArgKey || '',
+      currentArgValue: currentArgValue || '',
+      headerArguments,
+      highlightedHeaderArg: highlightedHeaderArg || '',
+      commandName: commandName || '',
     }
+  }
+  expectCmdBarToBe = async (expected: CmdBarSerilised) => {
+    return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
   progressCmdBar = async () => {
     if (Math.random() > 0.5) {

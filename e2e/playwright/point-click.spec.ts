@@ -1,4 +1,4 @@
-import { test, expect } from './authenticatedAppFixture'
+import { test } from './authenticatedAppFixture'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -26,29 +26,24 @@ test('verify extruding circle works', async ({ app }) => {
   await test.step('do extrude flow and check extrude code is added to editor', async () => {
     await app.clickExtrudeButton()
 
-    await expect
-      .poll(() => app.serialiseCmdBar())
-      .toEqual({
-        currentArg: 'distance',
-        tabNames: ['Selection: 1 face', 'Distance:'],
-        currentTab: 'distance:',
-        currentArgValue: '5',
-        inReview: false,
-      })
+    await app.expectCmdBarToBe({
+      stage: 'arguments',
+      currentArgKey: 'distance',
+      currentArgValue: '5',
+      headerArguments: { Selection: '1 face', Distance: '' },
+      highlightedHeaderArg: 'distance',
+      commandName: 'Extrude',
+    })
     await app.progressCmdBar()
 
     const expectString = 'const extrude001 = extrude(5, sketch001)'
     await app.expectEditor.not.toContain(expectString)
 
-    await expect
-      .poll(() => app.serialiseCmdBar())
-      .toEqual({
-        inReview: true,
-        tabNames: ['Selection: 1 face', 'Distance: 5'],
-        currentArg: '',
-        currentTab: '',
-        currentArgValue: '',
-      })
+    await app.expectCmdBarToBe({
+      stage: 'review',
+      headerArguments: { Selection: '1 face', Distance: '5' },
+      commandName: 'Extrude',
+    })
     await app.progressCmdBar()
 
     await app.expectEditor.toContain(expectString)
