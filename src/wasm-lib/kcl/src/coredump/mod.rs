@@ -162,6 +162,7 @@ impl CoreDumpInfo {
             r#"[Add a title above and insert a description of the issue here]
 
 ![Screenshot]({screenshot_url})
+<!-- Limited support for browser screenshots. Only captures modeling scene. -->
 
 <details>
 <summary><b>Core Dump</b></summary>
