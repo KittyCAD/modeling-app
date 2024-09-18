@@ -9,6 +9,13 @@ export interface IElectronAPI {
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
+  takeElectronWindowScreenshot: ({
+    width,
+    height,
+  }: {
+    width: number
+    height: number
+  }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   login: (host: string) => Promise<string>
   platform: typeof process.env.platform
