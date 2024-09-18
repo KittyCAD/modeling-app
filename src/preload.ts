@@ -18,7 +18,7 @@ const takeElectronWindowScreenshot = ({
 }: {
   width: number
   height: number
-}) => ipcRenderer.invoke('take.screenshot', args)
+}) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
 const startDeviceFlow = (host: string): Promise<string> =>
