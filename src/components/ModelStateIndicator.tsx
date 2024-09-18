@@ -1,14 +1,25 @@
+import { useEffect, useState } from 'react'
 import { useEngineCommands } from './EngineCommands'
 import { CustomIcon } from './CustomIcon'
 import useEngineStreamContext, { EngineStreamState } from 'hooks/useEngineStreamContext'
 
 export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
+  const [isDone, setIsDone] = useState<boolean>(false)
 
   const engineStreamActor = useEngineStreamContext.useActorRef()
   const engineStreamState = engineStreamActor.getSnapshot()
 
   const lastCommandType = commands[commands.length - 1]?.type
+
+  useEffect(() => {
+    if (lastCommandType === 'set_default_system_properties') {
+      setIsDone(false)
+    }
+    if (lastCommandType === 'execution-done') {
+      setIsDone(true)
+    }
+  }, [lastCommandType])
 
   let className = 'w-6 h-6 '
   let icon = <div className={className}></div>
@@ -32,7 +43,7 @@ export const ModelStateIndicator = () => {
         name="parallel"
       />
     )
-  } else if (lastCommandType === 'execution-done') {
+  } else if (isDone) {
     className +=
       'text-secondary'
     icon = (

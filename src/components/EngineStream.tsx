@@ -34,6 +34,7 @@ export const EngineStream = () => {
   const {
     state: modelingMachineState,
     send: modelingMachineActorSend,
+    context: modelingMachineActorContext,
   } = useModelingContext()
 
   const engineStreamActor = useEngineStreamContext.useActorRef()
@@ -156,19 +157,28 @@ export const EngineStream = () => {
   }, [streamIdleMode])
 
   useEffect(() => {
+    let frameId = undefined
     const frameLoop = () => {
-      if (timeoutStart.current) {
+      // Do not pause if the user is in the middle of an operation
+      if (!modelingMachineState.matches('idle')) {
+        // In fact, stop the timeout, because we don't want to trigger the
+        // pause when we exit the operation.
+        timeoutStart.current = null
+      } else if (timeoutStart.current) {
         const elapsed = Date.now() - timeoutStart.current
         if (elapsed >= IDLE_TIME_MS) {
           timeoutStart.current = null
           engineStreamActor.send({ type: EngineStreamTransition.Pause })
         }
       }
-
-      window.requestAnimationFrame(frameLoop)
+      frameId = window.requestAnimationFrame(frameLoop)
     }
-    frameLoop()
-  }, [])
+    frameId = window.requestAnimationFrame(frameLoop)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+    }
+  }, [modelingMachineState])
 
   useEffect(() => {
     if (!streamIdleMode) return 
@@ -198,6 +208,11 @@ export const EngineStream = () => {
 
       timeoutStart.current = Date.now()
     }
+
+    // It's possible after a reconnect, the user doesn't move their mouse at
+    // all, meaning the timer is not reset to run. We need to set it every
+    // time our effect dependencies change then.
+    timeoutStart.current = Date.now()
 
     window.document.addEventListener('keydown', onAnyInput)
     window.document.addEventListener('keyup', onAnyInput)

@@ -47,7 +47,7 @@ const engineStreamMachine = setup({
       input: {} as EngineStreamContext,
     },
     actions: {
-      [EngineStreamTransition.Play]({ context }) {
+      [EngineStreamTransition.Play]({ context }, params: { zoomToFit: boolean }) {
         const canvas = context.canvasRef.current
         if (!canvas) return false
 
@@ -61,13 +61,13 @@ const engineStreamMachine = setup({
         canvas.style.display = "none"
 
         video.srcObject = mediaStream
-        void video.play().catch((e) => {
+        void sceneInfra.camControls.restoreCameraPosition()
+        .then(() => video.play())
+        .catch((e) => {
             console.warn('Video playing was prevented', e, video)
-        }).then(() => {
-          kclManager.executeCode(true).then(() => {
-            return sceneInfra.camControls.restoreCameraPosition()
-          }).catch(trap)
         })
+        .then(() => kclManager.executeCode(params.zoomToFit))
+        .catch(trap)
       },
       [EngineStreamTransition.Pause]({ context }) {
         const video = context.videoRef.current
@@ -181,7 +181,7 @@ const engineStreamMachine = setup({
           },
           [EngineStreamTransition.Play]: {
             target: EngineStreamState.Playing,
-            actions: [ { type: EngineStreamTransition.Play } ]
+            actions: [ { type: EngineStreamTransition.Play, params: { zoomToFit: true }} ]
           }
         }
       },
@@ -214,7 +214,7 @@ const engineStreamMachine = setup({
           },
           [EngineStreamTransition.Play]: {
             target: EngineStreamState.Playing,
-            actions: [ { type: EngineStreamTransition.Play } ]
+            actions: [ { type: EngineStreamTransition.Play, params: { zoomToFit: false }} ]
           }
         }
       },
