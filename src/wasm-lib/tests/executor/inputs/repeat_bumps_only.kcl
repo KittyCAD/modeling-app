@@ -1,0 +1,22 @@
+let size = 100
+let case = startSketchOn('XY')
+    |> startProfileAt([-size, -size], %)
+    |> line([2 * size, 0], %)
+    |> line([0, 2 * size], %)
+    |> tangentialArcTo([-size, size], %)
+    |> close(%)
+    |> extrude(65, %)
+
+let bump1 = startSketchOn(case, 'end')
+    |> circle([-size / 2, -size / 2], 25, %)
+    |> extrude(50, %)
+let bump2 = startSketchOn(case, 'end')
+    |> circle([size / 2, -size / 2], 25, %)
+    |> extrude(50, %)
+
+// We pass in "bump1" here since we want to pattern just this object on the face.
+patternLinear3d({
+    axis: [0, 1, 0],
+    distance: 60,
+    repetitions:2,
+}, bump1)
