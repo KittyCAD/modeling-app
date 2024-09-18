@@ -135,7 +135,6 @@ export class AuthenticatedApp {
       const arrowButton = this.page.getByRole('button', {
         name: 'arrow right Continue',
       })
-      // .click()
       if (await arrowButton.isVisible()) {
         await arrowButton.click()
       } else {
