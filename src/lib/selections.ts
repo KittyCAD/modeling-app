@@ -407,6 +407,12 @@ function nodeHasClose(node: CommonASTNode) {
     ...node,
   })
 }
+function nodeHasCircle(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'circle',
+    ...node,
+  })
+}
 
 export function canExtrudeSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
@@ -415,7 +421,8 @@ export function canExtrudeSelection(selection: Selections) {
   return (
     !!isSketchPipe(selection) &&
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n)) &&
+    (commonNodes.every((n) => nodeHasClose(n)) ||
+      commonNodes.every((n) => nodeHasCircle(n))) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
 }
