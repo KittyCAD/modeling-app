@@ -169,7 +169,6 @@ ipcMain.handle(
       thumbnailSize: { width: data.width, height: data.height },
     })
 
-    console.log('here!', sources)
     for (const source of sources) {
       if (source.name === 'Zoo Modeling App') {
         // @ts-ignore image/png is real.
@@ -219,10 +218,7 @@ ipcMain.handle('login', async (event, host) => {
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
+    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
 ipcMain.handle('find_machine_api', () => {
