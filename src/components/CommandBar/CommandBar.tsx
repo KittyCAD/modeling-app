@@ -1,6 +1,8 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import { Fragment, useEffect } from 'react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { EngineConnectionStateType } from 'lang/std/engineConnection'
 import CommandBarArgument from './CommandBarArgument'
 import CommandComboBox from '../CommandComboBox'
 import CommandBarReview from './CommandBarReview'
@@ -14,6 +16,7 @@ export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const { commandBarState, commandBarSend } = useCommandsContext()
+  const { immediateState } = useNetworkContext()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -24,6 +27,12 @@ export const CommandBar = () => {
   useEffect(() => {
     commandBarSend({ type: 'Close' })
   }, [pathname])
+
+  useEffect(() => {
+    if (immediateState.type !== EngineConnectionStateType.ConnectionEstablished) {
+      commandBarSend({ type: 'Close' })
+    }
+  }, [immediateState])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
