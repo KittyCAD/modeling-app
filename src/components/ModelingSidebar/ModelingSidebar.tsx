@@ -7,7 +7,9 @@ import {
   useMemo,
   ReactNode,
   useContext,
-} from 'react'
+  MutableRefObject,
+  forwardRef,
+} from 'react'm
 import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
@@ -23,7 +25,8 @@ import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 
 interface ModelingSidebarProps {
-  paneOpacity: '' | 'opacity-20' | 'opacity-40'
+  paneOpacity: '' | 'opacity-20' | 'opacity-40',
+  ref: MutableRefObject<HTMLDivElement>
 }
 
 interface BadgeInfoComputed {
@@ -35,7 +38,7 @@ function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
 }
 
-export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
+export const ModelingSidebar = forwardRef(function ModelingSidebar({ paneOpacity }: ModelingSidebarProps, ref) {
   const machineManager = useContext(MachineManagerContext)
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
@@ -159,6 +162,14 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     [context.store?.openPanes, send]
   )
 
+  useEffect(() => {
+    // Don't send camera adjustment commands after 1 pane is open. It
+    // won't make any difference.
+    if (context.store?.openPanes > 1) return
+
+    void sceneInfra.camControls.centerModelRelativeToPanes()
+  }, [context.store?.openPanes])
+
   return (
     <Resizable
       className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}
@@ -236,6 +247,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         </ul>
         <ul
           id="pane-section"
+          ref={ref}
           className={
             'ml-[-1px] col-start-2 col-span-1 flex flex-col gap-2 ' +
             (context.store?.openPanes.length >= 1
@@ -265,7 +277,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       </div>
     </Resizable>
   )
-}
+})
 
 interface ModelingPaneButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
