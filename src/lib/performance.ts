@@ -1,5 +1,5 @@
 // Get the longest width of values or column name
-function columnWidth(arr:{[key:string]: any}, key:string) {
+function columnWidth(arr:{[key:string]: any}, key:string) : number {
   // Default as the column name
   let maxLength = key.length
 
@@ -12,7 +12,7 @@ function columnWidth(arr:{[key:string]: any}, key:string) {
   return maxLength
 }
 
-function printHeader(columnWidths: MaxWidth) {
+function printHeader(columnWidths: MaxWidth) : string {
   const headers = ['|']
   const padLeft = ' '
   Object.keys(columnWidths).forEach((key) => {
@@ -24,7 +24,7 @@ function printHeader(columnWidths: MaxWidth) {
   return headers.join('')
 }
 
-function printDivider(columnWidths: MaxWidth) {
+function printDivider(columnWidths: MaxWidth) : string {
   const headers = ['|']
   const padLeft = ' '
   Object.keys(columnWidths).forEach((key) => {
@@ -35,7 +35,7 @@ function printDivider(columnWidths: MaxWidth) {
   return headers.join('')
 }
 
-function printRow(row:{[key:string]: any}, columnWidths: MaxWidth) {
+function printRow(row:{[key:string]: any}, columnWidths: MaxWidth) : string {
   const _row = ['|']
   const padLeft = ' '
   Object.keys(row).forEach((key) => {
@@ -52,9 +52,9 @@ interface MaxWidth {
   [key: string]:number
 }
 
-export function printMarkDownTable(marks: Array<{[key:string]:any}>) {
+export function printMarkDownTable(marks: Array<{[key:string]:any}>) : Array<string> {
   if (marks.length === 0) {
-    return
+    return []
   }
   const sample = marks[0]
   const columnWidths : MaxWidth = {}
@@ -79,7 +79,7 @@ interface PerformanceDeltaTotal {
   total: string
 }
 
-function computeDeltaTotal(marks: Array<PerformanceMark>) {
+function computeDeltaTotal(marks: Array<PerformanceMark>) : Array<PerformanceDeltaTotal> {
   let startTime = -1
   let total = 0
   const deltaTotalArray : Array<PerformanceDeltaTotal>= marks.map((row : PerformanceMark) => {
@@ -98,12 +98,12 @@ function computeDeltaTotal(marks: Array<PerformanceMark>) {
   return deltaTotalArray
 }
 
-export function printDeltaTotal(marks: Array<PerformanceMark>) {
+export function printDeltaTotal(marks: Array<PerformanceMark>) : string[] {
   const deltaTotalArray = computeDeltaTotal(marks)
   return printMarkDownTable(deltaTotalArray)
 }
 
-function printRawRow(row: {[key:string]: any}) {
+function printRawRow(row: {[key:string]: any}) : string {
   const _row = ['']
   Object.keys(row).forEach((key) => {
     const value = String(row[key])
@@ -112,7 +112,7 @@ function printRawRow(row: {[key:string]: any}) {
   return _row.join('')
 }
 
-export function printRawMarks(marks: Array<PerformanceMark>) {
+export function printRawMarks(marks: Array<PerformanceMark>) : string[] {
   const headers = ['Name', 'Timestamp', 'Delta', 'Total', 'Detail']
   const lines = ['```', headers.join(' ')]
   const deltaTotalArray = computeDeltaTotal(marks)
@@ -123,7 +123,7 @@ export function printRawMarks(marks: Array<PerformanceMark>) {
   return lines
 }
 
-export function printInvocationCount(marks: Array<PerformanceMark>) {
+export function printInvocationCount(marks: Array<PerformanceMark>) : string[] {
   const counts: {[key:string]: number} = {}
   marks.forEach((mark : PerformanceMark) => {
     counts[mark.name] =
@@ -173,13 +173,19 @@ interface PerformanceMark {
   startTime: number,
   entryType: string,
   detail: null | PerformanceMarkDetail,
-  duration: number
+  duration?: number
+}
+
+interface MarkHelpers {
+  mark( name: string, options?: PerformanceMark): void,
+  markOnce(name: string, options?: PerformanceMark): void,
+  getMarks(): PerformanceMark[]
 }
 
 /**
  * Detect performance API environment, either Web or Node.js
  */
-function detectEnvironment() {
+function detectEnvironment() : MarkHelpers {
   const seenMarks : {  [key: string]: boolean} = {}
   if (isWeb() || isNode()) {
     // in a browser context, reuse performance-util
@@ -198,7 +204,7 @@ function detectEnvironment() {
       performance.mark(name, _options)
     }
 
-    return {
+    const _helpers : MarkHelpers=  {
       mark(name: string, options?: PerformanceMark) {
         _mark(name, options)
       },
@@ -211,7 +217,7 @@ function detectEnvironment() {
       },
       getMarks() {
         let timeOrigin = performance.timeOrigin
-        const result = [
+        const result : PerformanceMark[] = [
           {
             name: 'code/timeOrigin',
             startTime: Math.round(timeOrigin),
@@ -231,6 +237,7 @@ function detectEnvironment() {
         return result
       },
     }
+    return _helpers
   } else {
     // This would be browsers that do not support the performance API.
     // TODO: Implement a polyfill
@@ -238,7 +245,7 @@ function detectEnvironment() {
     return {
       mark () {/*no op*/},
       markOnce () {/*no op*/},
-      getMarks() {/*no op*/}
+      getMarks() { return [] }
     }
   }
 }
