@@ -224,9 +224,7 @@ export const commandBarMachine = setup({
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
               : arg.skip && 'defaultValue' in arg
-              ? arg.defaultValue instanceof Function
-                ? arg.defaultValue(context)
-                : arg.defaultValue
+              ? arg.defaultValue
               : undefined
         }
         return args

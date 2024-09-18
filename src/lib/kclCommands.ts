@@ -67,9 +67,7 @@ export function kclCommands(
           inputType: 'options',
           required: true,
           skip: true,
-          defaultValue() {
-            return isDesktop() ? 'newFile' : 'overwrite'
-          },
+          defaultValue: isDesktop() ? 'newFile' : 'overwrite',
           options() {
             return [
               {
