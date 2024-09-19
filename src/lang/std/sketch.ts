@@ -1902,6 +1902,11 @@ export function addTagForSketchOnFace(
   if (expressionName === 'close') {
     return addTag(1)(tagInfo)
   }
+  if (expressionName === 'chamfer') {
+    // TODO: if there are two (or more) tags on the chamfer, it needs to pull out
+    // the relevant tag and put it into a separate chamfer call
+    return addTag(2)(tagInfo)
+  }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
     return addTag(tagInfo)

@@ -724,18 +724,52 @@ export function getSweepEdgeCodeRef(
   if (err(seg)) return seg
   return seg.codeRef
 }
+export function getEdgeCuteConsumedCodeRef(
+  edge: EdgeCut,
+  artifactGraph: ArtifactGraph
+): CommonCommandProperties | Error {
+  const seg = getArtifactOfTypes(
+    { key: edge.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    artifactGraph
+  )
+  if (err(seg)) return seg
+  if (seg.type === 'segment') return seg.codeRef
+  return getSweepEdgeCodeRef(seg, artifactGraph)
+}
 
 export function getSweepFromSuspectedSweepSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {
   const artifact = getArtifactOfTypes(
-    { key: id, types: ['wall', 'cap'] },
+    { key: id, types: ['wall', 'cap', 'edgeCut'] },
     artifactGraph
   )
   if (err(artifact)) return artifact
+  if (artifact.type === 'wall' || artifact.type === 'cap') {
+    return getArtifactOfTypes(
+      { key: artifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+  }
+  const segOrEdge = getArtifactOfTypes(
+    { key: artifact.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    artifactGraph
+  )
+  if (err(segOrEdge)) return segOrEdge
+  if (segOrEdge.type === 'segment') {
+    const path = getArtifactOfTypes(
+      { key: segOrEdge.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) return path
+    return getArtifactOfTypes(
+      { key: path.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+  }
   return getArtifactOfTypes(
-    { key: artifact.sweepId, types: ['sweep'] },
+    { key: segOrEdge.sweepId, types: ['sweep'] },
     artifactGraph
   )
 }

@@ -164,6 +164,14 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
+  if (_artifact.type === 'edgeCut')
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: _artifact.codeRef.range, type: 'default' },
+      },
+    }
   return null
 }
 

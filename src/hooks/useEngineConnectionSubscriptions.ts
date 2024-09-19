@@ -11,6 +11,7 @@ import {
   getCapCodeRef,
   getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
+  getEdgeCuteConsumedCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -72,6 +73,17 @@ export function useEngineConnectionSubscriptions() {
             editorManager.setHighlightRange([
               artifact?.codeRef?.range || [0, 0],
             ])
+          } else if (artifact?.type === 'edgeCut') {
+            const codeRef = artifact.codeRef
+            const consumedCodeRef = getEdgeCuteConsumedCodeRef(
+              artifact,
+              engineCommandManager.artifactGraph
+            )
+            editorManager.setHighlightRange(
+              err(consumedCodeRef)
+                ? [codeRef.range]
+                : [codeRef.range, consumedCodeRef.range]
+            )
           } else {
             editorManager.setHighlightRange([[0, 0]])
           }
@@ -177,12 +189,21 @@ export function useEngineConnectionSubscriptions() {
                 engineCommandManager.artifactGraph
               )
 
-              if (artifact?.type !== 'cap' && artifact?.type !== 'wall') return
+              if (
+                artifact?.type !== 'cap' &&
+                artifact?.type !== 'wall' &&
+                !(
+                  artifact?.type === 'edgeCut' && artifact.subType === 'chamfer'
+                )
+              )
+                return
 
               const codeRef =
                 artifact.type === 'cap'
                   ? getCapCodeRef(artifact, engineCommandManager.artifactGraph)
-                  : getWallCodeRef(artifact, engineCommandManager.artifactGraph)
+                  : artifact.type === 'wall'
+                  ? getWallCodeRef(artifact, engineCommandManager.artifactGraph)
+                  : artifact.codeRef
 
               const faceInfo = await getFaceDetails(faceId)
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
