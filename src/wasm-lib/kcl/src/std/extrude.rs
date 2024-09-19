@@ -4,7 +4,12 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::{ExtrusionFaceCapType, ExtrusionFaceInfo};
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::{output::ExtrusionFaceInfo, shared::ExtrusionFaceCapType, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use uuid::Uuid;
 
@@ -86,7 +91,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         // We do this here in case extrude is called out of order.
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::EnableSketchMode {
+            ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: false,
                 entity_id: sketch_group.on.id(),
@@ -97,22 +102,25 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
                 } else {
                     None
                 },
-            },
+            }),
         )
         .await?;
 
         args.batch_modeling_cmd(
             id,
-            kittycad::types::ModelingCmd::Extrude {
-                target: sketch_group.id,
-                distance: length,
-            },
+            ModelingCmd::from(mcmd::Extrude {
+                target: sketch_group.id.into(),
+                distance: LengthUnit(length),
+            }),
         )
         .await?;
 
         // Disable the sketch mode.
-        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
-            .await?;
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+        )
+        .await?;
         extrude_groups.push(do_post_extrude(sketch_group.clone(), length, args.clone()).await?);
     }
 
@@ -128,9 +136,9 @@ pub(crate) async fn do_post_extrude(
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
-        kittycad::types::ModelingCmd::ObjectBringToFront {
+        ModelingCmd::from(mcmd::ObjectBringToFront {
             object_id: sketch_group.id,
-        },
+        }),
     )
     .await?;
 
@@ -166,15 +174,15 @@ pub(crate) async fn do_post_extrude(
     let solid3d_info = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo {
+            ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id,
                 object_id: sketch_group.id,
-            },
+            }),
         )
         .await?;
 
-    let face_infos = if let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetExtrusionFaceInfo { data },
+    let face_infos = if let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
     } = solid3d_info
     {
         data.faces
@@ -199,21 +207,21 @@ pub(crate) async fn do_post_extrude(
         // uses this to build the artifact graph, which the UI needs.
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
+            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: curve_id,
                 object_id: sketch_group.id,
                 face_id,
-            },
+            }),
         )
         .await?;
 
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
+            ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
                 edge_id: curve_id,
                 object_id: sketch_group.id,
                 face_id,
-            },
+            }),
         )
         .await?;
     }

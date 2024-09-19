@@ -2875,7 +2875,7 @@ impl BinaryOperator {
         match &self {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
             BinaryOperator::Mul | BinaryOperator::Div | BinaryOperator::Mod => 12,
-            BinaryOperator::Pow => 6,
+            BinaryOperator::Pow => 13,
         }
     }
 

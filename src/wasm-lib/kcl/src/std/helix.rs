@@ -2,7 +2,11 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kcmc::ModelingCmd;
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -61,13 +65,13 @@ async fn inner_helix(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::EntityMakeHelix {
+        ModelingCmd::from(mcmd::EntityMakeHelix {
             cylinder_id: extrude_group.id,
             is_clockwise: !data.ccw,
-            length: data.length.unwrap_or(extrude_group.height),
+            length: LengthUnit(data.length.unwrap_or(extrude_group.height)),
             revolutions: data.revolutions,
-            start_angle: kittycad::types::Angle::from_degrees(data.angle_start),
-        },
+            start_angle: Angle::from_degrees(data.angle_start),
+        }),
     )
     .await?;
 

@@ -6,7 +6,8 @@ use std::{
 };
 
 use anyhow::Result;
-use kittycad::types::WebSocketRequest;
+use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
+use kittycad_modeling_cmds as kcmc;
 use wasm_bindgen::prelude::*;
 
 use crate::{
@@ -137,9 +138,9 @@ impl crate::engine::EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::WebSocketRequest,
+        cmd: WebSocketRequest,
         id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<kittycad::types::WebSocketResponse, KclError> {
+    ) -> Result<WebSocketResponse, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize source range: {:?}", e),
@@ -184,7 +185,7 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        let ws_result: kittycad::types::WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
+        let ws_result: WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to deserialize response from engine: {:?}", e),
                 source_ranges: vec![source_range],

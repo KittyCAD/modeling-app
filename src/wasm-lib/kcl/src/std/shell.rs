@@ -2,7 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ModelingCmd;
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -230,12 +233,12 @@ async fn inner_shell(
 
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
-        ModelingCmd::Solid3DShellFace {
+        ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: false,
             face_ids,
             object_id: extrude_groups[0].id,
-            shell_thickness: data.thickness,
-        },
+            shell_thickness: LengthUnit(data.thickness),
+        }),
     )
     .await?;
 
@@ -316,12 +319,12 @@ async fn inner_hollow(
 
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
-        ModelingCmd::Solid3DShellFace {
+        ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: true,
             face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
             object_id: extrude_group.id,
-            shell_thickness: thickness,
-        },
+            shell_thickness: LengthUnit(thickness),
+        }),
     )
     .await?;
 

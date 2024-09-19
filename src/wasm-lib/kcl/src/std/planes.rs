@@ -53,7 +53,7 @@ pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<Kcl
 
     let plane = inner_offset_plane(std_plane, offset).await?;
 
-    Ok(KclValue::UserVal(UserVal::set(
+    Ok(KclValue::UserVal(UserVal::new(
         vec![Metadata {
             source_range: args.source_range,
         }],

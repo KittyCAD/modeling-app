@@ -7,7 +7,12 @@ use std::{
 };
 
 use anyhow::Result;
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::websocket::{
+    BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
+    WebSocketResponse,
+};
+use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::{errors::KclError, executor::DefaultPlanes};
 
@@ -48,41 +53,38 @@ impl crate::engine::EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::WebSocketRequest,
+        cmd: WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
-            WebSocketRequest::ModelingCmdBatchReq {
+            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
                 ref requests,
                 batch_id: _,
                 responses: _,
-            } => {
+            }) => {
                 // Create the empty responses.
                 let mut responses = HashMap::new();
                 for request in requests {
                     responses.insert(
-                        request.cmd_id.to_string(),
-                        kittycad::types::BatchResponse {
-                            response: Some(kittycad::types::OkModelingCmdResponse::Empty {}),
-                            errors: None,
+                        request.cmd_id,
+                        BatchResponse::Success {
+                            response: OkModelingCmdResponse::Empty {},
                         },
                     );
                 }
-                Ok(WebSocketResponse {
+                Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                     request_id: Some(id),
-                    resp: Some(OkWebSocketResponseData::ModelingBatch { responses }),
-                    success: Some(true),
-                    errors: None,
-                })
+                    resp: OkWebSocketResponseData::ModelingBatch { responses },
+                    success: true,
+                }))
             }
-            _ => Ok(WebSocketResponse {
+            _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                 request_id: Some(id),
-                resp: Some(OkWebSocketResponseData::Modeling {
-                    modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
-                }),
-                success: Some(true),
-                errors: None,
-            }),
+                resp: OkWebSocketResponseData::Modeling {
+                    modeling_response: OkModelingCmdResponse::Empty {},
+                },
+                success: true,
+            })),
         }
     }
 }
