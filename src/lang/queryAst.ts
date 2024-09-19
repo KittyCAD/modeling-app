@@ -880,7 +880,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
       if (
         node.type === 'CallExpression' &&
         node.callee.type === 'Identifier' &&
-        node.callee.name === 'extrude' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
         node.arguments?.[1]?.type === 'Identifier' &&
         node.arguments[1].name === varDec.id.name
       ) {
@@ -892,7 +892,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
 }
 
 /** File must contain at least one sketch that has not been extruded already */
-export function hasExtrudableGeometry(ast: Program) {
+export function doesSceneHaveSweepableSketch(ast: Program) {
   const theMap: any = {}
   traverse(ast as any, {
     enter(node) {
@@ -925,7 +925,7 @@ export function hasExtrudableGeometry(ast: Program) {
         }
       } else if (
         node.type === 'CallExpression' &&
-        node.callee.name === 'extrude' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
         node.arguments[1]?.type === 'Identifier' &&
         theMap?.[node?.arguments?.[1]?.name]
       ) {

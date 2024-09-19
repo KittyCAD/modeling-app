@@ -38,7 +38,7 @@ import {
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
   Selections,
-  canExtrudeSelection,
+  canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeInbetweenCharacters,
@@ -62,8 +62,8 @@ import {
 } from 'lang/modifyAst'
 import { Program, parse, recast } from 'lang/wasm'
 import {
+  doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
-  hasExtrudableGeometry,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
@@ -415,20 +415,9 @@ export const ModelingMachineProvider = ({
             selection: { type: 'default_scene' },
           }
 
-          // Artificially delay the export in playwright tests
-          toast
-            .promise(
-              exportFromEngine({
-                format: format,
-              }),
-
-              {
-                loading: 'Starting print...',
-                success: 'Started print successfully',
-                error: 'Error while starting print',
-              }
-            )
-            .catch(reportRejection)
+          exportFromEngine({
+            format: format,
+          }).catch(reportRejection)
         },
         'Engine export': ({ event }) => {
           if (event.type !== 'Export') return
@@ -482,18 +471,9 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          toast
-            .promise(
-              exportFromEngine({
-                format: format as Models['OutputFormat_type'],
-              }),
-              {
-                loading: 'Exporting...',
-                success: 'Exported successfully',
-                error: 'Error while exporting',
-              }
-            )
-            .catch(reportRejection)
+          exportFromEngine({
+            format: format as Models['OutputFormat_type'],
+          }).catch(reportRejection)
         },
         'Submit to Text-to-CAD API': ({ event }) => {
           if (event.type !== 'Text-to-CAD') return
@@ -528,12 +508,32 @@ export const ModelingMachineProvider = ({
             // they have no selection, we should enable the button
             // so they can select the face through the cmdbar
             // BUT only if there's extrudable geometry
-            if (hasExtrudableGeometry(kclManager.ast)) return true
+            if (doesSceneHaveSweepableSketch(kclManager.ast)) return true
             return false
           }
           if (!isPipe) return false
 
-          return canExtrudeSelection(selectionRanges)
+          return canSweepSelection(selectionRanges)
+        },
+        'has valid revolve selection': ({ context: { selectionRanges } }) => {
+          // A user can begin extruding if they either have 1+ faces selected or nothing selected
+          // TODO: I believe this guard only allows for extruding a single face at a time
+          const isPipe = isSketchPipe(selectionRanges)
+
+          if (
+            selectionRanges.codeBasedSelections.length === 0 ||
+            isRangeInbetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+          ) {
+            // they have no selection, we should enable the button
+            // so they can select the face through the cmdbar
+            // BUT only if there's extrudable geometry
+            if (doesSceneHaveSweepableSketch(kclManager.ast)) return true
+            return false
+          }
+          if (!isPipe) return false
+
+          return canSweepSelection(selectionRanges)
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },
@@ -571,7 +571,9 @@ export const ModelingMachineProvider = ({
             else if (kclManager.ast.body.length === 0)
               errorMessage += 'due to Empty Scene'
             console.error(errorMessage)
-            toast.error(errorMessage)
+            toast.error(errorMessage, {
+              id: kclManager.engineCommandManager.pendingExport?.toastId,
+            })
             return false
           }
         },

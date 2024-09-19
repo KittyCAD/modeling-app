@@ -21,7 +21,7 @@ pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclV
     };
     inner_array_reduce(array, start, reduce_fn, exec_state, &args)
         .await
-        .map(|sg| KclValue::UserVal(UserVal::set(sg.meta.clone(), sg)))
+        .map(|sg| KclValue::UserVal(UserVal::new(sg.meta.clone(), sg)))
 }
 
 /// Take a starting value. Then, for each element of an array, calculate the next value,
