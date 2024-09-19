@@ -10,6 +10,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::{
     ok_response::OkModelingCmdResponse,
+    output as mout,
     websocket::{
         BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
         WebSocketResponse,
@@ -71,7 +72,7 @@ impl crate::engine::EngineManager for EngineConnection {
                     responses.insert(
                         request.cmd_id,
                         BatchResponse::Success {
-                            response: OkModelingCmdResponse::Empty {},
+                            response: OkModelingCmdResponse::StartPath(mout::StartPath {}),
                         },
                     );
                 }
@@ -84,7 +85,7 @@ impl crate::engine::EngineManager for EngineConnection {
             _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                 request_id: Some(id),
                 resp: OkWebSocketResponseData::Modeling {
-                    modeling_response: OkModelingCmdResponse::Empty {},
+                    modeling_response: OkModelingCmdResponse::StartPath(mout::StartPath {}),
                 },
                 success: true,
             })),

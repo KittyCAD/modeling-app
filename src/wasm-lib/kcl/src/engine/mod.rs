@@ -160,7 +160,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Return early if we have no commands to send.
         if all_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
-                modeling_response: OkModelingCmdResponse::Empty {},
+                modeling_response: OkModelingCmdResponse::StartPath(kcmc::output::StartPath {}),
             });
         }
 

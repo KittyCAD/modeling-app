@@ -1527,8 +1527,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.59"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee900033a5804ca2354f0760478e851a0ab04d32b38a9117d0bd4f87a8867110"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers/no-more-empty#36b6b4a196af32235f6059f615012e0f95d008fc"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1552,8 +1551,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0cdc505a33bfffb87c317435ec41ced8f73474217cf30db685e479bf289757e"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers/no-more-empty#36b6b4a196af32235f6059f615012e0f95d008fc"
 dependencies = [
  "proc-macro2",
  "quote",
