@@ -31,6 +31,7 @@ import { reportRejection } from 'lib/trap'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
+const ORTHOGRAPHIC_MAGIC_FOV = 4
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -84,7 +85,7 @@ export class CameraControls {
   pendingPan: Vector2 | null = null
   interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
   isFovAnimationInProgress = false
-  fovBeforeOrtho = 45
+  perspectiveFovBeforeOrtho = 45
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
@@ -398,7 +399,7 @@ export class CameraControls {
           const zoomFudgeFactor = 2280
           distance = zoomFudgeFactor / (this.camera.zoom * 45)
         }
-        const panSpeed = (distance / 1000 / 45) * this.fovBeforeOrtho
+        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
         this.pendingPan.x += -deltaMove.x * panSpeed
         this.pendingPan.y += deltaMove.y * panSpeed
       }
@@ -516,19 +517,15 @@ export class CameraControls {
   _usePerspectiveCamera = () => {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
-    const zoom = this.camera.zoom
     this.camera = this.createPerspectiveCamera()
 
     this.camera.position.set(px, py, pz)
     this.camera.quaternion.set(qx, qy, qz, qw)
-    const zoomFudgeFactor = 2280
-    const distance = zoomFudgeFactor / (zoom * this.lastPerspectiveFov)
     const direction = new Vector3().subVectors(
       this.camera.position,
       this.target
     )
     direction.normalize()
-    this.camera.position.copy(this.target).addScaledVector(direction, distance)
   }
   usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
@@ -980,9 +977,9 @@ export class CameraControls {
         )
       this.isFovAnimationInProgress = true
       let currentFov = this.lastPerspectiveFov
-      this.fovBeforeOrtho = currentFov
+      this.perspectiveFovBeforeOrtho = currentFov
 
-      const targetFov = 4
+      const targetFov = ORTHOGRAPHIC_MAGIC_FOV
       const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
       let frameWaitOnFinish = 10
 
@@ -1018,9 +1015,9 @@ export class CameraControls {
         )
       }
       this.isFovAnimationInProgress = true
-      const targetFov = this.fovBeforeOrtho // Target FOV for perspective
-      this.lastPerspectiveFov = 4
-      let currentFov = 4
+      const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
+      this.lastPerspectiveFov = ORTHOGRAPHIC_MAGIC_FOV
+      let currentFov = ORTHOGRAPHIC_MAGIC_FOV
       const initialCameraUp = this.camera.up.clone()
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.usePerspectiveCamera()
@@ -1056,9 +1053,8 @@ export class CameraControls {
       )
     }
     this.isFovAnimationInProgress = true
-    const targetFov = this.fovBeforeOrtho // Target FOV for perspective
-    this.lastPerspectiveFov = 4
-    let currentFov = 4
+    const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
+    let currentFov = ORTHOGRAPHIC_MAGIC_FOV
     const initialCameraUp = this.camera.up.clone()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.usePerspectiveCamera()

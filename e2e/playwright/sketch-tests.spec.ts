@@ -706,19 +706,19 @@ test.describe('Sketch tests', () => {
     await u.closeDebugPanel()
 
     await click00r(30, 0)
-    codeStr += `  |> startProfileAt([1.53, 0], %)`
+    codeStr += `  |> startProfileAt([2.03, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(30, 0)
-    codeStr += `  |> line([1.53, 0], %)`
+    codeStr += `  |> line([2.04, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 30)
-    codeStr += `  |> line([0, -1.53], %)`
+    codeStr += `  |> line([0, -2.03], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(-30, 0)
-    codeStr += `  |> line([-1.53, 0], %)`
+    codeStr += `  |> line([-2.04, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(undefined, undefined)
