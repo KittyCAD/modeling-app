@@ -1,6 +1,13 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
-import { MouseEventHandler, useCallback, useEffect, useMemo, MutableRefObject, forwardRef } from 'react'
+import {
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  MutableRefObject,
+  forwardRef,
+} from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
@@ -16,7 +23,7 @@ import { useKclContext } from 'lang/KclProvider'
 import { machineManager } from 'lib/machineManager'
 
 interface ModelingSidebarProps {
-  paneOpacity: '' | 'opacity-20' | 'opacity-40',
+  paneOpacity: '' | 'opacity-20' | 'opacity-40'
   ref: MutableRefObject<HTMLDivElement>
 }
 
@@ -29,7 +36,10 @@ function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
 }
 
-export const ModelingSidebar = forwardRef(function ModelingSidebar({ paneOpacity }: ModelingSidebarProps, ref) {
+export const ModelingSidebar = forwardRef(function ModelingSidebar(
+  { paneOpacity }: ModelingSidebarProps,
+  ref
+) {
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()

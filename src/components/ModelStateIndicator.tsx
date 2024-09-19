@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useEngineCommands } from './EngineCommands'
 import { CustomIcon } from './CustomIcon'
-import useEngineStreamContext, { EngineStreamState } from 'hooks/useEngineStreamContext'
+import useEngineStreamContext, {
+  EngineStreamState,
+} from 'hooks/useEngineStreamContext'
 
 export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
@@ -26,26 +28,13 @@ export const ModelStateIndicator = () => {
   let dataTestId = 'model-state-indicator'
 
   if (engineStreamState.value === EngineStreamState.Paused) {
-    className +=
-      'text-secondary'
-    icon = (
-      <CustomIcon
-        data-testid={dataTestId + '-paused'}
-        name="parallel"
-      />
-    )
+    className += 'text-secondary'
+    icon = <CustomIcon data-testid={dataTestId + '-paused'} name="parallel" />
   } else if (engineStreamState.value === EngineStreamState.Resuming) {
-    className +=
-      'text-secondary'
-    icon = (
-      <CustomIcon
-        data-testid={dataTestId + '-resuming'}
-        name="parallel"
-      />
-    )
+    className += 'text-secondary'
+    icon = <CustomIcon data-testid={dataTestId + '-resuming'} name="parallel" />
   } else if (isDone) {
-    className +=
-      'text-secondary'
+    className += 'text-secondary'
     icon = (
       <CustomIcon
         data-testid={dataTestId + '-execution-done'}
