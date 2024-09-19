@@ -22,6 +22,8 @@ import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
 
+import * as packageJSON from '../package.json'
+
 let mainWindow: BrowserWindow | null = null
 
 // Check the command line arguments for a project path
@@ -170,7 +172,8 @@ ipcMain.handle(
     })
 
     for (const source of sources) {
-      if (source.name === 'Zoo Modeling App') {
+      // electron-builder uses the value of productName in package.json for the title of the application
+      if (source.name === packageJSON.productName) {
         // @ts-ignore image/png is real.
         return source.thumbnail.toDataURL('image/png') // The image to display the screenshot
       }
