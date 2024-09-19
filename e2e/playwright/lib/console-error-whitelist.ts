@@ -257,25 +257,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
     },
-    // this wis failing in e2e/playwright/point-click.spec.ts "verify extruding circle works" but only on windows
-    // I (Kurt) booted windows and could not replicate, so I'm adding it to the whitelist
-    {
-      message: `Invalid position 454 in document of length 451`,
-      name: 'RangeError',
-      stack: `RangeError: Invalid position 454 in document of length 451
-    at _TextLeaf.lineAt (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=a963ee11:8:13)
-    at markersForDiagnostics (http://localhost:3000/node_modules/.vite/deps/@codemirror_lint.js?v=a963ee11:667:20)
-    at _StateField.update [as updateF] (http://localhost:3000/node_modules/.vite/deps/@codemirror_lint.js?v=a963ee11:692:19)
-    at Object.update (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=a963ee11:1673:26)
-    at _EditorState.computeSlot (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=a963ee11:2313:85)
-    at ensureAddr (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=a963ee11:1894:23)
-    at new _EditorState (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=a963ee11:2252:7)
-    at _EditorState.applyTransaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=a963ee11:2313:5)
-    at get state (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=a963ee11:2052:23)
-    at _EditorView.update (http://localhost:3000/node_modules/.vite/deps/chunk-PBK6CWSG.js?v=a963ee11:7050:18)`,
-      project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/point-click.spec.ts',
-    },
   ]
 
   const cleanString = (str: string) => str.replace(/[`"]/g, '')

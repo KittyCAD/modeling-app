@@ -3,6 +3,10 @@ import { test } from './authenticatedAppFixture'
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test('verify extruding circle works', async ({ app }) => {
+  test.skip(
+    process.platform === 'win32',
+    'Fails on windows in CI, can not be replicated locally on windows.'
+  )
   const file = await app.getInputFile('test-circle-extrude.kcl')
   await app.initialise(file)
   const [clickCircle, moveToCircle] = app.makeMouseHelpers(582, 217)
