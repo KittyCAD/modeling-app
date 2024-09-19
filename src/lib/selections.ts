@@ -438,10 +438,14 @@ export function canFilletSelection(selection: Selections) {
 }
 
 function canExtrudeSelectionItem(selection: Selections, i: number) {
+  const isolatedSelection = {
+    ...selection,
+    codeBasedSelections: [selection.codeBasedSelections[i]],
+  }
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
   return (
-    !!isSketchPipe(selection) &&
+    !!isSketchPipe(isolatedSelection) &&
     nodeHasClose(commonNode) &&
     !nodeHasExtrude(commonNode)
   )
@@ -460,25 +464,17 @@ export type ResolvedSelectionType = [Selection['type'] | 'other', number]
 export function getSelectionType(
   selection: Selections
 ): ResolvedSelectionType[] {
-  return selection.codeBasedSelections
-    .map((s, i) => {
-      if (canExtrudeSelectionItem(selection, i)) {
-        return ['extrude-wall', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
-      } else {
-        return ['other', 1] as ResolvedSelectionType
-      }
-    })
-    .reduce((acc, [type, count]) => {
-      const foundIndex = acc.findIndex((item) => item && item[0] === type)
+  const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
+    const singleSelection = {
+      ...selection,
+      codeBasedSelections: [selection.codeBasedSelections[i]],
+    }
+    return canExtrudeSelectionItem(singleSelection, 0)
+  }).length
 
-      if (foundIndex === -1) {
-        return [...acc, [type, count]]
-      } else {
-        const temp = [...acc]
-        temp[foundIndex][1] += count
-        return temp
-      }
-    }, [] as ResolvedSelectionType[])
+  return extrudableCount === selection.codeBasedSelections.length
+    ? [['extrude-wall', extrudableCount]]
+    : [['other', selection.codeBasedSelections.length]]
 }
 
 export function getSelectionTypeDisplayText(
