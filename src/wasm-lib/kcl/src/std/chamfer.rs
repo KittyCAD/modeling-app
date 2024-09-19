@@ -128,7 +128,6 @@ async fn inner_chamfer(
     }
 
     let mut extrude_group = extrude_group.clone();
-    let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
@@ -152,7 +151,7 @@ async fn inner_chamfer(
         )
         .await?;
 
-        edge_cuts.push(EdgeCut::Chamfer {
+        extrude_group.edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
             length: data.length,
@@ -170,8 +169,6 @@ async fn inner_chamfer(
             }));
         }
     }
-
-    extrude_group.edge_cuts = edge_cuts;
 
     Ok(extrude_group)
 }

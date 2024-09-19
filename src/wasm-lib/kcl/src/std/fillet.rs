@@ -133,7 +133,6 @@ async fn inner_fillet(
     }
 
     let mut extrude_group = extrude_group.clone();
-    let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
@@ -157,7 +156,7 @@ async fn inner_fillet(
         )
         .await?;
 
-        edge_cuts.push(EdgeCut::Fillet {
+        extrude_group.edge_cuts.push(EdgeCut::Fillet {
             id,
             edge_id,
             radius: data.radius,
@@ -175,8 +174,6 @@ async fn inner_fillet(
             }));
         }
     }
-
-    extrude_group.edge_cuts = edge_cuts;
 
     Ok(extrude_group)
 }
