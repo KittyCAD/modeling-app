@@ -4,7 +4,13 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::{Angle, ModelingCmd, Point3D};
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
+use kcmc::ModelingCmd;
+use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -124,17 +130,13 @@ async fn inner_line_to(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Line {
-                end: Point3D {
-                    x: to[0],
-                    y: to[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Line {
+                end: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
                 relative: false,
             },
-        },
+        }),
     )
     .await?;
 
@@ -297,17 +299,13 @@ async fn inner_line(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Line {
-                end: Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Line {
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative: true,
             },
-        },
+        }),
     )
     .await?;
 
@@ -484,17 +482,13 @@ async fn inner_angled_line(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Line {
-                end: Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Line {
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
-        },
+        }),
     )
     .await?;
 
@@ -1192,14 +1186,14 @@ async fn start_sketch_on_plane(data: PlaneData, args: &Args) -> Result<Box<Plane
             let id = uuid::Uuid::new_v4();
             args.batch_modeling_cmd(
                 id,
-                ModelingCmd::MakePlane {
+                ModelingCmd::from(mcmd::MakePlane {
                     clobber: false,
                     origin: (*origin).into(),
-                    size: 60.0,
+                    size: LengthUnit(60.0),
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
                     hide: Some(true),
-                },
+                }),
             )
             .await?;
 
@@ -1275,7 +1269,7 @@ pub(crate) async fn inner_start_profile_at(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::EnableSketchMode {
+        ModelingCmd::from(mcmd::EnableSketchMode {
             animated: false,
             ortho: false,
             entity_id: sketch_surface.id(),
@@ -1286,24 +1280,21 @@ pub(crate) async fn inner_start_profile_at(
             } else {
                 None
             },
-        },
+        }),
     )
     .await?;
 
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
-    args.batch_modeling_cmd(path_id, ModelingCmd::StartPath {}).await?;
+    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
+        .await?;
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::MovePathPen {
-            path: path_id,
-            to: Point3D {
-                x: to[0],
-                y: to[1],
-                z: 0.0,
-            },
-        },
+        ModelingCmd::from(mcmd::MovePathPen {
+            path: path_id.into(),
+            to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
+        }),
     )
     .await?;
 
@@ -1466,17 +1457,20 @@ pub(crate) async fn inner_close(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ClosePath {
+        ModelingCmd::from(mcmd::ClosePath {
             path_id: sketch_group.id,
-        },
+        }),
     )
     .await?;
 
     // If we are sketching on a plane we can close the sketch group now.
     if let SketchSurface::Plane(_) = sketch_group.on {
         // We were on a plane, disable the sketch mode.
-        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
-            .await?;
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+        )
+        .await?;
     }
 
     let current_path = Path::ToPoint {
@@ -1600,16 +1594,16 @@ pub(crate) async fn inner_arc(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Arc {
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: center.into(),
-                radius,
+                center: KPoint2d::from(center).map(LengthUnit),
+                radius: LengthUnit(radius),
                 relative: false,
             },
-        },
+        }),
     )
     .await?;
 
@@ -1715,7 +1709,7 @@ async fn inner_tangential_arc(
             ));
             // make sure the arc center is on the correct side to guarantee deterministic behavior
             // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
-            let ccw = offset.degrees() > 0.0;
+            let ccw = offset.to_degrees() > 0.0;
             let tangent_to_arc_start_angle = if ccw {
                 // CCW turn
                 Angle::from_degrees(-90.0)
@@ -1731,10 +1725,13 @@ async fn inner_tangential_arc(
 
             args.batch_modeling_cmd(
                 id,
-                ModelingCmd::ExtendPath {
-                    path: sketch_group.id,
-                    segment: kittycad::types::PathSegment::TangentialArc { radius, offset },
-                },
+                ModelingCmd::from(mcmd::ExtendPath {
+                    path: sketch_group.id.into(),
+                    segment: PathSegment::TangentialArc {
+                        radius: LengthUnit(radius),
+                        offset,
+                    },
+                }),
             )
             .await?;
             (center, to.into(), ccw)
@@ -1766,17 +1763,13 @@ async fn inner_tangential_arc(
 }
 
 fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
-    ModelingCmd::ExtendPath {
-        path: sketch_group.id,
-        segment: kittycad::types::PathSegment::TangentialArcTo {
+    ModelingCmd::from(mcmd::ExtendPath {
+        path: sketch_group.id.into(),
+        segment: PathSegment::TangentialArcTo {
             angle_snap_increment: None,
-            to: Point3D {
-                x: to[0],
-                y: to[1],
-                z: 0.0,
-            },
+            to: KPoint2d::from(*to).with_z(0.0).map(LengthUnit),
         },
-    }
+    })
 }
 
 /// Draw a tangential arc to a specific point.
@@ -1936,7 +1929,7 @@ async fn inner_tangential_arc_to_relative(
                 metadata: args.source_range.into(),
             },
         },
-        center: dbg!(result.center),
+        center: result.center,
         ccw: result.ccw > 0,
     };
 
@@ -2009,27 +2002,15 @@ async fn inner_bezier_curve(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Bezier {
-                control_1: Point3D {
-                    x: data.control1[0],
-                    y: data.control1[1],
-                    z: 0.0,
-                },
-                control_2: Point3D {
-                    x: data.control2[0],
-                    y: data.control2[1],
-                    z: 0.0,
-                },
-                end: Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Bezier {
+                control1: KPoint2d::from(data.control1).with_z(0.0).map(LengthUnit),
+                control2: KPoint2d::from(data.control2).with_z(0.0).map(LengthUnit),
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
-        },
+        }),
     )
     .await?;
 
@@ -2106,10 +2087,10 @@ async fn inner_hole(
     for hole_sketch_group in hole_sketch_groups {
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid2DAddHole {
+            ModelingCmd::from(mcmd::Solid2dAddHole {
                 object_id: sketch_group.id,
                 hole_id: hole_sketch_group.id,
-            },
+            }),
         )
         .await?;
 
@@ -2117,10 +2098,10 @@ async fn inner_hole(
         // we also hide the source hole since its essentially "consumed" by this operation
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::ObjectVisible {
+            ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: hole_sketch_group.id,
                 hidden: true,
-            },
+            }),
         )
         .await?;
     }

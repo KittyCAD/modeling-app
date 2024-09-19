@@ -28,6 +28,7 @@ gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true }
+kittycad-modeling-cmds = { workspace = true }
 lazy_static = "1.5.0"
 measurements = "0.11.0"
 mime_guess = "2.0.5"
