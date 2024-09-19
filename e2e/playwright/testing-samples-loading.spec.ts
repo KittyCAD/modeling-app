@@ -14,6 +14,10 @@ test.afterEach(async ({ page }, testInfo) => {
 })
 
 test.describe('Testing in-app sample loading', () => {
+  /**
+   * Note this test implicitly depends on the KCL sample "flange-with-patterns.kcl"
+   * and its title. https://github.com/KittyCAD/kcl-samples/blob/main/flange-with-patterns/flange-with-patterns.kcl
+   */
   test('Web: should overwrite current code, cannot create new file', async ({
     page,
   }) => {
@@ -28,12 +32,15 @@ test.describe('Testing in-app sample loading', () => {
     })
 
     // Locators and constants
-    const newSampleName = 'flange-with-patterns'
-    const newSampleCode = '// Flange'
+    const newSample = {
+      file: 'flange-with-patterns' + FILE_EXT,
+      title: 'Flange',
+    }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const commandOption = page.getByRole('option', { name: 'Open Sample' })
     const commandSampleOption = page.getByRole('option', {
-      name: newSampleName,
+      name: newSample.title,
+      exact: true,
     })
     const commandMethodArgButton = page.getByRole('button', {
       name: 'Method',
@@ -61,10 +68,15 @@ test.describe('Testing in-app sample loading', () => {
       await expect(warningText).toBeVisible()
       await confirmButton.click()
 
-      await expect(codeLocator).toContainText(newSampleCode)
+      await expect(codeLocator).toContainText('// ' + newSample.title)
     })
   })
 
+  /**
+   * Note this test implicitly depends on the KCL samples:
+   * "flange-with-patterns.kcl": https://github.com/KittyCAD/kcl-samples/blob/main/flange-with-patterns/flange-with-patterns.kcl
+   * "gear-rack.kcl": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/gear-rack.kcl
+   */
   test(
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
@@ -82,16 +94,21 @@ test.describe('Testing in-app sample loading', () => {
       const u = await getUtils(page)
 
       // Locators and constants
-      const sampleOneName = 'flange-with-patterns'
-      const sampleOneCode = '// Flange'
-      const sampleTwoName = 'gear-rack'
-      const sampleTwoCode = '// 100mm Gear Rack'
+      const sampleOne = {
+        file: 'flange-with-patterns' + FILE_EXT,
+        title: 'Flange',
+      }
+      const sampleTwo = {
+        file: 'gear-rack' + FILE_EXT,
+        title: '100mm Gear Rack',
+      }
       const projectCard = page.getByRole('link', { name: 'bracket' })
       const commandBarButton = page.getByRole('button', { name: 'Commands' })
       const commandOption = page.getByRole('option', { name: 'Open Sample' })
       const commandSampleOption = (name: string) =>
         page.getByRole('option', {
           name,
+          exact: true,
         })
       const commandMethodArgButton = page.getByRole('button', {
         name: 'Method',
@@ -107,7 +124,7 @@ test.describe('Testing in-app sample loading', () => {
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const newFile = (name: string) =>
         page.getByRole('listitem').filter({
-          has: page.getByRole('button', { name: name + FILE_EXT }),
+          has: page.getByRole('button', { name }),
         })
       const codeLocator = page.locator('.cm-content')
 
@@ -123,28 +140,28 @@ test.describe('Testing in-app sample loading', () => {
         await u.openFilePanel()
 
         await expect(projectMenuButton).toContainText('main.kcl')
-        await expect(newFile(sampleOneName)).not.toBeVisible()
+        await expect(newFile(sampleOne.file)).not.toBeVisible()
       })
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
         await commandBarButton.click()
         await commandOption.click()
-        await commandSampleOption(sampleOneName).click()
+        await commandSampleOption(sampleOne.title).click()
         await expect(overwriteWarning).not.toBeVisible()
         await expect(newFileWarning).toBeVisible()
         await confirmButton.click()
       })
 
       await test.step(`Ensure we made and opened a new file`, async () => {
-        await expect(codeLocator).toContainText(sampleOneCode)
-        await expect(newFile(sampleOneName)).toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOneName + FILE_EXT)
+        await expect(codeLocator).toContainText('// ' + sampleOne.title)
+        await expect(newFile(sampleOne.file)).toBeVisible()
+        await expect(projectMenuButton).toContainText(sampleOne.file)
       })
 
       await test.step(`Now overwrite the current file`, async () => {
         await commandBarButton.click()
         await commandOption.click()
-        await commandSampleOption(sampleTwoName).click()
+        await commandSampleOption(sampleTwo.title).click()
         await commandMethodArgButton.click()
         await commandMethodOption.click()
         await expect(commandMethodArgButton).toContainText('overwrite')
@@ -154,10 +171,10 @@ test.describe('Testing in-app sample loading', () => {
       })
 
       await test.step(`Ensure we overwrote the current file without navigating`, async () => {
-        await expect(codeLocator).toContainText(sampleTwoCode)
-        await expect(newFile(sampleOneName)).toBeVisible()
-        await expect(newFile(sampleTwoName)).not.toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOneName + FILE_EXT)
+        await expect(codeLocator).toContainText('// ' + sampleTwo.title)
+        await expect(newFile(sampleOne.file)).toBeVisible()
+        await expect(newFile(sampleTwo.file)).not.toBeVisible()
+        await expect(projectMenuButton).toContainText(sampleOne.file)
       })
 
       await electronApp.close()
