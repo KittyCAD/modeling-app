@@ -24,6 +24,10 @@ import { getProjectInfo } from 'lib/desktop'
 import { getNextDirName, getNextFileName } from 'lib/desktopFS'
 import { kclCommands } from 'lib/kclCommands'
 import { codeManager, kclManager } from 'lib/singletons'
+import {
+  getKclSamplesManifest,
+  KclSamplesManifestItem,
+} from 'lib/getKclSamplesManifest'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -43,6 +47,16 @@ export const FileMachineProvider = ({
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
   const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
+    []
+  )
+
+  useEffect(() => {
+    async function fetchKclSamples() {
+      setKclSamples(await getKclSamplesManifest())
+    }
+    fetchKclSamples().catch(reportError)
+  }, [])
 
   const [state, send] = useMachine(
     fileMachine.provide({
@@ -276,23 +290,31 @@ export const FileMachineProvider = ({
 
   const kclCommandMemo = useMemo(
     () =>
-      kclCommands(async (data) => {
-        if (data.method === 'overwrite') {
-          codeManager.updateCodeStateEditor(data.code)
-          await kclManager.executeCode(true)
-          await codeManager.writeToFile()
-        } else if (data.method === 'newFile' && isDesktop()) {
-          send({
-            type: 'Create file',
-            data: {
-              name: data.sampleName,
-              content: data.code,
-              makeDir: false,
-            },
-          })
-        }
-      }),
-    [codeManager, kclManager, send]
+      kclCommands(
+        async (data) => {
+          if (data.method === 'overwrite') {
+            codeManager.updateCodeStateEditor(data.code)
+            await kclManager.executeCode(true)
+            await codeManager.writeToFile()
+          } else if (data.method === 'newFile' && isDesktop()) {
+            send({
+              type: 'Create file',
+              data: {
+                name: data.sampleName,
+                content: data.code,
+                makeDir: false,
+              },
+            })
+          }
+        },
+        kclSamples.map((sample) => ({
+          value: sample.file,
+          name: sample.title,
+        }))
+      ).filter(
+        (command) => kclSamples.length || command.name !== 'open-kcl-example'
+      ),
+    [codeManager, kclManager, send, kclSamples]
   )
 
   useEffect(() => {

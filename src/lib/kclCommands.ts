@@ -1,8 +1,8 @@
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
-import { Command } from './commandTypes'
+import { Command, CommandArgumentOption } from './commandTypes'
 import { kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
-import kclSampleNames from 'lib/kclSamplesArray.json'
+import { FILE_EXT } from './constants'
 
 interface OnSubmitProps {
   sampleName: string
@@ -11,7 +11,8 @@ interface OnSubmitProps {
 }
 
 export function kclCommands(
-  onSubmit: (p: OnSubmitProps) => Promise<void>
+  onSubmit: (p: OnSubmitProps) => Promise<void>,
+  providedOptions: CommandArgumentOption<string>[]
 ): Command[] {
   return [
     {
@@ -40,7 +41,10 @@ export function kclCommands(
         if (!data?.sample) {
           return
         }
-        const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${data.sample}/${data.sample}.kcl`
+        const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${data.sample.replace(
+          FILE_EXT,
+          ''
+        )}/${data.sample}`
         fetch(sampleCodeUrl)
           .then(async (response) => {
             if (!response.ok) {
@@ -99,12 +103,7 @@ export function kclCommands(
             }
             return value
           },
-          options() {
-            return kclSampleNames.map((sampleName) => ({
-              value: sampleName,
-              name: sampleName,
-            }))
-          },
+          options: providedOptions,
         },
       },
     },
