@@ -162,7 +162,10 @@ impl CoreDumpInfo {
             r#"[Add a title above and insert a description of the issue here]
 
 ![Screenshot]({screenshot_url})
-<!-- Limited support for browser screenshots. Only captures modeling scene. -->
+<!--
+  If you are capturing from a browser there is limited support for screenshots, only captures the modeling scene.
+  If you are on MacOS native screenshots may be disabled by default. To enable native screenshots add Zoo Modeling App to System Settings -> Screen & SystemAudio Recording for native screenshots.
+-->
 
 <details>
 <summary><b>Core Dump</b></summary>
