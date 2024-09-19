@@ -7,6 +7,11 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
+import { createUpdaterModal, UpdaterModal } from 'components/UpdaterModal'
+import {
+  createUpdaterRestartModal,
+  UpdaterRestartModal,
+} from 'components/UpdaterRestartModal'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -58,12 +63,12 @@ isDesktop() &&
   window.electron.onUpdateAvailable((version: string) => {
     const message = `A new update (${version}) is available and will be downloaded in the background.`
     console.log(message)
-    toast.success(message)
+    toast.success(message, { duration: 3000 })
   })
 
 isDesktop() &&
   window.electron.onUpdateDownloaded((version: string) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
-    toast.success(message)
+    toast.success(message, { duration: 3000 })
   })

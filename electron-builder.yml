@@ -9,13 +9,13 @@ mac:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - target: dmg
-      # arch:
-      #   - x64
-      #   - arm64
+      arch:
+        - x64
+        - arm64
     - target: zip
-      # arch:
-      #   - x64
-      #   - arm64
+      arch:
+        - x64
+        - arm64
   notarize:
     teamId: 92H8YB3B95
   fileAssociations:
@@ -71,5 +71,5 @@ linux:
       role: Editor
 publish:
   - provider: generic
-    url: https://dl.zoo.dev/releases/modeling-app/updater-test
+    url: https://dl.zoo.dev/releases/modeling-app
     channel: latest
