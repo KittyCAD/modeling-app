@@ -2,11 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::ok_response::OkModelingCmdResponse;
-use kcmc::websocket::OkWebSocketResponseData;
-use kcmc::{shared::CutType, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::CutType,
+    websocket::OkWebSocketResponseData, ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -150,7 +149,10 @@ async fn inner_fillet(
                 radius: LengthUnit(data.radius),
                 tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
                 cut_type: CutType::Fillet,
-                face_id: None,
+                // We pass in the command id as the face id.
+                // So the resulting face of the fillet will be the same.
+                // This is because that's how most other endpoints work.
+                face_id: Some(id),
             }),
         )
         .await?;
@@ -164,7 +166,7 @@ async fn inner_fillet(
 
         if let Some(ref tag) = tag {
             extrude_group.value.push(ExtrudeSurface::Fillet(FilletSurface {
-                face_id: edge_id,
+                face_id: id,
                 tag: Some(tag.clone()),
                 geo_meta: GeoMeta {
                     id,
