@@ -41,7 +41,7 @@ import {
   canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
-  isRangeInbetweenCharacters as isRangeBetweenCharacters,
+  isRangeBetweenCharacters,
   isSketchPipe,
   updateSelections,
 } from 'lib/selections'

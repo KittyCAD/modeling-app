@@ -374,7 +374,7 @@ export function isSelectionLastLine(
   return selectionRanges.codeBasedSelections[i].range[1] === code.length
 }
 
-export function isRangeInbetweenCharacters(selectionRanges: Selections) {
+export function isRangeBetweenCharacters(selectionRanges: Selections) {
   return (
     selectionRanges.codeBasedSelections.length === 1 &&
     selectionRanges.codeBasedSelections[0].range[0] === 0 &&
