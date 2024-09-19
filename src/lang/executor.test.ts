@@ -410,6 +410,11 @@ describe('testing math operators', () => {
     const mem = await exe(code)
     expect(mem.get('myVar')?.value).toBe(5)
   })
+  it('it can do power of math', async () => {
+    const code = 'const myNeg2 = 4 ^ 2 - 3 ^ 2 * 2'
+    const mem = await exe(code)
+    expect(mem.get('myNeg2')?.value).toBe(-2)
+  })
 })
 
 describe('Testing Errors', () => {

@@ -3467,6 +3467,12 @@ const sketch001 = startSketchOn('XY')
   |> startProfileAt(%)
 "#
     );
+    snapshot_test!(
+        bb,
+        r#"
+const my14 = 4 ^ 2 - 3 ^ 2 * 2
+"#
+    );
 }
 
 #[allow(unused)]
