@@ -537,6 +537,61 @@ const sketch001 = startSketchAt([-0, -0])
       await electronApp.close()
     }
   )
+
+  test(`View gizmo stays visible even when zoomed out all the way`, async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Constants and locators
+    const planeColor: [number, number, number] = [179, 220, 180]
+    const bgColor: [number, number, number] = [27, 27, 27]
+    const middlePixelIsColor = async (color: [number, number, number]) => {
+      return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
+    }
+    const gizmo = page.locator('[aria-label*=gizmo]')
+
+    await test.step(`Load an empty file`, async () => {
+      await page.addInitScript(async () => {
+        localStorage.setItem('persistCode', '')
+      })
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await u.closeKclCodePanel()
+    })
+
+    await test.step(`Zoom out until you can't see the default planes`, async () => {
+      await expect
+        .poll(async () => middlePixelIsColor(planeColor), {
+          timeout: 5000,
+          message: 'Plane color is visible',
+        })
+        .toBeLessThan(10)
+
+      let maxZoomOuts = 10
+      let middlePixelIsBackgroundColor =
+        (await middlePixelIsColor(bgColor)) < 10
+      while (!middlePixelIsBackgroundColor && maxZoomOuts > 0) {
+        await page.keyboard.down('Control')
+        await page.mouse.move(600, 460)
+        await page.mouse.down({ button: 'right' })
+        await page.mouse.move(600, 50, { steps: 20 })
+        await page.mouse.up({ button: 'right' })
+        await page.keyboard.up('Control')
+        await page.waitForTimeout(100)
+        maxZoomOuts--
+        middlePixelIsBackgroundColor = (await middlePixelIsColor(bgColor)) < 10
+      }
+
+      expect(middlePixelIsBackgroundColor, {
+        message: 'We no longer the default planes',
+      }).toBeTruthy()
+    })
+
+    await test.step(`Check that the gizmo is still visible`, async () => {
+      await expect(gizmo).toBeVisible()
+    })
+  })
 })
 
 async function clickExportButton(page: Page) {
