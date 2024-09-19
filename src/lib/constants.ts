@@ -101,4 +101,4 @@ export const KCL_SAMPLES_MANIFEST_URLS = {
   remote:
     'https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifst.json',
   localFallback: '/kcl-samples-manifest-fallback.json',
-}
+} as const
