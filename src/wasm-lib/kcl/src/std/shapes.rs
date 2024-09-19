@@ -2,7 +2,13 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::{Angle, ModelingCmd};
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
+use kcmc::ModelingCmd;
+use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::shared::PathSegment;
+use kcmc::shared::Point2d as KPoint2d;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -101,16 +107,17 @@ async fn inner_circle(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Arc {
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: data.center.into(),
-                radius: data.radius,
+                center: KPoint2d::from(data.center).map(LengthUnit),
+                // center: data.center.into(),
+                radius: data.radius.into(),
                 relative: false,
             },
-        },
+        }),
     )
     .await?;
 
@@ -126,7 +133,7 @@ async fn inner_circle(
         },
         radius: data.radius,
         center: data.center,
-        ccw: angle_start.degrees() < angle_end.degrees(),
+        ccw: angle_start.to_degrees() < angle_end.to_degrees(),
     };
 
     let mut new_sketch_group = sketch_group.clone();
@@ -138,9 +145,9 @@ async fn inner_circle(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ClosePath {
+        ModelingCmd::from(mcmd::ClosePath {
             path_id: new_sketch_group.id,
-        },
+        }),
     )
     .await?;
 
