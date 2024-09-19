@@ -152,9 +152,16 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: out-${{ matrix.os }}
+          name: out-arm64-${{ matrix.os }}
           path: |
-            out/Zoo*.*
+            out/Zoo*arm64*.*
+            out/latest*.yml
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: out-x64-${{ matrix.os }}
+          path: |
+            out/Zoo*x64*.*
             out/latest*.yml
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
@@ -176,10 +183,16 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
-          name: updater-test-${{ matrix.os }}
+          name: updater-test-arm64-${{ matrix.os }}
           path: |
-            out/Zoo*.*
-            out/latest*.yml
+            out/Zoo*arm64*.*
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        with:
+          name: updater-test-x64-${{ matrix.os }}
+          path: |
+            out/Zoo*x64*.*
 
 
   publish-apps-release:
@@ -201,17 +214,32 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: out-windows-2022
+          name: out-arm64-windows-2022
           path: out
 
       - uses: actions/download-artifact@v3
         with:
-          name: out-macos-14
+          name: out-x64-windows-2022
           path: out
 
       - uses: actions/download-artifact@v3
         with:
-          name: out-ubuntu-22.04
+          name: out-arm64-macos-14
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-x64-macos-14
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-arm64-ubuntu-22.04
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-x64-ubuntu-22.04
           path: out
 
       - name: Generate the download static endpoint
