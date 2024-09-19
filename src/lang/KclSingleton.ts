@@ -480,12 +480,18 @@ export class KclManager {
    * Workflows this improves,
    *  When someone comments the entire file then uncomments the entire file it zooms to the model
    *  When someone CRTL+A and deletes the code then adds the code back it zooms to the model
+   *  When someone CRTL+A and copies new code into the editor it zooms to the model
    */
   tryToZoomToFitOnCodeUpdate(ast: Program, zoomToFit: boolean | undefined) {
     const isAstEmpty = this._isAstEmpty(this._ast)
     const isRequestedAstEmpty = this._isAstEmpty(ast)
 
-    if (isAstEmpty && !isRequestedAstEmpty) {
+    // If the AST went from empty to not empty or
+    // If the user has all of the content selected and they copy new code in
+    if (
+      (isAstEmpty && !isRequestedAstEmpty) ||
+      editorManager.isAllTextSelected
+    ) {
       return true
     }
 
