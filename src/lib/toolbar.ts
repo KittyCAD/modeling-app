@@ -393,6 +393,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             !canRectangleOrCircleTool(state.context) &&
             !state.matches({ Sketch: 'Circle tool' }),
           isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
           description: 'Start drawing a circle from its center',
           links: [
