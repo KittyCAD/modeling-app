@@ -1,7 +1,9 @@
 use std::any::type_name;
 
 use anyhow::Result;
-use kittycad::types::OkWebSocketResponseData;
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::ModelingCmd;
+use kittycad_modeling_cmds as kcmc;
 use serde::de::DeserializeOwned;
 
 use crate::{
@@ -51,7 +53,7 @@ impl Args {
     pub(crate) async fn batch_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
+        cmd: ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
     }
@@ -59,11 +61,7 @@ impl Args {
     // Add a modeling command to the batch that gets executed at the end of the file.
     // This is good for something like fillet or chamfer where the engine would
     // eat the path id if we executed it right away.
-    pub(crate) async fn batch_end_cmd(
-        &self,
-        id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
+    pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
     }
 
@@ -71,7 +69,7 @@ impl Args {
     pub(crate) async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
+        cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
