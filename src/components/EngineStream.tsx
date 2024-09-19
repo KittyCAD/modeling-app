@@ -9,13 +9,14 @@ import { btnName } from 'lib/cameraControls'
 import { trap } from 'lib/trap'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager } from 'lib/singletons'
-import {
-  EngineCommandManagerEvents,
-} from 'lang/std/engineConnection'
+import { EngineCommandManagerEvents } from 'lang/std/engineConnection'
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
-import useEngineStreamContext, { EngineStreamState, EngineStreamTransition } from 'hooks/useEngineStreamContext'
+import useEngineStreamContext, {
+  EngineStreamState,
+  EngineStreamTransition,
+} from 'hooks/useEngineStreamContext'
 
 export const EngineStream = () => {
   const { setAppState } = useAppState()
@@ -46,7 +47,7 @@ export const EngineStream = () => {
   // so those exception people don't see.
   const REASONABLE_TIME_TO_REFRESH_STREAM_SIZE = 100
 
-  const configure =  () => {
+  const configure = () => {
     engineStreamActor.send({
       type: EngineStreamTransition.StartOrReconfigureEngine,
       modelingMachineActorSend,
@@ -57,9 +58,9 @@ export const EngineStream = () => {
       onMediaStream(mediaStream: MediaStream) {
         engineStreamActor.send({
           type: EngineStreamTransition.SetMediaStream,
-          mediaStream
+          mediaStream,
         })
-      }
+      },
     })
   }
 
@@ -91,11 +92,13 @@ export const EngineStream = () => {
       const canvas = engineStreamState.context.canvasRef?.current
       if (!canvas) return
 
-      if (Math.abs(video.width - window.innerWidth) > 4 || Math.abs(video.height - window.innerHeight) > 4) {
+      if (
+        Math.abs(video.width - window.innerWidth) > 4 ||
+        Math.abs(video.height - window.innerHeight) > 4
+      ) {
         timeoutStart.current = Date.now()
         configure()
       }
-
     }, REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
 
     return () => {
@@ -105,7 +108,10 @@ export const EngineStream = () => {
 
   // When the video and canvas element references are set, start the engine.
   useEffect(() => {
-    if (engineStreamState.context.canvasRef.current && engineStreamState.context.videoRef.current) {
+    if (
+      engineStreamState.context.canvasRef.current &&
+      engineStreamState.context.videoRef.current
+    ) {
       engineStreamActor.send({
         type: EngineStreamTransition.StartOrReconfigureEngine,
         modelingMachineActorSend,
@@ -114,24 +120,30 @@ export const EngineStream = () => {
         onMediaStream(mediaStream: MediaStream) {
           engineStreamActor.send({
             type: EngineStreamTransition.SetMediaStream,
-            mediaStream
+            mediaStream,
           })
-        }
+        },
       })
     }
-  }, [engineStreamState.context.canvasRef.current, engineStreamState.context.videoRef.current])
+  }, [
+    engineStreamState.context.canvasRef.current,
+    engineStreamState.context.videoRef.current,
+  ])
 
   // On settings change, reconfigure the engine. When paused this gets really tricky,
   // and also requires onMediaStream to be set!
   useEffect(() => {
     engineStreamActor.send({
-      type: EngineStreamTransition.StartOrReconfigureEngine, modelingMachineActorSend, settings: settingsEngine, setAppState,
-        onMediaStream(mediaStream: MediaStream) {
-          engineStreamActor.send({
-            type: EngineStreamTransition.SetMediaStream,
-            mediaStream
-          })
-        }
+      type: EngineStreamTransition.StartOrReconfigureEngine,
+      modelingMachineActorSend,
+      settings: settingsEngine,
+      setAppState,
+      onMediaStream(mediaStream: MediaStream) {
+        engineStreamActor.send({
+          type: EngineStreamTransition.SetMediaStream,
+          mediaStream,
+        })
+      },
     })
   }, [settings.context])
 
@@ -147,7 +159,7 @@ export const EngineStream = () => {
     }
   }, [file?.path, engineCommandManager.engineConnection])
 
-  const IDLE_TIME_MS = 1000 * 6
+  const IDLE_TIME_MS = Number(streamIdleMode) * 1000 * 60
 
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
@@ -181,10 +193,10 @@ export const EngineStream = () => {
   }, [modelingMachineState])
 
   useEffect(() => {
-    if (!streamIdleMode) return 
+    if (!streamIdleMode) return
 
     const onAnyInput = () => {
-      // Just in case it happens in the middle of the user turning off 
+      // Just in case it happens in the middle of the user turning off
       // idle mode.
       if (!streamIdleMode) {
         timeoutStart.current = null
@@ -200,9 +212,9 @@ export const EngineStream = () => {
           onMediaStream(mediaStream: MediaStream) {
             engineStreamActor.send({
               type: EngineStreamTransition.SetMediaStream,
-              mediaStream
+              mediaStream,
             })
-          }
+          },
         })
       }
 
@@ -236,7 +248,7 @@ export const EngineStream = () => {
     }
   }, [streamIdleMode, engineStreamState.value])
 
-   const isNetworkOkay =
+  const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
 
@@ -273,12 +285,15 @@ export const EngineStream = () => {
       />
       <canvas
         key={engineStreamActor.id + 'canvas'}
-      ref={engineStreamState.context.canvasRef} className="cursor-pointer" id="freeze-frame">No canvas support</canvas>
+        ref={engineStreamState.context.canvasRef}
+        className="cursor-pointer"
+        id="freeze-frame"
+      >
+        No canvas support
+      </canvas>
       <ClientSideScene
         cameraControls={settings.context.modeling.mouseControls.current}
       />
     </div>
-)
+  )
 }
-
-

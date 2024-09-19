@@ -22,11 +22,11 @@ export enum EngineStreamTransition {
 }
 
 export interface EngineStreamContext {
-  pool: string | null,
-  authToken: string | null,
-  mediaStream: MediaStream | null,
-  videoRef: MutableRefObject<HTMLVideoElement | null>,
-  canvasRef: MutableRefObject<HTMLCanvasElement | null>,
+  pool: string | null
+  authToken: string | null
+  mediaStream: MediaStream | null
+  videoRef: MutableRefObject<HTMLVideoElement | null>
+  canvasRef: MutableRefObject<HTMLCanvasElement | null>
 }
 
 export function getDimensions(streamWidth: number, streamHeight: number) {
@@ -42,185 +42,196 @@ export function getDimensions(streamWidth: number, streamHeight: number) {
 }
 
 const engineStreamMachine = setup({
-    types: {
-      context: {} as EngineStreamContext,
-      input: {} as EngineStreamContext,
-    },
-    actions: {
-      [EngineStreamTransition.Play]({ context }, params: { zoomToFit: boolean }) {
-        const canvas = context.canvasRef.current
-        if (!canvas) return false
+  types: {
+    context: {} as EngineStreamContext,
+    input: {} as EngineStreamContext,
+  },
+  actions: {
+    [EngineStreamTransition.Play]({ context }, params: { zoomToFit: boolean }) {
+      const canvas = context.canvasRef.current
+      if (!canvas) return false
 
-        const video = context.videoRef.current
-        if (!video) return false
+      const video = context.videoRef.current
+      if (!video) return false
 
-        const mediaStream = context.mediaStream
-        if (!mediaStream) return false
+      const mediaStream = context.mediaStream
+      if (!mediaStream) return false
 
-        video.style.display = "block"
-        canvas.style.display = "none"
+      video.style.display = 'block'
+      canvas.style.display = 'none'
 
-        video.srcObject = mediaStream
-        void sceneInfra.camControls.restoreCameraPosition()
+      video.srcObject = mediaStream
+      void sceneInfra.camControls
+        .restoreCameraPosition()
         .then(() => video.play())
         .catch((e) => {
-            console.warn('Video playing was prevented', e, video)
+          console.warn('Video playing was prevented', e, video)
         })
         .then(() => kclManager.executeCode(params.zoomToFit))
         .catch(trap)
-      },
-      [EngineStreamTransition.Pause]({ context }) {
-        const video = context.videoRef.current
-        if (!video) return
+    },
+    [EngineStreamTransition.Pause]({ context }) {
+      const video = context.videoRef.current
+      if (!video) return
 
-        video.pause()
+      video.pause()
 
-        const canvas = context.canvasRef.current
-        if (!canvas) return
+      const canvas = context.canvasRef.current
+      if (!canvas) return
 
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
-        canvas.style.width = video.videoWidth + 'px'
-        canvas.style.height = video.videoHeight + 'px'
-        canvas.style.display = "block"
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      canvas.style.width = video.videoWidth + 'px'
+      canvas.style.height = video.videoHeight + 'px'
+      canvas.style.display = 'block'
 
-        const ctx = canvas.getContext("2d")
-        if (!ctx) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-        // Make sure we're on the next frame for no flickering between canvas
-        // and the video elements.
-        window.requestAnimationFrame(() => {
-          video.style.display = "none"
+      // Make sure we're on the next frame for no flickering between canvas
+      // and the video elements.
+      window.requestAnimationFrame(() => {
+        video.style.display = 'none'
 
-          // Destroy the media stream only. We will re-establish it. We could
-          // leave everything at pausing, preventing video decoders from running
-          // but we can do even better by significantly reducing network
-          // cards also.
-          context.mediaStream?.getVideoTracks()[0].stop()
-          video.srcObject = null
+        // Destroy the media stream only. We will re-establish it. We could
+        // leave everything at pausing, preventing video decoders from running
+        // but we can do even better by significantly reducing network
+        // cards also.
+        context.mediaStream?.getVideoTracks()[0].stop()
+        video.srcObject = null
 
-          sceneInfra.camControls.old = {
-            camera: sceneInfra.camControls.camera.clone(),
-            target: sceneInfra.camControls.target.clone()
-          }
-
-          engineCommandManager.tearDown({ idleMode: true })
-        })
-      },
-      async [EngineStreamTransition.StartOrReconfigureEngine]({ context, event }) {
-        if (!context.authToken) return
-
-        const video = context.videoRef.current
-        if (!video) return
-
-        const { width, height } = getDimensions(
-          window.innerWidth,
-          window.innerHeight,
-        )
-
-        video.width = width
-        video.height = height
-
-        const settingsNext = {
-          // override the pool param (?pool=) to request a specific engine instance
-          // from a particular pool.
-          pool: context.pool,
-          ...event.settings,
+        sceneInfra.camControls.old = {
+          camera: sceneInfra.camControls.camera.clone(),
+          target: sceneInfra.camControls.target.clone(),
         }
 
-        engineCommandManager.settings = settingsNext
+        engineCommandManager.tearDown({ idleMode: true })
+      })
+    },
+    async [EngineStreamTransition.StartOrReconfigureEngine]({
+      context,
+      event,
+    }) {
+      if (!context.authToken) return
 
-        engineCommandManager.start({
-          setMediaStream: event.onMediaStream,
-          setIsStreamReady: (isStreamReady) => event.setAppState({ isStreamReady }),
-          width,
-          height,
-          token: context.authToken,
-          settings: settingsNext,
-          makeDefaultPlanes: () => {
-            return makeDefaultPlanes(kclManager.engineCommandManager)
-          },
-          modifyGrid: (hidden: boolean) => {
-            return modifyGrid(kclManager.engineCommandManager, hidden)
-          },
-        })
+      const video = context.videoRef.current
+      if (!video) return
 
-        event.modelingMachineActorSend({
-          type: 'Set context',
-          data: {
-            streamDimensions: {
-              streamWidth: width,
-              streamHeight: height,
-            },
+      const { width, height } = getDimensions(
+        window.innerWidth,
+        window.innerHeight
+      )
+
+      video.width = width
+      video.height = height
+
+      const settingsNext = {
+        // override the pool param (?pool=) to request a specific engine instance
+        // from a particular pool.
+        pool: context.pool,
+        ...event.settings,
+      }
+
+      engineCommandManager.settings = settingsNext
+
+      engineCommandManager.start({
+        setMediaStream: event.onMediaStream,
+        setIsStreamReady: (isStreamReady) =>
+          event.setAppState({ isStreamReady }),
+        width,
+        height,
+        token: context.authToken,
+        settings: settingsNext,
+        makeDefaultPlanes: () => {
+          return makeDefaultPlanes(kclManager.engineCommandManager)
+        },
+        modifyGrid: (hidden: boolean) => {
+          return modifyGrid(kclManager.engineCommandManager, hidden)
+        },
+      })
+
+      event.modelingMachineActorSend({
+        type: 'Set context',
+        data: {
+          streamDimensions: {
+            streamWidth: width,
+            streamHeight: height,
           },
-        })
+        },
+      })
+    },
+    async [EngineStreamTransition.Resume]({ context, event }) {
+      // engineCommandManager.engineConnection?.reattachMediaStream()
+    },
+  },
+}).createMachine({
+  context: (initial) => initial.input,
+  initial: EngineStreamState.Off,
+  states: {
+    [EngineStreamState.Off]: {
+      on: {
+        [EngineStreamTransition.StartOrReconfigureEngine]: {
+          target: EngineStreamState.On,
+          actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine }],
+        },
       },
-      async [EngineStreamTransition.Resume]({ context, event }) {
-        // engineCommandManager.engineConnection?.reattachMediaStream()
+    },
+    [EngineStreamState.On]: {
+      on: {
+        [EngineStreamTransition.SetMediaStream]: {
+          target: EngineStreamState.On,
+          actions: [
+            assign({ mediaStream: ({ context, event }) => event.mediaStream }),
+          ],
+        },
+        [EngineStreamTransition.Play]: {
+          target: EngineStreamState.Playing,
+          actions: [
+            { type: EngineStreamTransition.Play, params: { zoomToFit: true } },
+          ],
+        },
       },
-    }
-  }).createMachine({
-    context: (initial) => initial.input,
-    initial: EngineStreamState.Off,
-    states: {
-      [EngineStreamState.Off]: {
-        on: {
-          [EngineStreamTransition.StartOrReconfigureEngine]: {
-            target: EngineStreamState.On,
-            actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine } ]
-          }
-        }
+    },
+    [EngineStreamState.Playing]: {
+      on: {
+        [EngineStreamTransition.StartOrReconfigureEngine]: {
+          target: EngineStreamState.Playing,
+          reenter: true,
+          actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine }],
+        },
+        [EngineStreamTransition.Pause]: {
+          target: EngineStreamState.Paused,
+          actions: [{ type: EngineStreamTransition.Pause }],
+        },
       },
-      [EngineStreamState.On]: {
-        on: {
-          [EngineStreamTransition.SetMediaStream]: {
-            target: EngineStreamState.On,
-            actions: [ assign({ mediaStream: ({ context, event }) => event.mediaStream }) ]
-          },
-          [EngineStreamTransition.Play]: {
-            target: EngineStreamState.Playing,
-            actions: [ { type: EngineStreamTransition.Play, params: { zoomToFit: true }} ]
-          }
-        }
+    },
+    [EngineStreamState.Paused]: {
+      on: {
+        [EngineStreamTransition.StartOrReconfigureEngine]: {
+          target: EngineStreamState.Resuming,
+          actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine }],
+        },
       },
-      [EngineStreamState.Playing]: {
-        on: {
-          [EngineStreamTransition.StartOrReconfigureEngine]: {
-            target: EngineStreamState.Playing,
-            reenter: true,
-            actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine } ]
-          },
-          [EngineStreamTransition.Pause]: {
-            target: EngineStreamState.Paused,
-            actions: [ { type: EngineStreamTransition.Pause } ]
-          }
-        }
+    },
+    [EngineStreamState.Resuming]: {
+      on: {
+        [EngineStreamTransition.SetMediaStream]: {
+          target: EngineStreamState.Resuming,
+          actions: [
+            assign({ mediaStream: ({ context, event }) => event.mediaStream }),
+          ],
+        },
+        [EngineStreamTransition.Play]: {
+          target: EngineStreamState.Playing,
+          actions: [
+            { type: EngineStreamTransition.Play, params: { zoomToFit: false } },
+          ],
+        },
       },
-      [EngineStreamState.Paused]: {
-        on: {
-          [EngineStreamTransition.StartOrReconfigureEngine]: {
-            target: EngineStreamState.Resuming,
-            actions: [{ type: EngineStreamTransition.StartOrReconfigureEngine } ]
-          },
-        }
-      },
-      [EngineStreamState.Resuming]: {
-        on: {
-          [EngineStreamTransition.SetMediaStream]: {
-            target: EngineStreamState.Resuming,
-            actions: [ assign({ mediaStream: ({ context, event }) => event.mediaStream }) ]
-          },
-          [EngineStreamTransition.Play]: {
-            target: EngineStreamState.Playing,
-            actions: [ { type: EngineStreamTransition.Play, params: { zoomToFit: false }} ]
-          }
-        }
-      },
-    }
-  })
+    },
+  },
+})
 
 export default createActorContext(engineStreamMachine)
-
-

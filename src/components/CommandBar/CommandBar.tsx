@@ -29,7 +29,9 @@ export const CommandBar = () => {
   }, [pathname])
 
   useEffect(() => {
-    if (immediateState.type !== EngineConnectionStateType.ConnectionEstablished) {
+    if (
+      immediateState.type !== EngineConnectionStateType.ConnectionEstablished
+    ) {
       commandBarSend({ type: 'Close' })
     }
   }, [immediateState])

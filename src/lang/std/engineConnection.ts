@@ -404,7 +404,8 @@ class EngineConnection extends EventTarget {
         default:
           if (this.isConnecting()) break
           // Means we never could do an initial connection. Reconnect everything.
-          if (!this.pingPongSpan.ping) this.connect({ reconnect: false }).catch(reportRejection)
+          if (!this.pingPongSpan.ping)
+            this.connect({ reconnect: false }).catch(reportRejection)
           break
       }
     }, pingIntervalMs)
@@ -542,7 +543,6 @@ class EngineConnection extends EventTarget {
         type: DisconnectingType.Quit,
       },
     }
-
   }
 
   /**
@@ -1164,7 +1164,7 @@ class EngineConnection extends EventTarget {
       }
 
       if (args.reconnect) {
-          createWebSocketConnection()
+        createWebSocketConnection()
       } else {
         this.onNetworkStatusReady = () => {
           createWebSocketConnection()

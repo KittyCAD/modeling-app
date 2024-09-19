@@ -11,7 +11,8 @@ export function CommandBarOpenButton() {
   const { immediateState } = useNetworkContext()
   const platform = usePlatform()
 
-  const isDisabled = immediateState.type !== EngineConnectionStateType.ConnectionEstablished
+  const isDisabled =
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished
 
   return (
     <button
