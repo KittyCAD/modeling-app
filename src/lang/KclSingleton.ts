@@ -464,12 +464,32 @@ export class KclManager {
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
+
     if (!ast) {
       this.clearAst()
       return
     }
+
+    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
+
     this.ast = { ...ast }
     return this.executeAst({ zoomToFit })
+  }
+  /**
+   * This will override the zoom to fit to zoom into the model if the previous AST was empty.
+   * Workflows this improves,
+   *  When someone comments the entire file then uncomments the entire file it zooms to the model
+   *  When someone CRTL+A and deletes the code then adds the code back it zooms to the model
+   */
+  tryToZoomToFitOnCodeUpdate(ast: Program, zoomToFit: boolean | undefined) {
+    const isAstEmpty = this._isAstEmpty(this._ast)
+    const isRequestedAstEmpty = this._isAstEmpty(ast)
+
+    if (isAstEmpty && !isRequestedAstEmpty) {
+      return true
+    }
+
+    return zoomToFit
   }
   async format() {
     const originalCode = codeManager.code
@@ -646,6 +666,11 @@ export class KclManager {
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
   _isAstEmpty(ast: Node<Program>) {
+    return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
+
+  // Determines if there is no KCL code which means it is executing a blank KCL file
+  _isAstEmpty(ast: Program) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
 }
