@@ -166,7 +166,7 @@ async fn inner_fillet(
 
         if let Some(ref tag) = tag {
             extrude_group.value.push(ExtrudeSurface::Fillet(FilletSurface {
-                face_id: edge_id,
+                face_id: id,
                 tag: Some(tag.clone()),
                 geo_meta: GeoMeta {
                     id,
