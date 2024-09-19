@@ -97,10 +97,12 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
-  old: {
-    camera: PerspectiveCamera,
-    target: Vector3,
-  } | undefined
+  old:
+    | {
+        camera: PerspectiveCamera
+        target: Vector3
+      }
+    | undefined
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -960,33 +962,51 @@ export class CameraControls {
     // camera coordinates after a zoom-to-fit... So this is much easier, and
     // maps better to screen coordinates.
 
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_batch_req',
-      batch_id: uuidv4(),
-      responses: true,
-      requests: [
-        {
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-            padding: panesWidth > 0 ? (window.innerWidth / panesWidth) : 0.2, // padding around the objects
+    await this.engineCommandManager
+      .sendSceneCommand({
+        type: 'modeling_cmd_batch_req',
+        batch_id: uuidv4(),
+        responses: true,
+        requests: [
+          {
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
+              padding: panesWidth > 0 ? window.innerWidth / panesWidth : 0.2, // padding around the objects
+            },
           },
-        },
-        {
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'camera_drag_start',
-            interaction: 'pan',
-            window: { x: 0, y: 0 },
+          {
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'camera_drag_start',
+              interaction: 'pan',
+              window: { x: 0, y: 0 },
+            },
+            cmd_id: uuidv4(),
           },
-          cmd_id: uuidv4(),
-        },
-        {
+          {
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'camera_drag_move',
+              interaction: 'pan',
+              window: {
+                x: goRightPx,
+                y: 0,
+              },
+            },
+            cmd_id: uuidv4(),
+          },
+        ],
+      })
+      // engineCommandManager can't subscribe to batch responses so we'll send
+      // this one off by its lonesome after.
+      .then(() =>
+        this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
-            type: 'camera_drag_move',
+            type: 'camera_drag_end',
             interaction: 'pan',
             window: {
               x: goRightPx,
@@ -994,23 +1014,8 @@ export class CameraControls {
             },
           },
           cmd_id: uuidv4(),
-        },
-      ]
-    })
-    // engineCommandManager can't subscribe to batch responses so we'll send
-    // this one off by its lonesome after.
-    .then(() => this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'camera_drag_end',
-        interaction: 'pan',
-        window: {
-          x: goRightPx,
-          y: 0,
-        },
-      },
-      cmd_id: uuidv4(),
-    }))
+        })
+      )
   }
 
   async tweenCameraToQuaternion(

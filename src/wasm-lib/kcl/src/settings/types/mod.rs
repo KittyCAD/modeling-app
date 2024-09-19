@@ -121,7 +121,7 @@ pub struct AppSettings {
     pub dismiss_web_banner: bool,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
-    stream_idle_mode: bool,
+    stream_idle_mode: Option<FloatOrInt>,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -582,7 +582,7 @@ textWrapping = true
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
@@ -643,7 +643,7 @@ includeSettings = false
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -709,7 +709,7 @@ defaultProjectName = "projects-$nnn"
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -787,7 +787,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         theme_color: None,
                         dismiss_web_banner: false,
                         enable_ssao: None,
-                        stream_idle_mode: false,
+                        stream_idle_mode: None,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,

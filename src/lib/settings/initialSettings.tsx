@@ -181,13 +181,46 @@ export function createSettings() {
       /**
        * Stream resource saving behavior toggle
        */
-      streamIdleMode: new Setting<boolean>({
-        defaultValue: false,
+      streamIdleMode: new Setting<number | null>({
+        defaultValue: null,
         description: 'Toggle stream idling, saving bandwidth and battery',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
+        validate: (v) =>
+          v === null ||
+          (typeof v === 'number' &&
+            Number(v) >= 0 &&
+            Number(v) <= 60),
+        Component: ({ value, updateValue }) => (
+          <div className="flex item-center gap-4 px-2 m-0 py-0">
+            <div className="flex flex-col">
+              <input
+                type="checkbox"
+                checked={value !== null}
+                onChange={(e) => updateValue(!e.currentTarget.checked ? null : 5)}
+                className="block w-4 h-4"
+              />
+              <div></div>
+            </div>
+            <div className="flex flex-col grow">
+              <input
+                type="range"
+                onChange={(e) =>
+                  updateValue(parseInt(e.currentTarget.value))
+                }
+                disabled={value === null}
+                value={value}
+                min={1}
+                max={60}
+                step={1}
+                className="block flex-1"
+              />
+              { value !== null &&
+              <div>
+                {value === 60 ? '1 hour' : value === 1 ? '1 minute' : value + ' minutes'}
+              </div>
+              }
+            </div>
+          </div>
+        ),
       }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
