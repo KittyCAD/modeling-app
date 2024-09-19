@@ -2,12 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::ok_response::OkModelingCmdResponse;
-use kcmc::shared::Transform;
-use kcmc::websocket::OkWebSocketResponseData;
-use kcmc::ModelingCmd;
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
+    websocket::OkWebSocketResponseData, ModelingCmd,
+};
 use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};

@@ -6,6 +6,7 @@ use std::{
 };
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
 use kittycad_modeling_cmds as kcmc;
 use wasm_bindgen::prelude::*;
@@ -43,7 +44,7 @@ extern "C" {
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -55,7 +56,7 @@ impl EngineConnection {
         Ok(EngineConnection {
             manager: Arc::new(manager),
             batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(HashMap::new())),
+            batch_end: Arc::new(Mutex::new(IndexMap::new())),
         })
     }
 }
@@ -66,7 +67,7 @@ impl crate::engine::EngineManager for EngineConnection {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch_end.clone()
     }
 

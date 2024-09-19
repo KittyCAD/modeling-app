@@ -4,10 +4,12 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kcmc::each_cmd as mcmd;
-use kcmc::ok_response::{output::TakeSnapshot, OkModelingCmdResponse};
-use kcmc::websocket::{ModelingSessionData, OkWebSocketResponseData};
-use kcmc::{ImageFormat, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd,
+    ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
+    websocket::{ModelingSessionData, OkWebSocketResponseData},
+    ImageFormat, ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
 use parse_display::{Display, FromStr};

@@ -2,10 +2,7 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::shared::Angle;
-use kcmc::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
