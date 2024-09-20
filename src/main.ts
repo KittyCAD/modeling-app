@@ -187,8 +187,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
         )
       )
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    shell.openExternal(handle.verification_uri_complete)
+    shell.openExternal(handle.verification_uri_complete).catch(reportRejection)
 
     // Wait for the user to login.
     try {
