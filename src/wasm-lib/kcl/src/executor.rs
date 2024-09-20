@@ -4,12 +4,22 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kittycad::types::ModelingSessionData;
+use kcmc::{
+    each_cmd as mcmd,
+    ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
+    websocket::{ModelingSessionData, OkWebSocketResponseData},
+    ImageFormat, ModelingCmd,
+};
+use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
+
+type Point2D = kcmc::shared::Point2d<f64>;
+type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
@@ -311,7 +321,7 @@ pub enum KclValue {
 
 impl KclValue {
     pub(crate) fn new_user_val<T: Serialize>(meta: Vec<Metadata>, val: T) -> Self {
-        Self::UserVal(UserVal::set(meta, val))
+        Self::UserVal(UserVal::new(meta, val))
     }
 
     pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
@@ -356,14 +366,14 @@ impl KclValue {
 
 impl From<SketchGroupSet> for KclValue {
     fn from(sg: SketchGroupSet) -> Self {
-        KclValue::UserVal(UserVal::set(sg.meta(), sg))
+        KclValue::UserVal(UserVal::new(sg.meta(), sg))
     }
 }
 
 impl From<Vec<Box<SketchGroup>>> for KclValue {
     fn from(sg: Vec<Box<SketchGroup>>) -> Self {
         let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
-        KclValue::UserVal(UserVal::set(meta, sg))
+        KclValue::UserVal(UserVal::new(meta, sg))
     }
 }
 
@@ -654,6 +664,13 @@ pub struct UserVal {
 }
 
 impl UserVal {
+    pub fn new<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self {
+            meta,
+            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
+        }
+    }
+
     /// If the UserVal matches the type `T`, return it.
     pub fn get<T: serde::de::DeserializeOwned>(&self) -> Option<(T, Vec<Metadata>)> {
         let meta = self.meta.clone();
@@ -677,16 +694,8 @@ impl UserVal {
             return Ok(());
         };
         mutate(&mut val)?;
-        *self = Self::set(meta, val);
+        *self = Self::new(meta, val);
         Ok(())
-    }
-
-    /// Put the given value into this UserVal.
-    pub fn set<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
-        Self {
-            meta,
-            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
-        }
     }
 }
 
@@ -1284,7 +1293,7 @@ impl From<Point2d> for [f64; 2] {
     }
 }
 
-impl From<Point2d> for kittycad::types::Point2D {
+impl From<Point2d> for Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
     }
@@ -1315,9 +1324,18 @@ impl Point3d {
     }
 }
 
-impl From<Point3d> for kittycad::types::Point3D {
+impl From<Point3d> for Point3D {
     fn from(p: Point3d) -> Self {
         Self { x: p.x, y: p.y, z: p.z }
+    }
+}
+impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
+    fn from(p: Point3d) -> Self {
+        Self {
+            x: LengthUnit(p.x),
+            y: LengthUnit(p.y),
+            z: LengthUnit(p.z),
+        }
     }
 }
 
@@ -1687,9 +1705,9 @@ impl ExecutorContext {
             .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                &kittycad::types::ModelingCmd::EdgeLinesVisible {
+                &ModelingCmd::from(mcmd::EdgeLinesVisible {
                     hidden: !settings.highlight_edges,
-                },
+                }),
             )
             .await?;
 
@@ -1774,9 +1792,16 @@ impl ExecutorContext {
             .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                &kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.settings.units.into(),
-                },
+                &ModelingCmd::from(mcmd::SetSceneUnits {
+                    unit: match self.settings.units {
+                        UnitLength::Cm => kcmc::units::UnitLength::Centimeters,
+                        UnitLength::Ft => kcmc::units::UnitLength::Feet,
+                        UnitLength::In => kcmc::units::UnitLength::Inches,
+                        UnitLength::M => kcmc::units::UnitLength::Meters,
+                        UnitLength::Mm => kcmc::units::UnitLength::Millimeters,
+                        UnitLength::Yd => kcmc::units::UnitLength::Yards,
+                    },
+                }),
             )
             .await?;
         let memory = if let Some(memory) = memory {
@@ -1927,7 +1952,7 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<kittycad::types::TakeSnapshot> {
+    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<TakeSnapshot> {
         let _ = self.run(program, None).await?;
 
         // Zoom to fit.
@@ -1935,10 +1960,11 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::ZoomToFit {
+                ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
+                    animated: false,
                     padding: 0.1,
-                },
+                }),
             )
             .await?;
 
@@ -1948,19 +1974,19 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::TakeSnapshot {
-                    format: kittycad::types::ImageFormat::Png,
-                },
+                ModelingCmd::from(mcmd::TakeSnapshot {
+                    format: ImageFormat::Png,
+                }),
             )
             .await?;
 
-        let kittycad::types::OkWebSocketResponseData::Modeling {
-            modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
         } = resp
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok(data)
+        Ok(contents)
     }
 }
 

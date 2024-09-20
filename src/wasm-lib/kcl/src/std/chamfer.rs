@@ -2,7 +2,8 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -127,7 +128,6 @@ async fn inner_chamfer(
     }
 
     let mut extrude_group = extrude_group.clone();
-    let mut edge_cuts = Vec::new();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
@@ -137,18 +137,21 @@ async fn inner_chamfer(
         let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(
             id,
-            ModelingCmd::Solid3DFilletEdge {
+            ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: extrude_group.id,
-                radius: data.length,
-                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
-                cut_type: Some(kittycad::types::CutType::Chamfer),
+                radius: LengthUnit(data.length),
+                tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
+                cut_type: CutType::Chamfer,
+                // We pass in the command id as the face id.
+                // So the resulting face of the fillet will be the same.
+                // This is because that's how most other endpoints work.
                 face_id: Some(id),
-            },
+            }),
         )
         .await?;
 
-        edge_cuts.push(EdgeCut::Chamfer {
+        extrude_group.edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
             length: data.length,
@@ -166,8 +169,6 @@ async fn inner_chamfer(
             }));
         }
     }
-
-    extrude_group.edge_cuts = edge_cuts;
 
     Ok(extrude_group)
 }
