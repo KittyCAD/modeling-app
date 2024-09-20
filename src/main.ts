@@ -181,7 +181,11 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   // Register this handle to be used later.
   ipcMain.handleOnce('loginWithDeviceFlow', async () => {
     if (!handle) {
-      return Promise.reject(new Error('No handle available. Did you call startDeviceFlow before calling this?'))
+      return Promise.reject(
+        new Error(
+          'No handle available. Did you call startDeviceFlow before calling this?'
+        )
+      )
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     shell.openExternal(handle.verification_uri_complete)
