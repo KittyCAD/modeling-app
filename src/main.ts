@@ -251,7 +251,6 @@ app.on('ready', () => {
 
   autoUpdater.on('update-available', (info) => {
     console.log('update-available', info)
-    mainWindow?.webContents.send('update-available', info.version)
   })
 
   autoUpdater.on('update-downloaded', (info) => {
