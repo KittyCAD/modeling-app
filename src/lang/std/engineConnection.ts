@@ -1277,27 +1277,40 @@ export interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
+export enum CommandLogType {
+  SendModeling = 'send-modeling',
+  SendScene = 'send-scene',
+  ReceiveReliable = 'receive-reliable',
+  ExecutionDone = 'execution-done',
+  ExportDone = 'export-done',
+  SetDefaultSystemProperties = 'set_default_system_properties',
+}
+
 export type CommandLog =
   | {
-      type: 'send-modeling'
+      type: CommandLogType.SendModeling
       data: EngineCommand
     }
   | {
-      type: 'send-scene'
+      type: CommandLogType.SendScene
       data: EngineCommand
     }
   | {
-      type: 'receive-reliable'
+      type: CommandLogType.ReceiveReliable
       data: OkWebSocketResponseData
       id: string
       cmd_type?: string
     }
   | {
-      type: 'execution-done'
+      type: CommandLogType.ExecutionDone
       data: null
     }
   | {
-      type: 'export-done'
+      type: CommandLogType.ExportDone
+      data: null
+    }
+  | {
+      type: CommandLogType.SetDefaultSystemProperties
       data: null
     }
 
@@ -1697,7 +1710,7 @@ export class EngineCommandManager extends EventTarget {
           message.request_id
         ) {
           this.addCommandLog({
-            type: 'receive-reliable',
+            type: CommandLogType.ReceiveReliable,
             data: message.resp,
             id: message?.request_id || '',
             cmd_type: pending?.command?.cmd?.type,
@@ -1731,7 +1744,7 @@ export class EngineCommandManager extends EventTarget {
               if (!command) return
               if (command.type === 'modeling_cmd_req')
                 this.addCommandLog({
-                  type: 'receive-reliable',
+                  type: CommandLogType.ReceiveReliable,
                   data: {
                     type: 'modeling',
                     data: {
@@ -1939,7 +1952,7 @@ export class EngineCommandManager extends EventTarget {
     ) {
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
-        type: 'send-scene',
+        type: CommandLogType.SendScene,
         data: command,
       })
     }
@@ -1998,7 +2011,7 @@ export class EngineCommandManager extends EventTarget {
           toastId,
           resolve: (passThrough) => {
             this.addCommandLog({
-              type: 'export-done',
+              type: CommandLogType.ExportDone,
               data: null,
             })
             resolve(passThrough)

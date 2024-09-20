@@ -66,7 +66,9 @@ const lastCmdDelay = 50
 
 export class CameraControls {
   engineCommandManager: EngineCommandManager
-  modelingSidebarRef: MutableRefObject<HTMLDivElement>
+  modelingSidebarRef: MutableRefObject<HTMLUListElement | null> = {
+    current: null,
+  }
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -74,9 +76,10 @@ export class CameraControls {
   isDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
+  cameraDragStartXY = new Vector2()
   old:
     | {
-        camera: PerspectiveCamera
+        camera: PerspectiveCamera | OrthographicCamera
         target: Vector3
       }
     | undefined
@@ -889,10 +892,9 @@ export class CameraControls {
     })
     await this.centerModelRelativeToPanes()
 
-    this.cameraDragStartXY = {
-      x: 0,
-      y: 0,
-    }
+    this.cameraDragStartXY = new Vector2()
+    this.cameraDragStartXY.x = 0
+    this.cameraDragStartXY.y = 0
   }
 
   async restoreCameraPosition(): Promise<void> {
@@ -937,7 +939,6 @@ export class CameraControls {
         responses: true,
         requests: [
           {
-            type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
               type: 'zoom_to_fit',
@@ -946,7 +947,6 @@ export class CameraControls {
             },
           },
           {
-            type: 'modeling_cmd_req',
             cmd: {
               type: 'camera_drag_start',
               interaction: 'pan',
@@ -955,7 +955,6 @@ export class CameraControls {
             cmd_id: uuidv4(),
           },
           {
-            type: 'modeling_cmd_req',
             cmd: {
               type: 'camera_drag_move',
               interaction: 'pan',
