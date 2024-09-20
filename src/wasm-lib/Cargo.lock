@@ -264,7 +264,7 @@ dependencies = [
  "bitvec",
  "chrono",
  "hex",
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "js-sys",
  "once_cell",
  "rand 0.8.5",
@@ -690,7 +690,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.26"
+version = "0.1.27"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1067,7 +1067,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http 0.2.12",
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "slab",
  "tokio",
  "tokio-util",
@@ -1293,12 +1293,13 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.2.5"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b0b929d511467233429c45a44ac1dcaa21ba0f5ba11e4879e6ed28ddb4f9df4"
+checksum = "68b900aa2f7301e21c36462b170ee99994de34dff39a4a6a528e80e7376d07e5"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.3",
+ "serde",
 ]
 
 [[package]]
@@ -1399,7 +1400,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.14"
+version = "0.2.15"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1422,6 +1423,7 @@ dependencies = [
  "http 0.2.12",
  "iai",
  "image",
+ "indexmap 2.5.0",
  "insta",
  "itertools 0.13.0",
  "js-sys",
@@ -1472,7 +1474,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.10"
+version = "0.1.11"
 dependencies = [
  "anyhow",
  "hyper",
@@ -2740,7 +2742,7 @@ version = "1.0.128"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ff5456707a1de34e7e37f2a6fd3d3f808c318259cbd01ab6377795054b483d8"
 dependencies = [
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "itoa",
  "memchr",
  "ryu",
@@ -3268,7 +3270,7 @@ version = "0.22.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "583c44c02ad26b0c3f3066fe629275e50627026c51ac2e595cca4c230ce1ce1d"
 dependencies = [
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -4035,6 +4037,6 @@ dependencies = [
  "crc32fast",
  "crossbeam-utils",
  "displaydoc",
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "thiserror",
 ]
