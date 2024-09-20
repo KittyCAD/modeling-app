@@ -1438,6 +1438,7 @@ pub enum Path {
         /// arc's direction
         ccw: bool,
     },
+    // TODO: consolidate segment enums, remove Circle. https://github.com/KittyCAD/modeling-app/issues/3940
     /// a complete arc
     Circle {
         #[serde(flatten)]
