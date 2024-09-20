@@ -40,7 +40,8 @@ pub struct StdLibFnData {
 
 /// This struct defines a single argument to a stdlib function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
-#[ts(export)]
+// There's a bug in ts_rs where this isn't correctly imported by StdLibFnData.
+#[ts(export_to = "StdLibFnData.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StdLibFnArg {
     /// The name of the argument.
