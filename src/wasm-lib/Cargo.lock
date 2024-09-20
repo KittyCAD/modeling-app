@@ -1527,7 +1527,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.59"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers/no-more-empty#36b6b4a196af32235f6059f615012e0f95d008fc"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers/no-more-empty#2611f6f93b20b4efc701fd008ee3ccab8c447907"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1551,7 +1551,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.9"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers/no-more-empty#36b6b4a196af32235f6059f615012e0f95d008fc"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=achalmers/no-more-empty#2611f6f93b20b4efc701fd008ee3ccab8c447907"
 dependencies = [
  "proc-macro2",
  "quote",
