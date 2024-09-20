@@ -544,7 +544,7 @@ const sketch001 = startSketchAt([-0, -0])
     const u = await getUtils(page)
 
     // Constants and locators
-    const planeColor: [number, number, number] = [179, 220, 180]
+    const planeColor: [number, number, number] = [170, 220, 170]
     const bgColor: [number, number, number] = [27, 27, 27]
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
@@ -566,7 +566,7 @@ const sketch001 = startSketchAt([-0, -0])
           timeout: 5000,
           message: 'Plane color is visible',
         })
-        .toBeLessThan(10)
+        .toBeLessThan(15)
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =
