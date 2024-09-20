@@ -60,6 +60,9 @@ export interface IElectronAPI {
   kittycad: (access: string, args: any) => any
   listMachines: () => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  onUpdateDownloaded: (
+    callback: (value: string) => void
+  ) => Electron.IpcRenderer
 }
 
 declare global {
