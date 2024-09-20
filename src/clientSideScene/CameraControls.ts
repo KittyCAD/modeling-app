@@ -918,7 +918,7 @@ export class CameraControls {
   }
 
   async centerModelRelativeToPanes(zoomObjectId?: string): Promise<void> {
-    const panes = this.modelingSidebarRef.current
+    const panes = this.modelingSidebarRef?.current
     if (!panes) return
 
     const panesWidth = panes.offsetWidth + panes.offsetLeft
