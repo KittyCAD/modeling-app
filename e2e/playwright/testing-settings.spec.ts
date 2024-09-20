@@ -277,8 +277,6 @@ test.describe('Testing settings', () => {
 
       await page.setViewportSize({ width: 1200, height: 500 })
 
-      page.on('console', console.log)
-
       // Selectors and constants
       const userThemeColor = '120'
       const projectThemeColor = '50'
@@ -292,7 +290,6 @@ test.describe('Testing settings', () => {
       const projectLink = page.getByText('bracket')
       const logoLink = page.getByTestId('app-logo')
 
-      // Open the app and set the user theme color
       await test.step('Set user theme color on home', async () => {
         await expect(settingsOpenButton).toBeVisible()
         await settingsOpenButton.click()
@@ -311,13 +308,15 @@ test.describe('Testing settings', () => {
         await expect(projectSettingsTab).toBeChecked()
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
+        await settingsCloseButton.click()
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
+        // Make sure we're done navigating before we reload
+        await expect(settingsCloseButton).not.toBeVisible()
         await page.reload({ waitUntil: 'domcontentloaded' })
 
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-        await settingsCloseButton.click()
       })
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
