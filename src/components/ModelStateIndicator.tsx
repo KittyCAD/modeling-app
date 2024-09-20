@@ -4,6 +4,7 @@ import { CustomIcon } from './CustomIcon'
 import useEngineStreamContext, {
   EngineStreamState,
 } from 'hooks/useEngineStreamContext'
+import { CommandLogType } from 'lang/std/engineConnection'
 
 export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
@@ -15,10 +16,10 @@ export const ModelStateIndicator = () => {
   const lastCommandType = commands[commands.length - 1]?.type
 
   useEffect(() => {
-    if (lastCommandType === 'set_default_system_properties') {
+    if (lastCommandType === CommandLogType.SetDefaultSystemProperties) {
       setIsDone(false)
     }
-    if (lastCommandType === 'execution-done') {
+    if (lastCommandType === CommandLogType.ExecutionDone) {
       setIsDone(true)
     }
   }, [lastCommandType])

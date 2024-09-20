@@ -32,11 +32,8 @@ export const EngineStream = () => {
     showScaleGrid: settings.context.modeling.showScaleGrid.current,
   }
 
-  const {
-    state: modelingMachineState,
-    send: modelingMachineActorSend,
-    context: modelingMachineActorContext,
-  } = useModelingContext()
+  const { state: modelingMachineState, send: modelingMachineActorSend } =
+    useModelingContext()
 
   const engineStreamActor = useEngineStreamContext.useActorRef()
   const engineStreamState = engineStreamActor.getSnapshot()
@@ -169,7 +166,7 @@ export const EngineStream = () => {
   }, [streamIdleMode])
 
   useEffect(() => {
-    let frameId = undefined
+    let frameId: ReturnType<typeof window.requestAnimationFrame> = 0
     const frameLoop = () => {
       // Do not pause if the user is in the middle of an operation
       if (!modelingMachineState.matches('idle')) {

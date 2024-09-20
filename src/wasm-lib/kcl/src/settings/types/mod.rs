@@ -5,8 +5,7 @@ pub mod project;
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
-use serde::{de, Deserializer, Deserialize, Serialize};
-use std::fmt;
+use serde::{Deserializer, Deserialize, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
@@ -120,46 +119,33 @@ pub struct AppSettings {
     /// This setting only applies to the web app. And is temporary until we have Linux support.
     #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
     pub dismiss_web_banner: bool,
-    /// When the user is idle, and this is true, the stream will be torn down.
+    /// When the user is idle, teardown the stream after some time.
     #[serde(default, deserialize_with = "deserialize_stream_idle_mode", alias = "streamIdleMode", skip_serializing_if = "is_default")]
-    stream_idle_mode: Option<u64>,
+    stream_idle_mode: Option<u32>,
 }
 
-fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
-where D: Deserializer<'de>,
+fn deserialize_stream_idle_mode<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
+where
+  D: Deserializer<'de>,
 {
-   struct StreamIdleMode;
+  #[derive(Deserialize)]
+  #[serde(untagged)]
+  enum StreamIdleModeValue {
+    String(String),
+    Boolean(bool),
+  }
 
-    impl<'de> de::Visitor<'de> for StreamIdleMode
-    {
-        type Value = Option<u64>;
+  const DEFAULT_TIMEOUT: u32 = 1000 * 60 * 5;
 
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("boolean or integer")
-        }
-
-        // In an older config, stream idle mode used to be a boolean (on/off)
-        // I'm willing to say almost no one used the option.
-        fn visit_bool<E>(self, value: bool) -> Result<Option<u64>, E>
-          where E: de::Error
-        {
-          if value {
-            Ok(Some(1000 * 60 * 5))
-          } else {
-            Ok(None)
-          }
-        }
-
-        fn visit_i64<E>(self, value: i64) -> Result<Option<u64>, E>
-          where E: de::Error
-        {
-          Ok(Some(value.try_into().unwrap()))
-        }
-    }
-
-    deserializer.deserialize_any(StreamIdleMode)
+  Ok(match StreamIdleModeValue::deserialize(deserializer) {
+    Ok(StreamIdleModeValue::String(value)) => Some(value.parse::<u32>().unwrap_or(DEFAULT_TIMEOUT)),
+    // The old type of this value. I'm willing to say no one used it but
+    // we can never guarantee it.
+    Ok(StreamIdleModeValue::Boolean(true)) => Some(DEFAULT_TIMEOUT),
+    Ok(StreamIdleModeValue::Boolean(false)) => None,
+    _ => None
+  })
 }
-
 
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]

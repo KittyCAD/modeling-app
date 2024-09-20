@@ -24,6 +24,10 @@ import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 import { DeepPartial } from 'lib/types'
 
+type OmitNull<T> = T extends null ? undefined : T
+const toUndefinedIfNull = (a: any): OmitNull<any> =>
+  a === null ? undefined : a
+
 /**
  * Convert from a rust settings struct into the JS settings struct.
  * We do this because the JS settings type has all the fancy shit
@@ -40,7 +44,9 @@ export function configurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
+      streamIdleMode: toUndefinedIfNull(
+        configuration?.settings?.app?.stream_idle_mode
+      ),
       projectDirectory: configuration?.settings?.project?.directory,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
@@ -79,7 +85,9 @@ export function projectConfigurationToSettingsPayload(
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
+      streamIdleMode: toUndefinedIfNull(
+        configuration?.settings?.app?.stream_idle_mode
+      ),
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
     modeling: {
