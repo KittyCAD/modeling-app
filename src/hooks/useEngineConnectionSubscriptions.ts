@@ -9,8 +9,8 @@ import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   getCapCodeRef,
-  getExtrudeEdgeCodeRef,
-  getExtrusionFromSuspectedExtrudeSurface,
+  getSweepEdgeCodeRef,
+  getSweepFromSuspectedSweepSurface,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -47,7 +47,7 @@ export function useEngineConnectionSubscriptions() {
             if (err(codeRef)) return
             editorManager.setHighlightRange([codeRef.range])
           } else if (artifact?.type === 'wall') {
-            const extrusion = getExtrusionFromSuspectedExtrudeSurface(
+            const extrusion = getSweepFromSuspectedSweepSurface(
               data.entity_id,
               engineCommandManager.artifactGraph
             )
@@ -61,8 +61,8 @@ export function useEngineConnectionSubscriptions() {
                 ? [codeRef.range]
                 : [codeRef.range, extrusion.codeRef.range]
             )
-          } else if (artifact?.type === 'extrudeEdge') {
-            const codeRef = getExtrudeEdgeCodeRef(
+          } else if (artifact?.type === 'sweepEdge') {
+            const codeRef = getSweepEdgeCodeRef(
               artifact,
               engineCommandManager.artifactGraph
             )
@@ -172,7 +172,7 @@ export function useEngineConnectionSubscriptions() {
               }
               const faceId = planeOrFaceId
               const artifact = engineCommandManager.artifactGraph.get(faceId)
-              const extrusion = getExtrusionFromSuspectedExtrudeSurface(
+              const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
                 engineCommandManager.artifactGraph
               )

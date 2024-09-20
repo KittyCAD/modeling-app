@@ -2,7 +2,8 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -156,16 +157,15 @@ async fn inner_loft(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::Loft {
+        ModelingCmd::from(mcmd::Loft {
             section_ids: sketch_groups.iter().map(|group| group.id).collect(),
             base_curve_index: data.base_curve_index,
             bez_approximate_rational: data.bez_approximate_rational.unwrap_or(false),
-            tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
+            tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
             v_degree: data
                 .v_degree
-                .unwrap_or_else(|| std::num::NonZeroU32::new(DEFAULT_V_DEGREE).unwrap())
-                .into(),
-        },
+                .unwrap_or_else(|| std::num::NonZeroU32::new(DEFAULT_V_DEGREE).unwrap()),
+        }),
     )
     .await?;
 
