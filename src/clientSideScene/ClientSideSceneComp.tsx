@@ -96,15 +96,29 @@ export const ClientSideScene = ({
     canvas.appendChild(sceneInfra.renderer.domElement)
     canvas.appendChild(sceneInfra.labelRenderer.domElement)
     sceneInfra.animate()
-    canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
+    canvas.addEventListener(
+      'mousemove',
+      toSync(sceneInfra.onMouseMove, reportRejection),
+      false
+    )
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
-    canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)
+    canvas.addEventListener(
+      'mouseup',
+      toSync(sceneInfra.onMouseUp, reportRejection),
+      false
+    )
     sceneInfra.setSend(send)
     engineCommandManager.modelingSend = send
     return () => {
-      canvas?.removeEventListener('mousemove', sceneInfra.onMouseMove)
+      canvas?.removeEventListener(
+        'mousemove',
+        toSync(sceneInfra.onMouseMove, reportRejection)
+      )
       canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      canvas?.removeEventListener('mouseup', sceneInfra.onMouseUp)
+      canvas?.removeEventListener(
+        'mouseup',
+        toSync(sceneInfra.onMouseUp, reportRejection)
+      )
     }
   }, [])
 

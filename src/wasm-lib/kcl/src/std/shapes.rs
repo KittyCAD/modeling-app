@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     ast::types::TagDeclarator,
-    errors::{KclError, KclErrorDetails},
+    errors::KclError,
     executor::{BasePath, ExecState, GeoMeta, KclValue, Path, SketchGroup, SketchSurface},
     std::Args,
 };
@@ -93,15 +93,8 @@ async fn inner_circle(
     )
     .await?;
 
-    let angle_start = Angle::from_degrees(0.0);
-    let angle_end = Angle::from_degrees(360.0);
-
-    if angle_start == angle_end {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Arc start and end angles must be different".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
+    let angle_start = Angle::zero();
+    let angle_end = Angle::turn();
 
     let id = uuid::Uuid::new_v4();
 
