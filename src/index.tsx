@@ -7,6 +7,7 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
+import { ToastUpdate } from 'components/ToastUpdate'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -56,5 +57,13 @@ isDesktop() &&
   window.electron.onUpdateDownloaded((version: string) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
-    toast(message, { duration: 3000 })
+    toast.custom(
+      ToastUpdate({
+        version,
+        onRestart: () => {
+          window.electron.appRestart()
+        },
+      }),
+      { duration: 30000 }
+    )
   })

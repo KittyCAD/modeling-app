@@ -15,6 +15,7 @@ const login = (host: string): Promise<string> =>
   ipcRenderer.invoke('login', host)
 const onUpdateDownloaded = (callback: (value: string) => void) =>
   ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+const appRestart = () => ipcRenderer.invoke('app.restart')
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -123,4 +124,5 @@ contextBridge.exposeInMainWorld('electron', {
   listMachines,
   getMachineApiIp,
   onUpdateDownloaded,
+  appRestart,
 })

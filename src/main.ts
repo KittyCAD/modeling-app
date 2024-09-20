@@ -257,6 +257,10 @@ app.on('ready', () => {
     console.log('update-downloaded', info)
     mainWindow?.webContents.send('update-downloaded', info.version)
   })
+
+  ipcMain.handle('app.restart', () => {
+    autoUpdater.quitAndInstall()
+  })
 })
 
 const getProjectPathAtStartup = async (

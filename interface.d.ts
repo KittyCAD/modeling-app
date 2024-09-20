@@ -63,6 +63,7 @@ export interface IElectronAPI {
   onUpdateDownloaded: (
     callback: (value: string) => void
   ) => Electron.IpcRenderer
+  appRestart: () => void
 }
 
 declare global {
