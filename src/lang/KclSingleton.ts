@@ -565,7 +565,8 @@ export class KclManager {
     defaultSelectionFilter(this.programMemory, this.engineCommandManager)
   }
 
-  // Determines if there is no KCL code which means it is executing a blank KCL file
+  // An AST is empty if there are 0 lines of code in the editor or if all of the code is commented out
+  // This code will not tell you which scenario only if the AST evaluates to empty
   _isAstEmpty(ast: Program) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
