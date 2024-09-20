@@ -69,12 +69,15 @@ test.describe('Testing settings', () => {
     page,
   }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
+    await test.step(`Setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await page
+        .getByRole('button', { name: 'Start Sketch' })
+        .waitFor({ state: 'visible' })
+    })
 
+    // Selectors and constants
     const paneButtonLocator = page.getByTestId('debug-pane-button')
     const headingLocator = page.getByRole('heading', {
       name: 'Settings',
@@ -82,11 +85,23 @@ test.describe('Testing settings', () => {
     })
     const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
 
-    // Open the settings modal with the browser keyboard shortcut
-    await page.keyboard.press('ControlOrMeta+Shift+,')
+    await test.step('Open settings dialog and set "Show debug panel" to on', async () => {
+      await page.keyboard.press('ControlOrMeta+Shift+,')
+      await expect(headingLocator).toBeVisible()
 
-    await expect(headingLocator).toBeVisible()
-    await page.locator('#showDebugPanel').getByText('OffOn').click()
+      /** Test to close https://github.com/KittyCAD/modeling-app/issues/2713 */
+      await test.step(`Confirm that this dialog has a solid background`, async () => {
+        await expect
+          .poll(() => u.getGreatestPixDiff({ x: 600, y: 250 }, [28, 28, 28]), {
+            timeout: 1000,
+            message:
+              'Checking for solid background, should not see default plane colors',
+          })
+          .toBeLessThan(15)
+      })
+
+      await page.locator('#showDebugPanel').getByText('OffOn').click()
+    })
 
     // Close it and open again with keyboard shortcut, while KCL editor is focused
     // Put the cursor in the editor
