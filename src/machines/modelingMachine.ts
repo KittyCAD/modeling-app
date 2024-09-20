@@ -120,12 +120,28 @@ export interface SegmentOverlays {
   [pathToNodeString: string]: SegmentOverlay
 }
 
+export interface EdgeCutInfo {
+  type: 'edgeCut'
+  tagName: string
+  subType: 'base' | 'opposite' | 'adjacent'
+}
+
+export interface CapInfo {
+  type: 'cap'
+  subType: 'start' | 'end'
+}
+
 export type ExtrudeFacePlane = {
   type: 'extrudeFace'
   position: [number, number, number]
   sketchPathToNode: PathToNode
   extrudePathToNode: PathToNode
-  cap: 'start' | 'end' | 'none'
+  faceInfo:
+    | {
+        type: 'wall'
+      }
+    | CapInfo
+    | EdgeCutInfo
   faceId: string
   zAxis: [number, number, number]
   yAxis: [number, number, number]

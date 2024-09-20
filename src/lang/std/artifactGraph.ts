@@ -42,7 +42,7 @@ export interface PathArtifactRich {
   codeRef: CommonCommandProperties
 }
 
-interface SegmentArtifact {
+export interface SegmentArtifact {
   type: 'segment'
   pathId: ArtifactId
   surfaceId: ArtifactId

@@ -605,7 +605,7 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               input.sketchPathToNode,
               input.extrudePathToNode,
-              input.cap
+              input.faceInfo
             )
             if (trap(sketched)) return Promise.reject(sketched)
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched

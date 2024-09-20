@@ -233,7 +233,8 @@ function mutateAstWithTagForSketchSegment(
       pathToNode: pathToSegmentNode,
       node: astClone,
     },
-    segmentNode.node.callee.name
+    segmentNode.node.callee.name,
+    null
   )
   if (err(taggedSegment)) return taggedSegment
   const { tag } = taggedSegment

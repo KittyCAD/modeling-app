@@ -53,6 +53,7 @@ import { roundOff, getLength, getAngle } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { EdgeCutInfo } from 'machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -1895,17 +1896,129 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
+/** Ostensibly  should be used to add a chamfer tag to a chamfer call expression
+ *
+ * However things get complicated in situations like:
+ * ```ts
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tag1, tagOfInterest]
+ *   }, %)
+ * ```
+ * Because tag declarator is not allowed on a chamfer with more than one tag,
+ * They must be pulled apart into separate chamfer calls:
+ * ```ts
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tag1]
+ *   }, %)
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tagOfInterest]
+ *   }, %, $newTagDeclarator)
+ * ```
+ */
+function addTagToChamfer(
+  tagInfo: AddTagInfo,
+  edgeCutMeta: EdgeCutInfo | null
+):
+  | {
+      modifiedAst: Program
+      tag: string
+    }
+  | Error {
+  const _node = structuredClone(tagInfo.node)
+  let pipeIndex = 0
+  for (let i = 0; i < tagInfo.pathToNode.length; i++) {
+    if (tagInfo.pathToNode[i][1] === 'PipeExpression') {
+      pipeIndex = Number(tagInfo.pathToNode[i + 1][0])
+      break
+    }
+  }
+  const pipeExpr = getNodeFromPath<PipeExpression>(
+    _node,
+    tagInfo.pathToNode,
+    'PipeExpression'
+  )
+  if (err(pipeExpr)) return pipeExpr
+  const callExpr = pipeExpr.node.body[pipeIndex]
+  if (callExpr.type !== 'CallExpression')
+    return new Error('no chamfer call Expr')
+  const obj = callExpr.arguments[0]
+  if (obj.type !== 'ObjectExpression')
+    return new Error('first argument should be an object expression')
+  const tags = obj.properties.find((a) => {
+    return a.key.name === 'tags'
+  })
+  if (!tags) return new Error('no tags property')
+  if (tags.value.type !== 'ArrayExpression')
+    return new Error('tags should be an array expression')
+  if (tags.value.elements.length < 2) {
+    return addTag(2)(tagInfo)
+  }
+  const tagIndexToPullOut = tags.value.elements.findIndex((element) => {
+    if (
+      edgeCutMeta?.subType === 'base' &&
+      element.type === 'Identifier' &&
+      element.name === edgeCutMeta.tagName
+    )
+      return true
+    if (
+      edgeCutMeta?.subType === 'opposite' &&
+      element.type === 'CallExpression' &&
+      element.callee.name === 'getOppositeEdge' &&
+      element.arguments[0].type === 'Identifier' &&
+      element.arguments[0].name === edgeCutMeta.tagName
+    )
+      return true
+    if (
+      edgeCutMeta?.subType === 'adjacent' &&
+      element.type === 'CallExpression' &&
+      (element.callee.name === 'getNextAdjacentEdge' ||
+        element.callee.name === 'getPrevAdjacentEdge') &&
+      element.arguments[0].type === 'Identifier' &&
+      element.arguments[0].name === edgeCutMeta.tagName
+    )
+      return true
+  })
+  if (tagIndexToPullOut === -1) return new Error('tag not found')
+  const tagToPullOut = tags.value.elements[tagIndexToPullOut]
+  tags.value.elements.splice(tagIndexToPullOut, 1)
+  const chamferLength = obj.properties.find(
+    (a) => a.key.name === 'length'
+  )?.value
+  if (!chamferLength) return new Error('no chamfer length')
+  const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
+  const newExpressionToInsert = createCallExpression('chamfer', [
+    createObjectExpression({
+      length: chamferLength,
+      tags: createArrayExpression([tagToPullOut]),
+    }),
+    createPipeSubstitution(),
+    tagDec,
+  ])
+  pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
+  return {
+    modifiedAst: _node,
+    tag: tagDec.value,
+  }
+}
+
 export function addTagForSketchOnFace(
   tagInfo: AddTagInfo,
-  expressionName: string
-) {
+  expressionName: string,
+  edgeCutMeta: EdgeCutInfo | null
+):
+  | {
+      modifiedAst: Program
+      tag: string
+    }
+  | Error {
   if (expressionName === 'close') {
     return addTag(1)(tagInfo)
   }
   if (expressionName === 'chamfer') {
-    // TODO: if there are two (or more) tags on the chamfer, it needs to pull out
-    // the relevant tag and put it into a separate chamfer call
-    return addTag(2)(tagInfo)
+    return addTagToChamfer(tagInfo, edgeCutMeta)
   }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
