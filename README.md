@@ -337,13 +337,47 @@ For individual testing:
 yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
 ```
 
-Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/** tests, in interactive mode by default.
 
 ### Rust tests
 
-```bash
+**Dependencies**
+
+- `KITTYCAD_API_TOKEN`
+- `cargo-nextest`
+- `just`
+
+#### Setting KITTYCAD_API_TOKEN
+Use the production zoo.dev token, set this environment variable before running the tests
+
+#### Installing cargonextest
+
+```
 cd src/wasm-lib
-KITTYCAD_API_TOKEN=XXX cargo test -- --test-threads=1
+cargo search cargo-nextest
+cargo install cargo-nextest
+```
+
+#### just
+install [`just`](https://github.com/casey/just?tab=readme-ov-file#pre-built-binaries)
+
+#### Running the tests
+
+```bash
+# With just
+# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
+# Make sure you installed cargo-nextest
+# Make sure you installed just
+cd src/wasm-lib
+just test
+```
+
+```bash
+# Without just
+# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
+# Make sure you installed cargo-nextest
+cd src/wasm-lib
+export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
 ```
 
 Where `XXX` is an API token from the production engine (NOT the dev environment).
