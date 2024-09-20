@@ -1,8 +1,7 @@
 use std::any::type_name;
 
 use anyhow::Result;
-use kcmc::websocket::OkWebSocketResponseData;
-use kcmc::ModelingCmd;
+use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use serde::de::DeserializeOwned;
 
@@ -166,7 +165,7 @@ impl Args {
         // before what ever we call next.
         for id in ids {
             // Pop it off the batch_end and add it to the batch.
-            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().remove(&id) else {
+            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().shift_remove(&id) else {
                 // It might be in the batch already.
                 continue;
             };

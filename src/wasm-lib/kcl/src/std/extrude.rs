@@ -4,11 +4,10 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::ok_response::OkModelingCmdResponse;
-use kcmc::websocket::OkWebSocketResponseData;
-use kcmc::{output::ExtrusionFaceInfo, shared::ExtrusionFaceCapType, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::ExtrusionFaceInfo,
+    shared::ExtrusionFaceCapType, websocket::OkWebSocketResponseData, ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use uuid::Uuid;

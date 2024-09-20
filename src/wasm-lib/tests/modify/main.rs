@@ -3,9 +3,7 @@ use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
     executor::{ExecutorContext, KclValue, PlaneType, SketchGroup, SourceRange},
 };
-use kittycad_modeling_cmds::shared::Point3d;
-use kittycad_modeling_cmds::ModelingCmd;
-use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit};
+use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.

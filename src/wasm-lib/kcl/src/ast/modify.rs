@@ -1,10 +1,9 @@
 use std::sync::Arc;
 
-use kcmc::each_cmd as mcmd;
-use kcmc::ok_response::OkModelingCmdResponse;
-use kcmc::shared::PathCommand;
-use kcmc::websocket::OkWebSocketResponseData;
-use kcmc::ModelingCmd;
+use kcmc::{
+    each_cmd as mcmd, ok_response::OkModelingCmdResponse, shared::PathCommand, websocket::OkWebSocketResponseData,
+    ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 
 use crate::{
