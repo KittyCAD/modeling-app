@@ -78,8 +78,13 @@ export class CameraControls {
   enablePan = true
   enableZoom = true
   zoomDataFromLastFrame?: number = undefined
-  // holds coordinates, and interaction
-  moveDataFromLastFrame?: [number, number, string] = undefined
+  // Holds event type, coordinates (for wheel, it's delta), and interaction
+  moveDataFromLastFrame?: [
+    'pointer' | 'wheel',
+    number,
+    number,
+    interactionType
+  ] = undefined
   lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -283,19 +288,75 @@ export class CameraControls {
 
     const doMove = () => {
       if (this.moveDataFromLastFrame !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'camera_drag_move',
-            interaction: this.moveDataFromLastFrame[2] as any,
-            window: {
-              x: this.moveDataFromLastFrame[0],
-              y: this.moveDataFromLastFrame[1],
-            },
-          },
-          cmd_id: uuidv4(),
-        })
+        const interaction = this.moveDataFromLastFrame[3]
+        if (this.moveDataFromLastFrame[0] === 'pointer') {
+          this.engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd: {
+                type: 'camera_drag_move',
+                interaction,
+                window: {
+                  x: this.moveDataFromLastFrame[1],
+                  y: this.moveDataFromLastFrame[2],
+                },
+              },
+              cmd_id: uuidv4(),
+            })
+            .catch(reportRejection)
+        } else if (this.moveDataFromLastFrame[0] === 'wheel') {
+          const deltaX = this.moveDataFromLastFrame[1]
+          const deltaY = this.moveDataFromLastFrame[2]
+          this.isDragging = true
+          this.handleStart()
+
+          this.engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_batch_req',
+              batch_id: uuidv4(),
+              requests: [
+                {
+                  cmd: {
+                    type: 'camera_drag_start',
+                    interaction,
+                    window: { x: 0, y: 0 },
+                  },
+                  cmd_id: uuidv4(),
+                },
+                {
+                  cmd: {
+                    type: 'camera_drag_move',
+                    interaction,
+                    window: {
+                      x: -deltaX,
+                      y: -deltaY,
+                    },
+                  },
+                  cmd_id: uuidv4(),
+                },
+                {
+                  cmd: {
+                    type: 'camera_drag_end',
+                    interaction,
+                    window: {
+                      x: -deltaX,
+                      y: -deltaY,
+                    },
+                  },
+                  cmd_id: uuidv4(),
+                },
+              ],
+              responses: false,
+            })
+            .catch(reportRejection)
+
+          this.isDragging = false
+          this.handleEnd()
+        } else {
+          console.error(
+            `Unknown moveDataFromLastFrame event type: ${this.moveDataFromLastFrame[0]}`
+          )
+        }
       }
       this.moveDataFromLastFrame = undefined
     }
@@ -386,7 +447,12 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
-        this.moveDataFromLastFrame = [event.clientX, event.clientY, interaction]
+        this.moveDataFromLastFrame = [
+          'pointer',
+          event.clientX,
+          event.clientY,
+          interaction,
+        ]
         return
       }
 
@@ -466,51 +532,12 @@ export class CameraControls {
       if (interaction === 'zoom') {
         this.zoomDataFromLastFrame = event.deltaY * zoomDirection
       } else {
-        this.isDragging = true
-        this.handleStart()
-
-        this.engineCommandManager
-          .sendSceneCommand({
-            type: 'modeling_cmd_batch_req',
-            batch_id: uuidv4(),
-            requests: [
-              {
-                cmd: {
-                  type: 'camera_drag_start',
-                  interaction,
-                  window: { x: event.clientX, y: event.clientY },
-                },
-                cmd_id: uuidv4(),
-              },
-              {
-                cmd: {
-                  type: 'camera_drag_move',
-                  interaction,
-                  window: {
-                    x: event.clientX - event.deltaX,
-                    y: event.clientY - event.deltaY,
-                  },
-                },
-                cmd_id: uuidv4(),
-              },
-              {
-                cmd: {
-                  type: 'camera_drag_end',
-                  interaction,
-                  window: {
-                    x: event.clientX - event.deltaX,
-                    y: event.clientY - event.deltaY,
-                  },
-                },
-                cmd_id: uuidv4(),
-              },
-            ],
-            responses: false,
-          })
-          .catch(reportRejection)
-
-        this.isDragging = false
-        this.handleEnd()
+        this.moveDataFromLastFrame = [
+          'wheel',
+          event.deltaX,
+          event.deltaY,
+          interaction,
+        ]
       }
       return
     }
