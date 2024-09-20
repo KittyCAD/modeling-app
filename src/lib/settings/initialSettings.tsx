@@ -183,20 +183,24 @@ export function createSettings() {
       /**
        * Stream resource saving behavior toggle
        */
-      streamIdleMode: new Setting<number | null>({
-        defaultValue: null,
+      streamIdleMode: new Setting<number | undefined>({
+        defaultValue: undefined,
         description: 'Toggle stream idling, saving bandwidth and battery',
         validate: (v) =>
-          v === null ||
-          (typeof v === 'number' && Number(v) >= 1 * MS_IN_MINUTE && Number(v) <= 60 * MS_IN_MINUTE),
+          v === undefined ||
+          (typeof v === 'number' &&
+            v >= 1 * MS_IN_MINUTE &&
+            v <= 60 * MS_IN_MINUTE),
         Component: ({ value, updateValue }) => (
           <div className="flex item-center gap-4 px-2 m-0 py-0">
             <div className="flex flex-col">
               <input
                 type="checkbox"
-                checked={value !== null}
+                checked={value !== undefined}
                 onChange={(e) =>
-                  updateValue(!e.currentTarget.checked ? null : 5 * 1000 * 60)
+                  updateValue(
+                    !e.currentTarget.checked ? undefined : 5 * MS_IN_MINUTE
+                  )
                 }
                 className="block w-4 h-4"
               />
@@ -205,21 +209,27 @@ export function createSettings() {
             <div className="flex flex-col grow">
               <input
                 type="range"
-                onChange={(e) => updateValue(parseInt(e.currentTarget.value) * 1000 * 60)}
-                disabled={value === null}
-                value={value/MS_IN_MINUTE}
+                onChange={(e) =>
+                  updateValue(Number(e.currentTarget.value) * MS_IN_MINUTE)
+                }
+                disabled={value === undefined}
+                value={
+                  value !== null && value !== undefined
+                    ? value / MS_IN_MINUTE
+                    : 5
+                }
                 min={1}
                 max={60}
                 step={1}
                 className="block flex-1"
               />
-              {value !== null && (
+              {value !== undefined && value !== null && (
                 <div>
-                  {value/MS_IN_MINUTE === 60
+                  {value / MS_IN_MINUTE === 60
                     ? '1 hour'
-                    : value/MS_IN_MINUTE === 1
+                    : value / MS_IN_MINUTE === 1
                     ? '1 minute'
-                    : value/MS_IN_MINUTE + ' minutes'}
+                    : value / MS_IN_MINUTE + ' minutes'}
                 </div>
               )}
             </div>

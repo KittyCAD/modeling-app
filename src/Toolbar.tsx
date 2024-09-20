@@ -23,10 +23,6 @@ import {
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { EngineConnectionStateType } from 'lang/std/engineConnection'
-import useEngineStreamContext, {
-  EngineStreamState,
-  EngineStreamTransition,
-} from 'hooks/useEngineStreamContext'
 
 export function Toolbar({
   className = '',

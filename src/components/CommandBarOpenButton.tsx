@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import usePlatform from 'hooks/usePlatform'
 import { hotkeyDisplay } from 'lib/hotkeyWrapper'

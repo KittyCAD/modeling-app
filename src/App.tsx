@@ -37,7 +37,7 @@ export function App() {
   // Stream related refs and data
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const modelingSidebarRef = useRef<HTMLDivElement>(null)
+  const modelingSidebarRef = useRef<HTMLUListElement>(null)
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 

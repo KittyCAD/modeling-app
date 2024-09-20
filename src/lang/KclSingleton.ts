@@ -2,7 +2,7 @@ import { executeAst, lintAst } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
-import { EngineCommandManager } from './std/engineConnection'
+import { EngineCommandManager, CommandLogType } from './std/engineConnection'
 import { err } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
@@ -314,7 +314,7 @@ export class KclManager {
     this.ast = { ...ast }
     this._executeCallback()
     this.engineCommandManager.addCommandLog({
-      type: 'execution-done',
+      type: CommandLogType.ExecutionDone,
       data: null,
     })
 

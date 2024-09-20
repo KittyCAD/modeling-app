@@ -23,6 +23,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
+import { sceneInfra } from 'lib/singletons'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -38,10 +39,10 @@ function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
 }
 
-export const ModelingSidebar = forwardRef(function ModelingSidebar(
-  { paneOpacity }: ModelingSidebarProps,
-  ref
-) {
+export const ModelingSidebar = forwardRef<
+  HTMLUListElement | null,
+  ModelingSidebarProps
+>(function ModelingSidebar({ paneOpacity }, ref) {
   const machineManager = useContext(MachineManagerContext)
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
@@ -168,7 +169,7 @@ export const ModelingSidebar = forwardRef(function ModelingSidebar(
   useEffect(() => {
     // Don't send camera adjustment commands after 1 pane is open. It
     // won't make any difference.
-    if (context.store?.openPanes > 1) return
+    if (context.store?.openPanes.length > 1) return
 
     void sceneInfra.camControls.centerModelRelativeToPanes()
   }, [context.store?.openPanes])
