@@ -159,7 +159,7 @@ export const EngineStream = () => {
     }
   }, [file?.path, engineCommandManager.engineConnection])
 
-  const IDLE_TIME_MS = Number(streamIdleMode) * 1000 * 60
+  const IDLE_TIME_MS = Number(streamIdleMode)
 
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)

@@ -118,6 +118,8 @@ export class Setting<T = unknown> {
   }
 }
 
+const MS_IN_MINUTE = 1000 * 60
+
 export function createSettings() {
   return {
     /** Settings that affect the behavior of the entire app,
@@ -186,16 +188,16 @@ export function createSettings() {
         description: 'Toggle stream idling, saving bandwidth and battery',
         validate: (v) =>
           v === null ||
-          (typeof v === 'number' &&
-            Number(v) >= 0 &&
-            Number(v) <= 60),
+          (typeof v === 'number' && Number(v) >= 1 * MS_IN_MINUTE && Number(v) <= 60 * MS_IN_MINUTE),
         Component: ({ value, updateValue }) => (
           <div className="flex item-center gap-4 px-2 m-0 py-0">
             <div className="flex flex-col">
               <input
                 type="checkbox"
                 checked={value !== null}
-                onChange={(e) => updateValue(!e.currentTarget.checked ? null : 5)}
+                onChange={(e) =>
+                  updateValue(!e.currentTarget.checked ? null : 5 * 1000 * 60)
+                }
                 className="block w-4 h-4"
               />
               <div></div>
@@ -203,21 +205,23 @@ export function createSettings() {
             <div className="flex flex-col grow">
               <input
                 type="range"
-                onChange={(e) =>
-                  updateValue(parseInt(e.currentTarget.value))
-                }
+                onChange={(e) => updateValue(parseInt(e.currentTarget.value) * 1000 * 60)}
                 disabled={value === null}
-                value={value}
+                value={value/MS_IN_MINUTE}
                 min={1}
                 max={60}
                 step={1}
                 className="block flex-1"
               />
-              { value !== null &&
-              <div>
-                {value === 60 ? '1 hour' : value === 1 ? '1 minute' : value + ' minutes'}
-              </div>
-              }
+              {value !== null && (
+                <div>
+                  {value/MS_IN_MINUTE === 60
+                    ? '1 hour'
+                    : value/MS_IN_MINUTE === 1
+                    ? '1 minute'
+                    : value/MS_IN_MINUTE + ' minutes'}
+                </div>
+              )}
             </div>
           </div>
         ),
