@@ -41,10 +41,12 @@ export function kclCommands(
         if (!data?.sample) {
           return
         }
-        const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${data.sample.replace(
-          FILE_EXT,
-          ''
-        )}/${data.sample}`
+        const sampleCodeUrl = encodeURIComponent(
+          `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${data.sample.replace(
+            FILE_EXT,
+            ''
+          )}/${data.sample}`
+        )
         fetch(sampleCodeUrl)
           .then(async (response) => {
             if (!response.ok) {
