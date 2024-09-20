@@ -255,9 +255,9 @@ dependencies = [
 
 [[package]]
 name = "bson"
-version = "2.12.0"
+version = "2.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80cf6f7806607bd58ad490bab34bf60e25455ea4aaf995f897a13324d41ea580"
+checksum = "068208f2b6fcfa27a7f1ee37488d2bb8ba2640f68f5475d08e1d9130696aba59"
 dependencies = [
  "ahash",
  "base64 0.13.1",
@@ -1400,7 +1400,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.15"
+version = "0.2.16"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1526,9 +1526,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.59"
+version = "0.2.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee900033a5804ca2354f0760478e851a0ab04d32b38a9117d0bd4f87a8867110"
+checksum = "5128ba683e849388cac4214b65911c343842d559bec10827575c840a47733786"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3427,11 +3427,12 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "ts-rs"
-version = "9.0.1"
+version = "10.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b44017f9f875786e543595076374b9ef7d13465a518dd93d6ccdbf5b432dde8c"
+checksum = "3a2f31991cee3dce1ca4f929a8a04fdd11fd8801aac0f2030b0fa8a0a3fef6b9"
 dependencies = [
  "chrono",
+ "lazy_static",
  "serde_json",
  "thiserror",
  "ts-rs-macros",
@@ -3441,9 +3442,9 @@ dependencies = [
 
 [[package]]
 name = "ts-rs-macros"
-version = "9.0.1"
+version = "10.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c88cc88fd23b5a04528f3a8436024f20010a16ec18eb23c164b1242f65860130"
+checksum = "0ea0b99e8ec44abd6f94a18f28f7934437809dd062820797c52401298116f70e"
 dependencies = [
  "proc-macro2",
  "quote",
