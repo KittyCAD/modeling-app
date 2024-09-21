@@ -22,7 +22,12 @@ import {
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import { toSync, uuidv4 } from 'lib/utils'
+import {
+  cachedNaturalScrollDirection,
+  refreshNaturalScrollDirection,
+  toSync,
+  uuidv4,
+} from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
@@ -33,6 +38,9 @@ import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
 const ORTHOGRAPHIC_MAGIC_FOV = 4
+
+// Load the setting from the OS.
+refreshNaturalScrollDirection().catch(reportRejection)
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -522,15 +530,25 @@ export class CameraControls {
     }
   }
 
+  zoomDirection = (event: WheelEvent): 1 | -1 => {
+    if (!this.interactionGuards.zoom.scrollAllowInvertY) return 1
+    // Safari provides the updated user setting on every event, so it's more
+    // accurate than our cached value.
+    if ('webkitDirectionInvertedFromDevice' in event) {
+      return event.webkitDirectionInvertedFromDevice ? -1 : 1
+    }
+    return cachedNaturalScrollDirection ? -1 : 1
+  }
+
   onMouseWheel = (event: WheelEvent) => {
     const interaction = this.getInteractionType(event)
     if (interaction === 'none') return
     event.preventDefault()
 
-    const zoomDirection = this.interactionGuards.zoom.scrollReverseY ? -1 : 1
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
-        this.zoomDataFromLastFrame = event.deltaY * zoomDirection
+        const zoomDir = this.zoomDirection(event)
+        this.zoomDataFromLastFrame = event.deltaY * zoomDir
       } else {
         this.moveDataFromLastFrame = [
           'wheel',
@@ -551,8 +569,9 @@ export class CameraControls {
 
     this.handleStart()
     if (interaction === 'zoom') {
+      const zoomDir = this.zoomDirection(event)
       this.pendingZoom =
-        1 + (event.deltaY / window.devicePixelRatio) * 0.001 * zoomDirection
+        1 + (event.deltaY / window.devicePixelRatio) * 0.001 * zoomDir
     } else {
       this.isDragging = true
       this.mouseDownPosition.set(event.clientX, event.clientY)

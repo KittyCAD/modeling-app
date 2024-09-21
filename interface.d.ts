@@ -69,6 +69,7 @@ export interface IElectronAPI {
   kittycad: (access: string, args: any) => any
   listMachines: () => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  readNaturalScrollDirection: () => Promise<boolean>
   onUpdateDownloaded: (
     callback: (value: string) => void
   ) => Electron.IpcRenderer

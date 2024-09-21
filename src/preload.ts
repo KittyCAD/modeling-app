@@ -5,6 +5,7 @@ import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
+import { exec } from 'child_process'
 import chokidar from 'chokidar'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
@@ -81,6 +82,25 @@ const listMachines = async (): Promise<MachinesListing> => {
 const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
+async function readNaturalScrollDirection(): Promise<boolean> {
+  if (os.platform() !== 'darwin') {
+    // TODO: Detect this on other OS's.
+    return false
+  }
+  return new Promise((resolve, reject) => {
+    exec(
+      'defaults read -globalDomain com.apple.swipescrolldirection',
+      (err, stdout) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(stdout.trim() === '1')
+        }
+      }
+    )
+  })
+}
+
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
@@ -144,6 +164,7 @@ contextBridge.exposeInMainWorld('electron', {
   kittycad,
   listMachines,
   getMachineApiIp,
+  readNaturalScrollDirection,
   onUpdateDownloaded,
   appRestart,
 })

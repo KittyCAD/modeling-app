@@ -4,6 +4,7 @@ import { v4 } from 'uuid'
 import { isDesktop } from './isDesktop'
 import { AnyMachineSnapshot } from 'xstate'
 import { AsyncFn } from './types'
+import { readNaturalScrollDirection } from './desktop'
 
 export const uuidv4 = v4
 
@@ -260,6 +261,19 @@ export function isReducedMotion(): boolean {
     // TODO/Note I (Kurt) think '(prefers-reduced-motion: reduce)' and '(prefers-reduced-motion)' are equivalent, but not 100% sure
     window.matchMedia('(prefers-reduced-motion)').matches
   )
+}
+
+/**
+ * True if Apple Trackpad scroll should move the content. I.e. if this is true,
+ * and the user scrolls down, the viewport moves up relative to the content.
+ */
+export let cachedNaturalScrollDirection = platform() === 'macos'
+
+export async function refreshNaturalScrollDirection() {
+  if (!isDesktop()) return cachedNaturalScrollDirection
+  const isNatural = await readNaturalScrollDirection()
+  cachedNaturalScrollDirection = isNatural
+  return isNatural
 }
 
 export function XOR(bool1: boolean, bool2: boolean): boolean {

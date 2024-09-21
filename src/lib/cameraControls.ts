@@ -66,7 +66,7 @@ interface MouseGuardZoomHandler {
   description: string
   dragCallback: (e: MouseEvent) => boolean
   scrollCallback: (e: WheelEvent) => boolean
-  scrollReverseY?: boolean
+  scrollAllowInvertY?: boolean
   lenientDragStartButton?: number
 }
 
@@ -157,7 +157,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         !e.ctrlKey &&
         !e.altKey &&
         !e.metaKey,
-      scrollReverseY: true,
+      scrollAllowInvertY: true,
     },
     rotate: {
       description: `${ALT} + Scroll`,
