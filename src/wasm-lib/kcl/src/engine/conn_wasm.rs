@@ -1,9 +1,6 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
 use indexmap::IndexMap;
