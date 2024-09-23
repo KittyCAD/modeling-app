@@ -54,11 +54,17 @@ const case = startSketchOn('-XZ')
   |> extrude(65, %)
 
 const thing1 = startSketchOn(case, 'end')
-  |> circle([-size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [-size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 const thing2 = startSketchOn(case, 'end')
-  |> circle([size / 2, -size / 2], 25, %)
+  |> circle({
+       center: [size / 2, -size / 2],
+       radius: 25
+     }, %)
   |> extrude(50, %)
 
 hollow(0.5, case)
@@ -342,6 +348,26 @@ hollow(0.5, case)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -737,6 +763,26 @@ hollow(0.5, case)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.

@@ -1028,10 +1028,13 @@ const tabs_r = startSketchOn({
   |> line([0, -10], %)
   |> line([-10, -5], %)
   |> close(%)
-  |> hole(circle([
-       width / 2 + thk + hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         width / 2 + thk + hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
@@ -1052,10 +1055,13 @@ const tabs_l = startSketchOn({
   |> line([0, -10], %)
   |> line([10, -5], %)
   |> close(%)
-  |> hole(circle([
-       -width / 2 - thk - hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         -width / 2 - thk - hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
@@ -1148,10 +1154,13 @@ const tabs_r = startSketchOn({
   |> line([0, -10], %)
   |> line([-10, -5], %)
   |> close(%)
-  |> hole(circle([
-       width / 2 + thk + hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         width / 2 + thk + hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
@@ -1172,10 +1181,13 @@ const tabs_l = startSketchOn({
   |> line([0, -10], %)
   |> line([10, -5], %)
   |> close(%)
-  |> hole(circle([
-       -width / 2 - thk - hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         -width / 2 - thk - hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
