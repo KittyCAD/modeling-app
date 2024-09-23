@@ -240,7 +240,7 @@ describe('testing addTagForSketchOnFace', () => {
     const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
-  it.only('can break up chamfers in order to add tags', async () => {
+  it('can break up chamfers in order to add tags', async () => {
     const originalChamfer = `|> chamfer({
        length: 30,
        tags: [seg01, getOppositeEdge(seg01)]
