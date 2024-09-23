@@ -531,6 +531,10 @@ export class CameraControls {
   }
 
   zoomDirection = (event: WheelEvent): 1 | -1 => {
+    if (this.interactionGuards.zoom.pinchToZoom && isPinchToZoom(event)) {
+      return 1
+    }
+
     if (!this.interactionGuards.zoom.scrollAllowInvertY) return 1
     // Safari provides the updated user setting on every event, so it's more
     // accurate than our cached value.
@@ -1365,11 +1369,17 @@ function _getInteractionType(
   enableZoom: boolean
 ): interactionType | 'none' {
   if (event instanceof WheelEvent) {
-    if (enablePan && interactionGuards.pan.scrollCallback(event)) return 'pan'
-    if (enableRotate && interactionGuards.rotate.scrollCallback(event))
-      return 'rotate'
-    if (enableZoom && interactionGuards.zoom.scrollCallback(event))
-      return 'zoom'
+    // If the control scheme accepts pinch-to-zoom, and the event is
+    // pinch-to-zoom, never consider other interaction types.
+    if (interactionGuards.zoom.pinchToZoom && isPinchToZoom(event)) {
+      if (enableZoom) return 'zoom'
+    } else {
+      if (enablePan && interactionGuards.pan.scrollCallback(event)) return 'pan'
+      if (enableRotate && interactionGuards.rotate.scrollCallback(event))
+        return 'rotate'
+      if (enableZoom && interactionGuards.zoom.scrollCallback(event))
+        return 'zoom'
+    }
   } else {
     if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
     if (enableRotate && interactionGuards.rotate.callback(event))
@@ -1377,6 +1387,18 @@ function _getInteractionType(
     if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
   }
   return 'none'
+}
+
+function isPinchToZoom(event: WheelEvent): boolean {
+  // Browsers do this hack.  A couple issues:
+  //
+  // - According to MDN, it doesn't work on iOS.
+  // - It doesn't differentiate with a user actually holding Control and
+  //   scrolling normally.  It's possible to detect this by using onKeyDown and
+  //   onKeyUp to track the state of the Control key.  But we currently don't
+  //   care about this since only the Apple Trackpad scheme looks for
+  //   pinch-to-zoom events using interactionGuards.zoom.pinchToZoom.
+  return event.ctrlKey
 }
 
 /**

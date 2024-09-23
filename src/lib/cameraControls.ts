@@ -67,6 +67,7 @@ interface MouseGuardZoomHandler {
   dragCallback: (e: MouseEvent) => boolean
   scrollCallback: (e: WheelEvent) => boolean
   scrollAllowInvertY?: boolean
+  pinchToZoom?: boolean
   lenientDragStartButton?: number
 }
 
@@ -158,6 +159,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
         !e.altKey &&
         !e.metaKey,
       scrollAllowInvertY: true,
+      pinchToZoom: true,
     },
     rotate: {
       description: `${ALT} + Scroll`,
