@@ -13,9 +13,6 @@ test.afterEach(async ({ page }, testInfo) => {
 test('Units menu', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
-
   await u.waitForAuthSkipAppStart()
 
   const unitsMenuButton = page.getByRole('button', {
