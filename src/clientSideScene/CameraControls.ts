@@ -22,12 +22,7 @@ import {
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import {
-  cachedNaturalScrollDirection,
-  refreshNaturalScrollDirection,
-  toSync,
-  uuidv4,
-} from 'lib/utils'
+import { cachedNaturalScrollDirection, toSync, uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
@@ -38,9 +33,6 @@ import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
 const ORTHOGRAPHIC_MAGIC_FOV = 4
-
-// Load the setting from the OS.
-refreshNaturalScrollDirection().catch(reportRejection)
 
 const tempQuaternion = new Quaternion() // just used for maths
 

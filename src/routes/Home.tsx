@@ -37,6 +37,8 @@ import {
 } from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
+import { refreshNaturalScrollDirection } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 
@@ -59,6 +61,11 @@ const Home = () => {
   // Cancel all KCL executions while on the home page
   useEffect(() => {
     kclManager.cancelAllExecutions()
+  }, [])
+
+  useEffect(() => {
+    // Load OS setting.
+    refreshNaturalScrollDirection().catch(reportRejection)
   }, [])
 
   useHotkeys('backspace', (e) => {
