@@ -310,12 +310,11 @@ fn generate_repl_uuids(count: usize) -> Vec<uuid::Uuid> {
     repl_ids
 }
 
-#[allow(clippy::needless_range_loop)]
 fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> String {
     let mut codegen = String::new();
 
-    for (i, id) in entity_ids.into_iter().enumerate() {
-        let cpp_id = id_to_cpp(&id);
+    for (i, id) in entity_ids.iter().enumerate() {
+        let cpp_id = id_to_cpp(id);
         let iter = format!(
             r#"
             //change object id -> {id}
