@@ -95,3 +95,10 @@ export const MAKE_TOAST_MESSAGES = {
   ERROR_STARTING_PRINT: 'Error while starting print',
   SUCCESS: 'Started print successfully',
 }
+
+/** The URL for the KCL samples manifest files */
+export const KCL_SAMPLES_MANIFEST_URLS = {
+  remote:
+    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifst.json',
+  localFallback: '/kcl-samples-manifest-fallback.json',
+} as const
