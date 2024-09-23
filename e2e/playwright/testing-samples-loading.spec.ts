@@ -37,7 +37,9 @@ test.describe('Testing in-app sample loading', () => {
       title: 'Flange',
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    const samplesCommandOption = page.getByRole('option', { name: 'Open Sample' })
+    const samplesCommandOption = page.getByRole('option', {
+      name: 'Open Sample',
+    })
     const commandSampleOption = page.getByRole('option', {
       name: newSample.title,
       exact: true,
@@ -60,7 +62,7 @@ test.describe('Testing in-app sample loading', () => {
 
     await test.step(`Load a KCL sample with the command palette`, async () => {
       await commandBarButton.click()
-      await commandOption.click()
+      await samplesCommandOption.click()
       await commandSampleOption.click()
       await commandMethodArgButton.click()
       await expect(commandMethodOption('Create new file')).not.toBeVisible()
@@ -122,7 +124,7 @@ test.describe('Testing in-app sample loading', () => {
       const overwriteWarning = page.getByText('Overwrite current file?')
       const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const newFile = (name: string) =>
+      const newlyCreatedFile = (name: string) =>
         page.getByRole('listitem').filter({
           has: page.getByRole('button', { name }),
         })
@@ -140,7 +142,7 @@ test.describe('Testing in-app sample loading', () => {
         await u.openFilePanel()
 
         await expect(projectMenuButton).toContainText('main.kcl')
-        await expect(newFile(sampleOne.file)).not.toBeVisible()
+        await expect(newlyCreatedFile(sampleOne.file)).not.toBeVisible()
       })
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
@@ -154,7 +156,7 @@ test.describe('Testing in-app sample loading', () => {
 
       await test.step(`Ensure we made and opened a new file`, async () => {
         await expect(codeLocator).toContainText('// ' + sampleOne.title)
-        await expect(newFile(sampleOne.file)).toBeVisible()
+        await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
 
@@ -172,8 +174,8 @@ test.describe('Testing in-app sample loading', () => {
 
       await test.step(`Ensure we overwrote the current file without navigating`, async () => {
         await expect(codeLocator).toContainText('// ' + sampleTwo.title)
-        await expect(newFile(sampleOne.file)).toBeVisible()
-        await expect(newFile(sampleTwo.file)).not.toBeVisible()
+        await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
+        await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
 
