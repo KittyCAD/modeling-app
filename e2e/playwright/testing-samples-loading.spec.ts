@@ -37,7 +37,7 @@ test.describe('Testing in-app sample loading', () => {
       title: 'Flange',
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', { name: 'Open Sample' })
+    const samplesCommandOption = page.getByRole('option', { name: 'Open Sample' })
     const commandSampleOption = page.getByRole('option', {
       name: newSample.title,
       exact: true,
