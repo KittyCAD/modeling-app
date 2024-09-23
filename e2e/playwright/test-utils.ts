@@ -12,6 +12,7 @@ import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
 import { join } from 'path'
+import * as fs from 'fs'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
@@ -26,6 +27,7 @@ import {
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { uuidv4 } from 'lib/utils'
 import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
@@ -844,6 +846,16 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
     uploadThroughput: -1,
   })
 
+  if (process.env.GENERATE_PLAYWRIGHT_COVERAGE) {
+    for (const activePage of page.context().pages()) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await activePage.evaluate(() =>
+        (window as any)?.collectIstanbulCoverage?.(
+          JSON.stringify((window as any).__coverage__)
+        )
+      )
+    }
+  }
   // It seems it's best to give the browser about 3s to close things
   // It's not super reliable but we have no real other choice for now
   await page.waitForTimeout(3000)
@@ -891,6 +903,30 @@ export async function setup(
       secure: true,
     },
   ])
+
+  if (process.env.GENERATE_PLAYWRIGHT_COVERAGE) {
+    await context.addInitScript(() =>
+      window.addEventListener('beforeunload', () =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any)?.collectIstanbulCoverage?.(
+          JSON.stringify((window as any).__coverage__)
+        )
+      )
+    )
+    const istanbulCLIOutput = join(process.cwd(), '.nyc_output')
+    await fsp.mkdir(istanbulCLIOutput, { recursive: true })
+    await context.exposeFunction(
+      'collectIstanbulCoverage',
+      (coverageJSON: string) => {
+        if (coverageJSON) {
+          fs.writeFileSync(
+            join(istanbulCLIOutput, `playwright_coverage_${uuidv4()}.json`),
+            coverageJSON
+          )
+        }
+      }
+    )
+  }
 
   failOnConsoleErrors(page, testInfo)
   // kill animations, speeds up tests and reduced flakiness

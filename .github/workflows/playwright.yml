@@ -237,6 +237,7 @@ jobs:
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        GENERATE_PLAYWRIGHT_COVERAGE: true
     - name: send to axiom
       if: always()
       shell: bash
@@ -256,6 +257,18 @@ jobs:
         path: playwright-report/
         retention-days: 30
         overwrite: true
+    - name: Debug artifact name
+      if: ${{ !cancelled() && (success() || failure()) }}
+      run: |
+        echo "Artifact name: playwright-coverage-${{ runner.os }}-${{ matrix.shardIndex }}-${{ github.sha }}"
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() && (success() || failure()) }}
+      with:
+        name: playwright-coverage-${{ runner.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: "./.nyc_output/*.json"
+        retention-days: 30
+        overwrite: true
+        include-hidden-files: true
 
 
   playwright-electron:
@@ -416,6 +429,8 @@ jobs:
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
         IS_UBUNTU: ${{ startsWith(matrix.os, 'ubuntu') && 'true' || 'false' }}
+        # TODO set to true, see: https://github.com/KittyCAD/modeling-app/issues/3885
+        GENERATE_PLAYWRIGHT_COVERAGE: false
         #DEBUG: 'pw:browser*'
     - name: send to axiom
       if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
@@ -436,3 +451,59 @@ jobs:
         path: playwright-report/
         retention-days: 30
         overwrite: true
+    # TODO uncomment the following, see: https://github.com/KittyCAD/modeling-app/issues/3885 
+    # - uses: actions/upload-artifact@v4
+    #   if: ${{ always() }}
+    #   with:
+    #     name: playwright-coverage-${{ runner.os }}-${{ github.sha }}
+    #     path: .nyc_output/
+    #     retention-days: 30
+    #     overwrite: true
+
+
+  # only run this job after all shards above have completed
+  # TBC: do we want to separate coverage reports by OS?
+  # the Job below combines both chrome and webkit coverage reports
+  merge-coverage-reports:
+    # Merge reports after playwright-tests, even if some shards have failed
+    if: ${{ !cancelled() }}
+    needs: [playwright-chrome]
+    # only report on ubuntu (Google chrome) for now
+    # needs: [playwright-ubuntu, playwright-macos]
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+    - name: Install dependencies
+      run: yarn
+    - name: Ensure .all_coverage_reports directory exists
+      run: mkdir -p .all_coverage_reports
+    - name: List all artifacts
+      run: |
+        echo "Available artifacts:"
+        gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/artifacts --jq '.artifacts[].name'
+      env:
+        GH_TOKEN: ${{ github.token }}
+    - name: Download coverage reports from GitHub Actions Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: .all_coverage_reports
+        pattern: playwright-coverage-*
+        merge-multiple: true
+
+    - name: Merge all coverage reports from all shards into a single json report
+      run: npx nyc merge .all_coverage_reports ./.nyc_output/coverage.json
+
+    - name: Generate HTML coverage report
+      run: npx nyc report --reporter=html || true
+
+    - name: Upload Convertage HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-${{ github.sha }}
+        path: coverage
+        retention-days: 14

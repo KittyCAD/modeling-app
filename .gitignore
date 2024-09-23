@@ -62,7 +62,7 @@ Mac_App_Distribution.provisionprofile
 src/wasm-lib/pkg
 
 venv
-.vite/
+.nyc_output/*.vite/
 
 # electron
 out/
