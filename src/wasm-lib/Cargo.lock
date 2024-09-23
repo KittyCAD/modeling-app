@@ -1550,6 +1550,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "indexmap 2.5.0",
  "kcl-lib",
  "kittycad",
  "tokio",
