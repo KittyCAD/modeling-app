@@ -422,7 +422,7 @@ export class KclManager {
     ast: Program,
     execute: boolean,
     optionalParams?: {
-      focusPath?: PathToNode
+      focusPath?: Array<PathToNode>
       zoomToFit?: boolean
       zoomOnRangeAndType?: {
         range: SourceRange
@@ -441,27 +441,34 @@ export class KclManager {
     let returnVal: Selections | undefined = undefined
 
     if (optionalParams?.focusPath) {
-      const _node1 = getNodeFromPath<any>(
-        astWithUpdatedSource,
-        optionalParams?.focusPath
-      )
-      if (err(_node1)) return Promise.reject(_node1)
-      const { node } = _node1
-
-      const { start, end } = node
-      if (!start || !end)
-        return {
-          selections: undefined,
-          newAst: astWithUpdatedSource,
-        }
       returnVal = {
-        codeBasedSelections: [
-          {
+        codeBasedSelections: [],
+        otherSelections: [],
+      }
+
+      for (const path of optionalParams.focusPath) {
+        const getNodeFromPathResult = getNodeFromPath<any>(
+          astWithUpdatedSource,
+          path
+        )
+        if (err(getNodeFromPathResult))
+          return Promise.reject(getNodeFromPathResult)
+        const { node } = getNodeFromPathResult
+
+        const { start, end } = node
+
+        if (!start || !end)
+          return {
+            selections: undefined,
+            newAst: astWithUpdatedSource,
+          }
+
+        if (start && end) {
+          returnVal.codeBasedSelections.push({
             type: 'default',
             range: [start, end],
-          },
-        ],
-        otherSelections: [],
+          })
+        }
       }
     }
 

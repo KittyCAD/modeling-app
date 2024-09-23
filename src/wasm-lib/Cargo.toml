@@ -10,7 +10,7 @@ rust-version = "1.73"
 crate-type = ["cdylib"]
 
 [dependencies]
-bson = { version = "2.12.0", features = ["uuid-1", "chrono"] }
+bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
 data-encoding = "2.6.0"
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
@@ -73,7 +73,7 @@ members = [
 http = "0.2.12"
 kittycad = { version = "0.3.20", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-session = "0.1.4"
-kittycad-modeling-cmds = { version = "0.2.59", features = ["websocket"] }
+kittycad-modeling-cmds = { version = "0.2.61", features = ["websocket"] }
 
 [[test]]
 name = "executor"

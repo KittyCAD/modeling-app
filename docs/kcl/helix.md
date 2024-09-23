@@ -16,7 +16,7 @@ helix(data: HelixData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 
 ```js
 const part001 = startSketchOn('XY')
-  |> circle([5, 5], 10, %)
+  |> circle({ center: [5, 5], radius: 10 }, %)
   |> extrude(10, %)
   |> helix({
        angleStart: 0,
@@ -315,6 +315,26 @@ const part001 = startSketchOn('XY')
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -710,6 +730,26 @@ const part001 = startSketchOn('XY')
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
