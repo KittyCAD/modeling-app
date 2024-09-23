@@ -59,6 +59,7 @@ export type LineInputsType =
   | 'length'
   | 'intersectionOffset'
   | 'intersectionTag'
+  | 'radius'
 
 export type ConstraintType =
   | 'equalLength'
@@ -89,7 +90,10 @@ function createCallWrapper(
   tag?: Expr,
   valueUsedInTransform?: number
 ): CreatedSketchExprResult {
-  const args = [createFirstArg(tooltip, val), createPipeSubstitution()]
+  const args =
+    tooltip === 'circle'
+      ? []
+      : [createFirstArg(tooltip, val), createPipeSubstitution()]
   if (tag) {
     args.push(tag)
   }
@@ -1735,11 +1739,20 @@ export function transformAstSketchLines({
       pathToNode: _pathToNode,
       referencedSegment,
       fnName: transformTo || (callExp.node.callee.name as ToolTip),
-      segmentInput: {
-        type: 'straight-segment',
-        to,
-        from,
-      },
+      segmentInput:
+        seg.type === 'Circle'
+          ? {
+              type: 'arc-segment',
+              center: seg.center,
+              radius: seg.radius,
+              from,
+            }
+          : {
+              type: 'straight-segment',
+              to,
+              from,
+            },
+
       replaceExistingCallback: (rawArgs) =>
         callBack({
           referenceSegName: _referencedSegmentName,
@@ -1888,6 +1901,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   return false
 }
 
-function getInputOfType(a: InputArgs, b: LineInputsType): InputArg {
+function getInputOfType(a: InputArgs, b: LineInputsType | 'radius'): InputArg {
   return a.find(({ argType }) => argType === b) || a[0]
 }

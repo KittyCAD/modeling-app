@@ -1766,17 +1766,17 @@ const key = 'c'`
     const ast = parse(code)
     if (err(ast)) throw ast
     const { nonCodeMeta } = ast
-    expect(nonCodeMeta.nonCodeNodes[0][0]).toEqual(nonCodeMetaInstance)
+    expect(nonCodeMeta.nonCodeNodes[0]?.[0]).toEqual(nonCodeMetaInstance)
 
     // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
     const codeWithExtraStartWhitespace = '\n\n\n' + code
     const ast2 = parse(codeWithExtraStartWhitespace)
     if (err(ast2)) throw ast2
     const { nonCodeMeta: nonCodeMeta2 } = ast2
-    expect(nonCodeMeta2.nonCodeNodes[0][0].value).toStrictEqual(
+    expect(nonCodeMeta2.nonCodeNodes[0]?.[0].value).toStrictEqual(
       nonCodeMetaInstance.value
     )
-    expect(nonCodeMeta2.nonCodeNodes[0][0].start).not.toBe(
+    expect(nonCodeMeta2.nonCodeNodes[0]?.[0].start).not.toBe(
       nonCodeMetaInstance.start
     )
   })

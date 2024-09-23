@@ -18,8 +18,10 @@ const takeElectronWindowScreenshot = ({
 }) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const login = (host: string): Promise<string> =>
-  ipcRenderer.invoke('login', host)
+const startDeviceFlow = (host: string): Promise<string> =>
+  ipcRenderer.invoke('startDeviceFlow', host)
+const loginWithDeviceFlow = (): Promise<string> =>
+  ipcRenderer.invoke('loginWithDeviceFlow')
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -68,7 +70,8 @@ const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
 contextBridge.exposeInMainWorld('electron', {
-  login,
+  startDeviceFlow,
+  loginWithDeviceFlow,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.

@@ -202,7 +202,7 @@ ipcMain.handle(
   }
 )
 
-ipcMain.handle('login', async (event, host) => {
+ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
   // We quiet ts because we are not using this in the standard way.
   // @ts-ignore
@@ -220,30 +220,39 @@ ipcMain.handle('login', async (event, host) => {
 
   const handle = await client.deviceAuthorization()
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  shell.openExternal(handle.verification_uri_complete)
+  // Register this handle to be used later.
+  ipcMain.handleOnce('loginWithDeviceFlow', async () => {
+    if (!handle) {
+      return Promise.reject(
+        new Error(
+          'No handle available. Did you call startDeviceFlow before calling this?'
+        )
+      )
+    }
+    shell.openExternal(handle.verification_uri_complete).catch(reportRejection)
 
-  // Wait for the user to login.
-  try {
-    console.log('Polling for token')
-    const tokenSet = await handle.poll()
-    console.log('Received token set')
-    console.log(tokenSet)
-    return tokenSet.access_token
-  } catch (e) {
-    console.log(e)
-  }
+    // Wait for the user to login.
+    try {
+      console.log('Polling for token')
+      const tokenSet = await handle.poll()
+      console.log('Received token set')
+      console.log(tokenSet)
+      return tokenSet.access_token
+    } catch (e) {
+      console.log(e)
+    }
 
-  return Promise.reject(new Error('No access token received'))
+    return Promise.reject(new Error('No access token received'))
+  })
+
+  // Return the user code so the app can display it.
+  return handle.user_code
 })
 
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
+    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
 ipcMain.handle('find_machine_api', () => {

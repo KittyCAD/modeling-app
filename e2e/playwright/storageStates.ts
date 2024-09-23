@@ -365,10 +365,10 @@ const box = startSketchOn('XY')
 svg(startSketchOn(keychain, 'end'), [-33, 32], -thickness)
 
 startSketchOn(keychain, 'end')
-  |> circle([
+  |> circle({ center: [
        width / 2,
        height - (keychainHoleSize + 1.5)
-     ], keychainHoleSize, %)
+     ], radius: keychainHoleSize }, %)
   |> extrude(-thickness, %)`
 
 export const TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR = `const thing = 1`

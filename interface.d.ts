@@ -17,7 +17,10 @@ export interface IElectronAPI {
     height: number
   }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
-  login: (host: string) => Promise<string>
+  /** Require to be called first before {@link loginWithDeviceFlow} */
+  startDeviceFlow: (host: string) => Promise<string>
+  /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
+  loginWithDeviceFlow: () => Promise<string>
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version

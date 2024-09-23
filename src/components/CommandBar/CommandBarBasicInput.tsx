@@ -33,11 +33,15 @@ function CommandBarBasicInput({
 
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
-      <label className="flex items-center mx-4 my-4">
+      <label
+        data-testid="cmd-bar-arg-name"
+        className="flex items-center mx-4 my-4"
+      >
         <span className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
           {arg.name}
         </span>
         <input
+          data-testid="cmd-bar-arg-value"
           id="arg-form"
           name={arg.inputType}
           ref={inputRef}

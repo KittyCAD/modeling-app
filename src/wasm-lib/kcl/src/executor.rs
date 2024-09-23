@@ -1438,6 +1438,20 @@ pub enum Path {
         /// arc's direction
         ccw: bool,
     },
+    // TODO: consolidate segment enums, remove Circle. https://github.com/KittyCAD/modeling-app/issues/3940
+    /// a complete arc
+    Circle {
+        #[serde(flatten)]
+        base: BasePath,
+        /// the arc's center
+        #[ts(type = "[number, number]")]
+        center: [f64; 2],
+        /// the arc's radius
+        radius: f64,
+        /// arc's direction
+        // Maybe this one's not needed since it's a full revolution?
+        ccw: bool,
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -1470,6 +1484,7 @@ impl Path {
             Path::Base { base } => base.geo_meta.id,
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
+            Path::Circle { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1481,6 +1496,7 @@ impl Path {
             Path::Base { base } => base.tag.clone(),
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
+            Path::Circle { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1492,6 +1508,7 @@ impl Path {
             Path::Base { base } => base,
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
+            Path::Circle { base, .. } => base,
         }
     }
 
@@ -1503,6 +1520,7 @@ impl Path {
             Path::Base { base } => Some(base),
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
+            Path::Circle { base, .. } => Some(base),
         }
     }
 }
@@ -2548,7 +2566,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, $tag1)
+    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
     |> extrude(10, %)
 }
 
@@ -2676,7 +2694,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, $tag1)
+    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
     |> extrude(10, %)
 }
 

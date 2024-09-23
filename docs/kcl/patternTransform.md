@@ -32,7 +32,7 @@ fn transform = (replicaId) => {
 fn layer = () => {
   return startSketchOn("XY")
   // or some other plane idk
-  |> circle([0, 0], 1, %, $tag1)
+  |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
   |> extrude(h, %)
 }
 // The vase is 100 layers tall.
@@ -320,6 +320,26 @@ let vase = layer()
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.

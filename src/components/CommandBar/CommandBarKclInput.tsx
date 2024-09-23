@@ -139,10 +139,17 @@ function CommandBarKclInput({
   return (
     <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
-        <span className="capitalize text-chalkboard-80 dark:text-chalkboard-20">
+        <span
+          data-testid="cmd-bar-arg-name"
+          className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
+        >
           {arg.name}
         </span>
-        <div ref={editorRef} className={styles.editor} />
+        <div
+          data-testid="cmd-bar-arg-value"
+          ref={editorRef}
+          className={styles.editor}
+        />
         <CustomIcon
           name="equal"
           className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"

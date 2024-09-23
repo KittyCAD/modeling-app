@@ -92,10 +92,10 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close(%)
 ///
 /// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 20, %)
+///     |> circle({ center: [0, 100], radius: 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
 /// ```
@@ -111,10 +111,10 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close(%)
 ///
 /// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 20, %)
+///     |> circle({ center: [0, 100], radius: 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1], {
 ///     // This can be set to override the automatically determined

@@ -21,8 +21,8 @@ const exampleSketch = startSketchOn('XY')
   |> line([5, 0], %)
   |> line([0, -5], %)
   |> close(%)
-  |> hole(circle([1, 1], .25, %), %)
-  |> hole(circle([1, 4], .25, %), %)
+  |> hole(circle({ center: [1, 1], radius: .25 }, %), %)
+  |> hole(circle({ center: [1, 4], radius: .25 }, %), %)
 
 const example = extrude(1, exampleSketch)
 ```
@@ -41,7 +41,7 @@ fn squareHoleSketch = () => {
 }
 
 const exampleSketch = startSketchOn('-XZ')
-  |> circle([0, 0], 3, %)
+  |> circle({ center: [0, 0], radius: 3 }, %)
   |> hole(squareHoleSketch(), %)
 const example = extrude(1, exampleSketch)
 ```
@@ -198,6 +198,26 @@ const example = extrude(1, exampleSketch)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -410,6 +430,26 @@ const example = extrude(1, exampleSketch)
 	type: "TangentialArc",
 } |
 {
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
+} |
+{
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -610,6 +650,26 @@ const example = extrude(1, exampleSketch)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -819,6 +879,26 @@ const example = extrude(1, exampleSketch)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -1023,6 +1103,26 @@ const example = extrude(1, exampleSketch)
 	type: "TangentialArc",
 } |
 {
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
+} |
+{
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -1230,6 +1330,26 @@ const example = extrude(1, exampleSketch)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
