@@ -17,6 +17,7 @@ import {
   getNodeFromPath,
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
+  getObjExprProperty,
 } from 'lang/queryAst'
 import {
   isLiteralArrayOrStatic,
@@ -57,6 +58,7 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
 )
+const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
 
 export type Coords2d = [number, number]
 
@@ -925,6 +927,177 @@ export const tangentialArcTo: SketchLineHelper = {
     ]
   },
 }
+export const circle: SketchLineHelper = {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+
+    const { center, radius } = segmentInput
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: pipe } = nodeMeta
+
+    const x = createLiteral(roundOff(center[0], 2))
+    const y = createLiteral(roundOff(center[1], 2))
+
+    const radiusExp = createLiteral(roundOff(radius, 2))
+
+    if (replaceExistingCallback) {
+      const result = replaceExistingCallback([
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'center',
+          argType: 'xAbsolute',
+          expr: x,
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'center',
+          argType: 'yAbsolute',
+          expr: y,
+        },
+        {
+          type: 'objectProperty',
+          key: 'radius',
+          argType: 'radius',
+          expr: radiusExp,
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      pipe.body[callIndex] = callExp
+
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    return new Error('not implemented')
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    const { center, radius } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression, shallowPath } = nodeMeta
+
+    const firstArg = callExpression.arguments?.[0]
+    const newCenter = createArrayExpression([
+      createLiteral(roundOff(center[0])),
+      createLiteral(roundOff(center[1])),
+    ])
+    mutateObjExpProp(firstArg, newCenter, 'center')
+    const newRadius = createLiteral(roundOff(radius))
+    mutateObjExpProp(firstArg, newRadius, 'radius')
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  },
+  getTag: getTag(),
+  addTag: addTag(),
+  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
+    if (callExp.type !== 'CallExpression') return []
+    const firstArg = callExp.arguments?.[0]
+    if (firstArg.type !== 'ObjectExpression') return []
+    const centerDetails = getObjExprProperty(firstArg, 'center')
+    const radiusDetails = getObjExprProperty(firstArg, 'radius')
+    if (!centerDetails || !radiusDetails) return []
+    if (centerDetails.expr.type !== 'ArrayExpression') return []
+
+    const pathToCenterArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [centerDetails.index, 'index'],
+      ['value', 'Property'],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToRadiusLiteral: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [radiusDetails.index, 'index'],
+      ['value', 'Property'],
+    ]
+    const pathToXArg: PathToNode = [
+      ...pathToCenterArrayExpression,
+      [0, 'index'],
+    ]
+    const pathToYArg: PathToNode = [
+      ...pathToCenterArrayExpression,
+      [1, 'index'],
+    ]
+
+    return [
+      constrainInfo(
+        'radius',
+        isNotLiteralArrayOrStatic(radiusDetails.expr),
+        code.slice(radiusDetails.expr.start, radiusDetails.expr.end),
+        'circle',
+        'radius',
+        [radiusDetails.expr.start, radiusDetails.expr.end],
+        pathToRadiusLiteral
+      ),
+      {
+        stdLibFnName: 'circle',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(
+          centerDetails.expr.elements[0]
+        ),
+        sourceRange: [
+          centerDetails.expr.elements[0].start,
+          centerDetails.expr.elements[0].end,
+        ],
+        pathToNode: pathToXArg,
+        value: code.slice(
+          centerDetails.expr.elements[0].start,
+          centerDetails.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'center',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(
+          centerDetails.expr.elements[1]
+        ),
+        sourceRange: [
+          centerDetails.expr.elements[1].start,
+          centerDetails.expr.elements[1].end,
+        ],
+        pathToNode: pathToYArg,
+        value: code.slice(
+          centerDetails.expr.elements[1].start,
+          centerDetails.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'center',
+        },
+      },
+    ]
+  },
+}
 export const angledLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
@@ -1688,16 +1861,28 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
+  circle,
 } as const
 
 export function changeSketchArguments(
   node: Program,
   programMemory: ProgramMemory,
-  sourceRange: SourceRange,
+  sourceRangeOrPath:
+    | {
+        type: 'sourceRange'
+        sourceRange: SourceRange
+      }
+    | {
+        type: 'path'
+        pathToNode: PathToNode
+      },
   input: SegmentInputs
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   const _node = { ...node }
-  const thePath = getNodePathFromSourceRange(_node, sourceRange)
+  const thePath =
+    sourceRangeOrPath.type === 'sourceRange'
+      ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
+      : sourceRangeOrPath.pathToNode
   const nodeMeta = getNodeFromPath<CallExpression>(_node, thePath)
   if (err(nodeMeta)) return nodeMeta
 
@@ -1875,7 +2060,7 @@ export function replaceSketchLine({
       pathToNode: PathToNode
     }
   | Error {
-  if (![...toolTips, 'intersect'].includes(fnName)) {
+  if (![...toolTips, 'intersect', 'circle'].includes(fnName)) {
     return new Error(`The following function name  is not tooltip: ${fnName}`)
   }
   const _node = { ...node }
@@ -2065,6 +2250,32 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   }
 }
 
+const getCircle = (
+  callExp: CallExpression
+):
+  | {
+      val: [Expr, Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  const firstArg = callExp.arguments[0]
+  if (firstArg.type === 'ObjectExpression') {
+    const centerDetails = getObjExprProperty(firstArg, 'center')
+    const radiusDetails = getObjExprProperty(firstArg, 'radius')
+    const tag = callExp.arguments[2]
+    if (centerDetails?.expr?.type === 'ArrayExpression' && radiusDetails) {
+      return {
+        val: [
+          centerDetails?.expr.elements[0],
+          centerDetails?.expr.elements[1],
+          radiusDetails.expr,
+        ],
+        tag,
+      }
+    }
+  }
+  return new Error('expected ArrayExpression or ObjectExpression')
+}
 const getAngledLineThatIntersects = (
   callExp: CallExpression
 ):
@@ -2123,6 +2334,9 @@ export function getFirstArg(callExp: CallExpression):
   if (['tangentialArcTo'].includes(name)) {
     // TODO probably needs it's own implementation
     return getFirstArgValuesForXYFns(callExp)
+  }
+  if (name === 'circle') {
+    return getCircle(callExp)
   }
   return new Error('unexpected call expression: ' + name)
 }

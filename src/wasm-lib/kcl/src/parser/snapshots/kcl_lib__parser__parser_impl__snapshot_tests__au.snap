@@ -1,21 +1,22 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3423
 expression: actual
 ---
 {
   "start": 0,
-  "end": 87,
+  "end": 108,
   "body": [
     {
       "type": "VariableDeclaration",
       "type": "VariableDeclaration",
       "start": 0,
-      "end": 86,
+      "end": 107,
       "declarations": [
         {
           "type": "VariableDeclarator",
           "start": 6,
-          "end": 86,
+          "end": 107,
           "id": {
             "type": "Identifier",
             "start": 6,
@@ -27,7 +28,7 @@ expression: actual
             "type": "PipeExpression",
             "type": "PipeExpression",
             "start": 17,
-            "end": 86,
+            "end": 107,
             "body": [
               {
                 "type": "CallExpression",
@@ -59,7 +60,7 @@ expression: actual
                 "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 44,
-                "end": 64,
+                "end": 85,
                 "callee": {
                   "type": "Identifier",
                   "start": 44,
@@ -69,46 +70,81 @@ expression: actual
                 },
                 "arguments": [
                   {
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression",
+                    "type": "ObjectExpression",
+                    "type": "ObjectExpression",
                     "start": 51,
-                    "end": 56,
-                    "elements": [
+                    "end": 81,
+                    "properties": [
                       {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 52,
-                        "end": 53,
-                        "value": 0,
-                        "raw": "0",
+                        "type": "ObjectProperty",
+                        "start": 53,
+                        "end": 67,
+                        "key": {
+                          "type": "Identifier",
+                          "start": 53,
+                          "end": 59,
+                          "name": "center",
+                          "digest": null
+                        },
+                        "value": {
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression",
+                          "start": 61,
+                          "end": 67,
+                          "elements": [
+                            {
+                              "type": "Literal",
+                              "type": "Literal",
+                              "start": 62,
+                              "end": 63,
+                              "value": 0,
+                              "raw": "0",
+                              "digest": null
+                            },
+                            {
+                              "type": "Literal",
+                              "type": "Literal",
+                              "start": 65,
+                              "end": 66,
+                              "value": 0,
+                              "raw": "0",
+                              "digest": null
+                            }
+                          ],
+                          "digest": null
+                        },
                         "digest": null
                       },
                       {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 54,
-                        "end": 55,
-                        "value": 0,
-                        "raw": "0",
+                        "type": "ObjectProperty",
+                        "start": 69,
+                        "end": 79,
+                        "key": {
+                          "type": "Identifier",
+                          "start": 69,
+                          "end": 75,
+                          "name": "radius",
+                          "digest": null
+                        },
+                        "value": {
+                          "type": "Literal",
+                          "type": "Literal",
+                          "start": 77,
+                          "end": 79,
+                          "value": 22,
+                          "raw": "22",
+                          "digest": null
+                        },
                         "digest": null
                       }
                     ],
                     "digest": null
                   },
                   {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 58,
-                    "end": 60,
-                    "value": 22,
-                    "raw": "22",
-                    "digest": null
-                  },
-                  {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
-                    "start": 62,
-                    "end": 63,
+                    "start": 83,
+                    "end": 84,
                     "digest": null
                   }
                 ],
@@ -118,12 +154,12 @@ expression: actual
               {
                 "type": "CallExpression",
                 "type": "CallExpression",
-                "start": 72,
-                "end": 86,
+                "start": 93,
+                "end": 107,
                 "callee": {
                   "type": "Identifier",
-                  "start": 72,
-                  "end": 79,
+                  "start": 93,
+                  "end": 100,
                   "name": "extrude",
                   "digest": null
                 },
@@ -131,8 +167,8 @@ expression: actual
                   {
                     "type": "Literal",
                     "type": "Literal",
-                    "start": 80,
-                    "end": 82,
+                    "start": 101,
+                    "end": 103,
                     "value": 14,
                     "raw": "14",
                     "digest": null
@@ -140,8 +176,8 @@ expression: actual
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
-                    "start": 84,
-                    "end": 85,
+                    "start": 105,
+                    "end": 106,
                     "digest": null
                   }
                 ],

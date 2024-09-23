@@ -255,16 +255,16 @@ dependencies = [
 
 [[package]]
 name = "bson"
-version = "2.12.0"
+version = "2.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80cf6f7806607bd58ad490bab34bf60e25455ea4aaf995f897a13324d41ea580"
+checksum = "068208f2b6fcfa27a7f1ee37488d2bb8ba2640f68f5475d08e1d9130696aba59"
 dependencies = [
  "ahash",
  "base64 0.13.1",
  "bitvec",
  "chrono",
  "hex",
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "js-sys",
  "once_cell",
  "rand 0.8.5",
@@ -690,7 +690,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.26"
+version = "0.1.27"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1067,7 +1067,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http 0.2.12",
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "slab",
  "tokio",
  "tokio-util",
@@ -1293,12 +1293,13 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.2.5"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b0b929d511467233429c45a44ac1dcaa21ba0f5ba11e4879e6ed28ddb4f9df4"
+checksum = "68b900aa2f7301e21c36462b170ee99994de34dff39a4a6a528e80e7376d07e5"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.3",
+ "serde",
 ]
 
 [[package]]
@@ -1399,7 +1400,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.14"
+version = "0.2.18"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1422,6 +1423,7 @@ dependencies = [
  "http 0.2.12",
  "iai",
  "image",
+ "indexmap 2.5.0",
  "insta",
  "itertools 0.13.0",
  "js-sys",
@@ -1472,7 +1474,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.10"
+version = "0.1.11"
 dependencies = [
  "anyhow",
  "hyper",
@@ -1524,9 +1526,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.59"
+version = "0.2.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee900033a5804ca2354f0760478e851a0ab04d32b38a9117d0bd4f87a8867110"
+checksum = "5128ba683e849388cac4214b65911c343842d559bec10827575c840a47733786"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2740,7 +2742,7 @@ version = "1.0.128"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ff5456707a1de34e7e37f2a6fd3d3f808c318259cbd01ab6377795054b483d8"
 dependencies = [
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "itoa",
  "memchr",
  "ryu",
@@ -3268,7 +3270,7 @@ version = "0.22.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "583c44c02ad26b0c3f3066fe629275e50627026c51ac2e595cca4c230ce1ce1d"
 dependencies = [
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -3425,11 +3427,12 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "ts-rs"
-version = "9.0.1"
+version = "10.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b44017f9f875786e543595076374b9ef7d13465a518dd93d6ccdbf5b432dde8c"
+checksum = "3a2f31991cee3dce1ca4f929a8a04fdd11fd8801aac0f2030b0fa8a0a3fef6b9"
 dependencies = [
  "chrono",
+ "lazy_static",
  "serde_json",
  "thiserror",
  "ts-rs-macros",
@@ -3439,9 +3442,9 @@ dependencies = [
 
 [[package]]
 name = "ts-rs-macros"
-version = "9.0.1"
+version = "10.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c88cc88fd23b5a04528f3a8436024f20010a16ec18eb23c164b1242f65860130"
+checksum = "0ea0b99e8ec44abd6f94a18f28f7934437809dd062820797c52401298116f70e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4035,6 +4038,6 @@ dependencies = [
  "crc32fast",
  "crossbeam-utils",
  "displaydoc",
- "indexmap 2.2.5",
+ "indexmap 2.5.0",
  "thiserror",
 ]

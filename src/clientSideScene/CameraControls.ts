@@ -444,8 +444,19 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
+    const interaction = this.getInteractionType(event)
+    if (interaction === 'none') return
+    event.preventDefault()
+
     if (this.syncDirection === 'engineToClient') {
-      this.zoomDataFromLastFrame = event.deltaY
+      if (interaction === 'zoom') {
+        this.zoomDataFromLastFrame = event.deltaY
+      } else {
+        // This case will get handled when we add pan and rotate using Apple trackpad.
+        console.error(
+          `Unexpected interaction type for engineToClient wheel event: ${interaction}`
+        )
+      }
       return
     }
 
@@ -455,8 +466,16 @@ export class CameraControls {
     // zoom commands to engine. This means dropping some zoom
     // commands too.
     // From onMouseMove zoom handling which seems to be really smooth
+
     this.handleStart()
-    this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+    if (interaction === 'zoom') {
+      this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+    } else {
+      // This case will get handled when we add pan and rotate using Apple trackpad.
+      console.error(
+        `Unexpected interaction type for wheel event: ${interaction}`
+      )
+    }
     this.handleEnd()
   }
 
@@ -1123,7 +1142,7 @@ export class CameraControls {
     this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
-  getInteractionType = (event: any) =>
+  getInteractionType = (event: MouseEvent) =>
     _getInteractionType(
       this.interactionGuards,
       event,
@@ -1231,16 +1250,21 @@ function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
 
 function _getInteractionType(
   interactionGuards: MouseGuard,
-  event: any,
+  event: MouseEvent | WheelEvent,
   enablePan: boolean,
   enableRotate: boolean,
   enableZoom: boolean
 ): interactionType | 'none' {
-  let state: interactionType | 'none' = 'none'
-  if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
-  if (enableRotate && interactionGuards.rotate.callback(event)) return 'rotate'
-  if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
-  return state
+  if (event instanceof WheelEvent) {
+    if (enableZoom && interactionGuards.zoom.scrollCallback(event))
+      return 'zoom'
+  } else {
+    if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
+    if (enableRotate && interactionGuards.rotate.callback(event))
+      return 'rotate'
+    if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
+  }
+  return 'none'
 }
 
 /**

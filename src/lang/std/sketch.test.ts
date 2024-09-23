@@ -122,7 +122,10 @@ describe('testing changeSketchArguments', () => {
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
       programMemory,
-      [sourceStart, sourceStart + lineToChange.length],
+      {
+        type: 'sourceRange',
+        sourceRange: [sourceStart, sourceStart + lineToChange.length],
+      },
       {
         type: 'straight-segment',
         from: [0, 0],

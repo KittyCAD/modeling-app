@@ -260,7 +260,7 @@ export const Stream = () => {
     if (state.matches('Sketch')) return
     if (state.matches({ idle: 'showPlanes' })) return
 
-    if (btnName(e).left) {
+    if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sendSelectEventToEngine(e, videoRef.current)
     }

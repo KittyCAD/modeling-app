@@ -69,12 +69,15 @@ test.describe('Testing settings', () => {
     page,
   }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
+    await test.step(`Setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await page
+        .getByRole('button', { name: 'Start Sketch' })
+        .waitFor({ state: 'visible' })
+    })
 
+    // Selectors and constants
     const paneButtonLocator = page.getByTestId('debug-pane-button')
     const headingLocator = page.getByRole('heading', {
       name: 'Settings',
@@ -82,11 +85,23 @@ test.describe('Testing settings', () => {
     })
     const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
 
-    // Open the settings modal with the browser keyboard shortcut
-    await page.keyboard.press('ControlOrMeta+Shift+,')
+    await test.step('Open settings dialog and set "Show debug panel" to on', async () => {
+      await page.keyboard.press('ControlOrMeta+Shift+,')
+      await expect(headingLocator).toBeVisible()
 
-    await expect(headingLocator).toBeVisible()
-    await page.locator('#showDebugPanel').getByText('OffOn').click()
+      /** Test to close https://github.com/KittyCAD/modeling-app/issues/2713 */
+      await test.step(`Confirm that this dialog has a solid background`, async () => {
+        await expect
+          .poll(() => u.getGreatestPixDiff({ x: 600, y: 250 }, [28, 28, 28]), {
+            timeout: 1000,
+            message:
+              'Checking for solid background, should not see default plane colors',
+          })
+          .toBeLessThan(15)
+      })
+
+      await page.locator('#showDebugPanel').getByText('OffOn').click()
+    })
 
     // Close it and open again with keyboard shortcut, while KCL editor is focused
     // Put the cursor in the editor
@@ -262,8 +277,6 @@ test.describe('Testing settings', () => {
 
       await page.setViewportSize({ width: 1200, height: 500 })
 
-      page.on('console', console.log)
-
       // Selectors and constants
       const userThemeColor = '120'
       const projectThemeColor = '50'
@@ -277,7 +290,6 @@ test.describe('Testing settings', () => {
       const projectLink = page.getByText('bracket')
       const logoLink = page.getByTestId('app-logo')
 
-      // Open the app and set the user theme color
       await test.step('Set user theme color on home', async () => {
         await expect(settingsOpenButton).toBeVisible()
         await settingsOpenButton.click()
@@ -296,13 +308,15 @@ test.describe('Testing settings', () => {
         await expect(projectSettingsTab).toBeChecked()
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
+        await settingsCloseButton.click()
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
+        // Make sure we're done navigating before we reload
+        await expect(settingsCloseButton).not.toBeVisible()
         await page.reload({ waitUntil: 'domcontentloaded' })
 
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-        await settingsCloseButton.click()
       })
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {

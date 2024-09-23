@@ -38,7 +38,7 @@ use crate::{
     ast::types::FunctionExpression,
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, KclValue, ProgramMemory, SketchGroup, SketchSurface},
+    executor::{ExecState, KclValue, ProgramMemory},
     std::kcl_stdlib::KclStdLibFn,
 };
 
