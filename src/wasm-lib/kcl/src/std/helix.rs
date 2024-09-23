@@ -43,7 +43,7 @@ pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// const part001 = startSketchOn('XY')
-///   |> circle([5, 5], 10, %)
+///   |> circle({ center: [5, 5], radius: 10 }, %)
 ///   |> extrude(10, %)
 ///   |> helix({
 ///     angleStart: 0,

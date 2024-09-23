@@ -427,7 +427,7 @@ export function isSelectionLastLine(
   return selectionRanges.codeBasedSelections[i].range[1] === code.length
 }
 
-export function isRangeInbetweenCharacters(selectionRanges: Selections) {
+export function isRangeBetweenCharacters(selectionRanges: Selections) {
   return (
     selectionRanges.codeBasedSelections.length === 1 &&
     selectionRanges.codeBasedSelections[0].range[0] === 0 &&
@@ -466,6 +466,12 @@ function nodeHasClose(node: CommonASTNode) {
     ...node,
   })
 }
+function nodeHasCircle(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'circle',
+    ...node,
+  })
+}
 
 export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
@@ -474,7 +480,8 @@ export function canSweepSelection(selection: Selections) {
   return (
     !!isSketchPipe(selection) &&
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n)) &&
+    (commonNodes.every((n) => nodeHasClose(n)) ||
+      commonNodes.every((n) => nodeHasCircle(n))) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
 }
@@ -499,7 +506,7 @@ function canExtrudeSelectionItem(selection: Selections, i: number) {
 
   return (
     !!isSketchPipe(isolatedSelection) &&
-    nodeHasClose(commonNode) &&
+    (nodeHasClose(commonNode) || nodeHasCircle(commonNode)) &&
     !nodeHasExtrude(commonNode)
   )
 }

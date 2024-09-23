@@ -148,13 +148,10 @@ pub(crate) async fn do_post_extrude(
         }));
     }
 
-    let mut edge_id = None;
-    for segment in sketch_group.value.iter() {
-        if let Path::ToPoint { base } = segment {
-            edge_id = Some(base.geo_meta.id);
-            break;
-        }
-    }
+    let edge_id = sketch_group.value.iter().find_map(|segment| match segment {
+        Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
+        _ => None,
+    });
 
     let Some(edge_id) = edge_id else {
         return Err(KclError::Type(KclErrorDetails {
@@ -237,7 +234,7 @@ pub(crate) async fn do_post_extrude(
         .flat_map(|path| {
             if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
                 match path {
-                    Path::TangentialArc { .. } | Path::TangentialArcTo { .. } => {
+                    Path::TangentialArc { .. } | Path::TangentialArcTo { .. } | Path::Circle { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
