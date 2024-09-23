@@ -83,7 +83,7 @@ test.describe('Testing in-app sample loading', () => {
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
     async ({ browserName: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
+      const { electronApp, page, dir } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
           const bracketDir = join(dir, 'bracket')
@@ -174,6 +174,16 @@ test.describe('Testing in-app sample loading', () => {
 
       await test.step(`Ensure we overwrote the current file without navigating`, async () => {
         await expect(codeLocator).toContainText('// ' + sampleTwo.title)
+        await test.step(`Check actual file contents`, async () => {
+          await expect
+            .poll(async () => {
+              return await fsp.readFile(
+                join(dir, 'bracket', sampleOne.file),
+                'utf-8'
+              )
+            })
+            .toContain('// ' + sampleTwo.title)
+        })
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
