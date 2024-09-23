@@ -216,7 +216,7 @@ pub(crate) async fn do_post_extrude(
 
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
+            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: curve_id,
                 object_id: sketch_group.id,
                 face_id,

@@ -1980,6 +1980,7 @@ function addTagToChamfer(
       element.arguments[0].name === edgeCutMeta.tagName
     )
       return true
+    return false
   })
   if (tagIndexToPullOut === -1) return new Error('tag not found')
   const tagToPullOut = tags.value.elements[tagIndexToPullOut]

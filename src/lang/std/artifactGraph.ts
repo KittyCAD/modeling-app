@@ -436,10 +436,10 @@ export function getArtifactsToUpdate({
       response.data.modeling_response.type === 'solid3d_get_opposite_edge' &&
       response.data.modeling_response.data.edge) ||
     // or is adjacent edge
-    (cmd.type === 'solid3d_get_prev_adjacent_edge' &&
+    (cmd.type === 'solid3d_get_next_adjacent_edge' &&
       response.type === 'modeling' &&
       response.data.modeling_response.type ===
-        'solid3d_get_prev_adjacent_edge' &&
+        'solid3d_get_next_adjacent_edge' &&
       response.data.modeling_response.data.edge)
   ) {
     const wall = getArtifact(cmd.face_id)
@@ -457,7 +457,7 @@ export function getArtifactsToUpdate({
         artifact: {
           type: 'sweepEdge',
           subType:
-            cmd.type === 'solid3d_get_prev_adjacent_edge'
+            cmd.type === 'solid3d_get_next_adjacent_edge'
               ? 'adjacent'
               : 'opposite',
           segId: cmd.edge_id,
