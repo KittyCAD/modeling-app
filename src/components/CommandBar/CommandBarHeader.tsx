@@ -141,10 +141,10 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                           )
                         ) : (
                           <em>
-                          {arg.valueSummary
-                            ? arg.valueSummary(argValue)
-                            : argValue}
-                        </em>
+                            {arg.valueSummary
+                              ? arg.valueSummary(argValue)
+                              : argValue}
+                          </em>
                         )
                       ) : null}
                     </span>
