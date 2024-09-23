@@ -1,4 +1,5 @@
 use anyhow::Result;
+use indexmap::IndexMap;
 use kcl_lib::{errors::KclError, executor::DefaultPlanes};
 use kittycad::types::{
     ModelingCmd, OkModelingCmdResponse, OkWebSocketResponseData, PathSegment::*, WebSocketRequest, WebSocketResponse,
@@ -336,7 +337,7 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>> {
         self.batch_end.clone()
     }
 
