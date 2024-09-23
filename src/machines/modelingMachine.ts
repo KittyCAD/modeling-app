@@ -571,7 +571,7 @@ export const modelingMachine = setup({
 
         store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: pathToExtrudeArg,
+          focusPath: [pathToExtrudeArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
             range: selection.codeBasedSelections[0].range,
@@ -618,7 +618,7 @@ export const modelingMachine = setup({
 
         store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: pathToRevolveArg,
+          focusPath: [pathToRevolveArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
             range: selection.codeBasedSelections[0].range,
