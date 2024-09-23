@@ -251,6 +251,7 @@ export const ModelingSidebar = forwardRef<
         </ul>
         <ul
           id="pane-section"
+          data-testid="pane-section"
           ref={ref}
           className={
             'ml-[-1px] col-start-2 col-span-1 flex flex-col gap-2 ' +

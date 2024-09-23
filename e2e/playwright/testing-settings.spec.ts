@@ -715,19 +715,32 @@ extrude001 = extrude(5, sketch001)
 `
       )
     })
-    await page.setViewportSize({ width: 1200, height: 500 })
+    const viewport = { width: 1200, height: 500 }
+    await page.setViewportSize(viewport)
+    await u.waitForAuthSkipAppStart()
+
+    const getMiddleOfModelingArea = async (viewport) => {
+      const panes = page.getByTestId('pane-section')
+      const bb = await panes.boundingBox()
+      const goRightPx = bb.width > 0 ? (viewport.width - bb.width) / 2 : 0
+      return {
+        x: viewport.width / 2 + goRightPx,
+        y: viewport.height / 2,
+      }
+    }
 
     // Selectors and constants
     const editSketchButton = page.getByRole('button', { name: 'Edit Sketch' })
     const lineToolButton = page.getByTestId('line')
     const segmentOverlays = page.getByTestId('segment-overlay')
-    const sketchOriginLocation = { x: 600, y: 250 }
+    const sketchOriginLocation = await getMiddleOfModelingArea(viewport)
     const darkThemeSegmentColor: [number, number, number] = [215, 215, 215]
     const lightThemeSegmentColor: [number, number, number] = [90, 90, 90]
 
     await test.step(`Get into sketch mode`, async () => {
-      await u.waitForAuthSkipAppStart()
-      await page.mouse.click(700, 200)
+      const aLineToClickOn = await u.getBoundingBox('[data-overlay-index="0"]')
+      await page.mouse.move(aLineToClickOn.x, aLineToClickOn.y)
+
       await expect(editSketchButton).toBeVisible()
       await editSketchButton.click()
 
