@@ -31,6 +31,8 @@ test.describe('Testing selections', () => {
 
     const xAxisClick = () =>
       page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
+    const xAxisClickAfterExitingSketch = () =>
+      page.mouse.click(639, 278).then(() => page.waitForTimeout(100))
     const emptySpaceHover = () =>
       test.step('Hover over empty space', async () => {
         await page.mouse.move(700, 143, { steps: 5 })
@@ -44,9 +46,13 @@ test.describe('Testing selections', () => {
         )
       })
     const topHorzSegmentClick = () =>
-      page.mouse.click(709, 290).then(() => page.waitForTimeout(100))
+      page.mouse
+        .click(startXPx, 500 - PUR * 20)
+        .then(() => page.waitForTimeout(100))
     const bottomHorzSegmentClick = () =>
-      page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
+      page.mouse
+        .click(startXPx + PUR * 10, 500 - PUR * 10)
+        .then(() => page.waitForTimeout(100))
 
     await u.clearCommandLogs()
     await expect(
@@ -196,6 +202,8 @@ test.describe('Testing selections', () => {
 
     // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
     await topHorzSegmentClick()
+    await xAxisClickAfterExitingSketch()
+    await page.waitForTimeout(100)
     await emptySpaceHover()
 
     // enter sketch again
@@ -425,7 +433,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
   |> line([0, 20.03], %)
   |> line([62.61, 0], %, $seg03)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)      
+  |> close(%)
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -1014,7 +1022,7 @@ const extrude001 = extrude(50, sketch001)
     |> line([4.95, -8], %)
     |> line([-20.38, -10.12], %)
     |> line([-15.79, 17.08], %)
-  
+
   fn yohey = (pos) => {
     const sketch004 = startSketchOn('XZ')
     ${extrudeAndEditBlockedInFunction}
@@ -1024,7 +1032,7 @@ const extrude001 = extrude(50, sketch001)
     |> line([-15.79, 17.08], %)
     return ''
   }
-  
+
       yohey([15.79, -34.6])
   `
         )

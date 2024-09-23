@@ -13,15 +13,18 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::ok_response::OkModelingCmdResponse;
-use kcmc::shared::Color;
-use kcmc::websocket::ModelingBatch;
-use kcmc::websocket::{
-    BatchResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse,
+use indexmap::IndexMap;
+use kcmc::{
+    each_cmd as mcmd,
+    length_unit::LengthUnit,
+    ok_response::OkModelingCmdResponse,
+    shared::Color,
+    websocket::{
+        BatchResponse, ModelingBatch, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData, WebSocketRequest,
+        WebSocketResponse,
+    },
+    ModelingCmd,
 };
-use kcmc::ModelingCmd;
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -44,7 +47,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the batch of end commands to be sent to the engine.
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>;
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Get the default planes.
     async fn default_planes(

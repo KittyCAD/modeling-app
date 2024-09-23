@@ -2,9 +2,7 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -94,10 +92,10 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close(%)
 ///
 /// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 20, %)
+///     |> circle({ center: [0, 100], radius: 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
 /// ```
@@ -113,10 +111,10 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close(%)
 ///
 /// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 20, %)
+///     |> circle({ center: [0, 100], radius: 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1], {
 ///     // This can be set to override the automatically determined

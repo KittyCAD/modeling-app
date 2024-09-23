@@ -345,6 +345,32 @@ impl From<UnitLength> for kittycad::types::UnitLength {
     }
 }
 
+impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLength {
+    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
+        match unit {
+            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLength::Cm,
+            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLength::Ft,
+            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLength::In,
+            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLength::M,
+            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLength::Mm,
+            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLength::Yd,
+        }
+    }
+}
+
+impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
+    fn from(unit: UnitLength) -> Self {
+        match unit {
+            UnitLength::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
+            UnitLength::Ft => kittycad_modeling_cmds::units::UnitLength::Feet,
+            UnitLength::In => kittycad_modeling_cmds::units::UnitLength::Inches,
+            UnitLength::M => kittycad_modeling_cmds::units::UnitLength::Meters,
+            UnitLength::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
+            UnitLength::Yd => kittycad_modeling_cmds::units::UnitLength::Yards,
+        }
+    }
+}
+
 /// The types of controls for how to navigate the 3D view.
 #[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
 #[ts(export)]

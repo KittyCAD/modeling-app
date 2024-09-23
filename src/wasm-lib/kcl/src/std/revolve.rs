@@ -2,10 +2,7 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::shared::Angle;
-use kcmc::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -131,7 +128,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// // A donut shape.
 /// const sketch001 = startSketchOn('XY')
-///     |> circle([15, 0], 5, %)
+///     |> circle({ center: [15, 0], radius: 5 }, %)
 ///     |> revolve({
 ///         angle: 360,
 ///         axis: 'y'
@@ -183,7 +180,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> extrude(20, %)
 ///
 /// const sketch001 = startSketchOn(box, "END")
-///     |> circle([10,10], 4, %)
+///     |> circle({ center: [10,10], radius: 4 }, %)
 ///     |> revolve({
 ///         angle: -90,
 ///         axis: 'y'
@@ -200,7 +197,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> extrude(20, %)
 ///
 /// const sketch001 = startSketchOn(box, "END")
-///     |> circle([10,10], 4, %)
+///     |> circle({ center: [10,10], radius: 4 }, %)
 ///     |> revolve({
 ///         angle: 90,
 ///         axis: getOppositeEdge(revolveAxis)
@@ -217,7 +214,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> extrude(20, %)
 ///
 /// const sketch001 = startSketchOn(box, "END")
-///     |> circle([10,10], 4, %)
+///     |> circle({ center: [10,10], radius: 4 }, %)
 ///     |> revolve({
 ///         angle: 90,
 ///         axis: getOppositeEdge(revolveAxis),
