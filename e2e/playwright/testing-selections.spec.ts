@@ -542,16 +542,16 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     const close: Coords2d = [720, 200]
     const nothing: Coords2d = [600, 200]
     const closeEdge: Coords2d = [744, 233]
-    const closeAdjacentEdge: Coords2d = [688, 123]
+    const closeAdjacentEdge: Coords2d = [743, 277]
     const closeOppositeEdge: Coords2d = [687, 169]
 
     const tangentialArcEdge: Coords2d = [811, 142]
     const tangentialArcOppositeEdge: Coords2d = [820, 180]
-    const tangentialArcAdjacentEdge: Coords2d = [893, 165]
+    const tangentialArcAdjacentEdge: Coords2d = [688, 123]
 
     const straightSegmentEdge: Coords2d = [819, 369]
-    const straightSegmentOppositeEdge: Coords2d = [635, 394]
-    const straightSegmentAdjacentEdge: Coords2d = [679, 329]
+    const straightSegmentOppositeEdge: Coords2d = [822, 368]
+    const straightSegmentAdjacentEdge: Coords2d = [893, 165]
 
     await page.mouse.move(nothing[0], nothing[1])
     await page.mouse.click(nothing[0], nothing[1])
@@ -689,10 +689,10 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
       'angledLineToY({ angle: 30, to: 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
-      'straightSegmentAdjancentEdge',
+      'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)`,
+      '}, %)'
     )
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
