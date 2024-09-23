@@ -2,13 +2,14 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExtrudeGroup, KclValue},
+    executor::{ExecState, ExtrudeGroup, KclValue},
     std::Args,
 };
 
@@ -31,7 +32,7 @@ pub struct HelixData {
 }
 
 /// Create a helix on a cylinder.
-pub async fn helix(args: Args) -> Result<KclValue, KclError> {
+pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group): (HelixData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let extrude_group = inner_helix(data, extrude_group, args).await?;
@@ -42,7 +43,7 @@ pub async fn helix(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// const part001 = startSketchOn('XY')
-///   |> circle([5, 5], 10, %)
+///   |> circle({ center: [5, 5], radius: 10 }, %)
 ///   |> extrude(10, %)
 ///   |> helix({
 ///     angleStart: 0,
@@ -61,13 +62,13 @@ async fn inner_helix(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::EntityMakeHelix {
+        ModelingCmd::from(mcmd::EntityMakeHelix {
             cylinder_id: extrude_group.id,
             is_clockwise: !data.ccw,
-            length: data.length.unwrap_or(extrude_group.height),
+            length: LengthUnit(data.length.unwrap_or(extrude_group.height)),
             revolutions: data.revolutions,
-            start_angle: kittycad::types::Angle::from_degrees(data.angle_start),
-        },
+            start_angle: Angle::from_degrees(data.angle_start),
+        }),
     )
     .await?;
 

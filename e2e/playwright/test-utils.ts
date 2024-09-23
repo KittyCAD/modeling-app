@@ -26,7 +26,9 @@ import {
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -439,46 +441,78 @@ export async function getUtils(page: Page, test_?: typeof test) {
       }
       return maxDiff
     },
-    doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
-      new Promise(async (resolve) => {
-        await page.screenshot({
-          path: './e2e/playwright/temp1.png',
-          fullPage: true,
-        })
-        await fn()
-        const isImageDiff = async () => {
+    getPixelRGBs: async (
+      coords: { x: number; y: number },
+      radius: number
+    ): Promise<[number, number, number][]> => {
+      const buffer = await page.screenshot({
+        fullPage: true,
+      })
+      const screenshot = await PNG.sync.read(buffer)
+      const pixMultiplier: number = await page.evaluate(
+        'window.devicePixelRatio'
+      )
+      const allCords: [number, number][] = [[coords.x, coords.y]]
+      for (let i = 1; i < radius; i++) {
+        allCords.push([coords.x + i, coords.y])
+        allCords.push([coords.x - i, coords.y])
+        allCords.push([coords.x, coords.y + i])
+        allCords.push([coords.x, coords.y - i])
+      }
+      return allCords.map(([x, y]) => {
+        const index =
+          (screenshot.width * y * pixMultiplier + x * pixMultiplier) * 4 // rbga is 4 channels
+        return [
+          screenshot.data[index],
+          screenshot.data[index + 1],
+          screenshot.data[index + 2],
+        ]
+      })
+    },
+    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
+      new Promise<boolean>((resolve) => {
+        ;(async () => {
           await page.screenshot({
-            path: './e2e/playwright/temp2.png',
+            path: './e2e/playwright/temp1.png',
             fullPage: true,
           })
-          const screenshot1 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp1.png')
-          )
-          const screenshot2 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp2.png')
-          )
-          const actualDiffCount = pixelMatch(
-            screenshot1.data,
-            screenshot2.data,
-            null,
-            screenshot1.width,
-            screenshot2.height
-          )
-          return actualDiffCount > diffCount
-        }
-
-        // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-        let count = 0
-        const interval = setInterval(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
+          await fn()
+          const isImageDiff = async () => {
+            await page.screenshot({
+              path: './e2e/playwright/temp2.png',
+              fullPage: true,
+            })
+            const screenshot1 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp1.png')
+            )
+            const screenshot2 = PNG.sync.read(
+              await fsp.readFile('./e2e/playwright/temp2.png')
+            )
+            const actualDiffCount = pixelMatch(
+              screenshot1.data,
+              screenshot2.data,
+              null,
+              screenshot1.width,
+              screenshot2.height
+            )
+            return actualDiffCount > diffCount
           }
-        }, 50)
+
+          // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
+          let count = 0
+          const interval = setInterval(() => {
+            ;(async () => {
+              count++
+              if (await isImageDiff()) {
+                clearInterval(interval)
+                resolve(true)
+              } else if (count > 100) {
+                clearInterval(interval)
+                resolve(false)
+              }
+            })().catch(reportRejection)
+          }, 50)
+        })().catch(reportRejection)
       }),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
@@ -817,7 +851,11 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
-export async function setup(context: BrowserContext, page: Page) {
+export async function setup(
+  context: BrowserContext,
+  page: Page,
+  testInfo?: TestInfo
+) {
   await context.addInitScript(
     async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
       localStorage.clear()
@@ -853,6 +891,8 @@ export async function setup(context: BrowserContext, page: Page) {
       secure: true,
     },
   ])
+
+  failOnConsoleErrors(page, testInfo)
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
@@ -926,6 +966,48 @@ export async function setupElectron({
   return { electronApp, page, dir: projectDirName }
 }
 
+function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
+  // enabled for chrome for now
+  if (page.context().browser()?.browserType().name() === 'chromium') {
+    page.on('pageerror', (exception) => {
+      if (isErrorWhitelisted(exception)) {
+        return
+      }
+
+      // only set this env var to false if you want to collect console errors
+      // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
+      // unwhitelisted console errors are detected).
+      if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
+        // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
+        // use expect to prevent page from closing and not cleaning up
+        expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
+          
+          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
+          `).toEqual('Console error detected')
+      } else {
+        // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
+        fsp
+          .appendFile(
+            './test-results/exceptions.txt',
+            [
+              '~~~',
+              `triggered_by_test:${
+                testInfo?.file + ' ' + (testInfo?.title || ' ')
+              }`,
+              `name:${exception.name}`,
+              `message:${exception.message}`,
+              `stack:${exception.stack}`,
+              `project:${testInfo?.project.name}`,
+              '~~~',
+            ].join('\n')
+          )
+          .catch((err) => {
+            console.error(err)
+          })
+      }
+    })
+  }
+}
 export async function isOutOfViewInScrollContainer(
   element: Locator,
   container: Locator

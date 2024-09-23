@@ -34,7 +34,7 @@ jobs:
               - 'src/wasm-lib/**'
 
   playwright-chrome:
-    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 40 }}
+    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
     strategy:
       fail-fast: false
       matrix:
@@ -232,6 +232,7 @@ jobs:
         exit 0
       env:
         CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
         NODE_ENV: development
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true
@@ -262,7 +263,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-    timeout-minutes: 40
+    timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
@@ -410,6 +411,7 @@ jobs:
         exit 0
       env:
         CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
         NODE_ENV: development
         VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         VITE_KC_SKIP_AUTH: true

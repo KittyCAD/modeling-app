@@ -22,7 +22,10 @@ pi() -> number
 const circumference = 70
 
 const exampleSketch = startSketchOn("XZ")
-  |> circle([0, 0], circumference / (2 * pi()), %)
+  |> circle({
+       center: [0, 0],
+       radius: circumference / (2 * pi())
+     }, %)
 
 const example = extrude(5, exampleSketch)
 ```

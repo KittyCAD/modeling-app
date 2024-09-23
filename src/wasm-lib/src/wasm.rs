@@ -58,13 +58,13 @@ pub async fn execute_wasm(
         context_type,
     };
 
-    let memory = ctx.run(&program, Some(memory)).await.map_err(String::from)?;
+    let exec_state = ctx.run(&program, Some(memory)).await.map_err(String::from)?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     // DO NOT USE serde_wasm_bindgen::to_value(&memory).map_err(|e| e.to_string())
     // it will break the frontend.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
+    JsValue::from_serde(&exec_state.memory).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute

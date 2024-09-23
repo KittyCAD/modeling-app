@@ -1,15 +1,16 @@
 use std::any::type_name;
 
 use anyhow::Result;
-use kittycad::types::OkWebSocketResponseData;
+use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use serde::de::DeserializeOwned;
 
 use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
     executor::{
-        DynamicState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata,
-        ProgramMemory, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
+        ExecState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata, SketchGroup,
+        SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
     },
     std::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg},
 };
@@ -19,24 +20,14 @@ pub struct Args {
     pub args: Vec<KclValue>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
-    pub current_program_memory: ProgramMemory,
-    pub dynamic_state: DynamicState,
 }
 
 impl Args {
-    pub fn new(
-        args: Vec<KclValue>,
-        source_range: SourceRange,
-        ctx: ExecutorContext,
-        current_program_memory: ProgramMemory,
-        dynamic_state: DynamicState,
-    ) -> Self {
+    pub fn new(args: Vec<KclValue>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
         Self {
             args,
             source_range,
             ctx,
-            current_program_memory,
-            dynamic_state,
         }
     }
 
@@ -54,8 +45,6 @@ impl Args {
                 settings: Default::default(),
                 context_type: crate::executor::ContextType::Mock,
             },
-            current_program_memory: ProgramMemory::default(),
-            dynamic_state: DynamicState::default(),
         })
     }
 
@@ -63,7 +52,7 @@ impl Args {
     pub(crate) async fn batch_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
+        cmd: ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
     }
@@ -71,11 +60,7 @@ impl Args {
     // Add a modeling command to the batch that gets executed at the end of the file.
     // This is good for something like fillet or chamfer where the engine would
     // eat the path id if we executed it right away.
-    pub(crate) async fn batch_end_cmd(
-        &self,
-        id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
+    pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
     }
 
@@ -83,16 +68,17 @@ impl Args {
     pub(crate) async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
+        cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
-    fn get_tag_info_from_memory<'a>(
+    fn get_tag_info_from_memory<'a, 'e>(
         &'a self,
+        exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
-        if let KclValue::TagIdentifier(t) = self.current_program_memory.get(&tag.value, self.source_range)? {
+    ) -> Result<&'e crate::executor::TagEngineInfo, KclError> {
+        if let KclValue::TagIdentifier(t) = exec_state.memory.get(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
@@ -107,34 +93,43 @@ impl Args {
         }
     }
 
-    pub(crate) fn get_tag_engine_info<'a>(
+    pub(crate) fn get_tag_engine_info<'a, 'e>(
         &'a self,
+        exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError>
+    where
+        'e: 'a,
+    {
         if let Some(info) = &tag.info {
             return Ok(info);
         }
 
-        self.get_tag_info_from_memory(tag)
+        self.get_tag_info_from_memory(exec_state, tag)
     }
 
-    fn get_tag_engine_info_check_surface<'a>(
+    fn get_tag_engine_info_check_surface<'a, 'e>(
         &'a self,
+        exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError> {
+    ) -> Result<&'a crate::executor::TagEngineInfo, KclError>
+    where
+        'e: 'a,
+    {
         if let Some(info) = &tag.info {
             if info.surface.is_some() {
                 return Ok(info);
             }
         }
 
-        self.get_tag_info_from_memory(tag)
+        self.get_tag_info_from_memory(exec_state, tag)
     }
 
     /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
     #[allow(clippy::vec_box)]
     pub(crate) async fn flush_batch_for_extrude_group_set(
         &self,
+        exec_state: &mut ExecState,
         extrude_groups: Vec<Box<ExtrudeGroup>>,
     ) -> Result<(), KclError> {
         // Make sure we don't traverse sketch_groups more than once.
@@ -148,12 +143,13 @@ impl Args {
             if !traversed_sketch_groups.contains(&sketch_group_id) {
                 // Find all the extrude groups on the same shared sketch group.
                 ids.extend(
-                    self.current_program_memory
+                    exec_state
+                        .memory
                         .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
                         .iter()
                         .flat_map(|eg| eg.get_all_edge_cut_ids()),
                 );
-                ids.extend(self.dynamic_state.edge_cut_ids_on_sketch_group(sketch_group_id));
+                ids.extend(exec_state.dynamic_state.edge_cut_ids_on_sketch_group(sketch_group_id));
                 traversed_sketch_groups.push(sketch_group_id);
             }
 
@@ -169,7 +165,7 @@ impl Args {
         // before what ever we call next.
         for id in ids {
             // Pop it off the batch_end and add it to the batch.
-            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().remove(&id) else {
+            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().shift_remove(&id) else {
                 // It might be in the batch already.
                 continue;
             };
@@ -261,8 +257,7 @@ impl Args {
         &self,
     ) -> Result<
         (
-            [f64; 2],
-            f64,
+            crate::std::shapes::CircleData,
             crate::std::shapes::SketchSurfaceOrGroup,
             Option<TagDeclarator>,
         ),
@@ -380,6 +375,7 @@ impl Args {
 
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
+        exec_state: &mut ExecState,
         tag: &TagIdentifier,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
@@ -390,7 +386,7 @@ impl Args {
             }));
         }
 
-        let engine_info = self.get_tag_engine_info_check_surface(tag)?;
+        let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
         let surface = engine_info.surface.as_ref().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -500,6 +496,18 @@ where
             }));
         };
         Ok(val)
+    }
+}
+
+impl<'a> FromArgs<'a> for KclValue {
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let Some(v) = args.args.get(i) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Argument at index {i} was missing",),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        Ok(v.to_owned())
     }
 }
 
@@ -619,6 +627,7 @@ fn from_user_val<T: DeserializeOwned>(arg: &KclValue) -> Option<T> {
 impl_from_arg_via_json!(super::sketch::AngledLineData);
 impl_from_arg_via_json!(super::sketch::AngledLineToData);
 impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
+impl_from_arg_via_json!(super::shapes::CircleData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
 impl_from_arg_via_json!(super::sketch::BezierData);
@@ -714,5 +723,15 @@ impl<'a> FromKclValue<'a> for Vec<SketchGroup> {
         };
 
         uv.get::<Vec<SketchGroup>>().map(|x| x.0)
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<u64> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::UserVal(uv) = arg else {
+            return None;
+        };
+
+        uv.get::<Vec<u64>>().map(|x| x.0)
     }
 }

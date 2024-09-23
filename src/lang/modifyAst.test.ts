@@ -20,6 +20,7 @@ import {
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
+import { SimplifiedArgDetails } from './std/stdTypes'
 
 beforeAll(async () => {
   await initPromise
@@ -627,7 +628,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         'offset',
       ],
       ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1],
-    ])('stdlib fn: %s', async (expectedFinish, key, value) => {
+    ] as const)('stdlib fn: %s', async (expectedFinish, key, value) => {
       const ast = parse(code)
       if (err(ast)) throw ast
 
@@ -638,11 +639,27 @@ describe('Testing removeSingleConstraintInfo', () => {
         code.indexOf(lineOfInterest) + lineOfInterest.length,
       ]
       const pathToNode = getNodePathFromSourceRange(ast, range)
+      let argPosition: SimplifiedArgDetails
+      if (key === 'arrayIndex' && typeof value === 'number') {
+        argPosition = {
+          type: 'arrayItem',
+          index: value === 0 ? 0 : 1,
+        }
+      } else if (key === 'objectProperty' && typeof value === 'string') {
+        argPosition = {
+          type: 'objectProperty',
+          key: value,
+        }
+      } else if (key === '') {
+        argPosition = {
+          type: 'singleValue',
+        }
+      } else {
+        throw new Error('argPosition is undefined')
+      }
       const mod = removeSingleConstraintInfo(
-        {
-          pathToCallExp: pathToNode,
-          [key]: value,
-        },
+        pathToNode,
+        argPosition,
         ast,
         programMemory
       )
@@ -675,12 +692,24 @@ describe('Testing removeSingleConstraintInfo', () => {
         code.indexOf(lineOfInterest) + 1,
         code.indexOf(lineOfInterest) + lineOfInterest.length,
       ]
+      let argPosition: SimplifiedArgDetails
+      if (key === 'arrayIndex' && typeof value === 'number') {
+        argPosition = {
+          type: 'arrayItem',
+          index: value === 0 ? 0 : 1,
+        }
+      } else if (key === 'objectProperty' && typeof value === 'string') {
+        argPosition = {
+          type: 'objectProperty',
+          key: value,
+        }
+      } else {
+        throw new Error('argPosition is undefined')
+      }
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const mod = removeSingleConstraintInfo(
-        {
-          pathToCallExp: pathToNode,
-          [key]: value,
-        },
+        pathToNode,
+        argPosition,
         ast,
         programMemory
       )

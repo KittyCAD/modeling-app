@@ -9,8 +9,8 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -40,7 +40,7 @@ test.describe('Sketch tests', () => {
   const screwRadius = 3
   const wireRadius = 2
   const wireOffset = 0.5
-  
+
   const screwHole = startSketchOn('XY')
     ${startProfileAt1}
     |> arc({
@@ -48,7 +48,7 @@ test.describe('Sketch tests', () => {
           angle_start: 0,
           angle_end: 360
         }, %)
-  
+
   const part001 = startSketchOn('XY')
     ${startProfileAt2}
     |> xLine(width * .5, %)
@@ -57,7 +57,7 @@ test.describe('Sketch tests', () => {
     |> close(%)
     |> hole(screwHole, %)
     |> extrude(thickness, %)
-  
+
   const part002 = startSketchOn('-XZ')
     ${startProfileAt3}
     |> xLine(width / 4, %)
@@ -149,14 +149,16 @@ test.describe('Sketch tests', () => {
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page.waitForTimeout(100)
 
-    await page.mouse.click(700, 200)
+    await expect(async () => {
+      await page.mouse.click(700, 200)
 
-    await expect.poll(u.normalisedEditorCode)
-      .toBe(`const sketch001 = startSketchOn('XZ')
+      await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
+        .toBe(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> line([-12.34, 12.34], %)
 
 `)
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
   test('Can exit selection of face', async ({ page }) => {
     // Load the app with the code panes
@@ -344,6 +346,92 @@ test.describe('Sketch tests', () => {
     })
   })
 
+  test('Can edit a circle center and radius by dragging its handles', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const sketch001 = startSketchOn('XZ')
+  |> circle({ center: [4.61, -5.01], radius: 8 }, %)`
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    await page.waitForTimeout(100)
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 0, y: -1250, z: 580 },
+        center: { x: 0, y: 0, z: 0 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+
+    const startPX = [667, 325]
+
+    const dragPX = 40
+
+    await page
+      .getByText('circle({ center: [4.61, -5.01], radius: 8 }, %)')
+      .click()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(400)
+    let prevContent = await page.locator('.cm-content').innerText()
+
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
+
+    await test.step('drag circle center handle', async () => {
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: startPX[0], y: startPX[1] },
+        targetPosition: { x: startPX[0] + dragPX, y: startPX[1] - dragPX },
+      })
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+    })
+
+    await test.step('drag circle radius handle', async () => {
+      await page.waitForTimeout(100)
+
+      const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+      await page.waitForTimeout(100)
+      await page.dragAndDrop('#stream', '#stream', {
+        sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
+        targetPosition: { x: lineEnd.x + dragPX * 2, y: lineEnd.y + dragPX },
+      })
+      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      prevContent = await page.locator('.cm-content').innerText()
+    })
+
+    // expect the code to have changed
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
+  |> circle({ center: [7.26, -2.37], radius: 11.44 }, %)
+`)
+  })
   test('Can edit a sketch that has been extruded in the same pipe', async ({
     page,
   }) => {
@@ -618,19 +706,19 @@ test.describe('Sketch tests', () => {
     await u.closeDebugPanel()
 
     await click00r(30, 0)
-    codeStr += `  |> startProfileAt([1.53, 0], %)`
+    codeStr += `  |> startProfileAt([2.03, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(30, 0)
-    codeStr += `  |> line([1.53, 0], %)`
+    codeStr += `  |> line([2.04, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 30)
-    codeStr += `  |> line([0, -1.53], %)`
+    codeStr += `  |> line([0, -2.03], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(-30, 0)
-    codeStr += `  |> line([-1.53, 0], %)`
+    codeStr += `  |> line([-2.04, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(undefined, undefined)
@@ -953,5 +1041,69 @@ const sketch002 = startSketchOn(extrude001, 'END')
     expect(
       await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
     ).toBeLessThan(3)
+  })
+
+  test('Can attempt to sketch on revolved face', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(
+      browserName === 'webkit',
+      'Skip on Safari until `window.tearDown` is working there'
+    )
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const lugHeadLength = 0.25
+        const lugDiameter = 0.5
+        const lugLength = 2
+
+        fn lug = (origin, length, diameter, plane) => {
+          const lugSketch = startSketchOn(plane)
+            |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
+            |> angledLineOfYLength({ angle: 60, length: lugHeadLength }, %)
+            |> xLineTo(0 + .001, %)
+            |> yLineTo(0, %)
+            |> close(%)
+            |> revolve({ axis: "Y" }, %)
+
+          return lugSketch
+        }
+
+        lug([0, 0], 10, .5, "XY")`
+      )
+    })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    /***
+     * Test Plan
+     * Start the sketch mode
+     * Click the middle of the screen which should click the top face that is revolved
+     * Wait till you see the line tool be enabled
+     * Wait till you see the exit sketch enabled
+     *
+     * This is supposed to test that you are allowed to go into sketch mode to sketch on a revolved face
+     */
+
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    await expect(async () => {
+      await page.mouse.click(600, 250)
+      await page.waitForTimeout(1000)
+      await expect(
+        page.getByRole('button', { name: 'Exit Sketch' })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('button', { name: 'line Line', exact: true })
+      ).toHaveAttribute('aria-pressed', 'true')
+    }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
 })

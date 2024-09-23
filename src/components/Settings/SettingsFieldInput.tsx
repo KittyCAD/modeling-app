@@ -8,7 +8,7 @@ import {
 } from 'lib/settings/settingsTypes'
 import { getSettingInputType } from 'lib/settings/settingsUtils'
 import { useMemo } from 'react'
-import { Event } from 'xstate'
+import { EventFrom } from 'xstate'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,
@@ -59,7 +59,7 @@ export function SettingsFieldInput({
                   level: settingsLevel,
                   value: newValue,
                 },
-              } as unknown as Event<WildcardSetEvent>)
+              } as unknown as EventFrom<WildcardSetEvent>)
             }}
           />
         )
@@ -103,7 +103,7 @@ export function SettingsFieldInput({
                 level: settingsLevel,
                 value: e.target.value,
               },
-            } as unknown as Event<WildcardSetEvent>)
+            } as unknown as EventFrom<WildcardSetEvent>)
           }
         >
           {options &&
@@ -137,7 +137,7 @@ export function SettingsFieldInput({
                   level: settingsLevel,
                   value: e.target.value,
                 },
-              } as unknown as Event<WildcardSetEvent>)
+              } as unknown as EventFrom<WildcardSetEvent>)
             }
           }}
         />

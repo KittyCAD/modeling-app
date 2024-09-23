@@ -22,14 +22,16 @@ import {
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import { uuidv4 } from 'lib/utils'
+import { toSync, uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
 import { isQuaternionVertical } from './helpers'
+import { reportRejection } from 'lib/trap'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
+const ORTHOGRAPHIC_MAGIC_FOV = 4
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -83,7 +85,7 @@ export class CameraControls {
   pendingPan: Vector2 | null = null
   interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
   isFovAnimationInProgress = false
-  fovBeforeOrtho = 45
+  perspectiveFovBeforeOrtho = 45
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
@@ -100,6 +102,7 @@ export class CameraControls {
       camProps.type === 'perspective' &&
       this.camera instanceof OrthographicCamera
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.usePerspectiveCamera()
     } else if (
       camProps.type === 'orthographic' &&
@@ -127,6 +130,7 @@ export class CameraControls {
   }
 
   throttledEngCmd = throttle((cmd: EngineCommand) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 30)
 
@@ -139,6 +143,7 @@ export class CameraControls {
         ...convertThreeCamValuesToEngineCam(threeValues),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
 
@@ -151,6 +156,7 @@ export class CameraControls {
       this.lastPerspectiveCmd &&
       Date.now() - this.lastPerspectiveCmdTime >= lastCmdDelay
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineCommandManager.sendSceneCommand(this.lastPerspectiveCmd, true)
       this.lastPerspectiveCmdTime = Date.now()
     }
@@ -218,6 +224,7 @@ export class CameraControls {
         this.useOrthographicCamera()
       }
       if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.usePerspectiveCamera()
       }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
@@ -249,6 +256,7 @@ export class CameraControls {
     const doZoom = () => {
       if (this.zoomDataFromLastFrame !== undefined) {
         this.handleStart()
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
@@ -266,6 +274,7 @@ export class CameraControls {
 
     const doMove = () => {
       if (this.moveDataFromLastFrame !== undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd: {
@@ -335,7 +344,8 @@ export class CameraControls {
     this.camera.updateProjectionMatrix()
   }
 
-  onMouseDown = (event: MouseEvent) => {
+  onMouseDown = (event: PointerEvent) => {
+    this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
     this.mouseDownPosition.set(event.clientX, event.clientY)
     let interaction = this.getInteractionType(event)
@@ -355,7 +365,7 @@ export class CameraControls {
     }
   }
 
-  onMouseMove = (event: MouseEvent) => {
+  onMouseMove = (event: PointerEvent) => {
     if (this.isDragging) {
       this.mouseNewPosition.set(event.clientX, event.clientY)
       const deltaMove = this.mouseNewPosition
@@ -389,14 +399,33 @@ export class CameraControls {
           const zoomFudgeFactor = 2280
           distance = zoomFudgeFactor / (this.camera.zoom * 45)
         }
-        const panSpeed = (distance / 1000 / 45) * this.fovBeforeOrtho
+        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
         this.pendingPan.x += -deltaMove.x * panSpeed
         this.pendingPan.y += deltaMove.y * panSpeed
+      }
+    } else {
+      /**
+       * If we're not in sketch mode and not dragging, we can highlight entities
+       * under the cursor. This recently moved from being handled in App.tsx.
+       * This might not be the right spot, but it is more consolidated.
+       */
+      if (this.syncDirection === 'engineToClient') {
+        const newCmdId = uuidv4()
+
+        this.throttledEngCmd({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'highlight_set_entity',
+            selected_at_window: { x: event.clientX, y: event.clientY },
+          },
+          cmd_id: newCmdId,
+        })
       }
     }
   }
 
-  onMouseUp = (event: MouseEvent) => {
+  onMouseUp = (event: PointerEvent) => {
+    this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
     if (this.syncDirection === 'engineToClient') {
@@ -415,8 +444,19 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
+    const interaction = this.getInteractionType(event)
+    if (interaction === 'none') return
+    event.preventDefault()
+
     if (this.syncDirection === 'engineToClient') {
-      this.zoomDataFromLastFrame = event.deltaY
+      if (interaction === 'zoom') {
+        this.zoomDataFromLastFrame = event.deltaY
+      } else {
+        // This case will get handled when we add pan and rotate using Apple trackpad.
+        console.error(
+          `Unexpected interaction type for engineToClient wheel event: ${interaction}`
+        )
+      }
       return
     }
 
@@ -426,8 +466,16 @@ export class CameraControls {
     // zoom commands to engine. This means dropping some zoom
     // commands too.
     // From onMouseMove zoom handling which seems to be really smooth
+
     this.handleStart()
-    this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+    if (interaction === 'zoom') {
+      this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+    } else {
+      // This case will get handled when we add pan and rotate using Apple trackpad.
+      console.error(
+        `Unexpected interaction type for wheel event: ${interaction}`
+      )
+    }
     this.handleEnd()
   }
 
@@ -459,6 +507,7 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -487,19 +536,15 @@ export class CameraControls {
   _usePerspectiveCamera = () => {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
-    const zoom = this.camera.zoom
     this.camera = this.createPerspectiveCamera()
 
     this.camera.position.set(px, py, pz)
     this.camera.quaternion.set(qx, qy, qz, qw)
-    const zoomFudgeFactor = 2280
-    const distance = zoomFudgeFactor / (zoom * this.lastPerspectiveFov)
     const direction = new Vector3().subVectors(
       this.camera.position,
       this.target
     )
     direction.normalize()
-    this.camera.position.copy(this.target).addScaledVector(direction, distance)
   }
   usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
@@ -541,7 +586,7 @@ export class CameraControls {
     const oldFov = this.camera.fov
 
     const viewHeightFactor = (fov: number) => {
-      /*       * 
+      /*       *
               /|
              / |
             /  |
@@ -929,6 +974,7 @@ export class CameraControls {
       }
 
       if (isReducedMotion()) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         onComplete()
         return
       }
@@ -937,7 +983,7 @@ export class CameraControls {
         .to({ t: tweenEnd }, duration)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(onComplete)
+        .onComplete(toSync(onComplete, reportRejection))
         .start()
     })
   }
@@ -950,9 +996,9 @@ export class CameraControls {
         )
       this.isFovAnimationInProgress = true
       let currentFov = this.lastPerspectiveFov
-      this.fovBeforeOrtho = currentFov
+      this.perspectiveFovBeforeOrtho = currentFov
 
-      const targetFov = 4
+      const targetFov = ORTHOGRAPHIC_MAGIC_FOV
       const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
       let frameWaitOnFinish = 10
 
@@ -962,6 +1008,7 @@ export class CameraControls {
             // Decrease the FOV
             currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
             this.camera.updateProjectionMatrix()
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.dollyZoom(currentFov)
             requestAnimationFrame(animateFovChange) // Continue the animation
           } else if (frameWaitOnFinish > 0) {
@@ -987,10 +1034,11 @@ export class CameraControls {
         )
       }
       this.isFovAnimationInProgress = true
-      const targetFov = this.fovBeforeOrtho // Target FOV for perspective
-      this.lastPerspectiveFov = 4
-      let currentFov = 4
+      const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
+      this.lastPerspectiveFov = ORTHOGRAPHIC_MAGIC_FOV
+      let currentFov = ORTHOGRAPHIC_MAGIC_FOV
       const initialCameraUp = this.camera.up.clone()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.usePerspectiveCamera()
       const tempVec = new Vector3()
 
@@ -999,6 +1047,7 @@ export class CameraControls {
           this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov) * t
         const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, t)
         this.camera.up.copy(currentUp)
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.dollyZoom(currentFov)
       }
 
@@ -1023,10 +1072,10 @@ export class CameraControls {
       )
     }
     this.isFovAnimationInProgress = true
-    const targetFov = this.fovBeforeOrtho // Target FOV for perspective
-    this.lastPerspectiveFov = 4
-    let currentFov = 4
+    const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
+    let currentFov = ORTHOGRAPHIC_MAGIC_FOV
     const initialCameraUp = this.camera.up.clone()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.usePerspectiveCamera()
     const tempVec = new Vector3()
 
@@ -1093,7 +1142,7 @@ export class CameraControls {
     this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
-  getInteractionType = (event: any) =>
+  getInteractionType = (event: MouseEvent) =>
     _getInteractionType(
       this.interactionGuards,
       event,
@@ -1175,7 +1224,7 @@ function convertThreeCamValuesToEngineCam({
   const lookAt = buildLookAt(64 / zoom, target, position)
   return {
     center: new Vector3(lookAt.center.x, lookAt.center.y, lookAt.center.z),
-    up: new Vector3(0, 0, 1),
+    up: new Vector3(upVector.x, upVector.y, upVector.z),
     vantage: new Vector3(lookAt.eye.x, lookAt.eye.y, lookAt.eye.z),
   }
 }
@@ -1201,16 +1250,21 @@ function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
 
 function _getInteractionType(
   interactionGuards: MouseGuard,
-  event: any,
+  event: MouseEvent | WheelEvent,
   enablePan: boolean,
   enableRotate: boolean,
   enableZoom: boolean
 ): interactionType | 'none' {
-  let state: interactionType | 'none' = 'none'
-  if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
-  if (enableRotate && interactionGuards.rotate.callback(event)) return 'rotate'
-  if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
-  return state
+  if (event instanceof WheelEvent) {
+    if (enableZoom && interactionGuards.zoom.scrollCallback(event))
+      return 'zoom'
+  } else {
+    if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
+    if (enableRotate && interactionGuards.rotate.callback(event))
+      return 'rotate'
+    if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
+  }
+  return 'none'
 }
 
 /**

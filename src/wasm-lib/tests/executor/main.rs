@@ -301,8 +301,8 @@ async fn kcl_test_holes() {
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, 2], .5, %), %)
-  |> hole(circle([2, 8], .5, %), %)
+  |> hole(circle({ center: [2, 2], radius: .5 }, %), %)
+  |> hole(circle({ center: [2, 8], radius: .5 }, %), %)
   |> extrude(2, %)
 "#;
 
@@ -354,10 +354,10 @@ const holeRadius = 1
 const holeIndex = 6
 
 const part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle([-holeIndex, holeIndex], holeRadius, %), %)
-  |> hole(circle([holeIndex, holeIndex], holeRadius, %), %)
-  |> hole(circle([-holeIndex, -holeIndex], holeRadius, %), %)
-  |> hole(circle([holeIndex, -holeIndex], holeRadius, %), %)
+  |> hole(circle({ center: [-holeIndex, holeIndex], radius: holeRadius }, %), %)
+  |> hole(circle({ center: [holeIndex, holeIndex], radius: holeRadius }, %), %)
+  |> hole(circle({ center: [-holeIndex, -holeIndex], radius: holeRadius }, %), %)
+  |> hole(circle({ center: [holeIndex, -holeIndex], radius: holeRadius }, %), %)
   |> extrude(2, %)
 "#;
 
@@ -367,7 +367,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_top_level_expression() {
-    let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
+    let code = r#"startSketchOn('XY') |> circle({ center: [0,0], radius: 22 }, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("top_level_expression", &result);
@@ -378,7 +378,7 @@ async fn kcl_test_patterns_linear_basic_with_math() {
     let code = r#"const num = 12
 const distance = 5
 const part =  startSketchOn('XY')
-    |> circle([0,0], 2, %)
+    |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], repetitions: num -1, distance: distance - 1}, %)
     |> extrude(1, %)
 "#;
@@ -390,7 +390,7 @@ const part =  startSketchOn('XY')
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic() {
     let code = r#"const part =  startSketchOn('XY')
-    |> circle([0,0], 2, %)
+    |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
     |> extrude(1, %)
 "#;
@@ -418,7 +418,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_negative_distance() {
     let code = r#"const part = startSketchOn('XY')
-    |> circle([0,0], 2, %)
+    |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
     |> extrude(1, %)
 "#;
@@ -430,7 +430,7 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
-    |> circle([0,0], 2, %)
+    |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
     |> extrude(1, %)
 "#;
@@ -442,7 +442,7 @@ async fn kcl_test_patterns_linear_basic_negative_axis() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_holes() {
     let code = r#"const circles = startSketchOn('XY')
-    |> circle([5, 5], 1, %)
+    |> circle({ center: [5, 5], radius: 1 }, %)
     |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
 
 const rectangle = startSketchOn('XY')
@@ -463,7 +463,7 @@ const rectangle = startSketchOn('XY')
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"const part = startSketchOn('XY')
-    |> circle([0,0], 2, %)
+    |> circle({ center: [0,0], radius: 2 }, %)
     |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
     |> extrude(1, %)
 "#;
@@ -787,8 +787,8 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, 2], .5), %)
-  |> hole(circle([2, 8], .5, %), %)
+  |> hole(circle({ center: [2, 2], radius: .5 }), %)
+  |> hole(circle({ center: [2, 8], radius: .5 }, %), %)
   |> extrude(2, %)
 "#;
 
@@ -796,7 +796,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "Expected an argument at index 2" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 195])], message: "Expected an argument at index 1" }"#,
     );
 }
 
@@ -816,7 +816,7 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
 
 const part002 = startSketchOn(part001, "end")
-  |> circle([0, 0], 5, %) 
+  |> circle({ center: [0, 0], radius: 5 }, %) 
   |> extrude(5, %)
 "#;
 
@@ -866,7 +866,7 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type [f64; 2] but found string (text)" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
     );
 }
 
@@ -1085,7 +1085,7 @@ async fn kcl_test_revolve_on_face_circle_edge() {
   |> extrude(20, %)
 
 const sketch001 = startSketchOn(box, "END")
-  |> circle([10,10], 4, %)
+  |> circle({ center: [10,10], radius: 4 }, %)
   |> revolve({
     angle: 90, 
     axis: getOppositeEdge(revolveAxis) 
@@ -1107,7 +1107,7 @@ async fn kcl_test_revolve_on_face_circle() {
   |> extrude(20, %)
 
 const sketch001 = startSketchOn(box, "END")
-  |> circle([10,10], 4, %)
+  |> circle({ center: [10,10], radius: 4 }, %)
   |> revolve({
     angle: -90, 
     axis: 'y' 
@@ -1147,7 +1147,7 @@ const sketch001 = startSketchOn(box, "end")
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_revolve_circle() {
     let code = r#"const sketch001 = startSketchOn('XY')
-  |> circle([15, 0], 5, %)
+  |> circle({ center: [15, 0], radius: 5 }, %)
   |> revolve({
     angle: 360, 
     axis: 'y' 
@@ -1271,10 +1271,10 @@ async fn kcl_test_member_expression_in_params() {
          z_axis: { x: 0, y: 1, z: 0 }
       }
   })
-    |> circle([0, 0], capDia / 2, %)
+    |> circle({ center: [0, 0], radius: capDia / 2 }, %)
     |> extrude(capHeadLength, %)
   const screw = startSketchOn(screwHead, "start")
-    |> circle([0, 0], dia / 2, %)
+    |> circle({ center: [0, 0], radius: dia / 2 }, %)
     |> extrude(length, %)
   return screw
 }
@@ -1343,7 +1343,7 @@ async fn kcl_test_error_empty_start_sketch_on_string() {
   |> extrude(100, %)
 
 const secondSketch = startSketchOn(part001, '')
-  |> circle([-20, 50], 40, %)
+  |> circle({ center: [-20, 50], radius: 40 }, %)
   |> extrude(20, %)
 "#;
 
@@ -1373,7 +1373,7 @@ fn squareHole = (l, w) => {
 }
 
 const extrusion = startSketchOn('XY')
-  |> circle([0, 0], dia/2, %)
+  |> circle({ center: [0, 0], radius: dia/2 }, %)
   |> hole(squareHole(length, width, height), %)
   |> extrude(height, %)
 "#;
@@ -1382,7 +1382,7 @@ const extrusion = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([444, 477])], message: "Expected 2 arguments, got 3" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([464, 497])], message: "Expected 2 arguments, got 3" }"#
     );
 }
 
@@ -1821,40 +1821,6 @@ const part001 = cube([0,0], 20)
         result.err().unwrap().to_string(),
         r#"type: KclErrorDetails { source_ranges: [SourceRange([271, 357])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-#[ignore] // Will return an error until this is fixed in the engine: https://github.com/KittyCAD/engine/issues/2260
-async fn kcl_test_sketch_on_face_of_chamfer() {
-    let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-const part001 = cube([0,0], 20)
-    |> close(%, $line1)
-    |> extrude(20, %)
-  |> chamfer({
-    length: 10,
-    tags: [getOppositeEdge(line1)]
-  }, %, $chamfer1)
-
-const sketch001 = startSketchOn(part001, chamfer1)
-    |> startProfileAt([4.28, 3.83], %)
-    |> line([2.17, -0.03], %)
-    |> line([-0.07, -1.8], %)
-    |> line([-2.07, 0.05], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-    |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_of_chamfer", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]

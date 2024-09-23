@@ -24,11 +24,9 @@ export type ToolTip =
   | 'yLineTo'
   | 'angledLineThatIntersects'
   | 'tangentialArcTo'
+  | 'circle'
 
-export const toolTips = [
-  'sketch_line',
-  'move',
-  // original tooltips
+export const toolTips: Array<ToolTip> = [
   'line',
   'lineTo',
   'angledLine',
@@ -42,7 +40,7 @@ export const toolTips = [
   'yLineTo',
   'angledLineThatIntersects',
   'tangentialArcTo',
-] as any as ToolTip[]
+]
 
 export async function executeAst({
   ast,
@@ -64,6 +62,7 @@ export async function executeAst({
   try {
     if (!useFakeExecutor) {
       engineCommandManager.endSession()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.startNewSession()
     }
     const programMemory = await (useFakeExecutor

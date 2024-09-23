@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { BinaryPart, Program, Expr, VariableDeclarator } from '../../lang/wasm'
+import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -9,8 +9,9 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
-  TransformInfo,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
@@ -139,9 +140,11 @@ export async function applyConstraintHorzVertDistance({
       pathToNodeMap,
     }
   } else {
+    if (!isExprBinaryPart(valueNode))
+      return Promise.reject('Invalid valueNode, is not a BinaryPart')
     let finalValue = isAlign
       ? createLiteral(0)
-      : removeDoubleNegatives(valueNode as BinaryPart, sign, variableName)
+      : removeDoubleNegatives(valueNode, sign, variableName)
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
       ast: kclManager.ast,

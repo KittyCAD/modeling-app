@@ -122,9 +122,15 @@ describe('testing changeSketchArguments', () => {
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
       programMemory,
-      [sourceStart, sourceStart + lineToChange.length],
-      [2, 3],
-      [0, 0]
+      {
+        type: 'sourceRange',
+        sourceRange: [sourceStart, sourceStart + lineToChange.length],
+      },
+      {
+        type: 'straight-segment',
+        from: [0, 0],
+        to: [2, 3],
+      }
     )
     if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
     expect(recast(changeSketchArgsRetVal.modifiedAst)).toBe(expectedCode)
@@ -150,8 +156,11 @@ const mySketch001 = startSketchOn('XY')
     const newSketchLnRetVal = addNewSketchLn({
       node: ast,
       programMemory,
-      to: [2, 3],
-      from: [0, 0],
+      input: {
+        type: 'straight-segment',
+        from: [0, 0],
+        to: [2, 3],
+      },
       fnName: 'lineTo',
       pathToNode: [
         ['body', ''],

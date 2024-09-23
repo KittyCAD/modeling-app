@@ -4,21 +4,25 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::{ExtrusionFaceCapType, ExtrusionFaceInfo};
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::ExtrusionFaceInfo,
+    shared::ExtrusionFaceCapType, websocket::OkWebSocketResponseData, ModelingCmd,
+};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, KclValue, Path, SketchGroup, SketchGroupSet,
+        ExecState, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, KclValue, Path, SketchGroup, SketchGroupSet,
         SketchSurface,
     },
     std::Args,
 };
 
 /// Extrudes by a given amount.
-pub async fn extrude(args: Args) -> Result<KclValue, KclError> {
+pub async fn extrude(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (length, sketch_group_set) = args.get_number_sketch_group_set()?;
 
     let result = inner_extrude(length, sketch_group_set, args).await?;
@@ -86,7 +90,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         // We do this here in case extrude is called out of order.
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::EnableSketchMode {
+            ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: false,
                 entity_id: sketch_group.on.id(),
@@ -97,23 +101,25 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
                 } else {
                     None
                 },
-            },
+            }),
         )
         .await?;
 
         args.batch_modeling_cmd(
             id,
-            kittycad::types::ModelingCmd::Extrude {
-                target: sketch_group.id,
-                distance: length,
-                cap: true,
-            },
+            ModelingCmd::from(mcmd::Extrude {
+                target: sketch_group.id.into(),
+                distance: LengthUnit(length),
+            }),
         )
         .await?;
 
         // Disable the sketch mode.
-        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
-            .await?;
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+        )
+        .await?;
         extrude_groups.push(do_post_extrude(sketch_group.clone(), length, args.clone()).await?);
     }
 
@@ -129,9 +135,9 @@ pub(crate) async fn do_post_extrude(
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
-        kittycad::types::ModelingCmd::ObjectBringToFront {
+        ModelingCmd::from(mcmd::ObjectBringToFront {
             object_id: sketch_group.id,
-        },
+        }),
     )
     .await?;
 
@@ -142,13 +148,10 @@ pub(crate) async fn do_post_extrude(
         }));
     }
 
-    let mut edge_id = None;
-    for segment in sketch_group.value.iter() {
-        if let Path::ToPoint { base } = segment {
-            edge_id = Some(base.geo_meta.id);
-            break;
-        }
-    }
+    let edge_id = sketch_group.value.iter().find_map(|segment| match segment {
+        Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
+        _ => None,
+    });
 
     let Some(edge_id) = edge_id else {
         return Err(KclError::Type(KclErrorDetails {
@@ -167,15 +170,15 @@ pub(crate) async fn do_post_extrude(
     let solid3d_info = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo {
+            ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id,
                 object_id: sketch_group.id,
-            },
+            }),
         )
         .await?;
 
-    let face_infos = if let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetExtrusionFaceInfo { data },
+    let face_infos = if let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
     } = solid3d_info
     {
         data.faces
@@ -200,21 +203,21 @@ pub(crate) async fn do_post_extrude(
         // uses this to build the artifact graph, which the UI needs.
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::Solid3DGetOppositeEdge {
+            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: curve_id,
                 object_id: sketch_group.id,
                 face_id,
-            },
+            }),
         )
         .await?;
 
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge {
+            ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
                 edge_id: curve_id,
                 object_id: sketch_group.id,
                 face_id,
-            },
+            }),
         )
         .await?;
     }
@@ -231,7 +234,7 @@ pub(crate) async fn do_post_extrude(
         .flat_map(|path| {
             if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
                 match path {
-                    Path::TangentialArc { .. } | Path::TangentialArcTo { .. } => {
+                    Path::TangentialArc { .. } | Path::TangentialArcTo { .. } | Path::Circle { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),

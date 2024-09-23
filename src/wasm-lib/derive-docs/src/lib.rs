@@ -269,7 +269,7 @@ fn do_stdlib_inner(
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
 
-        if ty_string != "Args" {
+        if ty_string != "ExecState" && ty_string != "Args" {
             let schema = if ty_ident.to_string().starts_with("Vec < ")
                 || ty_ident.to_string().starts_with("Option <")
                 || ty_ident.to_string().starts_with('[')
@@ -387,11 +387,12 @@ fn do_stdlib_inner(
         #const_struct
 
         fn #boxed_fn_name_ident(
+            exec_state: &mut crate::executor::ExecState,
             args: crate::std::Args,
         ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>> + Send>,
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>> + Send + '_>,
         > {
-            Box::pin(#fn_name_ident(args))
+            Box::pin(#fn_name_ident(exec_state, args))
         }
 
         impl #docs_crate::StdLibFn for #name_ident
@@ -662,6 +663,9 @@ fn clean_ty_string(t: &str) -> (String, proc_macro2::TokenStream) {
         .replace("mut", "")
         .replace("< 'a >", "")
         .replace(' ', "");
+    if ty_string.starts_with("ExecState") {
+        ty_string = "ExecState".to_string();
+    }
     if ty_string.starts_with("Args") {
         ty_string = "Args".to_string();
     }

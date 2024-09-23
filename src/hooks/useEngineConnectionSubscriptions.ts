@@ -9,12 +9,12 @@ import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   getCapCodeRef,
-  getExtrudeEdgeCodeRef,
-  getExtrusionFromSuspectedExtrudeSurface,
+  getSweepEdgeCodeRef,
+  getSweepFromSuspectedSweepSurface,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 
@@ -47,7 +47,7 @@ export function useEngineConnectionSubscriptions() {
             if (err(codeRef)) return
             editorManager.setHighlightRange([codeRef.range])
           } else if (artifact?.type === 'wall') {
-            const extrusion = getExtrusionFromSuspectedExtrudeSurface(
+            const extrusion = getSweepFromSuspectedSweepSurface(
               data.entity_id,
               engineCommandManager.artifactGraph
             )
@@ -61,8 +61,8 @@ export function useEngineConnectionSubscriptions() {
                 ? [codeRef.range]
                 : [codeRef.range, extrusion.codeRef.range]
             )
-          } else if (artifact?.type === 'extrudeEdge') {
-            const codeRef = getExtrudeEdgeCodeRef(
+          } else if (artifact?.type === 'sweepEdge') {
+            const codeRef = getSweepEdgeCodeRef(
               artifact,
               engineCommandManager.artifactGraph
             )
@@ -86,9 +86,11 @@ export function useEngineConnectionSubscriptions() {
     })
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'select_with_point',
-      callback: async (engineEvent) => {
-        const event = await getEventForSelectWithPoint(engineEvent)
-        event && send(event)
+      callback: (engineEvent) => {
+        ;(async () => {
+          const event = await getEventForSelectWithPoint(engineEvent)
+          event && send(event)
+        })().catch(reportRejection)
       },
     })
     return () => {
@@ -101,118 +103,120 @@ export function useEngineConnectionSubscriptions() {
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
-        ? async ({ data }) => {
-            let planeOrFaceId = data.entity_id
-            if (!planeOrFaceId) return
-            if (
-              engineCommandManager.defaultPlanes?.xy === planeOrFaceId ||
-              engineCommandManager.defaultPlanes?.xz === planeOrFaceId ||
-              engineCommandManager.defaultPlanes?.yz === planeOrFaceId ||
-              engineCommandManager.defaultPlanes?.negXy === planeOrFaceId ||
-              engineCommandManager.defaultPlanes?.negXz === planeOrFaceId ||
-              engineCommandManager.defaultPlanes?.negYz === planeOrFaceId
-            ) {
-              let planeId = planeOrFaceId
-              const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-                [engineCommandManager.defaultPlanes.xy]: 'XY',
-                [engineCommandManager.defaultPlanes.xz]: 'XZ',
-                [engineCommandManager.defaultPlanes.yz]: 'YZ',
-                [engineCommandManager.defaultPlanes.negXy]: '-XY',
-                [engineCommandManager.defaultPlanes.negXz]: '-XZ',
-                [engineCommandManager.defaultPlanes.negYz]: '-YZ',
-              }
-              // TODO can we get this information from rust land when it creates the default planes?
-              // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
-              let zAxis: [number, number, number] = [0, 0, 1]
-              let yAxis: [number, number, number] = [0, 1, 0]
+        ? ({ data }) => {
+            ;(async () => {
+              let planeOrFaceId = data.entity_id
+              if (!planeOrFaceId) return
+              if (
+                engineCommandManager.defaultPlanes?.xy === planeOrFaceId ||
+                engineCommandManager.defaultPlanes?.xz === planeOrFaceId ||
+                engineCommandManager.defaultPlanes?.yz === planeOrFaceId ||
+                engineCommandManager.defaultPlanes?.negXy === planeOrFaceId ||
+                engineCommandManager.defaultPlanes?.negXz === planeOrFaceId ||
+                engineCommandManager.defaultPlanes?.negYz === planeOrFaceId
+              ) {
+                let planeId = planeOrFaceId
+                const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+                  [engineCommandManager.defaultPlanes.xy]: 'XY',
+                  [engineCommandManager.defaultPlanes.xz]: 'XZ',
+                  [engineCommandManager.defaultPlanes.yz]: 'YZ',
+                  [engineCommandManager.defaultPlanes.negXy]: '-XY',
+                  [engineCommandManager.defaultPlanes.negXz]: '-XZ',
+                  [engineCommandManager.defaultPlanes.negYz]: '-YZ',
+                }
+                // TODO can we get this information from rust land when it creates the default planes?
+                // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+                let zAxis: [number, number, number] = [0, 0, 1]
+                let yAxis: [number, number, number] = [0, 1, 0]
 
-              // get unit vector from camera position to target
-              const camVector = sceneInfra.camControls.camera.position
-                .clone()
-                .sub(sceneInfra.camControls.target)
+                // get unit vector from camera position to target
+                const camVector = sceneInfra.camControls.camera.position
+                  .clone()
+                  .sub(sceneInfra.camControls.target)
 
-              if (engineCommandManager.defaultPlanes?.xy === planeId) {
-                zAxis = [0, 0, 1]
-                yAxis = [0, 1, 0]
-                if (camVector.z < 0) {
-                  zAxis = [0, 0, -1]
-                  planeId = engineCommandManager.defaultPlanes?.negXy || ''
+                if (engineCommandManager.defaultPlanes?.xy === planeId) {
+                  zAxis = [0, 0, 1]
+                  yAxis = [0, 1, 0]
+                  if (camVector.z < 0) {
+                    zAxis = [0, 0, -1]
+                    planeId = engineCommandManager.defaultPlanes?.negXy || ''
+                  }
+                } else if (engineCommandManager.defaultPlanes?.yz === planeId) {
+                  zAxis = [1, 0, 0]
+                  yAxis = [0, 0, 1]
+                  if (camVector.x < 0) {
+                    zAxis = [-1, 0, 0]
+                    planeId = engineCommandManager.defaultPlanes?.negYz || ''
+                  }
+                } else if (engineCommandManager.defaultPlanes?.xz === planeId) {
+                  zAxis = [0, 1, 0]
+                  yAxis = [0, 0, 1]
+                  planeId = engineCommandManager.defaultPlanes?.negXz || ''
+                  if (camVector.y < 0) {
+                    zAxis = [0, -1, 0]
+                    planeId = engineCommandManager.defaultPlanes?.xz || ''
+                  }
                 }
-              } else if (engineCommandManager.defaultPlanes?.yz === planeId) {
-                zAxis = [1, 0, 0]
-                yAxis = [0, 0, 1]
-                if (camVector.x < 0) {
-                  zAxis = [-1, 0, 0]
-                  planeId = engineCommandManager.defaultPlanes?.negYz || ''
-                }
-              } else if (engineCommandManager.defaultPlanes?.xz === planeId) {
-                zAxis = [0, 1, 0]
-                yAxis = [0, 0, 1]
-                planeId = engineCommandManager.defaultPlanes?.negXz || ''
-                if (camVector.y < 0) {
-                  zAxis = [0, -1, 0]
-                  planeId = engineCommandManager.defaultPlanes?.xz || ''
-                }
+
+                sceneInfra.modelingSend({
+                  type: 'Select default plane',
+                  data: {
+                    type: 'defaultPlane',
+                    planeId: planeId,
+                    plane: defaultPlaneStrMap[planeId],
+                    zAxis,
+                    yAxis,
+                  },
+                })
+                return
               }
+              const faceId = planeOrFaceId
+              const artifact = engineCommandManager.artifactGraph.get(faceId)
+              const extrusion = getSweepFromSuspectedSweepSurface(
+                faceId,
+                engineCommandManager.artifactGraph
+              )
+
+              if (artifact?.type !== 'cap' && artifact?.type !== 'wall') return
+
+              const codeRef =
+                artifact.type === 'cap'
+                  ? getCapCodeRef(artifact, engineCommandManager.artifactGraph)
+                  : getWallCodeRef(artifact, engineCommandManager.artifactGraph)
+
+              const faceInfo = await getFaceDetails(faceId)
+              if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+                return
+              const { z_axis, y_axis, origin } = faceInfo
+              const sketchPathToNode = getNodePathFromSourceRange(
+                kclManager.ast,
+                err(codeRef) ? [0, 0] : codeRef.range
+              )
+
+              const extrudePathToNode = !err(extrusion)
+                ? getNodePathFromSourceRange(
+                    kclManager.ast,
+                    extrusion.codeRef.range
+                  )
+                : []
 
               sceneInfra.modelingSend({
                 type: 'Select default plane',
                 data: {
-                  type: 'defaultPlane',
-                  planeId: planeId,
-                  plane: defaultPlaneStrMap[planeId],
-                  zAxis,
-                  yAxis,
+                  type: 'extrudeFace',
+                  zAxis: [z_axis.x, z_axis.y, z_axis.z],
+                  yAxis: [y_axis.x, y_axis.y, y_axis.z],
+                  position: [origin.x, origin.y, origin.z].map(
+                    (num) => num / sceneInfra._baseUnitMultiplier
+                  ) as [number, number, number],
+                  sketchPathToNode,
+                  extrudePathToNode,
+                  cap: artifact.type === 'cap' ? artifact.subType : 'none',
+                  faceId: faceId,
                 },
               })
               return
-            }
-            const faceId = planeOrFaceId
-            const artifact = engineCommandManager.artifactGraph.get(faceId)
-            const extrusion = getExtrusionFromSuspectedExtrudeSurface(
-              faceId,
-              engineCommandManager.artifactGraph
-            )
-
-            if (artifact?.type !== 'cap' && artifact?.type !== 'wall') return
-
-            const codeRef =
-              artifact.type === 'cap'
-                ? getCapCodeRef(artifact, engineCommandManager.artifactGraph)
-                : getWallCodeRef(artifact, engineCommandManager.artifactGraph)
-
-            const faceInfo = await getFaceDetails(faceId)
-            if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-              return
-            const { z_axis, y_axis, origin } = faceInfo
-            const sketchPathToNode = getNodePathFromSourceRange(
-              kclManager.ast,
-              err(codeRef) ? [0, 0] : codeRef.range
-            )
-
-            const extrudePathToNode = !err(extrusion)
-              ? getNodePathFromSourceRange(
-                  kclManager.ast,
-                  extrusion.codeRef.range
-                )
-              : []
-
-            sceneInfra.modelingSend({
-              type: 'Select default plane',
-              data: {
-                type: 'extrudeFace',
-                zAxis: [z_axis.x, z_axis.y, z_axis.z],
-                yAxis: [y_axis.x, y_axis.y, y_axis.z],
-                position: [origin.x, origin.y, origin.z].map(
-                  (num) => num / sceneInfra._baseUnitMultiplier
-                ) as [number, number, number],
-                sketchPathToNode,
-                extrudePathToNode,
-                cap: artifact.type === 'cap' ? artifact.subType : 'none',
-                faceId: faceId,
-              },
-            })
-            return
+            })().catch(reportRejection)
           }
         : () => {},
     })
