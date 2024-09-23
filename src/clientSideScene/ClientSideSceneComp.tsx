@@ -96,15 +96,29 @@ export const ClientSideScene = ({
     canvas.appendChild(sceneInfra.renderer.domElement)
     canvas.appendChild(sceneInfra.labelRenderer.domElement)
     sceneInfra.animate()
-    canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
+    canvas.addEventListener(
+      'mousemove',
+      toSync(sceneInfra.onMouseMove, reportRejection),
+      false
+    )
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
-    canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)
+    canvas.addEventListener(
+      'mouseup',
+      toSync(sceneInfra.onMouseUp, reportRejection),
+      false
+    )
     sceneInfra.setSend(send)
     engineCommandManager.modelingSend = send
     return () => {
-      canvas?.removeEventListener('mousemove', sceneInfra.onMouseMove)
+      canvas?.removeEventListener(
+        'mousemove',
+        toSync(sceneInfra.onMouseMove, reportRejection)
+      )
       canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      canvas?.removeEventListener('mouseup', sceneInfra.onMouseUp)
+      canvas?.removeEventListener(
+        'mouseup',
+        toSync(sceneInfra.onMouseUp, reportRejection)
+      )
     }
   }, [])
 
@@ -124,7 +138,8 @@ export const ClientSideScene = ({
     } else if (
       state.matches({ Sketch: 'Line tool' }) ||
       state.matches({ Sketch: 'Tangential arc to' }) ||
-      state.matches({ Sketch: 'Rectangle tool' })
+      state.matches({ Sketch: 'Rectangle tool' }) ||
+      state.matches({ Sketch: 'Circle tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -269,15 +284,22 @@ const Overlay = ({
                 }
               />
             ))}
-          <SegmentMenu
-            verticalPosition={
-              overlay.windowCoords[1] > window.innerHeight / 2
-                ? 'top'
-                : 'bottom'
-            }
-            pathToNode={overlay.pathToNode}
-            stdLibFnName={constraints[0]?.stdLibFnName}
-          />
+          {/* delete circle is complicated by the fact it's the only segment in the
+          pipe expression. Maybe it should delete the entire pipeExpression, however
+          this will likely change soon when we implement multi-profile so we'll leave it for now
+          issue: https://github.com/KittyCAD/modeling-app/issues/3910
+          */}
+          {callExpression?.callee?.name !== 'circle' && (
+            <SegmentMenu
+              verticalPosition={
+                overlay.windowCoords[1] > window.innerHeight / 2
+                  ? 'top'
+                  : 'bottom'
+              }
+              pathToNode={overlay.pathToNode}
+              stdLibFnName={constraints[0]?.stdLibFnName}
+            />
+          )}
         </div>
       )}
     </div>
@@ -511,6 +533,11 @@ const ConstraintSymbol = ({
       varName: 'perpDist',
       displayName: 'Intersection Offset',
       iconName: 'intersection-offset',
+    },
+    radius: {
+      varName: 'radius',
+      displayName: 'Radius',
+      iconName: 'dimension',
     },
 
     // implicit constraints

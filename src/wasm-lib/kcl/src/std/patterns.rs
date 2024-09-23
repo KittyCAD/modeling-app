@@ -121,7 +121,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle([0, 0], 1, %, $tag1)
+///     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
@@ -326,7 +326,7 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle([0, 0], 1, %)
+///   |> circle({ center: [0, 0], radius: 1 }, %)
 ///   |> patternLinear2d({
 ///        axis: [1, 0],
 ///        repetitions: 6,
@@ -656,7 +656,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle([0, 0], 1, %)
+///   |> circle({ center: [0, 0], radius: 1 }, %)
 ///
 /// const example = extrude(-5, exampleSketch)
 ///   |> patternCircular3d({

@@ -39,10 +39,10 @@ const shellExtrude = startSketchOn(s, "start")
   |> extrude(-(height - t), %)
 
 const peg = startSketchOn(s, "end")
-  |> circle([
+  |> circle({ center: [
        -(total_width / 2 - wSegments),
        -(total_length / 2 - lSegments)
-     ], bumpDiam / 2, %)
+     ], radius: bumpDiam / 2 }, %)
   |> patternLinear2d({
        axis: [1, 0],
        repetitions: 5,

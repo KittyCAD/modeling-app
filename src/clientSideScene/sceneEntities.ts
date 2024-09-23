@@ -72,6 +72,7 @@ import {
   createArrayExpression,
   createCallExpressionStdLib,
   createLiteral,
+  createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
   findUniqueName,
@@ -90,6 +91,7 @@ import { getThemeColorForThreeJs, Themes } from 'lib/theme'
 import { err, reportRejection, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
+import { SegmentInputs } from 'lang/std/stdTypes'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -103,10 +105,18 @@ export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
+export const CIRCLE_SEGMENT = 'circle-segment'
+export const CIRCLE_SEGMENT_BODY = 'circle-segment-body'
+export const CIRCLE_SEGMENT_DASH = 'circle-segment-body-dashed'
+export const CIRCLE_CENTER_HANDLE = 'circle-center-handle'
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 75 // in pixels
 export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
-export const SEGMENT_BODIES = [STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT]
+export const SEGMENT_BODIES = [
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  CIRCLE_SEGMENT,
+]
 export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   ...SEGMENT_BODIES,
   PROFILE_START,
@@ -144,11 +154,11 @@ export class SceneEntities {
           ? orthoFactor
           : perspScale(sceneInfra.camControls.camera, segment)) /
         sceneInfra._baseUnitMultiplier
-      const input = {
+      let input: SegmentInputs = {
         type: 'straight-segment',
         from: segment.userData.from,
         to: segment.userData.to,
-      } as const
+      }
       let update: SegmentUtils['update'] | null = null
       if (
         segment.userData.from &&
@@ -165,6 +175,21 @@ export class SceneEntities {
       ) {
         update = segmentUtils.tangentialArcTo.update
       }
+      if (
+        segment.userData.from &&
+        segment.userData.center &&
+        segment.userData.radius &&
+        segment.userData.type === CIRCLE_SEGMENT
+      ) {
+        update = segmentUtils.circle.update
+        input = {
+          type: 'arc-segment',
+          from: segment.userData.from,
+          center: segment.userData.center,
+          radius: segment.userData.radius,
+        }
+      }
+
       const callBack = update?.({
         prevSegment: segment.userData.prevSegment,
         input,
@@ -311,7 +336,6 @@ export class SceneEntities {
       )
     }
     sceneInfra.setCallbacks({
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         if (!args) return
         if (args.mouseEvent.which !== 1) return
@@ -409,19 +433,21 @@ export class SceneEntities {
       maybeModdedAst,
       sketchGroup.start.__geoMeta.sourceRange
     )
-    const _profileStart = createProfileStartHandle({
-      from: sketchGroup.start.from,
-      id: sketchGroup.start.__geoMeta.id,
-      pathToNode: segPathToNode,
-      scale: factor,
-      theme: sceneInfra._theme,
-    })
-    _profileStart.layers.set(SKETCH_LAYER)
-    _profileStart.traverse((child) => {
-      child.layers.set(SKETCH_LAYER)
-    })
-    group.add(_profileStart)
-    this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
+    if (sketchGroup?.value?.[0]?.type !== 'Circle') {
+      const _profileStart = createProfileStartHandle({
+        from: sketchGroup.start.from,
+        id: sketchGroup.start.__geoMeta.id,
+        pathToNode: segPathToNode,
+        scale: factor,
+        theme: sceneInfra._theme,
+      })
+      _profileStart.layers.set(SKETCH_LAYER)
+      _profileStart.traverse((child) => {
+        child.layers.set(SKETCH_LAYER)
+      })
+      group.add(_profileStart)
+      this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
+    }
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
@@ -467,15 +493,26 @@ export class SceneEntities {
       const initSegment =
         segment.type === 'TangentialArcTo'
           ? segmentUtils.tangentialArcTo.init
+          : segment.type === 'Circle'
+          ? segmentUtils.circle.init
           : segmentUtils.straight.init
+      const input: SegmentInputs =
+        segment.type === 'Circle'
+          ? {
+              type: 'arc-segment',
+              from: segment.from,
+              center: segment.center,
+              radius: segment.radius,
+            }
+          : {
+              type: 'straight-segment',
+              from: segment.from,
+              to: segment.to,
+            }
       const result = initSegment({
         prevSegment: sketchGroup.value[index - 1],
         callExpName,
-        input: {
-          type: 'straight-segment',
-          from: segment.from,
-          to: segment.to,
-        },
+        input,
         id: segment.__geoMeta.id,
         pathToNode: segPathToNode,
         isDraftSegment,
@@ -575,7 +612,6 @@ export class SceneEntities {
     const lastSeg = sg?.value?.slice(-1)[0] || sg.start
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
-
     const mod = addNewSketchLn({
       node: _ast,
       programMemory: kclManager.programMemory,
@@ -606,7 +642,6 @@ export class SceneEntities {
         draftExpressionsIndices,
       })
     sceneInfra.setCallbacks({
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         if (!args) return
         if (args.mouseEvent.which !== 1) return
@@ -747,7 +782,6 @@ export class SceneEntities {
     })
 
     sceneInfra.setCallbacks({
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
         const pathToNodeTwo = structuredClone(sketchPathToNode)
@@ -779,7 +813,7 @@ export class SceneEntities {
           programMemory.get(variableDeclarationName),
           variableDeclarationName
         )
-        if (err(sketchGroup)) return sketchGroup
+        if (err(sketchGroup)) return Promise.reject(sketchGroup)
         const sgPaths = sketchGroup.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -795,7 +829,6 @@ export class SceneEntities {
           this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
         )
       },
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick: async (args) => {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
@@ -857,6 +890,173 @@ export class SceneEntities {
       },
     })
   }
+  setupDraftCircle = async (
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    circleCenter: [x: number, y: number]
+  ) => {
+    let _ast = structuredClone(kclManager.ast)
+
+    const _node1 = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchPathToNode || [],
+      'VariableDeclaration'
+    )
+    if (trap(_node1)) return Promise.reject(_node1)
+    const variableDeclarationName =
+      _node1.node?.declarations?.[0]?.id?.name || ''
+    const startSketchOn = _node1.node?.declarations
+    const startSketchOnInit = startSketchOn?.[0]?.init
+
+    startSketchOn[0].init = createPipeExpression([
+      startSketchOnInit,
+      createCallExpressionStdLib('circle', [
+        createObjectExpression({
+          center: createArrayExpression([
+            createLiteral(roundOff(circleCenter[0])),
+            createLiteral(roundOff(circleCenter[1])),
+          ]),
+          radius: createLiteral(1),
+        }),
+        createPipeSubstitution(),
+      ]),
+    ])
+
+    let _recastAst = parse(recast(_ast))
+    if (trap(_recastAst)) return Promise.reject(_recastAst)
+    _ast = _recastAst
+
+    // do a quick mock execution to get the program memory up-to-date
+    await kclManager.executeAstMock(_ast)
+
+    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+      sketchPathToNode,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices: { start: 0, end: 0 },
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        const pathToNodeTwo = structuredClone(sketchPathToNode)
+        pathToNodeTwo[1][0] = 0
+
+        const _node = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          pathToNodeTwo || [],
+          'VariableDeclaration'
+        )
+        let modded = structuredClone(truncatedAst)
+        if (trap(_node)) return
+        const sketchInit = _node.node?.declarations?.[0]?.init
+
+        const x = (args.intersectionPoint.twoD.x || 0) - circleCenter[0]
+        const y = (args.intersectionPoint.twoD.y || 0) - circleCenter[1]
+
+        if (sketchInit.type === 'PipeExpression') {
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.programMemory,
+            {
+              type: 'path',
+              pathToNode: [
+                ..._node.deepPath,
+                ['body', 'PipeExpression'],
+                [1, 'index'],
+              ],
+            },
+            {
+              type: 'arc-segment',
+              center: circleCenter,
+              radius: Math.sqrt(x ** 2 + y ** 2),
+              from: circleCenter,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+        }
+
+        const { programMemory } = await executeAst({
+          ast: modded,
+          useFakeExecutor: true,
+          engineCommandManager: this.engineCommandManager,
+          programMemoryOverride,
+        })
+        this.sceneProgramMemory = programMemory
+        const sketchGroup = sketchGroupFromKclValue(
+          programMemory.get(variableDeclarationName),
+          variableDeclarationName
+        )
+        if (err(sketchGroup)) return
+        const sgPaths = sketchGroup.value
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        this.updateSegment(
+          sketchGroup.start,
+          0,
+          0,
+          _ast,
+          orthoFactor,
+          sketchGroup
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+        )
+      },
+      onClick: async (args) => {
+        // Commit the rectangle to the full AST/code and return to sketch.idle
+        const cornerPoint = args.intersectionPoint?.twoD
+        if (!cornerPoint || args.mouseEvent.button !== 0) return
+
+        const x = roundOff((cornerPoint.x || 0) - circleCenter[0])
+        const y = roundOff((cornerPoint.y || 0) - circleCenter[1])
+
+        const _node = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          sketchPathToNode || [],
+          'VariableDeclaration'
+        )
+        if (trap(_node)) return
+        const sketchInit = _node.node?.declarations?.[0]?.init
+
+        let modded = structuredClone(_ast)
+        if (sketchInit.type === 'PipeExpression') {
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.programMemory,
+            {
+              type: 'path',
+              pathToNode: [
+                ..._node.deepPath,
+                ['body', 'PipeExpression'],
+                [1, 'index'],
+              ],
+            },
+            {
+              type: 'arc-segment',
+              center: circleCenter,
+              radius: Math.sqrt(x ** 2 + y ** 2),
+              from: circleCenter,
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+
+          let _recastAst = parse(recast(modded))
+          if (trap(_recastAst)) return Promise.reject(_recastAst)
+          _ast = _recastAst
+
+          // Update the primary AST and unequip the rectangle tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'Finish circle' })
+        }
+      },
+    })
+  }
   setupSketchIdleCallbacks = ({
     pathToNode,
     up,
@@ -870,7 +1070,6 @@ export class SceneEntities {
   }) => {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     sceneInfra.setCallbacks({
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
           await this.tearDownSketch({ removeAxis: false })
@@ -891,7 +1090,6 @@ export class SceneEntities {
           })
         }
       },
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onDrag: async ({
         selected,
         intersectionPoint,
@@ -1028,11 +1226,8 @@ export class SceneEntities {
       ? new Vector2(profileStart.position.x, profileStart.position.y)
       : _intersection2d
 
-    const group = getParentGroup(object, [
-      STRAIGHT_SEGMENT,
-      TANGENTIAL_ARC_TO_SEGMENT,
-      PROFILE_START,
-    ])
+    const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
+    const subGroup = getParentGroup(object, [ARROWHEAD, CIRCLE_CENTER_HANDLE])
     if (!group) return
     const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
     const varDecIndex = pathToNode[1][0]
@@ -1069,6 +1264,43 @@ export class SceneEntities {
           pathToNode: PathToNode
         }
       | Error
+
+    const getChangeSketchInput = (): SegmentInputs => {
+      if (
+        group.name === CIRCLE_SEGMENT &&
+        // !subGroup treats grabbing the outer circumference of the circle
+        // as a drag of the center handle
+        (!subGroup || subGroup?.name === ARROWHEAD)
+      )
+        return {
+          type: 'arc-segment',
+          from,
+          center: group.userData.center,
+          // distance between the center and the drag point
+          radius: Math.sqrt(
+            (group.userData.center[0] - dragTo[0]) ** 2 +
+              (group.userData.center[1] - dragTo[1]) ** 2
+          ),
+        }
+      if (
+        group.name === CIRCLE_SEGMENT &&
+        subGroup?.name === CIRCLE_CENTER_HANDLE
+      )
+        return {
+          type: 'arc-segment',
+          from,
+          center: dragTo,
+          radius: group.userData.radius,
+        }
+
+      // straight segment is the default
+      return {
+        type: 'straight-segment',
+        from,
+        to: dragTo,
+      }
+    }
+
     if (group.name === PROFILE_START) {
       modded = updateStartProfileAtArgs({
         node: modifiedAst,
@@ -1084,12 +1316,11 @@ export class SceneEntities {
       modded = changeSketchArguments(
         modifiedAst,
         kclManager.programMemory,
-        [node.start, node.end],
         {
-          type: 'straight-segment',
-          from,
-          to: dragTo,
-        }
+          type: 'sourceRange',
+          sourceRange: [node.start, node.end],
+        },
+        getChangeSketchInput()
       )
     }
     if (trap(modded)) return
@@ -1192,16 +1423,28 @@ export class SceneEntities {
         ? orthoFactor
         : perspScale(sceneInfra.camControls.camera, group)) /
       sceneInfra._baseUnitMultiplier
-    const input = {
+    let input: SegmentInputs = {
       type: 'straight-segment',
       from: segment.from,
       to: segment.to,
-    } as const
+    }
     let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
       update = segmentUtils.tangentialArcTo.update
     } else if (type === STRAIGHT_SEGMENT) {
       update = segmentUtils.straight.update
+    } else if (
+      type === CIRCLE_SEGMENT &&
+      'type' in segment &&
+      segment.type === 'Circle'
+    ) {
+      update = segmentUtils.circle.update
+      input = {
+        type: 'arc-segment',
+        from: segment.from,
+        center: segment.center,
+        radius: segment.radius,
+      }
     }
     const callBack =
       update &&
@@ -1276,7 +1519,7 @@ export class SceneEntities {
           this._tearDownSketch(callDepth + 1, resolve, reject, { removeAxis })
         }, delay)
       } else {
-        reject()
+        resolve(true)
       }
     }
     sceneInfra.camControls.enableRotate = true
@@ -1306,11 +1549,10 @@ export class SceneEntities {
           mat.color.set(obj.userData.baseColor)
           mat.color.offsetHSL(0, 0, 0.5)
         }
-        const parent = getParentGroup(selected, [
-          STRAIGHT_SEGMENT,
-          TANGENTIAL_ARC_TO_SEGMENT,
-          PROFILE_START,
-        ])
+        const parent = getParentGroup(
+          selected,
+          SEGMENT_BODIES_PLUS_PROFILE_START
+        )
         if (parent?.userData?.pathToNode) {
           const updatedAst = parse(recast(kclManager.ast))
           if (trap(updatedAst)) return
@@ -1334,11 +1576,11 @@ export class SceneEntities {
           }
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-          const input = {
+          let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
-          } as const
+          }
           const factor =
             (sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
@@ -1349,6 +1591,12 @@ export class SceneEntities {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
             update = segmentUtils.tangentialArcTo.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+            }
           }
           update &&
             update({
@@ -1364,19 +1612,18 @@ export class SceneEntities {
       },
       onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
         editorManager.setHighlightRange([[0, 0]])
-        const parent = getParentGroup(selected, [
-          STRAIGHT_SEGMENT,
-          TANGENTIAL_ARC_TO_SEGMENT,
-          PROFILE_START,
-        ])
+        const parent = getParentGroup(
+          selected,
+          SEGMENT_BODIES_PLUS_PROFILE_START
+        )
         if (parent) {
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-          const input = {
+          let input: SegmentInputs = {
             type: 'straight-segment',
             from: parent.userData.from,
             to: parent.userData.to,
-          } as const
+          }
           const factor =
             (sceneInfra.camControls.camera instanceof OrthographicCamera
               ? orthoFactor
@@ -1387,6 +1634,12 @@ export class SceneEntities {
             update = segmentUtils.straight.update
           } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
             update = segmentUtils.tangentialArcTo.update
+            input = {
+              type: 'arc-segment',
+              from: parent.userData.from,
+              radius: parent.userData.radius,
+              center: parent.userData.center,
+            }
           }
           update &&
             update({
@@ -1557,7 +1810,7 @@ function prepareTruncatedMemoryAndAst(
 
 export function getParentGroup(
   object: any,
-  stopAt: string[] = [STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT]
+  stopAt: string[] = SEGMENT_BODIES
 ): Group | null {
   if (stopAt.includes(object?.userData?.type)) {
     return object
@@ -1604,10 +1857,7 @@ function colorSegment(object: any, color: number) {
     })
     return
   }
-  const straightSegmentBody = getParentGroup(object, [
-    STRAIGHT_SEGMENT,
-    TANGENTIAL_ARC_TO_SEGMENT,
-  ])
+  const straightSegmentBody = getParentGroup(object, SEGMENT_BODIES)
   if (straightSegmentBody) {
     straightSegmentBody.traverse((child) => {
       if (child instanceof Mesh && !child.userData.ignoreColorChange) {

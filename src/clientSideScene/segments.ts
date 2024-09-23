@@ -24,6 +24,10 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
+  CIRCLE_CENTER_HANDLE,
+  CIRCLE_SEGMENT,
+  CIRCLE_SEGMENT_BODY,
+  CIRCLE_SEGMENT_DASH,
   EXTRA_SEGMENT_HANDLE,
   EXTRA_SEGMENT_OFFSET_PX,
   HIDE_HOVER_SEGMENT_LENGTH,
@@ -477,6 +481,169 @@ class TangentialArcToSegment implements SegmentUtils {
   }
 }
 
+class CircleSegment implements SegmentUtils {
+  init: SegmentUtils['init'] = ({
+    prevSegment,
+    input,
+    id,
+    pathToNode,
+    isDraftSegment,
+    scale = 1,
+    theme,
+    isSelected,
+    sceneInfra,
+  }) => {
+    if (input.type !== 'arc-segment') {
+      return new Error('Invalid segment type')
+    }
+    const { from, center, radius } = input
+    const baseColor = getThemeColorForThreeJs(theme)
+    const color = isSelected ? 0x0000ff : baseColor
+
+    const group = new Group()
+    const geometry = createArcGeometry({
+      center,
+      radius,
+      startAngle: 0,
+      endAngle: Math.PI * 2,
+      ccw: true,
+      isDashed: isDraftSegment,
+      scale,
+    })
+    const mat = new MeshBasicMaterial({ color })
+    const arcMesh = new Mesh(geometry, mat)
+    const meshType = isDraftSegment ? CIRCLE_SEGMENT_DASH : CIRCLE_SEGMENT_BODY
+    const arrowGroup = createArrowhead(scale, theme, color)
+    const circleCenterGroup = createCircleCenterHandle(scale, theme, color)
+
+    arcMesh.userData.type = meshType
+    arcMesh.name = meshType
+    group.userData = {
+      type: CIRCLE_SEGMENT,
+      id,
+      from,
+      radius,
+      center,
+      ccw: true,
+      prevSegment,
+      pathToNode,
+      isSelected,
+      baseColor,
+    }
+    group.name = CIRCLE_SEGMENT
+
+    group.add(arcMesh, arrowGroup, circleCenterGroup)
+    const updateOverlaysCallback = this.update({
+      prevSegment,
+      input,
+      group,
+      scale,
+      sceneInfra,
+    })
+    if (err(updateOverlaysCallback)) return updateOverlaysCallback
+
+    return {
+      group,
+      updateOverlaysCallback,
+    }
+  }
+  update: SegmentUtils['update'] = ({
+    prevSegment,
+    input,
+    group,
+    scale = 1,
+    sceneInfra,
+  }) => {
+    if (input.type !== 'arc-segment') {
+      return new Error('Invalid segment type')
+    }
+    const { from, center, radius } = input
+    group.userData.from = from
+    // group.userData.to = to
+    group.userData.center = center
+    group.userData.radius = radius
+    group.userData.prevSegment = prevSegment
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const circleCenterHandle = group.getObjectByName(
+      CIRCLE_CENTER_HANDLE
+    ) as Group
+
+    const pxLength = (2 * radius * Math.PI) / scale
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [CIRCLE_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
+
+    if (arrowGroup) {
+      arrowGroup.position.set(
+        center[0] + Math.cos(Math.PI / 4) * radius,
+        center[1] + Math.sin(Math.PI / 4) * radius,
+        0
+      )
+
+      const arrowheadAngle = Math.PI / 4
+      arrowGroup.quaternion.setFromUnitVectors(
+        new Vector3(0, 1, 0),
+        new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+      )
+      arrowGroup.scale.set(scale, scale, scale)
+      arrowGroup.visible = isHandlesVisible
+    }
+
+    if (circleCenterHandle) {
+      circleCenterHandle.position.set(center[0], center[1], 0)
+      circleCenterHandle.scale.set(scale, scale, scale)
+      circleCenterHandle.visible = isHandlesVisible
+    }
+
+    const circleSegmentBody = group.children.find(
+      (child) => child.userData.type === CIRCLE_SEGMENT_BODY
+    ) as Mesh
+
+    if (circleSegmentBody) {
+      const newGeo = createArcGeometry({
+        radius,
+        center,
+        startAngle: 0,
+        endAngle: Math.PI * 2,
+        ccw: true,
+        scale,
+      })
+      circleSegmentBody.geometry = newGeo
+    }
+    const circleSegmentBodyDashed = group.getObjectByName(CIRCLE_SEGMENT_DASH)
+    if (circleSegmentBodyDashed instanceof Mesh) {
+      // consider throttling the whole updateTangentialArcToSegment
+      // if there are more perf considerations going forward
+      circleSegmentBodyDashed.geometry = createArcGeometry({
+        center,
+        radius,
+        ccw: true,
+        // make the start end where the handle is
+        startAngle: Math.PI * 0.25,
+        endAngle: Math.PI * 2.25,
+        isDashed: true,
+        scale,
+      })
+    }
+    return () =>
+      sceneInfra.updateOverlayDetails({
+        arrowGroup,
+        group,
+        isHandlesVisible,
+        from: from,
+        to: [center[0], center[1]],
+        angle: Math.PI / 4,
+      })
+  }
+}
+
 export function createProfileStartHandle({
   from,
   id,
@@ -534,6 +701,28 @@ function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
   arrowGroup.lookAt(new Vector3(0, 1, 0))
   arrowGroup.scale.set(scale, scale, scale)
   return arrowGroup
+}
+function createCircleCenterHandle(
+  scale = 1,
+  theme: Themes,
+  color?: number
+): Group {
+  const circleCenterGroup = new Group()
+
+  const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color })
+  const mesh = new Mesh(geometry, body)
+
+  circleCenterGroup.add(mesh)
+
+  circleCenterGroup.userData = {
+    type: CIRCLE_CENTER_HANDLE,
+    baseColor,
+  }
+  circleCenterGroup.name = CIRCLE_CENTER_HANDLE
+  circleCenterGroup.scale.set(scale, scale, scale)
+  return circleCenterGroup
 }
 
 function createExtraSegmentHandle(
@@ -788,4 +977,5 @@ export function dashedStraight(
 export const segmentUtils = {
   straight: new StraightSegment(),
   tangentialArcTo: new TangentialArcToSegment(),
+  circle: new CircleSegment(),
 } as const
