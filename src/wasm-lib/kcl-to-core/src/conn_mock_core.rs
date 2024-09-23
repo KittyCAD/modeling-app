@@ -16,7 +16,7 @@ const NEED_PLANES: bool = true;
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     batch: Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
     core_test: Arc<Mutex<String>>,
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
 }
@@ -29,7 +29,7 @@ impl EngineConnection {
 
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(HashMap::new())),
+            batch_end: Arc::new(Mutex::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
         })
