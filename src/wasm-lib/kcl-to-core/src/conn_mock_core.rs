@@ -87,7 +87,16 @@ impl EngineConnection {
                     {plane_id}->setHidden();
                     scene->addSceneObject({plane_id});
                 "#,
-                    origin.x.0, origin.y.0, origin.z.0, x_axis.x, x_axis.y, x_axis.z, y_axis.x, y_axis.y, y_axis.z, size.0
+                    origin.x.0,
+                    origin.y.0,
+                    origin.z.0,
+                    x_axis.x,
+                    x_axis.y,
+                    x_axis.z,
+                    y_axis.x,
+                    y_axis.y,
+                    y_axis.z,
+                    size.0
                 )
             }
             kcmc::ModelingCmd::StartPath(kcmc::StartPath {}) => {
