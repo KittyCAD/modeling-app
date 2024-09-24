@@ -498,14 +498,11 @@ test('Sketch on face', async ({ page }) => {
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await u.openAndClearDebugPanel()
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(625, 165),
-    'default_camera_get_settings',
-    true
-  )
-  await page.waitForTimeout(150)
-  await u.closeDebugPanel()
+  const center = await u.getCenterOfModelViewArea()
+
+  await page.mouse.move(center.x, 180)
+  await page.mouse.click(center.x, 180)
+  await page.mouse.click(center.x, 180)
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]

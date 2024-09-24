@@ -17,6 +17,8 @@ import useEngineStreamContext, {
   EngineStreamState,
   EngineStreamTransition,
 } from 'hooks/useEngineStreamContext'
+import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from 'lib/timings'
+
 
 export const EngineStream = () => {
   const { setAppState } = useAppState()
@@ -24,6 +26,7 @@ export const EngineStream = () => {
   const { overallState } = useNetworkContext()
   const { settings } = useSettingsAuthContext()
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const last = useRef<number>(Date.now())
 
   const settingsEngine = {
     theme: settings.context.app.theme.current,
@@ -39,10 +42,6 @@ export const EngineStream = () => {
   const engineStreamState = engineStreamActor.getSnapshot()
 
   const streamIdleMode = settings.context.app.streamIdleMode.current
-
-  // 0.25s is the average visual reaction time for humans so we'll go a bit more
-  // so those exception people don't see.
-  const REASONABLE_TIME_TO_REFRESH_STREAM_SIZE = 100
 
   const configure = () => {
     engineStreamActor.send({
@@ -81,13 +80,14 @@ export const EngineStream = () => {
   }, [])
 
   useEffect(() => {
-    if (!streamIdleMode) return
+    const video = engineStreamState.context.videoRef?.current
+    if (!video) return
+    const canvas = engineStreamState.context.canvasRef?.current
+    if (!canvas) return
 
-    const s = setInterval(() => {
-      const video = engineStreamState.context.videoRef?.current
-      if (!video) return
-      const canvas = engineStreamState.context.canvasRef?.current
-      if (!canvas) return
+    new ResizeObserver(() => {
+      if (Date.now() - last.current < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE) return
+      last.current = Date.now()
 
       if (
         Math.abs(video.width - window.innerWidth) > 4 ||
@@ -96,12 +96,9 @@ export const EngineStream = () => {
         timeoutStart.current = Date.now()
         configure()
       }
-    }, REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
+    }).observe(document.body)
 
-    return () => {
-      clearInterval(s)
-    }
-  }, [streamIdleMode, engineStreamState.value])
+  }, [engineStreamState.value])
 
   // When the video and canvas element references are set, start the engine.
   useEffect(() => {

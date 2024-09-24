@@ -24,6 +24,7 @@ import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { sceneInfra } from 'lib/singletons'
+import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from 'lib/timings'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -173,6 +174,20 @@ export const ModelingSidebar = forwardRef<
 
     void sceneInfra.camControls.centerModelRelativeToPanes()
   }, [context.store?.openPanes])
+
+
+  // If the panes are resized then center the model also
+  useEffect(() => {
+    let width = ref.current.offsetWidth
+    let last = Date.now()
+    new ResizeObserver(() => {
+      if (width === ref.current.offsetWidth) return
+      if (Date.now() - last < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE) return
+      last = Date.now()
+      width = ref.current.offsetWidth
+      void sceneInfra.camControls.centerModelRelativeToPanes()
+    }).observe(ref.current)
+  }, [])
 
   return (
     <Resizable

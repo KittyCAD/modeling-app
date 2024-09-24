@@ -337,6 +337,18 @@ export async function getUtils(page: Page, test_?: typeof test) {
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
   const util = {
+    async getCenterOfModelViewArea() {
+      const windowInnerWidth = await page.evaluate(() => window.innerWidth)
+      const windowInnerHeight = await page.evaluate(() => window.innerHeight)
+
+      const panes = page.getByTestId('pane-section')
+      const bb = await panes.boundingBox()
+      const goRightPx = bb.width > 0 ? (windowInnerWidth - bb.width) / 2 : 0
+      return {
+        x: windowInnerWidth / 2 + goRightPx,
+        y: windowInnerHeight / 2,
+      }
+    },
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
     waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),

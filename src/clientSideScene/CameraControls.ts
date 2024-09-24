@@ -956,7 +956,7 @@ export class CameraControls {
     if (!panes) return
 
     const panesWidth = panes.offsetWidth + panes.offsetLeft
-    const goRightPx = panesWidth > 0 ? (window.innerWidth - panesWidth) / 2 : 0
+    const goRightPx = panesWidth > 0 ? panesWidth / 2 : 0
 
     // Originally I had tried to use the default_camera_look_at endpoint and
     // some quaternion math to move the camera right, but it ended up being
@@ -975,7 +975,7 @@ export class CameraControls {
             cmd: {
               type: 'zoom_to_fit',
               object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-              padding: panesWidth > 0 ? window.innerWidth / panesWidth : 0.2, // padding around the objects
+              padding: 0.2, // padding around the objects
             },
           },
           {
