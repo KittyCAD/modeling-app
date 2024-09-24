@@ -502,7 +502,6 @@ test('Sketch on face', async ({ page }) => {
 
   await page.mouse.move(center.x, 180)
   await page.mouse.click(center.x, 180)
-  await page.mouse.click(center.x, 180)
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]
