@@ -4,7 +4,7 @@ import { kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
 import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
-import { defaultProjectSettings, parseProjectSettings } from 'lang/wasm'
+import { parseProjectSettings } from 'lang/wasm'
 import { err } from './trap'
 import { projectConfigurationToSettingsPayload } from './settings/settingsUtils'
 
