@@ -520,7 +520,7 @@ pub fn get_autocomplete_snippet_from_schema(
                 let mut fn_docs = String::new();
                 fn_docs.push_str("{\n");
                 // Let's print out the object's properties.
-                let mut i = 0;
+                let mut i = index;
                 for (prop_name, prop) in obj_val.properties.iter() {
                     if prop_name.starts_with('_') {
                         continue;
@@ -532,9 +532,9 @@ pub fn get_autocomplete_snippet_from_schema(
                         continue;
                     }
 
-                    if let Some((_, snippet)) = get_autocomplete_snippet_from_schema(prop, index + i)? {
+                    if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(prop, i)? {
                         fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
-                        i += 1;
+                        i = new_index + 1;
                     }
                 }
 
@@ -915,10 +915,10 @@ mod tests {
             r#"patternCircular3d({
 	arcDegrees: ${0:3.14},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
-	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
-	repetitions: ${3:10},
-	rotateDuplicates: ${4:false},
-}, ${5:%})${}"#
+	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
+	repetitions: ${7:10},
+	rotateDuplicates: ${8:false},
+}, ${9:%})${}"#
         );
     }
 
@@ -942,8 +942,8 @@ mod tests {
             snippet,
             r#"circle({
 	center: [${0:3.14}, ${1:3.14}],
-	radius: ${1:3.14},
-}, ${2:%})${}"#
+	radius: ${2:3.14},
+}, ${3:%})${}"#
         );
     }
 }
