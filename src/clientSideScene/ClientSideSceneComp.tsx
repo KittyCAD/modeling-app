@@ -739,8 +739,9 @@ export const CamDebugSettings = () => {
           if (camSettings.type === 'perspective') {
             sceneInfra.camControls.useOrthographicCamera()
           } else {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            sceneInfra.camControls.usePerspectiveCamera(true)
+            sceneInfra.camControls
+              .usePerspectiveCamera(true)
+              .catch(reportRejection)
           }
         }}
       />

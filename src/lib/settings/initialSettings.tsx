@@ -267,6 +267,29 @@ export function createSettings() {
         },
       }),
       /**
+       * The camera projection method to display the 3D view
+       */
+      cameraProjection: new Setting<'perspective' | 'orthographic'>({
+        defaultValue: 'perspective',
+        description: 'The camera projection method to display the 3D view',
+        validate: (v) => ['perspective', 'orthographic'].includes(v),
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.cameraProjection.current,
+          options: (cmdContext, settingsContext) =>
+            (['perspective', 'orthographic'] as const).map((v) => ({
+              name: v.charAt(0).toUpperCase() + v.slice(1),
+              value: v,
+              isCurrent:
+                v ===
+                settingsContext.modeling.cameraProjection[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            })),
+        },
+      }),
+      /**
        * The controls for how to navigate the 3D view
        */
       mouseControls: new Setting<CameraSystem>({

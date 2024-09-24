@@ -13,6 +13,8 @@ import {
   projectConfigurationToSettingsPayload,
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
+import { sceneInfra } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
 
 export const settingsMachine = setup({
   types: {
@@ -89,6 +91,13 @@ export const settingsMachine = setup({
         currentTheme === Themes.System ? getSystemTheme() : currentTheme
       )
     },
+    setEngineCameraProjection: () => {
+      if (sceneInfra.camControls.reactCameraProperties.type === 'perspective') {
+        sceneInfra.camControls.useOrthographicCamera()
+      } else {
+        sceneInfra.camControls.usePerspectiveCamera(true).catch(reportRejection)
+      }
+    },
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IALAFYAnPgBMARgDsBsQDY969QGYjmzQBoQAT0SnrADnwePY61r0PAwNtMyMAX3CnVAweAiJSCio6BjQACzAAWzAAYUZiRg5xKSQQWXlFbGU1BD1PfFtfE3UzTUNNaydXBCD1b209PTEPTTMtdQNNSOj0LFx4knJKNHxMxggwYh58DYAzakFiNABVbAVi5XKFTCVSmusxPXx7bRt1DzMxI3UjD3UutwhAz4MyeHxiV5+AYRKIgGJzPCERZJFYpfDpLJgC6lK6VaqIExPMwWGwdGxBPRmAE9PSafCPMQ-EzWbQ6ELTOGzOJIxLLVbrTbbNKYKBpLaitAAUWgcGxMjk11uoBqVmBH0ZLKCrVs-xciCCwLCvhCjyMFhGHPh3IS5AASnB0AACZYI0SSS4KvF3AlafADRl1YZ2IxiRx6hBtIzPb7abQ+DxGaxmYKWrnzHnkGKO6jEYjOtN4OVlT03KrehAtOnm7Qaup6Ixm6mR6OaR4dAwjM1mVOxdM2lH8jZbXD4WBpRgAd2QAGMc2AAOIcIhF3Gl-EIRPA6yGcyh4whSnU0xGJ5GAat0OfFowma9xH9gBUK5LStUiECdMmfx+mg8hmNTY-PgMYQpoZoxh41g9q6+C0GAHDyLACL5nesBkBAzBgIQ2AAG6MAA1lhcEIZgSFWvMz4VGu5YALTbtYwEnj8HhxnooT1mG3QhmY-TmJ82gGCyjzaJEsLYAK8ClOReAelRr41HRJiMZYvysexdjUuohh+poBiGDuXzGKy0HWossmKmWyqIDR3zAZWLSahM2jWJ04YjDxHbDMmmhaYE3wmemxGIchLpxOZXpWQgNEjMB1h6WEYHqK8ZgJk2EL6N8wR1Cy-gJqJ4RAA */
@@ -151,6 +160,16 @@ export const settingsMachine = setup({
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess'],
+        },
+
+        'set.modeling.cameraProjection': {
+          target: 'persisting settings',
+
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setEngineCameraProjection',
+          ],
         },
 
         'set.modeling.highlightEdges': {
