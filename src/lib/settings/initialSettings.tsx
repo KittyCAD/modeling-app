@@ -271,6 +271,7 @@ export function createSettings() {
        */
       cameraProjection: new Setting<'perspective' | 'orthographic'>({
         defaultValue: 'perspective',
+        hideOnLevel: 'project',
         description: 'The camera projection method to display the 3D view',
         validate: (v) => ['perspective', 'orthographic'].includes(v),
         commandConfig: {
