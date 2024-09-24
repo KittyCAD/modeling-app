@@ -53,31 +53,6 @@ export class SceneFixture {
    * Expects the viewPort to be 1000x500 */
   clickNoWhere = () => this.page.mouse.click(998, 60)
 
-  expectCodeHighlightedToBe = async (
-    code: string,
-    { timeout }: { timeout: number } = { timeout: 5000 }
-  ) =>
-    await expect
-      .poll(
-        async () => {
-          const texts = (
-            await this.page.getByTestId('hover-highlight').allInnerTexts()
-          ).map((s) => s.replace(/\s+/g, '').trim())
-          return texts.join('')
-        },
-        { timeout }
-      )
-      .toBe(code.replace(/\s+/g, '').trim())
-  expectActiveLinesToBe = async (lines: Array<string>) => {
-    await expect
-      .poll(async () => {
-        return (await this.page.locator('.cm-activeLine').allInnerTexts()).map(
-          (l) => l.trim()
-        )
-      })
-      .toEqual(lines.map((l) => l.trim()))
-  }
-
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
     target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }

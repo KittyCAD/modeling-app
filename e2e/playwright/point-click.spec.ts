@@ -29,10 +29,18 @@ test('verify extruding circle works', async ({
     await moveToCircle()
     const circleSnippet =
       'circle({ center: [318.33, 168.1], radius: 182.8 }, %)'
-    await scene.expectCodeHighlightedToBe(circleSnippet)
+    await editor.expectState({
+      activeLines: [],
+      highlightedCode: circleSnippet,
+      diagnostics: [],
+    })
 
     await clickCircle()
-    await scene.expectActiveLinesToBe([circleSnippet.slice(-5)])
+    await editor.expectState({
+      activeLines: [circleSnippet.slice(-5)],
+      highlightedCode: circleSnippet,
+      diagnostics: [],
+    })
     await expect(toolbar.extrudeButton).toBeEnabled()
   })
 
@@ -105,7 +113,7 @@ test.describe('verify sketch on chamfer works', () => {
         await expect(async () => {
           // sometimes initial click doesn't register
           await clickChamfer()
-          await scene.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
+          await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
         }).toPass({ timeout: 40_000, intervals: [500] })
       })
 
@@ -132,7 +140,11 @@ test.describe('verify sketch on chamfer works', () => {
         await scene.waitForExecutionDone()
       })
       await test.step('Check there is no errors after code created in previous steps executes', async () => {
-        await editor.expectDiagnosticsToBe([])
+        await editor.expectState({
+          activeLines: ["const sketch001 = startSketchOn('XZ')"],
+          highlightedCode: '',
+          diagnostics: [],
+        })
       })
     }
   test('works on all edge selections and can break up multi edges in a chamfer array', async ({
