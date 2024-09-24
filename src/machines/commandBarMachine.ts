@@ -283,7 +283,7 @@ export const commandBarMachine = setup({
                   typeof argConfig.options === 'function'
                     ? argConfig.options(
                         input,
-                        argConfig.machineActor.getSnapshot().context
+                        argConfig.machineActor?.getSnapshot().context
                       )
                     : argConfig.options
                 ).some((o) => o.value === argValue)

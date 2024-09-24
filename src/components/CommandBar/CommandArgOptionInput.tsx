@@ -6,8 +6,8 @@ import { CommandArgument, CommandArgumentOption } from 'lib/commandTypes'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnyStateMachine, StateFrom } from 'xstate'
 
-const contextSelector = (snapshot: StateFrom<AnyStateMachine>) =>
-  snapshot.context
+const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
+  snapshot?.context
 
 function CommandArgOptionInput({
   arg,
