@@ -87,7 +87,7 @@ impl EngineConnection {
                     {plane_id}->setHidden();
                     scene->addSceneObject({plane_id});
                 "#,
-                    origin.x, origin.y, origin.z, x_axis.x, x_axis.y, x_axis.z, y_axis.x, y_axis.y, y_axis.z, size
+                    origin.x.0, origin.y.0, origin.z.0, x_axis.x, x_axis.y, x_axis.z, y_axis.x, y_axis.y, y_axis.z, size.0
                 )
             }
             kcmc::ModelingCmd::StartPath(kcmc::StartPath {}) => {
@@ -109,8 +109,8 @@ impl EngineConnection {
                     path_{}->moveTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor);
                 "#,
                     id_to_cpp(path),
-                    to.x,
-                    to.y
+                    to.x.0,
+                    to.y.0
                 )
             }
             kcmc::ModelingCmd::ExtendPath(kcmc::ExtendPath { path, segment }) => match segment {
@@ -120,8 +120,8 @@ impl EngineConnection {
                             path_{}->lineTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor, {{ {} }});
                         "#,
                         id_to_cpp(path),
-                        end.x,
-                        end.y,
+                        end.x.0,
+                        end.y.0,
                         relative
                     )
                 }
@@ -134,14 +134,15 @@ impl EngineConnection {
                 } => {
                     let start = start.value;
                     let end = end.value;
+                    let radius = radius.0;
 
                     format!(
                         r#"
                             path_{}->addArc(glm::dvec2 {{ {}, {} }} * scaleFactor, {radius} * scaleFactor, {start}, {end}, {{ {} }});
                         "#,
                         id_to_cpp(path),
-                        center.x,
-                        center.y,
+                        center.x.0,
+                        center.y.0,
                         relative
                     )
                 }
@@ -154,9 +155,9 @@ impl EngineConnection {
                             path_{}->tangentialArcTo(glm::dvec3 {{ {}, {}, {} }} * scaleFactor, nullopt, {{ true }});
                         "#,
                         id_to_cpp(path),
-                        to.x,
-                        to.y,
-                        to.z,
+                        to.x.0,
+                        to.y.0,
+                        to.z.0,
                     )
                 }
                 _ => {
@@ -178,7 +179,7 @@ impl EngineConnection {
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->extrudeToSolid3D({} * scaleFactor, true);
                 "#,
-                    distance
+                    distance.0
                 )
             }
             kcmc::ModelingCmd::Revolve(kcmc::Revolve {
@@ -189,13 +190,14 @@ impl EngineConnection {
                 target,
                 tolerance,
             }) => {
-                let ox = origin.x;
-                let oy = origin.y;
-                let oz = origin.z;
+                let ox = origin.x.0;
+                let oy = origin.y.0;
+                let oz = origin.z.0;
                 let ax = axis.x;
                 let ay = axis.y;
                 let az = axis.z;
                 let angle = angle.value;
+                let tolerance = tolerance.0;
                 format!(
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->revolveToSolid3D(nullopt, glm::dvec3 {{ {ox}, {oy}, {oz} }} * scaleFactor, glm::dvec3 {{ {ax}, {ay}, {az} }}, {axis_is_2d}, {angle}, {tolerance});
@@ -238,7 +240,7 @@ impl EngineConnection {
                     r#"
                     auto reps_{cpp_id} = scene->entityCircularPattern(Utils::UUID("{}"), {num_repetitions}, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, glm::dvec3 {{ {}, {}, {} }}  * scaleFactor, {arc_degrees}, {rotate_duplicates});
                 "#,
-                    entity_id, axis.x, axis.y, axis.z, center.x, center.y, center.z
+                    entity_id, axis.x, axis.y, axis.z, center.x.0, center.y.0, center.z.0
                 );
 
                 let repl_uuid_fix_code = codegen_cpp_repl_uuid_setters(&cpp_id, &entity_ids);
