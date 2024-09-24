@@ -1,36 +1,45 @@
 import { test, expect, AuthenticatedApp } from './authenticatedAppFixture'
+import { EditorFixture } from './editorFixture'
+import { SceneFixture } from './sceneFixture'
+import { ToolbarFixture } from './toolbarFixture'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test('verify extruding circle works', async ({ app }) => {
+test('verify extruding circle works', async ({
+  app,
+  cmdBar,
+  editor,
+  toolbar,
+  scene,
+}) => {
   test.skip(
     process.platform === 'win32',
     'Fails on windows in CI, can not be replicated locally on windows.'
   )
   const file = await app.getInputFile('test-circle-extrude.kcl')
   await app.initialise(file)
-  const [clickCircle, moveToCircle] = app.makeMouseHelpers(582, 217)
+  const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
   await test.step('because there is sweepable geometry, verify extrude is enable when nothing is selected', async () => {
-    await app.clickNoWhere()
-    await app.expectExtrudeButtonToBeEnabled()
+    await scene.clickNoWhere()
+    await expect(toolbar.extrudeButton).toBeEnabled()
   })
 
   await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
     await moveToCircle()
     const circleSnippet =
       'circle({ center: [318.33, 168.1], radius: 182.8 }, %)'
-    await app.expectCodeHighlightedToBe(circleSnippet)
+    await scene.expectCodeHighlightedToBe(circleSnippet)
 
     await clickCircle()
-    await app.expectActiveLinesToBe([circleSnippet.slice(-5)])
-    await app.expectExtrudeButtonToBeEnabled()
+    await scene.expectActiveLinesToBe([circleSnippet.slice(-5)])
+    await expect(toolbar.extrudeButton).toBeEnabled()
   })
 
   await test.step('do extrude flow and check extrude code is added to editor', async () => {
-    await app.clickExtrudeButton()
+    await toolbar.extrudeButton.click()
 
-    await app.expectCmdBarToBe({
+    await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'distance',
       currentArgValue: '5',
@@ -38,25 +47,30 @@ test('verify extruding circle works', async ({ app }) => {
       highlightedHeaderArg: 'distance',
       commandName: 'Extrude',
     })
-    await app.progressCmdBar()
+    await cmdBar.progressCmdBar()
 
     const expectString = 'const extrude001 = extrude(5, sketch001)'
-    await app.expectEditor.not.toContain(expectString)
+    await editor.expectEditor.not.toContain(expectString)
 
-    await app.expectCmdBarToBe({
+    await cmdBar.expectState({
       stage: 'review',
       headerArguments: { Selection: '1 face', Distance: '5' },
       commandName: 'Extrude',
     })
-    await app.progressCmdBar()
+    await cmdBar.progressCmdBar()
 
-    await app.expectEditor.toContain(expectString)
+    await editor.expectEditor.toContain(expectString)
   })
 })
 
 test.describe('verify sketch on chamfer works', () => {
   const _sketchOnAChamfer =
-    (app: AuthenticatedApp) =>
+    (
+      app: AuthenticatedApp,
+      editor: EditorFixture,
+      toolbar: ToolbarFixture,
+      scene: SceneFixture
+    ) =>
     async ({
       clickCoords,
       cameraPos,
@@ -74,50 +88,58 @@ test.describe('verify sketch on chamfer works', () => {
       afterRectangle1stClickSnippet: string
       afterRectangle2ndClickSnippet: string
     }) => {
-      const [clickChamfer] = app.makeMouseHelpers(clickCoords.x, clickCoords.y)
-      const [rectangle1stClick] = app.makeMouseHelpers(573, 149)
-      const [rectangle2ndClick, rectangle2ndMove] = app.makeMouseHelpers(
+      const [clickChamfer] = scene.makeMouseHelpers(
+        clickCoords.x,
+        clickCoords.y
+      )
+      const [rectangle1stClick] = scene.makeMouseHelpers(573, 149)
+      const [rectangle2ndClick, rectangle2ndMove] = scene.makeMouseHelpers(
         598,
         380,
         { steps: 5 }
       )
 
-      await app.moveCameraTo(cameraPos, cameraTarget)
+      await scene.moveCameraTo(cameraPos, cameraTarget)
 
       await test.step('check chamfer selection changes cursor positon', async () => {
         await expect(async () => {
           // sometimes initial click doesn't register
           await clickChamfer()
-          await app.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
+          await scene.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
         }).toPass({ timeout: 40_000, intervals: [500] })
       })
 
       await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
-        await app.startSketchPlaneSelection()
+        await toolbar.startSketchPlaneSelection()
         await clickChamfer()
         // timeout wait for engine animation is unavoidable
         await app.page.waitForTimeout(600)
-        await app.expectEditor.toContain(afterChamferSelectSnippet)
+        await editor.expectEditor.toContain(afterChamferSelectSnippet)
       })
       await test.step('make sure a basic sketch can be added', async () => {
-        await app.rectangleBtn.click()
+        await toolbar.rectangleBtn.click()
         await rectangle1stClick()
-        await app.expectEditor.toContain(afterRectangle1stClickSnippet)
-        await app.u.doAndWaitForImageDiff(() => rectangle2ndMove(), 50)
+        await editor.expectEditor.toContain(afterRectangle1stClickSnippet)
+        await rectangle2ndMove({
+          pixelDiff: 50,
+        })
         await rectangle2ndClick()
-        await app.expectEditor.toContain(afterRectangle2ndClickSnippet)
+        await editor.expectEditor.toContain(afterRectangle2ndClickSnippet)
       })
 
       await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
-        await app.exitSketchBtn.click()
-        await app.waitForExecutionDone()
+        await toolbar.exitSketchBtn.click()
+        await scene.waitForExecutionDone()
       })
       await test.step('Check there is no errors after code created in previous steps executes', async () => {
-        await app.expectDiagnosticsToBe([])
+        await editor.expectDiagnosticsToBe([])
       })
     }
   test('works on all edge selections and can break up multi edges in a chamfer array', async ({
     app,
+    editor,
+    toolbar,
+    scene,
   }) => {
     test.skip(
       process.platform === 'win32',
@@ -126,7 +148,7 @@ test.describe('verify sketch on chamfer works', () => {
     const file = await app.getInputFile('e2e-can-sketch-on-chamfer.kcl')
     await app.initialise(file)
 
-    const sketchOnAChamfer = _sketchOnAChamfer(app)
+    const sketchOnAChamfer = _sketchOnAChamfer(app, editor, toolbar, scene)
 
     await sketchOnAChamfer({
       clickCoords: { x: 570, y: 220 },
@@ -237,7 +259,7 @@ test.describe('verify sketch on chamfer works', () => {
     })
 
     await test.step('verif at the end of the test that final code is what is expected', async () => {
-      await app.expectEditor.toContain(
+      await editor.expectEditor.toContain(
         `const sketch001 = startSketchOn('XZ')
       |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
       |> angledLine([0, 268.43], %, $rectangleSegmentA001)
