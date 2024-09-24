@@ -7,21 +7,29 @@ use std::{
 };
 
 use anyhow::Result;
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
+use indexmap::IndexMap;
+use kcmc::{
+    ok_response::OkModelingCmdResponse,
+    websocket::{
+        BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
+        WebSocketResponse,
+    },
+};
+use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::{errors::KclError, executor::DefaultPlanes};
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 impl EngineConnection {
     pub async fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(HashMap::new())),
+            batch_end: Arc::new(Mutex::new(IndexMap::new())),
         })
     }
 }
@@ -32,7 +40,7 @@ impl crate::engine::EngineManager for EngineConnection {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch_end.clone()
     }
 
@@ -48,41 +56,38 @@ impl crate::engine::EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::WebSocketRequest,
+        cmd: WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
-            WebSocketRequest::ModelingCmdBatchReq {
+            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
                 ref requests,
                 batch_id: _,
                 responses: _,
-            } => {
+            }) => {
                 // Create the empty responses.
                 let mut responses = HashMap::new();
                 for request in requests {
                     responses.insert(
-                        request.cmd_id.to_string(),
-                        kittycad::types::BatchResponse {
-                            response: Some(kittycad::types::OkModelingCmdResponse::Empty {}),
-                            errors: None,
+                        request.cmd_id,
+                        BatchResponse::Success {
+                            response: OkModelingCmdResponse::Empty {},
                         },
                     );
                 }
-                Ok(WebSocketResponse {
+                Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                     request_id: Some(id),
-                    resp: Some(OkWebSocketResponseData::ModelingBatch { responses }),
-                    success: Some(true),
-                    errors: None,
-                })
+                    resp: OkWebSocketResponseData::ModelingBatch { responses },
+                    success: true,
+                }))
             }
-            _ => Ok(WebSocketResponse {
+            _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                 request_id: Some(id),
-                resp: Some(OkWebSocketResponseData::Modeling {
-                    modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
-                }),
-                success: Some(true),
-                errors: None,
-            }),
+                resp: OkWebSocketResponseData::Modeling {
+                    modeling_response: OkModelingCmdResponse::Empty {},
+                },
+                success: true,
+            })),
         }
     }
 }

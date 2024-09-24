@@ -53,7 +53,7 @@ pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<Kcl
 
     let plane = inner_offset_plane(std_plane, offset).await?;
 
-    Ok(KclValue::UserVal(UserVal::set(
+    Ok(KclValue::UserVal(UserVal::new(
         vec![Metadata {
             source_range: args.source_range,
         }],
@@ -77,7 +77,7 @@ pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -93,7 +93,7 @@ pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('XZ', 150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -109,7 +109,7 @@ pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('YZ', 150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -125,7 +125,7 @@ pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('-XZ', -150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```

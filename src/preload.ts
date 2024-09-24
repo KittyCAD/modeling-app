@@ -11,8 +11,10 @@ const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const login = (host: string): Promise<string> =>
-  ipcRenderer.invoke('login', host)
+const startDeviceFlow = (host: string): Promise<string> =>
+  ipcRenderer.invoke('startDeviceFlow', host)
+const loginWithDeviceFlow = (): Promise<string> =>
+  ipcRenderer.invoke('loginWithDeviceFlow')
 const onUpdateDownloaded = (callback: (value: string) => void) =>
   ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
@@ -64,7 +66,8 @@ const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
 contextBridge.exposeInMainWorld('electron', {
-  login,
+  startDeviceFlow,
+  loginWithDeviceFlow,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.

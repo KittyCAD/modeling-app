@@ -2,7 +2,11 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
+    websocket::OkWebSocketResponseData, ModelingCmd,
+};
+use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -117,7 +121,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle([0, 0], 1, %, $tag1)
+///     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
@@ -163,7 +167,7 @@ async fn inner_pattern_transform<'a>(
 async fn send_pattern_transform(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
-    transform: Vec<kittycad::types::Transform>,
+    transform: Vec<Transform>,
     extrude_group: &ExtrudeGroup,
     args: &Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
@@ -172,15 +176,15 @@ async fn send_pattern_transform(
     let resp = args
         .send_modeling_cmd(
             id,
-            ModelingCmd::EntityLinearPatternTransform {
+            ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: extrude_group.id,
                 transform,
-            },
+            }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityLinearPatternTransform { data: pattern_info },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -203,7 +207,7 @@ async fn make_transform<'a>(
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
-) -> Result<kittycad::types::Transform, KclError> {
+) -> Result<Transform, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::UserVal(UserVal {
         value: serde_json::Value::Number(i.into()),
@@ -247,12 +251,12 @@ async fn make_transform<'a>(
         Some(x) => array_to_point3d(x, source_ranges.clone())?,
         None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
     };
-    let t = kittycad::types::Transform {
+    let t = Transform {
         replicate,
-        scale: Some(scale.into()),
-        translate: Some(translate.into()),
+        scale: scale.into(),
+        translate: translate.into(),
         // TODO: chalmers to pipe thru to kcl.
-        rotation: None,
+        rotation: Default::default(),
     };
     Ok(t)
 }
@@ -322,7 +326,7 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle([0, 0], 1, %)
+///   |> circle({ center: [0, 0], radius: 1 }, %)
 ///   |> patternLinear2d({
 ///        axis: [1, 0],
 ///        repetitions: 6,
@@ -451,21 +455,17 @@ async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> 
     let resp = args
         .send_modeling_cmd(
             id,
-            ModelingCmd::EntityLinearPattern {
-                axis: kittycad::types::Point3D {
-                    x: data.axis()[0],
-                    y: data.axis()[1],
-                    z: data.axis()[2],
-                },
+            ModelingCmd::from(mcmd::EntityLinearPattern {
+                axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: geometry.id(),
                 num_repetitions: data.repetitions(),
-                spacing: data.distance(),
-            },
+                spacing: LengthUnit(data.distance()),
+            }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityLinearPattern { data: pattern_info },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityLinearPattern(pattern_info),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -656,7 +656,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle([0, 0], 1, %)
+///   |> circle({ center: [0, 0], radius: 1 }, %)
 ///
 /// const example = extrude(-5, exampleSketch)
 ///   |> patternCircular3d({
@@ -713,26 +713,27 @@ async fn inner_pattern_circular_3d(
 async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
 
+    let center = data.center();
     let resp = args
         .send_modeling_cmd(
             id,
-            ModelingCmd::EntityCircularPattern {
-                axis: kittycad::types::Point3D {
-                    x: data.axis()[0],
-                    y: data.axis()[1],
-                    z: data.axis()[2],
-                },
+            ModelingCmd::from(mcmd::EntityCircularPattern {
+                axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: geometry.id(),
-                center: data.center().into(),
+                center: kcmc::shared::Point3d {
+                    x: LengthUnit(center[0]),
+                    y: LengthUnit(center[1]),
+                    z: LengthUnit(center[2]),
+                },
                 num_repetitions: data.repetitions(),
                 arc_degrees: data.arc_degrees(),
                 rotate_duplicates: data.rotate_duplicates(),
-            },
+            }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityCircularPattern { data: pattern_info },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {

@@ -40,7 +40,8 @@ pub struct StdLibFnData {
 
 /// This struct defines a single argument to a stdlib function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
-#[ts(export)]
+// There's a bug in ts_rs where this isn't correctly imported by StdLibFnData.
+#[ts(export_to = "StdLibFnData.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StdLibFnArg {
     /// The name of the argument.
@@ -937,6 +938,12 @@ mod tests {
     fn get_autocomplete_snippet_circle() {
         let circle_fn: Box<dyn StdLibFn> = Box::new(crate::std::shapes::Circle);
         let snippet = circle_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"circle([${0:3.14}, ${1:3.14}], ${2:3.14}, ${3:%})${}"#);
+        assert_eq!(
+            snippet,
+            r#"circle({
+	center: [${0:3.14}, ${1:3.14}],
+	radius: ${1:3.14},
+}, ${2:%})${}"#
+        );
     }
 }

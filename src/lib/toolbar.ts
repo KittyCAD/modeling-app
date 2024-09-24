@@ -2,9 +2,11 @@ import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import {
-  canRectangleTool,
+  canRectangleOrCircleTool,
+  isClosedSketch,
   isEditingExistingSketch,
   modelingMachine,
+  pipeHasCircle,
 } from 'machines/modelingMachine'
 import { EventFrom, StateFrom } from 'xstate'
 
@@ -94,9 +96,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'revolve',
-        onClick: () => console.error('Revolve not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Revolve', groupId: 'modeling' },
+          }),
+        // TODO: disabled
+        // Who's state is this?
+        disabled: (state) => !state.can({ type: 'Revolve' }),
         icon: 'revolve',
-        status: 'kcl-only',
+        status: DEV ? 'available' : 'kcl-only',
         title: 'Revolve',
         hotkey: 'R',
         description:
@@ -301,7 +310,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('Sketch no face') ||
           state.matches({
             Sketch: { 'Rectangle tool': 'Awaiting second corner' },
-          }),
+          }) ||
+          state.matches({
+            Sketch: { 'Circle tool': 'Awaiting Radius' },
+          }) ||
+          isClosedSketch(state.context),
         title: 'Line',
         hotkey: (state) =>
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
@@ -324,8 +337,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'arc',
           status: 'available',
           disabled: (state) =>
-            !isEditingExistingSketch(state.context) &&
-            !state.matches({ Sketch: 'Tangential arc to' }),
+            (!isEditingExistingSketch(state.context) &&
+              !state.matches({ Sketch: 'Tangential arc to' })) ||
+            pipeHasCircle(state.context),
           title: 'Tangential Arc',
           hotkey: (state) =>
             state.matches({ Sketch: 'Tangential arc to' }) ? ['Esc', 'A'] : 'A',
@@ -363,10 +377,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'circle-center',
-          onClick: () => console.error('Center circle not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Circle tool' })
+                  ? 'circle'
+                  : 'none',
+              },
+            }),
           icon: 'circle',
-          status: 'unavailable',
+          status: 'available',
           title: 'Center circle',
+          disabled: (state) =>
+            !canRectangleOrCircleTool(state.context) &&
+            !state.matches({ Sketch: 'Circle tool' }),
+          isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
           description: 'Start drawing a circle from its center',
           links: [
@@ -382,7 +410,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             console.error('Three-point circle not yet implemented'),
           icon: 'circle',
           status: 'unavailable',
-          disabled: () => true,
           title: 'Three-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',
@@ -404,7 +431,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'rectangle',
           status: 'available',
           disabled: (state) =>
-            !canRectangleTool(state.context) &&
+            !canRectangleOrCircleTool(state.context) &&
             !state.matches({ Sketch: 'Rectangle tool' }),
           title: 'Corner rectangle',
           hotkey: (state) =>

@@ -2,7 +2,8 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
+use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -74,7 +75,7 @@ pub enum RevolveAxisAndOrigin {
 
 impl RevolveAxisAndOrigin {
     /// Get the axis and origin.
-    pub fn axis_and_origin(&self) -> Result<(kittycad::types::Point3D, kittycad::types::Point3D), KclError> {
+    pub fn axis_and_origin(&self) -> Result<(kcmc::shared::Point3d<f64>, kcmc::shared::Point3d<LengthUnit>), KclError> {
         let (axis, origin) = match self {
             RevolveAxisAndOrigin::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
             RevolveAxisAndOrigin::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
@@ -86,15 +87,15 @@ impl RevolveAxisAndOrigin {
         };
 
         Ok((
-            kittycad::types::Point3D {
+            kcmc::shared::Point3d {
                 x: axis[0],
                 y: axis[1],
                 z: axis[2],
             },
-            kittycad::types::Point3D {
-                x: origin[0],
-                y: origin[1],
-                z: origin[2],
+            kcmc::shared::Point3d {
+                x: LengthUnit(origin[0]),
+                y: LengthUnit(origin[1]),
+                z: LengthUnit(origin[2]),
             },
         ))
     }
@@ -133,7 +134,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// // A donut shape.
 /// const sketch001 = startSketchOn('XY')
-///     |> circle([15, 0], 5, %)
+///     |> circle({ center: [15, 0], radius: 5 }, %)
 ///     |> revolve({
 ///         angle: 360,
 ///         axis: 'y'
@@ -185,7 +186,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> extrude(20, %)
 ///
 /// const sketch001 = startSketchOn(box, "END")
-///     |> circle([10,10], 4, %)
+///     |> circle({ center: [10,10], radius: 4 }, %)
 ///     |> revolve({
 ///         angle: -90,
 ///         axis: 'y'
@@ -202,7 +203,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> extrude(20, %)
 ///
 /// const sketch001 = startSketchOn(box, "END")
-///     |> circle([10,10], 4, %)
+///     |> circle({ center: [10,10], radius: 4 }, %)
 ///     |> revolve({
 ///         angle: 90,
 ///         axis: getOppositeEdge(revolveAxis)
@@ -219,7 +220,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> extrude(20, %)
 ///
 /// const sketch001 = startSketchOn(box, "END")
-///     |> circle([10,10], 4, %)
+///     |> circle({ center: [10,10], radius: 4 }, %)
 ///     |> revolve({
 ///         angle: 90,
 ///         axis: getOppositeEdge(revolveAxis),
@@ -263,7 +264,7 @@ async fn inner_revolve(
         }
     }
 
-    let angle = kittycad::types::Angle::from_degrees(data.angle.unwrap_or(360.0));
+    let angle = Angle::from_degrees(data.angle.unwrap_or(360.0));
 
     let id = uuid::Uuid::new_v4();
     match data.axis {
@@ -271,14 +272,14 @@ async fn inner_revolve(
             let (axis, origin) = axis.axis_and_origin()?;
             args.batch_modeling_cmd(
                 id,
-                ModelingCmd::Revolve {
+                ModelingCmd::from(mcmd::Revolve {
                     angle,
-                    target: sketch_group.id,
+                    target: sketch_group.id.into(),
                     axis,
                     origin,
-                    tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
+                    tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
                     axis_is_2d: true,
-                },
+                }),
             )
             .await?;
         }
@@ -289,12 +290,12 @@ async fn inner_revolve(
             };
             args.batch_modeling_cmd(
                 id,
-                ModelingCmd::RevolveAboutEdge {
+                ModelingCmd::from(mcmd::RevolveAboutEdge {
                     angle,
-                    target: sketch_group.id,
+                    target: sketch_group.id.into(),
                     edge_id,
-                    tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
-                },
+                    tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                }),
             )
             .await?;
         }

@@ -20,6 +20,7 @@ type FileMachineEvents =
         makeDir: boolean
         content?: string
         silent?: boolean
+        shouldSetToRename?: boolean
       }
     }
   | { type: 'Delete file'; data: FileEntry }
@@ -42,6 +43,7 @@ type FileMachineEvents =
       output: {
         message: string
         path: string
+        shouldSetToRename: boolean
       }
     }
   | {
@@ -107,6 +109,10 @@ export const fileMachine = setup({
     },
     'Is not silent': ({ event }) =>
       event.type === 'Create file' ? !event.data.silent : false,
+    'Should set to rename': ({ event }) =>
+      (event.type === 'xstate.done.actor.create-and-open-file' &&
+        event.output.shouldSetToRename) ||
+      false,
   },
   actors: {
     readFiles: fromPromise(({ input }: { input: Project }) =>
@@ -119,6 +125,7 @@ export const fileMachine = setup({
           makeDir: boolean
           selectedDirectory: FileEntry
           content: string
+          shouldSetToRename: boolean
         }
       }) => Promise.resolve({ message: '', path: '' })
     ),
@@ -149,7 +156,7 @@ export const fileMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiACwAmADQgAnogAcANgCsAOnHiAjOICcAZh3K9TRQHYAvpdlpMuQiXIUASmABmAJzhFmbJCDcfAJCAWIIUrIKCHpq6nraipJJKorahqrWthjY+MRkYOoAEtRYpFxY7jmwFADC3ni82FWYfsJBqPyCwuG6hurKTAYG5mlSyeJRiHqS2prKg6Mj2pKz4lkgdrmOBcWlLXCuYKR4OM05bQEdXaGgvdpD6qPiioqqieJM2gaqUxELT3MQz0eleBlMhmUGy2Dny5D2sEq1TqDSaSNarHaPE6IR6iD6BgGQxGY1Wikm8gkQM0n2UknERm0qmUw2hOVhTkKJURBxq9TAjXOrW0-k42JueIQBKJw1GujJFOiqkkTE0X3M5mUuiYgxmbPseU5CPRhwAImBMGiDpcxcFumF8dptMp1GZRlqNYYdXo-ml1IlzMkHuZVAZJAY1PrtnCuftkQB5DjHE02wLi3EOqX6QmDWWkiZ-HSKf3gph6ZWqcwJIZRjm7bkmmoAZTAvCwsAtYAITQgWAgqG83a4njkqeuGbu+MkLPU7x+iiGszJfwj4ldTvB6UURh0klrht2-MaZCgWDwpF7XCTpBPJooEEEhTIADcuABrQoEVFgAC054gP5XscP7WpiVzpvak5SnO6hJD8RYfJ8ir4kw06zqoTDiMyTA4WGPz7js8JHvwpCnv+WBATepF3mAnieMO6gcOgjTuMOODqF+ApNH+F6AdeIEXGBto4pBoj4u8GjOiMqjiKMqhJFhfyVqqEbJIoCTkmk3wETG6huCcOC3gc96PuoL7voU3gGb+oGimmdq3GJCARuY8RMroEk6MMihKeWrpYepEZMKMSw6Ua+mnEZOQULR9GeIxzG8KxnjsVZpw2YJdnjqJ4QjK59KaoGLKhh6fyBpIsFgtqKjKuCYW7OalpRZgJnwuZH7qBAnbcbZWIOZKeXqAVyhFT8EbaOYK44f6kjlhYG6FVYNibOyB7wo1rbNZQsUMUxLFsZ13UZRiWUQY5uUakNskjdOY2lZSCAqhV24LlhHpMl89Xwm4eD9tRvKtU+pCvh1DQAbyY5nZKMwqZWwxqMorzltoZUrK6YbOlJoazIoX2FD9f2ngDD5tcDFnqGDAmYLADAin1InndMKrqD85jw8ySPvH8pgulqoYWEjc16HjekCoTjYxXRu2JclqVi1TcCQ-1mYwyzcMRhz6lcw9C56Cz4Yatd05ISLxFbYDZlkx1nGCgrSsM5KTJVgMMmjKkEYmAYfwrOkQ30i8WFSF8mTLTCa2FGb-3RTt8V7UlB02z1mX0xKmZMgu8R6C8YahqYwUow9TqBkNxXiLmUgGEyIsRYZUctSTQMg5ZxzpXbdPgcrUEuW57xYUyXkGD5D2Bhog9aKsLyzQywsbOUXXwAEYeEWAKcTk5P7KH8G+ujhuHDDJTJZ0t2QGsvxrlI2q85fiBhlgMZcQq8+iqDJ3OzAML2qCCqxDEkIsNryK+jMpSV1clIck3xB6ViLIWEwmhXiJF0EYIqptUS3nIpRLaQDHajAqvKCwqxEZTxkIXVChJNTqUDCkB4L9q4t1rkTHI2DMyRAeosIawxFxDESMoLCIsNokUYZgZhUF1IDGdK7LyWgX6TULqCIagYcKSHMAya6VdQ6rTPgTLaC9hKpygnSOY8FA7kj0J6WR0QISzn0J8IYN0tIi0TMcLBHcHZp1wf6cB5UiFZxIdEcEhJKyvQ9BqGSqCuIuL0WvXoHj8HeKSL472E0KrBRfrVRGL9cbWEsEAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiACwAmADQgAnogAcANgCsAOnHiAjOICcAZh3K9TRQHYAvpdlpMuQiXIUASmABmAJzhFmbJCDcfAJCAWIIUrIKCHpq6nraipJJKorahqrWthjY+MRkYOoAEtRYpFxY7jmwFADC3ni82FWYfsJBqPyCwuG6hurKTAYG5mlSyeJRiHqS2prKg6Mj2pKz4lkgdrmOBcWlLXCuYKR4OM05bQEdXaGgvdpD6qPiioqqieJM2gaqUxELT3MQz0eleBlMhmUGy2Dny5D2sEq1TqDSaSNarHaPE6IR6iF0ij08SGklUpikym0qkm8gkJie1KYklB70UBkkTChNk2OVhTkKJURBxq9TAjXOrW0-k42JueIQfQMAyGIzGq0UNOiqg5mi+5nMlM+gxm0N5eX5CPRhwAImBMGiDpcZcFumF8dptMp1GZRpT9YZOXo-ml1IlzMkHuZVOyDGpTfZzbtBVaagB5DjHK1OwKy3FuhX6JWDYajXTqzUSRKh8FMPTa1TmBJDePbOEC-bIgDKYF4WFgdrABCaECwEFQ3iHXE8cmz1zzd3xkmUSveP0UJJWyT+sfE3o94PSbK0KxbfN2osaZCgWDwpBHXAzpCvVooEEEhTIADcuABrQoEVEwAAWlvCAgIfY4gMdTErlzV0FwVH5dx3ZdtUSA9lD+B4qW9EkmE5ZkEnMAxT0TeEL34Uhr1ArAIKfKiXzfeEv1-f9AJAu9wMfKCLilLEXVuURpmUcw91JakDAsLQRiwplFHUIxlDeUxZlGRRSJ2cjUWfGi6OfA4KDATxPCndQOHQRp3CnHB1AAsUmg4sC6J4jFpRzAT5SpHDPRGalRlUJJxF+WkEAbJgFOUZJCQ+NJvg0tt1DcE4cH0nJX3fdQWL-dRvGS4DoLcud4KEhBY1EhJ3iCqkdGGRQ-jJDQmCCwlYyYUYlnii0ktOVLMHS5jSG-bLctOfLeMKuDBPCMr4i8qrqW+SS-nDDRJK0VYXmZcRwU63ZupShiDKMkzPDMizeCszwbJGs4XLAWdJvlEZRMkcQDXDVDY20cxltWdRXjZXQzDUSQdu5GEyMKW17V6ygmI-QbWPUCABwcgr+JxYrpv1dRXvepcfi+n6QoMfDQ2ZALzH3d6rHBs1NKh1HYcM4zTPMyzrOR1GxtcjG5XzZ7cbekSCejP0-g5SR-skprVD9Kkvl2+E3DwMdDuReHMsR4axTA4UHo8-MZnCn5iNjOXXjrbRlpWb12U9Hzo1mdS6YTBnEt12Gak1rLCgaPXqgYPjYMNhDjYUhthjUJTCXeP5TC9SlowsS260JJXChVtXr2FFmTrOjmrpy3W7tgA3Mam6YdVNqOLdj62QvXIkY31YWl0+dZXdbC0KOZn3tbY+yefumDnQrzyGyJNQ3teJTYxMAwsNmIkNpeIKpC+TIu7PLT7OZ462fOy6bLs8U7vL-mEKpdd4j0F52WjUw2ob6IPXDXHUPEYspAMKlrG5coKN4ABAhgzPm84SpAUwiFKBuF8L7iZGoEEPwM6WnKCmcBWN8Skynl-CErx9CqGpPHWYAw2TKRmBySSkhUHJmFJgyuiFvqaAmItN45gdB1RCngzQrxEi6CMB9VBvcGK6UfLDBhnlRhSzLBYVYSktoyBCg8UGTwlJ6HDCkB4RDUH7QkSHce+ZIghUWLjYYeFf4qCCqg6GPZ9Fj0viVQkAxPR+RqloIhxNX6glxuGfCkgOGCKTroz26tMDAIcRA8IkU5hIXXhqDRjYvHTFrOoakd98JlQjNoVB6Zjj2PcoYq+0jQxSDkUuJId8lHRHBCuUYTU-T6mpMI7SYSwCSPzN9JIpTkjhgqYorC30pZtSIdqWMbwAr-0sEAA */
   id: 'File machine',
 
   initial: 'Reading files',
@@ -222,15 +229,41 @@ export const fileMachine = setup({
               makeDir: false,
               selectedDirectory: context.selectedDirectory,
               content: '',
+              shouldSetToRename: false,
             }
           return {
             name: event.data.name,
             makeDir: event.data.makeDir,
             selectedDirectory: context.selectedDirectory,
             content: event.data.content ?? '',
+            shouldSetToRename: event.data.shouldSetToRename ?? false,
           }
         },
         onDone: [
+          {
+            target: 'Reading files',
+
+            actions: [
+              {
+                type: 'createToastSuccess',
+                params: ({
+                  event,
+                }: {
+                  // TODO: rely on type inference
+                  event: Extract<
+                    FileMachineEvents,
+                    { type: 'xstate.done.actor.create-and-open-file' }
+                  >
+                }) => {
+                  return { message: event.output.message }
+                },
+              },
+              'addFileToRenamingQueue',
+              'navigateToFile',
+            ],
+
+            guard: 'Should set to rename',
+          },
           {
             target: 'Reading files',
             actions: [
@@ -248,7 +281,6 @@ export const fileMachine = setup({
                   return { message: event.output.message }
                 },
               },
-              'addFileToRenamingQueue',
               'navigateToFile',
             ],
           },
