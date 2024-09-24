@@ -14,9 +14,10 @@ path = "src/tool.rs"
 
 [dependencies]
 anyhow = "1"
-indexmap = "2.5.0"
-kittycad = { workspace = true, features = ["clap"] }
-kcl-lib = { path = "../kcl" }
 async-trait = "0.1.81"
+indexmap = "2.5.0"
+kcl-lib = { path = "../kcl" }
+kittycad = { workspace = true, features = ["clap"] }
+kittycad-modeling-cmds = { workspace = true }
 tokio = { version = "1.38", features = ["full", "time", "rt", "tracing"] }
 uuid = { version = "1.9.1", features = ["v4", "js", "serde"] }

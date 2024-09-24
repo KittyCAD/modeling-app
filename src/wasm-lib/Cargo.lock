@@ -1553,6 +1553,7 @@ dependencies = [
  "indexmap 2.5.0",
  "kcl-lib",
  "kittycad",
+ "kittycad-modeling-cmds",
  "tokio",
  "uuid",
 ]

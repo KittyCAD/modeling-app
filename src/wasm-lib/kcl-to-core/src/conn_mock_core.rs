@@ -1,8 +1,12 @@
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{errors::KclError, executor::DefaultPlanes};
-use kittycad::types::{
-    ModelingCmd, OkModelingCmdResponse, OkWebSocketResponseData, PathSegment::*, WebSocketRequest, WebSocketResponse,
+use kittycad_modeling_cmds::{
+    self as kcmc,
+    id::ModelingCmdId,
+    ok_response::OkModelingCmdResponse,
+    shared::PathSegment::{self, *},
+    websocket::{ModelingBatch, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse},
 };
 use std::{
     collections::HashMap,
@@ -35,22 +39,22 @@ impl EngineConnection {
         })
     }
 
-    fn handle_command(&self, cmd_id: &uuid::Uuid, cmd: &ModelingCmd) -> (String, OkModelingCmdResponse) {
+    fn handle_command(&self, cmd_id: &ModelingCmdId, cmd: &kcmc::ModelingCmd) -> (String, OkModelingCmdResponse) {
         let cpp_id = id_to_cpp(cmd_id);
         let cmd_id = format!("{}", cmd_id);
         let mut this_response = OkModelingCmdResponse::Empty {};
 
         let new_code = match cmd {
-            ModelingCmd::ObjectVisible { hidden, object_id } => {
+            kcmc::ModelingCmd::ObjectVisible(kcmc::ObjectVisible { hidden, object_id }) => {
                 format!(r#"scene->getSceneObject(Utils::UUID("{object_id}"))->setHidden({hidden});"#)
             }
-            ModelingCmd::EnableSketchMode {
+            kcmc::ModelingCmd::EnableSketchMode(kcmc::EnableSketchMode {
                 entity_id,
                 animated: _,
                 ortho: _,
                 adjust_camera: _,
                 planar_normal,
-            } => {
+            }) => {
                 if let Some(normal) = planar_normal {
                     format!(
                         r#"
@@ -66,14 +70,14 @@ impl EngineConnection {
                     "".into()
                 }
             }
-            ModelingCmd::SketchModeDisable {} => "scene->disableSketchMode();".into(),
-            ModelingCmd::MakePlane {
+            kcmc::ModelingCmd::SketchModeDisable(kcmc::SketchModeDisable {}) => "scene->disableSketchMode();".into(),
+            kcmc::ModelingCmd::MakePlane(kcmc::MakePlane {
                 origin,
                 x_axis,
                 y_axis,
                 size,
                 ..
-            } => {
+            }) => {
                 let plane_id = format!("plane_{}", cpp_id);
                 format!(
                     r#"
@@ -86,7 +90,7 @@ impl EngineConnection {
                     origin.x, origin.y, origin.z, x_axis.x, x_axis.y, x_axis.z, y_axis.x, y_axis.y, y_axis.z, size
                 )
             }
-            ModelingCmd::StartPath {} => {
+            kcmc::ModelingCmd::StartPath(kcmc::StartPath {}) => {
                 let sketch_id = format!("sketch_{}", cpp_id);
                 let path_id = format!("path_{}", cpp_id);
                 format!(
@@ -99,7 +103,7 @@ impl EngineConnection {
                 "#
                 )
             }
-            ModelingCmd::MovePathPen { path, to } => {
+            kcmc::ModelingCmd::MovePathPen(kcmc::MovePathPen { path, to }) => {
                 format!(
                     r#"
                     path_{}->moveTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor);
@@ -109,7 +113,7 @@ impl EngineConnection {
                     to.y
                 )
             }
-            ModelingCmd::ExtendPath { path, segment } => match segment {
+            kcmc::ModelingCmd::ExtendPath(kcmc::ExtendPath { path, segment }) => match segment {
                 Line { end, relative } => {
                     format!(
                         r#"
@@ -121,7 +125,7 @@ impl EngineConnection {
                         relative
                     )
                 }
-                kittycad::types::PathSegment::Arc {
+                PathSegment::Arc {
                     center,
                     radius,
                     start,
@@ -141,7 +145,7 @@ impl EngineConnection {
                         relative
                     )
                 }
-                kittycad::types::PathSegment::TangentialArcTo {
+                PathSegment::TangentialArcTo {
                     angle_snap_increment: _,
                     to,
                 } => {
@@ -159,21 +163,17 @@ impl EngineConnection {
                     format!("//{:?}", cmd)
                 }
             },
-            ModelingCmd::ClosePath { path_id } => {
+            kcmc::ModelingCmd::ClosePath(kcmc::ClosePath { path_id }) => {
                 format!(
                     r#"
                     path_{}->close();
                     sketch_{}->toSolid2D();
                 "#,
-                    id_to_cpp(path_id),
-                    id_to_cpp(path_id)
+                    uuid_to_cpp(path_id),
+                    uuid_to_cpp(path_id)
                 )
             }
-            ModelingCmd::Extrude {
-                cap: _,
-                distance,
-                target,
-            } => {
+            kcmc::ModelingCmd::Extrude(kcmc::Extrude { distance, target }) => {
                 format!(
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->extrudeToSolid3D({} * scaleFactor, true);
@@ -181,14 +181,14 @@ impl EngineConnection {
                     distance
                 )
             }
-            ModelingCmd::Revolve {
+            kcmc::ModelingCmd::Revolve(kcmc::Revolve {
                 angle,
                 axis,
                 axis_is_2d,
                 origin,
                 target,
                 tolerance,
-            } => {
+            }) => {
                 let ox = origin.x;
                 let oy = origin.y;
                 let oz = origin.z;
@@ -202,14 +202,17 @@ impl EngineConnection {
                 "#
                 )
             }
-            ModelingCmd::Solid2DAddHole { hole_id, object_id } => {
+            kcmc::ModelingCmd::Solid2dAddHole(kcmc::Solid2dAddHole { hole_id, object_id }) => {
                 format!(
                     r#"scene->getSceneObject(Utils::UUID("{object_id}"))->get<Model::Brep::Solid2D>()->addHole(
                     make_shared<Model::Brep::Path>(*scene->getSceneObject(Utils::UUID("{hole_id}"))->get<Model::Brep::Solid2D>()->getPath())
                 );"#
                 )
             }
-            ModelingCmd::Solid3DGetExtrusionFaceInfo { object_id, edge_id } => {
+            kcmc::ModelingCmd::Solid3dGetExtrusionFaceInfo(kcmc::Solid3dGetExtrusionFaceInfo {
+                object_id,
+                edge_id,
+            }) => {
                 format!(
                     r#"
                     //face info get {} {}
@@ -217,21 +220,19 @@ impl EngineConnection {
                     object_id, edge_id
                 )
             }
-            ModelingCmd::EntityCircularPattern {
+            kcmc::ModelingCmd::EntityCircularPattern(kcmc::EntityCircularPattern {
                 entity_id,
                 axis,
                 center,
                 num_repetitions,
                 arc_degrees,
                 rotate_duplicates,
-            } => {
+            }) => {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
-                this_response = OkModelingCmdResponse::EntityCircularPattern {
-                    data: kittycad::types::EntityCircularPattern {
-                        entity_ids: entity_ids.clone(),
-                    },
-                };
+                this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
+                    entity_ids: entity_ids.clone(),
+                });
 
                 let mut base_code: String = format!(
                     r#"
@@ -245,12 +246,12 @@ impl EngineConnection {
 
                 base_code
             }
-            ModelingCmd::EntityLinearPattern {
+            kcmc::ModelingCmd::EntityLinearPattern(kcmc::EntityLinearPattern {
                 entity_id: _,
                 axis: _,
                 num_repetitions: _,
                 spacing: _,
-            } => {
+            }) => {
                 // let num_transforms = transforms.len();
                 // let num_repetitions = transform.iter().map(|t| if t.replicate { 1 } else { 0 } ).sum();
 
@@ -299,7 +300,11 @@ impl EngineConnection {
     }
 }
 
-fn id_to_cpp(id: &uuid::Uuid) -> String {
+fn id_to_cpp(id: &ModelingCmdId) -> String {
+    uuid_to_cpp(&id.0)
+}
+
+fn uuid_to_cpp(id: &uuid::Uuid) -> String {
     let str = format!("{}", id);
     str::replace(&str, "-", "_")
 }
@@ -315,7 +320,7 @@ fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> St
     let mut codegen = String::new();
 
     for (i, id) in entity_ids.iter().enumerate() {
-        let cpp_id = id_to_cpp(id);
+        let cpp_id = uuid_to_cpp(id);
         let iter = format!(
             r#"
             //change object id -> {id}
@@ -367,15 +372,15 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         _source_range: kcl_lib::executor::SourceRange,
-        cmd: kittycad::types::WebSocketRequest,
+        cmd: WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, kcl_lib::executor::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
-            WebSocketRequest::ModelingCmdBatchReq {
+            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
                 ref requests,
                 batch_id: _,
                 responses: _,
-            } => {
+            }) => {
                 let mut responses = HashMap::new();
                 for request in requests {
                     let (new_code, this_response);
@@ -399,21 +404,19 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                     }
 
                     responses.insert(
-                        request.cmd_id.to_string(),
-                        kittycad::types::BatchResponse {
-                            response: Some(this_response),
-                            errors: None,
+                        request.cmd_id,
+                        kcmc::websocket::BatchResponse::Success {
+                            response: this_response,
                         },
                     );
                 }
-                Ok(WebSocketResponse {
+                Ok(WebSocketResponse::Success(kcmc::websocket::SuccessWebSocketResponse {
+                    success: true,
                     request_id: Some(id),
-                    resp: Some(OkWebSocketResponseData::ModelingBatch { responses }),
-                    success: Some(true),
-                    errors: None,
-                })
+                    resp: OkWebSocketResponseData::ModelingBatch { responses },
+                }))
             }
-            WebSocketRequest::ModelingCmdReq { cmd, cmd_id } => {
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => {
                 //also handle unbatched requests inline
                 let (new_code, this_response);
 
@@ -435,23 +438,21 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                     this_response = OkModelingCmdResponse::Empty {};
                 }
 
-                Ok(WebSocketResponse {
+                Ok(WebSocketResponse::Success(kcmc::websocket::SuccessWebSocketResponse {
+                    success: true,
                     request_id: Some(id),
-                    resp: Some(OkWebSocketResponseData::Modeling {
+                    resp: OkWebSocketResponseData::Modeling {
                         modeling_response: this_response,
-                    }),
-                    success: Some(true),
-                    errors: None,
-                })
+                    },
+                }))
             }
-            _ => Ok(WebSocketResponse {
+            _ => Ok(WebSocketResponse::Success(kcmc::websocket::SuccessWebSocketResponse {
+                success: true,
                 request_id: Some(id),
-                resp: Some(OkWebSocketResponseData::Modeling {
+                resp: OkWebSocketResponseData::Modeling {
                     modeling_response: OkModelingCmdResponse::Empty {},
-                }),
-                success: Some(true),
-                errors: None,
-            }),
+                },
+            })),
         }
     }
 }
