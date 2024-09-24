@@ -1,4 +1,4 @@
-import { test, expect, AuthenticatedApp } from './authenticatedAppFixture'
+import { test, expect, AuthenticatedApp } from './fixtureSetup'
 import { EditorFixture } from './editorFixture'
 import { SceneFixture } from './sceneFixture'
 import { ToolbarFixture } from './toolbarFixture'
