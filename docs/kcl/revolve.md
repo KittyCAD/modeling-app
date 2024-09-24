@@ -158,7 +158,7 @@ const part001 = revolve({
 * `data`: `RevolveData` - Data for revolution surfaces. (REQUIRED)
 ```js
 {
-	// Angle to revolve (in degrees). Default is 360.
+	// Angle to revolve (in degrees). Default is 360, range is -360.0 to 360.0 and cannot be 0.0
 	angle: number,
 	// Axis of revolution.
 	axis: "X" |
