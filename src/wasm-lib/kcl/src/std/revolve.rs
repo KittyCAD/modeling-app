@@ -6,7 +6,6 @@ use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd
 use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use validator::Validate;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -19,12 +18,11 @@ use crate::{
 };
 
 /// Data for revolution surfaces.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct RevolveData {
-    /// Angle to revolve (in degrees). Default is 360.
+    /// Angle to revolve (in degrees). Default is 360, range is -360.0 to 360.0 and cannot be 0.0
     #[serde(default)]
-    #[validate(range(min = 0.0, max = 360.0))]
     pub angle: Option<f64>,
     /// Axis of revolution.
     pub axis: RevolveAxis,
@@ -249,10 +247,10 @@ async fn inner_revolve(
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     if let Some(angle) = data.angle {
-        // Return an error if the angle is less than -360 or greater than 360.
-        if !(-360.0..=360.0).contains(&angle) {
+        // Return an error if the angle is less than -360 or greater than 360 and cannot be 0.0
+        if !(-360.0..=360.0).contains(&angle) || angle == 0.0 {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected angle to be between -360 and 360, found `{}`", angle),
+                message: format!("Expected angle to be between -360 and 360 and cannot be 0.0, found `{}`", angle),
                 source_ranges: vec![args.source_range],
             }));
         }
