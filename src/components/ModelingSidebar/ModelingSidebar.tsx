@@ -172,7 +172,6 @@ export const ModelingSidebar = forwardRef<
     void sceneInfra.camControls.centerModelRelativeToPanes()
   }, [context.store?.openPanes])
 
-
   // If the panes are resized then center the model also
   useEffect(() => {
     let width = ref.current.offsetWidth
