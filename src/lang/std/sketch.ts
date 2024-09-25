@@ -2129,60 +2129,75 @@ function addTagToChamfer(
   const callExpr = pipeExpr.node.body[pipeIndex]
   if (callExpr.type !== 'CallExpression')
     return new Error('no chamfer call Expr')
-  const obj = callExpr.arguments[0]
-  if (obj.type !== 'ObjectExpression')
+  const chamferObjArg = callExpr.arguments[0]
+  if (chamferObjArg.type !== 'ObjectExpression')
     return new Error('first argument should be an object expression')
-  const tags = obj.properties.find((a) => {
-    return a.key.name === 'tags'
-  })
-  if (!tags) return new Error('no tags property')
-  if (tags.value.type !== 'ArrayExpression')
+  const inputTags = getObjExprProperty(chamferObjArg, 'tags')
+  if (!inputTags) return new Error('no tags property')
+  if (inputTags.expr.type !== 'ArrayExpression')
     return new Error('tags should be an array expression')
-  if (tags.value.elements.length < 2) {
+
+  const isChamferBreakUpNeeded = inputTags.expr.elements.length > 1
+  if (!isChamferBreakUpNeeded) {
     return addTag(2)(tagInfo)
   }
-  const tagIndexToPullOut = tags.value.elements.findIndex((element) => {
-    if (
+
+  // There's more than one input tag, we need to break that chamfer call into a separate chamfer call
+  // so that it can have a tag declarator added.
+  const tagIndexToPullOut = inputTags.expr.elements.findIndex((tag) => {
+    // e.g. chamfer({ tags: [tagOfInterest, tag2] }, %)
+    //                       ^^^^^^^^^^^^^
+    const elementMatchesBaseTagType =
       edgeCutMeta?.subType === 'base' &&
-      element.type === 'Identifier' &&
-      element.name === edgeCutMeta.tagName
-    )
-      return true
-    if (
+      tag.type === 'Identifier' &&
+      tag.name === edgeCutMeta.tagName
+    if (elementMatchesBaseTagType) return true
+
+    // e.g. chamfer({ tags: [getOppositeEdge(tagOfInterest), tag2] }, %)
+    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    const tagMatchesOppositeTagType =
       edgeCutMeta?.subType === 'opposite' &&
-      element.type === 'CallExpression' &&
-      element.callee.name === 'getOppositeEdge' &&
-      element.arguments[0].type === 'Identifier' &&
-      element.arguments[0].name === edgeCutMeta.tagName
-    )
-      return true
-    if (
+      tag.type === 'CallExpression' &&
+      tag.callee.name === 'getOppositeEdge' &&
+      tag.arguments[0].type === 'Identifier' &&
+      tag.arguments[0].name === edgeCutMeta.tagName
+    if (tagMatchesOppositeTagType) return true
+
+    // e.g. chamfer({ tags: [getNextAdjacentEdge(tagOfInterest), tag2] }, %)
+    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    const tagMatchesAdjacentTagType =
       edgeCutMeta?.subType === 'adjacent' &&
-      element.type === 'CallExpression' &&
-      (element.callee.name === 'getNextAdjacentEdge' ||
-        element.callee.name === 'getPrevAdjacentEdge') &&
-      element.arguments[0].type === 'Identifier' &&
-      element.arguments[0].name === edgeCutMeta.tagName
-    )
-      return true
+      tag.type === 'CallExpression' &&
+      (tag.callee.name === 'getNextAdjacentEdge' ||
+        tag.callee.name === 'getPrevAdjacentEdge') &&
+      tag.arguments[0].type === 'Identifier' &&
+      tag.arguments[0].name === edgeCutMeta.tagName
+    if (tagMatchesAdjacentTagType) return true
     return false
   })
   if (tagIndexToPullOut === -1) return new Error('tag not found')
-  const tagToPullOut = tags.value.elements[tagIndexToPullOut]
-  tags.value.elements.splice(tagIndexToPullOut, 1)
-  const chamferLength = obj.properties.find(
-    (a) => a.key.name === 'length'
-  )?.value
+  // get the tag we're pulling out
+  const tagToPullOut = inputTags.expr.elements[tagIndexToPullOut]
+  // and remove it from the original chamfer call
+  // [pullOutTag, tag2] to [tag2]
+  inputTags.expr.elements.splice(tagIndexToPullOut, 1)
+
+  // get the length of the chamfer we're breaking up, as the new chamfer will have the same length
+  const chamferLength = getObjExprProperty(chamferObjArg, 'length')
   if (!chamferLength) return new Error('no chamfer length')
   const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
   const newExpressionToInsert = createCallExpression('chamfer', [
     createObjectExpression({
-      length: chamferLength,
+      length: chamferLength.expr,
+      // single tag to add to the new chamfer call
       tags: createArrayExpression([tagToPullOut]),
     }),
     createPipeSubstitution(),
     tagDec,
   ])
+
+  // insert the new chamfer call with the tag declarator, add its above the original
+  // alternatively we could use `pipeIndex + 1` to insert it below the original
   pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
   return {
     modifiedAst: _node,
