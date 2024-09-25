@@ -101,6 +101,16 @@ export class Setting<T = unknown> {
         : this._default
       : this._default
   }
+  /**
+   * Return whether we should acknowledge this value as "matching" the current
+   * value. If the current value is the inherited default, we should also consider the
+   * it matching if the fallback value is matching.
+   */
+  public isCurrent(level: SettingsLevel | 'default', valueToMatch: T): boolean {
+    return this[`_${level}`] === undefined
+      ? this.getFallback(level) === valueToMatch
+      : this[`_${level}`] === valueToMatch
+  }
   public getParentLevel(level: SettingsLevel): SettingsLevel | 'default' {
     return level === 'project' ? 'user' : 'default'
   }
@@ -284,11 +294,10 @@ export function createSettings() {
             (['perspective', 'orthographic'] as const).map((v) => ({
               name: v.charAt(0).toUpperCase() + v.slice(1),
               value: v,
-              isCurrent:
-                v ===
-                settingsContext.modeling.cameraProjection[
-                  cmdContext.argumentsToSubmit.level as SettingsLevel
-                ],
+              isCurrent: settingsContext.modeling.cameraProjection.isCurrent(
+                cmdContext.argumentsToSubmit.level as SettingsLevel,
+                v
+              ),
             })),
         },
       }),
@@ -310,9 +319,9 @@ export function createSettings() {
               value: v,
               isCurrent:
                 v ===
-                settingsContext.modeling.mouseControls[
+                settingsContext.modeling.mouseControls.isCurrent(
                   cmdContext.argumentsToSubmit.level as SettingsLevel
-                ],
+                ),
             })),
         },
         Component: ({ value, updateValue }) => (
