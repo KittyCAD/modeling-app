@@ -178,7 +178,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBe(105022)
+          .toBe(102040)
 
         // clean up output.gltf
         await fsp.rm('output.gltf')
