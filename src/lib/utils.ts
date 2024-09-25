@@ -20,11 +20,6 @@ export function isOverlap(a: SourceRange, b: SourceRange) {
   return lastOfFirst >= firstOfSecond
 }
 
-export function roundOff(num: number, places: number = 2): number {
-  const x = Math.pow(10, places)
-  return Math.round(num * x) / x
-}
-
 export function getLength(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
@@ -235,4 +230,54 @@ export function XOR(bool1: boolean, bool2: boolean): boolean {
 
 export function getActorNextEvents(snapshot: AnyMachineSnapshot) {
   return [...new Set([...snapshot._nodes.flatMap((sn) => sn.ownEvents)])]
+}
+
+// export const onMouseDragRegex = /-?\b\d+\.?\d*\b/g
+export const onMouseDragRegex = /-?\.?\b\d+\.?\d*\b/g
+
+export function simulateOnMouseDragMatch(text: string) {
+  return text.match(onMouseDragRegex)
+}
+
+export function roundOff(num: number, places: number = 2): number {
+  const x = Math.pow(10, places)
+  return Math.round(num * x) / x
+}
+
+function getAccuracy(text) {
+  const wholeFractionSplit = text.split('.')
+  let originalAccuracy =
+    wholeFractionSplit.length === 2 ? wholeFractionSplit[1].split('').length : 0
+  return originalAccuracy
+}
+
+export function onDragNumberCalculation(text: string, e: MouseEvent) {
+  const multiplier =
+    e.shiftKey && e.metaKey ? 0.01 : e.metaKey ? 0.1 : e.shiftKey ? 10 : 1
+
+  const delta = e.movementX * multiplier
+  const perservePeriod = text.includes('.')
+  const addition = Number(text) + delta
+  let accuracy = Math.max(getAccuracy(text), getAccuracy(multiplier.toString()))
+  const newVal = roundOff(addition, accuracy)
+  if (isNaN(newVal)) {
+    return
+  }
+
+  let formattedString = newVal.toString()
+  if (perservePeriod && !formattedString.includes('.')) {
+    formattedString = formattedString.toString() + '.0'
+  }
+
+  return formattedString
+}
+
+export function onMouseDragMakeANewNumber(
+  text: string,
+  setText: (t: string) => void,
+  e: MouseEvent
+) {
+  const newVal = onDragNumberCalculation(text, e)
+  if (!newVal) return
+  setText(newVal)
 }
