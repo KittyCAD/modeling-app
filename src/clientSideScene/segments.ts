@@ -45,6 +45,7 @@ import {
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
   ARROWHEAD,
+  ADD_SEGMENT_DOT,
   SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
@@ -165,6 +166,8 @@ class StraightSegment implements SegmentUtils {
     if (callExpName !== 'close') {
       // an arrowhead that appears at the end of the segment
       const arrowGroup = createArrowhead(scale, theme, color)
+      const dotGroup = createAddNewSegmentDot(scale, theme, color)
+
       // A length indicator that appears at the midpoint of the segment
       const lengthIndicatorGroup = createLengthIndicator({
         from,
@@ -172,6 +175,7 @@ class StraightSegment implements SegmentUtils {
         scale,
       })
       segmentGroup.add(arrowGroup)
+      segmentGroup.add(dotGroup)
       segmentGroup.add(lengthIndicatorGroup)
     }
 
@@ -206,6 +210,7 @@ class StraightSegment implements SegmentUtils {
     shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
     shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const dotGroup = group.getObjectByName(ADD_SEGMENT_DOT) as Group
     const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
 
     const length = Math.sqrt(
@@ -224,9 +229,21 @@ class StraightSegment implements SegmentUtils {
       isHandlesVisible = !shouldHideHover
     }
 
+    if (dotGroup) {
+      dotGroup.position.set(to[0], to[1], 0)
+      const dir = new Vector3()
+        .subVectors(
+          new Vector3(to[0], to[1], 0),
+          new Vector3(from[0], from[1], 0)
+        )
+        .normalize()
+      dotGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+      dotGroup.scale.set(scale, scale, scale)
+      dotGroup.visible = isHandlesVisible
+    }
+
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
-
       const dir = new Vector3()
         .subVectors(
           new Vector3(to[0], to[1], 0),
@@ -235,7 +252,6 @@ class StraightSegment implements SegmentUtils {
         .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
-      arrowGroup.visible = isHandlesVisible
     }
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -340,6 +356,7 @@ class TangentialArcToSegment implements SegmentUtils {
     const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
     const arrowGroup = createArrowhead(scale, theme, color)
+    const dotGroup = createAddNewSegmentDot(scale, theme, color)
     const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
 
     group.name = TANGENTIAL_ARC_TO_SEGMENT
@@ -356,7 +373,7 @@ class TangentialArcToSegment implements SegmentUtils {
       baseColor,
     }
 
-    group.add(mesh, arrowGroup, extraSegmentGroup)
+    group.add(mesh, arrowGroup, dotGroup, extraSegmentGroup)
     const updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -514,6 +531,7 @@ class CircleSegment implements SegmentUtils {
     const arcMesh = new Mesh(geometry, mat)
     const meshType = isDraftSegment ? CIRCLE_SEGMENT_DASH : CIRCLE_SEGMENT_BODY
     const arrowGroup = createArrowhead(scale, theme, color)
+    const dotGroup = createAddNewSegmentDot(scale, theme, color)
     const circleCenterGroup = createCircleCenterHandle(scale, theme, color)
 
     arcMesh.userData.type = meshType
@@ -532,7 +550,7 @@ class CircleSegment implements SegmentUtils {
     }
     group.name = CIRCLE_SEGMENT
 
-    group.add(arcMesh, arrowGroup, circleCenterGroup)
+    group.add(arcMesh, arrowGroup, dotGroup, circleCenterGroup)
     const updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -683,6 +701,22 @@ export function createProfileStartHandle({
   return group
 }
 
+function createAddNewSegmentDot(scale = 1, theme: Themes, color?: number): Group {
+  const baseColor = getThemeColorForThreeJs(theme)
+  const arrowMaterial = new MeshBasicMaterial({
+    color: color || baseColor,
+  })
+  const sphereMesh = new Mesh(new SphereGeometry(4, 12, 12), arrowMaterial)
+
+  const dotGroup = new Group()
+  dotGroup.userData.type = ADD_SEGMENT_DOT
+  dotGroup.name = ADD_SEGMENT_DOT
+  dotGroup.add(sphereMesh)
+  dotGroup.lookAt(new Vector3(0, 1, 0))
+  dotGroup.scale.set(scale, scale, scale)
+  return dotGroup
+}
+
 function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
   const baseColor = getThemeColorForThreeJs(theme)
   const arrowMaterial = new MeshBasicMaterial({
@@ -692,16 +726,16 @@ function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
   // we'll scale the group to the correct size later to match these sizes in screen space
   const arrowheadMesh = new Mesh(new ConeGeometry(4.5, 20, 12), arrowMaterial)
   arrowheadMesh.position.set(0, -9, 0)
-  const sphereMesh = new Mesh(new SphereGeometry(4, 12, 12), arrowMaterial)
 
   const arrowGroup = new Group()
   arrowGroup.userData.type = ARROWHEAD
   arrowGroup.name = ARROWHEAD
-  arrowGroup.add(arrowheadMesh, sphereMesh)
+  arrowGroup.add(arrowheadMesh)
   arrowGroup.lookAt(new Vector3(0, 1, 0))
   arrowGroup.scale.set(scale, scale, scale)
   return arrowGroup
 }
+
 function createCircleCenterHandle(
   scale = 1,
   theme: Themes,
