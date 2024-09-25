@@ -148,9 +148,7 @@ log(5, myVar)
     expect(recasted.trim()).toBe(code.trim())
   })
   it('recast array declaration', () => {
-    const code = ['let three = 3', "let yo = [1, '2', three, 4 + 5]"].join(
-      '\n'
-    )
+    const code = ['let three = 3', "let yo = [1, '2', three, 4 + 5]"].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     if (err(recasted)) throw recasted
