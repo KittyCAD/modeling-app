@@ -268,12 +268,13 @@ export function createSettings() {
         },
       }),
       /**
-       * The camera projection method to display the 3D view
+       * Projection method applied to the 3D view, perspective or orthographic
        */
       cameraProjection: new Setting<CameraProjectionType>({
         defaultValue: 'perspective',
         hideOnLevel: 'project',
-        description: 'The camera projection method to display the 3D view',
+        description:
+          'Projection method applied to the 3D view, perspective or orthographic',
         validate: (v) => ['perspective', 'orthographic'].includes(v),
         commandConfig: {
           inputType: 'options',
