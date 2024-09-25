@@ -1,12 +1,13 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
+import { ToastUpdate } from 'components/ToastUpdate'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -52,4 +53,17 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
 
-isDesktop()
+isDesktop() &&
+  window.electron.onUpdateDownloaded((version: string) => {
+    const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
+    console.log(message)
+    toast.custom(
+      ToastUpdate({
+        version,
+        onRestart: () => {
+          window.electron.appRestart()
+        },
+      }),
+      { duration: 30000 }
+    )
+  })
