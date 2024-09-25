@@ -1375,6 +1375,7 @@ export class EngineCommandManager extends EventTarget {
           highlightEdges: true,
           enableSSAO: true,
           showScaleGrid: false,
+          cameraProjection: 'perspective',
         }
   }
 
@@ -1423,6 +1424,7 @@ export class EngineCommandManager extends EventTarget {
       highlightEdges: true,
       enableSSAO: true,
       showScaleGrid: false,
+      cameraProjection: 'perspective',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
@@ -1479,6 +1481,19 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
+      // Set the stream's camera projection type
+      // We don't send a command to the engine if in perspective mode because
+      // for now it's the engine's default.
+      if (settings.cameraProjection === 'orthographic') {
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_set_orthographic',
+          },
+        }).catch(reportRejection)
+      }
+
       // Set the stream background color
       // This takes RGBA values from 0-1
       // So we convert from the conventional 0-255 found in Figma

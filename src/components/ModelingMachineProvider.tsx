@@ -104,7 +104,12 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: {
+          defaultUnit,
+          cameraProjection,
+          highlightEdges,
+          showScaleGrid,
+        },
       },
     },
   } = useSettingsAuthContext()
@@ -968,6 +973,7 @@ export const ModelingMachineProvider = ({
       highlightEdges: highlightEdges.current,
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
+      cameraProjection: cameraProjection.current,
     },
     token
   )

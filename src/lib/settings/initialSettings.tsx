@@ -18,6 +18,7 @@ import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 
 /**
  * A setting that can be set at the user or project level
@@ -269,7 +270,7 @@ export function createSettings() {
       /**
        * The camera projection method to display the 3D view
        */
-      cameraProjection: new Setting<'perspective' | 'orthographic'>({
+      cameraProjection: new Setting<CameraProjectionType>({
         defaultValue: 'perspective',
         hideOnLevel: 'project',
         description: 'The camera projection method to display the 3D view',
