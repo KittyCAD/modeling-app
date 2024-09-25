@@ -393,14 +393,14 @@ export const FileTreeMenu = () => {
   function createFile() {
     send({
       type: 'Create file',
-      data: { name: '', makeDir: false },
+      data: { name: '', makeDir: false, shouldSetToRename: true },
     })
   }
 
   function createFolder() {
     send({
       type: 'Create file',
-      data: { name: '', makeDir: true },
+      data: { name: '', makeDir: true, shouldSetToRename: true },
     })
   }
 

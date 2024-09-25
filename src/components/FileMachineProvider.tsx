@@ -2,7 +2,7 @@ import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
-import React, { createContext } from 'react'
+import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
 import {
   Actor,
@@ -22,6 +22,12 @@ import {
 } from 'lib/constants'
 import { getProjectInfo } from 'lib/desktop'
 import { getNextDirName, getNextFileName } from 'lib/desktopFS'
+import { kclCommands } from 'lib/kclCommands'
+import { codeManager, kclManager } from 'lib/singletons'
+import {
+  getKclSamplesManifest,
+  KclSamplesManifestItem,
+} from 'lib/getKclSamplesManifest'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -41,6 +47,16 @@ export const FileMachineProvider = ({
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
   const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
+    []
+  )
+
+  useEffect(() => {
+    async function fetchKclSamples() {
+      setKclSamples(await getKclSamplesManifest())
+    }
+    fetchKclSamples().catch(reportError)
+  }, [])
 
   const [state, send] = useMachine(
     fileMachine.provide({
@@ -121,6 +137,7 @@ export const FileMachineProvider = ({
           return {
             message: `Successfully created "${createdName}"`,
             path: createdPath,
+            shouldSetToRename: input.shouldSetToRename,
           }
         }),
         createFile: fromPromise(async ({ input }) => {
@@ -270,6 +287,46 @@ export const FileMachineProvider = ({
       },
     }
   )
+
+  const kclCommandMemo = useMemo(
+    () =>
+      kclCommands(
+        async (data) => {
+          if (data.method === 'overwrite') {
+            codeManager.updateCodeStateEditor(data.code)
+            await kclManager.executeCode(true)
+            await codeManager.writeToFile()
+          } else if (data.method === 'newFile' && isDesktop()) {
+            send({
+              type: 'Create file',
+              data: {
+                name: data.sampleName,
+                content: data.code,
+                makeDir: false,
+              },
+            })
+          }
+        },
+        kclSamples.map((sample) => ({
+          value: sample.file,
+          name: sample.title,
+        }))
+      ).filter(
+        (command) => kclSamples.length || command.name !== 'open-kcl-example'
+      ),
+    [codeManager, kclManager, send, kclSamples]
+  )
+
+  useEffect(() => {
+    commandBarSend({ type: 'Add commands', data: { commands: kclCommandMemo } })
+
+    return () => {
+      commandBarSend({
+        type: 'Remove commands',
+        data: { commands: kclCommandMemo },
+      })
+    }
+  }, [commandBarSend, kclCommandMemo])
 
   return (
     <FileContext.Provider

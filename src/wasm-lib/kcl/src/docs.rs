@@ -520,7 +520,7 @@ pub fn get_autocomplete_snippet_from_schema(
                 let mut fn_docs = String::new();
                 fn_docs.push_str("{\n");
                 // Let's print out the object's properties.
-                let mut i = 0;
+                let mut i = index;
                 for (prop_name, prop) in obj_val.properties.iter() {
                     if prop_name.starts_with('_') {
                         continue;
@@ -532,15 +532,15 @@ pub fn get_autocomplete_snippet_from_schema(
                         continue;
                     }
 
-                    if let Some((_, snippet)) = get_autocomplete_snippet_from_schema(prop, index + i)? {
+                    if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(prop, i)? {
                         fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
-                        i += 1;
+                        i = new_index + 1;
                     }
                 }
 
                 fn_docs.push('}');
 
-                return Ok(Some((index + i - 1, fn_docs)));
+                return Ok(Some((i - 1, fn_docs)));
             }
 
             if let Some(array_val) = &o.array {
@@ -589,6 +589,7 @@ pub fn get_autocomplete_snippet_from_schema(
 
             if let Some(subschemas) = &o.subschemas {
                 let mut fn_docs = String::new();
+                let mut i = index;
                 if let Some(items) = &subschemas.one_of {
                     let mut had_enum_string = false;
                     let mut parsed_enum_values: Vec<String> = Vec::new();
@@ -620,13 +621,15 @@ pub fn get_autocomplete_snippet_from_schema(
                     if had_enum_string && !parsed_enum_values.is_empty() {
                         return Ok(Some((index, parsed_enum_values[0].to_string())));
                     } else if let Some(item) = items.iter().next() {
-                        if let Some((_, snippet)) = get_autocomplete_snippet_from_schema(item, index)? {
+                        if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(item, index)? {
+                            i = new_index + 1;
                             fn_docs.push_str(&snippet);
                         }
                     }
                 } else if let Some(items) = &subschemas.any_of {
                     if let Some(item) = items.iter().next() {
-                        if let Some((_, snippet)) = get_autocomplete_snippet_from_schema(item, index)? {
+                        if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(item, index)? {
+                            i = new_index + 1;
                             fn_docs.push_str(&snippet);
                         }
                     }
@@ -634,7 +637,7 @@ pub fn get_autocomplete_snippet_from_schema(
                     anyhow::bail!("unknown subschemas: {:#?}", subschemas);
                 }
 
-                return Ok(Some((index, fn_docs)));
+                return Ok(Some((i - 1, fn_docs)));
             }
 
             if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
@@ -915,10 +918,10 @@ mod tests {
             r#"patternCircular3d({
 	arcDegrees: ${0:3.14},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
-	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
-	repetitions: ${3:10},
-	rotateDuplicates: ${4:false},
-}, ${5:%})${}"#
+	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
+	repetitions: ${7:10},
+	rotateDuplicates: ${8:false},
+}, ${9:%})${}"#
         );
     }
 
@@ -942,8 +945,36 @@ mod tests {
             snippet,
             r#"circle({
 	center: [${0:3.14}, ${1:3.14}],
-	radius: ${1:3.14},
-}, ${2:%})${}"#
+	radius: ${2:3.14},
+}, ${3:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_arc() {
+        let arc_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Arc);
+        let snippet = arc_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"arc({
+	angleEnd: ${0:3.14},
+	angleStart: ${1:3.14},
+	radius: ${2:3.14},
+}, ${3:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_pattern_linear_2d() {
+        let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternLinear2D);
+        let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"patternLinear2d({
+	axis: [${0:3.14}, ${1:3.14}],
+	distance: ${2:3.14},
+	repetitions: ${3:10},
+}, ${4:%})${}"#
         );
     }
 }
