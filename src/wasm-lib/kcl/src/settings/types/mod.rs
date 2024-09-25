@@ -538,8 +538,8 @@ mod tests {
     use validator::Validate;
 
     use super::{
-        AppColor, AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
-        OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength, CameraProjectionType,
+        AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
+        ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
 
     #[test]
