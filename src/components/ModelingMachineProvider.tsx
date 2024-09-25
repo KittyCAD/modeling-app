@@ -37,7 +37,7 @@ import {
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
-  Selections,
+  Selections__old,
   canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
@@ -275,7 +275,7 @@ export const ModelingMachineProvider = ({
                 })
               })
             }
-            let selections: Selections = {
+            let selections: Selections__old = {
               codeBasedSelections: [],
               otherSelections: [],
             }

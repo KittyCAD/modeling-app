@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
+import { Selections__old } from 'lib/selections'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -24,7 +24,7 @@ const getModalInfo = createInfoModal(GetInfoModal)
 export function angleBetweenInfo({
   selectionRanges,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 }):
   | {
       transforms: TransformInfo[]
@@ -90,7 +90,7 @@ export async function applyConstraintAngleBetween({
   selectionRanges,
 }: // constraint,
 {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   // constraint: 'setHorzDistance' | 'setVertDistance'
 }): Promise<{
   modifiedAst: Program

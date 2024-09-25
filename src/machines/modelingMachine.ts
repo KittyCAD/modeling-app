@@ -5,7 +5,12 @@ import {
   parse,
   recast,
 } from 'lang/wasm'
-import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
+import {
+  Axis,
+  Selection__old,
+  Selections__old,
+  updateSelections,
+} from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
@@ -70,7 +75,7 @@ export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
-      selection?: Selection
+      selection?: Selection__old
     }
   | {
       selectionType: 'otherSelection'
@@ -78,12 +83,12 @@ export type SetSelections =
     }
   | {
       selectionType: 'completeSelection'
-      selection: Selections
+      selection: Selections__old
       updatedPathToNode?: PathToNode
     }
   | {
       selectionType: 'mirrorCodeMirrorSelections'
-      selection: Selections
+      selection: Selections__old
     }
 
 export type MouseState =
@@ -283,7 +288,7 @@ export interface ModelingMachineContext {
   currentMode: ToolbarModeName
   currentTool: SketchTool
   selection: string[]
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   sketchDetails: SketchDetails | null
   sketchPlaneId: string
   sketchEnginePathId: string

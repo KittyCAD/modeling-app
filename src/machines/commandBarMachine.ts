@@ -5,14 +5,14 @@ import {
   CommandArgumentWithName,
   KclCommandValue,
 } from 'lib/commandTypes'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 
 export type CommandBarContext = {
   commands: Command[]
   selectedCommand?: Command
   currentArgument?: CommandArgument<unknown> & { name: string }
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   argumentsToSubmit: { [x: string]: unknown }
 }
 

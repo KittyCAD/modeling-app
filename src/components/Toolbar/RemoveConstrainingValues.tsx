@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selection, Selections } from 'lib/selections'
+import { Selection__old, Selections__old } from 'lib/selections'
 import { PathToNode, Program, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -18,13 +18,13 @@ export function removeConstrainingValuesInfo({
   selectionRanges,
   pathToNodes,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   pathToNodes?: Array<PathToNode>
 }):
   | {
       transforms: TransformInfo[]
       enabled: boolean
-      updatedSelectionRanges: Selections
+      updatedSelectionRanges: Selections__old
     }
   | Error {
   const paths =
@@ -45,7 +45,7 @@ export function removeConstrainingValuesInfo({
     ? {
         otherSelections: [],
         codeBasedSelections: nodes.map(
-          (node): Selection => ({
+          (node): Selection__old => ({
             range: [node.start, node.end],
             type: 'default',
           })
@@ -73,7 +73,7 @@ export function applyRemoveConstrainingValues({
   selectionRanges,
   pathToNodes,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   pathToNodes?: Array<PathToNode>
 }):
   | {

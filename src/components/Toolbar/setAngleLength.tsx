@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr } from '../../lang/wasm'
+import { Selections__old } from 'lib/selections'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -32,7 +32,7 @@ export function angleLengthInfo({
   selectionRanges,
   angleOrLength = 'setLength',
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   angleOrLength?: 'setLength' | 'setAngle'
 }):
   | {
@@ -74,7 +74,7 @@ export async function applyConstraintAngleLength({
   selectionRanges,
   angleOrLength = 'setLength',
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   angleOrLength?: 'setLength' | 'setAngle'
 }): Promise<{
   modifiedAst: Program

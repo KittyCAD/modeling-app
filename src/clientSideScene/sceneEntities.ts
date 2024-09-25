@@ -77,7 +77,7 @@ import {
   createPipeSubstitution,
   findUniqueName,
 } from 'lang/modifyAst'
-import { Selections, getEventForSegmentSelection } from 'lib/selections'
+import { Selections__old, getEventForSegmentSelection } from 'lib/selections'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
@@ -374,7 +374,7 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
-    selectionRanges?: Selections
+    selectionRanges?: Selections__old
   }): Promise<{
     truncatedAst: Program
     programMemoryOverride: ProgramMemory
