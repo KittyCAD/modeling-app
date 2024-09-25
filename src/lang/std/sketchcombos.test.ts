@@ -96,12 +96,12 @@ function makeSelections(
 }
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
-  const inputScript = `const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+  const inputScript = `let myVar = 3
+let myVar2 = 5
+let myVar3 = 6
+let myAng = 40
+let myAng2 = 134
+let part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %) // ln-should-get-tag
   |> lineTo([myVar, 1], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
@@ -132,12 +132,12 @@ const part001 = startSketchOn('XY')
   |> xLineTo(30, %) // ln-xLineTo-free should convert to xLine
   |> yLineTo(20, %) // ln-yLineTo-free should convert to yLine
 `
-  const expectModifiedScript = `const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+  const expectModifiedScript = `let myVar = 3
+let myVar2 = 5
+let myVar3 = 6
+let myAng = 40
+let myAng2 = 134
+let part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
@@ -241,10 +241,10 @@ const part001 = startSketchOn('XY')
 })
 
 describe('testing transformAstForSketchLines for vertical and horizontal constraint', () => {
-  const inputScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+  const inputScript = `let myVar = 2
+let myVar2 = 12
+let myVar3 = -10
+let part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
@@ -269,10 +269,10 @@ const part001 = startSketchOn('XY')
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
   it('should transform horizontal lines the ast', async () => {
-    const expectModifiedScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+    const expectModifiedScript = `let myVar = 2
+let myVar2 = 12
+let myVar3 = -10
+let part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> xLine(-6.28, %) // select for horizontal constraint 1
@@ -331,10 +331,10 @@ const part001 = startSketchOn('XY')
     expect(newCode).toBe(expectModifiedScript)
   })
   it('should transform vertical lines the ast', async () => {
-    const expectModifiedScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+    const expectModifiedScript = `let myVar = 2
+let myVar2 = 12
+let myVar3 = -10
+let part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
@@ -396,8 +396,8 @@ const part001 = startSketchOn('XY')
 
 describe('testing transformAstForSketchLines for vertical and horizontal distance constraints', () => {
   describe('testing setHorzDistance for line', () => {
-    const inputScript = `const myVar = 1
-const part001 = startSketchOn('XY')
+    const inputScript = `let myVar = 1
+let part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0.31, 1.67], %) // base selection
   |> line([0.45, 1.46], %)
@@ -505,7 +505,7 @@ const baseThickHalf = baseThick / 2
 const halfHeight = totalHeight / 2
 const halfArmAngle = armAngle / 2
 
-const part001 = startSketchOn('XY')
+let part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.05], %)
   |> line([0.01, 0.94 + 0], %) // partial
   |> xLine(3.03, %) // partial
