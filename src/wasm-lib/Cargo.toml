@@ -73,7 +73,7 @@ members = [
 http = "0.2.12"
 kittycad = { version = "0.3.20", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-session = "0.1.4"
-kittycad-modeling-cmds = { version = "0.2.61", features = ["websocket"] }
+kittycad-modeling-cmds = { version = "0.2.62", features = ["websocket"] }
 
 [[test]]
 name = "executor"
@@ -84,6 +84,6 @@ name = "modify"
 path = "tests/modify/main.rs"
 
 # Example: how to point modeling-api at a different repo (e.g. a branch or a local clone)
-#[patch."https://github.com/KittyCAD/modeling-api"]
-#kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
-#kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
+[patch.crates-io]
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", branch = "achalmers/no-more-jsonschema" }
+
