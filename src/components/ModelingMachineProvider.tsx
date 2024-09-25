@@ -150,7 +150,9 @@ export const ModelingMachineProvider = ({
           ;(async () => {
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
