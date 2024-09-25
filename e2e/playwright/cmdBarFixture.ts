@@ -91,8 +91,14 @@ export class CmdBarFixture {
   expectState = async (expected: CmdBarSerilised) => {
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
-  progressCmdBar = async () => {
-    if (Math.random() > 0.5) {
+  /** The method will use buttons OR press enter randomly to progress the cmdbar,
+   * this could have unexpected results depending on what's focused
+   * 
+   * TODO: This method assumes the user has a valid input to the current stage,
+   * and assumes we are past the `pickCommand` step. 
+  */
+  progressCmdBar = async (shouldFuzzProgressMethod = true) => {
+    if (shouldFuzzProgressMethod || Math.random() > 0.5) {
       const arrowButton = this.page.getByRole('button', {
         name: 'arrow right Continue',
       })
