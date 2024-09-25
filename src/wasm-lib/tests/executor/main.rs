@@ -353,7 +353,7 @@ fn roundedRectangle = (pos, w, l, cornerRadius) => {
 const holeRadius = 1
 const holeIndex = 6
 
-const part = roundedRectangle([0, 0], 20, 20, 4)
+let part = roundedRectangle([0, 0], 20, 20, 4)
   |> hole(circle({ center: [-holeIndex, holeIndex], radius: holeRadius }, %), %)
   |> hole(circle({ center: [holeIndex, holeIndex], radius: holeRadius }, %), %)
   |> hole(circle({ center: [-holeIndex, -holeIndex], radius: holeRadius }, %), %)
@@ -377,7 +377,7 @@ async fn kcl_test_top_level_expression() {
 async fn kcl_test_patterns_linear_basic_with_math() {
     let code = r#"const num = 12
 const distance = 5
-const part =  startSketchOn('XY')
+let part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], repetitions: num -1, distance: distance - 1}, %)
     |> extrude(1, %)
@@ -389,7 +389,7 @@ const part =  startSketchOn('XY')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic() {
-    let code = r#"const part =  startSketchOn('XY')
+    let code = r#"let part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
     |> extrude(1, %)
@@ -401,7 +401,7 @@ async fn kcl_test_patterns_linear_basic() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_3d() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"let part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
     |> line([1, 0], %)
@@ -417,7 +417,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_negative_distance() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"let part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
     |> extrude(1, %)
@@ -429,7 +429,7 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_negative_axis() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"let part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
     |> extrude(1, %)
@@ -462,7 +462,7 @@ const rectangle = startSketchOn('XY')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_basic_2d() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"let part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
     |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
     |> extrude(1, %)
@@ -474,7 +474,7 @@ async fn kcl_test_patterns_circular_basic_2d() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_basic_3d() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"let part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
     |> line([1, 0], %)
@@ -490,7 +490,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_3d_tilted_axis() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"let part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
     |> line([1, 0], %)
@@ -845,7 +845,7 @@ const holeRadius = 1
 const holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
-const part = rectShape([0, 0], 20, 20)
+let part = rectShape([0, 0], 20, 20)
   |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
   |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
   |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)

@@ -2207,7 +2207,7 @@ fn hmm = (x) => {
   return x
 }
 
-const yo = 5 + 6
+let yo = 5 + 6
 
 const abc = 3
 const identifierGuy = 5

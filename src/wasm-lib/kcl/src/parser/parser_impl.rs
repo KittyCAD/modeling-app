@@ -1759,7 +1759,7 @@ mod tests {
     #[test]
     fn test_comments_in_function2() {
         let test_program = r#"() => {
-  const yo = { a: { b: { c: '123' } } } /* block
+  let yo = { a: { b: { c: '123' } } } /* block
 comment */
 }"#;
         let tokens = crate::token::lexer(test_program).unwrap();
@@ -1899,7 +1899,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn many_comments() {
         let test_program = r#"// this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
+  let yo = { a: { b: { c: '123' } } } /* block
   comment */
 
   const key = 'c'
@@ -1957,7 +1957,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn inline_block_comments() {
-        let test_program = r#"const yo = 3 /* block
+        let test_program = r#"let yo = 3 /* block
   comment */
   return 1"#;
 

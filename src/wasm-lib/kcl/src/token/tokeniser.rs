@@ -1114,7 +1114,7 @@ show(part001)"#;
     fn test_program3() {
         let program = r#"
 // this is a comment
-const yo = { a: { b: { c: '123' } } }
+let yo = { a: { b: { c: '123' } } }
 
 const key = 'c'
 const things = "things"

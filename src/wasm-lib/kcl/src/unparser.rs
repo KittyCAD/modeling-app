@@ -1302,7 +1302,7 @@ const tabs_l = startSketchOn({
     fn test_recast_comment_in_a_fn_block() {
         let some_program_string = r#"fn myFn = () => {
   // this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
+  let yo = { a: { b: { c: '123' } } } /* block
   comment */
 
   const key = 'c'
@@ -1318,7 +1318,7 @@ const tabs_l = startSketchOn({
             recasted,
             r#"fn myFn = () => {
   // this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
+  let yo = { a: { b: { c: '123' } } } /* block
   comment */
 
   const key = 'c'
@@ -1519,13 +1519,13 @@ const mySk1 = startSketchOn('XY')
     fn test_recast_first_level_object() {
         let some_program_string = r#"const three = 3
 
-const yo = {
+let yo = {
   aStr: 'str',
   anum: 2,
   identifier: three,
   binExp: 4 + 5
 }
-const yo = [
+let yo = [
   1,
   "  2,",
   "three",
@@ -1545,7 +1545,7 @@ const yo = [
     fn test_recast_new_line_before_comment() {
         let some_program_string = r#"
 // this is a comment
-const yo = { a: { b: { c: '123' } } }
+let yo = { a: { b: { c: '123' } } }
 
 const key = 'c'
 const things = "things"
