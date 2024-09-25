@@ -106,7 +106,7 @@ describe('testing changeSketchArguments', () => {
   const lineAfterChange = 'lineTo([2, 3], %)'
   test('changeSketchArguments', async () => {
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+    const genCode = (line: string) => `let mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)
@@ -142,7 +142,7 @@ describe('testing addNewSketchLn', () => {
   test('addNewSketchLn', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchOn('XY')
+let mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -152,7 +152,7 @@ const mySketch001 = startSketchOn('XY')
 
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
-    expect(sourceStart).toBe(95)
+    expect(sourceStart).toBe(93)
     const newSketchLnRetVal = addNewSketchLn({
       node: ast,
       programMemory,
@@ -173,7 +173,7 @@ const mySketch001 = startSketchOn('XY')
     if (err(newSketchLnRetVal)) return newSketchLnRetVal
 
     // Enable rotations #152
-    let expectedCode = `const mySketch001 = startSketchOn('XY')
+    let expectedCode = `let mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -197,7 +197,7 @@ const mySketch001 = startSketchOn('XY')
     })
     if (err(modifiedAst2)) return modifiedAst2
 
-    expectedCode = `const mySketch001 = startSketchOn('XY')
+    expectedCode = `let mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -212,7 +212,7 @@ describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
     const originalLine = 'lineTo([-1.59, -1.54], %)'
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+    const genCode = (line: string) => `let mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> ${line}
