@@ -469,8 +469,9 @@ export type ResolvedSelectionType = [Selection['type'] | 'other', number]
  * @returns
  */
 export function getSelectionType(
-  selection: Selections
+  selection?: Selections
 ): ResolvedSelectionType[] {
+  if (!selection) return []
   const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
     const singleSelection = {
       ...selection,
@@ -485,7 +486,7 @@ export function getSelectionType(
 }
 
 export function getSelectionTypeDisplayText(
-  selection: Selections
+  selection?: Selections
 ): string | null {
   const selectionsByType = getSelectionType(selection)
 

@@ -1,6 +1,6 @@
 {
   "name": "zoo-modeling-app",
-  "version": "0.25.3",
+  "version": "0.25.4",
   "private": true,
   "productName": "Zoo Modeling App",
   "author": {
@@ -83,6 +83,7 @@
     "fmt": "prettier --write ./src *.ts *.json *.js ./e2e ./packages",
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e ./packages",
     "fetch:wasm": "./get-latest-wasm-bundle.sh",
+    "fetch:samples": "echo \"Fetching latest KCL samples...\" && curl -o public/kcl-samples-manifest-fallback.json https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifest.json",
     "isomorphic-copy-wasm": "(copy src/wasm-lib/pkg/wasm_lib_bg.wasm public || cp src/wasm-lib/pkg/wasm_lib_bg.wasm public)",
     "build:wasm-dev": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && yarn isomorphic-copy-wasm && yarn fmt",
     "build:wasm": "yarn wasm-prep && cd src/wasm-lib && wasm-pack build --release --target web --out-dir pkg && cargo test -p kcl-lib export_bindings && cd ../.. && yarn isomorphic-copy-wasm && yarn fmt",
@@ -90,7 +91,7 @@
     "wasm-prep": "rimraf src/wasm-lib/pkg && mkdirp src/wasm-lib/pkg && rimraf src/wasm-lib/kcl/bindings",
     "lint": "eslint --fix src e2e packages/codemirror-lsp-client",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
-    "postinstall": "yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
+    "postinstall": "yarn fetch:samples && yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
     "generate:machine-api": "npx openapi-typescript ./openapi/machine-api.json -o src/lib/machine-api.d.ts",
