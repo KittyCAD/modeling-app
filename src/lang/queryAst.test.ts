@@ -26,21 +26,21 @@ beforeAll(async () => {
 
 describe('findAllPreviousVariables', () => {
   it('should find all previous variables', async () => {
-    const code = `const baseThick = 1
-const armAngle = 60
+    const code = `let baseThick = 1
+let armAngle = 60
 
-const baseThickHalf = baseThick / 2
-const halfArmAngle = armAngle / 2
+let baseThickHalf = baseThick / 2
+let halfArmAngle = armAngle / 2
 
-const arrExpShouldNotBeIncluded = [1, 2, 3]
-const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
+let arrExpShouldNotBeIncluded = [1, 2, 3]
+let objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
-const part001 = startSketchOn('XY')
+let part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> yLineTo(1, %)
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
-const variableBelowShouldNotBeIncluded = 3
+let variableBelowShouldNotBeIncluded = 3
 `
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     const ast = parse(code)
@@ -67,7 +67,7 @@ const variableBelowShouldNotBeIncluded = 3
 })
 
 describe('testing argIsNotIdentifier', () => {
-  const code = `const part001 = startSketchOn('XY')
+  const code = `let part001 = startSketchOn('XY')
 |> startProfileAt([-1.2, 4.83], %)
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.09], %)
@@ -75,8 +75,8 @@ describe('testing argIsNotIdentifier', () => {
 |> angledLine([def('yo'), 3.09], %)
 |> angledLine([ghi(%), 3.09], %)
 |> angledLine([jkl('yo') + 2, 3.09], %)
-const yo = 5 + 6
-const yo2 = hmm([identifierGuy + 5])`
+let yo = 5 + 6
+let yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
     const ast = parse(code)
     if (err(ast)) throw ast
@@ -150,7 +150,7 @@ const yo2 = hmm([identifierGuy + 5])`
     const replaced = result.replacer(structuredClone(ast), 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
-    expect(outCode).toContain(`const yo = replaceName`)
+    expect(outCode).toContain(`let yo = replaceName`)
   })
   it('find a safe BinaryExpression that has a CallExpression within', () => {
     const ast = parse(code)
@@ -186,7 +186,7 @@ const yo2 = hmm([identifierGuy + 5])`
     if (err(replaced)) throw replaced
     const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)
-    expect(outCode).toContain(`const yo2 = hmm([replaceName])`)
+    expect(outCode).toContain(`let yo2 = hmm([replaceName])`)
   })
 
   describe('testing isTypeInValue', () => {
@@ -214,7 +214,7 @@ const yo2 = hmm([identifierGuy + 5])`
 })
 
 describe('testing getNodePathFromSourceRange', () => {
-  const code = `const part001 = startSketchOn('XY')
+  const code = `let part001 = startSketchOn('XY')
   |> startProfileAt([0.39, -0.05], %)
   |> line([0.94, 2.61], %)
   |> line([-0.21, -1.4], %)`
@@ -271,7 +271,7 @@ describe('testing getNodePathFromSourceRange', () => {
 describe('testing doesPipeHave', () => {
   it('finds close', () => {
     const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+let part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -290,7 +290,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   })
   it('finds extrude', () => {
     const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+let part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -310,7 +310,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   })
   it('does NOT find close', () => {
     const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+let part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -343,7 +343,7 @@ const part001 = startSketchAt([-1.41, 3.46])
 describe('testing hasExtrudeSketchGroup', () => {
   it('find sketch group', async () => {
     const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+let part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -361,7 +361,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   })
   it('find extrude group', async () => {
     const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+let part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -394,7 +394,7 @@ const part001 = startSketchAt([-1.41, 3.46])
 })
 
 describe('Testing findUsesOfTagInPipe', () => {
-  const exampleCode = `const part001 = startSketchOn('-XZ')
+  const exampleCode = `let part001 = startSketchOn('-XZ')
 |> startProfileAt([68.12, 156.65], %)
 |> line([306.21, 198.82], %)
 |> line([306.21, 198.85], %, $seg01)
