@@ -52,6 +52,7 @@ export const Y_AXIS = 'yAxis'
 export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
+export const ADD_SEGMENT_DOT = 'add-segment-dot'
 export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
 export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
 export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
