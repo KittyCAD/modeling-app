@@ -4,7 +4,7 @@ use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, Expr, FormatOptions,
         FunctionExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeValue,
-        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
+        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -164,12 +164,17 @@ impl CallExpression {
 impl VariableDeclaration {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
+        let kind = match self.kind {
+            VariableKind::Fn => "fn",
+            VariableKind::Let | VariableKind::Const => "let",
+            VariableKind::Var => "var",
+        };
         self.declarations.iter().fold(String::new(), |mut output, declaration| {
             let _ = write!(
                 output,
                 "{}{} {} = {}",
                 indentation,
-                self.kind,
+                kind,
                 declaration.id.name,
                 declaration.init.recast(options, indentation_level, false).trim()
             );
