@@ -389,12 +389,14 @@ interface FileTreeProps {
 
 export const FileTreeMenu = () => {
   const { send } = useFileContext()
+  const { send: modelingSend } = useModelingContext()
 
   function createFile() {
     send({
       type: 'Create file',
       data: { name: '', makeDir: false, shouldSetToRename: true },
     })
+    modelingSend({ type: 'Cancel' })
   }
 
   function createFolder() {
