@@ -43,6 +43,7 @@ import {
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -718,6 +719,7 @@ export const CamDebugSettings = () => {
     sceneInfra.camControls.reactCameraProperties
   )
   const [fov, setFov] = useState(12)
+  const { commandBarSend } = useCommandsContext()
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
@@ -735,15 +737,15 @@ export const CamDebugSettings = () => {
       <input
         type="checkbox"
         checked={camSettings.type === 'perspective'}
-        onChange={(e) => {
-          if (camSettings.type === 'perspective') {
-            sceneInfra.camControls.useOrthographicCamera()
-          } else {
-            sceneInfra.camControls
-              .usePerspectiveCamera(true)
-              .catch(reportRejection)
-          }
-        }}
+        onChange={() =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: {
+              groupId: 'settings',
+              name: 'modeling.cameraProjection',
+            },
+          })
+        }
       />
       <div>
         <button

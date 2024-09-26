@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 
 export function CameraProjectionToggle() {
   const { settings } = useSettingsAuthContext()
-  const [checked, setChecked] = useState(
+  const isCameraProjectionPerspective =
     settings.context.modeling.cameraProjection.current === 'perspective'
-  )
+  const [checked, setChecked] = useState(isCameraProjectionPerspective)
 
   useEffect(() => {
     setChecked(

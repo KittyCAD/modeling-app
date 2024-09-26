@@ -14,7 +14,6 @@ import {
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
 import { sceneInfra } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
 
 export const settingsMachine = setup({
   types: {
@@ -91,12 +90,9 @@ export const settingsMachine = setup({
         currentTheme === Themes.System ? getSystemTheme() : currentTheme
       )
     },
-    setEngineCameraProjection: () => {
-      if (sceneInfra.camControls.reactCameraProperties.type === 'perspective') {
-        sceneInfra.camControls.useOrthographicCamera()
-      } else {
-        sceneInfra.camControls.usePerspectiveCamera(true).catch(reportRejection)
-      }
+    setEngineCameraProjection: ({ context }) => {
+      const newCurrentProjection = context.modeling.cameraProjection.current
+      sceneInfra.camControls.setEngineCameraProjection(newCurrentProjection)
     },
   },
 }).createMachine({

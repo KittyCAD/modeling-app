@@ -102,11 +102,13 @@ export class Setting<T = unknown> {
       : this._default
   }
   /**
-   * Return whether we should acknowledge this value as "matching" the current
-   * value. If the current value is the inherited default, we should also consider the
-   * it matching if the fallback value is matching.
+   * For the purposes of showing the `current` label in the command bar,
+   * is this setting at the given level the same as the given value?
    */
-  public isCurrent(level: SettingsLevel | 'default', valueToMatch: T): boolean {
+  public shouldShowCurrentLabel(
+    level: SettingsLevel | 'default',
+    valueToMatch: T
+  ): boolean {
     return this[`_${level}`] === undefined
       ? this.getFallback(level) === valueToMatch
       : this[`_${level}`] === valueToMatch
@@ -288,16 +290,22 @@ export function createSettings() {
         validate: (v) => ['perspective', 'orthographic'].includes(v),
         commandConfig: {
           inputType: 'options',
+          // This is how we can have toggling behavior for a non-boolean argument:
+          // Set it to "skippable", and make the default value the opposite of the current value
+          skip: true,
           defaultValueFromContext: (context) =>
-            context.modeling.cameraProjection.current,
+            context.modeling.cameraProjection.current === 'perspective'
+              ? 'orthographic'
+              : 'perspective',
           options: (cmdContext, settingsContext) =>
             (['perspective', 'orthographic'] as const).map((v) => ({
               name: v.charAt(0).toUpperCase() + v.slice(1),
               value: v,
-              isCurrent: settingsContext.modeling.cameraProjection.isCurrent(
-                cmdContext.argumentsToSubmit.level as SettingsLevel,
-                v
-              ),
+              isCurrent:
+                settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
             })),
         },
       }),
@@ -319,7 +327,7 @@ export function createSettings() {
               value: v,
               isCurrent:
                 v ===
-                settingsContext.modeling.mouseControls.isCurrent(
+                settingsContext.modeling.mouseControls.shouldShowCurrentLabel(
                   cmdContext.argumentsToSubmit.level as SettingsLevel
                 ),
             })),
