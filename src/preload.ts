@@ -20,6 +20,8 @@ const onUpdateDownloadStart = (
 ) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
 const onUpdateDownloaded = (callback: (value: string) => void) =>
   ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+const onUpdateError = (callback: (value: Error) => void) =>
+  ipcRenderer.on('update-error', (_event, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
 
 const isMac = os.platform() === 'darwin'
@@ -131,5 +133,6 @@ contextBridge.exposeInMainWorld('electron', {
   getMachineApiIp,
   onUpdateDownloadStart,
   onUpdateDownloaded,
+  onUpdateError,
   appRestart,
 })

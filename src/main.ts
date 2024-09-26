@@ -261,6 +261,11 @@ app.on('ready', () => {
     autoUpdater.checkForUpdates().catch(reportRejection)
   }, fifteenMinutes)
 
+  autoUpdater.on('error', (error) => {
+    console.error('updater-error', error)
+    mainWindow?.webContents.send('updater-error', error)
+  })
+
   autoUpdater.on('update-available', (info) => {
     console.log('update-available', info)
     autoUpdater.prependOnceListener('download-progress', (progress) => {

@@ -69,6 +69,9 @@ export interface IElectronAPI {
   onUpdateDownloaded: (
     callback: (value: string) => void
   ) => Electron.IpcRenderer
+  onUpdateError: (
+    callback: (value: { error: Error }) => void
+  ) => Electron
   appRestart: () => void
 }
 

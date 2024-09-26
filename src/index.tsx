@@ -62,6 +62,14 @@ if (isDesktop()) {
     console.log(message)
     toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
   })
+  // Listen for update download errors to show
+  // an error toast and clear the loading toast.
+  window.electron.onUpdateError(({ error }) => {
+    console.error(error)
+    toast.error('An error occurred while downloading the update.', {
+      id: AUTO_UPDATER_TOAST_ID,
+    })
+  })
   window.electron.onUpdateDownloaded((version: string) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
