@@ -290,9 +290,9 @@ export function createSettings() {
         validate: (v) => ['perspective', 'orthographic'].includes(v),
         commandConfig: {
           inputType: 'options',
-          // This is how we can have toggling behavior for a non-boolean argument:
+          // This is how we could have toggling behavior for a non-boolean argument:
           // Set it to "skippable", and make the default value the opposite of the current value
-          skip: true,
+          // skip: true,
           defaultValueFromContext: (context) =>
             context.modeling.cameraProjection.current === 'perspective'
               ? 'orthographic'
