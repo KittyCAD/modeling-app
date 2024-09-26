@@ -477,7 +477,7 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
 
     await expect(page.getByText('Unable to delete part')).toBeVisible()
   })
-  test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engin', async ({
+  test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
     page,
   }) => {
     const u = await getUtils(page)

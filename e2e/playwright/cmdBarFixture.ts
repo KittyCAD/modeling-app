@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
-type CmdBarSerilised =
+type CmdBarSerialised =
   | {
       stage: 'commandBarClosed'
       // TODO no more properties needed but needs to be implemented in _serialiseCmdBar
@@ -31,7 +31,7 @@ export class CmdBarFixture {
     this.page = page
   }
 
-  private _serialiseCmdBar = async (): Promise<CmdBarSerilised> => {
+  private _serialiseCmdBar = async (): Promise<CmdBarSerialised> => {
     const reviewForm = await this.page.locator('#review-form')
     const getHeaderArgs = async () => {
       const inputs = await this.page.getByTestId('cmd-bar-input-tab').all()
@@ -88,7 +88,7 @@ export class CmdBarFixture {
       commandName: commandName || '',
     }
   }
-  expectState = async (expected: CmdBarSerilised) => {
+  expectState = async (expected: CmdBarSerialised) => {
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
   /** The method will use buttons OR press enter randomly to progress the cmdbar,

@@ -114,7 +114,7 @@ test.describe('verify sketch on chamfer works', () => {
           // sometimes initial click doesn't register
           await clickChamfer()
           await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
-        }).toPass({ timeout: 40_000, intervals: [500] })
+        }).toPass({ timeout: 15_000, intervals: [500] })
       })
 
       await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
@@ -270,7 +270,7 @@ test.describe('verify sketch on chamfer works', () => {
     |> close(%)`,
     })
 
-    await test.step('verif at the end of the test that final code is what is expected', async () => {
+    await test.step('verify at the end of the test that final code is what is expected', async () => {
       await editor.expectEditor.toContain(
         `const sketch001 = startSketchOn('XZ')
       |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
