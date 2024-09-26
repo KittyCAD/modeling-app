@@ -232,7 +232,6 @@ export function getActorNextEvents(snapshot: AnyMachineSnapshot) {
   return [...new Set([...snapshot._nodes.flatMap((sn) => sn.ownEvents)])]
 }
 
-// export const onMouseDragRegex = /-?\b\d+\.?\d*\b/g
 export const onMouseDragRegex = /-?\.?\b\d+\.?\d*\b/g
 
 export function simulateOnMouseDragMatch(text: string) {
