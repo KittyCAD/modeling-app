@@ -57,7 +57,6 @@ reportWebVitals()
 if (isDesktop()) {
   // Listen for update download progress to begin
   // to show a loading toast.
-  // TODO: Make use of the progress value in future. Currently this fires only once.
   window.electron.onUpdateDownloadStart(({ version }) => {
     const message = `Downloading update (${version})...`
     console.log(message)
