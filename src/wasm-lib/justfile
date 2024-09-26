@@ -2,3 +2,6 @@
 new-test name:
     echo "kcl_test!(\"{{name}}\", {{name}});" >> tests/executor/visuals.rs
     TWENTY_TWENTY=overwrite cargo nextest run --test executor -E 'test(=visuals::{{name}})'
+
+lint:
+    cargo clippy --all --tests --benches -- -D warnings

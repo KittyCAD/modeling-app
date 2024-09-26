@@ -4,7 +4,10 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::{Angle, ModelingCmd, Point3D};
+use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -13,8 +16,8 @@ use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExtrudeGroup, Face, GeoMeta, KclValue, Path, Plane, PlaneType, Point2d, Point3d, SketchGroup,
-        SketchGroupSet, SketchSurface, TagEngineInfo, TagIdentifier, UserVal,
+        BasePath, ExecState, ExtrudeGroup, Face, GeoMeta, KclValue, Path, Plane, PlaneType, Point2d, Point3d,
+        SketchGroup, SketchGroupSet, SketchSurface, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -50,11 +53,12 @@ impl FaceTag {
     pub async fn get_face_id(
         &self,
         extrude_group: &ExtrudeGroup,
+        exec_state: &mut ExecState,
         args: &Args,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            FaceTag::Tag(ref t) => args.get_adjacent_face_to_tag(t, must_be_planar).await,
+            FaceTag::Tag(ref t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
             FaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: "Expected a start face".to_string(),
@@ -89,7 +93,7 @@ pub enum StartOrEnd {
 }
 
 /// Draw a line to a point.
-pub async fn line_to(args: Args) -> Result<KclValue, KclError> {
+pub async fn line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -123,17 +127,13 @@ async fn inner_line_to(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Line {
-                end: Point3D {
-                    x: to[0],
-                    y: to[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Line {
+                end: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
                 relative: false,
             },
-        },
+        }),
     )
     .await?;
 
@@ -160,7 +160,7 @@ async fn inner_line_to(
 }
 
 /// Draw a line to a point on the x-axis.
-pub async fn x_line_to(args: Args) -> Result<KclValue, KclError> {
+pub async fn x_line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -208,7 +208,7 @@ async fn inner_x_line_to(
 }
 
 /// Draw a line to a point on the y-axis.
-pub async fn y_line_to(args: Args) -> Result<KclValue, KclError> {
+pub async fn y_line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -248,7 +248,7 @@ async fn inner_y_line_to(
 }
 
 /// Draw a line.
-pub async fn line(args: Args) -> Result<KclValue, KclError> {
+pub async fn line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (delta, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -296,17 +296,13 @@ async fn inner_line(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Line {
-                end: Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Line {
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative: true,
             },
-        },
+        }),
     )
     .await?;
 
@@ -333,7 +329,7 @@ async fn inner_line(
 }
 
 /// Draw a line on the x-axis.
-pub async fn x_line(args: Args) -> Result<KclValue, KclError> {
+pub async fn x_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (length, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -376,7 +372,7 @@ async fn inner_x_line(
 }
 
 /// Draw a line on the y-axis.
-pub async fn y_line(args: Args) -> Result<KclValue, KclError> {
+pub async fn y_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (length, sketch_group, tag): (f64, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -430,7 +426,7 @@ pub enum AngledLineData {
 }
 
 /// Draw an angled line.
-pub async fn angled_line(args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (AngledLineData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -483,17 +479,13 @@ async fn inner_angled_line(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Line {
-                end: Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Line {
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
-        },
+        }),
     )
     .await?;
 
@@ -519,7 +511,7 @@ async fn inner_angled_line(
 }
 
 /// Draw an angled line of a given x length.
-pub async fn angled_line_of_x_length(args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_of_x_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (AngledLineData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -587,7 +579,7 @@ pub struct AngledLineToData {
 }
 
 /// Draw an angled line to a given x coordinate.
-pub async fn angled_line_to_x(args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_to_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (AngledLineToData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -644,7 +636,7 @@ async fn inner_angled_line_to_x(
 }
 
 /// Draw an angled line of a given y length.
-pub async fn angled_line_of_y_length(args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_of_y_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (AngledLineData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -704,7 +696,7 @@ async fn inner_angled_line_of_y_length(
 }
 
 /// Draw an angled line to a given y coordinate.
-pub async fn angled_line_to_y(args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_to_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (AngledLineToData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -775,10 +767,10 @@ pub struct AngledLineThatIntersectsData {
 }
 
 /// Draw an angled line that intersects with a given line.
-pub async fn angled_line_that_intersects(args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (AngledLineThatIntersectsData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
-    let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, tag, args).await?;
+    let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch_group.meta.clone(), new_sketch_group))
 }
 
@@ -808,9 +800,10 @@ async fn inner_angled_line_that_intersects(
     data: AngledLineThatIntersectsData,
     sketch_group: SketchGroup,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SketchGroup, KclError> {
-    let intersect_path = args.get_tag_engine_info(&data.intersect_tag)?;
+    let intersect_path = args.get_tag_engine_info(exec_state, &data.intersect_tag)?;
     let path = intersect_path.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
@@ -831,10 +824,10 @@ async fn inner_angled_line_that_intersects(
 }
 
 /// Start a sketch at a given point.
-pub async fn start_sketch_at(args: Args) -> Result<KclValue, KclError> {
+pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let data: [f64; 2] = args.get_data()?;
 
-    let sketch_group = inner_start_sketch_at(data, args).await?;
+    let sketch_group = inner_start_sketch_at(data, exec_state, args).await?;
     Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
@@ -872,11 +865,15 @@ pub async fn start_sketch_at(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "startSketchAt",
 }]
-async fn inner_start_sketch_at(data: [f64; 2], args: Args) -> Result<SketchGroup, KclError> {
+async fn inner_start_sketch_at(
+    data: [f64; 2],
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<SketchGroup, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
-    let sketch_group = inner_start_profile_at(data, sketch_surface, None, args).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, exec_state, &args).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, None, exec_state, args).await?;
     Ok(sketch_group)
 }
 
@@ -1006,10 +1003,10 @@ impl From<PlaneData> for Plane {
 }
 
 /// Start a sketch on a specific plane or face.
-pub async fn start_sketch_on(args: Args) -> Result<KclValue, KclError> {
+pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
 
-    match inner_start_sketch_on(data, tag, args).await? {
+    match inner_start_sketch_on(data, tag, exec_state, &args).await? {
         SketchSurface::Plane(plane) => Ok(KclValue::Plane(plane)),
         SketchSurface::Face(face) => Ok(KclValue::Face(face)),
     }
@@ -1119,7 +1116,12 @@ pub async fn start_sketch_on(args: Args) -> Result<KclValue, KclError> {
 #[stdlib {
     name = "startSketchOn",
 }]
-async fn inner_start_sketch_on(data: SketchData, tag: Option<FaceTag>, args: Args) -> Result<SketchSurface, KclError> {
+async fn inner_start_sketch_on(
+    data: SketchData,
+    tag: Option<FaceTag>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<SketchSurface, KclError> {
     match data {
         SketchData::Plane(plane_data) => {
             let plane = start_sketch_on_plane(plane_data, args).await?;
@@ -1132,7 +1134,7 @@ async fn inner_start_sketch_on(data: SketchData, tag: Option<FaceTag>, args: Arg
                     source_ranges: vec![args.source_range],
                 }));
             };
-            let face = start_sketch_on_face(extrude_group, tag, args).await?;
+            let face = start_sketch_on_face(extrude_group, tag, exec_state, args).await?;
             Ok(SketchSurface::Face(face))
         }
     }
@@ -1141,9 +1143,10 @@ async fn inner_start_sketch_on(data: SketchData, tag: Option<FaceTag>, args: Arg
 async fn start_sketch_on_face(
     extrude_group: Box<ExtrudeGroup>,
     tag: FaceTag,
-    args: Args,
+    exec_state: &mut ExecState,
+    args: &Args,
 ) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = tag.get_face_id(&extrude_group, &args, true).await?;
+    let extrude_plane_id = tag.get_face_id(&extrude_group, exec_state, args, true).await?;
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
@@ -1157,7 +1160,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
+async fn start_sketch_on_plane(data: PlaneData, args: &Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
 
     // Get the default planes.
@@ -1180,14 +1183,14 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
             let id = uuid::Uuid::new_v4();
             args.batch_modeling_cmd(
                 id,
-                ModelingCmd::MakePlane {
+                ModelingCmd::from(mcmd::MakePlane {
                     clobber: false,
                     origin: (*origin).into(),
-                    size: 60.0,
+                    size: LengthUnit(60.0),
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
                     hide: Some(true),
-                },
+                }),
             )
             .await?;
 
@@ -1199,11 +1202,11 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
 }
 
 /// Start a new profile at a given point.
-pub async fn start_profile_at(args: Args) -> Result<KclValue, KclError> {
+pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<TagDeclarator>) =
         args.get_data_and_sketch_surface()?;
 
-    let sketch_group = inner_start_profile_at(start, sketch_surface, tag, args).await?;
+    let sketch_group = inner_start_profile_at(start, sketch_surface, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
 }
 
@@ -1248,12 +1251,13 @@ pub(crate) async fn inner_start_profile_at(
     to: [f64; 2],
     sketch_surface: SketchSurface,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SketchGroup, KclError> {
     if let SketchSurface::Face(face) = &sketch_surface {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_extrude_group_set(face.extrude_group.clone().into())
+        args.flush_batch_for_extrude_group_set(exec_state, face.extrude_group.clone().into())
             .await?;
     }
 
@@ -1262,7 +1266,7 @@ pub(crate) async fn inner_start_profile_at(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::EnableSketchMode {
+        ModelingCmd::from(mcmd::EnableSketchMode {
             animated: false,
             ortho: false,
             entity_id: sketch_surface.id(),
@@ -1273,24 +1277,21 @@ pub(crate) async fn inner_start_profile_at(
             } else {
                 None
             },
-        },
+        }),
     )
     .await?;
 
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
-    args.batch_modeling_cmd(path_id, ModelingCmd::StartPath {}).await?;
+    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
+        .await?;
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::MovePathPen {
-            path: path_id,
-            to: Point3D {
-                x: to[0],
-                y: to[1],
-                z: 0.0,
-            },
-        },
+        ModelingCmd::from(mcmd::MovePathPen {
+            path: path_id.into(),
+            to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
+        }),
     )
     .await?;
 
@@ -1328,7 +1329,7 @@ pub(crate) async fn inner_start_profile_at(
 }
 
 /// Returns the X component of the sketch profile start point.
-pub async fn profile_start_x(args: Args) -> Result<KclValue, KclError> {
+pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_group: SketchGroup = args.get_sketch_group()?;
     let x = inner_profile_start_x(sketch_group)?;
     args.make_user_val_from_f64(x)
@@ -1352,7 +1353,7 @@ pub(crate) fn inner_profile_start_x(sketch_group: SketchGroup) -> Result<f64, Kc
 }
 
 /// Returns the Y component of the sketch profile start point.
-pub async fn profile_start_y(args: Args) -> Result<KclValue, KclError> {
+pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_group: SketchGroup = args.get_sketch_group()?;
     let x = inner_profile_start_y(sketch_group)?;
     args.make_user_val_from_f64(x)
@@ -1375,7 +1376,7 @@ pub(crate) fn inner_profile_start_y(sketch_group: SketchGroup) -> Result<f64, Kc
 }
 
 /// Returns the sketch profile start point.
-pub async fn profile_start(args: Args) -> Result<KclValue, KclError> {
+pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_group: SketchGroup = args.get_sketch_group()?;
     let point = inner_profile_start(sketch_group)?;
     Ok(KclValue::UserVal(UserVal {
@@ -1409,7 +1410,7 @@ pub(crate) fn inner_profile_start(sketch_group: SketchGroup) -> Result<[f64; 2],
 }
 
 /// Close the current sketch.
-pub async fn close(args: Args) -> Result<KclValue, KclError> {
+pub async fn close(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (sketch_group, tag): (SketchGroup, Option<TagDeclarator>) = args.get_sketch_group_and_optional_tag()?;
 
     let new_sketch_group = inner_close(sketch_group, tag, args).await?;
@@ -1453,17 +1454,20 @@ pub(crate) async fn inner_close(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ClosePath {
+        ModelingCmd::from(mcmd::ClosePath {
             path_id: sketch_group.id,
-        },
+        }),
     )
     .await?;
 
     // If we are sketching on a plane we can close the sketch group now.
     if let SketchSurface::Plane(_) = sketch_group.on {
         // We were on a plane, disable the sketch mode.
-        args.batch_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
-            .await?;
+        args.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+        )
+        .await?;
     }
 
     let current_path = Path::ToPoint {
@@ -1516,7 +1520,7 @@ pub enum ArcData {
 }
 
 /// Draw an arc.
-pub async fn arc(args: Args) -> Result<KclValue, KclError> {
+pub async fn arc(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (ArcData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -1587,16 +1591,16 @@ pub(crate) async fn inner_arc(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Arc {
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
-                center: center.into(),
-                radius,
+                center: KPoint2d::from(center).map(LengthUnit),
+                radius: LengthUnit(radius),
                 relative: false,
             },
-        },
+        }),
     )
     .await?;
 
@@ -1637,7 +1641,7 @@ pub enum TangentialArcData {
 }
 
 /// Draw a tangential arc.
-pub async fn tangential_arc(args: Args) -> Result<KclValue, KclError> {
+pub async fn tangential_arc(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (TangentialArcData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -1702,7 +1706,7 @@ async fn inner_tangential_arc(
             ));
             // make sure the arc center is on the correct side to guarantee deterministic behavior
             // note the engine automatically rejects an offset of zero, if we want to flag that at KCL too to avoid engine errors
-            let ccw = offset.degrees() > 0.0;
+            let ccw = offset.to_degrees() > 0.0;
             let tangent_to_arc_start_angle = if ccw {
                 // CCW turn
                 Angle::from_degrees(-90.0)
@@ -1718,10 +1722,13 @@ async fn inner_tangential_arc(
 
             args.batch_modeling_cmd(
                 id,
-                ModelingCmd::ExtendPath {
-                    path: sketch_group.id,
-                    segment: kittycad::types::PathSegment::TangentialArc { radius, offset },
-                },
+                ModelingCmd::from(mcmd::ExtendPath {
+                    path: sketch_group.id.into(),
+                    segment: PathSegment::TangentialArc {
+                        radius: LengthUnit(radius),
+                        offset,
+                    },
+                }),
             )
             .await?;
             (center, to.into(), ccw)
@@ -1753,21 +1760,17 @@ async fn inner_tangential_arc(
 }
 
 fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
-    ModelingCmd::ExtendPath {
-        path: sketch_group.id,
-        segment: kittycad::types::PathSegment::TangentialArcTo {
+    ModelingCmd::from(mcmd::ExtendPath {
+        path: sketch_group.id.into(),
+        segment: PathSegment::TangentialArcTo {
             angle_snap_increment: None,
-            to: Point3D {
-                x: to[0],
-                y: to[1],
-                z: 0.0,
-            },
+            to: KPoint2d::from(*to).with_z(0.0).map(LengthUnit),
         },
-    }
+    })
 }
 
 /// Draw a tangential arc to a specific point.
-pub async fn tangential_arc_to(args: Args) -> Result<KclValue, KclError> {
+pub async fn tangential_arc_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
         super::args::FromArgs::from_args(&args, 0)?;
 
@@ -1776,7 +1779,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<KclValue, KclError> {
 }
 
 /// Draw a tangential arc to point some distance away..
-pub async fn tangential_arc_to_relative(args: Args) -> Result<KclValue, KclError> {
+pub async fn tangential_arc_to_relative(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (delta, sketch_group, tag): ([f64; 2], SketchGroup, Option<TagDeclarator>) =
         super::args::FromArgs::from_args(&args, 0)?;
 
@@ -1923,7 +1926,7 @@ async fn inner_tangential_arc_to_relative(
                 metadata: args.source_range.into(),
             },
         },
-        center: dbg!(result.center),
+        center: result.center,
         ccw: result.ccw > 0,
     };
 
@@ -1951,7 +1954,7 @@ pub struct BezierData {
 }
 
 /// Draw a bezier curve.
-pub async fn bezier_curve(args: Args) -> Result<KclValue, KclError> {
+pub async fn bezier_curve(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group, tag): (BezierData, SketchGroup, Option<TagDeclarator>) =
         args.get_data_and_sketch_group_and_tag()?;
 
@@ -1996,27 +1999,15 @@ async fn inner_bezier_curve(
 
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::Bezier {
-                control_1: Point3D {
-                    x: data.control1[0],
-                    y: data.control1[1],
-                    z: 0.0,
-                },
-                control_2: Point3D {
-                    x: data.control2[0],
-                    y: data.control2[1],
-                    z: 0.0,
-                },
-                end: Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch_group.id.into(),
+            segment: PathSegment::Bezier {
+                control1: KPoint2d::from(data.control1).with_z(0.0).map(LengthUnit),
+                control2: KPoint2d::from(data.control2).with_z(0.0).map(LengthUnit),
+                end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
-        },
+        }),
     )
     .await?;
 
@@ -2043,7 +2034,7 @@ async fn inner_bezier_curve(
 }
 
 /// Use a sketch to cut a hole in another sketch.
-pub async fn hole(args: Args) -> Result<KclValue, KclError> {
+pub async fn hole(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hole_sketch_group, sketch_group): (SketchGroupSet, SketchGroup) = args.get_sketch_groups()?;
 
     let new_sketch_group = inner_hole(hole_sketch_group, sketch_group, args).await?;
@@ -2059,8 +2050,8 @@ pub async fn hole(args: Args) -> Result<KclValue, KclError> {
 ///   |> line([5, 0], %)
 ///   |> line([0, -5], %)
 ///   |> close(%)
-///   |> hole(circle([1, 1], .25, %), %)
-///   |> hole(circle([1, 4], .25, %), %)
+///   |> hole(circle({ center: [1, 1], radius: .25 }, %), %)
+///   |> hole(circle({ center: [1, 4], radius: .25 }, %), %)
 ///
 /// const example = extrude(1, exampleSketch)
 /// ```
@@ -2077,7 +2068,7 @@ pub async fn hole(args: Args) -> Result<KclValue, KclError> {
 ///   }
 ///
 ///  const exampleSketch = startSketchOn('-XZ')
-///     |> circle([0, 0], 3, %)
+///     |> circle({ center: [0, 0], radius: 3 }, %)
 ///     |> hole(squareHoleSketch(), %)
 ///  const example = extrude(1, exampleSketch)
 /// ```
@@ -2093,10 +2084,10 @@ async fn inner_hole(
     for hole_sketch_group in hole_sketch_groups {
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid2DAddHole {
+            ModelingCmd::from(mcmd::Solid2dAddHole {
                 object_id: sketch_group.id,
                 hole_id: hole_sketch_group.id,
-            },
+            }),
         )
         .await?;
 
@@ -2104,10 +2095,10 @@ async fn inner_hole(
         // we also hide the source hole since its essentially "consumed" by this operation
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::ObjectVisible {
+            ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: hole_sketch_group.id,
                 hidden: true,
-            },
+            }),
         )
         .await?;
     }

@@ -41,6 +41,7 @@ import { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
+export type { ObjectProperty } from '../wasm-lib/kcl/bindings/ObjectProperty'
 export type { MemberExpression } from '../wasm-lib/kcl/bindings/MemberExpression'
 export type { PipeExpression } from '../wasm-lib/kcl/bindings/PipeExpression'
 export type { VariableDeclaration } from '../wasm-lib/kcl/bindings/VariableDeclaration'
@@ -360,6 +361,7 @@ export const executor = async (
 ): Promise<ProgramMemory> => {
   if (err(programMemory)) return Promise.reject(programMemory)
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
@@ -569,6 +571,7 @@ export async function coreDump(
        a new GitHub issue for the user.
      */
     if (openGithubIssue && dump.github_issue_url) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       openWindow(dump.github_issue_url)
     } else {
       console.error(

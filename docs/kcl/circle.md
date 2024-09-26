@@ -9,14 +9,14 @@ Construct a 2-dimensional circle, of the specified radius, centered at
 the provided (x, y) origin point.
 
 ```js
-circle(center: [number], radius: number, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: TagDeclarator) -> SketchGroup
+circle(data: CircleData, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: TagDeclarator) -> SketchGroup
 ```
 
 ### Examples
 
 ```js
 const exampleSketch = startSketchOn("-XZ")
-  |> circle([0, 0], 10, %)
+  |> circle({ center: [0, 0], radius: 10 }, %)
 
 const example = extrude(5, exampleSketch)
 ```
@@ -30,7 +30,7 @@ const exampleSketch = startSketchOn("XZ")
   |> line([0, 30], %)
   |> line([-30, 0], %)
   |> close(%)
-  |> hole(circle([0, 15], 5, %), %)
+  |> hole(circle({ center: [0, 15], radius: 5 }, %), %)
 
 const example = extrude(5, exampleSketch)
 ```
@@ -39,8 +39,15 @@ const example = extrude(5, exampleSketch)
 
 ### Arguments
 
-* `center`: `[number]` (REQUIRED)
-* `radius`: `number` (REQUIRED)
+* `data`: `CircleData` - Data for drawing an circle (REQUIRED)
+```js
+{
+	// The center of the circle.
+	center: [number, number],
+	// The circle radius
+	radius: number,
+}
+```
 * `sketch_surface_or_group`: `SketchSurfaceOrGroup` - A sketch surface or a sketch group. (REQUIRED)
 ```js
 {
@@ -185,6 +192,26 @@ const example = extrude(5, exampleSketch)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.
@@ -563,6 +590,26 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArc",
 } |
 {
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
+} |
+{
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -774,6 +821,26 @@ const example = extrude(5, exampleSketch)
 	type: "TangentialArc",
 } |
 {
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
+} |
+{
 	// The from point.
 	from: [number, number],
 	// The tag of the path.
@@ -981,6 +1048,26 @@ const example = extrude(5, exampleSketch)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArc",
+} |
+{
+	// arc's direction
+	ccw: bool,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// the arc's radius
+	radius: number,
+	// The tag of the path.
+	tag: {
+	digest: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number],
+	end: number,
+	start: number,
+	value: string,
+},
+	// The to point.
+	to: [number, number],
+	type: "Circle",
 } |
 {
 	// The from point.

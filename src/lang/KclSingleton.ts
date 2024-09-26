@@ -129,8 +129,8 @@ export class KclManager {
     if (!isExecuting && this.executeIsStale) {
       const args = this.executeIsStale
       this.executeIsStale = null
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.executeAst(args)
-    } else {
     }
     this._isExecutingCallback(isExecuting)
   }
@@ -154,6 +154,7 @@ export class KclManager {
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(() => {
       this.ast = this.safeParse(codeManager.code) || this.ast
     })
@@ -400,9 +401,11 @@ export class KclManager {
     // Update the code state and the editor.
     codeManager.updateCodeStateEditor(code)
     // Write back to the file system.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     codeManager.writeToFile()
 
     // execute the code.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.executeCode()
   }
   // There's overlapping responsibility between updateAst and executeAst.
@@ -413,7 +416,7 @@ export class KclManager {
     ast: Program,
     execute: boolean,
     optionalParams?: {
-      focusPath?: PathToNode
+      focusPath?: Array<PathToNode>
       zoomToFit?: boolean
       zoomOnRangeAndType?: {
         range: SourceRange
@@ -432,27 +435,34 @@ export class KclManager {
     let returnVal: Selections | undefined = undefined
 
     if (optionalParams?.focusPath) {
-      const _node1 = getNodeFromPath<any>(
-        astWithUpdatedSource,
-        optionalParams?.focusPath
-      )
-      if (err(_node1)) return Promise.reject(_node1)
-      const { node } = _node1
-
-      const { start, end } = node
-      if (!start || !end)
-        return {
-          selections: undefined,
-          newAst: astWithUpdatedSource,
-        }
       returnVal = {
-        codeBasedSelections: [
-          {
+        codeBasedSelections: [],
+        otherSelections: [],
+      }
+
+      for (const path of optionalParams.focusPath) {
+        const getNodeFromPathResult = getNodeFromPath<any>(
+          astWithUpdatedSource,
+          path
+        )
+        if (err(getNodeFromPathResult))
+          return Promise.reject(getNodeFromPathResult)
+        const { node } = getNodeFromPathResult
+
+        const { start, end } = node
+
+        if (!start || !end)
+          return {
+            selections: undefined,
+            newAst: astWithUpdatedSource,
+          }
+
+        if (start && end) {
+          returnVal.codeBasedSelections.push({
             type: 'default',
             range: [start, end],
-          },
-        ],
-        otherSelections: [],
+          })
+        }
       }
     }
 
@@ -541,6 +551,7 @@ function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   programMemory.hasSketchOrExtrudeGroup() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',

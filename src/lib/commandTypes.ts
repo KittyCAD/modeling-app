@@ -1,14 +1,10 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
-import {
-  AnyStateMachine,
-  ContextFrom,
-  EventFrom,
-  InterpreterFrom,
-} from 'xstate'
+import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
 import { Selection } from './selections'
 import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
+import { ReactNode } from 'react'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -72,6 +68,12 @@ export type Command<
   name: CommandName
   groupId: T['id']
   needsReview: boolean
+  reviewMessage?:
+    | string
+    | ReactNode
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+      ) => string | ReactNode)
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
   args?: {
@@ -186,7 +188,7 @@ export type CommandArgument<
         machineContext?: ContextFrom<T>
       ) => boolean)
   skip?: boolean
-  machineActor: InterpreterFrom<T>
+  machineActor?: Actor<T>
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */

@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test'
 
 import { doExport, getUtils, makeTemplate, setup, tearDown } from './test-utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -13,9 +13,6 @@ test.afterEach(async ({ page }, testInfo) => {
 test('Units menu', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
-
   await u.waitForAuthSkipAppStart()
 
   const unitsMenuButton = page.getByRole('button', {

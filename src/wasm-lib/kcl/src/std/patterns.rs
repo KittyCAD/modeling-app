@@ -2,14 +2,18 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
+    websocket::OkWebSocketResponseData, ModelingCmd,
+};
+use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
+        ExecState, ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
         SourceRange, UserVal,
     },
     function_param::FunctionParam,
@@ -77,7 +81,7 @@ impl LinearPattern {
 /// A linear pattern
 /// Each element in the pattern repeats a particular piece of geometry.
 /// The repetitions can be transformed by the `transform` parameter.
-pub async fn pattern_transform(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
 
     let extrude_groups = inner_pattern_transform(
@@ -88,9 +92,9 @@ pub async fn pattern_transform(args: Args) -> Result<KclValue, KclError> {
             meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
             memory: *transform.memory,
-            dynamic_state: args.dynamic_state.clone(),
         },
         extr,
+        exec_state,
         &args,
     )
     .await?;
@@ -117,7 +121,7 @@ pub async fn pattern_transform(args: Args) -> Result<KclValue, KclError> {
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle([0, 0], 1, %, $tag1)
+///     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
@@ -131,18 +135,19 @@ async fn inner_pattern_transform<'a>(
     num_repetitions: u32,
     transform_function: FunctionParam<'a>,
     extrude_group_set: ExtrudeGroupSet,
+    exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::new();
+    let mut transform = Vec::with_capacity(usize::try_from(num_repetitions).unwrap());
     for i in 0..num_repetitions {
-        let t = make_transform(i, &transform_function, args.source_range).await?;
+        let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
         .await?;
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
@@ -162,7 +167,7 @@ async fn inner_pattern_transform<'a>(
 async fn send_pattern_transform(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
-    transform: Vec<kittycad::types::LinearTransform>,
+    transform: Vec<Transform>,
     extrude_group: &ExtrudeGroup,
     args: &Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
@@ -171,15 +176,15 @@ async fn send_pattern_transform(
     let resp = args
         .send_modeling_cmd(
             id,
-            ModelingCmd::EntityLinearPatternTransform {
+            ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: extrude_group.id,
                 transform,
-            },
+            }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityLinearPatternTransform { data: pattern_info },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -201,14 +206,15 @@ async fn make_transform<'a>(
     i: u32,
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
-) -> Result<kittycad::types::LinearTransform, KclError> {
+    exec_state: &mut ExecState,
+) -> Result<Transform, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::UserVal(UserVal {
         value: serde_json::Value::Number(i.into()),
         meta: vec![source_range.into()],
     });
     let transform_fn_args = vec![repetition_num];
-    let transform_fn_return = transform_function.call(transform_fn_args).await?;
+    let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
@@ -245,10 +251,12 @@ async fn make_transform<'a>(
         Some(x) => array_to_point3d(x, source_ranges.clone())?,
         None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
     };
-    let t = kittycad::types::LinearTransform {
+    let t = Transform {
         replicate,
-        scale: Some(scale.into()),
-        translate: Some(translate.into()),
+        scale: scale.into(),
+        translate: translate.into(),
+        // TODO: chalmers to pipe thru to kcl.
+        rotation: Default::default(),
     };
     Ok(t)
 }
@@ -297,7 +305,7 @@ mod tests {
 }
 
 /// A linear pattern on a 2D sketch.
-pub async fn pattern_linear_2d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group_set): (LinearPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     if data.axis == [0.0, 0.0] {
@@ -318,7 +326,7 @@ pub async fn pattern_linear_2d(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle([0, 0], 1, %)
+///   |> circle({ center: [0, 0], radius: 1 }, %)
 ///   |> patternLinear2d({
 ///        axis: [1, 0],
 ///        repetitions: 6,
@@ -364,7 +372,7 @@ async fn inner_pattern_linear_2d(
 }
 
 /// A linear pattern on a 3D model.
-pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group_set): (LinearPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
     if data.axis == [0.0, 0.0, 0.0] {
@@ -376,7 +384,7 @@ pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
         }));
     }
 
-    let extrude_groups = inner_pattern_linear_3d(data, extrude_group_set, args).await?;
+    let extrude_groups = inner_pattern_linear_3d(data, extrude_group_set, exec_state, args).await?;
     Ok(extrude_groups.into())
 }
 
@@ -404,12 +412,13 @@ pub async fn pattern_linear_3d(args: Args) -> Result<KclValue, KclError> {
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
     extrude_group_set: ExtrudeGroupSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
         .await?;
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
@@ -446,21 +455,17 @@ async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> 
     let resp = args
         .send_modeling_cmd(
             id,
-            ModelingCmd::EntityLinearPattern {
-                axis: kittycad::types::Point3D {
-                    x: data.axis()[0],
-                    y: data.axis()[1],
-                    z: data.axis()[2],
-                },
+            ModelingCmd::from(mcmd::EntityLinearPattern {
+                axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: geometry.id(),
                 num_repetitions: data.repetitions(),
-                spacing: data.distance(),
-            },
+                spacing: LengthUnit(data.distance()),
+            }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityLinearPattern { data: pattern_info },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityLinearPattern(pattern_info),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -572,7 +577,7 @@ impl CircularPattern {
 }
 
 /// A circular pattern on a 2D sketch.
-pub async fn pattern_circular_2d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_group_set): (CircularPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     let sketch_groups = inner_pattern_circular_2d(data, sketch_group_set, args).await?;
@@ -637,10 +642,10 @@ async fn inner_pattern_circular_2d(
 }
 
 /// A circular pattern on a 3D model.
-pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group_set): (CircularPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
 
-    let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, args).await?;
+    let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, exec_state, args).await?;
     Ok(extrude_groups.into())
 }
 
@@ -651,7 +656,7 @@ pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle([0, 0], 1, %)
+///   |> circle({ center: [0, 0], radius: 1 }, %)
 ///
 /// const example = extrude(-5, exampleSketch)
 ///   |> patternCircular3d({
@@ -668,12 +673,13 @@ pub async fn pattern_circular_3d(args: Args) -> Result<KclValue, KclError> {
 async fn inner_pattern_circular_3d(
     data: CircularPattern3dData,
     extrude_group_set: ExtrudeGroupSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(extrude_group_set.clone().into())
+    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
         .await?;
 
     let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
@@ -707,26 +713,27 @@ async fn inner_pattern_circular_3d(
 async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
 
+    let center = data.center();
     let resp = args
         .send_modeling_cmd(
             id,
-            ModelingCmd::EntityCircularPattern {
-                axis: kittycad::types::Point3D {
-                    x: data.axis()[0],
-                    y: data.axis()[1],
-                    z: data.axis()[2],
-                },
+            ModelingCmd::from(mcmd::EntityCircularPattern {
+                axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: geometry.id(),
-                center: data.center().into(),
+                center: kcmc::shared::Point3d {
+                    x: LengthUnit(center[0]),
+                    y: LengthUnit(center[1]),
+                    z: LengthUnit(center[2]),
+                },
                 num_repetitions: data.repetitions(),
                 arc_degrees: data.arc_degrees(),
                 rotate_duplicates: data.rotate_duplicates(),
-            },
+            }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityCircularPattern { data: pattern_info },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {

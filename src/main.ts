@@ -19,6 +19,7 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
+import { reportRejection } from 'lib/trap'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -87,28 +88,30 @@ const createWindow = (filePath?: string): BrowserWindow => {
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
   } else {
-    getProjectPathAtStartup(filePath).then((projectPath) => {
-      const startIndex = path.join(
-        __dirname,
-        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-      )
+    getProjectPathAtStartup(filePath)
+      .then(async (projectPath) => {
+        const startIndex = path.join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+        )
 
-      if (projectPath === null) {
-        newWindow.loadFile(startIndex)
-        return
-      }
+        if (projectPath === null) {
+          await newWindow.loadFile(startIndex)
+          return
+        }
 
-      console.log('Loading file', projectPath)
+        console.log('Loading file', projectPath)
 
-      const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-      console.log('Full URL', fullUrl)
+        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+        console.log('Full URL', fullUrl)
 
-      newWindow.loadFile(startIndex, {
-        hash: fullUrl,
+        await newWindow.loadFile(startIndex, {
+          hash: fullUrl,
+        })
       })
-    })
+      .catch(reportRejection)
   }
 
   // Open the DevTools.
@@ -157,7 +160,7 @@ ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
 })
 
-ipcMain.handle('login', async (event, host) => {
+ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
   // We quiet ts because we are not using this in the standard way.
   // @ts-ignore
@@ -175,20 +178,33 @@ ipcMain.handle('login', async (event, host) => {
 
   const handle = await client.deviceAuthorization()
 
-  shell.openExternal(handle.verification_uri_complete)
+  // Register this handle to be used later.
+  ipcMain.handleOnce('loginWithDeviceFlow', async () => {
+    if (!handle) {
+      return Promise.reject(
+        new Error(
+          'No handle available. Did you call startDeviceFlow before calling this?'
+        )
+      )
+    }
+    shell.openExternal(handle.verification_uri_complete).catch(reportRejection)
 
-  // Wait for the user to login.
-  try {
-    console.log('Polling for token')
-    const tokenSet = await handle.poll()
-    console.log('Received token set')
-    console.log(tokenSet)
-    return tokenSet.access_token
-  } catch (e) {
-    console.log(e)
-  }
+    // Wait for the user to login.
+    try {
+      console.log('Polling for token')
+      const tokenSet = await handle.poll()
+      console.log('Received token set')
+      console.log(tokenSet)
+      return tokenSet.access_token
+    } catch (e) {
+      console.log(e)
+    }
 
-  return Promise.reject(new Error('No access token received'))
+    return Promise.reject(new Error('No access token received'))
+  })
+
+  // Return the user code so the app can display it.
+  return handle.user_code
 })
 
 ipcMain.handle('kittycad', (event, data) => {
@@ -235,18 +251,14 @@ export function getAutoUpdater(): AppUpdater {
   return autoUpdater
 }
 
-export async function checkForUpdates(autoUpdater: AppUpdater) {
-  // TODO: figure out how to get the update modal back
-  const result = await autoUpdater.checkForUpdatesAndNotify()
-  console.log(result)
-}
-
-app.on('ready', async () => {
+app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
-  checkForUpdates(autoUpdater)
+  setTimeout(() => {
+    autoUpdater.checkForUpdates().catch(reportRejection)
+  }, 1000)
   const fifteenMinutes = 15 * 60 * 1000
   setInterval(() => {
-    checkForUpdates(autoUpdater)
+    autoUpdater.checkForUpdates().catch(reportRejection)
   }, fifteenMinutes)
 
   autoUpdater.on('update-available', (info) => {
@@ -255,6 +267,11 @@ app.on('ready', async () => {
 
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
+    mainWindow?.webContents.send('update-downloaded', info.version)
+  })
+
+  ipcMain.handle('app.restart', () => {
+    autoUpdater.quitAndInstall()
   })
 })
 

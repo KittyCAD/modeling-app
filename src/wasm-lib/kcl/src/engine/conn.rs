@@ -1,15 +1,20 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
-use kittycad::types::{ModelingSessionData, WebSocketRequest, WebSocketResponse};
+use indexmap::IndexMap;
+use kcmc::{
+    websocket::{
+        BatchResponse, FailureWebSocketResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData,
+        SuccessWebSocketResponse, WebSocketRequest, WebSocketResponse,
+    },
+    ModelingCmd,
+};
+use kittycad_modeling_cmds as kcmc;
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
@@ -34,7 +39,7 @@ pub struct EngineConnection {
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -118,10 +123,10 @@ impl EngineConnection {
     async fn start_write_actor(mut tcp_write: WebSocketTcpWrite, mut engine_req_rx: mpsc::Receiver<ToEngineReq>) {
         while let Some(req) = engine_req_rx.recv().await {
             let ToEngineReq { req, request_sent } = req;
-            let res = if let kittycad::types::WebSocketRequest::ModelingCmdReq {
-                cmd: kittycad::types::ModelingCmd::ImportFiles { .. },
+            let res = if let WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: ModelingCmd::ImportFiles { .. },
                 cmd_id: _,
-            } = &req
+            }) = &req
             {
                 // Send it as binary.
                 Self::inner_send_to_engine_binary(req, &mut tcp_write).await
@@ -196,43 +201,51 @@ impl EngineConnection {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
                         // If we got a batch response, add all the inner responses.
-                        match &ws_resp.resp {
-                            Some(kittycad::types::OkWebSocketResponseData::ModelingBatch { responses }) => {
+                        let id = ws_resp.request_id();
+                        match &ws_resp {
+                            WebSocketResponse::Success(SuccessWebSocketResponse {
+                                resp: OkWebSocketResponseData::ModelingBatch { responses },
+                                ..
+                            }) => {
                                 for (resp_id, batch_response) in responses {
-                                    let id: uuid::Uuid = resp_id.parse().unwrap();
-                                    if let Some(response) = &batch_response.response {
-                                        responses_clone.insert(
-                                            id,
-                                            kittycad::types::WebSocketResponse {
-                                                request_id: Some(id),
-                                                resp: Some(kittycad::types::OkWebSocketResponseData::Modeling {
-                                                    modeling_response: response.clone(),
+                                    let id: uuid::Uuid = (*resp_id).into();
+                                    match batch_response {
+                                        BatchResponse::Success { response } => {
+                                            responses_clone.insert(
+                                                id,
+                                                WebSocketResponse::Success(SuccessWebSocketResponse {
+                                                    success: true,
+                                                    request_id: Some(id),
+                                                    resp: OkWebSocketResponseData::Modeling {
+                                                        modeling_response: response.clone(),
+                                                    },
                                                 }),
-                                                errors: None,
-                                                success: Some(true),
-                                            },
-                                        );
-                                    } else {
-                                        responses_clone.insert(
-                                            id,
-                                            kittycad::types::WebSocketResponse {
-                                                request_id: Some(id),
-                                                resp: None,
-                                                errors: batch_response.errors.clone(),
-                                                success: Some(false),
-                                            },
-                                        );
+                                            );
+                                        }
+                                        BatchResponse::Failure { errors } => {
+                                            responses_clone.insert(
+                                                id,
+                                                WebSocketResponse::Failure(FailureWebSocketResponse {
+                                                    success: false,
+                                                    request_id: Some(id),
+                                                    errors: errors.clone(),
+                                                }),
+                                            );
+                                        }
                                     }
                                 }
                             }
-                            Some(kittycad::types::OkWebSocketResponseData::ModelingSessionData { session }) => {
+                            WebSocketResponse::Success(SuccessWebSocketResponse {
+                                resp: OkWebSocketResponseData::ModelingSessionData { session },
+                                ..
+                            }) => {
                                 let mut sd = session_data2.lock().unwrap();
                                 sd.replace(session.clone());
                             }
                             _ => {}
                         }
 
-                        if let Some(id) = ws_resp.request_id {
+                        if let Some(id) = id {
                             responses_clone.insert(id, ws_resp.clone());
                         }
                     }
@@ -256,7 +269,7 @@ impl EngineConnection {
             responses,
             socket_health,
             batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(HashMap::new())),
+            batch_end: Arc::new(Mutex::new(IndexMap::new())),
             default_planes: Default::default(),
             session_data,
         })
@@ -269,7 +282,7 @@ impl EngineManager for EngineConnection {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch_end.clone()
     }
 
@@ -299,7 +312,7 @@ impl EngineManager for EngineConnection {
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::WebSocketRequest,
+        cmd: WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         let (tx, rx) = oneshot::channel();

@@ -151,6 +151,7 @@ export function useCalc({
         })
         if (trap(error)) return
       }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       executeAst({
         ast,
         engineCommandManager,

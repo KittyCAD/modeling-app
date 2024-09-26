@@ -3,7 +3,7 @@ use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
     executor::{ExecutorContext, KclValue, PlaneType, SketchGroup, SourceRange},
 };
-use kittycad::types::{ModelingCmd, Point3D};
+use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
@@ -35,12 +35,12 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
-    let memory = ctx.run(&program, None).await?;
+    let exec_state = ctx.run(&program, None).await?;
 
     // We need to get the sketch ID.
     // Get the sketch group ID from memory.
-    let KclValue::UserVal(user_val) = memory.get(name, SourceRange::default()).unwrap() else {
-        anyhow::bail!("part001 not found in memory: {:?}", memory);
+    let KclValue::UserVal(user_val) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
+        anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
     };
     let Some((sketch_group, _meta)) = user_val.get::<SketchGroup>() else {
         anyhow::bail!("part001 was not a SketchGroup");
@@ -52,14 +52,14 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         .send_modeling_cmd(
             plane_id,
             SourceRange::default(),
-            ModelingCmd::MakePlane {
+            ModelingCmd::from(mcmd::MakePlane {
                 clobber: false,
-                origin: Point3D { x: 0.0, y: 0.0, z: 0.0 },
-                size: 60.0,
-                x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                origin: Point3d::default(),
+                size: LengthUnit(60.0),
+                x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                y_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
                 hide: Some(true),
-            },
+            }),
         )
         .await?;
 
@@ -70,13 +70,13 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::EnableSketchMode {
+            ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: true,
                 entity_id: plane_id,
-                planar_normal: Some(Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+                planar_normal: Some(Point3d { x: 0.0, y: 0.0, z: 1.0 }),
                 adjust_camera: false,
-            },
+            }),
         )
         .await?;
 

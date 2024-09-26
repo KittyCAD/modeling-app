@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test'
 import { uuidv4 } from 'lib/utils'
 import { getUtils, setup, tearDown } from './test-utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -558,7 +558,7 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
     await page.keyboard.type(`const extrusion = startSketchOn('XY')
-    |> circle([0, 0], dia/2, %)
+    |> circle({ center: [0, 0], radius: dia/2 }, %)
   |> hole(squareHole(length, width, height), %)
   |> extrude(height, %)`)
 

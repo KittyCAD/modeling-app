@@ -52,13 +52,23 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     e.preventDefault()
     commandBarSend({
       type: 'Submit command',
-      data: argumentsToSubmit,
+      output: argumentsToSubmit,
     })
   }
 
   return (
     <CommandBarHeader>
-      <p className="px-4">Confirm {selectedCommand?.name}</p>
+      <p className="px-4">
+        {selectedCommand?.reviewMessage ? (
+          selectedCommand.reviewMessage instanceof Function ? (
+            selectedCommand.reviewMessage(commandBarState.context)
+          ) : (
+            selectedCommand.reviewMessage
+          )
+        ) : (
+          <>Confirm {selectedCommand?.name}</>
+        )}
+      </p>
       <form
         id="review-form"
         className="absolute opacity-0 inset-0 pointer-events-none"

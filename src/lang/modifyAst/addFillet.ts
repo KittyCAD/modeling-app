@@ -35,7 +35,7 @@ import { Selections, canFilletSelection } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
   ArtifactGraph,
-  getExtrusionFromSuspectedPath,
+  getSweepFromSuspectedPath,
 } from 'lang/std/artifactGraph'
 import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
 
@@ -44,41 +44,67 @@ import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
  */
 
 export function applyFilletToSelection(
+  ast: Program,
   selection: Selections,
   radius: KclCommandValue
 ): void | Error {
-  // 1. get AST
-  let ast = kclManager.ast
+  // 1. clone ast
+  let clonedAst = structuredClone(ast)
+
+  // 2. modify ast clone with fillet and tag
+  const result = modifyAstWithFilletAndTag(clonedAst, selection, radius)
+  if (err(result)) return result
+  const { modifiedAst, pathToFilletNode } = result
+
+  // 3. update ast
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  updateAstAndFocus(modifiedAst, pathToFilletNode)
+}
+
+export function modifyAstWithFilletAndTag(
+  ast: Program,
+  selection: Selections,
+  radius: KclCommandValue
+): { modifiedAst: Program; pathToFilletNode: Array<PathToNode> } | Error {
   const astResult = insertRadiusIntoAst(ast, radius)
   if (err(astResult)) return astResult
 
-  // 2. get path
   const programMemory = kclManager.programMemory
   const artifactGraph = engineCommandManager.artifactGraph
-  const getPathToExtrudeForSegmentSelectionResult =
-    getPathToExtrudeForSegmentSelection(
-      ast,
-      selection,
-      programMemory,
-      artifactGraph
+
+  let clonedAst = structuredClone(ast)
+  const clonedAstForGetExtrude = structuredClone(ast)
+  let pathToFilletNodes: Array<PathToNode> = []
+
+  for (const selectionRange of selection.codeBasedSelections) {
+    const singleSelection = {
+      codeBasedSelections: [selectionRange],
+      otherSelections: [],
+    }
+    const getPathToExtrudeForSegmentSelectionResult =
+      getPathToExtrudeForSegmentSelection(
+        clonedAstForGetExtrude,
+        singleSelection,
+        programMemory,
+        artifactGraph
+      )
+    if (err(getPathToExtrudeForSegmentSelectionResult))
+      return getPathToExtrudeForSegmentSelectionResult
+    const { pathToSegmentNode, pathToExtrudeNode } =
+      getPathToExtrudeForSegmentSelectionResult
+
+    const addFilletResult = addFillet(
+      clonedAst,
+      pathToSegmentNode,
+      pathToExtrudeNode,
+      'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
     )
-  if (err(getPathToExtrudeForSegmentSelectionResult))
-    return getPathToExtrudeForSegmentSelectionResult
-  const { pathToSegmentNode, pathToExtrudeNode } =
-    getPathToExtrudeForSegmentSelectionResult
-
-  // 3. add fillet
-  const addFilletResult = addFillet(
-    ast,
-    pathToSegmentNode,
-    pathToExtrudeNode,
-    'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
-  )
-  if (trap(addFilletResult)) return addFilletResult
-  const { modifiedAst, pathToFilletNode } = addFilletResult
-
-  // 4. update ast
-  updateAstAndFocus(modifiedAst, pathToFilletNode)
+    if (trap(addFilletResult)) return addFilletResult
+    const { modifiedAst, pathToFilletNode } = addFilletResult
+    clonedAst = modifiedAst
+    pathToFilletNodes.push(pathToFilletNode)
+  }
+  return { modifiedAst: clonedAst, pathToFilletNode: pathToFilletNodes }
 }
 
 function insertRadiusIntoAst(
@@ -127,7 +153,7 @@ export function getPathToExtrudeForSegmentSelection(
   )
   if (trap(sketchGroup)) return sketchGroup
 
-  const extrusion = getExtrusionFromSuspectedPath(sketchGroup.id, artifactGraph)
+  const extrusion = getSweepFromSuspectedPath(sketchGroup.id, artifactGraph)
   if (err(extrusion)) return extrusion
 
   const pathToExtrudeNode = getNodePathFromSourceRange(
@@ -141,7 +167,7 @@ export function getPathToExtrudeForSegmentSelection(
 
 async function updateAstAndFocus(
   modifiedAst: Program,
-  pathToFilletNode: PathToNode
+  pathToFilletNode: Array<PathToNode>
 ) {
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
     focusPath: pathToFilletNode,
@@ -208,7 +234,8 @@ function mutateAstWithTagForSketchSegment(
       pathToNode: pathToSegmentNode,
       node: astClone,
     },
-    segmentNode.node.callee.name
+    segmentNode.node.callee.name,
+    null
   )
   if (err(taggedSegment)) return taggedSegment
   const { tag } = taggedSegment

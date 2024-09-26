@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{KclValue, Metadata, Plane, UserVal},
+    executor::{ExecState, KclValue, Metadata, Plane, UserVal},
     std::{sketch::PlaneData, Args},
 };
 
@@ -48,12 +48,12 @@ impl From<StandardPlane> for PlaneData {
 }
 
 /// Offset a plane by a distance along its normal.
-pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
+pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
 
     let plane = inner_offset_plane(std_plane, offset).await?;
 
-    Ok(KclValue::UserVal(UserVal::set(
+    Ok(KclValue::UserVal(UserVal::new(
         vec![Metadata {
             source_range: args.source_range,
         }],
@@ -77,7 +77,7 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -93,7 +93,7 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('XZ', 150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -109,7 +109,7 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('YZ', 150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -125,7 +125,7 @@ pub async fn offset_plane(args: Args) -> Result<KclValue, KclError> {
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('-XZ', -150))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
