@@ -16,9 +16,8 @@ const startDeviceFlow = (host: string): Promise<string> =>
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
 const onUpdateDownloadStart = (
-  callback: (value: { version: string; }) => void
-) =>
-  ipcRenderer.on('update-download-start', (_event, value) => callback(value))
+  callback: (value: { version: string }) => void
+) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
 const onUpdateDownloaded = (callback: (value: string) => void) =>
   ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
