@@ -15,6 +15,10 @@ const startDeviceFlow = (host: string): Promise<string> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
+const onUpdateDownloadStart = (
+  callback: (value: { version: string; }) => void
+) =>
+  ipcRenderer.on('update-download-start', (_event, value) => callback(value))
 const onUpdateDownloaded = (callback: (value: string) => void) =>
   ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
@@ -126,6 +130,7 @@ contextBridge.exposeInMainWorld('electron', {
   kittycad,
   listMachines,
   getMachineApiIp,
+  onUpdateDownloadStart,
   onUpdateDownloaded,
   appRestart,
 })

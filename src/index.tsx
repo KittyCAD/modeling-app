@@ -8,6 +8,7 @@ import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
 import { ToastUpdate } from 'components/ToastUpdate'
+import { AUTO_UPDATER_TOAST_ID } from 'lib/constants'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -53,7 +54,15 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
 
-isDesktop() &&
+if (isDesktop()) {
+  // List for update download progress to begin
+  // to show a loading toast.
+  // TODO: Make use of the progress value in future. Currently this fires only once.
+  window.electron.onUpdateDownloadProgress(({ version }) => {
+    const message = `Downloading update (${version})...`
+    console.log(message)
+    toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
+  })
   window.electron.onUpdateDownloaded((version: string) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
@@ -64,6 +73,7 @@ isDesktop() &&
           window.electron.appRestart()
         },
       }),
-      { duration: 30000 }
+      { duration: 30000, id: AUTO_UPDATER_TOAST_ID }
     )
   })
+}
