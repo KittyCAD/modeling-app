@@ -581,6 +581,14 @@ impl<'a> FromKclValue<'a> for &'a str {
     }
 }
 
+impl<'a> FromKclValue<'a> for i64 {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val()
+            .and_then(|uv| uv.value.as_number())
+            .and_then(|num| num.as_i64())
+    }
+}
+
 impl<'a> FromKclValue<'a> for TagDeclarator {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
