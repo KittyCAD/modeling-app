@@ -400,7 +400,7 @@ const sketch001 = startSketchOn(part001, seg01)`)
       ast,
       sketchPathToNode,
       extrudePathToNode,
-      'end'
+      { type: 'cap', subType: 'end' }
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded

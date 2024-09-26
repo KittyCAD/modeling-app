@@ -116,6 +116,7 @@ fn do_stdlib_inner(
 
     // Fail if the name is not camel case.
     let whitelist = [
+        "mirror2d",
         "patternLinear3d",
         "patternLinear2d",
         "patternCircular3d",

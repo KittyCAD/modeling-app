@@ -41,6 +41,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { SimplifiedArgDetails } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
+import { ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function startSketchOnDefault(
   node: Program,
@@ -442,7 +443,7 @@ export function sketchOnExtrudedFace(
   node: Program,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
-  cap: 'none' | 'start' | 'end' = 'none'
+  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   let _node = { ...node }
   const newSketchName = findUniqueName(
@@ -476,21 +477,22 @@ export function sketchOnExtrudedFace(
   const { node: extrudeVarDec } = _node3
   const extrudeName = extrudeVarDec.id?.name
 
-  let _tag = null
-  if (cap === 'none') {
+  let _tag
+  if (info.type !== 'cap') {
     const __tag = addTagForSketchOnFace(
       {
         pathToNode: sketchPathToNode,
         node: _node,
       },
-      expression.callee.name
+      expression.callee.name,
+      info.type === 'edgeCut' ? info : null
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
     _tag = createIdentifier(tag)
     _node = modifiedAst
   } else {
-    _tag = createLiteral(cap.toUpperCase())
+    _tag = createLiteral(info.subType.toUpperCase())
   }
 
   const newSketch = createVariableDeclaration(
