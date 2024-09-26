@@ -64,6 +64,7 @@ layout: manual
 * [`m`](kcl/m)
 * [`max`](kcl/max)
 * [`min`](kcl/min)
+* [`mirror2d`](kcl/mirror2d)
 * [`mm`](kcl/mm)
 * [`offsetPlane`](kcl/offsetPlane)
 * [`patternCircular2d`](kcl/patternCircular2d)

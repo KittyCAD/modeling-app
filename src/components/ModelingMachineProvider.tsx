@@ -579,9 +579,15 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               input.sketchPathToNode,
               input.extrudePathToNode,
-              input.cap
+              input.faceInfo
             )
-            if (trap(sketched)) return Promise.reject(sketched)
+            if (err(sketched)) {
+              const sketchedError = new Error(
+                'Incompatible face, please try another'
+              )
+              trap(sketchedError)
+              return Promise.reject(sketchedError)
+            }
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
             await kclManager.executeAstMock(modifiedAst)
