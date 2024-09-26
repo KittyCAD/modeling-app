@@ -46,6 +46,15 @@ pub enum EdgeReference {
     Tag(Box<TagIdentifier>),
 }
 
+impl EdgeReference {
+    pub fn get_engine_id(&self, exec_state: &mut ExecState, args: &Args) -> Result<uuid::Uuid, KclError> {
+        match self {
+            EdgeReference::Uuid(uuid) => Ok(*uuid),
+            EdgeReference::Tag(tag) => Ok(args.get_tag_engine_info(exec_state, tag)?.id),
+        }
+    }
+}
+
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, extrude_group, tag): (FilletData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
@@ -134,10 +143,7 @@ async fn inner_fillet(
 
     let mut extrude_group = extrude_group.clone();
     for edge_tag in data.tags {
-        let edge_id = match edge_tag {
-            EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
-        };
+        let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
         let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(
