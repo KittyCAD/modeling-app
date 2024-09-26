@@ -53,7 +53,9 @@ pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> circle({ center: [0, 0], radius: 2 }, %)
 /// const extrude001 = extrude(5, sketch001)
 ///
-/// const pattern01 = patternTransform(int(ceil(5 / 2)), (id) => {
+/// let n = int(ceil(5/2))
+/// assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
+/// const pattern01 = patternTransform(n, (id) => {
 ///   return { translate: [4 * id, 0, 0] }
 /// }, extrude001)
 /// ```
