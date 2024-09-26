@@ -55,7 +55,7 @@ root.render(
 reportWebVitals()
 
 if (isDesktop()) {
-  // List for update download progress to begin
+  // Listen for update download progress to begin
   // to show a loading toast.
   // TODO: Make use of the progress value in future. Currently this fires only once.
   window.electron.onUpdateDownloadStart(({ version }) => {
