@@ -2,9 +2,8 @@ import {
   isOverlap,
   roundOff,
   simulateOnMouseDragMatch,
-  onMouseDragRegex,
-  onMouseDragMakeANewNumber,
   onDragNumberCalculation,
+  hasLeadingZero,
 } from './utils'
 import { SourceRange } from '../lang/wasm'
 
@@ -37,6 +36,49 @@ describe('testing roundOff', () => {
   })
   it('rounds up ok', () => {
     expect(roundOff(1.273456789, 1)).toBe(1.3)
+  })
+})
+
+describe('testing hasLeadingZero', () => {
+  it('.1 should have no leading zero', () => {
+    const actual = hasLeadingZero('.1')
+    const expected = false
+    expect(actual).toBe(expected)
+  })
+  it('1.1 should have no leading zero', () => {
+    const actual = hasLeadingZero('1.1')
+    const expected = false
+    expect(actual).toBe(expected)
+  })
+  it('0.1 should have leading zero', () => {
+    const actual = hasLeadingZero('0.1')
+    const expected = true
+    expect(actual).toBe(expected)
+  })
+  it('10 should have no leading zero', () => {
+    const actual = hasLeadingZero('10')
+    const expected = false
+    expect(actual).toBe(expected)
+  })
+  it('0.375 should have leading zero', () => {
+    const actual = hasLeadingZero('0.375')
+    const expected = true
+    expect(actual).toBe(expected)
+  })
+  it('-0.375 should have leading zero', () => {
+    const actual = hasLeadingZero('-0.375')
+    const expected = true
+    expect(actual).toBe(expected)
+  })
+  it('-0.0 should have leading zero', () => {
+    const actual = hasLeadingZero('-0.0')
+    const expected = true
+    expect(actual).toBe(expected)
+  })
+  it('0.0 should have leading zero', () => {
+    const actual = hasLeadingZero('0.0')
+    const expected = true
+    expect(actual).toBe(expected)
   })
 })
 
@@ -344,26 +386,56 @@ describe('testing simulateOnMouseDragMatch', () => {
     const expected = ['-1000']
     expect(actual).toStrictEqual(expected)
   })
+
+  it('works with =-500', () => {
+    const actual = simulateOnMouseDragMatch('=-500')
+    const expected = ['-500']
+    expect(actual).toStrictEqual(expected)
+  })
+
+  it('works with =500', () => {
+    const actual = simulateOnMouseDragMatch('=500')
+    const expected = ['500']
+    expect(actual).toStrictEqual(expected)
+  })
+
+  it('works with = 500', () => {
+    const actual = simulateOnMouseDragMatch('= 500')
+    const expected = ['500']
+    expect(actual).toStrictEqual(expected)
+  })
 })
 
 describe('testing onDragNumberCalculation', () => {
-  const positiveHundredsDecimalEvent = {
+  // Need to simulate the MouseEvent object with limited values
+  const positiveHundredsDecimalEvent = new MouseEvent('mousemove', {
     shiftKey: true,
     metaKey: true,
     movementX: 1,
-  }
-  const positiveTensDecimalEvent = { metaKey: true, movementX: 1 }
-  const positiveTensEvent = { shiftKey: true, movementX: 1 }
-  const positiveOnesEvent = { movementX: 1 }
-
-  const negativeHundredsDecimalEvent = {
+  })
+  const positiveTensDecimalEvent = new MouseEvent('mousemove', {
+    metaKey: true,
+    movementX: 1,
+  })
+  const positiveTensEvent = new MouseEvent('mousemove', {
+    shiftKey: true,
+    movementX: 1,
+  })
+  const positiveOnesEvent = new MouseEvent('mousemove', { movementX: 1 })
+  const negativeHundredsDecimalEvent = new MouseEvent('mousemove', {
     shiftKey: true,
     metaKey: true,
-    movementx: -1,
-  }
-  const negativeTensDecimalEvent = { metaKey: true, movementX: -1 }
-  const negativeTensEvent = { shiftKey: true, movementX: -1 }
-  const negativeOnesEvent = { movementX: -1 }
+    movementX: -1,
+  })
+  const negativeTensDecimalEvent = new MouseEvent('mousemove', {
+    metaKey: true,
+    movementX: -1,
+  })
+  const negativeTensEvent = new MouseEvent('mousemove', {
+    shiftKey: true,
+    movementX: -1,
+  })
+  const negativeOnesEvent = new MouseEvent('mousemove', { movementX: -1 })
   describe('positive direction', () => {
     describe('ones event', () => {
       test('works with 0.0', () => {
@@ -461,6 +533,14 @@ describe('testing onDragNumberCalculation', () => {
         const expected = '100'
         expect(actual).toBe(expected)
       })
+
+      test('works with .123', () => {
+        const match = simulateOnMouseDragMatch('.123')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, positiveOnesEvent)
+        const expected = '1.123'
+        expect(actual).toBe(expected)
+      })
     })
     describe('tens event', () => {
       test('works with 0.0', () => {
@@ -505,6 +585,30 @@ describe('testing onDragNumberCalculation', () => {
 
       test('works with 0.1', () => {
         const match = simulateOnMouseDragMatch('0.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, positiveTensEvent)
+        const expected = '10.1'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 90', () => {
+        const match = simulateOnMouseDragMatch('90')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, positiveTensEvent)
+        const expected = '100'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .0', () => {
+        const match = simulateOnMouseDragMatch('.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, positiveTensEvent)
+        const expected = '10.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .1', () => {
+        const match = simulateOnMouseDragMatch('.1')
         const matchedText = match ? match[0] : ''
         const actual = onDragNumberCalculation(matchedText, positiveTensEvent)
         const expected = '10.1'
@@ -577,6 +681,50 @@ describe('testing onDragNumberCalculation', () => {
         const expected = '0.2'
         expect(actual).toBe(expected)
       })
+
+      test('works with .1', () => {
+        const match = simulateOnMouseDragMatch('.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveTensDecimalEvent
+        )
+        const expected = '.2'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 10', () => {
+        const match = simulateOnMouseDragMatch('10')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveTensDecimalEvent
+        )
+        const expected = '10.1'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .0', () => {
+        const match = simulateOnMouseDragMatch('.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveTensDecimalEvent
+        )
+        const expected = '.1'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .01', () => {
+        const match = simulateOnMouseDragMatch('.01')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveTensDecimalEvent
+        )
+        const expected = '.11'
+        expect(actual).toBe(expected)
+      })
     })
     describe('hundreds decimal event', () => {
       test('works with 0.0', () => {
@@ -642,6 +790,455 @@ describe('testing onDragNumberCalculation', () => {
           positiveHundredsDecimalEvent
         )
         const expected = '0.11'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .1', () => {
+        const match = simulateOnMouseDragMatch('.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveHundredsDecimalEvent
+        )
+        const expected = '.11'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .11', () => {
+        const match = simulateOnMouseDragMatch('.11')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveHundredsDecimalEvent
+        )
+        const expected = '.12'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 10', () => {
+        const match = simulateOnMouseDragMatch('10')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveHundredsDecimalEvent
+        )
+        const expected = '10.01'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 10.02', () => {
+        const match = simulateOnMouseDragMatch('10.02')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          positiveHundredsDecimalEvent
+        )
+        const expected = '10.03'
+        expect(actual).toBe(expected)
+      })
+    })
+  })
+
+  // NEGATIVE DIRECTION
+
+  describe('negative direction', () => {
+    describe('ones event', () => {
+      test('works with 0.0', () => {
+        const match = simulateOnMouseDragMatch('0.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-1.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 1', () => {
+        const match = simulateOnMouseDragMatch('1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.5', () => {
+        const match = simulateOnMouseDragMatch('0.5')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-0.5'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.66', () => {
+        const match = simulateOnMouseDragMatch('0.66')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-0.34'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.375', () => {
+        const match = simulateOnMouseDragMatch('0.375')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-0.625'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.1', () => {
+        const match = simulateOnMouseDragMatch('0.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-0.9'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .0', () => {
+        const match = simulateOnMouseDragMatch('.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-1.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 1.0', () => {
+        const match = simulateOnMouseDragMatch('1.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '0.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 1.66', () => {
+        const match = simulateOnMouseDragMatch('1.66')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '0.66'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.0000001', () => {
+        const match = simulateOnMouseDragMatch('0.0000001')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-0.9999999'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 9', () => {
+        const match = simulateOnMouseDragMatch('9')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '8'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 100', () => {
+        const match = simulateOnMouseDragMatch('100')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '99'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .123', () => {
+        const match = simulateOnMouseDragMatch('.123')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeOnesEvent)
+        const expected = '-0.877'
+        expect(actual).toBe(expected)
+      })
+    })
+    describe('tens event', () => {
+      test('works with 0.0', () => {
+        const match = simulateOnMouseDragMatch('0.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-10.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 1', () => {
+        const match = simulateOnMouseDragMatch('1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-9'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.5', () => {
+        const match = simulateOnMouseDragMatch('0.5')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-9.5'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.66', () => {
+        const match = simulateOnMouseDragMatch('0.66')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-9.34'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.375', () => {
+        const match = simulateOnMouseDragMatch('0.375')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-9.625'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.1', () => {
+        const match = simulateOnMouseDragMatch('0.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-9.9'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 90', () => {
+        const match = simulateOnMouseDragMatch('90')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '80'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .0', () => {
+        const match = simulateOnMouseDragMatch('.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-10.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .1', () => {
+        const match = simulateOnMouseDragMatch('.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(matchedText, negativeTensEvent)
+        const expected = '-9.9'
+        expect(actual).toBe(expected)
+      })
+    })
+    describe('tens decimal event', () => {
+      test('works with 0.0', () => {
+        const match = simulateOnMouseDragMatch('0.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '-0.1'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 1', () => {
+        const match = simulateOnMouseDragMatch('1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '0.9'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.5', () => {
+        const match = simulateOnMouseDragMatch('0.5')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '0.4'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.66', () => {
+        const match = simulateOnMouseDragMatch('0.66')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '0.56'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.375', () => {
+        const match = simulateOnMouseDragMatch('0.375')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '0.275'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.1', () => {
+        const match = simulateOnMouseDragMatch('0.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '0.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .1', () => {
+        const match = simulateOnMouseDragMatch('.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '.0'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 10', () => {
+        const match = simulateOnMouseDragMatch('10')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '9.9'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .0', () => {
+        const match = simulateOnMouseDragMatch('.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '-.1'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .01', () => {
+        const match = simulateOnMouseDragMatch('.01')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeTensDecimalEvent
+        )
+        const expected = '-.09'
+        expect(actual).toBe(expected)
+      })
+    })
+    describe('hundreds decimal event', () => {
+      test('works with 0.0', () => {
+        const match = simulateOnMouseDragMatch('0.0')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '-0.01'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 1', () => {
+        const match = simulateOnMouseDragMatch('1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '0.99'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.5', () => {
+        const match = simulateOnMouseDragMatch('0.5')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '0.49'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.66', () => {
+        const match = simulateOnMouseDragMatch('0.66')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '0.65'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.375', () => {
+        const match = simulateOnMouseDragMatch('0.375')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '0.365'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 0.1', () => {
+        const match = simulateOnMouseDragMatch('0.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '0.09'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .1', () => {
+        const match = simulateOnMouseDragMatch('.1')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '.09'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with .11', () => {
+        const match = simulateOnMouseDragMatch('.11')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '.1'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 10', () => {
+        const match = simulateOnMouseDragMatch('10')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '9.99'
+        expect(actual).toBe(expected)
+      })
+
+      test('works with 10.02', () => {
+        const match = simulateOnMouseDragMatch('10.02')
+        const matchedText = match ? match[0] : ''
+        const actual = onDragNumberCalculation(
+          matchedText,
+          negativeHundredsDecimalEvent
+        )
+        const expected = '10.01'
         expect(actual).toBe(expected)
       })
     })
