@@ -1,0 +1,62 @@
+---
+title: "{{name}}"
+excerpt: "{{summary}}"
+layout: manual
+---
+
+{{#if deprecated}}
+**WARNING:** This function is deprecated.
+
+{{/if}}
+{{summary}}
+
+{{description}}
+
+```js
+{{fn_signature}}
+```
+
+{{#if tags}}
+### Tags
+
+{{#each tags}}
+* `{{this}}`
+{{/each}}
+
+{{/if}}
+{{#if examples}}
+### Examples
+
+{{#each examples}}
+```js
+{{this}}
+```
+
+{{#unless @root.is_utilities}}
+![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{this.image_base64}})
+
+{{/unless}}
+{{/each}}
+{{/if}}
+### Arguments
+
+{{#each args}}
+* `{{name}}`: `{{type_}}` - {{#if description}}{{description}}{{/if}}{{#if required}} (REQUIRED){{else}} (OPTIONAL){{/if}}
+{{#if type_format}}
+```js
+{{type_format}}
+```
+{{/if}}
+{{/each}}
+
+{{#if return_value}}
+### Returns
+
+`{{return_value.type_}}` - {{#if return_value.description}}{{return_value.description}}{{/if}}
+
+{{#if return_value.type_format}}
+```js
+{{return_value.type_format}}
+```
+{{/if}}
+{{/if}}

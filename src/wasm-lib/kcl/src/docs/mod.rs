@@ -1,5 +1,8 @@
 //! Functions for generating docs for our stdlib functions.
 
+#[cfg(test)]
+mod gen_std_tests;
+
 use std::path::Path;
 
 use anyhow::Result;
