@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { _test, _expect } from './playwright-deprecated'
+import { test } from './fixtureSetup'
 import * as fsp from 'fs/promises'
 import * as fs from 'fs'
 import {
@@ -11,11 +12,11 @@ import {
 import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
+_test.beforeEach(async ({ context, page }, testInfo) => {
   await setup(context, page, testInfo)
 })
 
-test.afterEach(async ({ page }, testInfo) => {
+_test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
@@ -26,11 +27,8 @@ test.describe('when using the file tree to', () => {
   test(
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
     { tag: '@electron' },
-    async ({ browser: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
-        testInfo,
-        folderSetupFn: async () => {},
-      })
+    async ({ browser: _, tronApp }, testInfo) => {
+      await tronApp.initialise({})
 
       const {
         panesOpen,
@@ -38,10 +36,10 @@ test.describe('when using the file tree to', () => {
         pasteCodeInEditor,
         renameFile,
         editorTextMatches,
-      } = await getUtils(page, test)
+      } = await getUtils(tronApp.page, _test)
 
-      await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
+      await tronApp.page.setViewportSize({ width: 1200, height: 500 })
+      tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
@@ -55,39 +53,38 @@ test.describe('when using the file tree to', () => {
       await pasteCodeInEditor(kclCube)
 
       await renameFile(fromFile, toFile)
-      await page.reload()
+      await tronApp.page.reload()
 
       await test.step('Postcondition: editor has same content as before the rename', async () => {
         await editorTextMatches(kclCube)
       })
 
       await test.step('Postcondition: opening and closing settings works', async () => {
-        const settingsOpenButton = page.getByRole('link', {
+        const settingsOpenButton = tronApp.page.getByRole('link', {
           name: 'settings Settings',
         })
-        const settingsCloseButton = page.getByTestId('settings-close-button')
+        const settingsCloseButton = tronApp.page.getByTestId(
+          'settings-close-button'
+        )
         await settingsOpenButton.click()
         await settingsCloseButton.click()
       })
 
-      await electronApp.close()
+      await tronApp.close()
     }
   )
 
   test(
     `create many new untitled files they increment their names`,
     { tag: '@electron' },
-    async ({ browser: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
-        testInfo,
-        folderSetupFn: async () => {},
-      })
+    async ({ browser: _, tronApp }, testInfo) => {
+      await tronApp.initialise({})
 
       const { panesOpen, createAndSelectProject, createNewFile } =
-        await getUtils(page, test)
+        await getUtils(tronApp.page, test)
 
-      await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
+      await tronApp.page.setViewportSize({ width: 1200, height: 500 })
+      tronApp.page.on('console', console.log)
 
       await panesOpen(['files'])
 
@@ -100,24 +97,22 @@ test.describe('when using the file tree to', () => {
       await createNewFile('')
 
       await test.step('Postcondition: there are 5 new Untitled-*.kcl files', async () => {
-        await expect(
-          page
+        await _expect(
+          tronApp.page
             .locator('[data-testid="file-pane-scroll-container"] button')
             .filter({ hasText: /Untitled[-]?[0-5]?/ })
         ).toHaveCount(5)
       })
 
-      await electronApp.close()
+      await tronApp.close()
     }
   )
 
   test(
     'create a new file with the same name as an existing file cancels the operation',
     { tag: '@electron' },
-    async ({ browser: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
-        testInfo,
-      })
+    async ({ browser: _, tronApp }, testInfo) => {
+      await tronApp.initialise({})
 
       const {
         openKclCodePanel,
@@ -128,10 +123,10 @@ test.describe('when using the file tree to', () => {
         renameFile,
         selectFile,
         editorTextMatches,
-      } = await getUtils(page, test)
+      } = await getUtils(tronApp.page, _test)
 
-      await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
+      await tronApp.page.setViewportSize({ width: 1200, height: 500 })
+      tronApp.page.on('console', console.log)
 
       await createAndSelectProject('project-000')
       await openKclCodePanel()
@@ -159,25 +154,22 @@ test.describe('when using the file tree to', () => {
         await selectFile(kcl1)
         await editorTextMatches(kclCube)
       })
-      await page.waitForTimeout(500)
+      await tronApp.page.waitForTimeout(500)
 
       await test.step(`Postcondition: ${kcl2} still exists with the original content`, async () => {
         await selectFile(kcl2)
         await editorTextMatches(kclCylinder)
       })
 
-      await electronApp.close()
+      await tronApp?.close?.()
     }
   )
 
   test(
     'deleting all files recreates a default main.kcl with no code',
     { tag: '@electron' },
-    async ({ browser: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
-        testInfo,
-        folderSetupFn: async () => {},
-      })
+    async ({ browser: _, tronApp }, testInfo) => {
+      await tronApp.initialise({})
 
       const {
         panesOpen,
@@ -185,10 +177,10 @@ test.describe('when using the file tree to', () => {
         pasteCodeInEditor,
         deleteFile,
         editorTextMatches,
-      } = await getUtils(page, test)
+      } = await getUtils(tronApp.page, _test)
 
-      await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
+      await tronApp.page.setViewportSize({ width: 1200, height: 500 })
+      tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
@@ -208,7 +200,7 @@ test.describe('when using the file tree to', () => {
         await editorTextMatches('')
       })
 
-      await electronApp.close()
+      await tronApp.close()
     }
   )
 
@@ -217,10 +209,8 @@ test.describe('when using the file tree to', () => {
     {
       tag: '@electron',
     },
-    async ({ browser: _ }, testInfo) => {
-      const { page } = await setupElectron({
-        testInfo,
-      })
+    async ({ browser: _, tronApp }, testInfo) => {
+      await tronApp.initialise({})
 
       const {
         panesOpen,
@@ -230,10 +220,10 @@ test.describe('when using the file tree to', () => {
         openDebugPanel,
         closeDebugPanel,
         expectCmdLog,
-      } = await getUtils(page, test)
+      } = await getUtils(tronApp.page, test)
 
-      await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
+      await tronApp.page.setViewportSize({ width: 1200, height: 500 })
+      tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
       await createAndSelectProject('project-000')
@@ -248,30 +238,30 @@ test.describe('when using the file tree to', () => {
 
       // Create a large lego file
       await createNewFile('lego')
-      const legoFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'lego.kcl' }),
+      const legoFile = tronApp.page.getByRole('listitem').filter({
+        has: tronApp.page.getByRole('button', { name: 'lego.kcl' }),
       })
-      await expect(legoFile).toBeVisible({ timeout: 60_000 })
+      await _expect(legoFile).toBeVisible({ timeout: 60_000 })
       await legoFile.click()
       const kclLego = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/lego.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)
-      const mainFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'main.kcl' }),
+      const mainFile = tronApp.page.getByRole('listitem').filter({
+        has: tronApp.page.getByRole('button', { name: 'main.kcl' }),
       })
 
       // Open settings and enable the debug panel
-      await page
+      await tronApp.page
         .getByRole('link', {
           name: 'settings Settings',
         })
         .click()
-      await page.locator('#showDebugPanel').getByText('OffOn').click()
-      await page.getByTestId('settings-close-button').click()
+      await tronApp.page.locator('#showDebugPanel').getByText('OffOn').click()
+      await tronApp.page.getByTestId('settings-close-button').click()
 
-      await test.step('swap between small and large files', async () => {
+      await _test.step('swap between small and large files', async () => {
         await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl
         await mainFile.click()
@@ -283,12 +273,14 @@ test.describe('when using the file tree to', () => {
         await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         await closeDebugPanel()
       })
+
+      await tronApp.close()
     }
   )
 })
 
-test.describe('Renaming in the file tree', () => {
-  test(
+_test.describe('Renaming in the file tree', () => {
+  _test(
     'A file you have open',
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
@@ -333,56 +325,56 @@ test.describe('Renaming in the file tree', () => {
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
 
-      await test.step('Open project and file pane', async () => {
-        await expect(projectLink).toBeVisible()
+      await _test.step('Open project and file pane', async () => {
+        await _expect(projectLink).toBeVisible()
         await projectLink.click()
-        await expect(projectMenuButton).toBeVisible()
-        await expect(projectMenuButton).toContainText('main.kcl')
+        await _expect(projectMenuButton).toBeVisible()
+        await _expect(projectMenuButton).toContainText('main.kcl')
 
         await u.openFilePanel()
-        await expect(fileToRename).toBeVisible()
-        expect(checkUnRenamedFS()).toBeTruthy()
-        expect(checkRenamedFS()).toBeFalsy()
+        await _expect(fileToRename).toBeVisible()
+        _expect(checkUnRenamedFS()).toBeTruthy()
+        _expect(checkRenamedFS()).toBeFalsy()
         await fileToRename.click()
-        await expect(projectMenuButton).toContainText('fileToRename.kcl')
+        await _expect(projectMenuButton).toContainText('fileToRename.kcl')
         await u.openKclCodePanel()
-        await expect(codeLocator).toContainText('circle(')
+        await _expect(codeLocator).toContainText('circle(')
         await u.closeKclCodePanel()
       })
 
-      await test.step('Rename the file', async () => {
+      await _test.step('Rename the file', async () => {
         await fileToRename.click({ button: 'right' })
         await renameMenuItem.click()
-        await expect(renameInput).toBeVisible()
+        await _expect(renameInput).toBeVisible()
         await renameInput.fill(newFileName)
         await page.keyboard.press('Enter')
       })
 
-      await test.step('Verify the file is renamed', async () => {
-        await expect(fileToRename).not.toBeAttached()
-        await expect(renamedFile).toBeVisible()
-        expect(checkUnRenamedFS()).toBeFalsy()
-        expect(checkRenamedFS()).toBeTruthy()
+      await _test.step('Verify the file is renamed', async () => {
+        await _expect(fileToRename).not.toBeAttached()
+        await _expect(renamedFile).toBeVisible()
+        _expect(checkUnRenamedFS()).toBeFalsy()
+        _expect(checkRenamedFS()).toBeTruthy()
       })
 
-      await test.step('Verify we navigated', async () => {
-        await expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
+      await _test.step('Verify we navigated', async () => {
+        await _expect(projectMenuButton).toContainText(newFileName + FILE_EXT)
         const url = page.url()
-        expect(url).toContain(newFileName)
-        await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
-        await expect(projectMenuButton).not.toContainText('main.kcl')
-        expect(url).not.toContain('fileToRename.kcl')
-        expect(url).not.toContain('main.kcl')
+        _expect(url).toContain(newFileName)
+        await _expect(projectMenuButton).not.toContainText('fileToRename.kcl')
+        await _expect(projectMenuButton).not.toContainText('main.kcl')
+        _expect(url).not.toContain('fileToRename.kcl')
+        _expect(url).not.toContain('main.kcl')
 
         await u.openKclCodePanel()
-        await expect(codeLocator).toContainText('circle(')
+        await _expect(codeLocator).toContainText('circle(')
       })
 
       await electronApp.close()
     }
   )
 
-  test(
+  _test(
     'A file you do not have open',
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
@@ -426,54 +418,54 @@ test.describe('Renaming in the file tree', () => {
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
 
-      await test.step('Open project and file pane', async () => {
-        await expect(projectLink).toBeVisible()
+      await _test.step('Open project and file pane', async () => {
+        await _expect(projectLink).toBeVisible()
         await projectLink.click()
-        await expect(projectMenuButton).toBeVisible()
-        await expect(projectMenuButton).toContainText('main.kcl')
+        await _expect(projectMenuButton).toBeVisible()
+        await _expect(projectMenuButton).toContainText('main.kcl')
 
         await u.openFilePanel()
-        await expect(fileToRename).toBeVisible()
-        expect(checkUnRenamedFS()).toBeTruthy()
-        expect(checkRenamedFS()).toBeFalsy()
+        await _expect(fileToRename).toBeVisible()
+        _expect(checkUnRenamedFS()).toBeTruthy()
+        _expect(checkRenamedFS()).toBeFalsy()
       })
 
-      await test.step('Rename the file', async () => {
+      await _test.step('Rename the file', async () => {
         await fileToRename.click({ button: 'right' })
         await renameMenuItem.click()
-        await expect(renameInput).toBeVisible()
+        await _expect(renameInput).toBeVisible()
         await renameInput.fill(newFileName)
         await page.keyboard.press('Enter')
       })
 
-      await test.step('Verify the file is renamed', async () => {
-        await expect(fileToRename).not.toBeAttached()
-        await expect(renamedFile).toBeVisible()
-        expect(checkUnRenamedFS()).toBeFalsy()
-        expect(checkRenamedFS()).toBeTruthy()
+      await _test.step('Verify the file is renamed', async () => {
+        await _expect(fileToRename).not.toBeAttached()
+        await _expect(renamedFile).toBeVisible()
+        _expect(checkUnRenamedFS()).toBeFalsy()
+        _expect(checkRenamedFS()).toBeTruthy()
       })
 
-      await test.step('Verify we have not navigated', async () => {
-        await expect(projectMenuButton).toContainText('main.kcl')
-        await expect(projectMenuButton).not.toContainText(
+      await _test.step('Verify we have not navigated', async () => {
+        await _expect(projectMenuButton).toContainText('main.kcl')
+        await _expect(projectMenuButton).not.toContainText(
           newFileName + FILE_EXT
         )
-        await expect(projectMenuButton).not.toContainText('fileToRename.kcl')
+        await _expect(projectMenuButton).not.toContainText('fileToRename.kcl')
 
         const url = page.url()
-        expect(url).toContain('main.kcl')
-        expect(url).not.toContain(newFileName)
-        expect(url).not.toContain('fileToRename.kcl')
+        _expect(url).toContain('main.kcl')
+        _expect(url).not.toContain(newFileName)
+        _expect(url).not.toContain('fileToRename.kcl')
 
         await u.openKclCodePanel()
-        await expect(codeLocator).toContainText('fillet(')
+        await _expect(codeLocator).toContainText('fillet(')
       })
 
       await electronApp.close()
     }
   )
 
-  test(
+  _test(
     `A folder you're not inside`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
@@ -519,48 +511,51 @@ test.describe('Renaming in the file tree', () => {
         return fs.existsSync(folderPath)
       }
 
-      await test.step('Open project and file pane', async () => {
-        await expect(projectLink).toBeVisible()
+      await _test.step('Open project and file pane', async () => {
+        await _expect(projectLink).toBeVisible()
         await projectLink.click()
-        await expect(projectMenuButton).toBeVisible()
-        await expect(projectMenuButton).toContainText('main.kcl')
+        await _expect(projectMenuButton).toBeVisible()
+        await _expect(projectMenuButton).toContainText('main.kcl')
 
         const url = page.url()
-        expect(url).toContain('main.kcl')
-        expect(url).not.toContain('folderToRename')
+        _expect(url).toContain('main.kcl')
+        _expect(url).not.toContain('folderToRename')
 
         await u.openFilePanel()
-        await expect(folderToRename).toBeVisible()
-        expect(checkUnRenamedFolderFS()).toBeTruthy()
-        expect(checkRenamedFolderFS()).toBeFalsy()
+        await _expect(folderToRename).toBeVisible()
+        _expect(checkUnRenamedFolderFS()).toBeTruthy()
+        _expect(checkRenamedFolderFS()).toBeFalsy()
       })
 
-      await test.step('Rename the folder', async () => {
+      await _test.step('Rename the folder', async () => {
         await folderToRename.click({ button: 'right' })
-        await expect(renameMenuItem).toBeVisible()
+        await _expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
-        await expect(renameInput).toBeVisible()
+        await _expect(renameInput).toBeVisible()
         await renameInput.fill(newFolderName)
         await page.keyboard.press('Enter')
       })
 
-      await test.step('Verify the folder is renamed, and no navigation occurred', async () => {
-        const url = page.url()
-        expect(url).toContain('main.kcl')
-        expect(url).not.toContain('folderToRename')
+      await _test.step(
+        'Verify the folder is renamed, and no navigation occurred',
+        async () => {
+          const url = page.url()
+          _expect(url).toContain('main.kcl')
+          _expect(url).not.toContain('folderToRename')
 
-        await expect(projectMenuButton).toContainText('main.kcl')
-        await expect(renamedFolder).toBeVisible()
-        await expect(folderToRename).not.toBeAttached()
-        expect(checkUnRenamedFolderFS()).toBeFalsy()
-        expect(checkRenamedFolderFS()).toBeTruthy()
-      })
+          await _expect(projectMenuButton).toContainText('main.kcl')
+          await _expect(renamedFolder).toBeVisible()
+          await _expect(folderToRename).not.toBeAttached()
+          _expect(checkUnRenamedFolderFS()).toBeFalsy()
+          _expect(checkRenamedFolderFS()).toBeTruthy()
+        }
+      )
 
       await electronApp.close()
     }
   )
 
-  test(
+  _test(
     `A folder you are inside`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
@@ -609,66 +604,69 @@ test.describe('Renaming in the file tree', () => {
         return fs.existsSync(folderPath)
       }
 
-      await test.step('Open project and navigate into folder', async () => {
-        await expect(projectLink).toBeVisible()
+      await _test.step('Open project and navigate into folder', async () => {
+        await _expect(projectLink).toBeVisible()
         await projectLink.click()
-        await expect(projectMenuButton).toBeVisible()
-        await expect(projectMenuButton).toContainText('main.kcl')
+        await _expect(projectMenuButton).toBeVisible()
+        await _expect(projectMenuButton).toContainText('main.kcl')
 
         const url = page.url()
-        expect(url).toContain('main.kcl')
-        expect(url).not.toContain('folderToRename')
+        _expect(url).toContain('main.kcl')
+        _expect(url).not.toContain('folderToRename')
 
         await u.openFilePanel()
-        await expect(folderToRename).toBeVisible()
+        await _expect(folderToRename).toBeVisible()
         await folderToRename.click()
-        await expect(fileWithinFolder).toBeVisible()
+        await _expect(fileWithinFolder).toBeVisible()
         await fileWithinFolder.click()
 
-        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        await _expect(projectMenuButton).toContainText('someFileWithin.kcl')
         const newUrl = page.url()
-        expect(newUrl).toContain('folderToRename')
-        expect(newUrl).toContain('someFileWithin.kcl')
-        expect(newUrl).not.toContain('main.kcl')
-        expect(checkUnRenamedFolderFS()).toBeTruthy()
-        expect(checkRenamedFolderFS()).toBeFalsy()
+        _expect(newUrl).toContain('folderToRename')
+        _expect(newUrl).toContain('someFileWithin.kcl')
+        _expect(newUrl).not.toContain('main.kcl')
+        _expect(checkUnRenamedFolderFS()).toBeTruthy()
+        _expect(checkRenamedFolderFS()).toBeFalsy()
       })
 
-      await test.step('Rename the folder', async () => {
+      await _test.step('Rename the folder', async () => {
         await page.waitForTimeout(60000)
         await folderToRename.click({ button: 'right' })
-        await expect(renameMenuItem).toBeVisible()
+        await _expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
-        await expect(renameInput).toBeVisible()
+        await _expect(renameInput).toBeVisible()
         await renameInput.fill(newFolderName)
         await page.keyboard.press('Enter')
       })
 
-      await test.step('Verify the folder is renamed, and navigated to new path', async () => {
-        const urlSnippet = encodeURIComponent(
-          join(newFolderName, 'someFileWithin.kcl')
-        )
-        await page.waitForURL(new RegExp(urlSnippet))
-        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-        await expect(renamedFolder).toBeVisible()
-        await expect(folderToRename).not.toBeAttached()
+      await _test.step(
+        'Verify the folder is renamed, and navigated to new path',
+        async () => {
+          const urlSnippet = encodeURIComponent(
+            join(newFolderName, 'someFileWithin.kcl')
+          )
+          await page.waitForURL(new RegExp(urlSnippet))
+          await _expect(projectMenuButton).toContainText('someFileWithin.kcl')
+          await _expect(renamedFolder).toBeVisible()
+          await _expect(folderToRename).not.toBeAttached()
 
-        // URL is synchronous, so we check the other stuff first
-        const url = page.url()
-        expect(url).not.toContain('main.kcl')
-        expect(url).toContain(newFolderName)
-        expect(url).toContain('someFileWithin.kcl')
-        expect(checkUnRenamedFolderFS()).toBeFalsy()
-        expect(checkRenamedFolderFS()).toBeTruthy()
-      })
+          // URL is synchronous, so we check the other stuff first
+          const url = page.url()
+          _expect(url).not.toContain('main.kcl')
+          _expect(url).toContain(newFolderName)
+          _expect(url).toContain('someFileWithin.kcl')
+          _expect(checkUnRenamedFolderFS()).toBeFalsy()
+          _expect(checkRenamedFolderFS()).toBeTruthy()
+        }
+      )
 
       await electronApp.close()
     }
   )
 })
 
-test.describe('Deleting items from the file pane', () => {
-  test(
+_test.describe('Deleting items from the file pane', () => {
+  _test(
     `delete file when main.kcl exists, navigate to main.kcl`,
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
@@ -700,45 +698,48 @@ test.describe('Deleting items from the file pane', () => {
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
-      await test.step('Open project and navigate to fileToDelete.kcl', async () => {
-        await projectCard.click()
-        await u.waitForPageLoad()
-        await u.openFilePanel()
+      await _test.step(
+        'Open project and navigate to fileToDelete.kcl',
+        async () => {
+          await projectCard.click()
+          await u.waitForPageLoad()
+          await u.openFilePanel()
 
-        await fileToDelete.click()
-        await u.waitForPageLoad()
-        await u.openKclCodePanel()
-        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
-        await u.closeKclCodePanel()
-      })
+          await fileToDelete.click()
+          await u.waitForPageLoad()
+          await u.openKclCodePanel()
+          await _expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+          await u.closeKclCodePanel()
+        }
+      )
 
-      await test.step('Delete fileToDelete.kcl', async () => {
+      await _test.step('Delete fileToDelete.kcl', async () => {
         await fileToDelete.click({ button: 'right' })
-        await expect(deleteMenuItem).toBeVisible()
+        await _expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
-        await expect(deleteConfirmation).toBeVisible()
+        await _expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
       })
 
-      await test.step('Check deletion and navigation', async () => {
+      await _test.step('Check deletion and navigation', async () => {
         await u.waitForPageLoad()
-        await expect(fileToDelete).not.toBeVisible()
+        await _expect(fileToDelete).not.toBeVisible()
         await u.closeFilePanel()
         await u.openKclCodePanel()
-        await expect(u.codeLocator).toContainText('circle(')
-        await expect(projectMenuButton).toContainText('main.kcl')
+        await _expect(u.codeLocator).toContainText('circle(')
+        await _expect(projectMenuButton).toContainText('main.kcl')
       })
 
       await electronApp.close()
     }
   )
 
-  test.fixme(
+  _test.fixme(
     'TODO - delete file we have open when main.kcl does not exist',
     async () => {}
   )
 
-  test(
+  _test(
     `Delete folder we are not in, don't navigate`,
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
@@ -772,32 +773,32 @@ test.describe('Deleting items from the file pane', () => {
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
-      await test.step('Open project and open project pane', async () => {
+      await _test.step('Open project and open project pane', async () => {
         await projectCard.click()
         await u.waitForPageLoad()
-        await expect(projectMenuButton).toContainText('main.kcl')
+        await _expect(projectMenuButton).toContainText('main.kcl')
         await u.closeKclCodePanel()
         await u.openFilePanel()
       })
 
-      await test.step('Delete folderToDelete', async () => {
+      await _test.step('Delete folderToDelete', async () => {
         await folderToDelete.click({ button: 'right' })
-        await expect(deleteMenuItem).toBeVisible()
+        await _expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
-        await expect(deleteConfirmation).toBeVisible()
+        await _expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
       })
 
-      await test.step('Check deletion and no navigation', async () => {
-        await expect(folderToDelete).not.toBeAttached()
-        await expect(projectMenuButton).toContainText('main.kcl')
+      await _test.step('Check deletion and no navigation', async () => {
+        await _expect(folderToDelete).not.toBeAttached()
+        await _expect(projectMenuButton).toContainText('main.kcl')
       })
 
       await electronApp.close()
     }
   )
 
-  test(
+  _test(
     `Delete folder we are in, navigate to main.kcl`,
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
@@ -834,36 +835,45 @@ test.describe('Deleting items from the file pane', () => {
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
-      await test.step('Open project and navigate into folderToDelete', async () => {
-        await projectCard.click()
-        await u.waitForPageLoad()
-        await expect(projectMenuButton).toContainText('main.kcl')
-        await u.closeKclCodePanel()
-        await u.openFilePanel()
+      await _test.step(
+        'Open project and navigate into folderToDelete',
+        async () => {
+          await projectCard.click()
+          await u.waitForPageLoad()
+          await _expect(projectMenuButton).toContainText('main.kcl')
+          await u.closeKclCodePanel()
+          await u.openFilePanel()
 
-        await folderToDelete.click()
-        await expect(fileWithinFolder).toBeVisible()
-        await fileWithinFolder.click()
-        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-      })
+          await folderToDelete.click()
+          await _expect(fileWithinFolder).toBeVisible()
+          await fileWithinFolder.click()
+          await _expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        }
+      )
 
-      await test.step('Delete folderToDelete', async () => {
+      await _test.step('Delete folderToDelete', async () => {
         await folderToDelete.click({ button: 'right' })
-        await expect(deleteMenuItem).toBeVisible()
+        await _expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
-        await expect(deleteConfirmation).toBeVisible()
+        await _expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
       })
 
-      await test.step('Check deletion and navigation to main.kcl', async () => {
-        await expect(folderToDelete).not.toBeAttached()
-        await expect(fileWithinFolder).not.toBeAttached()
-        await expect(projectMenuButton).toContainText('main.kcl')
-      })
+      await _test.step(
+        'Check deletion and navigation to main.kcl',
+        async () => {
+          await _expect(folderToDelete).not.toBeAttached()
+          await _expect(fileWithinFolder).not.toBeAttached()
+          await _expect(projectMenuButton).toContainText('main.kcl')
+        }
+      )
 
       await electronApp.close()
     }
   )
 
-  test.fixme('TODO - delete folder we are in, with no main.kcl', async () => {})
+  _test.fixme(
+    'TODO - delete folder we are in, with no main.kcl',
+    async () => {}
+  )
 })
