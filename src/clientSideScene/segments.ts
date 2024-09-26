@@ -298,7 +298,7 @@ class StraightSegment implements SegmentUtils {
       sceneInfra.updateOverlayDetails({
         arrowGroup,
         group,
-        isHandlesVisible,
+        isHandlesVisible: true,
         from,
         to,
       })
@@ -473,7 +473,7 @@ class TangentialArcToSegment implements SegmentUtils {
       sceneInfra.updateOverlayDetails({
         arrowGroup,
         group,
-        isHandlesVisible,
+        isHandlesVisible: true,
         from,
         to,
         angle,
@@ -636,7 +636,7 @@ class CircleSegment implements SegmentUtils {
       sceneInfra.updateOverlayDetails({
         arrowGroup,
         group,
-        isHandlesVisible,
+        isHandlesVisible: true,
         from: from,
         to: [center[0], center[1]],
         angle: Math.PI / 4,

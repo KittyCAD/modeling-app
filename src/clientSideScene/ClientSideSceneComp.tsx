@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo, Fragment } from 'react'
+import { CSSProperties, useRef, useEffect, useState, useMemo, Fragment } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
@@ -233,6 +233,9 @@ const Overlay = ({
       state.matches({ Sketch: 'Rectangle tool' })
     )
 
+  // Line labels will cover the constraints overlay if this is not used.
+  const zIndex = 10
+
   return (
     <div className={`absolute w-0 h-0`}>
       <div
@@ -243,6 +246,7 @@ const Overlay = ({
         data-overlay-angle={overlay.angle}
         className="pointer-events-auto absolute w-0 h-0"
         style={{
+          zIndex,
           transform: `translate3d(${overlay.windowCoords[0]}px, ${overlay.windowCoords[1]}px, 0)`,
         }}
       ></div>
@@ -251,6 +255,7 @@ const Overlay = ({
           data-overlay-toolbar-index={overlayIndex}
           className={`px-0 pointer-events-auto absolute flex gap-1`}
           style={{
+            zIndex,
             transform: `translate3d(calc(${
               overlay.windowCoords[0] + xOffset
             }px + ${xAlignment}), calc(${
@@ -292,6 +297,7 @@ const Overlay = ({
           */}
           {callExpression?.callee?.name !== 'circle' && (
             <SegmentMenu
+              style={{ zIndex }}
               verticalPosition={
                 overlay.windowCoords[1] > window.innerHeight / 2
                   ? 'top'
@@ -433,15 +439,17 @@ const SegmentMenu = ({
   verticalPosition,
   pathToNode,
   stdLibFnName,
+  style,
 }: {
   verticalPosition: 'top' | 'bottom'
   pathToNode: PathToNode
   stdLibFnName: string
+  style?: CSSProperties
 }) => {
   const { send } = useModelingContext()
   const dependentSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
   return (
-    <Popover className="relative">
+    <Popover style={{ style }} className="relative">
       {({ open }) => (
         <>
           <Popover.Button
