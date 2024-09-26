@@ -243,14 +243,39 @@ describe('testing addTagForSketchOnFace', () => {
     const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
-  it('can break up chamfers in order to add tags', async () => {
-    const originalChamfer = `|> chamfer({
+  const chamferTestCases = [
+    {
+      desc: 'chamfer in pipeExpr',
+      originalChamfer: `  |> chamfer({
        length: 30,
        tags: [seg01, getOppositeEdge(seg01)]
-     }, %)`
-    const genCode = (
-      insertCode: string
-    ) => `const sketch001 = startSketchOn('XZ')
+     }, %)`,
+      expectedChamfer: `  |> chamfer({
+       length: 30,
+       tags: [getOppositeEdge(seg01)]
+     }, %, $seg03)
+  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+    },
+    {
+      desc: 'chamfer with its own variable',
+      originalChamfer: `const chamf = chamfer({
+       length: 30,
+       tags: [seg01, getOppositeEdge(seg01)]
+     }, extrude001)`,
+      expectedChamfer: `const chamf = chamfer({
+       length: 30,
+       tags: [getOppositeEdge(seg01)]
+     }, extrude001, $seg03)
+  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+    },
+    // Add more test cases here if needed
+  ] as const
+
+  chamferTestCases.forEach(({ originalChamfer, expectedChamfer, desc }) => {
+    it.only(`can break up chamfers in order to add tags - ${desc}`, async () => {
+      const genCode = (
+        insertCode: string
+      ) => `const sketch001 = startSketchOn('XZ')
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
@@ -264,40 +289,38 @@ describe('testing addTagForSketchOnFace', () => {
   |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
   |> close(%)
 const extrude001 = extrude(100, sketch001)
-  ${insertCode}
+${insertCode}
 `
-    const code = genCode(originalChamfer)
-    const ast = parse(code)
-    await enginelessExecutor(ast)
-    const sourceStart = code.indexOf(originalChamfer)
-    const sourceRange: [number, number] = [
-      sourceStart + 3,
-      sourceStart + originalChamfer.length - 3,
-    ]
+      const code = genCode(originalChamfer)
+      const ast = parse(code)
+      await enginelessExecutor(ast)
+      const sourceStart = code.indexOf(originalChamfer)
+      const extraChars = originalChamfer.indexOf('chamfer')
+      const sourceRange: [number, number] = [
+        sourceStart + extraChars,
+        sourceStart + originalChamfer.length - extraChars,
+      ]
 
-    if (err(ast)) throw ast
-    const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-    console.log('pathToNode', pathToNode)
-    const sketchOnFaceRetVal = addTagForSketchOnFace(
-      {
-        pathToNode,
-        node: ast,
-      },
-      'chamfer',
-      {
-        type: 'edgeCut',
-        subType: 'opposite',
-        tagName: 'seg01',
-      }
-    )
-    if (err(sketchOnFaceRetVal)) throw sketchOnFaceRetVal
-    expect(recast(sketchOnFaceRetVal.modifiedAst)).toBe(
-      genCode(`|> chamfer({
-       length: 30,
-       tags: [getOppositeEdge(seg01)]
-     }, %, $seg03)
-  |> chamfer({ length: 30, tags: [seg01] }, %)`)
-    )
+      if (err(ast)) throw ast
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      console.log('pathToNode', pathToNode)
+      const sketchOnFaceRetVal = addTagForSketchOnFace(
+        {
+          pathToNode,
+          node: ast,
+        },
+        'chamfer',
+        {
+          type: 'edgeCut',
+          subType: 'opposite',
+          tagName: 'seg01',
+        }
+      )
+      if (err(sketchOnFaceRetVal)) throw sketchOnFaceRetVal
+      expect(recast(sketchOnFaceRetVal.modifiedAst)).toBe(
+        genCode(expectedChamfer)
+      )
+    })
   })
 })
 

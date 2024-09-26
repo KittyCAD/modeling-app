@@ -87,6 +87,7 @@ test.describe('verify sketch on chamfer works', () => {
       afterChamferSelectSnippet,
       afterRectangle1stClickSnippet,
       afterRectangle2ndClickSnippet,
+      beforeChamferSnippetEnd,
     }: {
       clickCoords: { x: number; y: number }
       cameraPos: { x: number; y: number; z: number }
@@ -95,6 +96,7 @@ test.describe('verify sketch on chamfer works', () => {
       afterChamferSelectSnippet: string
       afterRectangle1stClickSnippet: string
       afterRectangle2ndClickSnippet: string
+      beforeChamferSnippetEnd?: string
     }) => {
       const [clickChamfer] = scene.makeMouseHelpers(
         clickCoords.x,
@@ -113,7 +115,10 @@ test.describe('verify sketch on chamfer works', () => {
         await expect(async () => {
           // sometimes initial click doesn't register
           await clickChamfer()
-          await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
+          // await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
+          await editor.expectActiveLinesToBe([
+            beforeChamferSnippetEnd || beforeChamferSnippet.slice(-5),
+          ])
         }).toPass({ timeout: 15_000, intervals: [500] })
       })
 
@@ -355,5 +360,94 @@ test.describe('verify sketch on chamfer works', () => {
         { shouldNormalise: true }
       )
     })
+  })
+
+  test('Works on chamfers that are non in a pipeExpression can break up multi edges in a chamfer array', async ({
+    app,
+    editor,
+    toolbar,
+    scene,
+  }) => {
+    test.skip(
+      process.platform === 'win32',
+      'Fails on windows in CI, can not be replicated locally on windows.'
+    )
+    const file = await app.getInputFile(
+      'e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
+    )
+    await app.initialise(file)
+
+    const sketchOnAChamfer = _sketchOnAChamfer(app, editor, toolbar, scene)
+
+    await sketchOnAChamfer({
+      clickCoords: { x: 570, y: 220 },
+      cameraPos: { x: 16020, y: -2000, z: 10500 },
+      cameraTarget: { x: -150, y: -4500, z: -80 },
+      beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
+      chamfer({length:30,tags:[
+      seg01,
+      getNextAdjacentEdge(yo),
+      getNextAdjacentEdge(seg02),
+      getOppositeEdge(seg01)
+    ]}, extrude001)`,
+      beforeChamferSnippetEnd: '}, extrude001)',
+      afterChamferSelectSnippet:
+        'const sketch002 = startSketchOn(extrude001, seg03)',
+      afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
+      afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
+    |> angledLine([
+         segAng(rectangleSegmentA002) - 90,
+         105.26
+       ], %, $rectangleSegmentB001)
+    |> angledLine([
+         segAng(rectangleSegmentA002),
+         -segLen(rectangleSegmentA002)
+       ], %, $rectangleSegmentC001)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)`,
+    })
+    await editor.expectEditor.toContain(
+      `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([75.8, 317.2], %)
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       217.26
+     ], %, $seg01)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $yo)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+  |> close(%)
+const extrude001 = extrude(100, sketch001)
+const chamf = chamfer({
+       length: 30,
+       tags: [getOppositeEdge(seg01)]
+     }, extrude001, $seg03)
+  |> chamfer({
+       length: 30,
+       tags: [
+         seg01,
+         getNextAdjacentEdge(yo),
+         getNextAdjacentEdge(seg02)
+       ]
+     }, %)
+const sketch002 = startSketchOn(extrude001, seg03)
+  |> startProfileAt([205.96, 254.59], %)
+  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       105.26
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`,
+      { shouldNormalise: true }
+    )
   })
 })

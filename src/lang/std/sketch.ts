@@ -2125,8 +2125,20 @@ function addTagToChamfer(
     tagInfo.pathToNode,
     'PipeExpression'
   )
+  const variableDec = getNodeFromPath<VariableDeclarator>(
+    _node,
+    tagInfo.pathToNode,
+    'VariableDeclarator'
+  )
   if (err(pipeExpr)) return pipeExpr
-  const callExpr = pipeExpr.node.body[pipeIndex]
+  if (err(variableDec)) return variableDec
+  const isPipeExpression = pipeExpr.node.type === 'PipeExpression'
+
+  console.log('pipeExpr', pipeExpr, variableDec)
+  // const callExpr = isPipeExpression ? pipeExpr.node.body[pipeIndex] : variableDec.node.init
+  const callExpr = isPipeExpression
+    ? pipeExpr.node.body[pipeIndex]
+    : variableDec.node.init
   if (callExpr.type !== 'CallExpression')
     return new Error('no chamfer call Expr')
   const chamferObjArg = callExpr.arguments[0]
@@ -2186,19 +2198,31 @@ function addTagToChamfer(
   const chamferLength = getObjExprProperty(chamferObjArg, 'length')
   if (!chamferLength) return new Error('no chamfer length')
   const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
+  const solid3dIdentifierUsedInOriginalChamfer = callExpr.arguments[1]
   const newExpressionToInsert = createCallExpression('chamfer', [
     createObjectExpression({
       length: chamferLength.expr,
       // single tag to add to the new chamfer call
       tags: createArrayExpression([tagToPullOut]),
     }),
-    createPipeSubstitution(),
+    isPipeExpression
+      ? createPipeSubstitution()
+      : solid3dIdentifierUsedInOriginalChamfer,
     tagDec,
   ])
 
   // insert the new chamfer call with the tag declarator, add its above the original
   // alternatively we could use `pipeIndex + 1` to insert it below the original
-  pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
+  if (isPipeExpression) {
+    pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
+  } else {
+    console.log('yo', createPipeExpression([newExpressionToInsert, callExpr]))
+    callExpr.arguments[1] = createPipeSubstitution()
+    variableDec.node.init = createPipeExpression([
+      newExpressionToInsert,
+      callExpr,
+    ])
+  }
   return {
     modifiedAst: _node,
     tag: tagDec.value,
