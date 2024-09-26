@@ -1012,7 +1012,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
      |> line([0, -5.5], %)
      |> line([-2, 0], %)
      |> close(%)
-     |> revolve({axis: {custom: {axis: [0, -1, 0], origin: [0,0,0]}}, angle: 180}, %)
+     |> revolve({axis: {custom: {axis: [0, -1], origin: [0,0]}}, angle: 180}, %)
 
 "#;
 

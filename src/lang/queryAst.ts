@@ -4,19 +4,20 @@ import {
   ArrayExpression,
   BinaryExpression,
   CallExpression,
+  Expr,
   ExpressionStatement,
+  ObjectExpression,
+  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ProgramMemory,
   ReturnStatement,
+  sketchGroupFromKclValue,
   SourceRange,
   SyntaxType,
-  Expr,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
-  ObjectExpression,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -947,7 +948,7 @@ export function doesSceneHaveSweepableSketch(ast: Program) {
 export function getObjExprProperty(
   node: ObjectExpression,
   propName: string
-): { expr: Expr; index: number } | null {
+): { expr: ObjectProperty['value']; index: number } | null {
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
