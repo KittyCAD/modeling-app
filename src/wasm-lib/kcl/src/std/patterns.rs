@@ -147,7 +147,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// let myCubes =
 ///   cube(width, [100,0])
-///   |> patternTransform(24, transform, %)
+///   |> patternTransform(25, transform, %)
 /// ```
 ///
 /// ```no_run
@@ -186,7 +186,7 @@ async fn inner_pattern_transform<'a>(
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform = Vec::with_capacity(usize::try_from(num_repetitions).unwrap());
-    for i in 1..=num_repetitions {
+    for i in 1..num_repetitions {
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }

@@ -36,4 +36,4 @@ fn transform = (i) => {
 
 let myCubes = 
   cube(width, [100,0])
-  |> patternTransform(24, transform, %)
+  |> patternTransform(25, transform, %)
