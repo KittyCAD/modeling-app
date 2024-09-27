@@ -45,6 +45,7 @@
     "isomorphic-fetch": "^3.0.0",
     "json-rpc-2.0": "^1.6.0",
     "jszip": "^3.10.1",
+    "kill-port": "^2.0.1",
     "minimist": "^1.2.8",
     "openid-client": "^5.6.5",
     "re-resizable": "^6.9.11",
@@ -104,7 +105,8 @@
     "tronb:package": "electron-builder --config electron-builder.yml",
     "tsc": "tsc",
     "test-setup": "yarn install && yarn build:wasm",
-    "test:playwright:browser:chrome": "playwright test '--project=Google Chrome' --config=playwright.ci.config.ts '--grep-invert=@snapshot|@electron'"
+    "test:playwright:browser:chrome": "playwright test '--project=Google Chrome' --config=playwright.ci.config.ts '--grep-invert=@snapshot|@electron'",
+    "local:test:unit": "yarn simpleserver:ci && yarn test:unit || kill-port 3000"
   },
   "prettier": {
     "trailingComma": "es5",
