@@ -1,7 +1,11 @@
 import { AppTheme } from 'wasm-lib/kcl/bindings/AppTheme'
 
 /** A media query matcher for dark mode */
-export const darkModeMatcher = window.matchMedia('(prefers-color-scheme: dark)')
+export const darkModeMatcher =
+  (typeof globalThis.window !== 'undefined' &&
+    'matchMedia' in globalThis.window &&
+    globalThis.window.matchMedia('(prefers-color-scheme: dark)')) ||
+  undefined
 
 export enum Themes {
   Light = 'light',
@@ -28,7 +32,7 @@ export function appThemeToTheme(
 export function getSystemTheme(): Exclude<Themes, 'system'> {
   return typeof globalThis.window !== 'undefined' &&
     'matchMedia' in globalThis.window
-    ? darkModeMatcher.matches
+    ? darkModeMatcher?.matches
       ? Themes.Dark
       : Themes.Light
     : Themes.Light

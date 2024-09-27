@@ -250,8 +250,8 @@ export const SettingsAuthProviderBase = ({
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
 
-    darkModeMatcher.addEventListener('change', listener)
-    return () => darkModeMatcher.removeEventListener('change', listener)
+    darkModeMatcher?.addEventListener('change', listener)
+    return () => darkModeMatcher?.removeEventListener('change', listener)
   }, [settingsState.context])
 
   /**

@@ -1490,7 +1490,7 @@ export class EngineCommandManager extends EventTarget {
       // Set the theme
       this.setTheme(this.settings.theme).catch(reportRejection)
       // Set up a listener for the dark theme media query
-      darkModeMatcher.addEventListener(
+      darkModeMatcher?.addEventListener(
         'change',
         this.onDarkThemeMediaQueryChange
       )
@@ -1784,7 +1784,7 @@ export class EngineCommandManager extends EventTarget {
         EngineConnectionEvents.NewTrack,
         this.onEngineConnectionNewTrack as EventListener
       )
-      darkModeMatcher.removeEventListener(
+      darkModeMatcher?.removeEventListener(
         'change',
         this.onDarkThemeMediaQueryChange
       )
