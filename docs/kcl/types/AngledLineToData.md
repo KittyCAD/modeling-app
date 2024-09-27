@@ -16,9 +16,7 @@ Data to draw an angled line to a point.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` | `number` (`double`)
- | The angle of the line. | No |
-| `to` | `number` (`double`)
- | The point to draw to. | No |
+| `angle` |`number` (`double`)| The angle of the line. | No |
+| `to` |`number` (`double`)| The point to draw to. | No |
 
 

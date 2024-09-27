@@ -1,13 +1,13 @@
-{{#if $ref}}
+{{~ #if $ref ~}}
 [{{basename $ref}}](#{{lowercase (basename $ref)}})
-{{else if anyOf}}
-anyOf
-{{else if oneOf}}
-oneOf
-{{else if allOf}}
-allOf
-{{else if enum}}
+{{else if anyOf ~}}
+`anyOf`
+{{else if oneOf ~}}
+`oneOf`
+{{else if allOf ~}}
+`allOf`
+{{else if enum ~}}
 enum: {{pretty_enum enum}}
-{{else}}
+{{else ~}}
 `{{type}}`{{#if format}} (`{{format}}`){{/if}}
-{{/if}}
+{{~/if~}}

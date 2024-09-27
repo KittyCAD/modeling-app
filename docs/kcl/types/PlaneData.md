@@ -89,8 +89,7 @@ A defined plane.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `plane` | `object`
- |  | No |
+| `plane` |`object`|  | No |
 
 
 ----

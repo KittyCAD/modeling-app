@@ -22,12 +22,9 @@ Angles and radius with an optional tag.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angleEnd` | `number` (`double`)
- | The end angle. | No |
-| `angleStart` | `number` (`double`)
- | The start angle. | No |
-| `radius` | `number` (`double`)
- | The radius. | No |
+| `angleEnd` |`number` (`double`)| The end angle. | No |
+| `angleStart` |`number` (`double`)| The start angle. | No |
+| `radius` |`number` (`double`)| The radius. | No |
 
 
 ----
@@ -43,12 +40,9 @@ Center, to and radius with an optional tag.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `center` | `array`
- | The center. | No |
-| `radius` | `number` (`double`)
- | The radius. | No |
-| `to` | `array`
- | The to point. | No |
+| `center` |`array`| The center. | No |
+| `radius` |`number` (`double`)| The radius. | No |
+| `to` |`array`| The to point. | No |
 
 
 ----

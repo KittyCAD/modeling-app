@@ -16,11 +16,9 @@ Data for revolution surfaces.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` | `number` (`double`)
- | Angle to revolve (in degrees). Default is 360. | No |
-| `axis` | anyOf
- | Axis of revolution. | No |
-| `tolerance` | `number` (`double`)
- | Tolerance for the revolve operation. | No |
+| `angle` |`number` (`double`)| Angle to revolve (in degrees). Default is 360. | No |
+| `axis` |`anyOf`
+| Axis of revolution. | No |
+| `tolerance` |`number` (`double`)| Tolerance for the revolve operation. | No |
 
 

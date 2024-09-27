@@ -11,7 +11,7 @@ use crate::{
     std::StdLib,
 };
 
-const TYPES_DIR: &str = "../../../docs/kcl/type";
+const TYPES_DIR: &str = "../../../docs/kcl/types";
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
@@ -89,6 +89,28 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
                     }
                 }
                 out.write("Invalid enum")?;
+                Ok(())
+            },
+        ),
+    );
+
+    // Register helper to remove newlines from a string.
+    hbs.register_helper(
+        "remove_newlines",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                if let Some(param) = h.param(0) {
+                    if let Some(string) = param.value().as_str() {
+                        out.write(&string.replace("\n", ""))?;
+                        return Ok(());
+                    }
+                }
+                out.write("")?;
                 Ok(())
             },
         ),
