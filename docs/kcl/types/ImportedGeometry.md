@@ -16,8 +16,8 @@ Data for an imported geometry.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `__meta` |`array`|  | No |
 | `id` |`string` (`uuid`)| The ID of the imported geometry. | No |
 | `value` |`array`| The original file paths. | No |
+| `__meta` |`array`|  | No |
 
 

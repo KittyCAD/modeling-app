@@ -55,9 +55,9 @@ A tag for the face.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `__meta` |`array`|  | No |
-| `info` |`object`| Engine information for a tag. | No |
 | `value` |`string`|  | No |
+| `info` |`object`| Engine information for a tag. | No |
+| `__meta` |`array`|  | No |
 
 
 ----
