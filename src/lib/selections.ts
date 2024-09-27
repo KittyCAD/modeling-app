@@ -7,7 +7,7 @@ import {
 } from 'lib/singletons'
 import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { uuidv4 } from 'lib/utils'
+import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
@@ -34,6 +34,7 @@ import {
   getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
+  ArtifactId,
 } from 'lang/std/artifactGraph'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -574,20 +575,21 @@ function codeToIdSelections(
   codeBasedSelections: Selection[]
 ): SelectionToEngine[] {
   return codeBasedSelections
-    .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
+    .flatMap((selection): null | SelectionToEngine[] => {
+      const { type } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact)) return false
-          return isOverlap(artifact.codeRef.range, range)
+          if (!('codeRef' in artifact)) return null
+          return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
-                selection: { type, range, ...rest },
+                selection,
                 id,
               }
-            : false
+            : null
         })
-        .filter(Boolean)
+        .filter(isNonNullable)
 
       /** TODO refactor
        * selections in our app is a sourceRange plus some metadata
@@ -600,9 +602,14 @@ function codeToIdSelections(
        * In the case of a user moving the cursor them, we will still need to figure out what artifact from the graph matches best, but we will just need sane defaults
        * and most of the time we can expect the user to be clicking in the 3d scene instead.
        */
-      let bestCandidate
+      let bestCandidate:
+        | {
+            id: ArtifactId
+            artifact: unknown
+            selection: Selection
+          }
+        | undefined
       overlappingEntries.forEach((entry) => {
-        if (!entry) return
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
@@ -612,9 +619,15 @@ function codeToIdSelections(
             entry.artifact.solid2dId || ''
           )
           if (solid?.type !== 'solid2D') return
+          if (!entry.artifact.solid2dId) {
+            console.error(
+              'Expected PathArtifact to have solid2dId, but none found'
+            )
+            return
+          }
           bestCandidate = {
             artifact: solid,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.solid2dId,
           }
         }
@@ -625,7 +638,7 @@ function codeToIdSelections(
           if (wall?.type !== 'wall') return
           bestCandidate = {
             artifact: wall,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.surfaceId,
           }
           return
@@ -639,7 +652,7 @@ function codeToIdSelections(
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
-            selection: { type, range, ...rest },
+            selection,
             id: edge[0],
           }
         }
@@ -655,7 +668,7 @@ function codeToIdSelections(
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
-            selection: { type, range, ...rest },
+            selection,
             id: edge[0],
           }
         }
@@ -681,7 +694,7 @@ function codeToIdSelections(
           if (!cap) return
           bestCandidate = {
             artifact: entry.artifact,
-            selection: { type, range, ...rest },
+            selection,
             id: cap[0],
           }
           return
@@ -700,12 +713,12 @@ function codeToIdSelections(
             type === 'base-edgeCut' &&
             isOverlap(
               consumedEdge.codeRef.range,
-              entry.selection?.secondaryRange || [0, 0]
+              selection.secondaryRange || [0, 0]
             )
           ) {
             bestCandidate = {
               artifact: entry.artifact,
-              selection: { type, range, ...rest },
+              selection,
               id: entry.id,
             }
           } else if (
@@ -721,14 +734,11 @@ function codeToIdSelections(
             )
             if (err(seg)) return
             if (
-              isOverlap(
-                seg.codeRef.range,
-                entry.selection?.secondaryRange || [0, 0]
-              )
+              isOverlap(seg.codeRef.range, selection.secondaryRange || [0, 0])
             ) {
               bestCandidate = {
                 artifact: entry.artifact,
-                selection: { type, range, ...rest },
+                selection,
                 id: entry.id,
               }
             }
@@ -737,21 +747,16 @@ function codeToIdSelections(
       })
 
       if (bestCandidate) {
-        const _bestCandidate = bestCandidate as {
-          artifact: any
-          selection: any
-          id: string
-        }
         return [
           {
             type,
-            id: _bestCandidate.id,
+            id: bestCandidate.id,
           },
         ]
       }
       return null
     })
-    .filter(Boolean) as any
+    .filter(isNonNullable)
 }
 
 export async function sendSelectEventToEngine(
