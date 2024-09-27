@@ -17,12 +17,12 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `hole_sketch_group` | [`SketchGroupSet`](kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
-| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `hole_sketch_group` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
+| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 
 ### Returns
 
-[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

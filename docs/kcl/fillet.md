@@ -17,13 +17,13 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> Ex
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`FilletData`](kcl/types/FilletData) | Data for fillets. | Yes |
-| `extrude_group` | [`ExtrudeGroup`](kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+| `data` | [`FilletData`](/docs/kcl/types/FilletData) | Data for fillets. | Yes |
+| `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`ExtrudeGroup`](kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
 
 
 ### Examples

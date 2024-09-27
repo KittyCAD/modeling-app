@@ -17,12 +17,12 @@ offsetPlane(std_plane: StandardPlane, offset: number) -> PlaneData
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `std_plane` | [`StandardPlane`](kcl/types/StandardPlane) | One of the standard planes. | Yes |
+| `std_plane` | [`StandardPlane`](/docs/kcl/types/StandardPlane) | One of the standard planes. | Yes |
 | `offset` | `number` |  | Yes |
 
 ### Returns
 
-[`PlaneData`](kcl/types/PlaneData) - Data for a plane.
+[`PlaneData`](/docs/kcl/types/PlaneData) - Data for a plane.
 
 
 ### Examples

@@ -184,6 +184,40 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 ///
 /// ```no_run
+/// fn cube = (length, center) => {
+///   let l = length/2
+///   let x = center[0]
+///   let y = center[1]
+///   let p0 = [-l + x, -l + y]
+///   let p1 = [-l + x,  l + y]
+///   let p2 = [ l + x,  l + y]
+///   let p3 = [ l + x, -l + y]
+///   
+///   return startSketchAt(p0)
+///   |> lineTo(p1, %)
+///   |> lineTo(p2, %)
+///   |> lineTo(p3, %)
+///   |> lineTo(p0, %)
+///   |> close(%)
+///   |> extrude(length, %)
+/// }
+///
+/// let width = 20
+/// fn transform = (i) => {
+///   return {
+///     translate: [0, 0, -i * width],
+///     rotation: {
+///       angle: 90 * i,
+///       // Rotate around the overall scene's origin.
+///       origin: "global",
+///     }
+///   }
+/// }
+/// let myCubes =
+///   cube(width, [100,100])
+///   |> patternTransform(4, transform, %)
+/// ```
+/// ```no_run
 /// // Parameters
 /// const r = 50    // base radius
 /// const h = 10    // layer height

@@ -17,12 +17,12 @@ helix(data: HelixData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`HelixData`](kcl/types/HelixData) | Data for helices. | Yes |
-| `extrude_group` | [`ExtrudeGroup`](kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `data` | [`HelixData`](/docs/kcl/types/HelixData) | Data for helices. | Yes |
+| `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
 
 
 ### Examples

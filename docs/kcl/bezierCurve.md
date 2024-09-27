@@ -17,13 +17,13 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup, tag?: TagDeclarator) ->
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`BezierData`](kcl/types/BezierData) | Data to draw a bezier curve. | Yes |
-| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+| `data` | [`BezierData`](/docs/kcl/types/BezierData) | Data to draw a bezier curve. | Yes |
+| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

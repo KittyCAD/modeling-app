@@ -17,12 +17,12 @@ patternCircular2d(data: CircularPattern2dData, sketch_group_set: SketchGroupSet)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`CircularPattern2dData`](kcl/types/CircularPattern2dData) | Data for a circular pattern on a 2D sketch. | Yes |
-| `sketch_group_set` | [`SketchGroupSet`](kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
+| `data` | [`CircularPattern2dData`](/docs/kcl/types/CircularPattern2dData) | Data for a circular pattern on a 2D sketch. | Yes |
+| `sketch_group_set` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
 
 ### Returns
 
-[`[SketchGroup]`](kcl/types/[SketchGroup]) 
+[`[SketchGroup]`](/docs/kcl/types/[SketchGroup]) 
 
 
 ### Examples
