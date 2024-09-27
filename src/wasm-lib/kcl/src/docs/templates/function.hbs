@@ -24,6 +24,24 @@ layout: manual
 {{/each}}
 
 {{/if}}
+
+{{#if args}}
+### Arguments
+
+| Name | Type | Description | Required |
+|----------|------|-------------|----------|
+{{#each args}}
+| `{{name}}` | `{{type_}}` | {{description}} | {{#if required}}Yes{{else}}No{{/if}} |
+{{/each}}
+{{/if}}
+
+{{#if return_value}}
+### Returns
+
+`{{return_value.type_}}` - {{#if return_value.description}}{{return_value.description}}{{/if}}
+
+{{/if}}
+
 {{#if examples}}
 ### Examples
 
@@ -38,25 +56,4 @@ layout: manual
 {{/unless}}
 {{/each}}
 {{/if}}
-### Arguments
 
-{{#each args}}
-* `{{name}}`: `{{type_}}` - {{#if description}}{{description}}{{/if}}{{#if required}} (REQUIRED){{else}} (OPTIONAL){{/if}}
-{{#if type_format}}
-```js
-{{type_format}}
-```
-{{/if}}
-{{/each}}
-
-{{#if return_value}}
-### Returns
-
-`{{return_value.type_}}` - {{#if return_value.description}}{{return_value.description}}{{/if}}
-
-{{#if return_value.type_format}}
-```js
-{{return_value.type_format}}
-```
-{{/if}}
-{{/if}}
