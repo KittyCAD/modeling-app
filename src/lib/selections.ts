@@ -574,7 +574,8 @@ function codeToIdSelections(
   codeBasedSelections: Selection[]
 ): SelectionToEngine[] {
   return codeBasedSelections
-    .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
+    .flatMap((selection): null | SelectionToEngine[] => {
+      const { type, range, ...rest } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
@@ -700,7 +701,7 @@ function codeToIdSelections(
             type === 'base-edgeCut' &&
             isOverlap(
               consumedEdge.codeRef.range,
-              entry.selection?.secondaryRange || [0, 0]
+              selection.secondaryRange || [0, 0]
             )
           ) {
             bestCandidate = {
@@ -723,7 +724,7 @@ function codeToIdSelections(
             if (
               isOverlap(
                 seg.codeRef.range,
-                entry.selection?.secondaryRange || [0, 0]
+                selection.secondaryRange || [0, 0]
               )
             ) {
               bestCandidate = {
