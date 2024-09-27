@@ -417,8 +417,28 @@ impl UnaryExpression {
 }
 
 impl IfExpression {
-    fn recast(&self, _options: &FormatOptions, _indentation_level: usize, is_in_pipe: bool) -> String {
-        todo!("ADAM")
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        // We can calculate how many lines this will take, so let's do it and avoid growing the vec.
+        // Total lines = starting lines, else-if lines, ending lines.
+        let n = 2 + (self.else_ifs.len() * 2) + 3;
+        let mut lines = Vec::with_capacity(n);
+
+        let cond = self.cond.recast(options, indentation_level, is_in_pipe);
+        lines.push((0, format!("if {cond} {{")));
+        lines.push((1, self.then_val.recast(options, indentation_level + 1)));
+        for else_if in &self.else_ifs {
+            let cond = else_if.cond.recast(options, indentation_level, is_in_pipe);
+            lines.push((0, format!("}} else if {cond} {{")));
+            lines.push((1, else_if.then_val.recast(options, indentation_level + 1)));
+        }
+        lines.push((0, "} else {".to_owned()));
+        lines.push((1, self.final_else.recast(options, indentation_level + 1)));
+        lines.push((0, "}".to_owned()));
+        lines
+            .into_iter()
+            .map(|(ind, line)| format!("{}{}", options.get_indentation(indentation_level + ind), line.trim()))
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }
 
@@ -485,6 +505,38 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use crate::ast::types::FormatOptions;
+
+    #[test]
+    fn test_recast_if_else_if_same() {
+        let input = r#"let b = if false {
+  3
+} else if true {
+  4
+} else {
+  5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_if_same() {
+        let input = r#"let b = if false {
+  3
+} else {
+  5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
 
     #[test]
     fn test_recast_bug_fn_in_fn() {
