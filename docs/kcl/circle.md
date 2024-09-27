@@ -17,13 +17,13 @@ circle(data: CircleData, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: Ta
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`CircleData`](types/CircleData) | Data for drawing an circle | Yes |
-| `sketch_surface_or_group` | [`SketchSurfaceOrGroup`](types/SketchSurfaceOrGroup) | A sketch surface or a sketch group. | Yes |
-| `tag` | [`TagDeclarator`](types#tag-declaration) |  | No |
+| `data` | [`CircleData`](/docs/kcl/types/CircleData) | Data for drawing an circle | Yes |
+| `sketch_surface_or_group` | [`SketchSurfaceOrGroup`](/docs/kcl/types/SketchSurfaceOrGroup) | A sketch surface or a sketch group. | Yes |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](types/SketchGroup) - A sketch group is a collection of paths.
+[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

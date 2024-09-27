@@ -21,7 +21,7 @@ min(args: [number]) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `args` | [`[number]`](types/[number]) |  | Yes |
+| `args` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
 
 ### Returns
 

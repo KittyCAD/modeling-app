@@ -245,13 +245,13 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
     for type_name in types {
         let formatted_type_name = format!("`{}`", type_name);
         if type_name == "TagDeclarator" {
-            let link = format!("[`{}`](types#tag-declaration)", "TagDeclarator");
+            let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
             output = output.replace(&formatted_type_name, &link);
         } else if type_name == "TagIdentifier" {
-            let link = format!("[`{}`](types#tag-identifier)", "TagIdentifier");
+            let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
             output = output.replace(&formatted_type_name, &link);
         } else {
-            let link = format!("[`{}`](types/{})", type_name, type_name);
+            let link = format!("[`{}`](/docs/kcl/types/{})", type_name, type_name);
             output = output.replace(&formatted_type_name, &link);
         }
     }
