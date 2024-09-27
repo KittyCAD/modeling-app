@@ -17,23 +17,13 @@ chamfer(data: ChamferData, solid: Solid, tag?: TagDeclarator) -> Solid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-<<<<<<< HEAD
 | `data` | [`ChamferData`](/docs/kcl/types/ChamferData) | Data for chamfers. | Yes |
-| `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
-=======
-| `data` | [`ChamferData`](kcl/types/ChamferData) | Data for chamfers. | Yes |
-| `solid` | [`Solid`](kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
-
-### Returns
-
-[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
->>>>>>> c10e4337 (renames)
+[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
 
 
 ### Examples

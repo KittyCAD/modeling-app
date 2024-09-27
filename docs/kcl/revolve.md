@@ -18,21 +18,12 @@ revolve(data: RevolveData, sketch: Sketch) -> Solid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-<<<<<<< HEAD
 | `data` | [`RevolveData`](/docs/kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
-| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
-=======
-| `data` | [`RevolveData`](kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
-| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-
-### Returns
-
-[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
->>>>>>> c10e4337 (renames)
+[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
 
 
 ### Examples

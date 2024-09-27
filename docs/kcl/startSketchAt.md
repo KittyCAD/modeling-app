@@ -21,11 +21,7 @@ startSketchAt(data: [number]) -> Sketch
 
 ### Returns
 
-<<<<<<< HEAD
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
-=======
-[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
->>>>>>> c10e4337 (renames)
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

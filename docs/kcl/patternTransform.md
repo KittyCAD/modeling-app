@@ -21,19 +21,11 @@ patternTransform(total_instances: u32, transform_function: FunctionParam, solid_
 |----------|------|-------------|----------|
 | `total_instances` | `u32` |  | Yes |
 | `transform_function` | `FunctionParam` |  | Yes |
-<<<<<<< HEAD
-| `extrude_group_set` | [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
+| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | A solid or a group of solids. | Yes |
 
 ### Returns
 
-[`[ExtrudeGroup]`](/docs/kcl/types/[ExtrudeGroup]) 
-=======
-| `solid_set` | [`SolidSet`](kcl/types/SolidSet) | A solid or a group of solids. | Yes |
-
-### Returns
-
-[`[Solid]`](kcl/types/[Solid]) 
->>>>>>> c10e4337 (renames)
+[`[Solid]`](/docs/kcl/types/[Solid]) 
 
 
 ### Examples

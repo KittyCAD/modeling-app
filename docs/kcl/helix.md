@@ -17,21 +17,12 @@ helix(data: HelixData, solid: Solid) -> Solid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-<<<<<<< HEAD
 | `data` | [`HelixData`](/docs/kcl/types/HelixData) | Data for helices. | Yes |
-| `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
-=======
-| `data` | [`HelixData`](kcl/types/HelixData) | Data for helices. | Yes |
-| `solid` | [`Solid`](kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
-
-### Returns
-
-[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
->>>>>>> c10e4337 (renames)
+[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
 
 
 ### Examples

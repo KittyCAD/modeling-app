@@ -18,19 +18,11 @@ hollow(thickness: number, solid: Solid) -> Solid
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `thickness` | `number` |  | Yes |
-<<<<<<< HEAD
-| `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
-=======
-| `solid` | [`Solid`](kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
-
-### Returns
-
-[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
->>>>>>> c10e4337 (renames)
+[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
 
 
 ### Examples

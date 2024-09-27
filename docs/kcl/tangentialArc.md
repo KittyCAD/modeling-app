@@ -18,23 +18,13 @@ tangentialArc(data: TangentialArcData, sketch: Sketch, tag?: TagDeclarator) -> S
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-<<<<<<< HEAD
 | `data` | [`TangentialArcData`](/docs/kcl/types/TangentialArcData) | Data to draw a tangential arc. | Yes |
-| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
-=======
-| `data` | [`TangentialArcData`](kcl/types/TangentialArcData) | Data to draw a tangential arc. | Yes |
-| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
-
-### Returns
-
-[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
->>>>>>> c10e4337 (renames)
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

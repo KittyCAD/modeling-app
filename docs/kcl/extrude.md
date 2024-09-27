@@ -18,19 +18,11 @@ extrude(length: number, sketch_set: SketchSet) -> SolidSet
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `length` | `number` |  | Yes |
-<<<<<<< HEAD
-| `sketch_group_set` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
+| `sketch_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
 
 ### Returns
 
-[`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) - A extrude group or a group of extrude groups.
-=======
-| `sketch_set` | [`SketchSet`](kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
-
-### Returns
-
-[`SolidSet`](kcl/types/SolidSet) - A solid or a group of solids.
->>>>>>> c10e4337 (renames)
+[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
 
 
 ### Examples

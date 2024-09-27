@@ -17,23 +17,13 @@ circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagDecl
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-<<<<<<< HEAD
 | `data` | [`CircleData`](/docs/kcl/types/CircleData) | Data for drawing an circle | Yes |
-| `sketch_surface_or_group` | [`SketchSurfaceOrGroup`](/docs/kcl/types/SketchSurfaceOrGroup) | A sketch surface or a sketch group. | Yes |
+| `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
-=======
-| `data` | [`CircleData`](kcl/types/CircleData) | Data for drawing an circle | Yes |
-| `sketch_surface_or_group` | [`SketchOrSurface`](kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
-
-### Returns
-
-[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
->>>>>>> c10e4337 (renames)
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

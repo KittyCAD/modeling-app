@@ -17,21 +17,12 @@ patternCircular3d(data: CircularPattern3dData, solid_set: SolidSet) -> [Solid]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-<<<<<<< HEAD
 | `data` | [`CircularPattern3dData`](/docs/kcl/types/CircularPattern3dData) | Data for a circular pattern on a 3D model. | Yes |
-| `extrude_group_set` | [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
+| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | A solid or a group of solids. | Yes |
 
 ### Returns
 
-[`[ExtrudeGroup]`](/docs/kcl/types/[ExtrudeGroup]) 
-=======
-| `data` | [`CircularPattern3dData`](kcl/types/CircularPattern3dData) | Data for a circular pattern on a 3D model. | Yes |
-| `solid_set` | [`SolidSet`](kcl/types/SolidSet) | A solid or a group of solids. | Yes |
-
-### Returns
-
-[`[Solid]`](kcl/types/[Solid]) 
->>>>>>> c10e4337 (renames)
+[`[Solid]`](/docs/kcl/types/[Solid]) 
 
 
 ### Examples
