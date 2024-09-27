@@ -34,6 +34,7 @@ import {
   getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
+  ArtifactId,
 } from 'lang/std/artifactGraph'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -601,7 +602,13 @@ function codeToIdSelections(
        * In the case of a user moving the cursor them, we will still need to figure out what artifact from the graph matches best, but we will just need sane defaults
        * and most of the time we can expect the user to be clicking in the 3d scene instead.
        */
-      let bestCandidate
+      let bestCandidate:
+        | {
+            id: ArtifactId
+            artifact: unknown
+            selection: Selection
+          }
+        | undefined
       overlappingEntries.forEach((entry) => {
         if (!entry) return
         if (type === 'default' && entry.artifact.type === 'segment') {
@@ -613,6 +620,12 @@ function codeToIdSelections(
             entry.artifact.solid2dId || ''
           )
           if (solid?.type !== 'solid2D') return
+          if (!entry.artifact.solid2dId) {
+            console.error(
+              'Expected PathArtifact to have solid2dId, but none found'
+            )
+            return
+          }
           bestCandidate = {
             artifact: solid,
             selection,
@@ -735,15 +748,10 @@ function codeToIdSelections(
       })
 
       if (bestCandidate) {
-        const _bestCandidate = bestCandidate as {
-          artifact: any
-          selection: any
-          id: string
-        }
         return [
           {
             type,
-            id: _bestCandidate.id,
+            id: bestCandidate.id,
           },
         ]
       }
