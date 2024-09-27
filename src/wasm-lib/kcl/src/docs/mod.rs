@@ -807,10 +807,10 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternCircular3d({
-	arcDegrees: ${0:3.14},
+	repetitions: ${0:10},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
-	repetitions: ${7:10},
+	arcDegrees: ${7:3.14},
 	rotateDuplicates: ${8:false},
 }, ${9:%})${}"#
         );
@@ -848,8 +848,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"arc({
-	angleEnd: ${0:3.14},
-	angleStart: ${1:3.14},
+	angleStart: ${0:3.14},
+	angleEnd: ${1:3.14},
 	radius: ${2:3.14},
 }, ${3:%})${}"#
         );
@@ -862,9 +862,9 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternLinear2d({
-	axis: [${0:3.14}, ${1:3.14}],
-	distance: ${2:3.14},
-	repetitions: ${3:10},
+	repetitions: ${0:10},
+	distance: ${1:3.14},
+	axis: [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
     }
