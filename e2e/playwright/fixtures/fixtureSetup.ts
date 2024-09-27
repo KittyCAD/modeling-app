@@ -5,7 +5,7 @@ import type {
   TestInfo,
 } from '@playwright/test'
 import { test as base } from '@playwright/test'
-import { getUtils, setup, setupElectron, tearDown } from './test-utils'
+import { getUtils, setup, setupElectron, tearDown } from '../test-utils'
 import fsp from 'fs/promises'
 import { join } from 'path'
 import { CmdBarFixture } from './cmdBarFixture'
@@ -13,7 +13,7 @@ import { EditorFixture } from './editorFixture'
 import { ToolbarFixture } from './toolbarFixture'
 import { SceneFixture } from './sceneFixture'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { HomePageFixture } from './fixtures/homePageFixture'
+import { HomePageFixture } from './homePageFixture'
 import { typedKeys } from 'lib/utils'
 
 export class AuthenticatedApp {

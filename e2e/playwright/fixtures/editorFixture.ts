@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { sansWhitespace } from './test-utils'
+import { sansWhitespace } from '../test-utils'
 
 interface EditorState {
   activeLines: Array<string>

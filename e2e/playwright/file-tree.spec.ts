@@ -1,5 +1,5 @@
 import { _test, _expect } from './playwright-deprecated'
-import { test, expect } from './fixtureSetup'
+import { test, expect } from './fixtures/fixtureSetup'
 import * as fsp from 'fs/promises'
 import * as fs from 'fs'
 import {

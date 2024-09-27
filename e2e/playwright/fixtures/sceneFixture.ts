@@ -6,7 +6,7 @@ import {
   doAndWaitForImageDiff,
   openAndClearDebugPanel,
   sendCustomCmd,
-} from './test-utils'
+} from '../test-utils'
 
 type mouseParams = {
   pixelDiff: number
