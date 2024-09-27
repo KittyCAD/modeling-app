@@ -7,7 +7,7 @@ import {
 } from 'lib/singletons'
 import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { uuidv4 } from 'lib/utils'
+import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
@@ -580,16 +580,16 @@ function codeToIdSelections(
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact)) return false
+          if (!('codeRef' in artifact)) return null
           return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
                 selection,
                 id,
               }
-            : false
+            : null
         })
-        .filter(Boolean)
+        .filter(isNonNullable)
 
       /** TODO refactor
        * selections in our app is a sourceRange plus some metadata
@@ -610,7 +610,6 @@ function codeToIdSelections(
           }
         | undefined
       overlappingEntries.forEach((entry) => {
-        if (!entry) return
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
@@ -757,7 +756,7 @@ function codeToIdSelections(
       }
       return null
     })
-    .filter(Boolean) as any
+    .filter(isNonNullable)
 }
 
 export async function sendSelectEventToEngine(
