@@ -17,7 +17,7 @@ segLen(tag: TagIdentifier) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | `TagIdentifier` |  | Yes |
+| `tag` | [`TagIdentifier`](kcl/types#tag-identifier) |  | Yes |
 
 ### Returns
 

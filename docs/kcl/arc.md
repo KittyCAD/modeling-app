@@ -19,13 +19,13 @@ arc(data: ArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGrou
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `ArcData` | Data to draw an arc. | Yes |
-| `sketch_group` | `SketchGroup` | A sketch group is a collection of paths. | Yes |
-| `tag` | `TagDeclarator` |  | No |
+| `data` | [`ArcData`](kcl/types/ArcData) | Data to draw an arc. | Yes |
+| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-`SketchGroup` - A sketch group is a collection of paths.
+[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

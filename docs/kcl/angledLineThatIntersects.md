@@ -17,13 +17,13 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `AngledLineThatIntersectsData` | Data for drawing an angled line that intersects with a given line. | Yes |
-| `sketch_group` | `SketchGroup` | A sketch group is a collection of paths. | Yes |
-| `tag` | `TagDeclarator` |  | No |
+| `data` | [`AngledLineThatIntersectsData`](kcl/types/AngledLineThatIntersectsData) | Data for drawing an angled line that intersects with a given line. | Yes |
+| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-`SketchGroup` - A sketch group is a collection of paths.
+[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

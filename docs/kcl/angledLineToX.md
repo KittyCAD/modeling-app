@@ -17,13 +17,13 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup, tag?: TagDeclar
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `AngledLineToData` | Data to draw an angled line to a point. | Yes |
-| `sketch_group` | `SketchGroup` | A sketch group is a collection of paths. | Yes |
-| `tag` | `TagDeclarator` |  | No |
+| `data` | [`AngledLineToData`](kcl/types/AngledLineToData) | Data to draw an angled line to a point. | Yes |
+| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-`SketchGroup` - A sketch group is a collection of paths.
+[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

@@ -17,11 +17,11 @@ polar(data: PolarCoordsData) -> [number]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `PolarCoordsData` | Data for polar coordinates. | Yes |
+| `data` | [`PolarCoordsData`](kcl/types/PolarCoordsData) | Data for polar coordinates. | Yes |
 
 ### Returns
 
-`[number]` 
+[`[number]`](kcl/types/[number]) 
 
 
 ### Examples

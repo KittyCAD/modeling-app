@@ -17,13 +17,13 @@ lineTo(to: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGr
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` | `[number]` |  | Yes |
-| `sketch_group` | `SketchGroup` | A sketch group is a collection of paths. | Yes |
-| `tag` | `TagDeclarator` |  | No |
+| `to` | [`[number]`](kcl/types/[number]) |  | Yes |
+| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-`SketchGroup` - A sketch group is a collection of paths.
+[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

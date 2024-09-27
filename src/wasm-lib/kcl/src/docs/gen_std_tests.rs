@@ -82,9 +82,13 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         .collect();
 
     // Generate the type markdown files for each argument.
+    let mut types = Vec::new();
     for arg in internal_fn.args() {
         if !arg.is_primitive()? {
             generate_type(&arg.type_, &arg.schema)?;
+            if !types.contains(&arg.type_.to_string()) {
+                types.push(arg.type_.to_string());
+            }
         }
     }
 
@@ -92,6 +96,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
     if let Some(ret) = internal_fn.return_value() {
         if !ret.is_primitive()? {
             generate_type(&ret.type_, &ret.schema)?;
+            if !types.contains(&ret.type_.to_string()) {
+                types.push(ret.type_.to_string());
+            }
         }
     }
 
@@ -120,7 +127,23 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         }),
     });
 
-    let output = hbs.render("function", &data)?;
+    let mut output = hbs.render("function", &data)?;
+
+    // Fix the links to the types.
+    for type_name in types {
+        let formatted_type_name = format!("`{}`", type_name);
+        if type_name == "TagDeclarator" {
+            let link = format!("[`{}`](kcl/types#tag-declaration)", "TagDeclarator");
+            output = output.replace(&formatted_type_name, &link);
+        } else if type_name == "TagIdentifier" {
+            let link = format!("[`{}`](kcl/types#tag-identifier)", "TagIdentifier");
+            output = output.replace(&formatted_type_name, &link);
+        } else {
+            let link = format!("[`{}`](kcl/types/{})", type_name, type_name);
+            output = output.replace(&formatted_type_name, &link);
+        }
+    }
+
     std::fs::write(format!("../../../docs/kcl/{}.md", fn_name), output)?;
 
     Ok(())
@@ -129,6 +152,11 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
 fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
     if name.is_empty() {
         return Err(anyhow::anyhow!("Empty type name"));
+    }
+
+    // Skip over TagDeclarator and TagIdentifier since they have custom docs.
+    if name == "TagDeclarator" || name == "TagIdentifier" {
+        return Ok(());
     }
 
     let schemars::schema::Schema::Object(o) = schema else {

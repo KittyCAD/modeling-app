@@ -17,12 +17,12 @@ loft(sketch_groups: [SketchGroup], data?: LoftData) -> ExtrudeGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch_groups` | `[SketchGroup]` |  | Yes |
-| `data` | `LoftData` | Data for a loft. | No |
+| `sketch_groups` | [`[SketchGroup]`](kcl/types/[SketchGroup]) |  | Yes |
+| `data` | [`LoftData`](kcl/types/LoftData) | Data for a loft. | No |
 
 ### Returns
 
-`ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+[`ExtrudeGroup`](kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
 
 
 ### Examples

@@ -18,12 +18,12 @@ mirror2d(data: Mirror2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `Mirror2dData` | Data for a mirror. | Yes |
-| `sketch_group_set` | `SketchGroupSet` | A sketch group or a group of sketch groups. | Yes |
+| `data` | [`Mirror2dData`](kcl/types/Mirror2dData) | Data for a mirror. | Yes |
+| `sketch_group_set` | [`SketchGroupSet`](kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
 
 ### Returns
 
-`[SketchGroup]` 
+[`[SketchGroup]`](kcl/types/[SketchGroup]) 
 
 
 ### Examples

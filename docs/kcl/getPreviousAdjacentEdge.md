@@ -17,7 +17,7 @@ getPreviousAdjacentEdge(tag: TagIdentifier) -> Uuid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | `TagIdentifier` |  | Yes |
+| `tag` | [`TagIdentifier`](kcl/types#tag-identifier) |  | Yes |
 
 ### Returns
 

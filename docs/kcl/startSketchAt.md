@@ -17,11 +17,11 @@ startSketchAt(data: [number]) -> SketchGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `[number]` |  | Yes |
+| `data` | [`[number]`](kcl/types/[number]) |  | Yes |
 
 ### Returns
 
-`SketchGroup` - A sketch group is a collection of paths.
+[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

@@ -17,12 +17,12 @@ shell(data: ShellData, extrude_group_set: ExtrudeGroupSet) -> ExtrudeGroupSet
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `ShellData` | Data for shells. | Yes |
-| `extrude_group_set` | `ExtrudeGroupSet` | A extrude group or a group of extrude groups. | Yes |
+| `data` | [`ShellData`](kcl/types/ShellData) | Data for shells. | Yes |
+| `extrude_group_set` | [`ExtrudeGroupSet`](kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
 
 ### Returns
 
-`ExtrudeGroupSet` - A extrude group or a group of extrude groups.
+[`ExtrudeGroupSet`](kcl/types/ExtrudeGroupSet) - A extrude group or a group of extrude groups.
 
 
 ### Examples

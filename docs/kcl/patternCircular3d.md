@@ -17,12 +17,12 @@ patternCircular3d(data: CircularPattern3dData, extrude_group_set: ExtrudeGroupSe
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `CircularPattern3dData` | Data for a circular pattern on a 3D model. | Yes |
-| `extrude_group_set` | `ExtrudeGroupSet` | A extrude group or a group of extrude groups. | Yes |
+| `data` | [`CircularPattern3dData`](kcl/types/CircularPattern3dData) | Data for a circular pattern on a 3D model. | Yes |
+| `extrude_group_set` | [`ExtrudeGroupSet`](kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
 
 ### Returns
 
-`[ExtrudeGroup]` 
+[`[ExtrudeGroup]`](kcl/types/[ExtrudeGroup]) 
 
 
 ### Examples

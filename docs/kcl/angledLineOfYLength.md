@@ -17,13 +17,13 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDe
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | `AngledLineData` | Data to draw an angled line. | Yes |
-| `sketch_group` | `SketchGroup` | A sketch group is a collection of paths. | Yes |
-| `tag` | `TagDeclarator` |  | No |
+| `data` | [`AngledLineData`](kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
+| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-`SketchGroup` - A sketch group is a collection of paths.
+[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples
