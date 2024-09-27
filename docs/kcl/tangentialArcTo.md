@@ -9,7 +9,7 @@ Starting at the current sketch&#x27;s origin, draw a curved line segment along
 some part of an imaginary circle until it reaches the desired (x, y) coordinates.
 
 ```js
-tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+tangentialArcTo(to: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -17,6 +17,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: TagDeclarator) ->
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `to` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -24,6 +25,15 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: TagDeclarator) ->
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `to` | [`[number]`](kcl/types/[number]) |  | Yes |
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

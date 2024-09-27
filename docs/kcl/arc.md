@@ -11,7 +11,7 @@ The arc is constructed such that the current position of the sketch is placed al
 Unless this makes a lot of sense and feels like what you&#x27;re looking for to construct your shape, you&#x27;re likely looking for tangentialArc.
 
 ```js
-arc(data: ArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+arc(data: ArcData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -19,6 +19,7 @@ arc(data: ArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGrou
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`ArcData`](/docs/kcl/types/ArcData) | Data to draw an arc. | Yes |
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -26,6 +27,15 @@ arc(data: ArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGrou
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `data` | [`ArcData`](kcl/types/ArcData) | Data to draw an arc. | Yes |
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

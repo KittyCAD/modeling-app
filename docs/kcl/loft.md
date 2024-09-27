@@ -9,7 +9,7 @@ Create a 3D surface or solid by interpolating between two or more sketches.
 The sketches need to closed and on the same plane.
 
 ```js
-loft(sketch_groups: [SketchGroup], data?: LoftData) -> ExtrudeGroup
+loft(sketches: [Sketch], data?: LoftData) -> Solid
 ```
 
 
@@ -17,12 +17,21 @@ loft(sketch_groups: [SketchGroup], data?: LoftData) -> ExtrudeGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `sketch_groups` | [`[SketchGroup]`](/docs/kcl/types/[SketchGroup]) |  | Yes |
 | `data` | [`LoftData`](/docs/kcl/types/LoftData) | Data for a loft. | No |
 
 ### Returns
 
 [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+=======
+| `sketches` | [`[Sketch]`](kcl/types/[Sketch]) |  | Yes |
+| `data` | [`LoftData`](kcl/types/LoftData) | Data for a loft. | No |
+
+### Returns
+
+[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

@@ -9,7 +9,7 @@ Blend a transitional edge along a tagged path, smoothing the sharp edge.
 Fillet is similar in function and use to a chamfer, except a chamfer will cut a sharp transition along an edge while fillet will smoothly blend the transition.
 
 ```js
-fillet(data: FilletData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> ExtrudeGroup
+fillet(data: FilletData, solid: Solid, tag?: TagDeclarator) -> Solid
 ```
 
 
@@ -17,6 +17,7 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> Ex
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`FilletData`](/docs/kcl/types/FilletData) | Data for fillets. | Yes |
 | `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -24,6 +25,15 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> Ex
 ### Returns
 
 [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+=======
+| `data` | [`FilletData`](kcl/types/FilletData) | Data for fillets. | Yes |
+| `solid` | [`Solid`](kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

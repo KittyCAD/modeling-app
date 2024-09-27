@@ -9,7 +9,7 @@ Cut a straight transitional edge along a tagged path.
 Chamfer is similar in function and use to a fillet, except a fillet will blend the transition along an edge, rather than cut a sharp, straight transitional edge.
 
 ```js
-chamfer(data: ChamferData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> ExtrudeGroup
+chamfer(data: ChamferData, solid: Solid, tag?: TagDeclarator) -> Solid
 ```
 
 
@@ -17,6 +17,7 @@ chamfer(data: ChamferData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> 
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`ChamferData`](/docs/kcl/types/ChamferData) | Data for chamfers. | Yes |
 | `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -24,6 +25,15 @@ chamfer(data: ChamferData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> 
 ### Returns
 
 [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+=======
+| `data` | [`ChamferData`](kcl/types/ChamferData) | Data for chamfers. | Yes |
+| `solid` | [`Solid`](kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

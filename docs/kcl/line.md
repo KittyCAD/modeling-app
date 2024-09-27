@@ -9,7 +9,7 @@ Draw a line relative to the current origin to a specified (x, y) away
 from the current position.
 
 ```js
-line(delta: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+line(delta: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -17,6 +17,7 @@ line(delta: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchG
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `delta` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -24,6 +25,15 @@ line(delta: [number], sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchG
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `delta` | [`[number]`](kcl/types/[number]) |  | Yes |
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

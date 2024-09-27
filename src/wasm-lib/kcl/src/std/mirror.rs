@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, SketchGroup, SketchGroupSet},
+    executor::{ExecState, KclValue, Sketch, SketchSet},
     std::{revolve::AxisOrEdgeReference, Args},
 };
 
@@ -26,10 +26,10 @@ pub struct Mirror2dData {
 ///
 /// Only works on unclosed sketches for now.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_group_set): (Mirror2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
+    let (data, sketch_set): (Mirror2dData, SketchSet) = args.get_data_and_sketch_set()?;
 
-    let sketch_groups = inner_mirror_2d(data, sketch_group_set, exec_state, args).await?;
-    Ok(sketch_groups.into())
+    let sketches = inner_mirror_2d(data, sketch_set, exec_state, args).await?;
+    Ok(sketches.into())
 }
 
 /// Mirror a sketch.
@@ -103,17 +103,17 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 }]
 async fn inner_mirror_2d(
     data: Mirror2dData,
-    sketch_group_set: SketchGroupSet,
+    sketch_set: SketchSet,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    let starting_sketch_groups = match sketch_group_set {
-        SketchGroupSet::SketchGroup(sketch_group) => vec![sketch_group],
-        SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
+) -> Result<Vec<Box<Sketch>>, KclError> {
+    let starting_sketches = match sketch_set {
+        SketchSet::Sketch(sketch) => vec![sketch],
+        SketchSet::Sketches(sketches) => sketches,
     };
 
     if args.ctx.is_mock {
-        return Ok(starting_sketch_groups);
+        return Ok(starting_sketches);
     }
 
     match data.axis {
@@ -123,10 +123,7 @@ async fn inner_mirror_2d(
             args.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 ModelingCmd::from(mcmd::EntityMirror {
-                    ids: starting_sketch_groups
-                        .iter()
-                        .map(|sketch_group| sketch_group.id)
-                        .collect(),
+                    ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     axis,
                     point: origin,
                 }),
@@ -139,10 +136,7 @@ async fn inner_mirror_2d(
             args.batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
-                    ids: starting_sketch_groups
-                        .iter()
-                        .map(|sketch_group| sketch_group.id)
-                        .collect(),
+                    ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     edge_id,
                 }),
             )
@@ -150,5 +144,5 @@ async fn inner_mirror_2d(
         }
     };
 
-    Ok(starting_sketch_groups)
+    Ok(starting_sketches)
 }

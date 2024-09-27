@@ -120,9 +120,9 @@ impl crate::docs::StdLibFn for LineTo {
                 required: true,
             },
             crate::docs::StdLibFnArg {
-                name: "sketch_group".to_string(),
-                type_: "SketchGroup".to_string(),
-                schema: SketchGroup::json_schema(&mut generator),
+                name: "sketch".to_string(),
+                type_: "Sketch".to_string(),
+                schema: Sketch::json_schema(&mut generator),
                 required: true,
             },
         ]
@@ -134,8 +134,8 @@ impl crate::docs::StdLibFn for LineTo {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "SketchGroup".to_string(),
-            schema: <SketchGroup>::json_schema(&mut generator),
+            type_: "Sketch".to_string(),
+            schema: <Sketch>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -187,10 +187,6 @@ impl crate::docs::StdLibFn for LineTo {
 #[doc = r" yes sirrr."]
 #[doc = r" lineTo"]
 #[doc = r" ```"]
-fn inner_line_to(
-    data: LineToData,
-    sketch_group: SketchGroup,
-    args: &Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_line_to(data: LineToData, sketch: Sketch, args: &Args) -> Result<Sketch, KclError> {
     Ok(())
 }

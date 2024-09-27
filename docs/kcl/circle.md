@@ -9,7 +9,7 @@ Construct a 2-dimensional circle, of the specified radius, centered at
 the provided (x, y) origin point.
 
 ```js
-circle(data: CircleData, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: TagDeclarator) -> SketchGroup
+circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -17,6 +17,7 @@ circle(data: CircleData, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: Ta
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`CircleData`](/docs/kcl/types/CircleData) | Data for drawing an circle | Yes |
 | `sketch_surface_or_group` | [`SketchSurfaceOrGroup`](/docs/kcl/types/SketchSurfaceOrGroup) | A sketch surface or a sketch group. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -24,6 +25,15 @@ circle(data: CircleData, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: Ta
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `data` | [`CircleData`](kcl/types/CircleData) | Data for drawing an circle | Yes |
+| `sketch_surface_or_group` | [`SketchOrSurface`](kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

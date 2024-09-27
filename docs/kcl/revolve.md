@@ -10,7 +10,7 @@ This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional
 Revolve occurs around a local sketch axis rather than a global axis.
 
 ```js
-revolve(data: RevolveData, sketch_group: SketchGroup) -> ExtrudeGroup
+revolve(data: RevolveData, sketch: Sketch) -> Solid
 ```
 
 
@@ -18,12 +18,21 @@ revolve(data: RevolveData, sketch_group: SketchGroup) -> ExtrudeGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`RevolveData`](/docs/kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 
 ### Returns
 
 [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+=======
+| `data` | [`RevolveData`](kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+
+### Returns
+
+[`Solid`](kcl/types/Solid) - An solid is a collection of extrude surfaces.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

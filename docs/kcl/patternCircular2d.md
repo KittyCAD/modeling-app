@@ -9,7 +9,7 @@ Repeat a 2-dimensional sketch some number of times along a partial or
 complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orentation of the solid with respect to the center of the circle is maintained.
 
 ```js
-patternCircular2d(data: CircularPattern2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
+patternCircular2d(data: CircularPattern2dData, sketch_set: SketchSet) -> [Sketch]
 ```
 
 
@@ -17,12 +17,21 @@ patternCircular2d(data: CircularPattern2dData, sketch_group_set: SketchGroupSet)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`CircularPattern2dData`](/docs/kcl/types/CircularPattern2dData) | Data for a circular pattern on a 2D sketch. | Yes |
 | `sketch_group_set` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
 
 ### Returns
 
 [`[SketchGroup]`](/docs/kcl/types/[SketchGroup]) 
+=======
+| `data` | [`CircularPattern2dData`](kcl/types/CircularPattern2dData) | Data for a circular pattern on a 2D sketch. | Yes |
+| `sketch_set` | [`SketchSet`](kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+
+### Returns
+
+[`[Sketch]`](kcl/types/[Sketch]) 
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

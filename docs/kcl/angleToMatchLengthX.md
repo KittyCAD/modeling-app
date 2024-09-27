@@ -9,7 +9,7 @@ Compute the angle (in degrees) in o
 
 
 ```js
-angleToMatchLengthX(tag: TagIdentifier, to: number, sketch_group: SketchGroup) -> number
+angleToMatchLengthX(tag: TagIdentifier, to: number, sketch: Sketch) -> number
 ```
 
 
@@ -19,7 +19,11 @@ angleToMatchLengthX(tag: TagIdentifier, to: number, sketch_group: SketchGroup) -
 |----------|------|-------------|----------|
 | `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
 | `to` | `number` |  | Yes |
+<<<<<<< HEAD
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+=======
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+>>>>>>> c10e4337 (renames)
 
 ### Returns
 

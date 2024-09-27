@@ -1,15 +1,15 @@
 ---
 title: "profileStartX"
-excerpt: "Extract the provided 2-dimensional sketch group&#x27;s profile&#x27;s origin&#x27;s &#x27;x&#x27;"
+excerpt: "Extract the provided 2-dimensional sketch&#x27;s profile&#x27;s origin&#x27;s &#x27;x&#x27;"
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch group&#x27;s profile&#x27;s origin&#x27;s &#x27;x&#x27;
+Extract the provided 2-dimensional sketch&#x27;s profile&#x27;s origin&#x27;s &#x27;x&#x27;
 
 value.
 
 ```js
-profileStartX(sketch_group: SketchGroup) -> number
+profileStartX(sketch: Sketch) -> number
 ```
 
 
@@ -17,7 +17,11 @@ profileStartX(sketch_group: SketchGroup) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+=======
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+>>>>>>> c10e4337 (renames)
 
 ### Returns
 

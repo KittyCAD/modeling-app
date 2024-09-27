@@ -9,7 +9,7 @@ Draw a line segment relative to the current origin using the polar
 measure of some angle and distance.
 
 ```js
-angledLine(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+angledLine(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -17,6 +17,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`AngledLineData`](/docs/kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -24,6 +25,15 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator)
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `data` | [`AngledLineData`](kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

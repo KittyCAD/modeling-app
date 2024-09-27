@@ -9,7 +9,7 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 
 ```js
-hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGroup
+hole(hole_sketch: SketchSet, sketch: Sketch) -> Sketch
 ```
 
 
@@ -17,12 +17,21 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `hole_sketch_group` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `hole_sketch` | [`SketchSet`](kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

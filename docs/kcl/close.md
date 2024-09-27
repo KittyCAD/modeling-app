@@ -9,7 +9,7 @@ Construct a line segment from the current origin back to the profile&#x27;s
 origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 
 ```js
-close(sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+close(sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -17,12 +17,21 @@ close(sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `sketch` | [`Sketch`](kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

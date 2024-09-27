@@ -9,7 +9,7 @@ Remove volume from a 3-dimensional shape such that a wall of the
 provided thickness remains, taking volume starting at the provided face, leaving it open in that direction.
 
 ```js
-shell(data: ShellData, extrude_group_set: ExtrudeGroupSet) -> ExtrudeGroupSet
+shell(data: ShellData, solid_set: SolidSet) -> SolidSet
 ```
 
 
@@ -17,12 +17,21 @@ shell(data: ShellData, extrude_group_set: ExtrudeGroupSet) -> ExtrudeGroupSet
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`ShellData`](/docs/kcl/types/ShellData) | Data for shells. | Yes |
 | `extrude_group_set` | [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
 
 ### Returns
 
 [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) - A extrude group or a group of extrude groups.
+=======
+| `data` | [`ShellData`](kcl/types/ShellData) | Data for shells. | Yes |
+| `solid_set` | [`SolidSet`](kcl/types/SolidSet) | A solid or a group of solids. | Yes |
+
+### Returns
+
+[`SolidSet`](kcl/types/SolidSet) - A solid or a group of solids.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

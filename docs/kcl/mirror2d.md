@@ -10,7 +10,7 @@ Only works on unclosed sketches for now.
 Mirror occurs around a local sketch axis rather than a global axis.
 
 ```js
-mirror2d(data: Mirror2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
+mirror2d(data: Mirror2dData, sketch_set: SketchSet) -> [Sketch]
 ```
 
 
@@ -18,12 +18,21 @@ mirror2d(data: Mirror2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `data` | [`Mirror2dData`](/docs/kcl/types/Mirror2dData) | Data for a mirror. | Yes |
 | `sketch_group_set` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
 
 ### Returns
 
 [`[SketchGroup]`](/docs/kcl/types/[SketchGroup]) 
+=======
+| `data` | [`Mirror2dData`](kcl/types/Mirror2dData) | Data for a mirror. | Yes |
+| `sketch_set` | [`SketchSet`](kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+
+### Returns
+
+[`[Sketch]`](kcl/types/[Sketch]) 
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

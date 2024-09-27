@@ -9,7 +9,7 @@ Start a new profile at a given point.
 
 
 ```js
-startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator) -> SketchGroup
+startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -17,6 +17,7 @@ startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
+<<<<<<< HEAD
 | `to` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
 | `sketch_surface` | [`SketchSurface`](/docs/kcl/types/SketchSurface) | A sketch group type. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
@@ -24,6 +25,15 @@ startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator)
 ### Returns
 
 [`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+=======
+| `to` | [`[number]`](kcl/types/[number]) |  | Yes |
+| `sketch_surface` | [`SketchSurface`](kcl/types/SketchSurface) | A sketch type. | Yes |
+| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+
+### Returns
+
+[`Sketch`](kcl/types/Sketch) - A sketch is a collection of paths.
+>>>>>>> c10e4337 (renames)
 
 
 ### Examples

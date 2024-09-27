@@ -1,10 +1,10 @@
 ---
 title: "SketchSurface"
-excerpt: "A sketch group type."
+excerpt: "A sketch type."
 layout: manual
 ---
 
-A sketch group type.
+A sketch type.
 
 
 
@@ -49,8 +49,8 @@ A face.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `__meta` |`array`|  | No |
-| `extrudeGroup` |`object`| The extrude group the face is on. | No |
 | `id` |`string` (`uuid`)| The id of the face. | No |
+| `solid` |`object`| The solid the face is on. | No |
 | `type` |enum: `face`
 |  | No |
 | `value` |`string`| The tag of the face. | No |
