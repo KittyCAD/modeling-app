@@ -22,7 +22,7 @@ patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet) -> [Sketch]
 
 ### Returns
 
-[`[Sketch]`](/docs/kcl/types/[Sketch]) 
+[`[Sketch]`](/docs/kcl/types/Sketch) 
 
 
 ### Examples

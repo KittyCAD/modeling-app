@@ -57,7 +57,7 @@ Wavefront OBJ format.
 |----------|------|-------------|----------|
 | `type` |enum: `obj`|  | No |
 | `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `units` |`oneOf`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `units` |**oneOf:** enum: `cm` **OR** enum: `ft` **OR** enum: `in` **OR** enum: `m` **OR** enum: `mm` **OR** enum: `yd`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----
@@ -75,7 +75,7 @@ The PLY Polygon File Format.
 |----------|------|-------------|----------|
 | `type` |enum: `ply`|  | No |
 | `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `units` |`oneOf`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `units` |**oneOf:** enum: `cm` **OR** enum: `ft` **OR** enum: `in` **OR** enum: `m` **OR** enum: `mm` **OR** enum: `yd`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----
@@ -125,7 +125,7 @@ ST**ereo**L**ithography format.
 |----------|------|-------------|----------|
 | `type` |enum: `stl`|  | No |
 | `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `units` |`oneOf`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `units` |**oneOf:** enum: `cm` **OR** enum: `ft` **OR** enum: `in` **OR** enum: `m` **OR** enum: `mm` **OR** enum: `yd`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----

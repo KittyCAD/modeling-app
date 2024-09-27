@@ -16,7 +16,7 @@ Data for chamfers.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `length` |`number` (`double`)| The length of the chamfer. | No |
-| `tags` |`array`| The tags of the paths you want to chamfer. | No |
+| `length` |`number`| The length of the chamfer. | No |
+| `tags` |`[` **anyOf:** `string` **OR** [`TagIdentifier`](/docs/kcl/types#tag-identifier) `]`| The tags of the paths you want to chamfer. | No |
 
 

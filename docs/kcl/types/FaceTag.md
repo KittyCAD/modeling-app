@@ -46,18 +46,10 @@ The end face after you extruded. This could also be known as the top face. But w
 A tag for the face.
 
 
-**Type:** `object`
 
 
 
 
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `value` |`string`|  | No |
-| `info` |`object`| Engine information for a tag. | No |
-| `__meta` |`array`|  | No |
 
 
 ----

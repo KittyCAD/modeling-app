@@ -21,8 +21,8 @@ Data to draw a tangential arc.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `radius` |`number` (`double`)| Radius of the arc. Not to be confused with Raiders of the Lost Ark. | No |
-| `offset` |`number` (`double`)| Offset of the arc, in degrees. | No |
+| `radius` |`number`| Radius of the arc. Not to be confused with Raiders of the Lost Ark. | No |
+| `offset` |`number`| Offset of the arc, in degrees. | No |
 
 
 ----

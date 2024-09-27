@@ -16,8 +16,8 @@ Data for revolution surfaces.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` |`number` (`double`)| Angle to revolve (in degrees). Default is 360. | No |
-| `axis` |`anyOf`| Axis of revolution. | No |
-| `tolerance` |`number` (`double`)| Tolerance for the revolve operation. | No |
+| `angle` |`number`| Angle to revolve (in degrees). Default is 360. | No |
+| `axis` |**anyOf:** **oneOf:** enum: `X` **OR** enum: `Y` **OR** enum: `-X` **OR** enum: `-Y` **OR** `object` **OR** **anyOf:** `string` **OR** [`TagIdentifier`](/docs/kcl/types#tag-identifier)| Axis of revolution. | No |
+| `tolerance` |`number`| Tolerance for the revolve operation. | No |
 
 

@@ -17,7 +17,7 @@ lineTo(to: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
+| `to` | `[number]` |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 

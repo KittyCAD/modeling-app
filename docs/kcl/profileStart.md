@@ -21,7 +21,7 @@ profileStart(sketch: Sketch) -> [number]
 
 ### Returns
 
-[`[number]`](/docs/kcl/types/[number]) 
+`[number]` 
 
 
 ### Examples

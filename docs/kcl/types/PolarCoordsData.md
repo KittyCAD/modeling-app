@@ -16,7 +16,7 @@ Data for polar coordinates.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` |`number` (`double`)| The angle of the line (in degrees). | No |
-| `length` |`number` (`double`)| The length of the line. | No |
+| `angle` |`number`| The angle of the line (in degrees). | No |
+| `length` |`number`| The length of the line. | No |
 
 

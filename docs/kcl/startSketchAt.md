@@ -17,7 +17,7 @@ startSketchAt(data: [number]) -> Sketch
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
+| `data` | `[number]` |  | Yes |
 
 ### Returns
 
