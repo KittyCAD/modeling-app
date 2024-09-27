@@ -9,7 +9,7 @@ Make the inside of a 3D object hollow.
 Remove volume from a 3-dimensional shape such that a wall of the provided thickness remains around the exterior of the shape.
 
 ```js
-hollow(thickness: number, extrude_group: ExtrudeGroup) -> ExtrudeGroup
+hollow(thickness: number, solid: Solid) -> Solid
 ```
 
 
@@ -18,11 +18,11 @@ hollow(thickness: number, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `thickness` | `number` |  | Yes |
-| `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
 
 
 ### Examples

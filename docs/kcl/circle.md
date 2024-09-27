@@ -9,7 +9,7 @@ Construct a 2-dimensional circle, of the specified radius, centered at
 the provided (x, y) origin point.
 
 ```js
-circle(data: CircleData, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: TagDeclarator) -> SketchGroup
+circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -18,12 +18,12 @@ circle(data: CircleData, sketch_surface_or_group: SketchSurfaceOrGroup, tag?: Ta
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`CircleData`](/docs/kcl/types/CircleData) | Data for drawing an circle | Yes |
-| `sketch_surface_or_group` | [`SketchSurfaceOrGroup`](/docs/kcl/types/SketchSurfaceOrGroup) | A sketch surface or a sketch group. | Yes |
+| `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

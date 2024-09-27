@@ -89,5 +89,5 @@ gen_test_fail!(
     pipe_substitution_inside_function_called_from_pipeline,
     "semantic: cannot use % outside a pipe expression"
 );
-gen_test!(sketch_group_in_object);
+gen_test!(sketch_in_object);
 gen_test!(add_lots);

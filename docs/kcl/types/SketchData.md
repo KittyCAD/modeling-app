@@ -1,10 +1,10 @@
 ---
 title: "SketchData"
-excerpt: "Data for start sketch on. You can start a sketch on a plane or an extrude group."
+excerpt: "Data for start sketch on. You can start a sketch on a plane or an solid."
 layout: manual
 ---
 
-Data for start sketch on. You can start a sketch on a plane or an extrude group.
+Data for start sketch on. You can start a sketch on a plane or an solid.
 
 
 
@@ -104,7 +104,7 @@ A defined plane.
 
 
 ----
-An extrude group is a collection of extrude surfaces.
+An solid is a collection of extrude surfaces.
 
 
 **Type:** `object`
@@ -117,11 +117,11 @@ An extrude group is a collection of extrude surfaces.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `__meta` |`array`| Metadata. | No |
-| `edgeCuts` |`array`| Chamfers or fillets on this extrude group. | No |
+| `edgeCuts` |`array`| Chamfers or fillets on this solid. | No |
 | `endCapId` |`string` (`uuid`)| The id of the extrusion end cap | No |
-| `height` |`number` (`double`)| The height of the extrude group. | No |
-| `id` |`string` (`uuid`)| The id of the extrude group. | No |
-| `sketchGroup` |`object`| The sketch group. | No |
+| `height` |`number` (`double`)| The height of the solid. | No |
+| `id` |`string` (`uuid`)| The id of the solid. | No |
+| `sketch` |`object`| The sketch. | No |
 | `startCapId` |`string` (`uuid`)| The id of the extrusion start cap | No |
 | `value` |`array`| The extrude surfaces. | No |
 

@@ -10,7 +10,7 @@ some part of an imaginary circle of the specified radius.
 The arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for &#x27;offset&#x27; degrees along the imaginary circle.
 
 ```js
-tangentialArc(data: TangentialArcData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+tangentialArc(data: TangentialArcData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -19,12 +19,12 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup, tag?: TagDecla
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`TangentialArcData`](/docs/kcl/types/TangentialArcData) | Data to draw a tangential arc. | Yes |
-| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

@@ -16,7 +16,6 @@ Data for a mirror.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `axis` |`anyOf`
-| Axis to use as mirror. | No |
+| `axis` |`anyOf`| Axis to use as mirror. | No |
 
 

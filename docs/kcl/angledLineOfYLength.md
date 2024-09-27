@@ -9,7 +9,7 @@ Create a line segment from the current 2-dimensional sketch origin
 along some angle (in degrees) for some relative length in the &#x27;y&#x27; dimension.
 
 ```js
-angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+angledLineOfYLength(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -18,12 +18,12 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup, tag?: TagDe
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`AngledLineData`](/docs/kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
-| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

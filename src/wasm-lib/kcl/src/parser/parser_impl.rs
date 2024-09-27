@@ -701,19 +701,25 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
 /// E.g. `person.name`
 fn member_expression_dot(i: TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     period.parse_next(i)?;
-    let property = identifier.parse_next(i)?;
-    let end = property.end;
-    Ok((LiteralIdentifier::Identifier(Box::new(property)), end, false))
+    let property = alt((
+        sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
+        identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+    ))
+    .parse_next(i)?;
+    let end = property.end();
+    Ok((property, end, false))
 }
 
 /// E.g. `people[0]` or `people[i]` or `people['adam']`
 fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = alt((
+        sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
         literal.map(Box::new).map(LiteralIdentifier::Literal),
         identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
+
     let end = close_bracket.parse_next(i)?.end;
     let computed = matches!(property, LiteralIdentifier::Identifier(_));
     Ok((property, end, computed))
@@ -1191,6 +1197,26 @@ fn identifier(i: TokenSlice) -> PResult<Identifier> {
     any.try_map(Identifier::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
         .parse_next(i)
+}
+
+fn sketch_keyword(i: TokenSlice) -> PResult<Identifier> {
+    any.try_map(|token: Token| {
+        if token.token_type == TokenType::Type && token.value == "sketch" {
+            Ok(Identifier {
+                start: token.start,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("Expected 'sketch' keyword, but found {}", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'sketch' keyword"))
+    .parse_next(i)
 }
 
 impl TryFrom<Token> for TagDeclarator {
@@ -2568,6 +2594,18 @@ const height = 1 - obj.a"#,
     }
 
     #[test]
+    fn test_parse_member_expression_allowed_type_in_expression() {
+        let tokens = crate::token::lexer(
+            r#"const obj = { thing: 1 }
+startSketchOn(obj.sketch)"#,
+        )
+        .unwrap();
+
+        let parser = crate::parser::Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
     fn test_parse_member_expression_binary_expression_brace_number_first() {
         let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
@@ -3182,7 +3220,7 @@ thing(false)
     }
 
     #[test]
-    fn test_member_expression_sketch_group() {
+    fn test_member_expression_sketch() {
         let some_program_string = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)

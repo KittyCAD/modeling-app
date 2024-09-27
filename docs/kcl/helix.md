@@ -9,7 +9,7 @@ Create a helix on a cylinder.
 
 
 ```js
-helix(data: HelixData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
+helix(data: HelixData, solid: Solid) -> Solid
 ```
 
 
@@ -18,11 +18,11 @@ helix(data: HelixData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`HelixData`](/docs/kcl/types/HelixData) | Data for helices. | Yes |
-| `extrude_group` | [`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+[`Solid`](/docs/kcl/types/Solid) - An solid is a collection of extrude surfaces.
 
 
 ### Examples

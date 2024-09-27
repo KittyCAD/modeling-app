@@ -11,7 +11,7 @@ The &#x60;patternTransform&#x60; call itself takes a number for how many total i
 The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument &#x60;1&#x60;. This simplifies your math: the transform function can rely on id &#x60;0&#x60; being the original instance passed into the &#x60;patternTransform&#x60;. See the examples.
 
 ```js
-patternTransform(total_instances: u32, transform_function: FunctionParam, extrude_group_set: ExtrudeGroupSet) -> [ExtrudeGroup]
+patternTransform(total_instances: u32, transform_function: FunctionParam, solid_set: SolidSet) -> [Solid]
 ```
 
 
@@ -21,11 +21,11 @@ patternTransform(total_instances: u32, transform_function: FunctionParam, extrud
 |----------|------|-------------|----------|
 | `total_instances` | `u32` |  | Yes |
 | `transform_function` | `FunctionParam` |  | Yes |
-| `extrude_group_set` | [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
+| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | A solid or a group of solids. | Yes |
 
 ### Returns
 
-[`[ExtrudeGroup]`](/docs/kcl/types/[ExtrudeGroup]) 
+[`[Solid]`](/docs/kcl/types/[Solid]) 
 
 
 ### Examples

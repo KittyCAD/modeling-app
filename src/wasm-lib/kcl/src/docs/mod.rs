@@ -68,12 +68,12 @@ impl StdLibFnArg {
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
-        if self.type_ == "SketchGroup"
-            || self.type_ == "SketchGroupSet"
-            || self.type_ == "ExtrudeGroup"
-            || self.type_ == "ExtrudeGroupSet"
+        if self.type_ == "Sketch"
+            || self.type_ == "SketchSet"
+            || self.type_ == "Solid"
+            || self.type_ == "SolidSet"
             || self.type_ == "SketchSurface"
-            || self.type_ == "SketchSurfaceOrGroup"
+            || self.type_ == "SketchOrSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
         } else if self.type_ == "TagDeclarator" && self.required {
