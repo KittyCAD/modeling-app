@@ -9,7 +9,7 @@ Draw an angled line from the current origin, constructing a line segment
 such that the newly created line intersects the desired target line segment.
 
 ```js
-angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
+angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -18,12 +18,12 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`AngledLineThatIntersectsData`](/docs/kcl/types/AngledLineThatIntersectsData) | Data for drawing an angled line that intersects with a given line. | Yes |
-| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

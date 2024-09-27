@@ -9,7 +9,7 @@ Take a starting value. Then, for each element of an array, calculate the next va
 using the previous value and the element.
 
 ```js
-arrayReduce(array: [u64], start: SketchGroup, reduce_fn: FunctionParam) -> SketchGroup
+arrayReduce(array: [u64], start: Sketch, reduce_fn: FunctionParam) -> Sketch
 ```
 
 
@@ -18,12 +18,12 @@ arrayReduce(array: [u64], start: SketchGroup, reduce_fn: FunctionParam) -> Sketc
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `array` | [`[u64]`](/docs/kcl/types/[u64]) |  | Yes |
-| `start` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `start` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `reduce_fn` | `FunctionParam` |  | Yes |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples
@@ -31,8 +31,8 @@ arrayReduce(array: [u64], start: SketchGroup, reduce_fn: FunctionParam) -> Sketc
 ```js
 fn decagon = (radius) => {
   let step = 1 / 10 * tau()
-  let sketch = startSketchAt([cos(0) * radius, sin(0) * radius])
-  return arrayReduce([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], sketch, (i, sg) => {
+  let sketch001 = startSketchAt([cos(0) * radius, sin(0) * radius])
+  return arrayReduce([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], sketch001, (i, sg) => {
   let x = cos(step * i) * radius
   let y = sin(step * i) * radius
   return lineTo([x, y], sg)

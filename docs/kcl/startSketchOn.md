@@ -17,12 +17,12 @@ startSketchOn(data: SketchData, tag?: FaceTag) -> SketchSurface
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`SketchData`](/docs/kcl/types/SketchData) | Data for start sketch on. You can start a sketch on a plane or an extrude group. | Yes |
+| `data` | [`SketchData`](/docs/kcl/types/SketchData) | Data for start sketch on. You can start a sketch on a plane or an solid. | Yes |
 | `tag` | [`FaceTag`](/docs/kcl/types/FaceTag) | A tag for a face. | No |
 
 ### Returns
 
-[`SketchSurface`](/docs/kcl/types/SketchSurface) - A sketch group type.
+[`SketchSurface`](/docs/kcl/types/SketchSurface) - A sketch type.
 
 
 ### Examples

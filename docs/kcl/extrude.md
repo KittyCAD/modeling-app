@@ -9,7 +9,7 @@ Extend a 2-dimensional sketch through a third dimension in order to
 create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
 
 ```js
-extrude(length: number, sketch_group_set: SketchGroupSet) -> ExtrudeGroupSet
+extrude(length: number, sketch_set: SketchSet) -> SolidSet
 ```
 
 
@@ -18,11 +18,11 @@ extrude(length: number, sketch_group_set: SketchGroupSet) -> ExtrudeGroupSet
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `length` | `number` |  | Yes |
-| `sketch_group_set` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
+| `sketch_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
 
 ### Returns
 
-[`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) - A extrude group or a group of extrude groups.
+[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
 
 
 ### Examples

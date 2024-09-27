@@ -126,8 +126,8 @@ impl crate::docs::StdLibFn for MyFunc {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "[SketchGroup]".to_string(),
-            schema: <Vec<SketchGroup>>::json_schema(&mut generator),
+            type_: "[Sketch]".to_string(),
+            schema: <Vec<Sketch>>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -181,6 +181,6 @@ impl crate::docs::StdLibFn for MyFunc {
 #[doc = r" ```"]
 fn inner_my_func(
     #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
-) -> Result<Vec<Box<SketchGroup>>> {
+) -> Result<Vec<Box<Sketch>>> {
     args
 }

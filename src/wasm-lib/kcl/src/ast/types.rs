@@ -23,8 +23,8 @@ use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, SketchGroup, SourceRange, StatementKind,
-        TagEngineInfo, TagIdentifier, UserVal,
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, Sketch, SourceRange, StatementKind, TagEngineInfo,
+        TagIdentifier, UserVal,
     },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
@@ -1200,24 +1200,24 @@ impl CallExpression {
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
 
-                // If the return result is a sketch group or extrude group, we want to update the
+                // If the return result is a sketch or solid, we want to update the
                 // memory for the tags of the group.
                 // TODO: This could probably be done in a better way, but as of now this was my only idea
                 // and it works.
                 match result {
                     KclValue::UserVal(ref mut uval) => {
-                        uval.mutate(|sketch_group: &mut SketchGroup| {
-                            for (_, tag) in sketch_group.tags.iter() {
+                        uval.mutate(|sketch: &mut Sketch| {
+                            for (_, tag) in sketch.tags.iter() {
                                 exec_state.memory.update_tag(&tag.value, tag.clone())?;
                             }
                             Ok::<_, KclError>(())
                         })?;
                     }
-                    KclValue::ExtrudeGroup(ref mut extrude_group) => {
-                        for value in &extrude_group.value {
+                    KclValue::Solid(ref mut solid) => {
+                        for value in &solid.value {
                             if let Some(tag) = value.get_tag() {
                                 // Get the past tag and update it.
-                                let mut t = if let Some(t) = extrude_group.sketch_group.tags.get(&tag.name) {
+                                let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
                                     t.clone()
                                 } else {
                                     // It's probably a fillet or a chamfer.
@@ -1228,7 +1228,7 @@ impl CallExpression {
                                             id: value.get_id(),
                                             surface: Some(value.clone()),
                                             path: None,
-                                            sketch_group: extrude_group.id,
+                                            sketch: solid.id,
                                         }),
                                         meta: vec![Metadata {
                                             source_range: tag.clone().into(),
@@ -1245,23 +1245,23 @@ impl CallExpression {
 
                                 let mut info = info.clone();
                                 info.surface = Some(value.clone());
-                                info.sketch_group = extrude_group.id;
+                                info.sketch = solid.id;
                                 t.info = Some(info);
 
                                 exec_state.memory.update_tag(&tag.name, t.clone())?;
 
-                                // update the sketch group tags.
-                                extrude_group.sketch_group.tags.insert(tag.name.clone(), t);
+                                // update the sketch tags.
+                                solid.sketch.tags.insert(tag.name.clone(), t);
                             }
                         }
 
-                        // Find the stale sketch group in memory and update it.
+                        // Find the stale sketch in memory and update it.
                         if let Some(current_env) = exec_state
                             .memory
                             .environments
                             .get_mut(exec_state.memory.current_env.index())
                         {
-                            current_env.update_sketch_group_tags(&extrude_group.sketch_group);
+                            current_env.update_sketch_tags(&solid.sketch);
                         }
                     }
                     _ => {}
@@ -3179,12 +3179,12 @@ pub enum FnArgPrimitive {
     Boolean,
     /// A tag.
     Tag,
-    /// A sketch group type.
-    SketchGroup,
+    /// A sketch type.
+    Sketch,
     /// A sketch surface type.
     SketchSurface,
-    /// An extrude group type.
-    ExtrudeGroup,
+    /// An solid type.
+    Solid,
 }
 
 impl FnArgPrimitive {
@@ -3194,9 +3194,9 @@ impl FnArgPrimitive {
             FnArgPrimitive::Number => b"number",
             FnArgPrimitive::Boolean => b"boolean",
             FnArgPrimitive::Tag => b"tag",
-            FnArgPrimitive::SketchGroup => b"sketchgroup",
-            FnArgPrimitive::SketchSurface => b"sketchsurface",
-            FnArgPrimitive::ExtrudeGroup => b"extrudegroup",
+            FnArgPrimitive::Sketch => b"sketch",
+            FnArgPrimitive::SketchSurface => b"sketch_surface",
+            FnArgPrimitive::Solid => b"solid",
         }
     }
 }

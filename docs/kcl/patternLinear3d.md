@@ -9,7 +9,7 @@ Repeat a 3-dimensional solid along a linear path, with a dynamic amount
 of distance between each repetition, some specified number of times.
 
 ```js
-patternLinear3d(data: LinearPattern3dData, extrude_group_set: ExtrudeGroupSet) -> [ExtrudeGroup]
+patternLinear3d(data: LinearPattern3dData, solid_set: SolidSet) -> [Solid]
 ```
 
 
@@ -18,11 +18,11 @@ patternLinear3d(data: LinearPattern3dData, extrude_group_set: ExtrudeGroupSet) -
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `data` | [`LinearPattern3dData`](/docs/kcl/types/LinearPattern3dData) | Data for a linear pattern on a 3D model. | Yes |
-| `extrude_group_set` | [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
+| `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | A solid or a group of solids. | Yes |
 
 ### Returns
 
-[`[ExtrudeGroup]`](/docs/kcl/types/[ExtrudeGroup]) 
+[`[Solid]`](/docs/kcl/types/[Solid]) 
 
 
 ### Examples

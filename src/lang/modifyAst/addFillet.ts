@@ -8,7 +8,7 @@ import {
   Expr,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from '../wasm'
 import {
   createCallExpressionStdLib,
@@ -147,13 +147,13 @@ export function getPathToExtrudeForSegmentSelection(
   if (err(varDecNode)) return varDecNode
   const sketchVar = varDecNode.node.declarations[0].id.name
 
-  const sketchGroup = sketchGroupFromKclValue(
+  const sketch = sketchFromKclValue(
     kclManager.programMemory.get(sketchVar),
     sketchVar
   )
-  if (trap(sketchGroup)) return sketchGroup
+  if (trap(sketch)) return sketch
 
-  const extrusion = getSweepFromSuspectedPath(sketchGroup.id, artifactGraph)
+  const extrusion = getSweepFromSuspectedPath(sketch.id, artifactGraph)
   if (err(extrusion)) return extrusion
 
   const pathToExtrudeNode = getNodePathFromSourceRange(

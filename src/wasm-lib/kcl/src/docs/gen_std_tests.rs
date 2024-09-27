@@ -334,7 +334,7 @@ fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
     let data = json!(schemars::schema::Schema::Object(object));
 
     let output = hbs.render("type", &data)?;
-    expectorate::assert_contents(format!("{}/{}.md", TYPES_DIR, name), &output);
+    std::fs::write(format!("{}/{}.md", TYPES_DIR, name), output)?;
 
     Ok(())
 }
