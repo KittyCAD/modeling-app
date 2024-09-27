@@ -17,9 +17,9 @@ angleToMatchLengthY(tag: TagIdentifier, to: number, sketch_group: SketchGroup) -
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](kcl/types#tag-identifier) |  | Yes |
+| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
 | `to` | `number` |  | Yes |
-| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 
 ### Returns
 

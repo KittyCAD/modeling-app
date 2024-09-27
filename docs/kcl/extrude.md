@@ -18,11 +18,11 @@ extrude(length: number, sketch_group_set: SketchGroupSet) -> ExtrudeGroupSet
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `length` | `number` |  | Yes |
-| `sketch_group_set` | [`SketchGroupSet`](kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
+| `sketch_group_set` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
 
 ### Returns
 
-[`ExtrudeGroupSet`](kcl/types/ExtrudeGroupSet) - A extrude group or a group of extrude groups.
+[`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) - A extrude group or a group of extrude groups.
 
 
 ### Examples

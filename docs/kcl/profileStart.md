@@ -17,11 +17,11 @@ profileStart(sketch_group: SketchGroup) -> [number]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 
 ### Returns
 
-[`[number]`](kcl/types/[number]) 
+[`[number]`](/docs/kcl/types/[number]) 
 
 
 ### Examples

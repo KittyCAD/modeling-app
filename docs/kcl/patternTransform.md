@@ -21,11 +21,11 @@ patternTransform(total_instances: u32, transform_function: FunctionParam, extrud
 |----------|------|-------------|----------|
 | `total_instances` | `u32` |  | Yes |
 | `transform_function` | `FunctionParam` |  | Yes |
-| `extrude_group_set` | [`ExtrudeGroupSet`](kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
+| `extrude_group_set` | [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
 
 ### Returns
 
-[`[ExtrudeGroup]`](kcl/types/[ExtrudeGroup]) 
+[`[ExtrudeGroup]`](/docs/kcl/types/[ExtrudeGroup]) 
 
 
 ### Examples
