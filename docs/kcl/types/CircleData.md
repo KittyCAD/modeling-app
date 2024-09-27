@@ -1,4 +1,8 @@
-# CircleData
+---
+title: "CircleData"
+excerpt: "Data for drawing an circle"
+layout: manual
+---
 
 Data for drawing an circle
 

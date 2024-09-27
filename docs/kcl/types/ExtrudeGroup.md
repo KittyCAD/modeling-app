@@ -1,4 +1,8 @@
-# ExtrudeGroup
+---
+title: "ExtrudeGroup"
+excerpt: "An extrude group is a collection of extrude surfaces."
+layout: manual
+---
 
 An extrude group is a collection of extrude surfaces.
 

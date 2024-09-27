@@ -1,4 +1,8 @@
-# PolarCoordsData
+---
+title: "PolarCoordsData"
+excerpt: "Data for polar coordinates."
+layout: manual
+---
 
 Data for polar coordinates.
 

@@ -1,4 +1,8 @@
-# ShellData
+---
+title: "ShellData"
+excerpt: "Data for shells."
+layout: manual
+---
 
 Data for shells.
 

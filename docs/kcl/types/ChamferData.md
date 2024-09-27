@@ -1,4 +1,8 @@
-# ChamferData
+---
+title: "ChamferData"
+excerpt: "Data for chamfers."
+layout: manual
+---
 
 Data for chamfers.
 

@@ -1,4 +1,8 @@
-# LinearPattern3dData
+---
+title: "LinearPattern3dData"
+excerpt: "Data for a linear pattern on a 3D model."
+layout: manual
+---
 
 Data for a linear pattern on a 3D model.
 

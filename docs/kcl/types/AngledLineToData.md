@@ -1,4 +1,8 @@
-# AngledLineToData
+---
+title: "AngledLineToData"
+excerpt: "Data to draw an angled line to a point."
+layout: manual
+---
 
 Data to draw an angled line to a point.
 

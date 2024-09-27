@@ -13,7 +13,7 @@ layout: manual
 {{description}}
 
 ```js
-{{fn_signature}}
+{{{fn_signature}}}
 ```
 
 {{#if tags}}
@@ -38,7 +38,7 @@ layout: manual
 {{#if return_value}}
 ### Returns
 
-`{{return_value.type_}}` - {{#if return_value.description}}{{return_value.description}}{{/if}}
+`{{return_value.type_}}` {{#if return_value.description}}- {{return_value.description}}{{/if}}
 
 {{/if}}
 
@@ -47,7 +47,7 @@ layout: manual
 
 {{#each examples}}
 ```js
-{{this}}
+{{{this.content}}}
 ```
 
 {{#unless @root.is_utilities}}

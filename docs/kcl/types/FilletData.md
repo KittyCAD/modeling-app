@@ -1,4 +1,8 @@
-# FilletData
+---
+title: "FilletData"
+excerpt: "Data for fillets."
+layout: manual
+---
 
 Data for fillets.
 

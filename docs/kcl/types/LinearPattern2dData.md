@@ -1,4 +1,8 @@
-# LinearPattern2dData
+---
+title: "LinearPattern2dData"
+excerpt: "Data for a linear pattern on a 2D sketch."
+layout: manual
+---
 
 Data for a linear pattern on a 2D sketch.
 

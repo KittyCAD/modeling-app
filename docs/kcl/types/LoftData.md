@@ -1,4 +1,8 @@
-# LoftData
+---
+title: "LoftData"
+excerpt: "Data for a loft."
+layout: manual
+---
 
 Data for a loft.
 

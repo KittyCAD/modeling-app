@@ -1,4 +1,8 @@
-# TagDeclarator
+---
+title: "TagDeclarator"
+excerpt: ""
+layout: manual
+---
 
 
 

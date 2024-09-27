@@ -1,4 +1,8 @@
-# Mirror2dData
+---
+title: "Mirror2dData"
+excerpt: "Data for a mirror."
+layout: manual
+---
 
 Data for a mirror.
 

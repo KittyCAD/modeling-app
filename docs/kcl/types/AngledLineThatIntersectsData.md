@@ -1,4 +1,8 @@
-# AngledLineThatIntersectsData
+---
+title: "AngledLineThatIntersectsData"
+excerpt: "Data for drawing an angled line that intersects with a given line."
+layout: manual
+---
 
 Data for drawing an angled line that intersects with a given line.
 

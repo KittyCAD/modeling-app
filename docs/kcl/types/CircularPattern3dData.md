@@ -1,4 +1,8 @@
-# CircularPattern3dData
+---
+title: "CircularPattern3dData"
+excerpt: "Data for a circular pattern on a 3D model."
+layout: manual
+---
 
 Data for a circular pattern on a 3D model.
 

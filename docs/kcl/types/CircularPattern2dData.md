@@ -1,4 +1,8 @@
-# CircularPattern2dData
+---
+title: "CircularPattern2dData"
+excerpt: "Data for a circular pattern on a 2D sketch."
+layout: manual
+---
 
 Data for a circular pattern on a 2D sketch.
 

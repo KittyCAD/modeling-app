@@ -1,4 +1,8 @@
-# HelixData
+---
+title: "HelixData"
+excerpt: "Data for helices."
+layout: manual
+---
 
 Data for helices.
 

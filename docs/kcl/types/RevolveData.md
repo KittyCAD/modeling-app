@@ -1,4 +1,8 @@
-# RevolveData
+---
+title: "RevolveData"
+excerpt: "Data for revolution surfaces."
+layout: manual
+---
 
 Data for revolution surfaces.
 

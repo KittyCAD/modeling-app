@@ -1,4 +1,8 @@
-# ImportedGeometry
+---
+title: "ImportedGeometry"
+excerpt: "Data for an imported geometry."
+layout: manual
+---
 
 Data for an imported geometry.
 

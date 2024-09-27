@@ -1,4 +1,8 @@
-# SketchGroup
+---
+title: "SketchGroup"
+excerpt: "A sketch group is a collection of paths."
+layout: manual
+---
 
 A sketch group is a collection of paths.
 

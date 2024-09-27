@@ -105,21 +105,17 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         "examples": examples,
         "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
         "args": internal_fn.args().iter().map(|arg| {
-            let (type_format, should_be_indented) = arg.get_type_string().unwrap();
             json!({
                 "name": arg.name,
                 "type_": arg.type_,
                 "description": arg.description(),
                 "required": arg.required,
-                "type_format": should_be_indented.then_some(type_format),
             })
         }).collect::<Vec<_>>(),
         "return_value": internal_fn.return_value().map(|ret| {
-            let (type_format, should_be_indented) = ret.get_type_string().unwrap();
             json!({
                 "type_": ret.type_,
                 "description": ret.description(),
-                "type_format": should_be_indented.then_some(type_format),
             })
         }),
     });

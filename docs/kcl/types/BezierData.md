@@ -1,4 +1,8 @@
-# BezierData
+---
+title: "BezierData"
+excerpt: "Data to draw a bezier curve."
+layout: manual
+---
 
 Data to draw a bezier curve.
 
