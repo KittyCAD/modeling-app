@@ -133,12 +133,9 @@ export const test = base.extend<Fixtures>({
   },
 })
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
+test.afterEach(async ({ page, tronApp }, testInfo) => {
   await tearDown(page, testInfo)
+  await tronApp.close()
 })
 
 export { expect } from '@playwright/test'
