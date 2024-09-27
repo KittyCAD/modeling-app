@@ -10,7 +10,7 @@ Only works on unclosed sketches for now.
 Mirror occurs around a local sketch axis rather than a global axis.
 
 ```js
-mirror2d(data: MirrorData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
+mirror2d(data: Mirror2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
 ```
 
 ### Examples
@@ -83,7 +83,7 @@ const example = extrude(10, sketch001)
 
 ### Arguments
 
-* `data`: `MirrorData` - Data for a mirror. (REQUIRED)
+* `data`: `Mirror2dData` - Data for a mirror. (REQUIRED)
 ```js
 {
 	// Axis to use as mirror.

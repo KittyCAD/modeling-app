@@ -6,7 +6,12 @@ use convert_case::Casing;
 use itertools::Itertools;
 use serde_json::json;
 
-use crate::{docs::StdLibFn, std::StdLib};
+use crate::{
+    docs::{is_primitive, StdLibFn},
+    std::StdLib,
+};
+
+const TYPES_DIR: &str = "../../../docs/kcl/types";
 
 fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
     let mut hbs = handlebars::Handlebars::new();
@@ -76,6 +81,20 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         })
         .collect();
 
+    // Generate the type markdown files for each argument.
+    for arg in internal_fn.args() {
+        if !arg.is_primitive()? {
+            generate_type(&arg.type_, &arg.schema)?;
+        }
+    }
+
+    // Generate the type markdown for the return value.
+    if let Some(ret) = internal_fn.return_value() {
+        if !ret.is_primitive()? {
+            generate_type(&ret.type_, &ret.schema)?;
+        }
+    }
+
     let data = json!({
         "name": fn_name,
         "summary": internal_fn.summary(),
@@ -107,6 +126,80 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
 
     let output = hbs.render("function", &data)?;
     std::fs::write(format!("../../../docs/kcl/{}.md", fn_name), output)?;
+
+    Ok(())
+}
+
+fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
+    if name.is_empty() {
+        return Err(anyhow::anyhow!("Empty type name"));
+    }
+
+    let schemars::schema::Schema::Object(o) = schema else {
+        return Err(anyhow::anyhow!(
+            "Failed to get object schema, should have not been a primitive"
+        ));
+    };
+
+    // If we have an array we want to generate the type markdown files for each item in the
+    // array.
+    if let Some(array) = &o.array {
+        // Recursively generate the type markdown files for each item in the array.
+        if let Some(items) = &array.items {
+            match items {
+                schemars::schema::SingleOrVec::Single(item) => {
+                    if is_primitive(item)?.is_some() {
+                        return Ok(());
+                    }
+                    return generate_type(name.trim_start_matches('[').trim_end_matches(']'), item);
+                }
+                schemars::schema::SingleOrVec::Vec(items) => {
+                    for item in items {
+                        if is_primitive(item)?.is_some() {
+                            continue;
+                        }
+                        generate_type(name.trim_start_matches('[').trim_end_matches(']'), item)?;
+                    }
+                    return Ok(());
+                }
+            }
+        } else {
+            return Err(anyhow::anyhow!("Failed to get array items"));
+        }
+    }
+
+    // Make sure the name is pascal cased.
+    if !(name.is_case(convert_case::Case::Pascal)
+        || name == "CircularPattern2dData"
+        || name == "CircularPattern3dData"
+        || name == "LinearPattern2dData"
+        || name == "LinearPattern3dData"
+        || name == "Mirror2dData")
+    {
+        return Err(anyhow::anyhow!("Type name is not pascal cased: {}", name));
+    }
+
+    // Make sure the types directory exists.
+    std::fs::create_dir_all(TYPES_DIR)?;
+
+    let mut hbs = handlebars::Handlebars::new();
+    hbs.register_template_string("type", include_str!("templates/type.hbs"))?;
+
+    // Add the name as the title.
+    let mut object = o.clone();
+    if let Some(metadata) = object.metadata.as_mut() {
+        metadata.title = Some(name.to_string());
+    } else {
+        object.metadata = Some(Box::new(schemars::schema::Metadata {
+            title: Some(name.to_string()),
+            ..Default::default()
+        }));
+    }
+
+    let data = json!(schemars::schema::Schema::Object(object));
+
+    let output = hbs.render("type", &data)?;
+    std::fs::write(format!("{}/{}.md", TYPES_DIR, name), output)?;
 
     Ok(())
 }
@@ -144,6 +237,9 @@ fn clean_function_name(name: &str) -> String {
 
 #[test]
 fn test_generate_stdlib_markdown_docs() {
+    // Clean the old files.
+    std::fs::remove_dir_all(TYPES_DIR).unwrap_or_default();
+
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 

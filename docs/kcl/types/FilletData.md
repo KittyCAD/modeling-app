@@ -1,0 +1,16 @@
+# FilletData
+
+Data for fillets.
+
+
+**Type:** `object`
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `radius` | `number` | The radius of the fillet. | No |
+| `tags` | `array` | The tags of the paths you want to fillet. | No |
+| `tolerance` | `number` | The tolerance for the fillet. | No |
+
+

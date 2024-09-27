@@ -1,0 +1,60 @@
+# {{title}}
+
+{{#if description}}
+{{description}}
+{{/if}}
+
+{{#if $schema}}
+**Schema:** `{{$schema}}`
+{{/if}}
+
+{{#if type}}
+**Type:** `{{type}}`
+{{/if}}
+
+{{#if properties}}
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+{{#each properties}}
+| `{{@key}}` | `{{this.type}}` | {{this.description}} | {{#if (lookup ../required @key)}}Yes{{else}}No{{/if}} |
+{{/each}}
+{{/if}}
+
+{{#if definitions}}
+## Definitions
+
+{{#each definitions}}
+### {{@key}}
+
+{{#if this.type}}
+**Type:** `{{this.type}}`
+{{/if}}
+
+{{#if this.description}}
+{{this.description}}
+{{/if}}
+
+{{#if this.properties}}
+#### Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+{{#each this.properties}}
+| `{{@key}}` | `{{this.type}}` | {{this.description}} | {{#if (lookup ../required @key)}}Yes{{else}}No{{/if}} |
+{{/each}}
+{{/if}}
+
+{{/each}}
+{{/if}}
+
+{{#if examples}}
+## Examples
+
+{{#each examples}}
+```json
+{{json this}}
+```
+{{/each}}
+{{/if}}

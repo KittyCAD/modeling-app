@@ -67,6 +67,11 @@ impl StdLibFnArg {
         }
     }
 
+    /// If the argument is a primitive.
+    pub fn is_primitive(&self) -> Result<bool> {
+        is_primitive(&self.schema).map(|r| r.is_some())
+    }
+
     pub fn get_autocomplete_string(&self) -> Result<String> {
         get_autocomplete_string_from_schema(&self.schema.clone())
     }
@@ -322,6 +327,65 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::Schema) -> 
     }
 
     None
+}
+
+pub fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitive>> {
+    match schema {
+        schemars::schema::Schema::Object(o) => {
+            if o.enum_values.is_some() {
+                // It's an enum so it's not a primitive.
+                return Ok(None);
+            }
+
+            // Check if there
+            if let Some(format) = &o.format {
+                if format == "uuid" {
+                    return Ok(Some(Primitive::Uuid));
+                } else if format == "double"
+                    || format == "uint"
+                    || format == "int32"
+                    || format == "int64"
+                    || format == "uint8"
+                    || format == "uint32"
+                    || format == "uint64"
+                {
+                    return Ok(Some(Primitive::Number));
+                } else {
+                    anyhow::bail!("unknown format: {}", format);
+                }
+            }
+
+            if o.object.is_some() {
+                // It's an object so it's not a primitive.
+                return Ok(None);
+            }
+
+            if o.array.is_some() {
+                return Ok(None);
+            }
+
+            if o.subschemas.is_some() {
+                return Ok(None);
+            }
+
+            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                if schemars::schema::InstanceType::Boolean == **single {
+                    return Ok(Some(Primitive::Bool));
+                } else if schemars::schema::InstanceType::String == **single
+                    || schemars::schema::InstanceType::Null == **single
+                {
+                    return Ok(Some(Primitive::String));
+                }
+            }
+
+            if o.reference.is_some() {
+                return Ok(None);
+            }
+
+            anyhow::bail!("unknown type: {:#?}", o)
+        }
+        schemars::schema::Schema::Bool(_) => Ok(Some(Primitive::Bool)),
+    }
 }
 
 pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<(String, bool)> {
