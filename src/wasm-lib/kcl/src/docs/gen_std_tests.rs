@@ -152,7 +152,7 @@ fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
 
     let output = hbs.render("index", &data)?;
 
-    std::fs::write("../../../docs/kcl/index.md", output)?;
+    expectorate::assert_contents("../../../docs/kcl/index.md", &output);
 
     Ok(())
 }
@@ -245,18 +245,18 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
     for type_name in types {
         let formatted_type_name = format!("`{}`", type_name);
         if type_name == "TagDeclarator" {
-            let link = format!("[`{}`](kcl/types#tag-declaration)", "TagDeclarator");
+            let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
             output = output.replace(&formatted_type_name, &link);
         } else if type_name == "TagIdentifier" {
-            let link = format!("[`{}`](kcl/types#tag-identifier)", "TagIdentifier");
+            let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
             output = output.replace(&formatted_type_name, &link);
         } else {
-            let link = format!("[`{}`](kcl/types/{})", type_name, type_name);
+            let link = format!("[`{}`](/docs/kcl/types/{})", type_name, type_name);
             output = output.replace(&formatted_type_name, &link);
         }
     }
 
-    std::fs::write(format!("../../../docs/kcl/{}.md", fn_name), output)?;
+    expectorate::assert_contents(format!("../../../docs/kcl/{}.md", fn_name), &output);
 
     Ok(())
 }
@@ -334,7 +334,7 @@ fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
     let data = json!(schemars::schema::Schema::Object(object));
 
     let output = hbs.render("type", &data)?;
-    std::fs::write(format!("{}/{}.md", TYPES_DIR, name), output)?;
+    expectorate::assert_contents(format!("{}/{}.md", TYPES_DIR, name), &output);
 
     Ok(())
 }

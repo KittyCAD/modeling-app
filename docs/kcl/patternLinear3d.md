@@ -17,12 +17,12 @@ patternLinear3d(data: LinearPattern3dData, extrude_group_set: ExtrudeGroupSet) -
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`LinearPattern3dData`](kcl/types/LinearPattern3dData) | Data for a linear pattern on a 3D model. | Yes |
-| `extrude_group_set` | [`ExtrudeGroupSet`](kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
+| `data` | [`LinearPattern3dData`](/docs/kcl/types/LinearPattern3dData) | Data for a linear pattern on a 3D model. | Yes |
+| `extrude_group_set` | [`ExtrudeGroupSet`](/docs/kcl/types/ExtrudeGroupSet) | A extrude group or a group of extrude groups. | Yes |
 
 ### Returns
 
-[`[ExtrudeGroup]`](kcl/types/[ExtrudeGroup]) 
+[`[ExtrudeGroup]`](/docs/kcl/types/[ExtrudeGroup]) 
 
 
 ### Examples

@@ -21,7 +21,7 @@ max(args: [number]) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `args` | [`[number]`](kcl/types/[number]) |  | Yes |
+| `args` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
 
 ### Returns
 

@@ -17,12 +17,12 @@ patternLinear2d(data: LinearPattern2dData, sketch_group_set: SketchGroupSet) -> 
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`LinearPattern2dData`](kcl/types/LinearPattern2dData) | Data for a linear pattern on a 2D sketch. | Yes |
-| `sketch_group_set` | [`SketchGroupSet`](kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
+| `data` | [`LinearPattern2dData`](/docs/kcl/types/LinearPattern2dData) | Data for a linear pattern on a 2D sketch. | Yes |
+| `sketch_group_set` | [`SketchGroupSet`](/docs/kcl/types/SketchGroupSet) | A sketch group or a group of sketch groups. | Yes |
 
 ### Returns
 
-[`[SketchGroup]`](kcl/types/[SketchGroup]) 
+[`[SketchGroup]`](/docs/kcl/types/[SketchGroup]) 
 
 
 ### Examples

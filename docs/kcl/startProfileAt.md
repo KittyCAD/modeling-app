@@ -17,13 +17,13 @@ startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` | [`[number]`](kcl/types/[number]) |  | Yes |
-| `sketch_surface` | [`SketchSurface`](kcl/types/SketchSurface) | A sketch group type. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+| `to` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
+| `sketch_surface` | [`SketchSurface`](/docs/kcl/types/SketchSurface) | A sketch group type. | Yes |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

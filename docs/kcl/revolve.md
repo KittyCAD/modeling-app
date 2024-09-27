@@ -18,12 +18,12 @@ revolve(data: RevolveData, sketch_group: SketchGroup) -> ExtrudeGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`RevolveData`](kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
-| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `data` | [`RevolveData`](/docs/kcl/types/RevolveData) | Data for revolution surfaces. | Yes |
+| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+[`ExtrudeGroup`](/docs/kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
 
 
 ### Examples
