@@ -11,11 +11,75 @@ use crate::{
     std::StdLib,
 };
 
-const TYPES_DIR: &str = "../../../docs/kcl/types";
+const TYPES_DIR: &str = "../../../docs/kcl/type";
+
+fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
+    let mut hbs = handlebars::Handlebars::new();
+    // Register the 'json' helper
+    hbs.register_helper(
+        "json",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+                out.write(&serde_json::to_string(&param).unwrap())?;
+                Ok(())
+            },
+        ),
+    );
+
+    // Register the 'basename' helper
+    hbs.register_helper(
+        "basename",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+                let basename = param.split('/').last().unwrap_or("");
+                out.write(basename)?;
+                Ok(())
+            },
+        ),
+    );
+
+    // Register the 'lowercase' helper
+    hbs.register_helper(
+        "lowercase",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+                out.write(&param.to_lowercase())?;
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_template_string("schemaType", include_str!("templates/schemaType.hbs"))?;
+    hbs.register_template_string("properties", include_str!("templates/properties.hbs"))?;
+    hbs.register_template_string("propertyType", include_str!("templates/propertyType.hbs"))?;
+    hbs.register_template_string("schema", include_str!("templates/schema.hbs"))?;
+    hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
+    hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
+    hbs.register_template_string("type", include_str!("templates/type.hbs"))?;
+
+    Ok(hbs)
+}
 
 fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
-    let mut hbs = handlebars::Handlebars::new();
-    hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
+    let hbs = init_handlebars()?;
 
     let mut functions = Vec::new();
 
@@ -45,8 +109,7 @@ fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
 }
 
 fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
-    let mut hbs = handlebars::Handlebars::new();
-    hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
+    let hbs = init_handlebars()?;
 
     if internal_fn.unpublished() {
         return Ok(());
@@ -206,8 +269,7 @@ fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
     // Make sure the types directory exists.
     std::fs::create_dir_all(TYPES_DIR)?;
 
-    let mut hbs = handlebars::Handlebars::new();
-    hbs.register_template_string("type", include_str!("templates/type.hbs"))?;
+    let hbs = init_handlebars()?;
 
     // Add the name as the title.
     let mut object = o.clone();

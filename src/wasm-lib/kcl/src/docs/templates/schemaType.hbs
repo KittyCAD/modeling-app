@@ -1,0 +1,21 @@
+{{
+#if
+ $ref}}
+[{{basename $ref}}](#{{lowercase (basename $ref)}})
+{{else if anyOf}}
+anyOf
+{{else if oneOf}}
+oneOf
+{{else if allOf}}
+allOf
+{{else if enum}}
+enum: {{json enum}}
+{{else}}
+`{{type}}`{{
+#if
+ format}} (`{{format}}`){{
+/if
+}}
+{{
+/if
+}}
