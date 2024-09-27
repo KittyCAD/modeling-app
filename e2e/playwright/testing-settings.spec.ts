@@ -257,7 +257,7 @@ test.describe('Testing settings', () => {
 
   test(
     `Project settings override user settings on desktop`,
-    { tag: ['@electron', '@skipWin']},
+    { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
       test.skip(
         process.platform === 'win32',
