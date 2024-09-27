@@ -105,12 +105,45 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
     Ok(KclValue::ExtrudeGroups { value: extrude_groups })
 }
 
-/// Repeat a 3-dimensional solid by successively applying a transformation (such
-/// as rotation, scale, translation, visibility) on each repetition.
+/// Repeat a 3-dimensional solid, changing it each time.
 ///
-/// The transformation takes a single parameter: an integer representing which
+/// Replicates the 3D solid, applying a transformation function to each replica.
+/// Transformation function could alter rotation, scale, visibility, position, etc.
+///
+/// The `patternTransform` call itself takes a number for how many total instances of
+/// the shape should be. For example, if you use a circle with `patternTransform(4, transform)`
+/// then there will be 4 circles: the original, and 3 created by replicating the original and
+/// calling the transform function on each.
+///
+/// The transform function takes a single parameter: an integer representing which
 /// number replication the transform is for. E.g. the first replica to be transformed
-/// will be passed the argument `1`.
+/// will be passed the argument `1`. This simplifies your math: the transform function can
+/// rely on id `0` being the original instance passed into the `patternTransform`. See the examples.
+/// ```no_run
+/// // Each instance will be shifted along the X axis.
+/// fn transform = (id) => {
+///   return { translate: [4 * id, 0, 0] }
+/// }
+///
+/// // Sketch 4 cylinders.
+/// const sketch001 = startSketchOn('XZ')
+///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> extrude(5, %)
+///   |> patternTransform(4, transform, %)
+/// ```
+/// ```no_run
+/// // Each instance will be shifted along the X axis,
+/// // with a gap between the original (at x = 0) and the first replica
+/// // (at x = 8). This is because `id` starts at 1.
+/// fn transform = (id) => {
+///   return { translate: [4 * (1+id), 0, 0] }
+/// }
+///
+/// const sketch001 = startSketchOn('XZ')
+///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> extrude(5, %)
+///   |> patternTransform(4, transform, %)
+/// ```
 /// ```no_run
 /// fn cube = (length, center) => {
 ///   let l = length/2
@@ -178,15 +211,15 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
      name = "patternTransform",
  }]
 async fn inner_pattern_transform<'a>(
-    num_repetitions: u32,
+    total_instances: u32,
     transform_function: FunctionParam<'a>,
     extrude_group_set: ExtrudeGroupSet,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::with_capacity(usize::try_from(num_repetitions).unwrap());
-    for i in 1..num_repetitions {
+    let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
+    for i in 1..total_instances {
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
