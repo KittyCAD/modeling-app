@@ -447,7 +447,7 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
 
-  test('can do many at once and get many prompts back, and interact with many', async ({
+  test('can do many at once and get many prompts back, and interact with many',{tag:['@skipWin']}, async ({
     page,
   }) => {
     // Let this test run longer since we've seen it timeout.

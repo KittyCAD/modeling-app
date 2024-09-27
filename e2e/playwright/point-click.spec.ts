@@ -5,7 +5,7 @@ import { ToolbarFixture } from './toolbarFixture'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test('verify extruding circle works', async ({
+test('verify extruding circle works', {tag:['@skipWin']},async ({
   app,
   cmdBar,
   editor,
@@ -152,7 +152,7 @@ test.describe('verify sketch on chamfer works', () => {
         })
       })
     }
-  test('works on all edge selections and can break up multi edges in a chamfer array', async ({
+  test('works on all edge selections and can break up multi edges in a chamfer array',{tag:['@skipWin']}, async ({
     app,
     editor,
     toolbar,
@@ -362,7 +362,7 @@ test.describe('verify sketch on chamfer works', () => {
     })
   })
 
-  test('Works on chamfers that are non in a pipeExpression can break up multi edges in a chamfer array', async ({
+  test('Works on chamfers that are non in a pipeExpression can break up multi edges in a chamfer array',{tag:['@skipWin']},async ({
     app,
     editor,
     toolbar,

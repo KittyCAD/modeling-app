@@ -15,7 +15,7 @@ test.afterEach(async ({ page }, testInfo) => {
 
 test.describe('Testing selections', () => {
   test.setTimeout(90_000)
-  test('Selections work on fresh and edited sketch', async ({ page }) => {
+  test('Selections work on fresh and edited sketch',{tag:['@skipWin']}, async ({ page }) => {
     // Skip on windows its being weird.
     test.skip(process.platform === 'win32', 'Skip on windows')
 

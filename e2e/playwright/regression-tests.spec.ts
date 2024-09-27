@@ -221,7 +221,7 @@ const sketch001 = startSketchAt([-0, -0])
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
-  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
+  test('Position _ Is Out Of Range... regression test',{tag:['@skipWin']}, async ({ page }) => {
     // SKip on windows, its being weird.
     test.skip(
       process.platform === 'win32',
@@ -401,7 +401,7 @@ const sketch001 = startSketchAt([-0, -0])
     const successToastMessage = page.getByText(`Exported successfully`)
     await expect(successToastMessage).toBeVisible()
   })
-  test('ensure you can not export while an export is already going', async ({
+  test('ensure you can not export while an export is already going',{tag:['@skipLinux', '@skipWin']}, async ({
     page,
   }) => {
     // This is being weird on ubuntu and windows.
