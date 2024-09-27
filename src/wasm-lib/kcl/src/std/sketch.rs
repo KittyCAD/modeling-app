@@ -1501,9 +1501,11 @@ pub enum ArcData {
     AnglesAndRadius {
         /// The start angle.
         #[serde(rename = "angleStart", alias = "angle_start")]
+        #[schemars(range(min = -360.0, max = 360.0))]
         angle_start: f64,
         /// The end angle.
         #[serde(rename = "angleEnd", alias = "angle_end")]
+        #[schemars(range(min = -360.0, max = 360.0))]
         angle_end: f64,
         /// The radius.
         radius: f64,

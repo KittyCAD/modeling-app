@@ -6,9 +6,13 @@ use kcmc::{
     each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
     websocket::OkWebSocketResponseData, ModelingCmd,
 };
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds::{
+    self as kcmc,
+    shared::{Angle, OriginType, Rotation},
+};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use serde_json::Value as JValue;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -101,8 +105,83 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
     Ok(KclValue::ExtrudeGroups { value: extrude_groups })
 }
 
-/// Repeat a 3-dimensional solid by successively applying a transformation (such
-/// as rotation, scale, translation, visibility) on each repetition.
+/// Repeat a 3-dimensional solid, changing it each time.
+///
+/// Replicates the 3D solid, applying a transformation function to each replica.
+/// Transformation function could alter rotation, scale, visibility, position, etc.
+///
+/// The `patternTransform` call itself takes a number for how many total instances of
+/// the shape should be. For example, if you use a circle with `patternTransform(4, transform)`
+/// then there will be 4 circles: the original, and 3 created by replicating the original and
+/// calling the transform function on each.
+///
+/// The transform function takes a single parameter: an integer representing which
+/// number replication the transform is for. E.g. the first replica to be transformed
+/// will be passed the argument `1`. This simplifies your math: the transform function can
+/// rely on id `0` being the original instance passed into the `patternTransform`. See the examples.
+/// ```no_run
+/// // Each instance will be shifted along the X axis.
+/// fn transform = (id) => {
+///   return { translate: [4 * id, 0, 0] }
+/// }
+///
+/// // Sketch 4 cylinders.
+/// const sketch001 = startSketchOn('XZ')
+///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> extrude(5, %)
+///   |> patternTransform(4, transform, %)
+/// ```
+/// ```no_run
+/// // Each instance will be shifted along the X axis,
+/// // with a gap between the original (at x = 0) and the first replica
+/// // (at x = 8). This is because `id` starts at 1.
+/// fn transform = (id) => {
+///   return { translate: [4 * (1+id), 0, 0] }
+/// }
+///
+/// const sketch001 = startSketchOn('XZ')
+///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> extrude(5, %)
+///   |> patternTransform(4, transform, %)
+/// ```
+/// ```no_run
+/// fn cube = (length, center) => {
+///   let l = length/2
+///   let x = center[0]
+///   let y = center[1]
+///   let p0 = [-l + x, -l + y]
+///   let p1 = [-l + x,  l + y]
+///   let p2 = [ l + x,  l + y]
+///   let p3 = [ l + x, -l + y]
+///
+///   return startSketchAt(p0)
+///   |> lineTo(p1, %)
+///   |> lineTo(p2, %)
+///   |> lineTo(p3, %)
+///   |> lineTo(p0, %)
+///   |> close(%)
+///   |> extrude(length, %)
+/// }
+///
+/// let width = 20
+/// fn transform = (i) => {
+///   return {
+///     // Move down each time.
+///     translate: [0, 0, -i * width],
+///     // Make the cube longer, wider and flatter each time.
+///     scale: [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
+///     // Turn by 15 degrees each time.
+///     rotation: {
+///       angle: 15 * i,
+///       origin: "local",
+///     }
+///   }
+/// }
+///
+/// let myCubes =
+///   cube(width, [100,0])
+///   |> patternTransform(25, transform, %)
+/// ```
 ///
 /// ```no_run
 /// // Parameters
@@ -132,15 +211,15 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
      name = "patternTransform",
  }]
 async fn inner_pattern_transform<'a>(
-    num_repetitions: u32,
+    total_instances: u32,
     transform_function: FunctionParam<'a>,
     extrude_group_set: ExtrudeGroupSet,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     // Build the vec of transforms, one for each repetition.
-    let mut transform = Vec::with_capacity(usize::try_from(num_repetitions).unwrap());
-    for i in 0..num_repetitions {
+    let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
+    for i in 1..total_instances {
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
@@ -210,7 +289,7 @@ async fn make_transform<'a>(
 ) -> Result<Transform, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::UserVal(UserVal {
-        value: serde_json::Value::Number(i.into()),
+        value: JValue::Number(i.into()),
         meta: vec![source_range.into()],
     });
     let transform_fn_args = vec![repetition_num];
@@ -233,8 +312,8 @@ async fn make_transform<'a>(
 
     // Apply defaults to the transform.
     let replicate = match transform.value.get("replicate") {
-        Some(serde_json::Value::Bool(true)) => true,
-        Some(serde_json::Value::Bool(false)) => false,
+        Some(JValue::Bool(true)) => true,
+        Some(JValue::Bool(false)) => false,
         Some(_) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: "The 'replicate' key must be a bool".to_string(),
@@ -251,18 +330,48 @@ async fn make_transform<'a>(
         Some(x) => array_to_point3d(x, source_ranges.clone())?,
         None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
     };
+    let mut rotation = Rotation::default();
+    if let Some(rot) = transform.value.get("rotation") {
+        if let Some(axis) = rot.get("axis") {
+            rotation.axis = array_to_point3d(axis, source_ranges.clone())?.into();
+        }
+        if let Some(angle) = rot.get("angle") {
+            match angle {
+                JValue::Number(number) => {
+                    if let Some(number) = number.as_f64() {
+                        rotation.angle = Angle::from_degrees(number);
+                    }
+                }
+                _ => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "The 'rotation.angle' key must be a number (of degrees)".to_string(),
+                        source_ranges: source_ranges.clone(),
+                    }));
+                }
+            }
+        }
+        if let Some(origin) = rot.get("origin") {
+            rotation.origin = match origin {
+                JValue::String(s) if s == "local" => OriginType::Local,
+                JValue::String(s) if s == "global" => OriginType::Global,
+                other => {
+                    let origin = array_to_point3d(other, source_ranges.clone())?.into();
+                    OriginType::Custom { origin }
+                }
+            };
+        }
+    }
     let t = Transform {
         replicate,
         scale: scale.into(),
         translate: translate.into(),
-        // TODO: chalmers to pipe thru to kcl.
-        rotation: Default::default(),
+        rotation,
     };
     Ok(t)
 }
 
-fn array_to_point3d(json: &serde_json::Value, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-    let serde_json::Value::Array(arr) = json else {
+fn array_to_point3d(json: &JValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+    let JValue::Array(arr) = json else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Expected an array of 3 numbers (i.e. a 3D point)".to_string(),
             source_ranges,
@@ -276,7 +385,7 @@ fn array_to_point3d(json: &serde_json::Value, source_ranges: Vec<SourceRange>) -
         }));
     };
     // Gets an f64 from a JSON value, returns Option.
-    let f = |j: &serde_json::Value| j.as_number().and_then(|num| num.as_f64()).map(|x| x.to_owned());
+    let f = |j: &JValue| j.as_number().and_then(|num| num.as_f64()).map(|x| x.to_owned());
     let err = |component| {
         KclError::Semantic(KclErrorDetails {
             message: format!("{component} component of this point was not a number"),

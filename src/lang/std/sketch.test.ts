@@ -272,7 +272,7 @@ describe('testing addTagForSketchOnFace', () => {
   ] as const
 
   chamferTestCases.forEach(({ originalChamfer, expectedChamfer, desc }) => {
-    it.only(`can break up chamfers in order to add tags - ${desc}`, async () => {
+    it(`can break up chamfers in order to add tags - ${desc}`, async () => {
       const genCode = (
         insertCode: string
       ) => `const sketch001 = startSketchOn('XZ')

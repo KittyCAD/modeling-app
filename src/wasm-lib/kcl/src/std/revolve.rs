@@ -23,6 +23,7 @@ use crate::{
 pub struct RevolveData {
     /// Angle to revolve (in degrees). Default is 360.
     #[serde(default)]
+    #[schemars(range(min = -360.0, max = 360.0))]
     pub angle: Option<f64>,
     /// Axis of revolution.
     pub axis: AxisOrEdgeReference,
@@ -249,10 +250,12 @@ async fn inner_revolve(
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     if let Some(angle) = data.angle {
-        // Return an error if the angle is less than -360 or greater than 360.
-        if !(-360.0..=360.0).contains(&angle) {
+        // Return an error if the angle is zero.
+        // We don't use validate() here because we want to return a specific error message that is
+        // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
+        if !(-360.0..=360.0).contains(&angle) || angle == 0.0 {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected angle to be between -360 and 360, found `{}`", angle),
+                message: format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
                 source_ranges: vec![args.source_range],
             }));
         }
