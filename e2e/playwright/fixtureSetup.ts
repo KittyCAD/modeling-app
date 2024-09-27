@@ -13,6 +13,8 @@ import { EditorFixture } from './editorFixture'
 import { ToolbarFixture } from './toolbarFixture'
 import { SceneFixture } from './sceneFixture'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { HomePageFixture } from './fixtures/homePageFixture'
+import { typedKeys } from 'lib/utils'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -46,6 +48,15 @@ export class AuthenticatedApp {
   }
 }
 
+interface Fixtures {
+  app: AuthenticatedApp
+  tronApp: AuthenticatedTronApp
+  cmdBar: CmdBarFixture
+  editor: EditorFixture
+  toolbar: ToolbarFixture
+  scene: SceneFixture
+  homePage: HomePageFixture
+}
 export class AuthenticatedTronApp {
   public readonly _page: Page
   public page: Page
@@ -59,11 +70,14 @@ export class AuthenticatedTronApp {
     this.context = context
     this.testInfo = testInfo
   }
-  async initialise(arg: {
-    folderSetupFn?: (projectDirName: string) => Promise<void>
-    cleanProjectDir?: boolean
-    appSettings?: Partial<SaveSettingsPayload>
-  }) {
+  async initialise(
+    arg: {
+      fixtures: Partial<Fixtures>
+      folderSetupFn?: (projectDirName: string) => Promise<void>
+      cleanProjectDir?: boolean
+      appSettings?: Partial<SaveSettingsPayload>
+    } = { fixtures: {} }
+  ) {
     const { electronApp, page } = await setupElectron({
       testInfo: this.testInfo,
       folderSetupFn: arg.folderSetupFn,
@@ -72,26 +86,30 @@ export class AuthenticatedTronApp {
     })
     this.page = page
     this.electronApp = electronApp
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    for (const key of typedKeys(arg.fixtures)) {
+      const fixture = arg.fixtures[key]
+      if (
+        !fixture ||
+        fixture instanceof AuthenticatedApp ||
+        fixture instanceof AuthenticatedTronApp
+      )
+        continue
+      fixture.reConstruct(page)
+    }
   }
+
   close = async () => {
     await this.electronApp?.close?.()
   }
-  getInputFile = (fileName: string) => {
-    return fsp.readFile(
-      join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName),
-      'utf-8'
-    )
-  }
+  debugPause = () =>
+    new Promise(() => {
+      console.log('UN-RESOLVING PROMISE')
+    })
 }
 
-export const test = base.extend<{
-  app: AuthenticatedApp
-  tronApp: AuthenticatedTronApp
-  cmdBar: CmdBarFixture
-  editor: EditorFixture
-  toolbar: ToolbarFixture
-  scene: SceneFixture
-}>({
+export const test = base.extend<Fixtures>({
   app: async ({ page, context }, use, testInfo) => {
     await use(new AuthenticatedApp(context, page, testInfo))
   },
@@ -109,6 +127,9 @@ export const test = base.extend<{
   },
   scene: async ({ page }, use) => {
     await use(new SceneFixture(page))
+  },
+  homePage: async ({ page }, use) => {
+    await use(new HomePageFixture(page))
   },
 })
 

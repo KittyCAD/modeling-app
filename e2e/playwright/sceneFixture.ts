@@ -13,11 +13,17 @@ type mouseParams = {
 }
 
 export class SceneFixture {
-  public readonly page: Page
-  private readonly exeIndicator: Locator
+  public page: Page
+
+  private exeIndicator!: Locator
 
   constructor(page: Page) {
     this.page = page
+    this.reConstruct(page)
+  }
+  reConstruct = (page: Page) => {
+    this.page = page
+
     this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
   }
 
@@ -25,33 +31,38 @@ export class SceneFixture {
     x: number,
     y: number,
     { steps }: { steps: number } = { steps: 5000 }
-  ) => [
-    (params?: mouseParams) => {
-      if (params?.pixelDiff) {
-        return doAndWaitForImageDiff(
-          this.page,
-          () => this.page.mouse.click(x, y),
-          params.pixelDiff
-        )
-      }
-      return this.page.mouse.click(x, y)
-    },
-    (params?: mouseParams) => {
-      if (params?.pixelDiff) {
-        return doAndWaitForImageDiff(
-          this.page,
-          () => this.page.mouse.move(x, y, { steps }),
-          params.pixelDiff
-        )
-      }
-      return this.page.mouse.move(x, y, { steps })
-    },
-  ]
+  ) =>
+    [
+      (clickParams?: mouseParams) => {
+        if (clickParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () => this.page.mouse.click(x, y),
+            clickParams.pixelDiff
+          )
+        }
+        return this.page.mouse.click(x, y)
+      },
+      (moveParams?: mouseParams) => {
+        if (moveParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () => this.page.mouse.move(x, y, { steps }),
+            moveParams.pixelDiff
+          )
+        }
+        return this.page.mouse.move(x, y, { steps })
+      },
+    ] as const
 
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
    *
    * Expects the viewPort to be 1000x500 */
   clickNoWhere = () => this.page.mouse.click(998, 60)
+  /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
+   *
+   * Expects the viewPort to be 1000x500 */
+  moveNoWhere = (steps?: number) => this.page.mouse.move(998, 60, { steps })
 
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },

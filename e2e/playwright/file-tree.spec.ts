@@ -1,5 +1,5 @@
 import { _test, _expect } from './playwright-deprecated'
-import { test } from './fixtureSetup'
+import { test, expect } from './fixtureSetup'
 import * as fsp from 'fs/promises'
 import * as fs from 'fs'
 import {
@@ -20,6 +20,87 @@ _test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
+test.describe('integrations tests', () => {
+  test('Creating a new file or switching file while in sketchMode should exit sketchMode', async ({
+    tronApp,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await tronApp.initialise({
+      fixtures: { homePage, scene, editor, toolbar },
+      folderSetupFn: async (dir) => {
+        const bracketDir = join(dir, 'test-sample')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+          join(bracketDir, 'main.kcl')
+        )
+      },
+    })
+    const [clickObj] = await scene.makeMouseHelpers(600, 300)
+
+    await test.step('setup test', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'test-sample',
+            fileCount: 1,
+            folderCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.openProject('test-sample')
+      await scene.waitForExecutionDone()
+    })
+    await test.step('enter sketch mode', async () => {
+      await clickObj()
+      await scene.moveNoWhere()
+      await editor.expectState({
+        activeLines: [
+          '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+        ],
+        highlightedCode: '',
+        diagnostics: [],
+      })
+      await toolbar.editSketch()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+    })
+    await test.step('check sketch mode is exited when creating new file', async () => {
+      await toolbar.fileTreeBtn.click()
+      await toolbar.expectFileTreeState(['main.kcl'])
+      await toolbar.createFile({ wait: true })
+
+      // check we're out of sketch mode
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
+    })
+    await test.step('setup for next assertion', async () => {
+      await toolbar.openFile('main.kcl')
+      await clickObj()
+      await scene.moveNoWhere()
+      await editor.expectState({
+        activeLines: [
+          '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+        ],
+        highlightedCode: '',
+        diagnostics: [],
+      })
+      await toolbar.editSketch()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await toolbar.expectFileTreeState(['main.kcl', 'Untitled.kcl'])
+    })
+    await test.step('check sketch mode is exited when opening a different file', async () => {
+      await toolbar.openFile('untitled.kcl', { wait: false })
+
+      // check we're out of sketch mode
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
+    })
+  })
+})
 test.describe('when using the file tree to', () => {
   const fromFile = 'main.kcl'
   const toFile = 'hello.kcl'
@@ -28,7 +109,7 @@ test.describe('when using the file tree to', () => {
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
-      await tronApp.initialise({})
+      await tronApp.initialise()
 
       const {
         panesOpen,
@@ -36,7 +117,7 @@ test.describe('when using the file tree to', () => {
         pasteCodeInEditor,
         renameFile,
         editorTextMatches,
-      } = await getUtils(tronApp.page, _test)
+      } = await getUtils(tronApp.page, test)
 
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
@@ -78,7 +159,7 @@ test.describe('when using the file tree to', () => {
     `create many new untitled files they increment their names`,
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
-      await tronApp.initialise({})
+      await tronApp.initialise()
 
       const { panesOpen, createAndSelectProject, createNewFile } =
         await getUtils(tronApp.page, test)
@@ -97,7 +178,7 @@ test.describe('when using the file tree to', () => {
       await createNewFile('')
 
       await test.step('Postcondition: there are 5 new Untitled-*.kcl files', async () => {
-        await _expect(
+        await expect(
           tronApp.page
             .locator('[data-testid="file-pane-scroll-container"] button')
             .filter({ hasText: /Untitled[-]?[0-5]?/ })
@@ -112,7 +193,7 @@ test.describe('when using the file tree to', () => {
     'create a new file with the same name as an existing file cancels the operation',
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
-      await tronApp.initialise({})
+      await tronApp.initialise()
 
       const {
         openKclCodePanel,
@@ -169,7 +250,7 @@ test.describe('when using the file tree to', () => {
     'deleting all files recreates a default main.kcl with no code',
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
-      await tronApp.initialise({})
+      await tronApp.initialise()
 
       const {
         panesOpen,
@@ -210,7 +291,7 @@ test.describe('when using the file tree to', () => {
       tag: '@electron',
     },
     async ({ browser: _, tronApp }, testInfo) => {
-      await tronApp.initialise({})
+      await tronApp.initialise()
 
       const {
         panesOpen,

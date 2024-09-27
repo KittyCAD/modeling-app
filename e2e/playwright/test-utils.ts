@@ -1066,3 +1066,7 @@ export async function openAndClearDebugPanel(page: Page) {
   await openDebugPanel(page)
   return clearCommandLogs(page)
 }
+
+export function sansWhitespace(str: string) {
+  return str.replace(/\s+/g, '').trim()
+}

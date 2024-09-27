@@ -14,6 +14,13 @@ export function isArray(val: any): val is unknown[] {
   return Array.isArray(val)
 }
 
+/**
+ * An alternative to `Object.keys()` that returns an array of keys with the correct type.
+ */
+export function typedKeys<T extends object>(obj: T): Array<keyof T> {
+  return Object.keys(obj) as Array<keyof T>
+}
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]
