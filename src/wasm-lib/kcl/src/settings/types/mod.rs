@@ -407,9 +407,9 @@ pub enum MouseControlType {
 #[display(style = "snake_case")]
 pub enum CameraProjectionType {
     /// Perspective projection https://en.wikipedia.org/wiki/3D_projection#Perspective_projection
-    #[default]
     Perspective,
     /// Orthographic projection https://en.wikipedia.org/wiki/3D_projection#Orthographic_projection
+    #[default]
     Orthographic,
 }
 

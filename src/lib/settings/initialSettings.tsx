@@ -283,7 +283,7 @@ export function createSettings() {
        * Projection method applied to the 3D view, perspective or orthographic
        */
       cameraProjection: new Setting<CameraProjectionType>({
-        defaultValue: 'perspective',
+        defaultValue: 'orthographic',
         hideOnLevel: 'project',
         description:
           'Projection method applied to the 3D view, perspective or orthographic',
