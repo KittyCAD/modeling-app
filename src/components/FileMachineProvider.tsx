@@ -257,7 +257,7 @@ export const FileMachineProvider = ({
             // Refresh the route selected above because it's possible we're on
             // the same path on the navigate, which doesn't cause anything to
             // refresh, leaving a stale execution state.
-            navigate(0)
+            navigate('.')
             return {
               message: 'No more files in project, created main.kcl',
             }
