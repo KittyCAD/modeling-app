@@ -951,7 +951,7 @@ async fn kcl_test_revolve_bad_angle_low() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 314])], message: "Expected angle to be between -360 and 360, found `-455`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 314])], message: "Expected angle to be between -360 and 360 and not 0, found `-455`" }"#
     );
 }
 
@@ -976,7 +976,7 @@ async fn kcl_test_revolve_bad_angle_high() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 313])], message: "Expected angle to be between -360 and 360, found `455`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 313])], message: "Expected angle to be between -360 and 360 and not 0, found `455`" }"#
     );
 }
 
