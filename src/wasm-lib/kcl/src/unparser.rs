@@ -417,7 +417,7 @@ impl UnaryExpression {
 }
 
 impl IfExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+    fn recast(&self, _options: &FormatOptions, _indentation_level: usize, is_in_pipe: bool) -> String {
         todo!("ADAM")
     }
 }
