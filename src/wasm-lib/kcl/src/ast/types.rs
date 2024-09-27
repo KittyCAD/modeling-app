@@ -18,7 +18,11 @@ use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
 
-pub use crate::ast::types::{condition::IfExpression, literal_value::LiteralValue, none::KclNone};
+pub use crate::ast::types::{
+    condition::{ElseIf, IfExpression},
+    literal_value::LiteralValue,
+    none::KclNone,
+};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
