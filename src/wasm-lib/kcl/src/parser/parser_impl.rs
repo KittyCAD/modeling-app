@@ -359,6 +359,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
                 Expr::CallExpression(x) => BinaryPart::CallExpression(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
+                Expr::IfExpression(x) => BinaryPart::IfExpression(x),
             };
             Ok(expr)
         })

@@ -3,8 +3,8 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, Expr, FormatOptions,
-        FunctionExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeValue,
-        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
+        FunctionExpression, IfExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
+        NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
     },
     parser::PIPE_OPERATOR,
 };
@@ -121,6 +121,7 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
+            Expr::IfExpression(e) => e.recast(options, indentation_level, is_in_pipe),
             Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
@@ -138,6 +139,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.recast(options, indentation_level, false),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
             BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
+            BinaryPart::IfExpression(e) => e.recast(options, indentation_level, false),
         }
     }
 }
@@ -403,6 +405,7 @@ impl UnaryExpression {
             BinaryPart::Literal(_)
             | BinaryPart::Identifier(_)
             | BinaryPart::MemberExpression(_)
+            | BinaryPart::IfExpression(_)
             | BinaryPart::CallExpression(_) => {
                 format!("{}{}", &self.operator, self.argument.recast(options, 0))
             }
@@ -410,6 +413,12 @@ impl UnaryExpression {
                 format!("{}({})", &self.operator, self.argument.recast(options, 0))
             }
         }
+    }
+}
+
+impl IfExpression {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        todo!("ADAM")
     }
 }
 

@@ -776,6 +776,25 @@ impl From<KclValue> for Vec<SourceRange> {
     }
 }
 
+impl From<&KclValue> for Vec<SourceRange> {
+    fn from(item: &KclValue) -> Self {
+        match item {
+            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::TagDeclarator(ref t) => vec![t.into()],
+            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::ExtrudeGroups { value } => value
+                .iter()
+                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
+                .collect(),
+            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+        }
+    }
+}
+
 impl KclValue {
     pub fn get_json_value(&self) -> Result<serde_json::Value, KclError> {
         if let KclValue::UserVal(user_val) = self {
@@ -904,6 +923,23 @@ impl KclValue {
                 source_ranges: self.clone().into(),
             })),
         }
+    }
+
+    /// If this KCL value is a bool, retrieve it.
+    pub fn get_bool(&self) -> Result<bool, KclError> {
+        let Self::UserVal(uv) = self else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", self.human_friendly_type()),
+            }));
+        };
+        let JValue::Bool(b) = uv.value else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", human_friendly_type(&uv.value)),
+            }));
+        };
+        Ok(b)
     }
 
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
@@ -1844,20 +1880,22 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<(), KclError> {
+    ) -> Result<Option<KclValue>, KclError> {
+        let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
-                    // Discard return value.
-                    self.execute_expr(
-                        &expression_statement.expression,
-                        exec_state,
-                        &metadata,
-                        StatementKind::Expression,
-                    )
-                    .await?;
+                    last_expr = Some(
+                        self.execute_expr(
+                            &expression_statement.expression,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?,
+                    );
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
@@ -1903,7 +1941,7 @@ impl ExecutorContext {
                 .await?;
         }
 
-        Ok(())
+        Ok(last_expr)
     }
 
     pub async fn execute_expr<'a>(
@@ -1960,6 +1998,7 @@ impl ExecutorContext {
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
+            Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -2088,7 +2127,7 @@ pub(crate) async fn call_user_defined_function(
         (result, fn_memory)
     };
 
-    result.map(|()| fn_memory.return_)
+    result.map(|_| fn_memory.return_)
 }
 
 pub enum StatementKind<'a> {
