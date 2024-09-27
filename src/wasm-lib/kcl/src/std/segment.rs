@@ -251,7 +251,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 
     let result = between(path.from.into(), path.to.into());
 
-    Ok(result.degrees())
+    Ok(result.to_degrees())
 }
 
 /// Returns the angle to match the given length for x.

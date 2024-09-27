@@ -18,6 +18,8 @@ macro_rules! kcl_test {
     };
 }
 
+kcl_test!("pattern_cubes_local_rotation", kcl_test_pattern_cubes_local_rotation);
+kcl_test!("pattern_cubes_global_rotation", kcl_test_pattern_cubes_global_rotation);
 kcl_test!("sketch_on_face", kcl_test_sketch_on_face);
 kcl_test!("tangential_arc", kcl_test_tangential_arc);
 kcl_test!(
@@ -57,3 +59,8 @@ kcl_test!("lego", kcl_test_lego);
 kcl_test!("riddle_small", kcl_test_riddle_small);
 kcl_test!("tan_arc_x_line", kcl_test_tan_arc_x_line);
 kcl_test!("fillet-and-shell", kcl_test_fillet_and_shell);
+kcl_test!("sketch-on-chamfer-two-times", kcl_test_sketch_on_chamfer_two_times);
+kcl_test!(
+    "sketch-on-chamfer-two-times-different-order",
+    kcl_test_sketch_on_chamfer_two_times_different_order
+);

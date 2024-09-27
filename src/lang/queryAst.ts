@@ -4,19 +4,20 @@ import {
   ArrayExpression,
   BinaryExpression,
   CallExpression,
+  Expr,
   ExpressionStatement,
+  ObjectExpression,
+  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ProgramMemory,
   ReturnStatement,
+  sketchGroupFromKclValue,
   SourceRange,
   SyntaxType,
-  Expr,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
-  ObjectExpression,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -880,7 +881,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
       if (
         node.type === 'CallExpression' &&
         node.callee.type === 'Identifier' &&
-        node.callee.name === 'extrude' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
         node.arguments?.[1]?.type === 'Identifier' &&
         node.arguments[1].name === varDec.id.name
       ) {
@@ -892,7 +893,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
 }
 
 /** File must contain at least one sketch that has not been extruded already */
-export function hasExtrudableGeometry(ast: Program) {
+export function doesSceneHaveSweepableSketch(ast: Program) {
   const theMap: any = {}
   traverse(ast as any, {
     enter(node) {
@@ -903,6 +904,7 @@ export function hasExtrudableGeometry(ast: Program) {
         let hasStartProfileAt = false
         let hasStartSketchOn = false
         let hasClose = false
+        let hasCircle = false
         for (const pipe of node.init.body) {
           if (
             pipe.type === 'CallExpression' &&
@@ -919,13 +921,20 @@ export function hasExtrudableGeometry(ast: Program) {
           if (pipe.type === 'CallExpression' && pipe.callee.name === 'close') {
             hasClose = true
           }
+          if (pipe.type === 'CallExpression' && pipe.callee.name === 'circle') {
+            hasCircle = true
+          }
         }
-        if (hasStartProfileAt && hasStartSketchOn && hasClose) {
+        if (
+          (hasStartProfileAt || hasCircle) &&
+          hasStartSketchOn &&
+          (hasClose || hasCircle)
+        ) {
           theMap[node.id.name] = true
         }
       } else if (
         node.type === 'CallExpression' &&
-        node.callee.name === 'extrude' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
         node.arguments[1]?.type === 'Identifier' &&
         theMap?.[node?.arguments?.[1]?.name]
       ) {
@@ -939,7 +948,7 @@ export function hasExtrudableGeometry(ast: Program) {
 export function getObjExprProperty(
   node: ObjectExpression,
   propName: string
-): { expr: Expr; index: number } | null {
+): { expr: ObjectProperty['value']; index: number } | null {
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }

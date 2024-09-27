@@ -1,7 +1,8 @@
 use std::any::type_name;
 
 use anyhow::Result;
-use kittycad::types::OkWebSocketResponseData;
+use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use serde::de::DeserializeOwned;
 
 use crate::{
@@ -51,7 +52,7 @@ impl Args {
     pub(crate) async fn batch_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
+        cmd: ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
     }
@@ -59,11 +60,7 @@ impl Args {
     // Add a modeling command to the batch that gets executed at the end of the file.
     // This is good for something like fillet or chamfer where the engine would
     // eat the path id if we executed it right away.
-    pub(crate) async fn batch_end_cmd(
-        &self,
-        id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
+    pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
         self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
     }
 
@@ -71,7 +68,7 @@ impl Args {
     pub(crate) async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
+        cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
@@ -168,7 +165,7 @@ impl Args {
         // before what ever we call next.
         for id in ids {
             // Pop it off the batch_end and add it to the batch.
-            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().remove(&id) else {
+            let Some(item) = self.ctx.engine.batch_end().lock().unwrap().shift_remove(&id) else {
                 // It might be in the batch already.
                 continue;
             };
@@ -260,8 +257,7 @@ impl Args {
         &self,
     ) -> Result<
         (
-            [f64; 2],
-            f64,
+            crate::std::shapes::CircleData,
             crate::std::shapes::SketchSurfaceOrGroup,
             Option<TagDeclarator>,
         ),
@@ -585,6 +581,14 @@ impl<'a> FromKclValue<'a> for &'a str {
     }
 }
 
+impl<'a> FromKclValue<'a> for i64 {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val()
+            .and_then(|uv| uv.value.as_number())
+            .and_then(|num| num.as_i64())
+    }
+}
+
 impl<'a> FromKclValue<'a> for TagDeclarator {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
@@ -631,6 +635,7 @@ fn from_user_val<T: DeserializeOwned>(arg: &KclValue) -> Option<T> {
 impl_from_arg_via_json!(super::sketch::AngledLineData);
 impl_from_arg_via_json!(super::sketch::AngledLineToData);
 impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
+impl_from_arg_via_json!(super::shapes::CircleData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
 impl_from_arg_via_json!(super::sketch::BezierData);
@@ -648,6 +653,7 @@ impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(crate::std::loft::LoftData);
 impl_from_arg_via_json!(crate::std::planes::StandardPlane);
+impl_from_arg_via_json!(crate::std::mirror::MirrorData);
 impl_from_arg_via_json!(SketchGroup);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);

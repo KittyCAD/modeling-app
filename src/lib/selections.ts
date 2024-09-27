@@ -31,7 +31,7 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
-  getExtrudeEdgeCodeRef,
+  getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
 } from 'lang/std/artifactGraph'
@@ -41,23 +41,30 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
-export type Selection = {
-  type:
-    | 'default'
-    | 'line-end'
-    | 'line-mid'
-    | 'extrude-wall'
-    | 'solid2D'
-    | 'start-cap'
-    | 'end-cap'
-    | 'point'
-    | 'edge'
-    | 'adjacent-edge'
-    | 'line'
-    | 'arc'
-    | 'all'
-  range: SourceRange
-}
+export type Selection =
+  | {
+      type:
+        | 'default'
+        | 'line-end'
+        | 'line-mid'
+        | 'extrude-wall'
+        | 'solid2D'
+        | 'start-cap'
+        | 'end-cap'
+        | 'point'
+        | 'edge'
+        | 'adjacent-edge'
+        | 'line'
+        | 'arc'
+        | 'all'
+      range: SourceRange
+    }
+  | {
+      type: 'opposite-edgeCut' | 'adjacent-edgeCut' | 'base-edgeCut'
+      range: SourceRange
+      // TODO this is a temporary measure that well be made redundant with: https://github.com/KittyCAD/modeling-app/pull/3836
+      secondaryRange: SourceRange
+    }
 export type Selections = {
   otherSelections: Axis[]
   codeBasedSelections: Selection[]
@@ -141,8 +148,8 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
-  if (_artifact.type === 'extrudeEdge') {
-    const codeRef = getExtrudeEdgeCodeRef(
+  if (_artifact.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
       _artifact,
       engineCommandManager.artifactGraph
     )
@@ -161,6 +168,52 @@ export async function getEventForSelectWithPoint({
       data: {
         selectionType: 'singleCodeCursor',
         selection: { range: codeRef.range, type: 'edge' },
+      },
+    }
+  }
+  if (_artifact.type === 'edgeCut') {
+    const consumedEdge = getArtifactOfTypes(
+      { key: _artifact.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+      engineCommandManager.artifactGraph
+    )
+    if (err(consumedEdge))
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: _artifact.codeRef.range, type: 'default' },
+        },
+      }
+    if (consumedEdge.type === 'segment') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            range: _artifact.codeRef.range,
+            type: 'base-edgeCut',
+            secondaryRange: consumedEdge.codeRef.range,
+          },
+        },
+      }
+    }
+    const segment = getArtifactOfTypes(
+      { key: consumedEdge.segId, types: ['segment'] },
+      engineCommandManager.artifactGraph
+    )
+    if (err(segment)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          range: _artifact.codeRef.range,
+          type:
+            consumedEdge.subType === 'adjacent'
+              ? 'adjacent-edgeCut'
+              : 'opposite-edgeCut',
+          secondaryRange: segment.codeRef.range,
+        },
       },
     }
   }
@@ -374,7 +427,7 @@ export function isSelectionLastLine(
   return selectionRanges.codeBasedSelections[i].range[1] === code.length
 }
 
-export function isRangeInbetweenCharacters(selectionRanges: Selections) {
+export function isRangeBetweenCharacters(selectionRanges: Selections) {
   return (
     selectionRanges.codeBasedSelections.length === 1 &&
     selectionRanges.codeBasedSelections[0].range[0] === 0 &&
@@ -395,10 +448,16 @@ function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
 }
 
 function nodeHasExtrude(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'extrude',
-    ...node,
-  })
+  return (
+    doesPipeHaveCallExp({
+      calleeName: 'extrude',
+      ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'revolve',
+      ...node,
+    })
+  )
 }
 
 function nodeHasClose(node: CommonASTNode) {
@@ -407,15 +466,22 @@ function nodeHasClose(node: CommonASTNode) {
     ...node,
   })
 }
+function nodeHasCircle(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'circle',
+    ...node,
+  })
+}
 
-export function canExtrudeSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
   return (
     !!isSketchPipe(selection) &&
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n)) &&
+    (commonNodes.every((n) => nodeHasClose(n)) ||
+      commonNodes.every((n) => nodeHasCircle(n))) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
 }
@@ -432,11 +498,15 @@ export function canFilletSelection(selection: Selections) {
 }
 
 function canExtrudeSelectionItem(selection: Selections, i: number) {
+  const isolatedSelection = {
+    ...selection,
+    codeBasedSelections: [selection.codeBasedSelections[i]],
+  }
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
   return (
-    !!isSketchPipe(selection) &&
-    nodeHasClose(commonNode) &&
+    !!isSketchPipe(isolatedSelection) &&
+    (nodeHasClose(commonNode) || nodeHasCircle(commonNode)) &&
     !nodeHasExtrude(commonNode)
   )
 }
@@ -452,31 +522,24 @@ export type ResolvedSelectionType = [Selection['type'] | 'other', number]
  * @returns
  */
 export function getSelectionType(
-  selection: Selections
+  selection?: Selections
 ): ResolvedSelectionType[] {
-  return selection.codeBasedSelections
-    .map((s, i) => {
-      if (canExtrudeSelectionItem(selection, i)) {
-        return ['extrude-wall', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
-      } else {
-        return ['other', 1] as ResolvedSelectionType
-      }
-    })
-    .reduce((acc, [type, count]) => {
-      const foundIndex = acc.findIndex((item) => item && item[0] === type)
+  if (!selection) return []
+  const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
+    const singleSelection = {
+      ...selection,
+      codeBasedSelections: [selection.codeBasedSelections[i]],
+    }
+    return canExtrudeSelectionItem(singleSelection, 0)
+  }).length
 
-      if (foundIndex === -1) {
-        return [...acc, [type, count]]
-      } else {
-        const temp = [...acc]
-        temp[foundIndex][1] += count
-        return temp
-      }
-    }, [] as ResolvedSelectionType[])
+  return extrudableCount === selection.codeBasedSelections.length
+    ? [['extrude-wall', extrudableCount]]
+    : [['other', selection.codeBasedSelections.length]]
 }
 
 export function getSelectionTypeDisplayText(
-  selection: Selections
+  selection?: Selections
 ): string | null {
   const selectionsByType = getSelectionType(selection)
 
@@ -569,12 +632,10 @@ function codeToIdSelections(
         }
         if (type === 'edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
           )
-          const edge = [...edges].find(
-            ([_, edge]) => edge.type === 'extrudeEdge'
-          )
+          const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
@@ -584,12 +645,12 @@ function codeToIdSelections(
         }
         if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['extrudeEdge'] },
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
           )
           const edge = [...edges].find(
             ([_, edge]) =>
-              edge.type === 'extrudeEdge' && edge.subType === 'adjacent'
+              edge.type === 'sweepEdge' && edge.subType === 'adjacent'
           )
           if (!edge) return
           bestCandidate = {
@@ -604,8 +665,8 @@ function codeToIdSelections(
         ) {
           const extrusion = getArtifactOfTypes(
             {
-              key: entry.artifact.extrusionId,
-              types: ['extrusion'],
+              key: entry.artifact.sweepId,
+              types: ['sweep'],
             },
             engineCommandManager.artifactGraph
           )
@@ -624,6 +685,54 @@ function codeToIdSelections(
             id: cap[0],
           }
           return
+        }
+        if (entry.artifact.type === 'edgeCut') {
+          const consumedEdge = getArtifactOfTypes(
+            {
+              key: entry.artifact.consumedEdgeId,
+              types: ['segment', 'sweepEdge'],
+            },
+            engineCommandManager.artifactGraph
+          )
+          if (err(consumedEdge)) return
+          if (
+            consumedEdge.type === 'segment' &&
+            type === 'base-edgeCut' &&
+            isOverlap(
+              consumedEdge.codeRef.range,
+              entry.selection?.secondaryRange || [0, 0]
+            )
+          ) {
+            bestCandidate = {
+              artifact: entry.artifact,
+              selection: { type, range, ...rest },
+              id: entry.id,
+            }
+          } else if (
+            consumedEdge.type === 'sweepEdge' &&
+            ((type === 'adjacent-edgeCut' &&
+              consumedEdge.subType === 'adjacent') ||
+              (type === 'opposite-edgeCut' &&
+                consumedEdge.subType === 'opposite'))
+          ) {
+            const seg = getArtifactOfTypes(
+              { key: consumedEdge.segId, types: ['segment'] },
+              engineCommandManager.artifactGraph
+            )
+            if (err(seg)) return
+            if (
+              isOverlap(
+                seg.codeRef.range,
+                entry.selection?.secondaryRange || [0, 0]
+              )
+            ) {
+              bestCandidate = {
+                artifact: entry.artifact,
+                selection: { type, range, ...rest },
+                id: entry.id,
+              }
+            }
+          }
         }
       })
 
@@ -686,9 +795,20 @@ export function updateSelections(
       const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
+      const selection = prevSelectionRanges.codeBasedSelections[Number(index)]
+      if (
+        selection?.type === 'base-edgeCut' ||
+        selection?.type === 'adjacent-edgeCut' ||
+        selection?.type === 'opposite-edgeCut'
+      )
+        return {
+          range: [node.start, node.end],
+          type: selection?.type,
+          secondaryRange: selection?.secondaryRange,
+        }
       return {
         range: [node.start, node.end],
-        type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
+        type: selection?.type,
       }
     })
     .filter((x?: Selection) => x !== undefined) as Selection[]

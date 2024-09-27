@@ -10,7 +10,10 @@ export interface IElectronAPI {
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
   showInFolder: typeof shell.showItemInFolder
-  login: (host: string) => Promise<string>
+  /** Require to be called first before {@link loginWithDeviceFlow} */
+  startDeviceFlow: (host: string) => Promise<string>
+  /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
+  loginWithDeviceFlow: () => Promise<string>
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version
@@ -60,6 +63,10 @@ export interface IElectronAPI {
   kittycad: (access: string, args: any) => any
   listMachines: () => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  onUpdateDownloaded: (
+    callback: (value: string) => void
+  ) => Electron.IpcRenderer
+  appRestart: () => void
 }
 
 declare global {

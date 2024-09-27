@@ -1,8 +1,16 @@
 /// The method below uses the File System Access API when it's supported and
 // else falls back to the classic approach. In both cases the function saves
 // the file, but in case of where the File System Access API is supported, the
+
+import toast from 'react-hot-toast'
+import { EXPORT_TOAST_MESSAGES } from './constants'
+
 // user will get a file save dialog where they can choose where the file should be saved.
-export const browserSaveFile = async (blob: Blob, suggestedName: string) => {
+export const browserSaveFile = async (
+  blob: Blob,
+  suggestedName: string,
+  toastId: string
+) => {
   // Feature detection. The API needs to be supported
   // and the app not run in an iframe.
   const supportsFileSystemAccess =
@@ -29,11 +37,15 @@ export const browserSaveFile = async (blob: Blob, suggestedName: string) => {
       const writable = await handle.createWritable()
       await writable.write(blob)
       await writable.close()
+      toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
       return
     } catch (err: any) {
       // Fail silently if the user has simply canceled the dialog.
-      if (err.name !== 'AbortError') {
+      if (err.name === 'AbortError') {
+        toast.dismiss(toastId)
+      } else {
         console.error(err.name, err.message)
+        toast.error(EXPORT_TOAST_MESSAGES.FAILED, { id: toastId })
       }
       return
     }
@@ -54,4 +66,5 @@ export const browserSaveFile = async (blob: Blob, suggestedName: string) => {
     URL.revokeObjectURL(blobURL)
     a.remove()
   }, 1000)
+  toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
 }

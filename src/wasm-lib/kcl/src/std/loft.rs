@@ -2,7 +2,8 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -91,10 +92,10 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close(%)
 ///
 /// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 20, %)
+///     |> circle({ center: [0, 100], radius: 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
 /// ```
@@ -110,10 +111,10 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> close(%)
 ///
 /// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-///     |> circle([0, 100], 50, %)
+///     |> circle({ center: [0, 100], radius: 50 }, %)
 ///
 /// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-///     |> circle([0, 100], 20, %)
+///     |> circle({ center: [0, 100], radius: 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1], {
 ///     // This can be set to override the automatically determined
@@ -156,16 +157,15 @@ async fn inner_loft(
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::Loft {
+        ModelingCmd::from(mcmd::Loft {
             section_ids: sketch_groups.iter().map(|group| group.id).collect(),
             base_curve_index: data.base_curve_index,
             bez_approximate_rational: data.bez_approximate_rational.unwrap_or(false),
-            tolerance: data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units)),
+            tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
             v_degree: data
                 .v_degree
-                .unwrap_or_else(|| std::num::NonZeroU32::new(DEFAULT_V_DEGREE).unwrap())
-                .into(),
-        },
+                .unwrap_or_else(|| std::num::NonZeroU32::new(DEFAULT_V_DEGREE).unwrap()),
+        }),
     )
     .await?;
 

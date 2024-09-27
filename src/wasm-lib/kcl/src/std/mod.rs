@@ -12,6 +12,7 @@ pub mod import;
 pub mod kcl_stdlib;
 pub mod loft;
 pub mod math;
+pub mod mirror;
 pub mod patterns;
 pub mod planes;
 pub mod polar;
@@ -38,7 +39,7 @@ use crate::{
     ast::types::FunctionExpression,
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, KclValue, ProgramMemory, SketchGroup, SketchSurface},
+    executor::{ExecState, KclValue, ProgramMemory},
     std::kcl_stdlib::KclStdLibFn,
 };
 
@@ -90,6 +91,7 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::mirror::Mirror2D),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -119,6 +121,7 @@ lazy_static! {
         Box::new(crate::std::math::Tau),
         Box::new(crate::std::math::Sqrt),
         Box::new(crate::std::math::Abs),
+        Box::new(crate::std::math::Rem),
         Box::new(crate::std::math::Floor),
         Box::new(crate::std::math::Ceil),
         Box::new(crate::std::math::Min),
