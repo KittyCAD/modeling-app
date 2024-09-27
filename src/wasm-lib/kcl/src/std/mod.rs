@@ -121,6 +121,7 @@ lazy_static! {
         Box::new(crate::std::math::Tau),
         Box::new(crate::std::math::Sqrt),
         Box::new(crate::std::math::Abs),
+        Box::new(crate::std::math::Rem),
         Box::new(crate::std::math::Floor),
         Box::new(crate::std::math::Ceil),
         Box::new(crate::std::math::Min),

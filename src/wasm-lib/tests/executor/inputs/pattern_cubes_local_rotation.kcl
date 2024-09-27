@@ -1,0 +1,39 @@
+fn cube = (length, center) => {
+  let l = length/2
+  let x = center[0]
+  let y = center[1]
+  let p0 = [-l + x, -l + y]
+  let p1 = [-l + x,  l + y]
+  let p2 = [ l + x,  l + y]
+  let p3 = [ l + x, -l + y]
+
+  return startSketchAt(p0)
+  |> lineTo(p1, %)
+  |> lineTo(p2, %)
+  |> lineTo(p3, %)
+  |> lineTo(p0, %)
+  |> close(%)
+  |> extrude(length, %)
+}
+
+let width = 20
+fn transform = (i) => {
+  // 10% bigger each time
+  let bigger = pow(1.1, i)
+  // 10% flatter each time
+  let flatter = pow(0.9, i)
+  return {
+    // Move down each time.
+    translate: [0, 0, -i * width],
+    scale: [bigger, bigger, flatter],
+    rotation: {
+      // Turn by 15 degrees each time.
+      angle: 15 * i,
+      origin: "local",
+    }
+  }
+}
+
+let myCubes = 
+  cube(width, [100,0])
+  |> patternTransform(25, transform, %)
