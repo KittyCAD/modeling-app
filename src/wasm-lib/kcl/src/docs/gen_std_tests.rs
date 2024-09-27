@@ -67,6 +67,34 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
         ),
     );
 
+    hbs.register_helper(
+        "pretty_enum",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                if let Some(enum_value) = h.param(0) {
+                    if let Some(array) = enum_value.value().as_array() {
+                        println!("{:?}", array);
+                        let pretty_options = array
+                            .iter()
+                            .filter_map(|v| v.as_str())
+                            .map(|s| format!("`{}`", s))
+                            .collect::<Vec<_>>()
+                            .join(", ");
+                        out.write(&pretty_options)?;
+                        return Ok(());
+                    }
+                }
+                out.write("Invalid enum")?;
+                Ok(())
+            },
+        ),
+    );
+
     hbs.register_template_string("schemaType", include_str!("templates/schemaType.hbs"))?;
     hbs.register_template_string("properties", include_str!("templates/properties.hbs"))?;
     hbs.register_template_string("propertyType", include_str!("templates/propertyType.hbs"))?;

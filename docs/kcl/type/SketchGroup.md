@@ -7,7 +7,10 @@ layout: manual
 A sketch group is a collection of paths.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 

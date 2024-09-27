@@ -7,7 +7,10 @@ layout: manual
 Data for polar coordinates.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 

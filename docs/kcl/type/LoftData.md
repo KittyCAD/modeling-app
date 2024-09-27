@@ -7,7 +7,10 @@ layout: manual
 Data for a loft.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 

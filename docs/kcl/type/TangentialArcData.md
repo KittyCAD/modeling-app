@@ -7,12 +7,18 @@ layout: manual
 Data to draw a tangential arc.
 
 
+**anyOf**
+
+
 
 **This schema accepts any of the following:**
 
 
 
+`object`
+
 **Type:** `object`
+
 
 
 

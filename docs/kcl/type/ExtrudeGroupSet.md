@@ -7,6 +7,9 @@ layout: manual
 A extrude group or a group of extrude groups.
 
 
+**oneOf**
+
+
 
 
 **This schema accepts exactly one of the following:**
@@ -14,7 +17,10 @@ A extrude group or a group of extrude groups.
 An extrude group is a collection of extrude surfaces.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -37,7 +43,7 @@ An extrude group is a collection of extrude surfaces.
  | The sketch group. | No |
 | `startCapId` | `string` (`uuid`)
  | The id of the extrusion start cap | No |
-| `type` | enum: ""
+| `type` | enum: `extrudeGroup`
  |  | No |
 | `value` | `array`
  | The extrude surfaces. | No |
@@ -46,7 +52,10 @@ An extrude group is a collection of extrude surfaces.
 ----
 
 
+`[object, array]`
+
 **Type:** `[object, array]`
+
 
 
 
@@ -55,7 +64,7 @@ An extrude group is a collection of extrude surfaces.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` | enum: ""
+| `type` | enum: `extrudeGroups`
  |  | No |
 
 

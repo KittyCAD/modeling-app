@@ -3,13 +3,13 @@
  $ref}}
 [{{basename $ref}}](#{{lowercase (basename $ref)}})
 {{else if anyOf}}
-anyOf
+**anyOf**
 {{else if oneOf}}
-oneOf
+**oneOf**
 {{else if allOf}}
-allOf
+**allOf**
 {{else if enum}}
-enum: {{json enum}}
+**enum:** {{pretty_enum enum}}
 {{else}}
 `{{type}}`{{
 #if

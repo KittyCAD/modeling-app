@@ -7,13 +7,19 @@ layout: manual
 Data to draw an angled line.
 
 
+**anyOf**
+
+
 
 **This schema accepts any of the following:**
 
 An angle and length with explicitly named parameters
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -32,7 +38,10 @@ An angle and length with explicitly named parameters
 An angle and length given as a pair
 
 
+`array`
+
 **Type:** `array`
+
 
 
 

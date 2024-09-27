@@ -7,6 +7,9 @@ layout: manual
 A sketch group or a group of sketch groups.
 
 
+**oneOf**
+
+
 
 
 **This schema accepts exactly one of the following:**
@@ -14,7 +17,10 @@ A sketch group or a group of sketch groups.
 A sketch group is a collection of paths.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -33,7 +39,7 @@ A sketch group is a collection of paths.
  | The starting path. | No |
 | `tags` | `object`
  | Tag identifiers that have been declared in this sketch group. | No |
-| `type` | enum: ""
+| `type` | enum: `sketchGroup`
  |  | No |
 | `value` | `array`
  | The paths in the sketch group. | No |
@@ -42,7 +48,10 @@ A sketch group is a collection of paths.
 ----
 
 
+`[object, array]`
+
 **Type:** `[object, array]`
+
 
 
 
@@ -51,7 +60,7 @@ A sketch group is a collection of paths.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` | enum: ""
+| `type` | enum: `sketchGroups`
  |  | No |
 
 

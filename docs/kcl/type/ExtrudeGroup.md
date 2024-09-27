@@ -7,7 +7,10 @@ layout: manual
 An extrude group is a collection of extrude surfaces.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 

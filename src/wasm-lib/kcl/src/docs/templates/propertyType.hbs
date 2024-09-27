@@ -7,7 +7,7 @@ oneOf
 {{else if allOf}}
 allOf
 {{else if enum}}
-enum: {{json enum}}
+enum: {{pretty_enum enum}}
 {{else}}
 `{{type}}`{{#if format}} (`{{format}}`){{/if}}
 {{/if}}

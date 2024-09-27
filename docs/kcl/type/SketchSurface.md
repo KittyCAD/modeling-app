@@ -7,6 +7,9 @@ layout: manual
 A sketch group type.
 
 
+**oneOf**
+
+
 
 
 **This schema accepts exactly one of the following:**
@@ -14,7 +17,10 @@ A sketch group type.
 A plane.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -29,7 +35,7 @@ A plane.
  | The id of the plane. | No |
 | `origin` | `object`
  | Origin of the plane. | No |
-| `type` | enum: ""
+| `type` | enum: `plane`
  |  | No |
 | `value` | oneOf
  | Type for a plane. | No |
@@ -45,7 +51,10 @@ A plane.
 A face.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -60,7 +69,7 @@ A face.
  | The extrude group the face is on. | No |
 | `id` | `string` (`uuid`)
  | The id of the face. | No |
-| `type` | enum: ""
+| `type` | enum: `face`
  |  | No |
 | `value` | `string`
  | The tag of the face. | No |

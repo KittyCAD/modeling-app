@@ -7,10 +7,16 @@ layout: manual
 Data for start sketch on. You can start a sketch on a plane or an extrude group.
 
 
+**anyOf**
+
+
 
 **This schema accepts any of the following:**
 
 Data for a plane.
+
+
+**oneOf**
 
 
 
@@ -20,7 +26,10 @@ Data for a plane.
 The XY plane.
 
 
+**enum:** `XY`
+
 **Type:** `string`
+
 
 
 
@@ -31,7 +40,10 @@ The XY plane.
 The opposite side of the XY plane.
 
 
+**enum:** `-XY`
+
 **Type:** `string`
+
 
 
 
@@ -42,7 +54,10 @@ The opposite side of the XY plane.
 The XZ plane.
 
 
+**enum:** `XZ`
+
 **Type:** `string`
+
 
 
 
@@ -53,7 +68,10 @@ The XZ plane.
 The opposite side of the XZ plane.
 
 
+**enum:** `-XZ`
+
 **Type:** `string`
+
 
 
 
@@ -64,7 +82,10 @@ The opposite side of the XZ plane.
 The YZ plane.
 
 
+**enum:** `YZ`
+
 **Type:** `string`
+
 
 
 
@@ -75,7 +96,10 @@ The YZ plane.
 The opposite side of the YZ plane.
 
 
+**enum:** `-YZ`
+
 **Type:** `string`
+
 
 
 
@@ -86,7 +110,10 @@ The opposite side of the YZ plane.
 A defined plane.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -108,7 +135,10 @@ A defined plane.
 An extrude group is a collection of extrude surfaces.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 

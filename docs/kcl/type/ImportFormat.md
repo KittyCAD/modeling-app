@@ -7,6 +7,9 @@ layout: manual
 Import format specifier
 
 
+**oneOf**
+
+
 
 
 **This schema accepts exactly one of the following:**
@@ -14,7 +17,10 @@ Import format specifier
 Autodesk Filmbox (FBX) format
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -23,7 +29,7 @@ Autodesk Filmbox (FBX) format
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` | enum: ""
+| `type` | enum: `fbx`
  |  | No |
 
 
@@ -31,7 +37,10 @@ Autodesk Filmbox (FBX) format
 Binary glTF 2.0. We refer to this as glTF since that is how our customers refer to it, but this can also import binary glTF (glb).
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -40,7 +49,7 @@ Binary glTF 2.0. We refer to this as glTF since that is how our customers refer 
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` | enum: ""
+| `type` | enum: `gltf`
  |  | No |
 
 
@@ -48,7 +57,10 @@ Binary glTF 2.0. We refer to this as glTF since that is how our customers refer 
 Wavefront OBJ format.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -59,7 +71,7 @@ Wavefront OBJ format.
 |----------|------|-------------|----------|
 | `coords` | `object`
  | Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `type` | enum: ""
+| `type` | enum: `obj`
  |  | No |
 | `units` | oneOf
  | The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
@@ -69,7 +81,10 @@ Wavefront OBJ format.
 The PLY Polygon File Format.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -80,7 +95,7 @@ The PLY Polygon File Format.
 |----------|------|-------------|----------|
 | `coords` | `object`
  | Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `type` | enum: ""
+| `type` | enum: `ply`
  |  | No |
 | `units` | oneOf
  | The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
@@ -90,7 +105,10 @@ The PLY Polygon File Format.
 SolidWorks part (SLDPRT) format.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -99,7 +117,7 @@ SolidWorks part (SLDPRT) format.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` | enum: ""
+| `type` | enum: `sldprt`
  |  | No |
 
 
@@ -107,7 +125,10 @@ SolidWorks part (SLDPRT) format.
 ISO 10303-21 (STEP) format.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -116,7 +137,7 @@ ISO 10303-21 (STEP) format.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` | enum: ""
+| `type` | enum: `step`
  |  | No |
 
 
@@ -124,7 +145,10 @@ ISO 10303-21 (STEP) format.
 ST**ereo**L**ithography format.
 
 
+`object`
+
 **Type:** `object`
+
 
 
 
@@ -135,7 +159,7 @@ ST**ereo**L**ithography format.
 |----------|------|-------------|----------|
 | `coords` | `object`
  | Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `type` | enum: ""
+| `type` | enum: `stl`
  |  | No |
 | `units` | oneOf
  | The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |

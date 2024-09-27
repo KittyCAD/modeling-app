@@ -6,9 +6,12 @@
 **Schema:** `{{$schema}}`
 {{/if}}
 
+{{> schemaType this}}
+
 {{#if type}}
 **Type:** `{{type}}`
 {{/if}}
+
 
 {{#if anyOf}}
 **This schema accepts any of the following:**
