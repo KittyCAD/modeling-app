@@ -575,15 +575,15 @@ function codeToIdSelections(
 ): SelectionToEngine[] {
   return codeBasedSelections
     .flatMap((selection): null | SelectionToEngine[] => {
-      const { type, range, ...rest } = selection
+      const { type } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
           if (!('codeRef' in artifact)) return false
-          return isOverlap(artifact.codeRef.range, range)
+          return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
-                selection: { type, range, ...rest },
+                selection,
                 id,
               }
             : false
@@ -615,7 +615,7 @@ function codeToIdSelections(
           if (solid?.type !== 'solid2D') return
           bestCandidate = {
             artifact: solid,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.solid2dId,
           }
         }
@@ -626,7 +626,7 @@ function codeToIdSelections(
           if (wall?.type !== 'wall') return
           bestCandidate = {
             artifact: wall,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.surfaceId,
           }
           return
@@ -640,7 +640,7 @@ function codeToIdSelections(
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
-            selection: { type, range, ...rest },
+            selection,
             id: edge[0],
           }
         }
@@ -656,7 +656,7 @@ function codeToIdSelections(
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
-            selection: { type, range, ...rest },
+            selection,
             id: edge[0],
           }
         }
@@ -682,7 +682,7 @@ function codeToIdSelections(
           if (!cap) return
           bestCandidate = {
             artifact: entry.artifact,
-            selection: { type, range, ...rest },
+            selection,
             id: cap[0],
           }
           return
@@ -706,7 +706,7 @@ function codeToIdSelections(
           ) {
             bestCandidate = {
               artifact: entry.artifact,
-              selection: { type, range, ...rest },
+              selection,
               id: entry.id,
             }
           } else if (
@@ -722,14 +722,11 @@ function codeToIdSelections(
             )
             if (err(seg)) return
             if (
-              isOverlap(
-                seg.codeRef.range,
-                selection.secondaryRange || [0, 0]
-              )
+              isOverlap(seg.codeRef.range, selection.secondaryRange || [0, 0])
             ) {
               bestCandidate = {
                 artifact: entry.artifact,
-                selection: { type, range, ...rest },
+                selection,
                 id: entry.id,
               }
             }
