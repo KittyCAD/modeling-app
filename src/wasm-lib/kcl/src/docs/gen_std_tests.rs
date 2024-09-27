@@ -78,7 +78,6 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
              -> handlebars::HelperResult {
                 if let Some(enum_value) = h.param(0) {
                     if let Some(array) = enum_value.value().as_array() {
-                        println!("{:?}", array);
                         let pretty_options = array
                             .iter()
                             .filter_map(|v| v.as_str())
