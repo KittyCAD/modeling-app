@@ -19,11 +19,11 @@ import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `file_path` | `String` |  | Yes |
-| `options` | [`ImportFormat`](kcl/types/ImportFormat) | Import format specifier | No |
+| `options` | [`ImportFormat`](types/ImportFormat) | Import format specifier | No |
 
 ### Returns
 
-[`ImportedGeometry`](kcl/types/ImportedGeometry) - Data for an imported geometry.
+[`ImportedGeometry`](types/ImportedGeometry) - Data for an imported geometry.
 
 
 ### Examples

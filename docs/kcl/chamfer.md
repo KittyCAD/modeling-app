@@ -17,13 +17,13 @@ chamfer(data: ChamferData, extrude_group: ExtrudeGroup, tag?: TagDeclarator) -> 
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`ChamferData`](kcl/types/ChamferData) | Data for chamfers. | Yes |
-| `extrude_group` | [`ExtrudeGroup`](kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+| `data` | [`ChamferData`](types/ChamferData) | Data for chamfers. | Yes |
+| `extrude_group` | [`ExtrudeGroup`](types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `tag` | [`TagDeclarator`](types#tag-declaration) |  | No |
 
 ### Returns
 
-[`ExtrudeGroup`](kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+[`ExtrudeGroup`](types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
 
 
 ### Examples

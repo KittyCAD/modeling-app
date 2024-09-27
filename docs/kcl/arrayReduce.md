@@ -17,13 +17,13 @@ arrayReduce(array: [u64], start: SketchGroup, reduce_fn: FunctionParam) -> Sketc
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[u64]`](kcl/types/[u64]) |  | Yes |
-| `start` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `array` | [`[u64]`](types/[u64]) |  | Yes |
+| `start` | [`SketchGroup`](types/SketchGroup) | A sketch group is a collection of paths. | Yes |
 | `reduce_fn` | `FunctionParam` |  | Yes |
 
 ### Returns
 
-[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`SketchGroup`](types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

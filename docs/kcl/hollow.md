@@ -18,11 +18,11 @@ hollow(thickness: number, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `thickness` | `number` |  | Yes |
-| `extrude_group` | [`ExtrudeGroup`](kcl/types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
+| `extrude_group` | [`ExtrudeGroup`](types/ExtrudeGroup) | An extrude group is a collection of extrude surfaces. | Yes |
 
 ### Returns
 
-[`ExtrudeGroup`](kcl/types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
+[`ExtrudeGroup`](types/ExtrudeGroup) - An extrude group is a collection of extrude surfaces.
 
 
 ### Examples

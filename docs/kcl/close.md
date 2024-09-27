@@ -17,12 +17,12 @@ close(sketch_group: SketchGroup, tag?: TagDeclarator) -> SketchGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch_group` | [`SketchGroup`](kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](kcl/types#tag-declaration) |  | No |
+| `sketch_group` | [`SketchGroup`](types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `tag` | [`TagDeclarator`](types#tag-declaration) |  | No |
 
 ### Returns
 
-[`SketchGroup`](kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`SketchGroup`](types/SketchGroup) - A sketch group is a collection of paths.
 
 
 ### Examples

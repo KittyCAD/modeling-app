@@ -17,7 +17,7 @@ segAng(tag: TagIdentifier) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](kcl/types#tag-identifier) |  | Yes |
+| `tag` | [`TagIdentifier`](types#tag-identifier) |  | Yes |
 
 ### Returns
 
