@@ -14,6 +14,15 @@ export function isArray(val: any): val is unknown[] {
   return Array.isArray(val)
 }
 
+/**
+ * Predicate that checks if a value is not null and not undefined.  This is
+ * useful for functions like Array::filter() and Array::find() that have
+ * overloads that accept a type guard.
+ */
+export function isNonNullable<T>(val: T): val is NonNullable<T> {
+  return val !== null && val !== undefined
+}
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]

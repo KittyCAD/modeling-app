@@ -17,7 +17,7 @@ use crate::{
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct MirrorData {
+pub struct Mirror2dData {
     /// Axis to use as mirror.
     pub axis: AxisOrEdgeReference,
 }
@@ -26,7 +26,7 @@ pub struct MirrorData {
 ///
 /// Only works on unclosed sketches for now.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_group_set): (MirrorData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
+    let (data, sketch_group_set): (Mirror2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     let sketch_groups = inner_mirror_2d(data, sketch_group_set, exec_state, args).await?;
     Ok(sketch_groups.into())
@@ -102,7 +102,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     name = "mirror2d",
 }]
 async fn inner_mirror_2d(
-    data: MirrorData,
+    data: Mirror2dData,
     sketch_group_set: SketchGroupSet,
     exec_state: &mut ExecState,
     args: Args,
