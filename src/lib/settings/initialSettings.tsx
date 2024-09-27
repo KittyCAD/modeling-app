@@ -280,36 +280,6 @@ export function createSettings() {
         },
       }),
       /**
-       * Projection method applied to the 3D view, perspective or orthographic
-       */
-      cameraProjection: new Setting<CameraProjectionType>({
-        defaultValue: 'orthographic',
-        hideOnLevel: 'project',
-        description:
-          'Projection method applied to the 3D view, perspective or orthographic',
-        validate: (v) => ['perspective', 'orthographic'].includes(v),
-        commandConfig: {
-          inputType: 'options',
-          // This is how we could have toggling behavior for a non-boolean argument:
-          // Set it to "skippable", and make the default value the opposite of the current value
-          // skip: true,
-          defaultValueFromContext: (context) =>
-            context.modeling.cameraProjection.current === 'perspective'
-              ? 'orthographic'
-              : 'perspective',
-          options: (cmdContext, settingsContext) =>
-            (['perspective', 'orthographic'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
-              value: v,
-              isCurrent:
-                settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
-                  cmdContext.argumentsToSubmit.level as SettingsLevel,
-                  v
-                ),
-            })),
-        },
-      }),
-      /**
        * The controls for how to navigate the 3D view
        */
       mouseControls: new Setting<CameraSystem>({
@@ -368,6 +338,36 @@ export function createSettings() {
             </ul>
           </>
         ),
+      }),
+      /**
+       * Projection method applied to the 3D view, perspective or orthographic
+       */
+      cameraProjection: new Setting<CameraProjectionType>({
+        defaultValue: 'orthographic',
+        hideOnLevel: 'project',
+        description:
+          'Projection method applied to the 3D view, perspective or orthographic',
+        validate: (v) => ['perspective', 'orthographic'].includes(v),
+        commandConfig: {
+          inputType: 'options',
+          // This is how we could have toggling behavior for a non-boolean argument:
+          // Set it to "skippable", and make the default value the opposite of the current value
+          // skip: true,
+          defaultValueFromContext: (context) =>
+            context.modeling.cameraProjection.current === 'perspective'
+              ? 'orthographic'
+              : 'perspective',
+          options: (cmdContext, settingsContext) =>
+            (['perspective', 'orthographic'] as const).map((v) => ({
+              name: v.charAt(0).toUpperCase() + v.slice(1),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
       }),
       /**
        * Whether to highlight edges of 3D objects
