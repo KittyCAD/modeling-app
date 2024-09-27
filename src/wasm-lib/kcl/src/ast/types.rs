@@ -89,6 +89,14 @@ impl Program {
         hasher.update(slf.non_code_meta.compute_digest());
     });
 
+    /// Is the last body item an expression?
+    pub fn ends_with_expr(&self) -> bool {
+        let Some(ref last) = self.body.last() else {
+            return false;
+        };
+        matches!(last, BodyItem::ExpressionStatement(_))
+    }
+
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         // Check if we are in the non code meta.
         if let Some(meta) = self.get_non_code_meta_for_position(pos) {

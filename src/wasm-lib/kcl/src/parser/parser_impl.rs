@@ -703,7 +703,10 @@ fn else_if(i: TokenSlice) -> PResult<ElseIf> {
     let cond = expression(i)?;
     ignore_whitespace(i);
     let _ = open_brace(i)?;
-    let then_val = program(i).map(Box::new)?;
+    let then_val = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map(Box::new)?;
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
     ignore_whitespace(i);
@@ -735,12 +738,15 @@ fn if_expr(i: TokenSlice) -> PResult<IfExpression> {
     let _ = whitespace(i)?;
     let _ = open_brace(i)?;
     ignore_whitespace(i);
-    let then_val = program(i).map(Box::new)?;
+    let then_val = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map_err(|e| e.cut())
+        .map(Box::new)?;
     ignore_whitespace(i);
     let _ = close_brace(i)?;
     ignore_whitespace(i);
     let else_ifs = repeat(0.., else_if).parse_next(i)?;
-    // let else_ifs = Vec::new();
 
     ignore_whitespace(i);
     let _ = any
@@ -760,7 +766,11 @@ fn if_expr(i: TokenSlice) -> PResult<IfExpression> {
     let _ = open_brace(i)?;
     ignore_whitespace(i);
 
-    let final_else = program(i).map(Box::new)?;
+    let final_else = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map_err(|e| e.cut())
+        .map(Box::new)?;
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
     Ok(IfExpression {
