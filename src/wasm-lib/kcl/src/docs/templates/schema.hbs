@@ -7,7 +7,8 @@
 {{else if enum}}
 **enum:** {{pretty_enum enum}}
 {{else if type}}
-**Type:** `{{type}}`{{~ #if format }} (`{{format}}`){{/if ~}}
+**Type:** `{{type}}`{{~ #if format }} (`{{format}}`){{~/if ~}}{{~ #if maximum }} (**maximum:** {{maximum}}){{~/if~}}{{~ #if minimum }} (**minimum:** {{minimum}}){{~/if~}}
+{{else}}
 {{/if}}
 
 {{#if $schema}}
