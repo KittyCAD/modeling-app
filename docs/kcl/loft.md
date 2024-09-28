@@ -17,7 +17,7 @@ loft(sketches: [Sketch], data?: LoftData) -> Solid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch]`](/docs/kcl/types/[Sketch]) |  | Yes |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) |  | Yes |
 | `data` | [`LoftData`](/docs/kcl/types/LoftData) | Data for a loft. | No |
 
 ### Returns

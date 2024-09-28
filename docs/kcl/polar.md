@@ -21,7 +21,7 @@ polar(data: PolarCoordsData) -> [number]
 
 ### Returns
 
-[`[number]`](/docs/kcl/types/[number]) 
+`[number]` 
 
 
 ### Examples

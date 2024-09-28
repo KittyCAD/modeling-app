@@ -17,7 +17,7 @@ startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
+| `to` | `[number]` |  | Yes |
 | `sketch_surface` | [`SketchSurface`](/docs/kcl/types/SketchSurface) | A sketch type. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 

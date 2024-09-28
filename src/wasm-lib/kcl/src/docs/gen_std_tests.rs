@@ -1,8 +1,9 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use anyhow::Result;
 use base64::Engine;
 use convert_case::Casing;
+use handlebars::Renderable;
 use itertools::Itertools;
 use serde_json::json;
 
@@ -34,7 +35,42 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
 
     // Register the 'basename' helper
     hbs.register_helper(
-        "basename",
+        "times",
+        Box::new(
+            |h: &handlebars::Helper,
+             hb: &handlebars::Handlebars,
+             ctx: &handlebars::Context,
+             rc: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let n = h.param(0).and_then(|v| v.value().as_u64()).ok_or_else(|| {
+                    handlebars::RenderErrorReason::Other(
+                        "times helper expects an integer as first parameter".to_string(),
+                    )
+                })?;
+
+                let template = h
+                    .template()
+                    .ok_or_else(|| handlebars::RenderErrorReason::Other("times helper expects a block".to_string()))?;
+
+                for i in 0..n {
+                    let mut local_ctx = ctx.clone();
+                    let mut rc = rc.clone();
+                    let m = local_ctx.data_mut().as_object_mut().unwrap();
+                    m.insert("@index".to_string(), handlebars::JsonValue::Number(i.into()));
+                    if i == 0 {
+                        m.insert("@first".to_string(), handlebars::JsonValue::Bool(true));
+                    }
+                    template.render(hb, &local_ctx, &mut rc, out)?;
+                }
+
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_helper(
+        "lte",
         Box::new(
             |h: &handlebars::Helper,
              _: &handlebars::Handlebars,
@@ -42,9 +78,47 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
              _: &mut handlebars::RenderContext,
              out: &mut dyn handlebars::Output|
              -> handlebars::HelperResult {
-                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
-                let basename = param.split('/').last().unwrap_or("");
-                out.write(basename)?;
+                let a = h.param(0).and_then(|v| v.value().as_f64()).ok_or_else(|| {
+                    handlebars::RenderErrorReason::Other("lte helper expects a number as first parameter".to_string())
+                })?;
+
+                let b = h.param(1).and_then(|v| v.value().as_f64()).ok_or_else(|| {
+                    handlebars::RenderErrorReason::Other("lte helper expects a number as second parameter".to_string())
+                })?;
+
+                let result = a <= b;
+                out.write(if result { "true" } else { "false" })?;
+
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_helper(
+        "neq",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let param1 = h
+                    .param(0)
+                    .ok_or_else(|| {
+                        handlebars::RenderErrorReason::Other("neq helper expects two parameters".to_string())
+                    })?
+                    .value();
+                let param2 = h
+                    .param(1)
+                    .ok_or_else(|| {
+                        handlebars::RenderErrorReason::Other("neq helper expects two parameters".to_string())
+                    })?
+                    .value();
+
+                let result = param1 != param2;
+                out.write(if result { "true" } else { "false" })?;
+
                 Ok(())
             },
         ),
@@ -89,6 +163,50 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
                     }
                 }
                 out.write("Invalid enum")?;
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_helper(
+        "pretty_enum",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                if let Some(enum_value) = h.param(0) {
+                    if let Some(array) = enum_value.value().as_array() {
+                        let pretty_options = array
+                            .iter()
+                            .filter_map(|v| v.as_str())
+                            .map(|s| format!("`{}`", s))
+                            .collect::<Vec<_>>()
+                            .join(", ");
+                        out.write(&pretty_options)?;
+                        return Ok(());
+                    }
+                }
+                out.write("Invalid enum")?;
+                Ok(())
+            },
+        ),
+    );
+
+    hbs.register_helper(
+        "pretty_ref",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
+                let basename = param.split('/').last().unwrap_or("");
+                out.write(&format!("`{}`", basename))?;
                 Ok(())
             },
         ),
@@ -157,11 +275,11 @@ fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
     Ok(())
 }
 
-fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
+fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, schemars::schema::Schema>> {
     let hbs = init_handlebars()?;
 
     if internal_fn.unpublished() {
-        return Ok(());
+        return Ok(BTreeMap::new());
     }
 
     let fn_name = internal_fn.name();
@@ -194,23 +312,17 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         .collect();
 
     // Generate the type markdown files for each argument.
-    let mut types = Vec::new();
+    let mut types = BTreeMap::new();
     for arg in internal_fn.args() {
         if !arg.is_primitive()? {
-            generate_type(&arg.type_, &arg.schema)?;
-            if !types.contains(&arg.type_.to_string()) {
-                types.push(arg.type_.to_string());
-            }
+            add_to_types(&arg.type_, &arg.schema, &mut types)?;
         }
     }
 
     // Generate the type markdown for the return value.
     if let Some(ret) = internal_fn.return_value() {
         if !ret.is_primitive()? {
-            generate_type(&ret.type_, &ret.schema)?;
-            if !types.contains(&ret.type_.to_string()) {
-                types.push(ret.type_.to_string());
-            }
+            add_to_types(&ret.type_, &ret.schema, &mut types)?;
         }
     }
 
@@ -240,28 +352,102 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
     });
 
     let mut output = hbs.render("function", &data)?;
+    // Fix the links to the types.
+    output = cleanup_type_links(&output, types.keys().cloned().collect());
 
+    expectorate::assert_contents(format!("../../../docs/kcl/{}.md", fn_name), &output);
+
+    Ok(types)
+}
+
+fn cleanup_static_links(output: &str) -> String {
+    let mut cleaned_output = output.to_string();
+    // Fix the links to the types.
+    let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
+    cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
+    let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
+    cleaned_output = cleaned_output.replace("`TagIdentifier`", &link);
+
+    cleaned_output
+}
+
+// Fix the links to the types.
+fn cleanup_type_links(output: &str, types: Vec<String>) -> String {
+    let mut cleaned_output = output.to_string();
     // Fix the links to the types.
     for type_name in types {
-        let formatted_type_name = format!("`{}`", type_name);
-        if type_name == "TagDeclarator" {
-            let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
-            output = output.replace(&formatted_type_name, &link);
-        } else if type_name == "TagIdentifier" {
-            let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
-            output = output.replace(&formatted_type_name, &link);
+        if type_name == "TagDeclarator" || type_name == "TagIdentifier" {
+            continue;
         } else {
-            let link = format!("[`{}`](/docs/kcl/types/{})", type_name, type_name);
-            output = output.replace(&formatted_type_name, &link);
+            let link = format!("(/docs/kcl/types/{})", type_name);
+            cleaned_output =
+                cleaned_output.replace(&format!("`{}`", type_name), &format!("[`{}`]{}", type_name, &link));
+            // Do the same for the type with brackets.
+            cleaned_output =
+                cleaned_output.replace(&format!("`[{}]`", type_name), &format!("[`[{}]`]{}", type_name, link));
         }
     }
 
-    expectorate::assert_contents(format!("../../../docs/kcl/{}.md", fn_name), &output);
+    // Cleanup our weird number arrays.
+    // TODO: This is a hack for the handlebars template being too complex.
+    cleaned_output = cleaned_output.replace("`[, `number`, `number`]`", "`[number, number]`");
+    cleaned_output = cleaned_output.replace("`[, `number`, `number`, `number`]`", "`[number, number, number]`");
+
+    cleanup_static_links(&cleaned_output)
+}
+
+fn add_to_types(
+    name: &str,
+    schema: &schemars::schema::Schema,
+    types: &mut BTreeMap<String, schemars::schema::Schema>,
+) -> Result<()> {
+    if name.is_empty() {
+        return Err(anyhow::anyhow!("Empty type name"));
+    }
+
+    let schemars::schema::Schema::Object(o) = schema else {
+        return Err(anyhow::anyhow!(
+            "Failed to get object schema, should have not been a primitive"
+        ));
+    };
+
+    // If we have an array we want to generate the type markdown files for each item in the
+    // array.
+    if let Some(array) = &o.array {
+        // Recursively generate the type markdown files for each item in the array.
+        if let Some(items) = &array.items {
+            match items {
+                schemars::schema::SingleOrVec::Single(item) => {
+                    if is_primitive(item)?.is_some() {
+                        return Ok(());
+                    }
+                    return add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types);
+                }
+                schemars::schema::SingleOrVec::Vec(items) => {
+                    for item in items {
+                        if is_primitive(item)?.is_some() {
+                            continue;
+                        }
+                        add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types)?;
+                    }
+                    return Ok(());
+                }
+            }
+        } else {
+            return Err(anyhow::anyhow!("Failed to get array items"));
+        }
+    }
+
+    types.insert(name.to_string(), schema.clone());
 
     Ok(())
 }
 
-fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
+fn generate_type(
+    name: &str,
+    schema: &schemars::schema::Schema,
+    types: &BTreeMap<String, schemars::schema::Schema>,
+) -> Result<()> {
     if name.is_empty() {
         return Err(anyhow::anyhow!("Empty type name"));
     }
@@ -287,14 +473,14 @@ fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
                     if is_primitive(item)?.is_some() {
                         return Ok(());
                     }
-                    return generate_type(name.trim_start_matches('[').trim_end_matches(']'), item);
+                    return generate_type(name.trim_start_matches('[').trim_end_matches(']'), item, types);
                 }
                 schemars::schema::SingleOrVec::Vec(items) => {
                     for item in items {
                         if is_primitive(item)?.is_some() {
                             continue;
                         }
-                        generate_type(name.trim_start_matches('[').trim_end_matches(']'), item)?;
+                        generate_type(name.trim_start_matches('[').trim_end_matches(']'), item, types)?;
                     }
                     return Ok(());
                 }
@@ -315,8 +501,12 @@ fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
         return Err(anyhow::anyhow!("Type name is not pascal cased: {}", name));
     }
 
-    // Make sure the types directory exists.
-    std::fs::create_dir_all(TYPES_DIR)?;
+    let new_schema = recurse_and_create_references(name, schema, types)?;
+    let schemars::schema::Schema::Object(o) = new_schema else {
+        return Err(anyhow::anyhow!(
+            "Failed to get object schema, should have not been a primitive"
+        ));
+    };
 
     let hbs = init_handlebars()?;
 
@@ -333,8 +523,10 @@ fn generate_type(name: &str, schema: &schemars::schema::Schema) -> Result<()> {
 
     let data = json!(schemars::schema::Schema::Object(object));
 
-    let output = hbs.render("type", &data)?;
-    std::fs::write(format!("{}/{}.md", TYPES_DIR, name), output)?;
+    let mut output = hbs.render("type", &data)?;
+    // Fix the links to the types.
+    output = cleanup_type_links(&output, types.keys().cloned().collect());
+    expectorate::assert_contents(format!("{}/{}.md", TYPES_DIR, name), &output);
 
     Ok(())
 }
@@ -370,20 +562,130 @@ fn clean_function_name(name: &str) -> String {
     fn_name
 }
 
+/// Check if a schema is the same as another schema, but don't check the description.
+fn is_same_schema(sa: &schemars::schema::Schema, sb: &schemars::schema::Schema) -> bool {
+    let schemars::schema::Schema::Object(a) = sa else {
+        return sa == sb;
+    };
+
+    let schemars::schema::Schema::Object(b) = sb else {
+        return sa == sb;
+    };
+
+    let mut a = a.clone();
+    a.metadata = None;
+    let mut b = b.clone();
+    b.metadata = None;
+
+    a == b
+}
+
+/// Recursively create references for types we already know about.
+fn recurse_and_create_references(
+    name: &str,
+    schema: &schemars::schema::Schema,
+    types: &BTreeMap<String, schemars::schema::Schema>,
+) -> Result<schemars::schema::Schema> {
+    let schemars::schema::Schema::Object(o) = schema else {
+        return Err(anyhow::anyhow!(
+            "Failed to get object schema, should have not been a primitive"
+        ));
+    };
+
+    // Check if this is the type we already know about.
+    for (n, s) in types {
+        if is_same_schema(schema, s) && name != n && !n.starts_with("[") {
+            // Return a reference to the type.
+            let sref = schemars::schema::Schema::new_ref(n.to_string());
+            // Add the existing metadata to the reference.
+            let schemars::schema::Schema::Object(ro) = sref else {
+                return Err(anyhow::anyhow!(
+                    "Failed to get object schema, should have not been a primitive"
+                ));
+            };
+            let mut ro = ro.clone();
+            ro.metadata = o.metadata.clone();
+
+            return Ok(schemars::schema::Schema::Object(ro));
+        }
+    }
+
+    let mut obj = o.clone();
+
+    // If we have an object iterate over the properties and recursively create references.
+    if let Some(object) = &mut obj.object {
+        for (_, value) in object.properties.iter_mut() {
+            let new_value = recurse_and_create_references(name, value, types)?;
+            *value = new_value;
+        }
+    }
+
+    // If we have an array iterate over the items and recursively create references.
+    if let Some(array) = &mut obj.array {
+        if let Some(items) = &mut array.items {
+            match items {
+                schemars::schema::SingleOrVec::Single(item) => {
+                    let new_item = recurse_and_create_references(name, item, types)?;
+                    *item = Box::new(new_item);
+                }
+                schemars::schema::SingleOrVec::Vec(items) => {
+                    for item in items {
+                        let new_item = recurse_and_create_references(name, item, types)?;
+                        *item = new_item;
+                    }
+                }
+            }
+        }
+    }
+
+    // If we have subschemas iterate over them and recursively create references.
+    if let Some(subschema) = &mut obj.subschemas {
+        // Do anyOf.
+        if let Some(any_of) = &mut subschema.any_of {
+            for item in any_of {
+                let new_item = recurse_and_create_references(name, item, types)?;
+                *item = new_item;
+            }
+        }
+
+        // Do allOf.
+        if let Some(all_of) = &mut subschema.all_of {
+            for item in all_of {
+                let new_item = recurse_and_create_references(name, item, types)?;
+                *item = new_item;
+            }
+        }
+
+        // Do oneOf.
+        if let Some(one_of) = &mut subschema.one_of {
+            for item in one_of {
+                let new_item = recurse_and_create_references(name, item, types)?;
+                *item = new_item;
+            }
+        }
+    }
+
+    Ok(schemars::schema::Schema::Object(obj.clone()))
+}
+
 #[test]
 fn test_generate_stdlib_markdown_docs() {
-    // Clean the old files.
-    std::fs::remove_dir_all(TYPES_DIR).unwrap_or_default();
-
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 
     // Generate the index which is the table of contents.
     generate_index(&combined).unwrap();
 
+    let mut types = BTreeMap::new();
     for key in combined.keys().sorted() {
         let internal_fn = combined.get(key).unwrap();
-        generate_function(internal_fn.clone()).unwrap();
+        let fn_types = generate_function(internal_fn.clone()).unwrap();
+        types.extend(fn_types);
+    }
+
+    // Generate the type markdown files.
+    for (name, schema) in &types {
+        generate_type(name, schema, &types).unwrap();
     }
 }
 

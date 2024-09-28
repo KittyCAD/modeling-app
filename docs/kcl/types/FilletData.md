@@ -16,8 +16,8 @@ Data for fillets.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `radius` |`number` (`double`)| The radius of the fillet. | No |
-| `tags` |`array`| The tags of the paths you want to fillet. | No |
-| `tolerance` |`number` (`double`)| The tolerance for the fillet. | No |
+| `radius` |`number`| The radius of the fillet. | No |
+| `tags` |`[` **anyOf:** `string` **OR** [`TagIdentifier`](/docs/kcl/types#tag-identifier) `]`| The tags of the paths you want to fillet. | No |
+| `tolerance` |`number`| The tolerance for the fillet. | No |
 
 

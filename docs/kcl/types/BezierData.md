@@ -16,8 +16,8 @@ Data to draw a bezier curve.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `to` |`array`| The to point. | No |
-| `control1` |`array`| The first control point. | No |
-| `control2` |`array`| The second control point. | No |
+| `to` |`[number, number]`| The to point. | No |
+| `control1` |`[number, number]`| The first control point. | No |
+| `control2` |`[number, number]`| The second control point. | No |
 
 

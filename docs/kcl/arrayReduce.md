@@ -17,7 +17,7 @@ arrayReduce(array: [u64], start: Sketch, reduce_fn: FunctionParam) -> Sketch
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[u64]`](/docs/kcl/types/[u64]) |  | Yes |
+| `array` | `[u64]` |  | Yes |
 | `start` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `reduce_fn` | `FunctionParam` |  | Yes |
 

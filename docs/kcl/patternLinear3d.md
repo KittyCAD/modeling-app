@@ -22,7 +22,7 @@ patternLinear3d(data: LinearPattern3dData, solid_set: SolidSet) -> [Solid]
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/[Solid]) 
+[`[Solid]`](/docs/kcl/types/Solid) 
 
 
 ### Examples

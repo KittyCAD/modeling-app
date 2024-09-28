@@ -16,7 +16,7 @@ Data for shells.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `thickness` |`number` (`double`)| The thickness of the shell. | No |
-| `faces` |`array`| The faces you want removed. | No |
+| `thickness` |`number`| The thickness of the shell. | No |
+| `faces` |`[` **anyOf:** **oneOf:** enum: `start` **OR** enum: `end` **OR** [`TagIdentifier`](/docs/kcl/types#tag-identifier) `]`| The faces you want removed. | No |
 
 

@@ -1,7 +1,17 @@
 {{~ #if $ref ~}}
-[{{basename $ref}}](#{{lowercase (basename $ref)}}){{else if anyOf ~}}
-`anyOf`{{else if oneOf ~}}
-`oneOf`{{else if allOf ~}}
-`allOf`{{else if enum ~}}
-enum: {{pretty_enum enum}}{{else ~}}
-`{{type}}`{{#if format}} (`{{format}}`){{/if}}{{~/if~}}
+{{pretty_ref $ref}}{{else if anyOf ~}}
+**anyOf:** {{#each anyOf}}{{> propertyType this}}{{#unless @last}} **OR** {{/unless}}{{/each}}{{else if oneOf ~}}
+**oneOf:** {{#each oneOf}}{{> propertyType this}}{{#unless @last}} **OR** {{/unless}}{{/each}}{{else if allOf ~}}
+**allOf:** {{#each allOf}}{{> propertyType this}}{{#unless @last}} **OR** {{/unless}}{{/each}}{{else if enum ~}}
+enum: {{pretty_enum enum}}{{else if items ~}}
+{{~ #if maxItems ~}}
+{{~ #if (lte maxItems 3) ~}}
+`[{{#times maxItems ~}}
+{{~ #if @first ~}}{{else ~}}, {{/if ~}}{{> propertyType ../items}}{{/times}}]`{{else ~}}
+`[` {{ > propertyType items }} `]`
+{{~ /if ~}}{{else ~}}`[` {{ > propertyType items }} `]`
+{{~ /if ~}}{{else ~}}
+`{{type}}{{~ #if format }}{{#if neq format "double" }} ({{format}}){{/if}}
+{{~ /if ~}}`
+{{~/if~}}
+

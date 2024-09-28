@@ -24,13 +24,13 @@ A plane.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `plane`|  | No |
-| `id` |`string` (`uuid`)| The id of the plane. | No |
-| `value` |`oneOf`| Type for a plane. | No |
+| `id` |`string`| The id of the plane. | No |
+| `value` |**oneOf:** enum: `XY`, `XZ`, `YZ` **OR** enum: `Custom`| Type for a plane. | No |
 | `origin` |`object`| Origin of the plane. | No |
 | `xAxis` |`object`| What should the plane’s X axis be? | No |
 | `yAxis` |`object`| What should the plane’s Y axis be? | No |
 | `zAxis` |`object`| The z-axis (normal). | No |
-| `__meta` |`array`|  | No |
+| `__meta` |`[` `object` `]`|  | No |
 
 
 ----
@@ -47,13 +47,13 @@ A face.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `face`|  | No |
-| `id` |`string` (`uuid`)| The id of the face. | No |
+| `id` |`string`| The id of the face. | No |
 | `value` |`string`| The tag of the face. | No |
 | `xAxis` |`object`| What should the face’s X axis be? | No |
 | `yAxis` |`object`| What should the face’s Y axis be? | No |
 | `zAxis` |`object`| The z-axis (normal). | No |
 | `solid` |`object`| The solid the face is on. | No |
-| `__meta` |`array`|  | No |
+| `__meta` |`[` `object` `]`|  | No |
 
 
 ----

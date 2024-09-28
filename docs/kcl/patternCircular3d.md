@@ -22,7 +22,7 @@ patternCircular3d(data: CircularPattern3dData, solid_set: SolidSet) -> [Solid]
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/[Solid]) 
+[`[Solid]`](/docs/kcl/types/Solid) 
 
 
 ### Examples

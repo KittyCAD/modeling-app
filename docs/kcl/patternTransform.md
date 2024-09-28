@@ -25,7 +25,7 @@ patternTransform(total_instances: u32, transform_function: FunctionParam, solid_
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/[Solid]) 
+[`[Solid]`](/docs/kcl/types/Solid) 
 
 
 ### Examples

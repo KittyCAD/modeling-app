@@ -17,7 +17,7 @@ tangentialArcToRelative(delta: [number], sketch: Sketch, tag?: TagDeclarator) ->
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `delta` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
+| `delta` | `[number]` |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
