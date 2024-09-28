@@ -23,8 +23,8 @@ Angles and radius with an optional tag.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angleStart` |`number`| The start angle. | No |
-| `angleEnd` |`number`| The end angle. | No |
+| `angleStart` |`number` (**maximum:** 360.0) (**minimum:** -360.0)| The start angle. | No |
+| `angleEnd` |`number` (**maximum:** 360.0) (**minimum:** -360.0)| The end angle. | No |
 | `radius` |`number`| The radius. | No |
 
 
