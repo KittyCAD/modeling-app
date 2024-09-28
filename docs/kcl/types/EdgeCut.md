@@ -29,7 +29,7 @@ A fillet.
 | `id` |`string`| The id of the engine command that called this fillet. | No |
 | `radius` |`number`|  | No |
 | `edgeId` |`string`| The engine id of the edge to fillet. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`|  | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
 
 
 ----
@@ -50,7 +50,7 @@ A chamfer.
 | `id` |`string`| The id of the engine command that called this chamfer. | No |
 | `length` |`number`|  | No |
 | `edgeId` |`string`| The engine id of the edge to chamfer. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`|  | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
 
 
 ----

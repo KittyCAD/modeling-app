@@ -27,7 +27,7 @@ An extrude plane.
 |----------|------|-------------|----------|
 | `type` |enum: `extrudePlane`|  | No |
 | `faceId` |`string`| The face id for the extrude plane. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag. | No |
 | `id` |`string`| The id of the geometry. | No |
 | `sourceRange` |`SourceRange`| The source range. | No |
 
@@ -48,7 +48,7 @@ An extruded arc.
 |----------|------|-------------|----------|
 | `type` |enum: `extrudeArc`|  | No |
 | `faceId` |`string`| The face id for the extrude plane. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag. | No |
 | `id` |`string`| The id of the geometry. | No |
 | `sourceRange` |`SourceRange`| The source range. | No |
 
@@ -69,7 +69,7 @@ Geometry metadata.
 |----------|------|-------------|----------|
 | `type` |enum: `chamfer`|  | No |
 | `faceId` |`string`| The id for the chamfer surface. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag. | No |
 | `id` |`string`| The id of the geometry. | No |
 | `sourceRange` |`SourceRange`| The source range. | No |
 
@@ -90,7 +90,7 @@ Geometry metadata.
 |----------|------|-------------|----------|
 | `type` |enum: `fillet`|  | No |
 | `faceId` |`string`| The id for the fillet surface. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag. | No |
 | `id` |`string`| The id of the geometry. | No |
 | `sourceRange` |`SourceRange`| The source range. | No |
 

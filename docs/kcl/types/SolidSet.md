@@ -30,8 +30,8 @@ An solid is a collection of extrude surfaces.
 | `value` |`[` [`ExtrudeSurface`](/docs/kcl/types/ExtrudeSurface) `]`| The extrude surfaces. | No |
 | `sketch` |[`Sketch`](/docs/kcl/types/Sketch)| The sketch. | No |
 | `height` |`number`| The height of the solid. | No |
-| `startCapId` |`[string, null]`| The id of the extrusion start cap | No |
-| `endCapId` |`[string, null]`| The id of the extrusion end cap | No |
+| `startCapId` |`string`| The id of the extrusion start cap | No |
+| `endCapId` |`string`| The id of the extrusion end cap | No |
 | `edgeCuts` |`[` [`EdgeCut`](/docs/kcl/types/EdgeCut) `]`| Chamfers or fillets on this solid. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
 

@@ -418,7 +418,7 @@ fn do_stdlib_inner(
             }
 
             fn args(&self) -> Vec<#docs_crate::StdLibFnArg> {
-                let mut settings = schemars::gen::SchemaSettings::draft07();
+                let mut settings = schemars::gen::SchemaSettings::openapi3();
                 // We set this to false so we can recurse them later.
                 settings.inline_subschemas = false;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);
@@ -427,7 +427,7 @@ fn do_stdlib_inner(
             }
 
             fn return_value(&self) -> Option<#docs_crate::StdLibFnArg> {
-                let mut settings = schemars::gen::SchemaSettings::draft07();
+                let mut settings = schemars::gen::SchemaSettings::openapi3();
                 // We set this to false so we can recurse them later.
                 settings.inline_subschemas = false;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);

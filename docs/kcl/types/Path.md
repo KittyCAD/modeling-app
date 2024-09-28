@@ -28,7 +28,7 @@ A path that goes to a point.
 | `type` |enum: `ToPoint`|  | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -51,7 +51,7 @@ A arc that is tangential to the last path segment that goes to a point
 | `ccw` |`boolean`| arc&#x27;s direction | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -74,7 +74,7 @@ A arc that is tangential to the last path segment
 | `ccw` |`boolean`| arc&#x27;s direction | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -98,7 +98,7 @@ a complete arc
 | `ccw` |`boolean`| arc&#x27;s direction | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -120,7 +120,7 @@ A path that is horizontal.
 | `x` |`number`| The x coordinate. | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -139,11 +139,11 @@ An angled line to.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `AngledLineTo`|  | No |
-| `x` |`[number, null]`| The x coordinate. | No |
-| `y` |`[number, null]`| The y coordinate. | No |
+| `x` |`number`| The x coordinate. | No |
+| `y` |`number`| The y coordinate. | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -164,7 +164,7 @@ A base path.
 | `type` |enum: `Base`|  | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
-| `tag` |**anyOf:** [`TagDeclarator`](/docs/kcl/types#tag-declaration) **OR** `null`| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 

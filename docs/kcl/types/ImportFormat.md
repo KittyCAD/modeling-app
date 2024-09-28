@@ -60,7 +60,7 @@ Wavefront OBJ format.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `obj`|  | No |
-| `coords` |**anyOf:** [`System`](/docs/kcl/types/System) **OR** `null`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
 | `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
@@ -79,7 +79,7 @@ The PLY Polygon File Format.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ply`|  | No |
-| `coords` |**anyOf:** [`System`](/docs/kcl/types/System) **OR** `null`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
 | `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
@@ -132,7 +132,7 @@ ST**ereo**L**ithography format.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `stl`|  | No |
-| `coords` |**anyOf:** [`System`](/docs/kcl/types/System) **OR** `null`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
 | `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
