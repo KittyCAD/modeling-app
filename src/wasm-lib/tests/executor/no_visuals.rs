@@ -57,6 +57,7 @@ async fn run_fail(code: &str) -> KclError {
 
 gen_test!(property_of_object);
 gen_test!(index_of_array);
+gen_test!(comparisons);
 gen_test_fail!(
     invalid_index_str,
     "semantic: Only integers >= 0 can be used as the index of an array, but you're using a string"

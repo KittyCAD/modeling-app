@@ -1,0 +1,8 @@
+assert(3 == 3, "equality")
+assert(3 != 4, "non-equality")
+assert(3 < 4, "lt")
+assert(3 <= 4, "lte but actually lt")
+assert(4 <= 4, "lte but actually eq")
+assert(4 > 3, "gt")
+assert(4 >= 3, "gte but actually gt")
+assert(3 >= 3, "gte but actually eq")
