@@ -6,8 +6,6 @@ layout: manual
 
 Data for polar coordinates.
 
-
-
 **Type:** `object`
 
 

@@ -10,12 +10,9 @@ Import format specifier
 
 
 
-
 **This schema accepts exactly one of the following:**
 
 Autodesk Filmbox (FBX) format
-
-
 
 **Type:** `object`
 
@@ -33,8 +30,6 @@ Autodesk Filmbox (FBX) format
 ----
 Binary glTF 2.0. We refer to this as glTF since that is how our customers refer to it, but this can also import binary glTF (glb).
 
-
-
 **Type:** `object`
 
 
@@ -51,8 +46,6 @@ Binary glTF 2.0. We refer to this as glTF since that is how our customers refer 
 ----
 Wavefront OBJ format.
 
-
-
 **Type:** `object`
 
 
@@ -64,14 +57,12 @@ Wavefront OBJ format.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `obj`|  | No |
-| `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `units` |**oneOf:** enum: `cm` **OR** enum: `ft` **OR** enum: `in` **OR** enum: `m` **OR** enum: `mm` **OR** enum: `yd`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----
 The PLY Polygon File Format.
-
-
 
 **Type:** `object`
 
@@ -84,14 +75,12 @@ The PLY Polygon File Format.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ply`|  | No |
-| `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `units` |**oneOf:** enum: `cm` **OR** enum: `ft` **OR** enum: `in` **OR** enum: `m` **OR** enum: `mm` **OR** enum: `yd`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----
 SolidWorks part (SLDPRT) format.
-
-
 
 **Type:** `object`
 
@@ -109,8 +98,6 @@ SolidWorks part (SLDPRT) format.
 ----
 ISO 10303-21 (STEP) format.
 
-
-
 **Type:** `object`
 
 
@@ -127,8 +114,6 @@ ISO 10303-21 (STEP) format.
 ----
 ST**ereo**L**ithography format.
 
-
-
 **Type:** `object`
 
 
@@ -140,8 +125,8 @@ ST**ereo**L**ithography format.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `stl`|  | No |
-| `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `units` |**oneOf:** enum: `cm` **OR** enum: `ft` **OR** enum: `in` **OR** enum: `m` **OR** enum: `mm` **OR** enum: `yd`| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----

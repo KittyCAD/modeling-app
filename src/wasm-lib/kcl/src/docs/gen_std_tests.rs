@@ -314,16 +314,23 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
 
     // Generate the type markdown files for each argument.
     let mut types = BTreeMap::new();
-    for arg in internal_fn.args() {
+    for arg in internal_fn.args(false) {
         if !arg.is_primitive()? {
             add_to_types(&arg.type_, &arg.schema, &mut types)?;
+            // Add each definition as well.
+            for (name, definition) in &arg.schema_definitions {
+                add_to_types(name, definition, &mut types)?;
+            }
         }
     }
 
     // Generate the type markdown for the return value.
-    if let Some(ret) = internal_fn.return_value() {
+    if let Some(ret) = internal_fn.return_value(false) {
         if !ret.is_primitive()? {
             add_to_types(&ret.type_, &ret.schema, &mut types)?;
+            for (name, definition) in &ret.schema_definitions {
+                add_to_types(name, definition, &mut types)?;
+            }
         }
     }
 
@@ -336,7 +343,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
         "tags": internal_fn.tags(),
         "examples": examples,
         "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
-        "args": internal_fn.args().iter().map(|arg| {
+        "args": internal_fn.args(false).iter().map(|arg| {
             json!({
                 "name": arg.name,
                 "type_": arg.type_,
@@ -344,7 +351,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
                 "required": arg.required,
             })
         }).collect::<Vec<_>>(),
-        "return_value": internal_fn.return_value().map(|ret| {
+        "return_value": internal_fn.return_value(false).map(|ret| {
             json!({
                 "type_": ret.type_,
                 "description": ret.description(),
@@ -493,6 +500,8 @@ fn generate_type(
 
     // Make sure the name is pascal cased.
     if !(name.is_case(convert_case::Case::Pascal)
+        || name == "Point3d"
+        || name == "Point2d"
         || name == "CircularPattern2dData"
         || name == "CircularPattern3dData"
         || name == "LinearPattern2dData"
@@ -593,6 +602,27 @@ fn recurse_and_create_references(
             "Failed to get object schema, should have not been a primitive"
         ));
     };
+
+    // If we already have a reference add the metadata to the reference if it has none.
+    if o.reference.is_some() {
+        let mut obj = o.clone();
+        let t = types
+            .get(name)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get type: {}", name))?;
+        let schemars::schema::Schema::Object(to) = t else {
+            return Err(anyhow::anyhow!(
+                "Failed to get object schema, should have not been a primitive"
+            ));
+        };
+        if let Some(metadata) = obj.metadata.as_mut() {
+            if metadata.description.is_none() {
+                metadata.description = to.metadata.as_ref().and_then(|m| m.description.clone());
+            }
+        } else {
+            obj.metadata = to.metadata.clone();
+        }
+        return Ok(schemars::schema::Schema::Object(obj));
+    }
 
     // Check if this is the type we already know about.
     for (n, s) in types {

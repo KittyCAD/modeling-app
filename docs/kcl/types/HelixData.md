@@ -6,8 +6,6 @@ layout: manual
 
 Data for helices.
 
-
-
 **Type:** `object`
 
 

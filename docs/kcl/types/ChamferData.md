@@ -6,8 +6,6 @@ layout: manual
 
 Data for chamfers.
 
-
-
 **Type:** `object`
 
 
@@ -19,6 +17,6 @@ Data for chamfers.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `length` |`number`| The length of the chamfer. | No |
-| `tags` |`[` **anyOf:** `string` **OR** [`TagIdentifier`](/docs/kcl/types#tag-identifier) `]`| The tags of the paths you want to chamfer. | No |
+| `tags` |`[` [`EdgeReference`](/docs/kcl/types/EdgeReference) `]`| The tags of the paths you want to chamfer. | No |
 
 

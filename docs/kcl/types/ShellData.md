@@ -6,8 +6,6 @@ layout: manual
 
 Data for shells.
 
-
-
 **Type:** `object`
 
 
@@ -19,6 +17,6 @@ Data for shells.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `thickness` |`number`| The thickness of the shell. | No |
-| `faces` |`[` **anyOf:** **oneOf:** enum: `start` **OR** enum: `end` **OR** [`TagIdentifier`](/docs/kcl/types#tag-identifier) `]`| The faces you want removed. | No |
+| `faces` |`[` [`FaceTag`](/docs/kcl/types/FaceTag) `]`| The faces you want removed. | No |
 
 

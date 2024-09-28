@@ -6,8 +6,6 @@ layout: manual
 
 Data to draw an angled line to a point.
 
-
-
 **Type:** `object`
 
 

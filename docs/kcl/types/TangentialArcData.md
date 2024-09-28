@@ -9,10 +9,7 @@ Data to draw a tangential arc.
 
 
 
-
 **This schema accepts any of the following:**
-
-
 
 
 **Type:** `object`
