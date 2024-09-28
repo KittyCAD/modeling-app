@@ -236,6 +236,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
 
     hbs.register_template_string("schemaType", include_str!("templates/schemaType.hbs"))?;
     hbs.register_template_string("properties", include_str!("templates/properties.hbs"))?;
+    hbs.register_template_string("array", include_str!("templates/array.hbs"))?;
     hbs.register_template_string("propertyType", include_str!("templates/propertyType.hbs"))?;
     hbs.register_template_string("schema", include_str!("templates/schema.hbs"))?;
     hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
@@ -502,6 +503,7 @@ fn generate_type(
     }
 
     let new_schema = recurse_and_create_references(name, schema, types)?;
+
     let schemars::schema::Schema::Object(o) = new_schema else {
         return Err(anyhow::anyhow!(
             "Failed to get object schema, should have not been a primitive"

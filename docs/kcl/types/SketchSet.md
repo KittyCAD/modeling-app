@@ -9,12 +9,16 @@ A sketch or a group of sketches.
 
 
 
+
+
 **This schema accepts exactly one of the following:**
 
 A sketch is a collection of paths.
 
 
+
 **Type:** `object`
+
 
 
 
@@ -35,8 +39,10 @@ A sketch is a collection of paths.
 ----
 
 
+
 **Type:** `[object, array]`
 
+`[` `object` `]`
 
 
 

@@ -7,7 +7,9 @@ layout: manual
 Data for chamfers.
 
 
+
 **Type:** `object`
+
 
 
 

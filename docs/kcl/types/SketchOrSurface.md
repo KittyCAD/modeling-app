@@ -8,9 +8,13 @@ A sketch surface or a sketch.
 
 
 
+
+
 **This schema accepts any of the following:**
 
 A sketch type.
+
+
 
 
 
@@ -20,7 +24,9 @@ A sketch type.
 A plane.
 
 
+
 **Type:** `object`
+
 
 
 
@@ -43,7 +49,9 @@ A plane.
 A face.
 
 
+
 **Type:** `object`
+
 
 
 
@@ -71,7 +79,9 @@ A face.
 A sketch is a collection of paths.
 
 
+
 **Type:** `object`
+
 
 
 

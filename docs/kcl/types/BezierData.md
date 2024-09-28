@@ -7,7 +7,9 @@ layout: manual
 Data to draw a bezier curve.
 
 
+
 **Type:** `object`
+
 
 
 
