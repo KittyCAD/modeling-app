@@ -1,9 +1,10 @@
 ---
 title: "FaceTag"
-excerpt: ""
+excerpt: "A tag for a face."
 layout: manual
 ---
 
+A tag for a face.
 
 
 
@@ -11,7 +12,7 @@ layout: manual
 **This schema accepts any of the following:**
 
 
-[`FaceTag`](/docs/kcl/types/FaceTag)
+[`StartOrEnd`](/docs/kcl/types/StartOrEnd)
 
 
 
@@ -21,8 +22,9 @@ layout: manual
 
 
 ----
+A tag for the face.
 
-**Type:** `null`
+[`TagIdentifier`](/docs/kcl/types#tag-identifier)
 
 
 

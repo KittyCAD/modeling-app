@@ -288,6 +288,7 @@ fn do_stdlib_inner(
                     name: #arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     schema: #schema,
+                    schema_definitions: generator.definitions().clone(),
                     required: #required,
                 }
             });
@@ -343,10 +344,12 @@ fn do_stdlib_inner(
     let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
+            let schema = <#return_type_inner>::json_schema(&mut generator);
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
                 type_: #ret_ty_string.to_string(),
-                schema: <#return_type_inner>::json_schema(&mut generator),
+                schema,
+                schema_definitions: generator.definitions().clone(),
                 required: true,
             })
         }
@@ -415,16 +418,16 @@ fn do_stdlib_inner(
             }
 
             fn args(&self) -> Vec<#docs_crate::StdLibFnArg> {
-                let mut settings = schemars::gen::SchemaSettings::draft2019_09();
+                let mut settings = schemars::gen::SchemaSettings::draft07();
                 // We set this to false so we can recurse them later.
-                settings.inline_subschemas =false;
+                settings.inline_subschemas = false;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);
 
                 vec![#(#arg_types),*]
             }
 
             fn return_value(&self) -> Option<#docs_crate::StdLibFnArg> {
-                let mut settings = schemars::gen::SchemaSettings::draft2019_09();
+                let mut settings = schemars::gen::SchemaSettings::draft07();
                 // We set this to false so we can recurse them later.
                 settings.inline_subschemas = false;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);

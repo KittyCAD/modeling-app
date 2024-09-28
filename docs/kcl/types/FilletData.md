@@ -18,7 +18,7 @@ Data for fillets.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `radius` |`number`| The radius of the fillet. | No |
-| `tags` |`[` `EdgeReference` `]`| The tags of the paths you want to fillet. | No |
+| `tags` |`[` [`EdgeReference`](/docs/kcl/types/EdgeReference) `]`| The tags of the paths you want to fillet. | No |
 | `tolerance` |`[number, null]`| The tolerance for the fillet. | No |
 
 

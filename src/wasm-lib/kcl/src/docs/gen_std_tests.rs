@@ -317,6 +317,10 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     for arg in internal_fn.args() {
         if !arg.is_primitive()? {
             add_to_types(&arg.type_, &arg.schema, &mut types)?;
+            // Add each definition as well.
+            for (name, definition) in &arg.schema_definitions {
+                add_to_types(name, definition, &mut types)?;
+            }
         }
     }
 
@@ -324,6 +328,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     if let Some(ret) = internal_fn.return_value() {
         if !ret.is_primitive()? {
             add_to_types(&ret.type_, &ret.schema, &mut types)?;
+            for (name, definition) in &ret.schema_definitions {
+                add_to_types(name, definition, &mut types)?;
+            }
         }
     }
 
@@ -493,6 +500,8 @@ fn generate_type(
 
     // Make sure the name is pascal cased.
     if !(name.is_case(convert_case::Case::Pascal)
+        || name == "Point3d"
+        || name == "Point2d"
         || name == "CircularPattern2dData"
         || name == "CircularPattern3dData"
         || name == "LinearPattern2dData"

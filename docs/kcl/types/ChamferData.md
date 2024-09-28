@@ -18,6 +18,6 @@ Data for chamfers.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `length` |`number`| The length of the chamfer. | No |
-| `tags` |`[` `EdgeReference` `]`| The tags of the paths you want to chamfer. | No |
+| `tags` |`[` [`EdgeReference`](/docs/kcl/types/EdgeReference) `]`| The tags of the paths you want to chamfer. | No |
 
 
