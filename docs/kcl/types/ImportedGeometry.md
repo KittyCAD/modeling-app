@@ -20,6 +20,6 @@ Data for an imported geometry.
 |----------|------|-------------|----------|
 | `id` |`string`| The ID of the imported geometry. | No |
 | `value` |`[` `string` `]`| The original file paths. | No |
-| `__meta` |`[` `object` `]`|  | No |
+| `__meta` |`[` `Metadata` `]`|  | No |
 
 

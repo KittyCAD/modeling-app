@@ -415,16 +415,18 @@ fn do_stdlib_inner(
             }
 
             fn args(&self) -> Vec<#docs_crate::StdLibFnArg> {
-                let mut settings = schemars::gen::SchemaSettings::openapi3();
-                settings.inline_subschemas = true;
+                let mut settings = schemars::gen::SchemaSettings::draft2019_09();
+                // We set this to false so we can recurse them later.
+                settings.inline_subschemas =false;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);
 
                 vec![#(#arg_types),*]
             }
 
             fn return_value(&self) -> Option<#docs_crate::StdLibFnArg> {
-                let mut settings = schemars::gen::SchemaSettings::openapi3();
-                settings.inline_subschemas = true;
+                let mut settings = schemars::gen::SchemaSettings::draft2019_09();
+                // We set this to false so we can recurse them later.
+                settings.inline_subschemas = false;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);
 
                 #return_type

@@ -594,6 +594,11 @@ fn recurse_and_create_references(
         ));
     };
 
+    // If we already have a reference, then continue.
+    if o.reference.is_some() {
+        return Ok(schemars::schema::Schema::Object(o.clone()));
+    }
+
     // Check if this is the type we already know about.
     for (n, s) in types {
         if is_same_schema(schema, s) && name != n && !n.starts_with("[") {

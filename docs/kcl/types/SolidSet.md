@@ -29,13 +29,13 @@ An solid is a collection of extrude surfaces.
 |----------|------|-------------|----------|
 | `type` |enum: `solid`|  | No |
 | `id` |`string`| The id of the solid. | No |
-| `value` |`[` **oneOf:** `object` **OR** `object` **OR** `object` **OR** `object` `]`| The extrude surfaces. | No |
-| `sketch` |`object`| The sketch. | No |
+| `value` |`[` `ExtrudeSurface` `]`| The extrude surfaces. | No |
+| `sketch` |[`Sketch`](/docs/kcl/types/Sketch)| The sketch. | No |
 | `height` |`number`| The height of the solid. | No |
-| `startCapId` |`string`| The id of the extrusion start cap | No |
-| `endCapId` |`string`| The id of the extrusion end cap | No |
-| `edgeCuts` |`[` **oneOf:** `object` **OR** `object` `]`| Chamfers or fillets on this solid. | No |
-| `__meta` |`[` `object` `]`| Metadata. | No |
+| `startCapId` |`[string, null]`| The id of the extrusion start cap | No |
+| `endCapId` |`[string, null]`| The id of the extrusion end cap | No |
+| `edgeCuts` |`[` `EdgeCut` `]`| Chamfers or fillets on this solid. | No |
+| `__meta` |`[` `Metadata` `]`| Metadata. | No |
 
 
 ----
@@ -44,7 +44,7 @@ An solid is a collection of extrude surfaces.
 
 **Type:** `[object, array]`
 
-`[` `object` `]`
+`[` [`Solid`](/docs/kcl/types/Solid) `]`
 
 
 
