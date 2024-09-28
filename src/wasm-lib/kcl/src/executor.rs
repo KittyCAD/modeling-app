@@ -1913,6 +1913,7 @@ impl ExecutorContext {
                             .await?;
                         exec_state.memory.add(&var_name, memory_item, source_range)?;
                     }
+                    last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
@@ -1925,6 +1926,7 @@ impl ExecutorContext {
                         )
                         .await?;
                     exec_state.memory.return_ = Some(value);
+                    last_expr = None;
                 }
             }
         }
