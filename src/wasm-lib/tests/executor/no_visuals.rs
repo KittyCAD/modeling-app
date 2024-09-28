@@ -90,7 +90,6 @@ gen_test_fail!(
     "semantic: cannot use % outside a pipe expression"
 );
 gen_test!(sketch_in_object);
-gen_test!(sketch_group_in_object);
 gen_test!(if_else);
 // gen_test_fail!(
 //     if_else_no_expr,

@@ -782,8 +782,8 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             KclValue::TagDeclarator(ref t) => vec![t.into()],
             KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::ExtrudeGroups { value } => value
+            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solids { value } => value
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
