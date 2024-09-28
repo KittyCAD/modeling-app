@@ -1651,7 +1651,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let args = arguments(i)?;
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         // Type check the arguments.
-        for (i, spec_arg) in std_fn.args().iter().enumerate() {
+        for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
             let Some(arg) = &args.get(i) else {
                 // The executor checks the number of arguments, so we don't need to check it here.
                 continue;

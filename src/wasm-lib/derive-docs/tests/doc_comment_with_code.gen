@@ -108,26 +108,29 @@ impl crate::docs::StdLibFn for MyFunc {
         vec![]
     }
 
-    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+    fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "kittycad::types::InputFormat".to_string(),
             schema: <Option<kittycad::types::InputFormat>>::json_schema(&mut generator),
+            schema_definitions: generator.definitions().clone(),
             required: false,
         }]
     }
 
-    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
+    fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let schema = <Vec<Sketch>>::json_schema(&mut generator);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "[Sketch]".to_string(),
-            schema: <Vec<Sketch>>::json_schema(&mut generator),
+            schema,
+            schema_definitions: generator.definitions().clone(),
             required: true,
         })
     }

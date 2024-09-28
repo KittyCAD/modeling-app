@@ -123,10 +123,10 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn tags(&self) -> Vec<String>;
 
     /// The args of the function.
-    fn args(&self) -> Vec<StdLibFnArg>;
+    fn args(&self, inline_subschemas: bool) -> Vec<StdLibFnArg>;
 
     /// The return value of the function.
-    fn return_value(&self) -> Option<StdLibFnArg>;
+    fn return_value(&self, inline_subschemas: bool) -> Option<StdLibFnArg>;
 
     /// If the function is unpublished.
     fn unpublished(&self) -> bool;
@@ -150,8 +150,8 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             summary: self.summary(),
             description: self.description(),
             tags: self.tags(),
-            args: self.args(),
-            return_value: self.return_value(),
+            args: self.args(false),
+            return_value: self.return_value(false),
             unpublished: self.unpublished(),
             deprecated: self.deprecated(),
             examples: self.examples(),
@@ -161,7 +161,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn fn_signature(&self) -> String {
         let mut signature = String::new();
         signature.push_str(&format!("{}(", self.name()));
-        for (i, arg) in self.args().iter().enumerate() {
+        for (i, arg) in self.args(false).iter().enumerate() {
             if i > 0 {
                 signature.push_str(", ");
             }
@@ -172,7 +172,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             }
         }
         signature.push(')');
-        if let Some(return_value) = self.return_value() {
+        if let Some(return_value) = self.return_value(false) {
             signature.push_str(&format!(" -> {}", return_value.type_));
         }
 
@@ -215,7 +215,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         let mut args = Vec::new();
         let mut index = 0;
-        for arg in self.args().iter() {
+        for arg in self.args(true).iter() {
             if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index)? {
                 index = i + 1;
                 args.push(arg_str);
@@ -241,7 +241,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
                         self.summary()
                     },
                 })),
-                parameters: Some(self.args().into_iter().map(|arg| arg.into()).collect()),
+                parameters: Some(self.args(true).into_iter().map(|arg| arg.into()).collect()),
                 active_parameter,
             }],
             active_signature: Some(0),
@@ -766,7 +766,7 @@ mod tests {
 
     #[test]
     fn test_deserialize_function() {
-        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false, "examples": []}}"#;
+        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{},"schemaDefinitions":{}},"args":[],"unpublished":false,"deprecated":false, "examples": []}}"#;
         let some_function: crate::ast::types::Function = serde_json::from_str(some_function_string).unwrap();
 
         assert_eq!(

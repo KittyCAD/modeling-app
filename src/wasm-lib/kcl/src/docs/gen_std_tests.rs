@@ -314,7 +314,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
 
     // Generate the type markdown files for each argument.
     let mut types = BTreeMap::new();
-    for arg in internal_fn.args() {
+    for arg in internal_fn.args(false) {
         if !arg.is_primitive()? {
             add_to_types(&arg.type_, &arg.schema, &mut types)?;
             // Add each definition as well.
@@ -325,7 +325,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     }
 
     // Generate the type markdown for the return value.
-    if let Some(ret) = internal_fn.return_value() {
+    if let Some(ret) = internal_fn.return_value(false) {
         if !ret.is_primitive()? {
             add_to_types(&ret.type_, &ret.schema, &mut types)?;
             for (name, definition) in &ret.schema_definitions {
@@ -343,7 +343,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
         "tags": internal_fn.tags(),
         "examples": examples,
         "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
-        "args": internal_fn.args().iter().map(|arg| {
+        "args": internal_fn.args(false).iter().map(|arg| {
             json!({
                 "name": arg.name,
                 "type_": arg.type_,
@@ -351,7 +351,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
                 "required": arg.required,
             })
         }).collect::<Vec<_>>(),
-        "return_value": internal_fn.return_value().map(|ret| {
+        "return_value": internal_fn.return_value(false).map(|ret| {
             json!({
                 "type_": ret.type_,
                 "description": ret.description(),
