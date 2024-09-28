@@ -7,7 +7,9 @@ layout: manual
 Data for drawing an circle
 
 
+
 **Type:** `object`
+
 
 
 

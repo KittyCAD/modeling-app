@@ -9,12 +9,16 @@ Import format specifier
 
 
 
+
+
 **This schema accepts exactly one of the following:**
 
 Autodesk Filmbox (FBX) format
 
 
+
 **Type:** `object`
+
 
 
 
@@ -30,7 +34,9 @@ Autodesk Filmbox (FBX) format
 Binary glTF 2.0. We refer to this as glTF since that is how our customers refer to it, but this can also import binary glTF (glb).
 
 
+
 **Type:** `object`
+
 
 
 
@@ -46,7 +52,9 @@ Binary glTF 2.0. We refer to this as glTF since that is how our customers refer 
 Wavefront OBJ format.
 
 
+
 **Type:** `object`
+
 
 
 
@@ -64,7 +72,9 @@ Wavefront OBJ format.
 The PLY Polygon File Format.
 
 
+
 **Type:** `object`
+
 
 
 
@@ -82,7 +92,9 @@ The PLY Polygon File Format.
 SolidWorks part (SLDPRT) format.
 
 
+
 **Type:** `object`
+
 
 
 
@@ -98,7 +110,9 @@ SolidWorks part (SLDPRT) format.
 ISO 10303-21 (STEP) format.
 
 
+
 **Type:** `object`
+
 
 
 
@@ -114,7 +128,9 @@ ISO 10303-21 (STEP) format.
 ST**ereo**L**ithography format.
 
 
+
 **Type:** `object`
+
 
 
 

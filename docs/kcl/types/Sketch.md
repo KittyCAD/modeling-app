@@ -7,7 +7,9 @@ layout: manual
 A sketch is a collection of paths.
 
 
+
 **Type:** `object`
+
 
 
 

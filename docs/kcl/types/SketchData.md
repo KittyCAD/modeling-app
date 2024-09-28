@@ -8,9 +8,14 @@ Data for start sketch on. You can start a sketch on a plane or an solid.
 
 
 
+
+
 **This schema accepts any of the following:**
 
 Data for a plane.
+
+[`PlaneData`](/docs/kcl/types/PlaneData)
+
 
 
 
@@ -23,7 +28,9 @@ Data for a plane.
 An solid is a collection of extrude surfaces.
 
 
+
 **Type:** `object`
+
 
 
 

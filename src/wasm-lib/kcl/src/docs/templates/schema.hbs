@@ -2,6 +2,10 @@
 {{description}}
 {{/if}}
 
+{{#if $ref}}
+{{pretty_ref $ref}}
+{{/if}}
+
 {{#if $schema}}
 **Schema:** `{{$schema}}`
 {{/if}}
@@ -10,6 +14,10 @@
 **enum:** {{pretty_enum enum}}
 {{else if type}}
 **Type:** `{{type}}`
+{{/if}}
+
+{{#if items}}
+{{>array}}
 {{/if}}
 
 {{#if anyOf}}
