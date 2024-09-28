@@ -2778,6 +2778,12 @@ impl BinaryExpression {
             BinaryOperator::Div => (left / right).into(),
             BinaryOperator::Mod => (left % right).into(),
             BinaryOperator::Pow => (left.powf(right)).into(),
+            BinaryOperator::Eq => (left == right).into(),
+            BinaryOperator::Neq => (left != right).into(),
+            BinaryOperator::Gt => (left > right).into(),
+            BinaryOperator::Gte => (left >= right).into(),
+            BinaryOperator::Lt => (left < right).into(),
+            BinaryOperator::Lte => (left <= right).into(),
         };
 
         Ok(KclValue::UserVal(UserVal {
@@ -2861,6 +2867,30 @@ pub enum BinaryOperator {
     #[serde(rename = "^")]
     #[display("^")]
     Pow,
+    /// Are two numbers equal?
+    #[serde(rename = "==")]
+    #[display("==")]
+    Eq,
+    /// Are two numbers not equal?
+    #[serde(rename = "!=")]
+    #[display("!=")]
+    Neq,
+    /// Is left greater than right
+    #[serde(rename = ">")]
+    #[display(">")]
+    Gt,
+    /// Is left greater than or equal to right
+    #[serde(rename = ">=")]
+    #[display(">=")]
+    Gte,
+    /// Is left less than right
+    #[serde(rename = "<")]
+    #[display("<")]
+    Lt,
+    /// Is left less than or equal to right
+    #[serde(rename = "<=")]
+    #[display("<=")]
+    Lte,
 }
 
 /// Mathematical associativity.
@@ -2889,6 +2919,12 @@ impl BinaryOperator {
             BinaryOperator::Div => *b"div",
             BinaryOperator::Mod => *b"mod",
             BinaryOperator::Pow => *b"pow",
+            BinaryOperator::Eq => *b"eqq",
+            BinaryOperator::Neq => *b"neq",
+            BinaryOperator::Gt => *b"gtr",
+            BinaryOperator::Gte => *b"gte",
+            BinaryOperator::Lt => *b"ltr",
+            BinaryOperator::Lte => *b"lte",
         }
     }
 
@@ -2899,6 +2935,8 @@ impl BinaryOperator {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
             BinaryOperator::Mul | BinaryOperator::Div | BinaryOperator::Mod => 12,
             BinaryOperator::Pow => 13,
+            Self::Gt | Self::Gte | Self::Lt | Self::Lte => 9,
+            Self::Eq | Self::Neq => 8,
         }
     }
 
@@ -2908,6 +2946,7 @@ impl BinaryOperator {
         match self {
             Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
             Self::Pow => Associativity::Right,
+            Self::Gt | Self::Gte | Self::Lt | Self::Lte | Self::Eq | Self::Neq => Associativity::Left, // I don't know if this is correct
         }
     }
 }
