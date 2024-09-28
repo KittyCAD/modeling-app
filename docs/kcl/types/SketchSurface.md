@@ -26,7 +26,7 @@ A plane.
 |----------|------|-------------|----------|
 | `type` |enum: `plane`|  | No |
 | `id` |`string`| The id of the plane. | No |
-| `value` |[`PlaneType`](/docs/kcl/types/PlaneType)|  | No |
+| `value` |[`PlaneType`](/docs/kcl/types/PlaneType)| A sketch type. | No |
 | `origin` |[`Point3d`](/docs/kcl/types/Point3d)| Origin of the plane. | No |
 | `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane’s X axis be? | No |
 | `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane’s Y axis be? | No |

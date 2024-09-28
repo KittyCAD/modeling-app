@@ -603,6 +603,23 @@ fn recurse_and_create_references(
         ));
     };
 
+    // If we already have a reference add the metadata to the reference if it has none.
+    if o.reference.is_some() {
+        let mut obj = o.clone();
+        if obj.metadata.is_none() {
+            let t = types
+                .get(name)
+                .ok_or_else(|| anyhow::anyhow!("Failed to get type: {}", name))?;
+            let schemars::schema::Schema::Object(to) = t else {
+                return Err(anyhow::anyhow!(
+                    "Failed to get object schema, should have not been a primitive"
+                ));
+            };
+            obj.metadata = to.metadata.clone();
+        }
+        return Ok(schemars::schema::Schema::Object(obj));
+    }
+
     // Check if this is the type we already know about.
     for (n, s) in types {
         if is_same_schema(schema, s) && name != n && !n.starts_with("[") {
