@@ -19,7 +19,7 @@ import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `file_path` | `String` |  | Yes |
-| `options` | [`ImportFormat`](/docs/kcl/types/ImportFormat) |  | No |
+| `options` | [`ImportFormat`](/docs/kcl/types/ImportFormat) | Import format specifier | No |
 
 ### Returns
 

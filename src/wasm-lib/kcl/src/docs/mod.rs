@@ -89,7 +89,7 @@ impl StdLibFnArg {
     }
 
     pub fn description(&self) -> Option<String> {
-        get_description_string_from_schema(&self.schema.clone())
+        get_description_string_from_schema(&self.schema.clone(), &self.schema_definitions)
     }
 }
 
@@ -311,11 +311,20 @@ impl Clone for Box<dyn StdLibFn> {
     }
 }
 
-pub fn get_description_string_from_schema(schema: &schemars::schema::Schema) -> Option<String> {
+pub fn get_description_string_from_schema(
+    schema: &schemars::schema::Schema,
+    definitions: &schemars::Map<String, schemars::schema::Schema>,
+) -> Option<String> {
     if let schemars::schema::Schema::Object(o) = schema {
         if let Some(metadata) = &o.metadata {
             if let Some(description) = &metadata.description {
                 return Some(description.to_string());
+            }
+        }
+
+        if let Some(reference) = &o.reference {
+            if let Some(definition) = definitions.get(reference.split('/').last().unwrap_or("")) {
+                return get_description_string_from_schema(definition, definitions);
             }
         }
     }
@@ -695,7 +704,7 @@ pub fn completion_item_from_enum_schema(
     kind: CompletionItemKind,
 ) -> Result<CompletionItem> {
     // Get the docs for the schema.
-    let description = get_description_string_from_schema(schema).unwrap_or_default();
+    let description = get_description_string_from_schema(schema, &Default::default()).unwrap_or_default();
     let schemars::schema::Schema::Object(o) = schema else {
         anyhow::bail!("expected object schema: {:#?}", schema);
     };

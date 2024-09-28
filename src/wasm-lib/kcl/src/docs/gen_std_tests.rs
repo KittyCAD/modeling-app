@@ -606,15 +606,19 @@ fn recurse_and_create_references(
     // If we already have a reference add the metadata to the reference if it has none.
     if o.reference.is_some() {
         let mut obj = o.clone();
-        if obj.metadata.is_none() {
-            let t = types
-                .get(name)
-                .ok_or_else(|| anyhow::anyhow!("Failed to get type: {}", name))?;
-            let schemars::schema::Schema::Object(to) = t else {
-                return Err(anyhow::anyhow!(
-                    "Failed to get object schema, should have not been a primitive"
-                ));
-            };
+        let t = types
+            .get(name)
+            .ok_or_else(|| anyhow::anyhow!("Failed to get type: {}", name))?;
+        let schemars::schema::Schema::Object(to) = t else {
+            return Err(anyhow::anyhow!(
+                "Failed to get object schema, should have not been a primitive"
+            ));
+        };
+        if let Some(metadata) = obj.metadata.as_mut() {
+            if metadata.description.is_none() {
+                metadata.description = to.metadata.as_ref().and_then(|m| m.description.clone());
+            }
+        } else {
             obj.metadata = to.metadata.clone();
         }
         return Ok(schemars::schema::Schema::Object(obj));
