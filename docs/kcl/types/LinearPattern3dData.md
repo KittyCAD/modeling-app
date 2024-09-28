@@ -6,9 +6,8 @@ layout: manual
 
 Data for a linear pattern on a 3D model.
 
-
-
 **Type:** `object`
+
 
 
 

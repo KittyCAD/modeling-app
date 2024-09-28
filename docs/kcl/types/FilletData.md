@@ -6,9 +6,8 @@ layout: manual
 
 Data for fillets.
 
-
-
 **Type:** `object`
+
 
 
 

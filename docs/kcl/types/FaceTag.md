@@ -8,7 +8,6 @@ layout: manual
 
 
 
-
 **This schema accepts any of the following:**
 
 
@@ -21,12 +20,10 @@ layout: manual
 
 
 
-
 ----
 
-
-
 **Type:** `null`
+
 
 
 

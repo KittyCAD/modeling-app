@@ -9,14 +9,12 @@ Data to draw an arc.
 
 
 
-
 **This schema accepts any of the following:**
 
 Angles and radius with an optional tag.
 
-
-
 **Type:** `object`
+
 
 
 
@@ -34,9 +32,8 @@ Angles and radius with an optional tag.
 ----
 Center, to and radius with an optional tag.
 
-
-
 **Type:** `object`
+
 
 
 

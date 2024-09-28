@@ -6,9 +6,8 @@ layout: manual
 
 An solid is a collection of extrude surfaces.
 
-
-
 **Type:** `object`
+
 
 
 

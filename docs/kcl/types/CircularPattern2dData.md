@@ -6,9 +6,8 @@ layout: manual
 
 Data for a circular pattern on a 2D sketch.
 
-
-
 **Type:** `object`
+
 
 
 

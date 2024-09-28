@@ -6,9 +6,8 @@ layout: manual
 
 Data for an imported geometry.
 
-
-
 **Type:** `object`
+
 
 
 

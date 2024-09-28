@@ -6,9 +6,8 @@ layout: manual
 
 Data for drawing an angled line that intersects with a given line.
 
-
-
 **Type:** `object`
+
 
 
 

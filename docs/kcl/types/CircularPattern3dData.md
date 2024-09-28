@@ -6,9 +6,8 @@ layout: manual
 
 Data for a circular pattern on a 3D model.
 
-
-
 **Type:** `object`
+
 
 
 

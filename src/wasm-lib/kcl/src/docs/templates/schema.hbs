@@ -4,16 +4,14 @@
 
 {{#if $ref}}
 {{pretty_ref $ref}}
+{{else if enum}}
+**enum:** {{pretty_enum enum}}
+{{else if type}}
+**Type:** `{{type}}`
 {{/if}}
 
 {{#if $schema}}
 **Schema:** `{{$schema}}`
-{{/if}}
-
-{{#if enum}}
-**enum:** {{pretty_enum enum}}
-{{else if type}}
-**Type:** `{{type}}`
 {{/if}}
 
 {{#if items}}

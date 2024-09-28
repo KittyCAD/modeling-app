@@ -10,14 +10,12 @@ A solid or a group of solids.
 
 
 
-
 **This schema accepts exactly one of the following:**
 
 An solid is a collection of extrude surfaces.
 
-
-
 **Type:** `object`
+
 
 
 
@@ -40,9 +38,8 @@ An solid is a collection of extrude surfaces.
 
 ----
 
-
-
 **Type:** `[object, array]`
+
 
 `[` [`Solid`](/docs/kcl/types/Solid) `]`
 

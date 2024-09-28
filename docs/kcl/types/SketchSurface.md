@@ -10,14 +10,12 @@ A sketch type.
 
 
 
-
 **This schema accepts exactly one of the following:**
 
 A plane.
 
-
-
 **Type:** `object`
+
 
 
 
@@ -40,9 +38,8 @@ A plane.
 ----
 A face.
 
-
-
 **Type:** `object`
+
 
 
 
