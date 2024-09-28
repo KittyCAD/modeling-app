@@ -18,7 +18,6 @@ Data to draw a tangential arc.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

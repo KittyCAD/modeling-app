@@ -12,7 +12,6 @@ Data for helices.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

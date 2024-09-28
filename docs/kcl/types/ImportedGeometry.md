@@ -12,7 +12,6 @@ Data for an imported geometry.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

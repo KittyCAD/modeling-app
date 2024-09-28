@@ -12,7 +12,6 @@ A base path.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

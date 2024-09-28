@@ -12,7 +12,6 @@ An solid is a collection of extrude surfaces.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

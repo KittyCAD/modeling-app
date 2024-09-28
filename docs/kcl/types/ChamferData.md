@@ -12,7 +12,6 @@ Data for chamfers.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

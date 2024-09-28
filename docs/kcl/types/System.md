@@ -24,7 +24,6 @@ See [cglearn.eu] for background reading.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

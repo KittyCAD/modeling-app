@@ -12,7 +12,6 @@ Data to draw a bezier curve.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

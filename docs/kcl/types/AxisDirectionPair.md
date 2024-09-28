@@ -12,7 +12,6 @@ An [&#x60;Axis&#x60;] paired with a [&#x60;Direction&#x60;].
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

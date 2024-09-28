@@ -12,7 +12,6 @@ Data for revolution surfaces.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

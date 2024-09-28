@@ -20,7 +20,6 @@ A plane.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -39,7 +38,6 @@ A plane.
 A face.
 
 **Type:** `object`
-
 
 
 

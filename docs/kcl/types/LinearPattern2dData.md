@@ -12,7 +12,6 @@ Data for a linear pattern on a 2D sketch.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

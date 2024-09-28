@@ -20,7 +20,6 @@ A path that goes to a point.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -36,7 +35,6 @@ A path that goes to a point.
 A arc that is tangential to the last path segment that goes to a point
 
 **Type:** `object`
-
 
 
 
@@ -64,7 +62,6 @@ A arc that is tangential to the last path segment
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -82,7 +79,6 @@ A arc that is tangential to the last path segment
 a complete arc
 
 **Type:** `object`
-
 
 
 
@@ -111,7 +107,6 @@ A path that is horizontal.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -128,7 +123,6 @@ A path that is horizontal.
 An angled line to.
 
 **Type:** `object`
-
 
 
 
@@ -151,7 +145,6 @@ An angled line to.
 A base path.
 
 **Type:** `object`
-
 
 
 

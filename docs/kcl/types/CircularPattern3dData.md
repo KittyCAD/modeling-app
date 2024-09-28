@@ -12,7 +12,6 @@ Data for a circular pattern on a 3D model.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

@@ -12,7 +12,6 @@ Data for drawing an circle
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

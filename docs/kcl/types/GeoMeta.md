@@ -12,7 +12,6 @@ Geometry metadata.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

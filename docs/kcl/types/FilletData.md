@@ -12,7 +12,6 @@ Data for fillets.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

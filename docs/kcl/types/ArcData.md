@@ -19,7 +19,6 @@ Angles and radius with an optional tag.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -33,7 +32,6 @@ Angles and radius with an optional tag.
 Center, to and radius with an optional tag.
 
 **Type:** `object`
-
 
 
 

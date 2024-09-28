@@ -12,7 +12,6 @@ Data for shells.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

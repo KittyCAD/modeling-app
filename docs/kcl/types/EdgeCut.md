@@ -20,7 +20,6 @@ A fillet.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -36,7 +35,6 @@ A fillet.
 A chamfer.
 
 **Type:** `object`
-
 
 
 

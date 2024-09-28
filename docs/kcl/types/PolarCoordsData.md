@@ -12,7 +12,6 @@ Data for polar coordinates.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

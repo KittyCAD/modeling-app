@@ -13,8 +13,7 @@ A tag or a uuid of an edge.
 
 A uuid of an edge.
 
-**Type:** `string`
-
+**Type:** `string` (`uuid`)
 
 
 

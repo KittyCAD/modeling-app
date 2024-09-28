@@ -20,7 +20,6 @@ An extrude plane.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -36,7 +35,6 @@ An extrude plane.
 An extruded arc.
 
 **Type:** `object`
-
 
 
 
@@ -62,7 +60,6 @@ Geometry metadata.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -78,7 +75,6 @@ Geometry metadata.
 Geometry metadata.
 
 **Type:** `object`
-
 
 
 

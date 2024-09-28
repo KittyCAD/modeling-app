@@ -12,7 +12,6 @@ A sketch is a collection of paths.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

@@ -12,7 +12,6 @@ Data to draw an angled line to a point.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

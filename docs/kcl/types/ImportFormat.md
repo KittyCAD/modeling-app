@@ -20,7 +20,6 @@ Autodesk Filmbox (FBX) format
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -37,7 +36,6 @@ Binary glTF 2.0. We refer to this as glTF since that is how our customers refer 
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -49,7 +47,6 @@ Binary glTF 2.0. We refer to this as glTF since that is how our customers refer 
 Wavefront OBJ format.
 
 **Type:** `object`
-
 
 
 
@@ -73,7 +70,6 @@ The PLY Polygon File Format.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -87,7 +83,6 @@ The PLY Polygon File Format.
 SolidWorks part (SLDPRT) format.
 
 **Type:** `object`
-
 
 
 
@@ -109,7 +104,6 @@ ISO 10303-21 (STEP) format.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -121,7 +115,6 @@ ISO 10303-21 (STEP) format.
 ST**ereo**L**ithography format.
 
 **Type:** `object`
-
 
 
 

@@ -12,7 +12,6 @@ Metadata.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

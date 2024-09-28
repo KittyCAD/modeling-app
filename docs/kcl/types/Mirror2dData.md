@@ -12,7 +12,6 @@ Data for a mirror.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

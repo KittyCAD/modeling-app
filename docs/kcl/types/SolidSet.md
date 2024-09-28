@@ -20,7 +20,6 @@ An solid is a collection of extrude surfaces.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |
@@ -39,7 +38,6 @@ An solid is a collection of extrude surfaces.
 ----
 
 **Type:** `[object, array]`
-
 
 `[` [`Solid`](/docs/kcl/types/Solid) `]`
 

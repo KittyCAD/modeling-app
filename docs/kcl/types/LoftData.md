@@ -12,7 +12,6 @@ Data for a loft.
 
 
 
-
 ## Properties
 
 | Property | Type | Description | Required |

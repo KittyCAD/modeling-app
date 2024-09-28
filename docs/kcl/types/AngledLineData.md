@@ -27,7 +27,6 @@ An angle and length given as a pair
 
 **Type:** `array`
 
-
 `[number, number]`
 
 

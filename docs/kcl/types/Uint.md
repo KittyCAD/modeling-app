@@ -5,8 +5,7 @@ layout: manual
 ---
 
 
-**Type:** `integer`
-
+**Type:** `integer` (`uint32`)
 
 
 
