@@ -1171,6 +1171,7 @@ export class SceneEntities {
       },
       onMove: () => {},
       onClick: (args) => {
+        console.log('onClick', args)
         if (args?.mouseEvent.which !== 1) return
         if (!args || !args.selected) {
           sceneInfra.modelingSend({
@@ -1183,6 +1184,7 @@ export class SceneEntities {
         }
         const { selected } = args
         const event = getEventForSegmentSelection(selected)
+        console.log('event', event)
         if (!event) return
         sceneInfra.modelingSend(event)
       },

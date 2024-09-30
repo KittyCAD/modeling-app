@@ -9,7 +9,7 @@ interface BaseArtifact {
   id: ArtifactId
 }
 
-interface CodeRef {
+export interface CodeRef {
   range: SourceRange
   pathToNode: PathToNode
 }
@@ -774,4 +774,34 @@ export function getSweepFromSuspectedPath(
     { key: path.sweepId, types: ['sweep'] },
     artifactGraph
   )
+}
+
+export function getCodeRefsByArtifactId(
+  id: string,
+  artifactGraph: ArtifactGraph
+): Array<CodeRef> | null {
+  const artifact = artifactGraph.get(id)
+  if (artifact?.type === 'solid2D') {
+    const codeRef = getSolid2dCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return [codeRef]
+    // editorManager.setHighlightRange([codeRef.range])
+  } else if (artifact?.type === 'cap') {
+    const codeRef = getCapCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return [codeRef]
+  } else if (artifact?.type === 'wall') {
+    const extrusion = getSweepFromSuspectedSweepSurface(id, artifactGraph)
+    const codeRef = getWallCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return err(extrusion) ? [codeRef] : [codeRef, extrusion.codeRef]
+  } else if (artifact?.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return [codeRef]
+  } else if (artifact?.type === 'segment') {
+    return [artifact.codeRef]
+  } else {
+    return null
+  }
 }

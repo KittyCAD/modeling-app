@@ -22,6 +22,7 @@ import {
 } from 'lib/toolbar'
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { convertSelectionsToOld } from 'lib/selections'
 
 export function Toolbar({
   className = '',
@@ -38,12 +39,17 @@ export function Toolbar({
     '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
 
   const sketchPathId = useMemo(() => {
-    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
+    if (
+      !isSingleCursorInPipe(
+        convertSelectionsToOld(context.selectionRanges),
+        kclManager.ast
+      )
+    ) {
       return false
     }
     return isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,
-      context.selectionRanges
+      convertSelectionsToOld(context.selectionRanges)
     )
   }, [engineCommandManager.artifactGraph, context.selectionRanges])
 

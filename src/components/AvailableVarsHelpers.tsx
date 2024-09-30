@@ -12,6 +12,7 @@ import { useKclContext } from 'lang/KclProvider'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { executeAst } from 'lang/langHelpers'
 import { trap } from 'lib/trap'
+import { convertSelectionsToOld } from 'lib/selections'
 
 export const AvailableVars = ({
   onVarClick,
@@ -96,7 +97,8 @@ export function useCalc({
 } {
   const { programMemory } = useKclContext()
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.codeBasedSelections[0].range
+  const selectionRange = convertSelectionsToOld(context.selectionRanges)
+    .codeBasedSelections[0].range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>

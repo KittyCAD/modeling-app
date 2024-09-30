@@ -35,6 +35,8 @@ import {
   getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
+  CodeRef,
+  getCodeRefsByArtifactId,
 } from 'lang/std/artifactGraph'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -65,24 +67,124 @@ export type Selections__old = {
   otherSelections: Axis[]
   codeBasedSelections: Selection__old[]
 }
+export interface Selection {
+  artifact: Artifact
+  codeRef: CodeRef
+}
 export type Selections = {
-  otherSelections: Axis[]
-  graphSelections: Artifact[]
+  otherSelections: Array<Axis>
+  graphSelections: Array<Selection>
 }
 
 /** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
  * this function should only be used for backwards compatibility with old functions.
  */
-export function convertSelectionToOld(selection: Selection__old): Artifact {
-  return {} as Artifact
+export function convertSelectionToOld(
+  selection: Selection
+): Selection__old | null {
+  // return {} as Selection__old
   // TODO implementation
+  const _artifact = selection.artifact
+  if (_artifact.type === 'solid2D') {
+    const codeRef = getSolid2dCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return { range: codeRef.range, type: 'solid2D' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+
+    //     selection: { range: codeRef.range, type: 'solid2D' },
+    //   },
+    // }
+  }
+  if (_artifact.type === 'cap') {
+    const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
+    if (err(codeRef)) return null
+    return {
+      range: codeRef.range,
+      type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+    }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: {
+    //       range: codeRef.range,
+    //       type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+    //     },
+    //   },
+    // }
+  }
+  if (_artifact.type === 'wall') {
+    const codeRef = getWallCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return { range: codeRef.range, type: 'extrude-wall' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: { range: codeRef.range, type: 'extrude-wall' },
+    //   },
+    // }
+  }
+  if (_artifact.type === 'segment' || _artifact.type === 'path') {
+    return { range: _artifact.codeRef.range, type: 'default' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: { range: _artifact.codeRef.range, type: 'default' },
+    //   },
+    // }
+  }
+  if (_artifact.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    if (_artifact?.subType === 'adjacent') {
+      return { range: codeRef.range, type: 'adjacent-edge' }
+      // return {
+      //   type: 'Set selection',
+      //   data: {
+      //     selectionType: 'singleCodeCursor',
+      //     selection: { range: codeRef.range, type: 'adjacent-edge' },
+      //   },
+      // }
+    }
+    return { range: codeRef.range, type: 'edge' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: { range: codeRef.range, type: 'edge' },
+    //   },
+    // }
+  }
+  return null
 }
 /** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
  * this function should only be used for backwards compatibility with old functions.
  */
-export function convertSelectionsToOld(selection: Selections__old): Selections {
-  // TODO implementation
-  return { otherSelections: [], graphSelections: [] }
+export function convertSelectionsToOld(selection: Selections): Selections__old {
+  const selections: Selection__old[] = []
+  for (const artifact of selection.graphSelections) {
+    const converted = convertSelectionToOld(artifact)
+    if (converted) selections.push(converted)
+  }
+  const selectionsOld: Selections__old = {
+    otherSelections: selection.otherSelections,
+    codeBasedSelections: selections,
+  }
+  return selectionsOld
 }
 
 export async function getEventForSelectWithPoint({
@@ -107,85 +209,102 @@ export async function getEventForSelectWithPoint({
     }
   }
   let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
-  if (!_artifact)
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor' },
-    }
-  if (_artifact.type === 'solid2D') {
-    const codeRef = getSolid2dCodeRef(
-      _artifact,
-      engineCommandManager.artifactGraph
-    )
-    if (err(codeRef)) return null
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'solid2D' },
-      },
-    }
-  }
-  if (_artifact.type === 'cap') {
-    const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
-    if (err(codeRef)) return null
+  const codeRefs = getCodeRefsByArtifactId(
+    data.entity_id,
+    engineCommandManager.artifactGraph
+  )
+  if (_artifact && codeRefs) {
     return {
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
         selection: {
-          range: codeRef.range,
-          type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+          artifact: _artifact,
+          codeRef: codeRefs[0],
         },
       },
     }
   }
-  if (_artifact.type === 'wall') {
-    const codeRef = getWallCodeRef(
-      _artifact,
-      engineCommandManager.artifactGraph
-    )
-    if (err(codeRef)) return null
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'extrude-wall' },
-      },
-    }
-  }
-  if (_artifact.type === 'segment' || _artifact.type === 'path') {
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { range: _artifact.codeRef.range, type: 'default' },
-      },
-    }
-  }
-  if (_artifact.type === 'sweepEdge') {
-    const codeRef = getSweepEdgeCodeRef(
-      _artifact,
-      engineCommandManager.artifactGraph
-    )
-    if (err(codeRef)) return null
-    if (_artifact?.subType === 'adjacent') {
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: { range: codeRef.range, type: 'adjacent-edge' },
-        },
-      }
-    }
-    return {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'edge' },
-      },
-    }
-  }
+  // if (!_artifact)
+  //   return {
+  //     type: 'Set selection',
+  //     data: { selectionType: 'singleCodeCursor' },
+  //   }
+  // if (_artifact.type === 'solid2D') {
+  //   const codeRef = getSolid2dCodeRef(
+  //     _artifact,
+  //     engineCommandManager.artifactGraph
+  //   )
+  //   if (err(codeRef)) return null
+  //   return {
+  //     type: 'Set selection',
+  //     data: {
+  //       selectionType: 'singleCodeCursor',
+
+  //       // selection: { range: codeRef.range, type: 'solid2D' },
+  //     },
+  //   }
+  // }
+  // if (_artifact.type === 'cap') {
+  //   const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
+  //   if (err(codeRef)) return null
+  //   return {
+  //     type: 'Set selection',
+  //     data: {
+  //       selectionType: 'singleCodeCursor',
+  //       selection: {
+  //         range: codeRef.range,
+  //         type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+  //       },
+  //     },
+  //   }
+  // }
+  // if (_artifact.type === 'wall') {
+  //   const codeRef = getWallCodeRef(
+  //     _artifact,
+  //     engineCommandManager.artifactGraph
+  //   )
+  //   if (err(codeRef)) return null
+  //   return {
+  //     type: 'Set selection',
+  //     data: {
+  //       selectionType: 'singleCodeCursor',
+  //       selection: { range: codeRef.range, type: 'extrude-wall' },
+  //     },
+  //   }
+  // }
+  // if (_artifact.type === 'segment' || _artifact.type === 'path') {
+  //   return {
+  //     type: 'Set selection',
+  //     data: {
+  //       selectionType: 'singleCodeCursor',
+  //       selection: { range: _artifact.codeRef.range, type: 'default' },
+  //     },
+  //   }
+  // }
+  // if (_artifact.type === 'sweepEdge') {
+  //   const codeRef = getSweepEdgeCodeRef(
+  //     _artifact,
+  //     engineCommandManager.artifactGraph
+  //   )
+  //   if (err(codeRef)) return null
+  //   if (_artifact?.subType === 'adjacent') {
+  //     return {
+  //       type: 'Set selection',
+  //       data: {
+  //         selectionType: 'singleCodeCursor',
+  //         selection: { range: codeRef.range, type: 'adjacent-edge' },
+  //       },
+  //     }
+  //   }
+  //   return {
+  //     type: 'Set selection',
+  //     data: {
+  //       selectionType: 'singleCodeCursor',
+  //       selection: { range: codeRef.range, type: 'edge' },
+  //     },
+  //   }
+  // }
   return null
 }
 
@@ -204,30 +323,50 @@ export function getEventForSegmentSelection(
       },
     }
   }
-  const pathToNode = group?.userData?.pathToNode
-  if (!pathToNode) return null
-  // previous drags don't update ast for efficiency reasons
-  // So we want to make sure we have and updated ast with
-  // accurate source ranges
-  const updatedAst = parse(codeManager.code)
-  if (err(updatedAst)) return null
-
-  const nodeMeta = getNodeFromPath<CallExpression>(
-    updatedAst,
-    pathToNode,
-    'CallExpression'
+  // console.log('group', group?.userData.)
+  const id = group?.userData?.id
+  if (!id) return null
+  const artifact = engineCommandManager.artifactGraph.get(id)
+  const codeRefs = getCodeRefsByArtifactId(
+    id,
+    engineCommandManager.artifactGraph
   )
-  if (err(nodeMeta)) return null
-
-  const node = nodeMeta.node
-  const range: SourceRange = [node.start, node.end]
+  console.log('artifact', artifact, group.userData)
+  if (!artifact || !codeRefs) return null
   return {
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
-      selection: { range, type: 'default' },
+      selection: {
+        artifact,
+        codeRef: codeRefs[0],
+      },
     },
   }
+  // const pathToNode = group?.userData?.pathToNode
+  // if (!pathToNode) return null
+  // // previous drags don't update ast for efficiency reasons
+  // // So we want to make sure we have and updated ast with
+  // // accurate source ranges
+  // const updatedAst = parse(codeManager.code)
+  // if (err(updatedAst)) return null
+
+  // const nodeMeta = getNodeFromPath<CallExpression>(
+  //   updatedAst,
+  //   pathToNode,
+  //   'CallExpression'
+  // )
+  // if (err(nodeMeta)) return null
+
+  // const node = nodeMeta.node
+  // const range: SourceRange = [node.start, node.end]
+  // return {
+  //   type: 'Set selection',
+  //   data: {
+  //     selectionType: 'singleCodeCursor',
+  //     selection: { range, type: 'default' },
+  //   },
+  // }
 }
 
 export function handleSelectionBatch({
@@ -289,7 +428,8 @@ export function processCodeMirrorRanges({
   engineEvents: Models['WebSocketRequest_type'][]
 } {
   const isChange =
-    codeMirrorRanges.length !== selectionRanges.codeBasedSelections.length ||
+    // todo should this take old or new selections?
+    codeMirrorRanges.length !== selectionRanges?.codeBasedSelections?.length ||
     codeMirrorRanges.some(({ from, to }, i) => {
       return (
         from !== selectionRanges.codeBasedSelections[i].range[0] ||
@@ -307,6 +447,15 @@ export function processCodeMirrorRanges({
     })
   const idBasedSelections: SelectionToEngine[] =
     codeToIdSelections(codeBasedSelections)
+  const artifacts: Selection[] = []
+  for (const { id } of idBasedSelections) {
+    const artifact = engineCommandManager.artifactGraph.get(id)
+    const codeRefs = getCodeRefsByArtifactId(
+      id,
+      engineCommandManager.artifactGraph
+    )
+    if (artifact && codeRefs) artifacts.push({ artifact, codeRef: codeRefs[0] })
+  }
 
   if (!selectionRanges) return null
   updateSceneObjectColors(codeBasedSelections)
@@ -317,7 +466,7 @@ export function processCodeMirrorRanges({
         selectionType: 'mirrorCodeMirrorSelections',
         selection: {
           otherSelections: isShiftDown ? selectionRanges.otherSelections : [],
-          codeBasedSelections,
+          graphSelections: artifacts,
         },
       },
     },
@@ -731,6 +880,77 @@ export function updateSelections(
       newSelections.length > 0
         ? newSelections
         : prevSelectionRanges.codeBasedSelections,
+    otherSelections: prevSelectionRanges.otherSelections,
+  }
+}
+
+// using artifact as the selection is maybe not such a good idea.
+// is the artifact stable, once you add a constrain, there will a new artifact graph
+// then the ids will not match up
+export function updateSelections2(
+  pathToNodeMap: PathToNodeMap,
+  prevSelectionRanges: Selections,
+  ast: Program | Error
+): Selections | Error {
+  if (err(ast)) return ast
+
+  const newSelections = Object.entries(pathToNodeMap)
+    .map(([index, pathToNode]): Selection | undefined => {
+      const previousSelection =
+        prevSelectionRanges.graphSelections[Number(index)]
+      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
+      if (err(nodeMeta)) return undefined
+      const node = nodeMeta.node
+      let artifact: Artifact | null = null
+      for (const [id, a] of engineCommandManager.artifactGraph) {
+        if (previousSelection.artifact.type === a.type) {
+          const codeRefs = getCodeRefsByArtifactId(
+            id,
+            engineCommandManager.artifactGraph
+          )
+          console.log('codeRef', codeRefs)
+          if (!codeRefs) continue
+          if (
+            JSON.stringify(codeRefs[0].pathToNode) ===
+            JSON.stringify(pathToNode)
+          ) {
+            artifact = a
+            console.log('found artifact', a)
+            break
+          }
+        }
+        // if (
+        //   a.codeRef.range[0] === node.start &&
+        //   a.codeRef.range[1] === node.end
+        // ) {
+        //   artifact = a
+        //   break
+        // }
+      }
+      if (!artifact) return undefined
+      return {
+        artifact: artifact,
+        codeRef: {
+          range: [node.start, node.end],
+          pathToNode: pathToNode,
+        },
+        // codeRef: {
+        //   range: [node.start, node.end],
+        //   pathToNode: pathToNode,
+        // },
+      }
+      // return {
+      //   range: [node.start, node.end],
+      //   type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
+      // }
+    })
+    .filter((x?: Selection) => x !== undefined) as Selection[]
+
+  return {
+    graphSelections:
+      newSelections.length > 0
+        ? newSelections
+        : prevSelectionRanges.graphSelections,
     otherSelections: prevSelectionRanges.otherSelections,
   }
 }

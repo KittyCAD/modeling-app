@@ -7,6 +7,7 @@ import { ProgramMemory, Expr, parse } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { executeAst } from 'lang/langHelpers'
 import { err, trap } from 'lib/trap'
+import { convertSelectionsToOld } from './selections'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -34,9 +35,10 @@ export function useCalculateKclExpression({
 } {
   const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
+  const selectionOld = convertSelectionsToOld(context.selectionRanges)
   const selectionRange:
-    | (typeof context.selectionRanges.codeBasedSelections)[number]['range']
-    | undefined = context.selectionRanges.codeBasedSelections[0]?.range
+    | (typeof selectionOld.codeBasedSelections)[number]['range']
+    | undefined = selectionOld.codeBasedSelections[0]?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>

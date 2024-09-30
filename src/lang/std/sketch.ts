@@ -1917,7 +1917,7 @@ export function getConstraintInfo(
     code,
     pathToNode
   )
-  console.log('result path', result[0].pathToNode)
+  // console.log('result path', result[0].pathToNode)
   return result
 }
 

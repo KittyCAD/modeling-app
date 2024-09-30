@@ -44,6 +44,10 @@ import {
   isRangeBetweenCharacters,
   isSketchPipe,
   updateSelections,
+  convertSelectionsToOld,
+  convertSelectionToOld,
+  Selections,
+  updateSelections2,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -249,6 +253,7 @@ export const ModelingMachineProvider = ({
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
             // this was needed for ts after adding 'Set selection' action to on done modal events
+            // const oldSelections = convertSelectionsToOld(selectionRanges)
             const setSelections =
               ('data' in event &&
                 event.data &&
@@ -275,8 +280,12 @@ export const ModelingMachineProvider = ({
                 })
               })
             }
-            let selections: Selections__old = {
-              codeBasedSelections: [],
+            // let selections: Selections__old = {
+            //   codeBasedSelections: [],
+            //   otherSelections: [],
+            // }
+            let selections: Selections = {
+              graphSelections: [],
               otherSelections: [],
             }
             if (setSelections.selectionType === 'singleCodeCursor') {
@@ -286,21 +295,28 @@ export const ModelingMachineProvider = ({
                 !editorManager.isShiftDown
               ) {
                 selections = {
-                  codeBasedSelections: [],
+                  graphSelections: [],
                   otherSelections: [],
                 }
               } else if (
                 setSelections.selection &&
                 !editorManager.isShiftDown
               ) {
+                // const oldSelection = convertSelectionToOld(setSelections.selection)
+                // if (oldSelection) {
+
+                // }
                 selections = {
-                  codeBasedSelections: [setSelections.selection],
+                  graphSelections: [setSelections.selection],
                   otherSelections: [],
                 }
               } else if (setSelections.selection && editorManager.isShiftDown) {
+                // const oldSelection = convertSelectionToOld(setSelections.selection)
+                // if (oldSelection) {
+                // }
                 selections = {
-                  codeBasedSelections: [
-                    ...selectionRanges.codeBasedSelections,
+                  graphSelections: [
+                    ...selectionRanges.graphSelections,
                     setSelections.selection,
                   ],
                   otherSelections: selectionRanges.otherSelections,
@@ -312,7 +328,7 @@ export const ModelingMachineProvider = ({
                 codeMirrorSelection,
                 updateSceneObjectColors,
               } = handleSelectionBatch({
-                selections,
+                selections: convertSelectionsToOld(selections),
               })
               codeMirrorSelection && dispatchSelection(codeMirrorSelection)
               engineEvents &&
@@ -336,18 +352,18 @@ export const ModelingMachineProvider = ({
             if (setSelections.selectionType === 'otherSelection') {
               if (editorManager.isShiftDown) {
                 selections = {
-                  codeBasedSelections: selectionRanges.codeBasedSelections,
+                  graphSelections: selectionRanges.graphSelections,
                   otherSelections: [setSelections.selection],
                 }
               } else {
                 selections = {
-                  codeBasedSelections: [],
+                  graphSelections: [],
                   otherSelections: [setSelections.selection],
                 }
               }
               const { engineEvents, updateSceneObjectColors } =
                 handleSelectionBatch({
-                  selections,
+                  selections: convertSelectionsToOld(selections),
                 })
               engineEvents &&
                 engineEvents.forEach((event) => {
@@ -360,7 +376,9 @@ export const ModelingMachineProvider = ({
               }
             }
             if (setSelections.selectionType === 'completeSelection') {
-              editorManager.selectRange(setSelections.selection)
+              editorManager.selectRange(
+                convertSelectionsToOld(setSelections.selection)
+              )
               if (!sketchDetails)
                 return {
                   selectionRanges: setSelections.selection,
@@ -494,10 +512,11 @@ export const ModelingMachineProvider = ({
         'has valid sweep selection': ({ context: { selectionRanges } }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
+          const _selections = convertSelectionsToOld(selectionRanges)
           const hasNoSelection =
-            selectionRanges.codeBasedSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
+            _selections.codeBasedSelections.length === 0 ||
+            isRangeBetweenCharacters(_selections) ||
+            isSelectionLastLine(_selections, codeManager.code)
 
           if (hasNoSelection) {
             // they have no selection, we should enable the button
@@ -505,31 +524,34 @@ export const ModelingMachineProvider = ({
             // BUT only if there's extrudable geometry
             return doesSceneHaveSweepableSketch(kclManager.ast)
           }
-          if (!isSketchPipe(selectionRanges)) return false
+          if (!isSketchPipe(_selections)) return false
 
-          return canSweepSelection(selectionRanges)
+          return canSweepSelection(_selections)
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
+          const _selections = convertSelectionsToOld(selectionRanges)
           if (!commandBarState.matches('Closed')) return false
-          if (selectionRanges.codeBasedSelections.length <= 0) return false
+          if (_selections.codeBasedSelections.length <= 0) return false
           return true
         },
-        'has valid fillet selection': ({ context: { selectionRanges } }) =>
-          hasValidFilletSelection({
-            selectionRanges,
+        'has valid fillet selection': ({ context: { selectionRanges } }) => {
+          const _selections = convertSelectionsToOld(selectionRanges)
+          return hasValidFilletSelection({
+            selectionRanges: _selections,
             ast: kclManager.ast,
             code: codeManager.code,
-          }),
+          })
+        },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
-          if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
-            return false
+          const _selections = convertSelectionsToOld(selectionRanges)
+          if (!isSingleCursorInPipe(_selections, kclManager.ast)) return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactGraph,
-            selectionRanges
+            _selections
           )
         },
         'Has exportable geometry': () => {
@@ -619,7 +641,8 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
-            const sourceRange = selectionRanges.codeBasedSelections[0].range
+            const _selections = convertSelectionsToOld(selectionRanges)
+            const sourceRange = _selections.codeBasedSelections[0].range
             const sketchPathToNode = getNodePathFromSourceRange(
               kclManager.ast,
               sourceRange
@@ -643,10 +666,11 @@ export const ModelingMachineProvider = ({
         ),
         'Get horizontal info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
+            const _selections = convertSelectionsToOld(selectionRanges)
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setHorzDistance',
-                selectionRanges,
+                selectionRanges: _selections,
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
@@ -664,7 +688,8 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections(
+            // const selection = updateSelections(
+            const selection = updateSelections2(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -682,7 +707,7 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setVertDistance',
-                selectionRanges,
+                selectionRanges: convertSelectionsToOld(selectionRanges),
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
@@ -702,7 +727,7 @@ export const ModelingMachineProvider = ({
             if (err(updatedAst)) return Promise.reject(updatedAst)
             const selection = updateSelections(
               pathToNodeMap,
-              selectionRanges,
+              convertSelectionsToOld(selectionRanges),
               updatedAst.newAst
             )
             if (err(selection)) return Promise.reject(selection)
@@ -716,15 +741,15 @@ export const ModelingMachineProvider = ({
         'Get angle info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const info = angleBetweenInfo({
-              selectionRanges,
+              selectionRanges: convertSelectionsToOld(selectionRanges),
             })
             if (err(info)) return Promise.reject(info)
             const { modifiedAst, pathToNodeMap } = await (info.enabled
               ? applyConstraintAngleBetween({
-                  selectionRanges,
+                  selectionRanges: convertSelectionsToOld(selectionRanges),
                 })
               : applyConstraintAngleLength({
-                  selectionRanges,
+                  selectionRanges: convertSelectionsToOld(selectionRanges),
                   angleOrLength: 'setAngle',
                 }))
             const _modifiedAst = parse(recast(modifiedAst))
@@ -747,7 +772,7 @@ export const ModelingMachineProvider = ({
             if (err(updatedAst)) return Promise.reject(updatedAst)
             const selection = updateSelections(
               pathToNodeMap,
-              selectionRanges,
+              convertSelectionsToOld(selectionRanges),
               updatedAst.newAst
             )
             if (err(selection)) return Promise.reject(selection)
