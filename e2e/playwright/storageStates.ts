@@ -15,6 +15,7 @@ export const TEST_SETTINGS = {
   modeling: {
     defaultUnit: 'in',
     mouseControls: 'KittyCAD',
+    cameraProjection: 'perspective',
     showDebugPanel: true,
   },
   projects: {
@@ -48,6 +49,11 @@ export const TEST_SETTINGS_ONBOARDING_START = {
   app: { ...TEST_SETTINGS.app, onboardingStatus: '' },
 } satisfies Partial<SaveSettingsPayload>
 
+export const TEST_SETTINGS_DEFAULT_THEME = {
+  ...TEST_SETTINGS,
+  app: { ...TEST_SETTINGS.app, theme: Themes.System },
+} satisfies Partial<SaveSettingsPayload>
+
 export const TEST_SETTINGS_CORRUPTED = {
   app: {
     theme: Themes.Dark,
@@ -57,6 +63,7 @@ export const TEST_SETTINGS_CORRUPTED = {
   modeling: {
     defaultUnit: 'invalid' as any,
     mouseControls: `() => alert('hack the planet')` as any,
+    cameraProjection: 'perspective',
     showDebugPanel: true,
   },
   projects: {

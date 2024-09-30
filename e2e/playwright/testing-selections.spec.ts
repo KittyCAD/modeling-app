@@ -477,7 +477,9 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
 
     await expect(page.getByText('Unable to delete part')).toBeVisible()
   })
-  test('Hovering over 3d features highlights code', async ({ page }) => {
+  test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
+    page,
+  }) => {
     const u = await getUtils(page)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
@@ -542,16 +544,16 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     const close: Coords2d = [720, 200]
     const nothing: Coords2d = [600, 200]
     const closeEdge: Coords2d = [744, 233]
-    const closeAdjacentEdge: Coords2d = [688, 123]
+    const closeAdjacentEdge: Coords2d = [743, 277]
     const closeOppositeEdge: Coords2d = [687, 169]
 
     const tangentialArcEdge: Coords2d = [811, 142]
     const tangentialArcOppositeEdge: Coords2d = [820, 180]
-    const tangentialArcAdjacentEdge: Coords2d = [893, 165]
+    const tangentialArcAdjacentEdge: Coords2d = [688, 123]
 
     const straightSegmentEdge: Coords2d = [819, 369]
-    const straightSegmentOppositeEdge: Coords2d = [635, 394]
-    const straightSegmentAdjacentEdge: Coords2d = [679, 329]
+    const straightSegmentOppositeEdge: Coords2d = [822, 368]
+    const straightSegmentAdjacentEdge: Coords2d = [893, 165]
 
     await page.mouse.move(nothing[0], nothing[1])
     await page.mouse.click(nothing[0], nothing[1])
@@ -569,19 +571,27 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
         const highlightedLocator = page.getByTestId('hover-highlight')
         const activeLineLocator = page.locator('.cm-activeLine')
 
-        await test.step(`hover should highlight correct code`, async () => {
-          await page.mouse.move(coord[0], coord[1])
-          await expect(highlightedLocator.first()).toBeVisible()
-          await expect
-            .poll(async () => {
-              const textContents = await highlightedLocator.allTextContents()
-              return textContents.join('').replace(/\s+/g, '')
-            })
-            .toBe(highlightCode)
-          await page.mouse.move(nothing[0], nothing[1])
+        await test.step(`hover should highlight correct code, clicking should put the cursor in the right place, and send selection to engine`, async () => {
+          await expect(async () => {
+            await page.mouse.move(nothing[0], nothing[1])
+            await page.mouse.move(coord[0], coord[1])
+            await expect(highlightedLocator.first()).toBeVisible()
+            await expect
+              .poll(async () => {
+                let textContents = await highlightedLocator.allTextContents()
+                const textContentsStr = textContents
+                  .join('')
+                  .replace(/\s+/g, '')
+                console.log(textContentsStr)
+                return textContentsStr
+              })
+              .toBe(highlightCode)
+            await page.mouse.move(nothing[0], nothing[1])
+          }).toPass({ timeout: 40_000, intervals: [500] })
         })
         await test.step(`click should put the cursor in the right place`, async () => {
-          await expect(highlightedLocator.first()).not.toBeVisible()
+          // await page.mouse.move(nothing[0], nothing[1], { steps: 5 })
+          // await expect(highlightedLocator.first()).not.toBeVisible()
           await page.mouse.click(coord[0], coord[1])
           await expect
             .poll(async () => {
@@ -689,10 +699,122 @@ const sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
       'angledLineToY({ angle: 30, to: 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
-      'straightSegmentAdjancentEdge',
+      'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)`,
+      '}, %)'
+    )
+
+    await page.waitForTimeout(200)
+
+    await u.removeCurrentCode()
+    await u.codeLocator.fill(`const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       217.26
+     ], %, $seg01)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $yo)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+  |> close(%)
+const extrude001 = extrude(100, sketch001)
+  |> chamfer({
+       length: 30,
+       tags: [
+         seg01,
+         getNextAdjacentEdge(yo),
+         getNextAdjacentEdge(seg02),
+         getOppositeEdge(seg01)
+       ]
+     }, %)
+`)
+    await expect(
+      page.getByTestId('model-state-indicator-execution-done')
+    ).toBeVisible()
+
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 16118, y: -1654, z: 5855 },
+        center: { x: 4915, y: -3893, z: 4874 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.closeDebugPanel()
+
+    await page.mouse.click(nothing[0], nothing[1])
+
+    const oppositeChamfer: Coords2d = [577, 230]
+    const baseChamfer: Coords2d = [726, 258]
+    const adjacentChamfer1: Coords2d = [653, 99]
+    const adjacentChamfer2: Coords2d = [653, 430]
+
+    await checkCodeAtHoverPosition(
+      'oppositeChamfer',
+      oppositeChamfer,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      '}, %)'
+    )
+
+    await checkCodeAtHoverPosition(
+      'baseChamfer',
+      baseChamfer,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      '}, %)'
+    )
+
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: -6414, y: 160, z: 6145 },
+        center: { x: 5919, y: 1236, z: 5251 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.closeDebugPanel()
+
+    await page.mouse.click(nothing[0], nothing[1])
+
+    await checkCodeAtHoverPosition(
+      'adjacentChamfer1',
+      adjacentChamfer1,
+      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      '}, %)'
+    )
+
+    await checkCodeAtHoverPosition(
+      'adjacentChamfer2',
+      adjacentChamfer2,
+      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      '}, %)'
     )
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({

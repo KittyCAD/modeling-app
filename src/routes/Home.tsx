@@ -248,6 +248,7 @@ const Home = () => {
               <small>Sort by</small>
               <ActionButton
                 Element="button"
+                data-testid="home-sort-by-name"
                 className={
                   'text-xs border-primary/10 ' +
                   (!sort.includes('name')
@@ -269,6 +270,7 @@ const Home = () => {
               </ActionButton>
               <ActionButton
                 Element="button"
+                data-testid="home-sort-by-modified"
                 className={
                   'text-xs border-primary/10 ' +
                   (!isSortByModified

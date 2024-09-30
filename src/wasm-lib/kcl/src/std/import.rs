@@ -15,7 +15,6 @@ use kcmc::{
     ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},

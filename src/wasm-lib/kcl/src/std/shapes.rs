@@ -2,11 +2,12 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::shared::Angle;
-use kcmc::shared::Point2d as KPoint2d;
-use kcmc::ModelingCmd;
+use kcmc::{
+    each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared::{Angle, Point2d as KPoint2d},
+    ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use schemars::JsonSchema;
@@ -15,17 +16,17 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::TagDeclarator,
     errors::KclError,
-    executor::{BasePath, ExecState, GeoMeta, KclValue, Path, SketchGroup, SketchSurface},
+    executor::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     std::Args,
 };
 
-/// A sketch surface or a sketch group.
+/// A sketch surface or a sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
-pub enum SketchSurfaceOrGroup {
+pub enum SketchOrSurface {
     SketchSurface(SketchSurface),
-    SketchGroup(Box<SketchGroup>),
+    Sketch(Box<Sketch>),
 }
 
 /// Data for drawing an circle
@@ -42,11 +43,11 @@ pub struct CircleData {
 
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_surface_or_group, tag): (CircleData, SketchSurfaceOrGroup, Option<TagDeclarator>) =
+    let (data, sketch_surface_or_group, tag): (CircleData, SketchOrSurface, Option<TagDeclarator>) =
         args.get_circle_args()?;
 
-    let sketch_group = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(sketch_group.meta.clone(), sketch_group))
+    let sketch = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
+    Ok(KclValue::new_user_val(sketch.meta.clone(), sketch))
 }
 
 /// Construct a 2-dimensional circle, of the specified radius, centered at
@@ -75,16 +76,16 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 async fn inner_circle(
     data: CircleData,
-    sketch_surface_or_group: SketchSurfaceOrGroup,
+    sketch_surface_or_group: SketchOrSurface,
     tag: Option<TagDeclarator>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Sketch, KclError> {
     let sketch_surface = match sketch_surface_or_group {
-        SketchSurfaceOrGroup::SketchSurface(surface) => surface,
-        SketchSurfaceOrGroup::SketchGroup(group) => group.on,
+        SketchOrSurface::SketchSurface(surface) => surface,
+        SketchOrSurface::Sketch(group) => group.on,
     };
-    let sketch_group = crate::std::sketch::inner_start_profile_at(
+    let sketch = crate::std::sketch::inner_start_profile_at(
         [data.center[0] + data.radius, data.center[1]],
         sketch_surface,
         None,
@@ -101,7 +102,7 @@ async fn inner_circle(
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
-            path: sketch_group.id.into(),
+            path: sketch.id.into(),
             segment: PathSegment::Arc {
                 start: angle_start,
                 end: angle_end,
@@ -128,20 +129,15 @@ async fn inner_circle(
         ccw: angle_start.to_degrees() < angle_end.to_degrees(),
     };
 
-    let mut new_sketch_group = sketch_group.clone();
+    let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch_group.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch_group.value.push(current_path);
+    new_sketch.value.push(current_path);
 
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::ClosePath {
-            path_id: new_sketch_group.id,
-        }),
-    )
-    .await?;
+    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
+        .await?;
 
-    Ok(new_sketch_group)
+    Ok(new_sketch)
 }

@@ -2,7 +2,7 @@ use anyhow::Result;
 
 use crate::{
     ast::types::{
-        BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression,
+        BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression,
         ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
     },
     walk::Node,
@@ -105,9 +105,11 @@ where
         BinaryPart::CallExpression(ce) => f.walk(ce.as_ref().into()),
         BinaryPart::UnaryExpression(ue) => walk_unary_expression(ue, f),
         BinaryPart::MemberExpression(me) => walk_member_expression(me, f),
+        BinaryPart::IfExpression(e) => walk_if_expression(e, f),
     }
 }
 
+// TODO: Rename this to walk_expr
 fn walk_value<'a, WalkT>(node: &'a Expr, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
@@ -184,6 +186,7 @@ where
         Expr::ObjectExpression(oe) => walk_object_expression(oe, f),
         Expr::MemberExpression(me) => walk_member_expression(me, f),
         Expr::UnaryExpression(ue) => walk_unary_expression(ue, f),
+        Expr::IfExpression(e) => walk_if_expression(e, f),
         Expr::None(_) => Ok(true),
     }
 }
@@ -212,6 +215,33 @@ where
         if !walk_object_property(prop, f)? {
             return Ok(false);
         }
+    }
+    Ok(true)
+}
+
+/// Walk through an [IfExpression].
+fn walk_if_expression<'a, WalkT>(node: &'a IfExpression, f: &WalkT) -> Result<bool>
+where
+    WalkT: Walker<'a>,
+{
+    if !f.walk(node.into())? {
+        return Ok(false);
+    }
+    if !walk_value(&node.cond, f)? {
+        return Ok(false);
+    }
+
+    for else_if in &node.else_ifs {
+        if !walk_value(&else_if.cond, f)? {
+            return Ok(false);
+        }
+        if !walk(&else_if.then_val, f)? {
+            return Ok(false);
+        }
+    }
+    let final_else = &(*node.final_else);
+    if !f.walk(final_else.into())? {
+        return Ok(false);
     }
     Ok(true)
 }

@@ -1,0 +1,70 @@
+{{#if description}}
+{{{description}}}
+{{/if}}
+
+{{#if $ref}}
+{{pretty_ref $ref}}
+{{else if enum}}
+**enum:** {{pretty_enum enum}}
+{{else if type}}
+**Type:** `{{type}}`{{~ #if format }} (`{{format}}`){{~/if ~}}{{~ #if maximum }} (**maximum:** {{maximum}}){{~/if~}}{{~ #if minimum }} (**minimum:** {{minimum}}){{~/if~}}
+{{else}}
+{{/if}}
+
+{{#if $schema}}
+**Schema:** `{{$schema}}`
+{{/if}}
+
+{{#if items}}
+{{>array}}
+{{/if}}
+
+{{#if anyOf}}
+**This schema accepts any of the following:**
+
+{{#each anyOf}}
+{{> schema this}}
+----
+{{/each}}
+{{/if}}
+
+{{#if oneOf}}
+**This schema accepts exactly one of the following:**
+
+{{#each oneOf}}
+{{> schema this}}
+----
+{{/each}}
+{{/if}}
+
+{{#if allOf}}
+**This schema requires all of the following:**
+
+{{#each allOf}}
+{{> schema this}}
+----
+{{/each}}
+{{/if}}
+
+{{> properties}}
+
+{{#if definitions}}
+## Definitions
+
+{{#each definitions}}
+### {{@key}}
+
+{{> schemaType this}}
+
+{{/each}}
+{{/if}}
+
+{{#if examples}}
+## Examples
+
+{{#each examples}}
+```json
+{{{json this}}}
+```
+{{/each}}
+{{/if}}

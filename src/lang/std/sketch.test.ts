@@ -234,13 +234,93 @@ describe('testing addTagForSketchOnFace', () => {
         pathToNode,
         node: ast,
       },
-      'lineTo'
+      'lineTo',
+      null
     )
     if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
     const { modifiedAst } = sketchOnFaceRetVal
     const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
     expect(recast(modifiedAst)).toBe(expectedCode)
+  })
+  const chamferTestCases = [
+    {
+      desc: 'chamfer in pipeExpr',
+      originalChamfer: `  |> chamfer({
+       length: 30,
+       tags: [seg01, getOppositeEdge(seg01)]
+     }, %)`,
+      expectedChamfer: `  |> chamfer({
+       length: 30,
+       tags: [getOppositeEdge(seg01)]
+     }, %, $seg03)
+  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+    },
+    {
+      desc: 'chamfer with its own variable',
+      originalChamfer: `const chamf = chamfer({
+       length: 30,
+       tags: [seg01, getOppositeEdge(seg01)]
+     }, extrude001)`,
+      expectedChamfer: `const chamf = chamfer({
+       length: 30,
+       tags: [getOppositeEdge(seg01)]
+     }, extrude001, $seg03)
+  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+    },
+    // Add more test cases here if needed
+  ] as const
+
+  chamferTestCases.forEach(({ originalChamfer, expectedChamfer, desc }) => {
+    it(`can break up chamfers in order to add tags - ${desc}`, async () => {
+      const genCode = (
+        insertCode: string
+      ) => `const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       217.26
+     ], %, $seg01)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+  |> close(%)
+const extrude001 = extrude(100, sketch001)
+${insertCode}
+`
+      const code = genCode(originalChamfer)
+      const ast = parse(code)
+      await enginelessExecutor(ast)
+      const sourceStart = code.indexOf(originalChamfer)
+      const extraChars = originalChamfer.indexOf('chamfer')
+      const sourceRange: [number, number] = [
+        sourceStart + extraChars,
+        sourceStart + originalChamfer.length - extraChars,
+      ]
+
+      if (err(ast)) throw ast
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      console.log('pathToNode', pathToNode)
+      const sketchOnFaceRetVal = addTagForSketchOnFace(
+        {
+          pathToNode,
+          node: ast,
+        },
+        'chamfer',
+        {
+          type: 'edgeCut',
+          subType: 'opposite',
+          tagName: 'seg01',
+        }
+      )
+      if (err(sketchOnFaceRetVal)) throw sketchOnFaceRetVal
+      expect(recast(sketchOnFaceRetVal.modifiedAst)).toBe(
+        genCode(expectedChamfer)
+      )
+    })
   })
 })
 

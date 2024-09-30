@@ -5,7 +5,7 @@ import {
   isTypeInValue,
   getNodePathFromSourceRange,
   doesPipeHaveCallExp,
-  hasExtrudeSketchGroup,
+  hasExtrudeSketch,
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
   doesSceneHaveSweepableSketch,
@@ -340,8 +340,8 @@ const part001 = startSketchAt([-1.41, 3.46])
   })
 })
 
-describe('testing hasExtrudeSketchGroup', () => {
-  it('find sketch group', async () => {
+describe('testing hasExtrudeSketch', () => {
+  it('find sketch', async () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
@@ -352,14 +352,14 @@ const part001 = startSketchAt([-1.41, 3.46])
     if (err(ast)) throw ast
 
     const programMemory = await enginelessExecutor(ast)
-    const result = hasExtrudeSketchGroup({
+    const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [100, 101] },
       programMemory,
     })
     expect(result).toEqual(true)
   })
-  it('find extrude group', async () => {
+  it('find solid', async () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
@@ -371,7 +371,7 @@ const part001 = startSketchAt([-1.41, 3.46])
     if (err(ast)) throw ast
 
     const programMemory = await enginelessExecutor(ast)
-    const result = hasExtrudeSketchGroup({
+    const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [100, 101] },
       programMemory,
@@ -384,7 +384,7 @@ const part001 = startSketchAt([-1.41, 3.46])
     if (err(ast)) throw ast
 
     const programMemory = await enginelessExecutor(ast)
-    const result = hasExtrudeSketchGroup({
+    const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [10, 11] },
       programMemory,

@@ -3,8 +3,8 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, Expr, FormatOptions,
-        FunctionExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeValue,
-        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
+        FunctionExpression, IfExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
+        NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
     },
     parser::PIPE_OPERATOR,
 };
@@ -121,6 +121,7 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
+            Expr::IfExpression(e) => e.recast(options, indentation_level, is_in_pipe),
             Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
@@ -138,6 +139,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.recast(options, indentation_level, false),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
             BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
+            BinaryPart::IfExpression(e) => e.recast(options, indentation_level, false),
         }
     }
 }
@@ -403,6 +405,7 @@ impl UnaryExpression {
             BinaryPart::Literal(_)
             | BinaryPart::Identifier(_)
             | BinaryPart::MemberExpression(_)
+            | BinaryPart::IfExpression(_)
             | BinaryPart::CallExpression(_) => {
                 format!("{}{}", &self.operator, self.argument.recast(options, 0))
             }
@@ -410,6 +413,32 @@ impl UnaryExpression {
                 format!("{}({})", &self.operator, self.argument.recast(options, 0))
             }
         }
+    }
+}
+
+impl IfExpression {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        // We can calculate how many lines this will take, so let's do it and avoid growing the vec.
+        // Total lines = starting lines, else-if lines, ending lines.
+        let n = 2 + (self.else_ifs.len() * 2) + 3;
+        let mut lines = Vec::with_capacity(n);
+
+        let cond = self.cond.recast(options, indentation_level, is_in_pipe);
+        lines.push((0, format!("if {cond} {{")));
+        lines.push((1, self.then_val.recast(options, indentation_level + 1)));
+        for else_if in &self.else_ifs {
+            let cond = else_if.cond.recast(options, indentation_level, is_in_pipe);
+            lines.push((0, format!("}} else if {cond} {{")));
+            lines.push((1, else_if.then_val.recast(options, indentation_level + 1)));
+        }
+        lines.push((0, "} else {".to_owned()));
+        lines.push((1, self.final_else.recast(options, indentation_level + 1)));
+        lines.push((0, "}".to_owned()));
+        lines
+            .into_iter()
+            .map(|(ind, line)| format!("{}{}", options.get_indentation(indentation_level + ind), line.trim()))
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }
 
@@ -476,6 +505,38 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use crate::ast::types::FormatOptions;
+
+    #[test]
+    fn test_recast_if_else_if_same() {
+        let input = r#"let b = if false {
+  3
+} else if true {
+  4
+} else {
+  5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_if_same() {
+        let input = r#"let b = if false {
+  3
+} else {
+  5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
 
     #[test]
     fn test_recast_bug_fn_in_fn() {

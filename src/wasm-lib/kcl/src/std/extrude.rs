@@ -9,23 +9,19 @@ use kcmc::{
     shared::ExtrusionFaceCapType, websocket::OkWebSocketResponseData, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{
-        ExecState, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, KclValue, Path, SketchGroup, SketchGroupSet,
-        SketchSurface,
-    },
+    executor::{ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet},
     std::Args,
 };
 
 /// Extrudes by a given amount.
 pub async fn extrude(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch_group_set) = args.get_number_sketch_group_set()?;
+    let (length, sketch_set) = args.get_number_sketch_set()?;
 
-    let result = inner_extrude(length, sketch_group_set, args).await?;
+    let result = inner_extrude(length, sketch_set, args).await?;
 
     Ok(result.into())
 }
@@ -79,13 +75,13 @@ pub async fn extrude(_exec_state: &mut ExecState, args: Args) -> Result<KclValue
 #[stdlib {
     name = "extrude"
 }]
-async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args) -> Result<ExtrudeGroupSet, KclError> {
+async fn inner_extrude(length: f64, sketch_set: SketchSet, args: Args) -> Result<SolidSet, KclError> {
     let id = uuid::Uuid::new_v4();
 
     // Extrude the element(s).
-    let sketch_groups: Vec<SketchGroup> = sketch_group_set.into();
-    let mut extrude_groups = Vec::new();
-    for sketch_group in &sketch_groups {
+    let sketches: Vec<Sketch> = sketch_set.into();
+    let mut solids = Vec::new();
+    for sketch in &sketches {
         // Before we extrude, we need to enable the sketch mode.
         // We do this here in case extrude is called out of order.
         args.batch_modeling_cmd(
@@ -93,9 +89,9 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
             ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: false,
-                entity_id: sketch_group.on.id(),
+                entity_id: sketch.on.id(),
                 adjust_camera: false,
-                planar_normal: if let SketchSurface::Plane(plane) = &sketch_group.on {
+                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
                     // We pass in the normal for the plane here.
                     Some(plane.z_axis.into())
                 } else {
@@ -108,7 +104,7 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Extrude {
-                target: sketch_group.id.into(),
+                target: sketch.id.into(),
                 distance: LengthUnit(length),
             }),
         )
@@ -120,35 +116,29 @@ async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
-        extrude_groups.push(do_post_extrude(sketch_group.clone(), length, args.clone()).await?);
+        solids.push(do_post_extrude(sketch.clone(), length, args.clone()).await?);
     }
 
-    Ok(extrude_groups.into())
+    Ok(solids.into())
 }
 
-pub(crate) async fn do_post_extrude(
-    sketch_group: SketchGroup,
-    length: f64,
-    args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> Result<Box<Solid>, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
         uuid::Uuid::new_v4(),
-        ModelingCmd::from(mcmd::ObjectBringToFront {
-            object_id: sketch_group.id,
-        }),
+        ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
     )
     .await?;
 
-    if sketch_group.value.is_empty() {
+    if sketch.value.is_empty() {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Expected a non-empty sketch group".to_string(),
+            message: "Expected a non-empty sketch".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
-    let edge_id = sketch_group.value.iter().find_map(|segment| match segment {
+    let edge_id = sketch.value.iter().find_map(|segment| match segment {
         Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
         _ => None,
     });
@@ -160,11 +150,11 @@ pub(crate) async fn do_post_extrude(
         }));
     };
 
-    let mut sketch_group = sketch_group.clone();
+    let mut sketch = sketch.clone();
 
     // If we were sketching on a face, we need the original face id.
-    if let SketchSurface::Face(ref face) = sketch_group.on {
-        sketch_group.id = face.extrude_group.sketch_group.id;
+    if let SketchSurface::Face(ref face) = sketch.on {
+        sketch.id = face.solid.sketch.id;
     }
 
     let solid3d_info = args
@@ -172,7 +162,7 @@ pub(crate) async fn do_post_extrude(
             uuid::Uuid::new_v4(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id,
-                object_id: sketch_group.id,
+                object_id: sketch.id,
             }),
         )
         .await?;
@@ -205,7 +195,7 @@ pub(crate) async fn do_post_extrude(
             uuid::Uuid::new_v4(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: curve_id,
-                object_id: sketch_group.id,
+                object_id: sketch.id,
                 face_id,
             }),
         )
@@ -213,9 +203,9 @@ pub(crate) async fn do_post_extrude(
 
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
+            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: curve_id,
-                object_id: sketch_group.id,
+                object_id: sketch.id,
                 face_id,
             }),
         )
@@ -227,8 +217,8 @@ pub(crate) async fn do_post_extrude(
         start_cap_id,
         end_cap_id,
     } = analyze_faces(&args, face_infos);
-    // Iterate over the sketch_group.value array and add face_id to GeoMeta
-    let new_value = sketch_group
+    // Iterate over the sketch.value array and add face_id to GeoMeta
+    let new_value = sketch
         .value
         .iter()
         .flat_map(|path| {
@@ -276,14 +266,14 @@ pub(crate) async fn do_post_extrude(
         })
         .collect();
 
-    Ok(Box::new(ExtrudeGroup {
-        // Ok so you would think that the id would be the id of the extrude group,
+    Ok(Box::new(Solid {
+        // Ok so you would think that the id would be the id of the solid,
         // that we passed in to the function, but it's actually the id of the
-        // sketch group.
-        id: sketch_group.id,
+        // sketch.
+        id: sketch.id,
         value: new_value,
-        meta: sketch_group.meta.clone(),
-        sketch_group,
+        meta: sketch.meta.clone(),
+        sketch,
         height: length,
         start_cap_id,
         end_cap_id,

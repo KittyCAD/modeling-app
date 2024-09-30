@@ -1,7 +1,7 @@
 use anyhow::Result;
 use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
-    executor::{ExecutorContext, KclValue, PlaneType, SketchGroup, SourceRange},
+    executor::{ExecutorContext, KclValue, PlaneType, Sketch, SourceRange},
 };
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
@@ -38,14 +38,14 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let exec_state = ctx.run(&program, None).await?;
 
     // We need to get the sketch ID.
-    // Get the sketch group ID from memory.
+    // Get the sketch ID from memory.
     let KclValue::UserVal(user_val) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
         anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
     };
-    let Some((sketch_group, _meta)) = user_val.get::<SketchGroup>() else {
-        anyhow::bail!("part001 was not a SketchGroup");
+    let Some((sketch, _meta)) = user_val.get::<Sketch>() else {
+        anyhow::bail!("part001 was not a Sketch");
     };
-    let sketch_id = sketch_group.id;
+    let sketch_id = sketch.id;
 
     let plane_id = uuid::Uuid::new_v4();
     ctx.engine
