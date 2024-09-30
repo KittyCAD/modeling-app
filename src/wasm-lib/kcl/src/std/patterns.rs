@@ -118,6 +118,32 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// number replication the transform is for. E.g. the first replica to be transformed
 /// will be passed the argument `1`. This simplifies your math: the transform function can
 /// rely on id `0` being the original instance passed into the `patternTransform`. See the examples.
+///
+/// The transform function returns a transform object. All properties of the object are optional,
+/// they each default to "no change". So the overall transform object defaults to "no change" too.
+/// Its properties are:
+///
+///  - `translate` (3D point)
+///
+///    Translates the replica, moving its position in space.      
+///
+///  - `replicate` (bool)
+///
+///    If false, this ID will not actually copy the object. It'll be skipped.
+///
+///  - `scale` (3D point)
+///
+///    Stretches the object, multiplying its width in the given dimension by the point's component in
+///    that direction.      
+///
+///  - `rotation` (object, with the following properties)
+///
+///    - `rotation.axis` (a 3D point, defaults to the Z axis)
+///
+///    - `rotation.angle` (number of degrees)
+///
+///    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
+///
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
 /// fn transform = (id) => {
