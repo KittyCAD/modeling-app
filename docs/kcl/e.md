@@ -1,6 +1,6 @@
 ---
 title: "e"
-excerpt: "Return the value of Euler’s number &#x60;e&#x60;."
+excerpt: "Return the value of Euler’s number `e`."
 layout: manual
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "tangentialArcToRelative"
-excerpt: "Starting at the current sketch&#x27;s origin, draw a curved line segment along"
+excerpt: "Starting at the current sketch's origin, draw a curved line segment along"
 layout: manual
 ---
 
