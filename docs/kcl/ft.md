@@ -8,11 +8,11 @@ Feet conversion factor for current projects units.
 
 No matter what units the current project uses, this function will always return the conversion factor to feet.
 
-For example, if the current project uses inches, this function will return &#x60;12&#x60;. If the current project uses millimeters, this function will return &#x60;304.8&#x60;. If the current project uses feet, this function will return &#x60;1&#x60;.
+For example, if the current project uses inches, this function will return `12`. If the current project uses millimeters, this function will return `304.8`. If the current project uses feet, this function will return `1`.
 
 **Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.
 
-We merely provide these functions for convenience and readability, as &#x60;10 * ft()&#x60; is more readable that your intent is &quot;I want 10 feet&quot; than &#x60;10 * 304.8&#x60;, if the project settings are in millimeters.
+We merely provide these functions for convenience and readability, as `10 * ft()` is more readable that your intent is "I want 10 feet" than `10 * 304.8`, if the project settings are in millimeters.
 
 ```js
 ft() -> number

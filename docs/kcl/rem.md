@@ -4,9 +4,9 @@ excerpt: "Compute the remainder after dividing `num` by `div`."
 layout: manual
 ---
 
-Compute the remainder after dividing &#x60;num&#x60; by &#x60;div&#x60;.
+Compute the remainder after dividing `num` by `div`.
 
-If &#x60;num&#x60; is negative, the result will be too.
+If `num` is negative, the result will be too.
 
 ```js
 rem(num: i64, divisor: i64) -> i64

@@ -4,7 +4,7 @@ excerpt: "Extract the provided 2-dimensional sketch's profile's origin's 'y'"
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch&#x27;s profile&#x27;s origin&#x27;s &#x27;y&#x27;
+Extract the provided 2-dimensional sketch's profile's origin's 'y'
 
 value.
 
