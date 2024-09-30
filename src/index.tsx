@@ -54,12 +54,13 @@ root.render(
 reportWebVitals()
 
 isDesktop() &&
-  window.electron.onUpdateDownloaded((version: string) => {
+  window.electron.onUpdateDownloaded(({ version, releaseNotes }) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
     toast.custom(
       ToastUpdate({
         version,
+        releaseNotes,
         onRestart: () => {
           window.electron.appRestart()
         },

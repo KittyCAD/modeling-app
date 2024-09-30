@@ -267,7 +267,10 @@ app.on('ready', () => {
 
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
-    mainWindow?.webContents.send('update-downloaded', info.version)
+    mainWindow?.webContents.send('update-downloaded', {
+      version: info.version,
+      releaseNotes: info.releaseNotes,
+    })
   })
 
   ipcMain.handle('app.restart', () => {
