@@ -133,7 +133,7 @@ export const test = base.extend<Fixtures>({
   },
 })
 
-test.afterEach(async ({ page, tronApp }, testInfo) => {
+test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
