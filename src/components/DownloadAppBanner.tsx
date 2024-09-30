@@ -15,8 +15,8 @@ const DownloadAppBanner = () => {
       open={!isBannerDismissed}
       onClose={() => ({})}
     >
-      <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/50" />
-      <Dialog.Panel className="relative max-w-xl bg-warn-20 text-warn-80 px-8 py-4">
+      <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/70" />
+      <Dialog.Panel className="relative max-w-xl bg-warn-20 text-warn-80 px-8 py-4 rounded-md">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold mb-4">Be warned!</h2>
           <p>
@@ -42,11 +42,12 @@ const DownloadAppBanner = () => {
             <ActionButton
               Element="button"
               onClick={() => setIsBannerDismissed(true)}
-              className="group text-warn-80 bg-warn-10 border-warn-70 hover:border-warn-80 hover:bg-warn-10"
+              className="group text-warn-80 bg-warn-10 border-warn-70 hover:border-warn-80 hover:bg-warn-10 dark:bg-warn-10 dark:!border-warn-70 dark:hover:!border-warn-80 dark:text-warn-80 dark:hover:bg-warn-10"
               iconStart={{
                 icon: 'checkmark',
-                iconClassName: 'text-warn-10',
-                bgClassName: 'bg-warn-70 group-hover:bg-warn-80',
+                iconClassName: 'text-warn-10 dark:text-warn-10',
+                bgClassName:
+                  'bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80',
               }}
             >
               OK, I understand
@@ -54,11 +55,12 @@ const DownloadAppBanner = () => {
             <ActionButton
               Element="externalLink"
               to="https://zoo.dev/modeling-app/download"
-              className="group bg-warn-10 border-warn-70 hover:border-warn-80"
+              className="group bg-warn-10 border-warn-70 hover:border-warn-80 dark:bg-warn-10 dark:!border-warn-70 dark:hover:!border-warn-80 dark:text-warn-80"
               iconStart={{
                 icon: 'link',
-                iconClassName: 'text-warn-10',
-                bgClassName: 'bg-warn-70 group-hover:bg-warn-80',
+                iconClassName: 'text-warn-10 dark:text-warn-10',
+                bgClassName:
+                  'bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80',
               }}
             >
               Download Desktop App
