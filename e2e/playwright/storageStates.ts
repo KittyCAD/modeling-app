@@ -15,6 +15,7 @@ export const TEST_SETTINGS = {
   modeling: {
     defaultUnit: 'in',
     mouseControls: 'KittyCAD',
+    cameraProjection: 'perspective',
     showDebugPanel: true,
   },
   projects: {
@@ -62,6 +63,7 @@ export const TEST_SETTINGS_CORRUPTED = {
   modeling: {
     defaultUnit: 'invalid' as any,
     mouseControls: `() => alert('hack the planet')` as any,
+    cameraProjection: 'perspective',
     showDebugPanel: true,
   },
   projects: {

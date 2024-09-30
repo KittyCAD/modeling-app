@@ -21,6 +21,7 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
+import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -85,6 +86,7 @@ export function App() {
       <LowerRightControls coreDumpManager={coreDumpManager}>
         <UnitsMenu />
         <Gizmo />
+        <CameraProjectionToggle />
       </LowerRightControls>
     </div>
   )
