@@ -20,8 +20,8 @@ const DownloadAppBanner = () => {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold mb-4">Be warned!</h2>
           <p>
-            Zoo Modeling App Desktop is more reliable! Our web app may have
-            breaking changes at any time.
+            Zoo Modeling App Desktop is more reliable! Our web app gets the
+            latest changes first, and may have less stable features.
           </p>
           {!navigator?.userAgent.includes('Chrome') && (
             <p className="mt-6">
