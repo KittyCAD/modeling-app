@@ -249,7 +249,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
                         // Only get the first part before the newline.
                         // This is to prevent the YAML from breaking.
                         let string = string.split('\n').next().unwrap_or("");
-                        out.write(&string)?;
+                        out.write(string)?;
                         return Ok(());
                     }
                 }
