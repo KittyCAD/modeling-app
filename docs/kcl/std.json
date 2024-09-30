@@ -24081,8 +24081,8 @@
   },
   {
     "name": "arc",
-    "summary": "Starting at the current sketch's origin, draw a curved line segment along",
-    "description": "an imaginary circle of the specified radius.\n\nThe arc is constructed such that the current position of the sketch is placed along an imaginary circle of the specified radius, at angleStart degrees. The resulting arc is the segment of the imaginary circle from that origin point to angleEnd, radius away from the center of the imaginary circle.\n\nUnless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.",
+    "summary": "Draw a curved line segment along an imaginary circle.",
+    "description": "The arc is constructed such that the current position of the sketch is placed along an imaginary circle of the specified radius, at angleStart degrees. The resulting arc is the segment of the imaginary circle from that origin point to angleEnd, radius away from the center of the imaginary circle.\n\nUnless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.",
     "tags": [],
     "args": [
       {
@@ -106550,8 +106550,8 @@
   },
   {
     "name": "tangentialArc",
-    "summary": "Starting at the current sketch's origin, draw a curved line segment along",
-    "description": "some part of an imaginary circle of the specified radius.\n\nThe arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for 'offset' degrees along the imaginary circle.",
+    "summary": "Draw a curved line segment along part of an imaginary circle.",
+    "description": "The arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for 'offset' degrees along the imaginary circle.",
     "tags": [],
     "args": [
       {

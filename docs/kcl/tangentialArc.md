@@ -1,12 +1,10 @@
 ---
 title: "tangentialArc"
-excerpt: "Starting at the current sketch&#x27;s origin, draw a curved line segment along"
+excerpt: "Draw a curved line segment along part of an imaginary circle."
 layout: manual
 ---
 
-Starting at the current sketch&#x27;s origin, draw a curved line segment along
-
-some part of an imaginary circle of the specified radius.
+Draw a curved line segment along part of an imaginary circle.
 
 The arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for &#x27;offset&#x27; degrees along the imaginary circle.
 
