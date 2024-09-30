@@ -1,6 +1,6 @@
 ---
 title: "pi"
-excerpt: "Return the value of &#x60;pi&#x60;. Archimedes’ constant (π)."
+excerpt: "Return the value of `pi`. Archimedes’ constant (π)."
 layout: manual
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "close"
-excerpt: "Construct a line segment from the current origin back to the profile&#x27;s"
+excerpt: "Construct a line segment from the current origin back to the profile's"
 layout: manual
 ---
 

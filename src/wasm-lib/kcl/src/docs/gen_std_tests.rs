@@ -234,6 +234,31 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
         ),
     );
 
+    // Register a helper to do safe YAML new lines.
+    hbs.register_helper(
+        "safe_yaml",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                if let Some(param) = h.param(0) {
+                    if let Some(string) = param.value().as_str() {
+                        // Only get the first part before the newline.
+                        // This is to prevent the YAML from breaking.
+                        let string = string.split('\n').next().unwrap_or("");
+                        out.write(&string)?;
+                        return Ok(());
+                    }
+                }
+                out.write("")?;
+                Ok(())
+            },
+        ),
+    );
+
     hbs.register_template_string("schemaType", include_str!("templates/schemaType.hbs"))?;
     hbs.register_template_string("properties", include_str!("templates/properties.hbs"))?;
     hbs.register_template_string("array", include_str!("templates/array.hbs"))?;

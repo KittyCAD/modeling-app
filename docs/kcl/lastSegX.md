@@ -1,6 +1,6 @@
 ---
 title: "lastSegX"
-excerpt: "Extract the &#x27;x&#x27; axis value of the last line segment in the provided 2-d"
+excerpt: "Extract the 'x' axis value of the last line segment in the provided 2-d"
 layout: manual
 ---
 

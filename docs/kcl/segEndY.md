@@ -1,6 +1,6 @@
 ---
 title: "segEndY"
-excerpt: "Compute the ending point of the provided line segment along the &#x27;y&#x27; axis."
+excerpt: "Compute the ending point of the provided line segment along the 'y' axis."
 layout: manual
 ---
 

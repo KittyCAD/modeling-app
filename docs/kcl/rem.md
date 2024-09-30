@@ -1,6 +1,6 @@
 ---
 title: "rem"
-excerpt: "Compute the remainder after dividing &#x60;num&#x60; by &#x60;div&#x60;."
+excerpt: "Compute the remainder after dividing `num` by `div`."
 layout: manual
 ---
 
