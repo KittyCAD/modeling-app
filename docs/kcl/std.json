@@ -24081,8 +24081,8 @@
   },
   {
     "name": "arc",
-    "summary": "Starting at the current sketch's origin, draw a curved line segment along",
-    "description": "an imaginary circle of the specified radius.\nThe arc is constructed such that the current position of the sketch is placed along an imaginary circle of the specified radius, at angleStart degrees. The resulting arc is the segment of the imaginary circle from that origin point to angleEnd, radius away from the center of the imaginary circle.\nUnless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.",
+    "summary": "Draw a curved line segment along an imaginary circle.",
+    "description": "The arc is constructed such that the current position of the sketch is placed along an imaginary circle of the specified radius, at angleStart degrees. The resulting arc is the segment of the imaginary circle from that origin point to angleEnd, radius away from the center of the imaginary circle.\n\nUnless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.",
     "tags": [],
     "args": [
       {
@@ -44971,7 +44971,7 @@
   {
     "name": "cm",
     "summary": "Centimeters conversion factor for current projects units.",
-    "description": "No matter what units the current project uses, this function will always return the conversion factor to centimeters.\nFor example, if the current project uses inches, this function will return `0.393701`. If the current project uses millimeters, this function will return `10`. If the current project uses centimeters, this function will return `1`.\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\nWe merely provide these functions for convenience and readability, as `10 * cm()` is more readable that your intent is \"I want 10 centimeters\" than `10 * 10`, if the project settings are in millimeters.",
+    "description": "No matter what units the current project uses, this function will always return the conversion factor to centimeters.\n\nFor example, if the current project uses inches, this function will return `0.393701`. If the current project uses millimeters, this function will return `10`. If the current project uses centimeters, this function will return `1`.\n\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\n\nWe merely provide these functions for convenience and readability, as `10 * cm()` is more readable that your intent is \"I want 10 centimeters\" than `10 * 10`, if the project settings are in millimeters.",
     "tags": [
       "units"
     ],
@@ -51171,7 +51171,7 @@
   {
     "name": "ft",
     "summary": "Feet conversion factor for current projects units.",
-    "description": "No matter what units the current project uses, this function will always return the conversion factor to feet.\nFor example, if the current project uses inches, this function will return `12`. If the current project uses millimeters, this function will return `304.8`. If the current project uses feet, this function will return `1`.\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\nWe merely provide these functions for convenience and readability, as `10 * ft()` is more readable that your intent is \"I want 10 feet\" than `10 * 304.8`, if the project settings are in millimeters.",
+    "description": "No matter what units the current project uses, this function will always return the conversion factor to feet.\n\nFor example, if the current project uses inches, this function will return `12`. If the current project uses millimeters, this function will return `304.8`. If the current project uses feet, this function will return `1`.\n\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\n\nWe merely provide these functions for convenience and readability, as `10 * ft()` is more readable that your intent is \"I want 10 feet\" than `10 * 304.8`, if the project settings are in millimeters.",
     "tags": [
       "units"
     ],
@@ -60240,7 +60240,7 @@
   {
     "name": "import",
     "summary": "Import a CAD file.",
-    "description": "For formats lacking unit data (such as STL, OBJ, or PLY files), the default unit of measurement is millimeters. Alternatively you may specify the unit by passing your desired measurement unit in the options parameter. When importing a GLTF file, the bin file will be imported as well. Import paths are relative to the current project directory.\nNote: The import command currently only works when using the native Modeling App.",
+    "description": "For formats lacking unit data (such as STL, OBJ, or PLY files), the default unit of measurement is millimeters. Alternatively you may specify the unit by passing your desired measurement unit in the options parameter. When importing a GLTF file, the bin file will be imported as well. Import paths are relative to the current project directory.\n\nNote: The import command currently only works when using the native Modeling App.",
     "tags": [],
     "args": [
       {
@@ -60597,7 +60597,7 @@
   {
     "name": "inch",
     "summary": "Inches conversion factor for current projects units.",
-    "description": "No matter what units the current project uses, this function will always return the conversion factor to inches.\nFor example, if the current project uses inches, this function will return `1`. If the current project uses millimeters, this function will return `25.4`.\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\nWe merely provide these functions for convenience and readability, as `10 * inch()` is more readable that your intent is \"I want 10 inches\" than `10 * 25.4`, if the project settings are in millimeters.",
+    "description": "No matter what units the current project uses, this function will always return the conversion factor to inches.\n\nFor example, if the current project uses inches, this function will return `1`. If the current project uses millimeters, this function will return `25.4`.\n\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\n\nWe merely provide these functions for convenience and readability, as `10 * inch()` is more readable that your intent is \"I want 10 inches\" than `10 * 25.4`, if the project settings are in millimeters.",
     "tags": [
       "units"
     ],
@@ -60621,7 +60621,7 @@
   {
     "name": "int",
     "summary": "Convert a number to an integer.",
-    "description": "Callers should use floor(), ceil(), or other rounding function first if they care about how numbers with fractional parts are converted.  If the number has a fractional part, it's truncated, moving the number towards zero.\nIf the number is NaN or has a magnitude, either positive or negative, that is too large to fit into the internal integer representation, the result is a runtime error.",
+    "description": "Callers should use floor(), ceil(), or other rounding function first if they care about how numbers with fractional parts are converted.  If the number has a fractional part, it's truncated, moving the number towards zero.\n\nIf the number is NaN or has a magnitude, either positive or negative, that is too large to fit into the internal integer representation, the result is a runtime error.",
     "tags": [
       "convert"
     ],
@@ -73223,7 +73223,7 @@
   {
     "name": "m",
     "summary": "Meters conversion factor for current projects units.",
-    "description": "No matter what units the current project uses, this function will always return the conversion factor to meters.\nFor example, if the current project uses inches, this function will return `39.3701`. If the current project uses millimeters, this function will return `1000`. If the current project uses meters, this function will return `1`.\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\nWe merely provide these functions for convenience and readability, as `10 * m()` is more readable that your intent is \"I want 10 meters\" than `10 * 1000`, if the project settings are in millimeters.",
+    "description": "No matter what units the current project uses, this function will always return the conversion factor to meters.\n\nFor example, if the current project uses inches, this function will return `39.3701`. If the current project uses millimeters, this function will return `1000`. If the current project uses meters, this function will return `1`.\n\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\n\nWe merely provide these functions for convenience and readability, as `10 * m()` is more readable that your intent is \"I want 10 meters\" than `10 * 1000`, if the project settings are in millimeters.",
     "tags": [
       "units"
     ],
@@ -73323,7 +73323,7 @@
   {
     "name": "mirror2d",
     "summary": "Mirror a sketch.",
-    "description": "Only works on unclosed sketches for now.\nMirror occurs around a local sketch axis rather than a global axis.",
+    "description": "Only works on unclosed sketches for now.\n\nMirror occurs around a local sketch axis rather than a global axis.",
     "tags": [],
     "args": [
       {
@@ -76101,7 +76101,7 @@
   {
     "name": "mm",
     "summary": "Millimeters conversion factor for current projects units.",
-    "description": "No matter what units the current project uses, this function will always return the conversion factor to millimeters.\nFor example, if the current project uses inches, this function will return `(1/25.4)`. If the current project uses millimeters, this function will return `1`.\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\nWe merely provide these functions for convenience and readability, as `10 * mm()` is more readable that your intent is \"I want 10 millimeters\" than `10 * (1/25.4)`, if the project settings are in inches.",
+    "description": "No matter what units the current project uses, this function will always return the conversion factor to millimeters.\n\nFor example, if the current project uses inches, this function will return `(1/25.4)`. If the current project uses millimeters, this function will return `1`.\n\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\n\nWe merely provide these functions for convenience and readability, as `10 * mm()` is more readable that your intent is \"I want 10 millimeters\" than `10 * (1/25.4)`, if the project settings are in inches.",
     "tags": [
       "units"
     ],
@@ -85504,7 +85504,7 @@
   {
     "name": "patternTransform",
     "summary": "Repeat a 3-dimensional solid, changing it each time.",
-    "description": "Replicates the 3D solid, applying a transformation function to each replica. Transformation function could alter rotation, scale, visibility, position, etc.\nThe `patternTransform` call itself takes a number for how many total instances of the shape should be. For example, if you use a circle with `patternTransform(4, transform)` then there will be 4 circles: the original, and 3 created by replicating the original and calling the transform function on each.\nThe transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples.",
+    "description": "Replicates the 3D solid, applying a transformation function to each replica. Transformation function could alter rotation, scale, visibility, position, etc.\n\nThe `patternTransform` call itself takes a number for how many total instances of the shape should be. For example, if you use a circle with `patternTransform(4, transform)` then there will be 4 circles: the original, and 3 created by replicating the original and calling the transform function on each.\n\nThe transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples.\n\nThe transform function returns a transform object. All properties of the object are optional, they each default to \"no change\". So the overall transform object defaults to \"no change\" too. Its properties are:\n\n - `translate` (3D point)\n\n   Translates the replica, moving its position in space.\n\n - `replicate` (bool)\n\n   If false, this ID will not actually copy the object. It'll be skipped.\n\n - `scale` (3D point)\n\n   Stretches the object, multiplying its width in the given dimension by the point's component in    that direction.\n\n - `rotation` (object, with the following properties)\n\n   - `rotation.axis` (a 3D point, defaults to the Z axis)\n\n   - `rotation.angle` (number of degrees)\n\n   - `rotation.origin` (either \"local\" i.e. rotate around its own center, \"global\" i.e. rotate around the scene's center, or a 3D point, defaults to \"local\")",
     "tags": [],
     "args": [
       {
@@ -91372,7 +91372,7 @@
   {
     "name": "revolve",
     "summary": "Rotate a sketch around some provided axis, creating a solid from its extent.",
-    "description": "This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional sketch. However, unlike extrude, this creates a solid by using the extent of the sketch as its revolved around an axis rather than using the extent of the sketch linearly translated through a third dimension.\nRevolve occurs around a local sketch axis rather than a global axis.",
+    "description": "This, like extrude, is able to create a 3-dimensional solid from a 2-dimensional sketch. However, unlike extrude, this creates a solid by using the extent of the sketch as its revolved around an axis rather than using the extent of the sketch linearly translated through a third dimension.\n\nRevolve occurs around a local sketch axis rather than a global axis.",
     "tags": [],
     "args": [
       {
@@ -106550,8 +106550,8 @@
   },
   {
     "name": "tangentialArc",
-    "summary": "Starting at the current sketch's origin, draw a curved line segment along",
-    "description": "some part of an imaginary circle of the specified radius.\nThe arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for 'offset' degrees along the imaginary circle.",
+    "summary": "Draw a curved line segment along part of an imaginary circle.",
+    "description": "The arc is constructed such that the last line segment is placed tangent to the imaginary circle of the specified radius. The resulting arc is the segment of the imaginary circle from that tangent point for 'offset' degrees along the imaginary circle.",
     "tags": [],
     "args": [
       {
@@ -129992,7 +129992,7 @@
   {
     "name": "yd",
     "summary": "Yards conversion factor for current projects units.",
-    "description": "No matter what units the current project uses, this function will always return the conversion factor to yards.\nFor example, if the current project uses inches, this function will return `36`. If the current project uses millimeters, this function will return `914.4`. If the current project uses yards, this function will return `1`.\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\nWe merely provide these functions for convenience and readability, as `10 * yd()` is more readable that your intent is \"I want 10 yards\" than `10 * 914.4`, if the project settings are in millimeters.",
+    "description": "No matter what units the current project uses, this function will always return the conversion factor to yards.\n\nFor example, if the current project uses inches, this function will return `36`. If the current project uses millimeters, this function will return `914.4`. If the current project uses yards, this function will return `1`.\n\n**Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.\n\nWe merely provide these functions for convenience and readability, as `10 * yd()` is more readable that your intent is \"I want 10 yards\" than `10 * 914.4`, if the project settings are in millimeters.",
     "tags": [
       "units"
     ],

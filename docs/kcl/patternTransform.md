@@ -7,8 +7,32 @@ layout: manual
 Repeat a 3-dimensional solid, changing it each time.
 
 Replicates the 3D solid, applying a transformation function to each replica. Transformation function could alter rotation, scale, visibility, position, etc.
+
 The &#x60;patternTransform&#x60; call itself takes a number for how many total instances of the shape should be. For example, if you use a circle with &#x60;patternTransform(4, transform)&#x60; then there will be 4 circles: the original, and 3 created by replicating the original and calling the transform function on each.
+
 The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument &#x60;1&#x60;. This simplifies your math: the transform function can rely on id &#x60;0&#x60; being the original instance passed into the &#x60;patternTransform&#x60;. See the examples.
+
+The transform function returns a transform object. All properties of the object are optional, they each default to &quot;no change&quot;. So the overall transform object defaults to &quot;no change&quot; too. Its properties are:
+
+ - &#x60;translate&#x60; (3D point)
+
+   Translates the replica, moving its position in space.
+
+ - &#x60;replicate&#x60; (bool)
+
+   If false, this ID will not actually copy the object. It&#x27;ll be skipped.
+
+ - &#x60;scale&#x60; (3D point)
+
+   Stretches the object, multiplying its width in the given dimension by the point&#x27;s component in    that direction.
+
+ - &#x60;rotation&#x60; (object, with the following properties)
+
+   - &#x60;rotation.axis&#x60; (a 3D point, defaults to the Z axis)
+
+   - &#x60;rotation.angle&#x60; (number of degrees)
+
+   - &#x60;rotation.origin&#x60; (either &quot;local&quot; i.e. rotate around its own center, &quot;global&quot; i.e. rotate around the scene&#x27;s center, or a 3D point, defaults to &quot;local&quot;)
 
 ```js
 patternTransform(total_instances: u32, transform_function: FunctionParam, solid_set: SolidSet) -> [Solid]
