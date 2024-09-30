@@ -98,6 +98,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::patterns::PatternTransform),
         Box::new(crate::std::array::ArrayReduce),
+        Box::new(crate::std::array::Map),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
