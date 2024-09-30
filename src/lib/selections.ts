@@ -63,7 +63,7 @@ export type Selection =
     }
   | {
       type: 'opposite-edgeCut' | 'adjacent-edgeCut' | 'base-edgeCut'
-      artifactId?: ArtifactId
+      artifactId: ArtifactId
       range: SourceRange
       // TODO this is a temporary measure that well be made redundant with: https://github.com/KittyCAD/modeling-app/pull/3836
       secondaryRange: SourceRange
@@ -175,7 +175,11 @@ export async function getEventForSelectWithPoint({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
-          selection: { range: codeRef.range, type: 'adjacent-edge' },
+          selection: {
+            artifactId: data.entity_id,
+            range: codeRef.range,
+            type: 'adjacent-edge',
+          },
         },
       }
     }
@@ -183,7 +187,11 @@ export async function getEventForSelectWithPoint({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: { range: codeRef.range, type: 'edge' },
+        selection: {
+          artifactId: data.entity_id,
+          range: codeRef.range,
+          type: 'edge',
+        },
       },
     }
   }
@@ -197,7 +205,11 @@ export async function getEventForSelectWithPoint({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
-          selection: { range: _artifact.codeRef.range, type: 'default' },
+          selection: {
+            artifactId: data.entity_id,
+            range: _artifact.codeRef.range,
+            type: 'default',
+          },
         },
       }
     if (consumedEdge.type === 'segment') {
@@ -206,6 +218,7 @@ export async function getEventForSelectWithPoint({
         data: {
           selectionType: 'singleCodeCursor',
           selection: {
+            artifactId: data.entity_id,
             range: _artifact.codeRef.range,
             type: 'base-edgeCut',
             secondaryRange: consumedEdge.codeRef.range,
@@ -223,6 +236,7 @@ export async function getEventForSelectWithPoint({
       data: {
         selectionType: 'singleCodeCursor',
         selection: {
+          artifactId: data.entity_id,
           range: _artifact.codeRef.range,
           type:
             consumedEdge.subType === 'adjacent'
@@ -272,6 +286,7 @@ export function getEventForSegmentSelection(
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
+      // What is the artifactId for this selection?
       selection: { range, type: 'default' },
     },
   }
@@ -347,6 +362,7 @@ export function processCodeMirrorRanges({
   if (!isChange) return null
   const codeBasedSelections: Selections['codeBasedSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
+      // What is the artifactId for this selection?
       return {
         type: 'default',
         range: [from, to],
