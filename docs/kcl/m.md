@@ -7,8 +7,11 @@ layout: manual
 Meters conversion factor for current projects units.
 
 No matter what units the current project uses, this function will always return the conversion factor to meters.
+
 For example, if the current project uses inches, this function will return &#x60;39.3701&#x60;. If the current project uses millimeters, this function will return &#x60;1000&#x60;. If the current project uses meters, this function will return &#x60;1&#x60;.
+
 **Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.
+
 We merely provide these functions for convenience and readability, as &#x60;10 * m()&#x60; is more readable that your intent is &quot;I want 10 meters&quot; than &#x60;10 * 1000&#x60;, if the project settings are in millimeters.
 
 ```js

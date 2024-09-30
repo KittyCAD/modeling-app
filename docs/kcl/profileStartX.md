@@ -1,6 +1,6 @@
 ---
 title: "profileStartX"
-excerpt: "Extract the provided 2-dimensional sketch&#x27;s profile&#x27;s origin&#x27;s &#x27;x&#x27;"
+excerpt: "Extract the provided 2-dimensional sketch's profile's origin's 'x'"
 layout: manual
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "AxisDirectionPair"
-excerpt: "An [&#x60;Axis&#x60;] paired with a [&#x60;Direction&#x60;]."
+excerpt: "An [[`Axis`](/docs/kcl/types/Axis)] paired with a [[`Direction`](/docs/kcl/types/Direction)]."
 layout: manual
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "tau"
-excerpt: "Return the value of &#x60;tau&#x60;. The full circle constant (τ). Equal to 2π."
+excerpt: "Return the value of `tau`. The full circle constant (τ). Equal to 2π."
 layout: manual
 ---
 

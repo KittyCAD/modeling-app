@@ -7,6 +7,7 @@ layout: manual
 Convert a number to an integer.
 
 Callers should use floor(), ceil(), or other rounding function first if they care about how numbers with fractional parts are converted.  If the number has a fractional part, it&#x27;s truncated, moving the number towards zero.
+
 If the number is NaN or has a magnitude, either positive or negative, that is too large to fit into the internal integer representation, the result is a runtime error.
 
 ```js

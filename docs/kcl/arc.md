@@ -1,13 +1,13 @@
 ---
 title: "arc"
-excerpt: "Starting at the current sketch&#x27;s origin, draw a curved line segment along"
+excerpt: "Draw a curved line segment along an imaginary circle."
 layout: manual
 ---
 
-Starting at the current sketch&#x27;s origin, draw a curved line segment along
+Draw a curved line segment along an imaginary circle.
 
-an imaginary circle of the specified radius.
 The arc is constructed such that the current position of the sketch is placed along an imaginary circle of the specified radius, at angleStart degrees. The resulting arc is the segment of the imaginary circle from that origin point to angleEnd, radius away from the center of the imaginary circle.
+
 Unless this makes a lot of sense and feels like what you&#x27;re looking for to construct your shape, you&#x27;re likely looking for tangentialArc.
 
 ```js
