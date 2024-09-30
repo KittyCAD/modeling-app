@@ -1,10 +1,10 @@
 ---
 title: "profileStart"
-excerpt: "Extract the provided 2-dimensional sketch&#x27;s profile&#x27;s origin"
+excerpt: "Extract the provided 2-dimensional sketch's profile's origin"
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch&#x27;s profile&#x27;s origin
+Extract the provided 2-dimensional sketch's profile's origin
 
 value.
 

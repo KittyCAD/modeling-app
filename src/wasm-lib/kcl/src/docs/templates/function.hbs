@@ -1,6 +1,6 @@
 ---
 title: "{{name}}"
-excerpt: "{{summary}}"
+excerpt: "{{safe_yaml summary}}"
 layout: manual
 ---
 
@@ -8,9 +8,9 @@ layout: manual
 **WARNING:** This function is deprecated.
 
 {{/if}}
-{{summary}}
+{{{summary}}}
 
-{{description}}
+{{{description}}}
 
 ```js
 {{{fn_signature}}}
@@ -31,14 +31,14 @@ layout: manual
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 {{#each args}}
-| `{{name}}` | `{{type_}}` | {{description}} | {{#if required}}Yes{{else}}No{{/if}} |
+| `{{name}}` | `{{type_}}` | {{{description}}} | {{#if required}}Yes{{else}}No{{/if}} |
 {{/each}}
 {{/if}}
 
 {{#if return_value}}
 ### Returns
 
-`{{return_value.type_}}` {{#if return_value.description}}- {{return_value.description}}{{/if}}
+`{{return_value.type_}}` {{#if return_value.description}}- {{{return_value.description}}}{{/if}}
 
 {{/if}}
 
@@ -51,7 +51,7 @@ layout: manual
 ```
 
 {{#unless @root.is_utilities}}
-![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{this.image_base64}})
+![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
 
 {{/unless}}
 {{/each}}

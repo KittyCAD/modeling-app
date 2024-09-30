@@ -1,5 +1,4 @@
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 use super::{args::FromArgs, Args, FnAsArg};
 use crate::{

@@ -115,8 +115,7 @@ impl crate::docs::StdLibFn for MyFunc {
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "kittycad::types::InputFormat".to_string(),
-            schema: <Option<kittycad::types::InputFormat>>::json_schema(&mut generator),
-            schema_definitions: generator.definitions().clone(),
+            schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
             required: false,
         }]
     }
@@ -125,12 +124,11 @@ impl crate::docs::StdLibFn for MyFunc {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = <Vec<Sketch>>::json_schema(&mut generator);
+        let schema = generator.root_schema_for::<Vec<Sketch>>();
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "[Sketch]".to_string(),
             schema,
-            schema_definitions: generator.definitions().clone(),
             required: true,
         })
     }
