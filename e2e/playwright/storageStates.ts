@@ -48,6 +48,11 @@ export const TEST_SETTINGS_ONBOARDING_START = {
   app: { ...TEST_SETTINGS.app, onboardingStatus: '' },
 } satisfies Partial<SaveSettingsPayload>
 
+export const TEST_SETTINGS_DEFAULT_THEME = {
+  ...TEST_SETTINGS,
+  app: { ...TEST_SETTINGS.app, theme: Themes.System },
+} satisfies Partial<SaveSettingsPayload>
+
 export const TEST_SETTINGS_CORRUPTED = {
   app: {
     theme: Themes.Dark,

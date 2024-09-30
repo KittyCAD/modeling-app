@@ -13,7 +13,7 @@ import {
   Program,
   ProgramMemory,
   ReturnStatement,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
@@ -663,7 +663,7 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const sg = sketchGroupFromKclValue(programMemory?.get(varName), varName)
+    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
@@ -757,7 +757,7 @@ export function doesPipeHaveCallExp({
   )
 }
 
-export function hasExtrudeSketchGroup({
+export function hasExtrudeSketch({
   ast,
   selection,
   programMemory,
@@ -781,8 +781,7 @@ export function hasExtrudeSketchGroup({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'ExtrudeGroup' ||
-    !err(sketchGroupFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
   )
 }
 

@@ -1,10 +1,4 @@
-import {
-  parse,
-  SketchGroup,
-  recast,
-  initPromise,
-  sketchGroupFromKclValue,
-} from '../wasm'
+import { parse, Sketch, recast, initPromise, sketchFromKclValue } from '../wasm'
 import {
   ConstraintType,
   getTransformInfos,
@@ -368,10 +362,10 @@ const part001 = startSketchOn('XY')
   it('normal case works', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
-    const sg = sketchGroupFromKclValue(
+    const sg = sketchFromKclValue(
       programMemory.get('part001'),
       'part001'
-    ) as SketchGroup
+    ) as Sketch
     const _segment = getSketchSegmentFromSourceRange(sg, [index, index])
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment
@@ -386,10 +380,7 @@ const part001 = startSketchOn('XY')
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
-      sketchGroupFromKclValue(
-        programMemory.get('part001'),
-        'part001'
-      ) as SketchGroup,
+      sketchFromKclValue(programMemory.get('part001'), 'part001') as Sketch,
       [index, index]
     )
     if (err(_segment)) throw _segment

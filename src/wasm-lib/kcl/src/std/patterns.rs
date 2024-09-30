@@ -17,8 +17,7 @@ use serde_json::Value as JValue;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecState, ExtrudeGroup, ExtrudeGroupSet, Geometries, Geometry, KclValue, Point3d, SketchGroup, SketchGroupSet,
-        SourceRange, UserVal,
+        ExecState, Geometries, Geometry, KclValue, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange, UserVal,
     },
     function_param::FunctionParam,
     std::{types::Uint, Args},
@@ -88,7 +87,7 @@ impl LinearPattern {
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
 
-    let extrude_groups = inner_pattern_transform(
+    let solids = inner_pattern_transform(
         num_repetitions,
         FunctionParam {
             inner: transform.func,
@@ -102,7 +101,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
         &args,
     )
     .await?;
-    Ok(KclValue::ExtrudeGroups { value: extrude_groups })
+    Ok(KclValue::Solids { value: solids })
 }
 
 /// Repeat a 3-dimensional solid, changing it each time.
@@ -184,6 +183,40 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 ///
 /// ```no_run
+/// fn cube = (length, center) => {
+///   let l = length/2
+///   let x = center[0]
+///   let y = center[1]
+///   let p0 = [-l + x, -l + y]
+///   let p1 = [-l + x,  l + y]
+///   let p2 = [ l + x,  l + y]
+///   let p3 = [ l + x, -l + y]
+///   
+///   return startSketchAt(p0)
+///   |> lineTo(p1, %)
+///   |> lineTo(p2, %)
+///   |> lineTo(p3, %)
+///   |> lineTo(p0, %)
+///   |> close(%)
+///   |> extrude(length, %)
+/// }
+///
+/// let width = 20
+/// fn transform = (i) => {
+///   return {
+///     translate: [0, 0, -i * width],
+///     rotation: {
+///       angle: 90 * i,
+///       // Rotate around the overall scene's origin.
+///       origin: "global",
+///     }
+///   }
+/// }
+/// let myCubes =
+///   cube(width, [100,100])
+///   |> patternTransform(4, transform, %)
+/// ```
+/// ```no_run
 /// // Parameters
 /// const r = 50    // base radius
 /// const h = 10    // layer height
@@ -213,10 +246,10 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 async fn inner_pattern_transform<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
-    extrude_group_set: ExtrudeGroupSet,
+    solid_set: SolidSet,
     exec_state: &mut ExecState,
     args: &'a Args,
-) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+) -> Result<Vec<Box<Solid>>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
     for i in 1..total_instances {
@@ -225,38 +258,38 @@ async fn inner_pattern_transform<'a>(
     }
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
-    // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
+    // Flush just the fillets/chamfers that apply to these solids.
+    args.flush_batch_for_solid_set(exec_state, solid_set.clone().into())
         .await?;
 
-    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
+    let starting_solids: Vec<Box<Solid>> = solid_set.into();
 
     if args.ctx.is_mock {
-        return Ok(starting_extrude_groups);
+        return Ok(starting_solids);
     }
 
-    let mut extrude_groups = Vec::new();
-    for e in starting_extrude_groups {
-        let new_extrude_groups = send_pattern_transform(transform.clone(), &e, args).await?;
-        extrude_groups.extend(new_extrude_groups);
+    let mut solids = Vec::new();
+    for e in starting_solids {
+        let new_solids = send_pattern_transform(transform.clone(), &e, args).await?;
+        solids.extend(new_solids);
     }
-    Ok(extrude_groups)
+    Ok(solids)
 }
 
 async fn send_pattern_transform(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
     transform: Vec<Transform>,
-    extrude_group: &ExtrudeGroup,
+    solid: &Solid,
     args: &Args,
-) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+) -> Result<Vec<Box<Solid>>, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: extrude_group.id,
+                entity_id: solid.id,
                 transform,
             }),
         )
@@ -272,11 +305,11 @@ async fn send_pattern_transform(
         }));
     };
 
-    let mut geometries = vec![Box::new(extrude_group.clone())];
+    let mut geometries = vec![Box::new(solid.clone())];
     for id in pattern_info.entity_ids.iter() {
-        let mut new_extrude_group = extrude_group.clone();
-        new_extrude_group.id = *id;
-        geometries.push(Box::new(new_extrude_group));
+        let mut new_solid = solid.clone();
+        new_solid.id = *id;
+        geometries.push(Box::new(new_solid));
     }
     Ok(geometries)
 }
@@ -415,7 +448,7 @@ mod tests {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_group_set): (LinearPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
+    let (data, sketch_set): (LinearPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
 
     if data.axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -426,8 +459,8 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
         }));
     }
 
-    let sketch_groups = inner_pattern_linear_2d(data, sketch_group_set, args).await?;
-    Ok(sketch_groups.into())
+    let sketches = inner_pattern_linear_2d(data, sketch_set, args).await?;
+    Ok(sketches.into())
 }
 
 /// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
@@ -449,40 +482,40 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
 }]
 async fn inner_pattern_linear_2d(
     data: LinearPattern2dData,
-    sketch_group_set: SketchGroupSet,
+    sketch_set: SketchSet,
     args: Args,
-) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
+) -> Result<Vec<Box<Sketch>>, KclError> {
+    let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
 
     if args.ctx.is_mock {
-        return Ok(starting_sketch_groups);
+        return Ok(starting_sketches);
     }
 
-    let mut sketch_groups = Vec::new();
-    for sketch_group in starting_sketch_groups.iter() {
+    let mut sketches = Vec::new();
+    for sketch in starting_sketches.iter() {
         let geometries = pattern_linear(
             LinearPattern::TwoD(data.clone()),
-            Geometry::SketchGroup(sketch_group.clone()),
+            Geometry::Sketch(sketch.clone()),
             args.clone(),
         )
         .await?;
 
-        let Geometries::SketchGroups(new_sketch_groups) = geometries else {
+        let Geometries::Sketches(new_sketches) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of sketch groups".to_string(),
+                message: "Expected a vec of sketches".to_string(),
                 source_ranges: vec![args.source_range],
             }));
         };
 
-        sketch_groups.extend(new_sketch_groups);
+        sketches.extend(new_sketches);
     }
 
-    Ok(sketch_groups)
+    Ok(sketches)
 }
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group_set): (LinearPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
+    let (data, solid_set): (LinearPattern3dData, SolidSet) = args.get_data_and_solid_set()?;
 
     if data.axis == [0.0, 0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -493,8 +526,8 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let extrude_groups = inner_pattern_linear_3d(data, extrude_group_set, exec_state, args).await?;
-    Ok(extrude_groups.into())
+    let solids = inner_pattern_linear_3d(data, solid_set, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Repeat a 3-dimensional solid along a linear path, with a dynamic amount
@@ -520,42 +553,42 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 }]
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
-    extrude_group_set: ExtrudeGroupSet,
+    solid_set: SolidSet,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+) -> Result<Vec<Box<Solid>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
-    // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
+    // Flush just the fillets/chamfers that apply to these solids.
+    args.flush_batch_for_solid_set(exec_state, solid_set.clone().into())
         .await?;
 
-    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
+    let starting_solids: Vec<Box<Solid>> = solid_set.into();
 
     if args.ctx.is_mock {
-        return Ok(starting_extrude_groups);
+        return Ok(starting_solids);
     }
 
-    let mut extrude_groups = Vec::new();
-    for extrude_group in starting_extrude_groups.iter() {
+    let mut solids = Vec::new();
+    for solid in starting_solids.iter() {
         let geometries = pattern_linear(
             LinearPattern::ThreeD(data.clone()),
-            Geometry::ExtrudeGroup(extrude_group.clone()),
+            Geometry::Solid(solid.clone()),
             args.clone(),
         )
         .await?;
 
-        let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
+        let Geometries::Solids(new_solids) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of extrude groups".to_string(),
+                message: "Expected a vec of solids".to_string(),
                 source_ranges: vec![args.source_range],
             }));
         };
 
-        extrude_groups.extend(new_extrude_groups);
+        solids.extend(new_solids);
     }
 
-    Ok(extrude_groups)
+    Ok(solids)
 }
 
 async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
@@ -584,23 +617,23 @@ async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> 
     };
 
     let geometries = match geometry {
-        Geometry::SketchGroup(sketch_group) => {
-            let mut geometries = vec![sketch_group.clone()];
+        Geometry::Sketch(sketch) => {
+            let mut geometries = vec![sketch.clone()];
             for id in pattern_info.entity_ids.iter() {
-                let mut new_sketch_group = sketch_group.clone();
-                new_sketch_group.id = *id;
-                geometries.push(new_sketch_group);
+                let mut new_sketch = sketch.clone();
+                new_sketch.id = *id;
+                geometries.push(new_sketch);
             }
-            Geometries::SketchGroups(geometries)
+            Geometries::Sketches(geometries)
         }
-        Geometry::ExtrudeGroup(extrude_group) => {
-            let mut geometries = vec![extrude_group.clone()];
+        Geometry::Solid(solid) => {
+            let mut geometries = vec![solid.clone()];
             for id in pattern_info.entity_ids.iter() {
-                let mut new_extrude_group = extrude_group.clone();
-                new_extrude_group.id = *id;
-                geometries.push(new_extrude_group);
+                let mut new_solid = solid.clone();
+                new_solid.id = *id;
+                geometries.push(new_solid);
             }
-            Geometries::ExtrudeGroups(geometries)
+            Geometries::Solids(geometries)
         }
     };
 
@@ -687,10 +720,10 @@ impl CircularPattern {
 
 /// A circular pattern on a 2D sketch.
 pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_group_set): (CircularPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
+    let (data, sketch_set): (CircularPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
 
-    let sketch_groups = inner_pattern_circular_2d(data, sketch_group_set, args).await?;
-    Ok(sketch_groups.into())
+    let sketches = inner_pattern_circular_2d(data, sketch_set, args).await?;
+    Ok(sketches.into())
 }
 
 /// Repeat a 2-dimensional sketch some number of times along a partial or
@@ -719,43 +752,43 @@ pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Res
 }]
 async fn inner_pattern_circular_2d(
     data: CircularPattern2dData,
-    sketch_group_set: SketchGroupSet,
+    sketch_set: SketchSet,
     args: Args,
-) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    let starting_sketch_groups: Vec<Box<SketchGroup>> = sketch_group_set.into();
+) -> Result<Vec<Box<Sketch>>, KclError> {
+    let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
 
     if args.ctx.is_mock {
-        return Ok(starting_sketch_groups);
+        return Ok(starting_sketches);
     }
 
-    let mut sketch_groups = Vec::new();
-    for sketch_group in starting_sketch_groups.iter() {
+    let mut sketches = Vec::new();
+    for sketch in starting_sketches.iter() {
         let geometries = pattern_circular(
             CircularPattern::TwoD(data.clone()),
-            Geometry::SketchGroup(sketch_group.clone()),
+            Geometry::Sketch(sketch.clone()),
             args.clone(),
         )
         .await?;
 
-        let Geometries::SketchGroups(new_sketch_groups) = geometries else {
+        let Geometries::Sketches(new_sketches) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of sketch groups".to_string(),
+                message: "Expected a vec of sketches".to_string(),
                 source_ranges: vec![args.source_range],
             }));
         };
 
-        sketch_groups.extend(new_sketch_groups);
+        sketches.extend(new_sketches);
     }
 
-    Ok(sketch_groups)
+    Ok(sketches)
 }
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group_set): (CircularPattern3dData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
+    let (data, solid_set): (CircularPattern3dData, SolidSet) = args.get_data_and_solid_set()?;
 
-    let extrude_groups = inner_pattern_circular_3d(data, extrude_group_set, exec_state, args).await?;
-    Ok(extrude_groups.into())
+    let solids = inner_pattern_circular_3d(data, solid_set, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Repeat a 3-dimensional solid some number of times along a partial or
@@ -781,42 +814,42 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 }]
 async fn inner_pattern_circular_3d(
     data: CircularPattern3dData,
-    extrude_group_set: ExtrudeGroupSet,
+    solid_set: SolidSet,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+) -> Result<Vec<Box<Solid>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
-    // Flush just the fillets/chamfers that apply to these extrude groups.
-    args.flush_batch_for_extrude_group_set(exec_state, extrude_group_set.clone().into())
+    // Flush just the fillets/chamfers that apply to these solids.
+    args.flush_batch_for_solid_set(exec_state, solid_set.clone().into())
         .await?;
 
-    let starting_extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.into();
+    let starting_solids: Vec<Box<Solid>> = solid_set.into();
 
     if args.ctx.is_mock {
-        return Ok(starting_extrude_groups);
+        return Ok(starting_solids);
     }
 
-    let mut extrude_groups = Vec::new();
-    for extrude_group in starting_extrude_groups.iter() {
+    let mut solids = Vec::new();
+    for solid in starting_solids.iter() {
         let geometries = pattern_circular(
             CircularPattern::ThreeD(data.clone()),
-            Geometry::ExtrudeGroup(extrude_group.clone()),
+            Geometry::Solid(solid.clone()),
             args.clone(),
         )
         .await?;
 
-        let Geometries::ExtrudeGroups(new_extrude_groups) = geometries else {
+        let Geometries::Solids(new_solids) = geometries else {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of extrude groups".to_string(),
+                message: "Expected a vec of solids".to_string(),
                 source_ranges: vec![args.source_range],
             }));
         };
 
-        extrude_groups.extend(new_extrude_groups);
+        solids.extend(new_solids);
     }
 
-    Ok(extrude_groups)
+    Ok(solids)
 }
 
 async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
@@ -852,23 +885,23 @@ async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args)
     };
 
     let geometries = match geometry {
-        Geometry::SketchGroup(sketch_group) => {
-            let mut geometries = vec![sketch_group.clone()];
+        Geometry::Sketch(sketch) => {
+            let mut geometries = vec![sketch.clone()];
             for id in pattern_info.entity_ids.iter() {
-                let mut new_sketch_group = sketch_group.clone();
-                new_sketch_group.id = *id;
-                geometries.push(new_sketch_group);
+                let mut new_sketch = sketch.clone();
+                new_sketch.id = *id;
+                geometries.push(new_sketch);
             }
-            Geometries::SketchGroups(geometries)
+            Geometries::Sketches(geometries)
         }
-        Geometry::ExtrudeGroup(extrude_group) => {
-            let mut geometries = vec![extrude_group.clone()];
+        Geometry::Solid(solid) => {
+            let mut geometries = vec![solid.clone()];
             for id in pattern_info.entity_ids.iter() {
-                let mut new_extrude_group = extrude_group.clone();
-                new_extrude_group.id = *id;
-                geometries.push(new_extrude_group);
+                let mut new_solid = solid.clone();
+                new_solid.id = *id;
+                geometries.push(new_solid);
             }
-            Geometries::ExtrudeGroups(geometries)
+            Geometries::Solids(geometries)
         }
     };
 

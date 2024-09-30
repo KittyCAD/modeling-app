@@ -38,6 +38,14 @@ export function isArray(val: any): val is unknown[] {
 export function unsafeTypedKeys<T extends object>(obj: T): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>
 }
+/*
+ * Predicate that checks if a value is not null and not undefined.  This is
+ * useful for functions like Array::filter() and Array::find() that have
+ * overloads that accept a type guard.
+ */
+export function isNonNullable<T>(val: T): val is NonNullable<T> {
+  return val !== null && val !== undefined
+}
 
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]

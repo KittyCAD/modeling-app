@@ -179,7 +179,7 @@ const yi=45`
       lineTo(2, 3)
     } |> rx(45, %)`)
     expect(result).toEqual([
-      "word         'sketch'   from 0   to 6",
+      "type         'sketch'   from 0   to 6",
       "whitespace   ' '        from 6   to 7",
       "word         'mySketch' from 7   to 15",
       "whitespace   ' '        from 15  to 16",
