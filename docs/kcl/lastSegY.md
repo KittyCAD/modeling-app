@@ -4,7 +4,7 @@ excerpt: "Extract the 'y' axis value of the last line segment in the provided 2-
 layout: manual
 ---
 
-Extract the &#x27;y&#x27; axis value of the last line segment in the provided 2-d
+Extract the 'y' axis value of the last line segment in the provided 2-d
 
 sketch.
 

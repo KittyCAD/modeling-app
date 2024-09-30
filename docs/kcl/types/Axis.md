@@ -16,7 +16,7 @@ See [cglearn.eu] for background reading.
 
 **This schema accepts exactly one of the following:**
 
-&#x27;Y&#x27; axis.
+'Y' axis.
 
 **enum:** `y`
 
@@ -28,7 +28,7 @@ See [cglearn.eu] for background reading.
 
 
 ----
-&#x27;Z&#x27; axis.
+'Z' axis.
 
 **enum:** `z`
 

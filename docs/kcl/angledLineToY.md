@@ -6,7 +6,7 @@ layout: manual
 
 Create a line segment from the current 2-dimensional sketch origin
 
-along some angle (in degrees) for some length, ending at the provided value in the &#x27;y&#x27; dimension.
+along some angle (in degrees) for some length, ending at the provided value in the 'y' dimension.
 
 ```js
 angledLineToY(data: AngledLineToData, sketch: Sketch, tag?: TagDeclarator) -> Sketch

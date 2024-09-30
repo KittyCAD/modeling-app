@@ -4,7 +4,7 @@ excerpt: "Compute the ending point of the provided line segment along the 'x' ax
 layout: manual
 ---
 
-Compute the ending point of the provided line segment along the &#x27;x&#x27; axis.
+Compute the ending point of the provided line segment along the 'x' axis.
 
 
 
