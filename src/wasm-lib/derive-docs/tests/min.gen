@@ -107,26 +107,29 @@ impl crate::docs::StdLibFn for Min {
         vec![]
     }
 
-    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+    fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "[number]".to_string(),
             schema: <Vec<f64>>::json_schema(&mut generator),
+            schema_definitions: generator.definitions().clone(),
             required: true,
         }]
     }
 
-    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
+    fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let schema = <f64>::json_schema(&mut generator);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "number".to_string(),
-            schema: <f64>::json_schema(&mut generator),
+            schema,
+            schema_definitions: generator.definitions().clone(),
             required: true,
         })
     }
