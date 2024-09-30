@@ -7,6 +7,7 @@ layout: manual
 Mirror a sketch.
 
 Only works on unclosed sketches for now.
+
 Mirror occurs around a local sketch axis rather than a global axis.
 
 ```js

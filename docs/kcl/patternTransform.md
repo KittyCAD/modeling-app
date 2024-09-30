@@ -7,7 +7,9 @@ layout: manual
 Repeat a 3-dimensional solid, changing it each time.
 
 Replicates the 3D solid, applying a transformation function to each replica. Transformation function could alter rotation, scale, visibility, position, etc.
+
 The &#x60;patternTransform&#x60; call itself takes a number for how many total instances of the shape should be. For example, if you use a circle with &#x60;patternTransform(4, transform)&#x60; then there will be 4 circles: the original, and 3 created by replicating the original and calling the transform function on each.
+
 The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument &#x60;1&#x60;. This simplifies your math: the transform function can rely on id &#x60;0&#x60; being the original instance passed into the &#x60;patternTransform&#x60;. See the examples.
 
 ```js

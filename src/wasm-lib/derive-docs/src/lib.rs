@@ -589,6 +589,7 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
                         }
                     })
                     .trim_end()
+                    .replace('\n', "\n\n")
                     .to_string(),
             ),
         ),
