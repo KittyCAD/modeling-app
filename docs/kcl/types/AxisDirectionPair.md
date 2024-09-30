@@ -4,7 +4,7 @@ excerpt: "An [[`Axis`](/docs/kcl/types/Axis)] paired with a [[`Direction`](/docs
 layout: manual
 ---
 
-An [&#x60;Axis&#x60;] paired with a [&#x60;Direction&#x60;].
+An [[`Axis`](/docs/kcl/types/Axis)] paired with a [[`Direction`](/docs/kcl/types/Direction)].
 
 **Type:** `object`
 

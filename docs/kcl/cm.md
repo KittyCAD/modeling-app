@@ -8,11 +8,11 @@ Centimeters conversion factor for current projects units.
 
 No matter what units the current project uses, this function will always return the conversion factor to centimeters.
 
-For example, if the current project uses inches, this function will return &#x60;0.393701&#x60;. If the current project uses millimeters, this function will return &#x60;10&#x60;. If the current project uses centimeters, this function will return &#x60;1&#x60;.
+For example, if the current project uses inches, this function will return `0.393701`. If the current project uses millimeters, this function will return `10`. If the current project uses centimeters, this function will return `1`.
 
 **Caution**: This function is only intended to be used when you absolutely MUST have different units in your code than the project settings. Otherwise, it is a bad pattern to use this function.
 
-We merely provide these functions for convenience and readability, as &#x60;10 * cm()&#x60; is more readable that your intent is &quot;I want 10 centimeters&quot; than &#x60;10 * 10&#x60;, if the project settings are in millimeters.
+We merely provide these functions for convenience and readability, as `10 * cm()` is more readable that your intent is "I want 10 centimeters" than `10 * 10`, if the project settings are in millimeters.
 
 ```js
 cm() -> number

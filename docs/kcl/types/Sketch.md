@@ -16,7 +16,7 @@ A sketch is a collection of paths.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `id` |`string`| The id of the sketch (this will change when the engine&#x27;s reference to it changes. | No |
+| `id` |`string`| The id of the sketch (this will change when the engine's reference to it changes. | No |
 | `value` |`[` [`Path`](/docs/kcl/types/Path) `]`| The paths in the sketch. | No |
 | `on` |[`SketchSurface`](/docs/kcl/types/SketchSurface)| What the sketch is on (can be a plane or a face). | No |
 | `start` |[`BasePath`](/docs/kcl/types/BasePath)| The starting path. | No |

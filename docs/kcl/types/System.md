@@ -6,7 +6,7 @@ layout: manual
 
 Co-ordinate system definition.
 
-The &#x60;up&#x60; axis must be orthogonal to the &#x60;forward&#x60; axis.
+The `up` axis must be orthogonal to the `forward` axis.
 
 See [cglearn.eu] for background reading.
 
