@@ -316,9 +316,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     let mut types = BTreeMap::new();
     for arg in internal_fn.args(false) {
         if !arg.is_primitive()? {
-            add_to_types(&arg.type_, &arg.schema, &mut types)?;
+            add_to_types(&arg.type_, &arg.schema.schema.into(), &mut types)?;
             // Add each definition as well.
-            for (name, definition) in &arg.schema_definitions {
+            for (name, definition) in &arg.schema.definitions {
                 add_to_types(name, definition, &mut types)?;
             }
         }
@@ -327,8 +327,8 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     // Generate the type markdown for the return value.
     if let Some(ret) = internal_fn.return_value(false) {
         if !ret.is_primitive()? {
-            add_to_types(&ret.type_, &ret.schema, &mut types)?;
-            for (name, definition) in &ret.schema_definitions {
+            add_to_types(&ret.type_, &ret.schema.schema.into(), &mut types)?;
+            for (name, definition) in &ret.schema.definitions {
                 add_to_types(name, definition, &mut types)?;
             }
         }
@@ -674,6 +674,18 @@ fn recurse_and_create_references(
     if let Some(subschema) = &mut obj.subschemas {
         // Do anyOf.
         if let Some(any_of) = &mut subschema.any_of {
+            // If we only have one item in anyOf we can just return that item.
+            if any_of.len() == 1 {
+                let mut new_item = recurse_and_create_references(name, &any_of[0], types)?;
+                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
+                    if let Some(metadata) = new_obj.metadata.as_mut() {
+                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
+                    } else {
+                        new_obj.metadata = obj.metadata.clone();
+                    }
+                }
+                return Ok(new_item);
+            }
             for item in any_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;
@@ -682,6 +694,18 @@ fn recurse_and_create_references(
 
         // Do allOf.
         if let Some(all_of) = &mut subschema.all_of {
+            // If we only have one item in allOf we can just return that item.
+            if all_of.len() == 1 {
+                let mut new_item = recurse_and_create_references(name, &all_of[0], types)?;
+                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
+                    if let Some(metadata) = new_obj.metadata.as_mut() {
+                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
+                    } else {
+                        new_obj.metadata = obj.metadata.clone();
+                    }
+                }
+                return Ok(new_item);
+            }
             for item in all_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;
@@ -690,6 +714,18 @@ fn recurse_and_create_references(
 
         // Do oneOf.
         if let Some(one_of) = &mut subschema.one_of {
+            // If we only have one item in oneOf we can just return that item.
+            if one_of.len() == 1 {
+                let mut new_item = recurse_and_create_references(name, &one_of[0], types)?;
+                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
+                    if let Some(metadata) = new_obj.metadata.as_mut() {
+                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
+                    } else {
+                        new_obj.metadata = obj.metadata.clone();
+                    }
+                }
+                return Ok(new_item);
+            }
             for item in one_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;

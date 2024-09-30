@@ -271,24 +271,14 @@ fn do_stdlib_inner(
         let required = !ty_ident.to_string().starts_with("Option <");
 
         if ty_string != "ExecState" && ty_string != "Args" {
-            let schema = if ty_ident.to_string().starts_with("Vec < ")
-                || ty_ident.to_string().starts_with("Option <")
-                || ty_ident.to_string().starts_with('[')
-            {
-                quote! {
-                   <#ty_ident>::json_schema(&mut generator)
-                }
-            } else {
-                quote! {
-                    #ty_ident::json_schema(&mut generator)
-                }
+            let schema = quote! {
+               generator.root_schema_for::<#ty_ident>()
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
                     name: #arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     schema: #schema,
-                    schema_definitions: generator.definitions().clone(),
                     required: #required,
                 }
             });
@@ -344,12 +334,11 @@ fn do_stdlib_inner(
     let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
-            let schema = <#return_type_inner>::json_schema(&mut generator);
+            let schema = generator.root_schema_for::<#return_type_inner>();
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
                 type_: #ret_ty_string.to_string(),
                 schema,
-                schema_definitions: generator.definitions().clone(),
                 required: true,
             })
         }

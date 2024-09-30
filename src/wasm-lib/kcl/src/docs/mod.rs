@@ -52,10 +52,7 @@ pub struct StdLibFnArg {
     pub type_: String,
     /// The schema of the argument.
     #[ts(type = "any")]
-    pub schema: schemars::schema::Schema,
-    /// The schema definitions for the argument.
-    #[ts(type = "any")]
-    pub schema_definitions: schemars::Map<String, schemars::schema::Schema>,
+    pub schema: schemars::schema::RootSchema,
     /// If the argument is required.
     pub required: bool,
 }
@@ -63,11 +60,11 @@ pub struct StdLibFnArg {
 impl StdLibFnArg {
     /// If the argument is a primitive.
     pub fn is_primitive(&self) -> Result<bool> {
-        is_primitive(&self.schema).map(|r| r.is_some())
+        is_primitive(&self.schema.schema.clone().into()).map(|r| r.is_some())
     }
 
     pub fn get_autocomplete_string(&self) -> Result<String> {
-        get_autocomplete_string_from_schema(&self.schema.clone())
+        get_autocomplete_string_from_schema(&self.schema.schema.clone().into())
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
@@ -85,11 +82,11 @@ impl StdLibFnArg {
             // TODO: actually use the ast to populate this.
             return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         }
-        get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
+        get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
     }
 
     pub fn description(&self) -> Option<String> {
-        get_description_string_from_schema(&self.schema.clone(), &self.schema_definitions)
+        get_description_string_from_schema(&self.schema.clone())
     }
 }
 
@@ -311,20 +308,55 @@ impl Clone for Box<dyn StdLibFn> {
     }
 }
 
-pub fn get_description_string_from_schema(
-    schema: &schemars::schema::Schema,
-    definitions: &schemars::Map<String, schemars::schema::Schema>,
-) -> Option<String> {
-    if let schemars::schema::Schema::Object(o) = schema {
-        if let Some(metadata) = &o.metadata {
-            if let Some(description) = &metadata.description {
-                return Some(description.to_string());
+pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema) -> Option<String> {
+    if let Some(metadata) = &schema.schema.metadata {
+        if let Some(description) = &metadata.description {
+            return Some(description.to_string());
+        }
+    }
+
+    if let Some(reference) = &schema.schema.reference {
+        if let Some(definition) = schema.definitions.get(reference.split('/').last().unwrap_or("")) {
+            let schemars::schema::Schema::Object(definition) = definition else {
+                return None;
+            };
+            if let Some(metadata) = &definition.metadata {
+                if let Some(description) = &metadata.description {
+                    return Some(description.to_string());
+                }
+            }
+        }
+    }
+
+    // If we have subschemas iterate over them and recursively create references.
+    if let Some(subschema) = &schema.schema.subschemas {
+        if let Some(one_of) = &subschema.one_of {
+            if one_of.len() == 1 {
+                return get_description_string_from_schema(&schemars::schema::RootSchema {
+                    meta_schema: schema.meta_schema.clone(),
+                    schema: one_of[0].clone().into(),
+                    definitions: schema.definitions.clone(),
+                });
             }
         }
 
-        if let Some(reference) = &o.reference {
-            if let Some(definition) = definitions.get(reference.split('/').last().unwrap_or("")) {
-                return get_description_string_from_schema(definition, definitions);
+        if let Some(all_of) = &subschema.all_of {
+            if all_of.len() == 1 {
+                return get_description_string_from_schema(&schemars::schema::RootSchema {
+                    meta_schema: schema.meta_schema.clone(),
+                    schema: all_of[0].clone().into(),
+                    definitions: schema.definitions.clone(),
+                });
+            }
+        }
+
+        if let Some(any_of) = &subschema.any_of {
+            if any_of.len() == 1 {
+                return get_description_string_from_schema(&schemars::schema::RootSchema {
+                    meta_schema: schema.meta_schema.clone(),
+                    schema: any_of[0].clone().into(),
+                    definitions: schema.definitions.clone(),
+                });
             }
         }
     }
@@ -704,10 +736,14 @@ pub fn completion_item_from_enum_schema(
     kind: CompletionItemKind,
 ) -> Result<CompletionItem> {
     // Get the docs for the schema.
-    let description = get_description_string_from_schema(schema, &Default::default()).unwrap_or_default();
     let schemars::schema::Schema::Object(o) = schema else {
         anyhow::bail!("expected object schema: {:#?}", schema);
     };
+    let description = get_description_string_from_schema(&schemars::schema::RootSchema {
+        schema: o.clone(),
+        ..Default::default()
+    })
+    .unwrap_or_default();
     let Some(enum_values) = o.enum_values.as_ref() else {
         anyhow::bail!("expected enum values: {:#?}", o);
     };
