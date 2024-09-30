@@ -6,8 +6,8 @@ layout: manual
 
 Data for drawing an circle
 
-
 **Type:** `object`
+
 
 
 
@@ -16,7 +16,7 @@ Data for drawing an circle
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `center` |`array`| The center of the circle. | No |
-| `radius` |`number` (`double`)| The circle radius | No |
+| `center` |`[number, number]`| The center of the circle. | No |
+| `radius` |`number`| The circle radius | No |
 
 

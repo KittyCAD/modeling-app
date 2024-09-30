@@ -119,11 +119,11 @@ async fn kcl_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_member_expression_sketch_group() {
-    let code = kcl_input!("member_expression_sketch_group");
+async fn kcl_test_member_expression_sketch() {
+    let code = kcl_input!("member_expression_sketch");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("member_expression_sketch_group", &result);
+    assert_out("member_expression_sketch", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -331,8 +331,8 @@ const thing = other_circle([2, 2], 20)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_rounded_with_holes() {
-    let code = r#"fn tarc = (to, sketchGroup, tag?) => {
-  return tangentialArcTo(to, sketchGroup, tag)
+    let code = r#"fn tarc = (to, sktch, tag?) => {
+  return tangentialArcTo(to, sktch, tag)
 }
 
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
@@ -725,7 +725,7 @@ const part001 = cube([0, 0], 20)
   |> close(%)
   |> extrude(20, %)
 
-const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
+const part002 = startSketchOn(part001, part001.sketch.tags.here)
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([5, 5], %)
@@ -1227,7 +1227,7 @@ fn pentagon = (len) => {
 const p = pentagon(32)
   |> extrude(10, %)
 
-const circle0 = make_circle(p, p.sketchGroup.tags.a, [0, 0], 2.5)
+const circle0 = make_circle(p, p.sketch.tags.a, [0, 0], 2.5)
 const plumbus0 = circle0
   |> extrude(10, %)
   |> fillet({
@@ -1235,7 +1235,7 @@ const plumbus0 = circle0
        tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
      }, %)
 
-const circle1 = make_circle(p, p.sketchGroup.tags.b, [0, 0], 2.5)
+const circle1 = make_circle(p, p.sketch.tags.b, [0, 0], 2.5)
 const plumbus1 = circle1
    |> extrude(10, %)
    |> fillet({

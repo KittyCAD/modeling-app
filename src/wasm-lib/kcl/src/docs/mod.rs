@@ -53,6 +53,9 @@ pub struct StdLibFnArg {
     /// The schema of the argument.
     #[ts(type = "any")]
     pub schema: schemars::schema::Schema,
+    /// The schema definitions for the argument.
+    #[ts(type = "any")]
+    pub schema_definitions: schemars::Map<String, schemars::schema::Schema>,
     /// If the argument is required.
     pub required: bool,
 }
@@ -68,12 +71,12 @@ impl StdLibFnArg {
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
-        if self.type_ == "SketchGroup"
-            || self.type_ == "SketchGroupSet"
-            || self.type_ == "ExtrudeGroup"
-            || self.type_ == "ExtrudeGroupSet"
+        if self.type_ == "Sketch"
+            || self.type_ == "SketchSet"
+            || self.type_ == "Solid"
+            || self.type_ == "SolidSet"
             || self.type_ == "SketchSurface"
-            || self.type_ == "SketchSurfaceOrGroup"
+            || self.type_ == "SketchOrSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
         } else if self.type_ == "TagDeclarator" && self.required {
@@ -86,7 +89,7 @@ impl StdLibFnArg {
     }
 
     pub fn description(&self) -> Option<String> {
-        get_description_string_from_schema(&self.schema.clone())
+        get_description_string_from_schema(&self.schema.clone(), &self.schema_definitions)
     }
 }
 
@@ -120,10 +123,10 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn tags(&self) -> Vec<String>;
 
     /// The args of the function.
-    fn args(&self) -> Vec<StdLibFnArg>;
+    fn args(&self, inline_subschemas: bool) -> Vec<StdLibFnArg>;
 
     /// The return value of the function.
-    fn return_value(&self) -> Option<StdLibFnArg>;
+    fn return_value(&self, inline_subschemas: bool) -> Option<StdLibFnArg>;
 
     /// If the function is unpublished.
     fn unpublished(&self) -> bool;
@@ -147,8 +150,8 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             summary: self.summary(),
             description: self.description(),
             tags: self.tags(),
-            args: self.args(),
-            return_value: self.return_value(),
+            args: self.args(false),
+            return_value: self.return_value(false),
             unpublished: self.unpublished(),
             deprecated: self.deprecated(),
             examples: self.examples(),
@@ -158,7 +161,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn fn_signature(&self) -> String {
         let mut signature = String::new();
         signature.push_str(&format!("{}(", self.name()));
-        for (i, arg) in self.args().iter().enumerate() {
+        for (i, arg) in self.args(false).iter().enumerate() {
             if i > 0 {
                 signature.push_str(", ");
             }
@@ -169,7 +172,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             }
         }
         signature.push(')');
-        if let Some(return_value) = self.return_value() {
+        if let Some(return_value) = self.return_value(false) {
             signature.push_str(&format!(" -> {}", return_value.type_));
         }
 
@@ -212,7 +215,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         let mut args = Vec::new();
         let mut index = 0;
-        for arg in self.args().iter() {
+        for arg in self.args(true).iter() {
             if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index)? {
                 index = i + 1;
                 args.push(arg_str);
@@ -238,7 +241,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
                         self.summary()
                     },
                 })),
-                parameters: Some(self.args().into_iter().map(|arg| arg.into()).collect()),
+                parameters: Some(self.args(true).into_iter().map(|arg| arg.into()).collect()),
                 active_parameter,
             }],
             active_signature: Some(0),
@@ -308,11 +311,20 @@ impl Clone for Box<dyn StdLibFn> {
     }
 }
 
-pub fn get_description_string_from_schema(schema: &schemars::schema::Schema) -> Option<String> {
+pub fn get_description_string_from_schema(
+    schema: &schemars::schema::Schema,
+    definitions: &schemars::Map<String, schemars::schema::Schema>,
+) -> Option<String> {
     if let schemars::schema::Schema::Object(o) = schema {
         if let Some(metadata) = &o.metadata {
             if let Some(description) = &metadata.description {
                 return Some(description.to_string());
+            }
+        }
+
+        if let Some(reference) = &o.reference {
+            if let Some(definition) = definitions.get(reference.split('/').last().unwrap_or("")) {
+                return get_description_string_from_schema(definition, definitions);
             }
         }
     }
@@ -692,7 +704,7 @@ pub fn completion_item_from_enum_schema(
     kind: CompletionItemKind,
 ) -> Result<CompletionItem> {
     // Get the docs for the schema.
-    let description = get_description_string_from_schema(schema).unwrap_or_default();
+    let description = get_description_string_from_schema(schema, &Default::default()).unwrap_or_default();
     let schemars::schema::Schema::Object(o) = schema else {
         anyhow::bail!("expected object schema: {:#?}", schema);
     };
@@ -754,7 +766,7 @@ mod tests {
 
     #[test]
     fn test_deserialize_function() {
-        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false, "examples": []}}"#;
+        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{},"schemaDefinitions":{}},"args":[],"unpublished":false,"deprecated":false, "examples": []}}"#;
         let some_function: crate::ast::types::Function = serde_json::from_str(some_function_string).unwrap();
 
         assert_eq!(
@@ -807,10 +819,10 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternCircular3d({
-	arcDegrees: ${0:3.14},
+	repetitions: ${0:10},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
-	repetitions: ${7:10},
+	arcDegrees: ${7:3.14},
 	rotateDuplicates: ${8:false},
 }, ${9:%})${}"#
         );
@@ -848,8 +860,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"arc({
-	angleEnd: ${0:3.14},
-	angleStart: ${1:3.14},
+	angleStart: ${0:3.14},
+	angleEnd: ${1:3.14},
 	radius: ${2:3.14},
 }, ${3:%})${}"#
         );
@@ -862,9 +874,9 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternLinear2d({
-	axis: [${0:3.14}, ${1:3.14}],
-	distance: ${2:3.14},
-	repetitions: ${3:10},
+	repetitions: ${0:10},
+	distance: ${1:3.14},
+	axis: [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
     }

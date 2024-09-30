@@ -9,7 +9,7 @@ Start a new 2-dimensional sketch at a given point on the &#x27;XY&#x27; plane.
 
 
 ```js
-startSketchAt(data: [number]) -> SketchGroup
+startSketchAt(data: [number]) -> Sketch
 ```
 
 
@@ -17,11 +17,11 @@ startSketchAt(data: [number]) -> SketchGroup
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`[number]`](/docs/kcl/types/[number]) |  | Yes |
+| `data` | `[number]` |  | Yes |
 
 ### Returns
 
-[`SketchGroup`](/docs/kcl/types/SketchGroup) - A sketch group is a collection of paths.
+[`Sketch`](/docs/kcl/types/Sketch) - A sketch is a collection of paths.
 
 
 ### Examples

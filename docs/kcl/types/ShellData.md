@@ -6,8 +6,8 @@ layout: manual
 
 Data for shells.
 
-
 **Type:** `object`
+
 
 
 
@@ -16,7 +16,7 @@ Data for shells.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` |`array`| The faces you want removed. | No |
-| `thickness` |`number` (`double`)| The thickness of the shell. | No |
+| `thickness` |`number`| The thickness of the shell. | No |
+| `faces` |`[` [`FaceTag`](/docs/kcl/types/FaceTag) `]`| The faces you want removed. | No |
 
 

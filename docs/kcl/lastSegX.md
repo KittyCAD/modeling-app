@@ -9,7 +9,7 @@ Extract the &#x27;x&#x27; axis value of the last line segment in the provided 2-
 sketch.
 
 ```js
-lastSegX(sketch_group: SketchGroup) -> number
+lastSegX(sketch: Sketch) -> number
 ```
 
 
@@ -17,7 +17,7 @@ lastSegX(sketch_group: SketchGroup) -> number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 
 ### Returns
 

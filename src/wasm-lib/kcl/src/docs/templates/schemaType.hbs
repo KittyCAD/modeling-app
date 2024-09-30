@@ -1,7 +1,5 @@
-{{
-#if
- $ref}}
-[{{basename $ref}}](#{{lowercase (basename $ref)}})
+{{#if $ref}}
+{{pretty_ref $ref}}
 {{else if anyOf}}
 **anyOf**
 {{else if oneOf}}

@@ -6,8 +6,8 @@ layout: manual
 
 Data for an imported geometry.
 
-
 **Type:** `object`
+
 
 
 
@@ -16,8 +16,8 @@ Data for an imported geometry.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `__meta` |`array`|  | No |
-| `id` |`string` (`uuid`)| The ID of the imported geometry. | No |
-| `value` |`array`| The original file paths. | No |
+| `id` |`string`| The ID of the imported geometry. | No |
+| `value` |`[` `string` `]`| The original file paths. | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

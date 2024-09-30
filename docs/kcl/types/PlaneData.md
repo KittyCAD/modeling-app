@@ -9,12 +9,14 @@ Data for a plane.
 
 
 
+
 **This schema accepts exactly one of the following:**
 
 The XY plane.
 
-
 **enum:** `XY`
+
+
 
 
 
@@ -24,8 +26,9 @@ The XY plane.
 ----
 The opposite side of the XY plane.
 
-
 **enum:** `-XY`
+
+
 
 
 
@@ -35,8 +38,9 @@ The opposite side of the XY plane.
 ----
 The XZ plane.
 
-
 **enum:** `XZ`
+
+
 
 
 
@@ -46,8 +50,9 @@ The XZ plane.
 ----
 The opposite side of the XZ plane.
 
-
 **enum:** `-XZ`
+
+
 
 
 
@@ -57,8 +62,9 @@ The opposite side of the XZ plane.
 ----
 The YZ plane.
 
-
 **enum:** `YZ`
+
+
 
 
 
@@ -68,8 +74,9 @@ The YZ plane.
 ----
 The opposite side of the YZ plane.
 
-
 **enum:** `-YZ`
+
+
 
 
 
@@ -79,8 +86,8 @@ The opposite side of the YZ plane.
 ----
 A defined plane.
 
-
 **Type:** `object`
+
 
 
 

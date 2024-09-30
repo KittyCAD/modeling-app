@@ -6,8 +6,8 @@ layout: manual
 
 Data for revolution surfaces.
 
-
 **Type:** `object`
+
 
 
 
@@ -16,9 +16,8 @@ Data for revolution surfaces.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` |`number` (`double`)| Angle to revolve (in degrees). Default is 360. | No |
-| `axis` |`anyOf`
-| Axis of revolution. | No |
-| `tolerance` |`number` (`double`)| Tolerance for the revolve operation. | No |
+| `angle` |`number` (**maximum:** 360.0) (**minimum:** -360.0)| Angle to revolve (in degrees). Default is 360. | No |
+| `axis` |[`AxisOrEdgeReference`](/docs/kcl/types/AxisOrEdgeReference)| Axis of revolution. | No |
+| `tolerance` |`number`| Tolerance for the revolve operation. | No |
 
 

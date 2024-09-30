@@ -690,7 +690,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.28"
+version = "0.1.29"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1303,6 +1303,7 @@ checksum = "bd070e393353796e801d209ad339e89596eb4c8d430d18ede6a1cced8fafbd99"
 dependencies = [
  "autocfg",
  "hashbrown 0.12.3",
+ "serde",
 ]
 
 [[package]]
@@ -1414,7 +1415,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.19"
+version = "0.2.20"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1489,7 +1490,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.11"
+version = "0.1.12"
 dependencies = [
  "anyhow",
  "hyper",
@@ -1541,9 +1542,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.64"
+version = "0.2.67"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a888b32ba73a4e381e5c41d89a852fd64b97b9e6cdc8bc53444416f74b44ecc"
+checksum = "d0f365b4a0f4abce9515857c2bd1093ebad963ccbe3d34d1158e68f77072f0ac"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1578,9 +1579,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
-version = "0.1.11"
+version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d6d5c7c50c7f4bbc0d56dad46e064b256a321912f154ffb3fcb78888adf3f67"
+checksum = "6607507a8a0e4273b943179f0a3ef8e90712308d1d3095246040c29cfdbf985b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2704,6 +2705,7 @@ dependencies = [
  "bytes",
  "chrono",
  "dyn-clone",
+ "indexmap 1.9.3",
  "schemars_derive",
  "serde",
  "serde_json",

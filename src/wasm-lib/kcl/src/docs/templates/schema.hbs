@@ -2,14 +2,21 @@
 {{description}}
 {{/if}}
 
+{{#if $ref}}
+{{pretty_ref $ref}}
+{{else if enum}}
+**enum:** {{pretty_enum enum}}
+{{else if type}}
+**Type:** `{{type}}`{{~ #if format }} (`{{format}}`){{~/if ~}}{{~ #if maximum }} (**maximum:** {{maximum}}){{~/if~}}{{~ #if minimum }} (**minimum:** {{minimum}}){{~/if~}}
+{{else}}
+{{/if}}
+
 {{#if $schema}}
 **Schema:** `{{$schema}}`
 {{/if}}
 
-{{#if enum}}
-**enum:** {{pretty_enum enum}}
-{{else if type}}
-**Type:** `{{type}}`
+{{#if items}}
+{{>array}}
 {{/if}}
 
 {{#if anyOf}}

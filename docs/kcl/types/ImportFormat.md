@@ -9,12 +9,13 @@ Import format specifier
 
 
 
+
 **This schema accepts exactly one of the following:**
 
 Autodesk Filmbox (FBX) format
 
-
 **Type:** `object`
+
 
 
 
@@ -23,15 +24,14 @@ Autodesk Filmbox (FBX) format
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `fbx`
-|  | No |
+| `type` |enum: `fbx`|  | No |
 
 
 ----
 Binary glTF 2.0. We refer to this as glTF since that is how our customers refer to it, but this can also import binary glTF (glb).
 
-
 **Type:** `object`
+
 
 
 
@@ -40,15 +40,14 @@ Binary glTF 2.0. We refer to this as glTF since that is how our customers refer 
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `gltf`
-|  | No |
+| `type` |enum: `gltf`|  | No |
 
 
 ----
 Wavefront OBJ format.
 
-
 **Type:** `object`
+
 
 
 
@@ -57,18 +56,16 @@ Wavefront OBJ format.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `type` |enum: `obj`
-|  | No |
-| `units` |`oneOf`
-| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `type` |enum: `obj`|  | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----
 The PLY Polygon File Format.
 
-
 **Type:** `object`
+
 
 
 
@@ -77,18 +74,16 @@ The PLY Polygon File Format.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `type` |enum: `ply`
-|  | No |
-| `units` |`oneOf`
-| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `type` |enum: `ply`|  | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----
 SolidWorks part (SLDPRT) format.
 
-
 **Type:** `object`
+
 
 
 
@@ -97,15 +92,14 @@ SolidWorks part (SLDPRT) format.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `sldprt`
-|  | No |
+| `type` |enum: `sldprt`|  | No |
 
 
 ----
 ISO 10303-21 (STEP) format.
 
-
 **Type:** `object`
+
 
 
 
@@ -114,15 +108,14 @@ ISO 10303-21 (STEP) format.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `step`
-|  | No |
+| `type` |enum: `step`|  | No |
 
 
 ----
 ST**ereo**L**ithography format.
 
-
 **Type:** `object`
+
 
 
 
@@ -131,11 +124,9 @@ ST**ereo**L**ithography format.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `coords` |`object`| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
-| `type` |enum: `stl`
-|  | No |
-| `units` |`oneOf`
-| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
+| `type` |enum: `stl`|  | No |
+| `coords` |[`System`](/docs/kcl/types/System)| Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system. | No |
+| `units` |[`UnitLength`](/docs/kcl/types/UnitLength)| The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters. | No |
 
 
 ----

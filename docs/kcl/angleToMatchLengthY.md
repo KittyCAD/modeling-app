@@ -9,7 +9,7 @@ Returns the angle to match the given length for y.
 
 
 ```js
-angleToMatchLengthY(tag: TagIdentifier, to: number, sketch_group: SketchGroup) -> number
+angleToMatchLengthY(tag: TagIdentifier, to: number, sketch: Sketch) -> number
 ```
 
 
@@ -19,7 +19,7 @@ angleToMatchLengthY(tag: TagIdentifier, to: number, sketch_group: SketchGroup) -
 |----------|------|-------------|----------|
 | `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
 | `to` | `number` |  | Yes |
-| `sketch_group` | [`SketchGroup`](/docs/kcl/types/SketchGroup) | A sketch group is a collection of paths. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
 
 ### Returns
 

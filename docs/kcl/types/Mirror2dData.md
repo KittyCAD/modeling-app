@@ -6,8 +6,8 @@ layout: manual
 
 Data for a mirror.
 
-
 **Type:** `object`
+
 
 
 
@@ -16,7 +16,6 @@ Data for a mirror.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `axis` |`anyOf`
-| Axis to use as mirror. | No |
+| `axis` |[`AxisOrEdgeReference`](/docs/kcl/types/AxisOrEdgeReference)| Axis to use as mirror. | No |
 
 
