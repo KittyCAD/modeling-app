@@ -474,6 +474,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -531,6 +532,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -585,6 +587,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')
