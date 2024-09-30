@@ -14,7 +14,7 @@ import { ToolbarFixture } from './toolbarFixture'
 import { SceneFixture } from './sceneFixture'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { HomePageFixture } from './homePageFixture'
-import { typedKeys } from 'lib/utils'
+import { unsafeTypedKeys } from 'lib/utils'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -88,7 +88,7 @@ export class AuthenticatedTronApp {
     this.electronApp = electronApp
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    for (const key of typedKeys(arg.fixtures)) {
+    for (const key of unsafeTypedKeys(arg.fixtures)) {
       const fixture = arg.fixtures[key]
       if (
         !fixture ||
