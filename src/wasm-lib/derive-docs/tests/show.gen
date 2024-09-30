@@ -81,8 +81,7 @@ impl crate::docs::StdLibFn for Show {
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "[number]".to_string(),
-            schema: <Vec<f64>>::json_schema(&mut generator),
-            schema_definitions: generator.definitions().clone(),
+            schema: generator.root_schema_for::<Vec<f64>>(),
             required: true,
         }]
     }
@@ -91,12 +90,11 @@ impl crate::docs::StdLibFn for Show {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = <()>::json_schema(&mut generator);
+        let schema = generator.root_schema_for::<()>();
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "()".to_string(),
             schema,
-            schema_definitions: generator.definitions().clone(),
             required: true,
         })
     }
