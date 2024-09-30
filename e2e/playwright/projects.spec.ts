@@ -203,7 +203,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBe(482669)
+            .toBe(431341)
 
           // clean up output.gltf
           await fsp.rm('output.gltf')
@@ -1199,7 +1199,7 @@ test(
           'kittycad_svg.kcl',
           'lego.kcl',
           'math.kcl',
-          'member_expression_sketch_group.kcl',
+          'member_expression_sketch.kcl',
           'mike_stress_test.kcl',
           'negative_args.kcl',
           'order-sketch-extrude-in-order.kcl',

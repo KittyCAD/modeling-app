@@ -1,6 +1,6 @@
 {
   "name": "zoo-modeling-app",
-  "version": "0.25.4",
+  "version": "0.25.5",
   "private": true,
   "productName": "Zoo Modeling App",
   "author": {
@@ -163,7 +163,7 @@
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.19",
     "d3-force": "^3.0.0",
-    "electron": "^32.0.1",
+    "electron": "^32.1.2",
     "electron-builder": "^24.13.3",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.0.1",

@@ -105,7 +105,12 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: {
+          defaultUnit,
+          cameraProjection,
+          highlightEdges,
+          showScaleGrid,
+        },
       },
     },
   } = useSettingsAuthContext()
@@ -153,7 +158,9 @@ export const ModelingMachineProvider = ({
 
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
@@ -587,9 +594,15 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               input.sketchPathToNode,
               input.extrudePathToNode,
-              input.cap
+              input.faceInfo
             )
-            if (trap(sketched)) return Promise.reject(sketched)
+            if (err(sketched)) {
+              const sketchedError = new Error(
+                'Incompatible face, please try another'
+              )
+              trap(sketchedError)
+              return Promise.reject(sketchedError)
+            }
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
             await kclManager.executeAstMock(modifiedAst)
@@ -976,6 +989,7 @@ export const ModelingMachineProvider = ({
       highlightEdges: highlightEdges.current,
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
+      cameraProjection: cameraProjection.current,
     },
     token
   )
