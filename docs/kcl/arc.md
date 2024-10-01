@@ -31,7 +31,7 @@ arc(data: ArcData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> arc({

@@ -3686,11 +3686,11 @@ ghi("things")
         let program = parser.ast().unwrap();
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
-        assert_eq!(folding_ranges[0].start_line, 35);
+        assert_eq!(folding_ranges[0].start_line, 29);
         assert_eq!(folding_ranges[0].end_line, 134);
         assert_eq!(
             folding_ranges[0].collapsed_text,
-            Some("const part001 = startSketchOn('XY')".to_string())
+            Some("part001 = startSketchOn('XY')".to_string())
         );
         assert_eq!(folding_ranges[1].start_line, 155);
         assert_eq!(folding_ranges[1].end_line, 254);

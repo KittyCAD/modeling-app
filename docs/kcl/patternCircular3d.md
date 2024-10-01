@@ -28,10 +28,10 @@ patternCircular3d(data: CircularPattern3dData, solid_set: SolidSet) -> [Solid]
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn('XZ')
   |> circle({ center: [0, 0], radius: 1 }, %)
 
-const example = extrude(-5, exampleSketch)
+example = extrude(-5, exampleSketch)
   |> patternCircular3d({
        axis: [1, -1, 0],
        center: [10, -20, 0],

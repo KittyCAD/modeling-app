@@ -30,11 +30,11 @@ reduce(array: [u64], start: Sketch, reduce_fn: FunctionParam) -> Sketch
 
 ```js
 fn decagon = (radius) => {
-  let step = 1 / 10 * tau()
-  let sketch001 = startSketchAt([cos(0) * radius, sin(0) * radius])
+  step = 1 / 10 * tau()
+  sketch001 = startSketchAt([cos(0) * radius, sin(0) * radius])
   return reduce([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], sketch001, (i, sg) => {
-  let x = cos(step * i) * radius
-  let y = sin(step * i) * radius
+  x = cos(step * i) * radius
+  y = sin(step * i) * radius
   return lineTo([x, y], sg)
 })
 }

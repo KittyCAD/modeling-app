@@ -11,19 +11,7 @@ layout: manual
 
 **This schema accepts exactly one of the following:**
 
-Declare a variable.
-
-**enum:** `let`
-
-
-
-
-
-
-
-
-----
-Declare a variable that is read-only.
+Declare a named constant.
 
 **enum:** `const`
 
@@ -38,18 +26,6 @@ Declare a variable that is read-only.
 Declare a function.
 
 **enum:** `fn`
-
-
-
-
-
-
-
-
-----
-Declare a variable.
-
-**enum:** `var`
 
 
 
