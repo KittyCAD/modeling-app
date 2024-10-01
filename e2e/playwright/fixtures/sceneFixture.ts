@@ -102,11 +102,9 @@ export class SceneFixture {
         const pixel = (await getPixelRGBs(this.page)(coords, 1))[0]
         if (!pixel) return null
         finalValue = pixel
-        const yo = pixel.every(
+        return pixel.every(
           (channel, index) => Math.abs(channel - colour[index]) < diff
         )
-        console.log('yo', yo)
-        return yo
       })
       .toBeTruthy()
       .catch((e) => {

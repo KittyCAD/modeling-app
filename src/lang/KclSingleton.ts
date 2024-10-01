@@ -346,6 +346,9 @@ export class KclManager {
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = programMemory
+    }
     if (updates !== 'artifactRanges') return
 
     // TODO the below seems like a work around, I wish there's a comment explaining exactly what
