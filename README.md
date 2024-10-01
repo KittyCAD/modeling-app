@@ -324,7 +324,11 @@ cargo test
 
 ### Mapping CI CD jobs to local commands
 
-When you see the CI CD fail on jobs you may wonder three things do I have a bug in my code? Is the test flaky? Is there a bug in `main**?
+When you see the CI CD fail on jobs you may wonder three things 
+- Do I have a bug in my code? 
+- Is the test flaky? 
+- Is there a bug in `main`?
+
 To answer these questions the following commands will give you confidence to locate the issue.
 
 #### Static Analysis
@@ -348,7 +352,7 @@ yarn xstate:typegen
 yarn test:unit:local
 ```
 
-> Gotcha: Our unit tests are unit tests. They have integration tests in them. You need to run a localhost server to run the unit tests.
+> Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
 
 #### Integration Tests
 
