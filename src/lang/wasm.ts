@@ -36,7 +36,7 @@ import { err } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
+import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -80,8 +80,8 @@ export type SyntaxType =
 
 export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
-export type { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
-export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
+export type { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
+export type { Solid } from '../wasm-lib/kcl/bindings/Solid'
 export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
@@ -307,11 +307,11 @@ export class ProgramMemory {
   }
 
   /**
-   * Returns true if any visible variables are a SketchGroup or ExtrudeGroup.
+   * Returns true if any visible variables are a Sketch or Solid.
    */
-  hasSketchOrExtrudeGroup(): boolean {
+  hasSketchOrSolid(): boolean {
     for (const node of this.visibleEntries().values()) {
-      if (node.type === 'ExtrudeGroup' || node.value?.type === 'SketchGroup') {
+      if (node.type === 'Solid' || node.value?.type === 'Sketch') {
         return true
       }
     }
@@ -332,13 +332,13 @@ export class ProgramMemory {
 }
 
 // TODO: In the future, make the parameter be a KclValue.
-export function sketchGroupFromKclValue(
+export function sketchFromKclValue(
   obj: any,
   varName: string | null
-): SketchGroup | Error {
-  if (obj?.value?.type === 'SketchGroup') return obj.value
-  if (obj?.value?.type === 'ExtrudeGroup') return obj.value.sketchGroup
-  if (obj?.type === 'ExtrudeGroup') return obj.sketchGroup
+): Sketch | Error {
+  if (obj?.value?.type === 'Sketch') return obj.value
+  if (obj?.value?.type === 'Solid') return obj.value.sketch
+  if (obj?.type === 'Solid') return obj.sketch
   if (!varName) {
     varName = 'a KCL value'
   }
@@ -346,10 +346,10 @@ export function sketchGroupFromKclValue(
   if (actualType) {
     console.log(obj)
     return new Error(
-      `Expected ${varName} to be a sketchGroup or extrudeGroup, but it was ${actualType} instead.`
+      `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
     )
   } else {
-    return new Error(`Expected ${varName} to be a sketchGroup, but it wasn't.`)
+    return new Error(`Expected ${varName} to be a sketch, but it wasn't.`)
   }
 }
 
