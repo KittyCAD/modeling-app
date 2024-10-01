@@ -103,7 +103,7 @@ export class SceneFixture {
         if (!pixel) return null
         finalValue = pixel
         const yo = pixel.every(
-          (chanel, index) => Math.abs(chanel - colour[index]) < diff
+          (channel, index) => Math.abs(channel - colour[index]) < diff
         )
         console.log('yo', yo)
         return yo
@@ -111,7 +111,7 @@ export class SceneFixture {
       .toBeTruthy()
       .catch((e) => {
         console.error(
-          `Error is ExpectPixelColor: expecing ${colour} got ${finalValue}`
+          `Error is ExpectPixelColor: expecting ${colour} got ${finalValue}`
         )
         throw e
       })
