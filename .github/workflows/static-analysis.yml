@@ -1,4 +1,4 @@
-name: build-test-web
+name: static-analysis
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ permissions:
   actions: read
 
 jobs:
-  check-format:
+  yarn-fmt-check:
     runs-on: 'ubuntu-22.04'
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
       - run: yarn install
       - run: yarn fmt-check
 
-  check-types:
+  yarn-build-wasm:
     runs-on: ubuntu-22.04
 
     steps:
@@ -42,13 +42,57 @@ jobs:
           workspaces: './src/wasm-lib'
 
       - run: yarn build:wasm
+
+  yarn-xstate-typegen:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './src/wasm-lib'
+
       - run: yarn xstate:typegen
+
+
+  yarn-tsc:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './src/wasm-lib'
+
       - run: yarn tsc
-      - name: Lint
-        run: yarn eslint --max-warnings 0 src e2e packages/codemirror-lsp-client
 
+  yarn-lint:
+    runs-on: ubuntu-22.04
 
-  check-typos:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './src/wasm-lib'
+
+      - run: yarn lint
+
+  python-codespell:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -62,7 +106,7 @@ jobs:
         run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
 
 
-  build-test-web:
+  yarn-unit-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +124,7 @@ jobs:
 
       - run: yarn build:wasm
 
-      - run: yarn simpleserver:ci
+      - run: yarn simpleserver:bg
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
 
       - name: Install Chromium Browser
@@ -89,7 +133,7 @@ jobs:
 
       - name: run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: yarn test:nowatch
+        run: yarn test:unit
         env:
           VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 

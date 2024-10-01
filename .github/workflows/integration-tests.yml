@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Integration Tests
 on:
   push:
     branches: [ main ]
@@ -33,7 +33,7 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  playwright-chrome:
+  test-playwright-browser-chrome-snapshot:
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
     strategy:
       fail-fast: false
@@ -41,6 +41,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
+        grepInvert: ["@snapshot|@electron|@skipLinux","@snapshot|@electron|@skipWin"]
+        exclude:
+          - os: ubuntu-latest
+            grepInvert: "@snapshot|@electron|@skipWin"
+          - os: windows-latest
+            grepInvert: "@snapshot|@electron|@skipLinux"
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
@@ -191,7 +197,7 @@ jobs:
         if [[ ! -f "test-results/.last-run.json" ]]; then
             # if no last run artifact, than run plawright normally
             echo "run playwright normally"
-            yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert="@snapshot|@electron" || true
+            yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=${{ matrix.grepInvert }} || true
             # # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
         fi
@@ -206,7 +212,7 @@ jobs:
                 if [[ $failed_tests -gt 0 ]]; then
                     echo "retried=true" >>$GITHUB_OUTPUT
                     echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --last-failed --grep-invert="@snapshot|@electron" || true
+                    yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --last-failed --grep-invert=${{ matrix.grepInvert }} || true
                     # send to axiom
                     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
                     retry=$((retry + 1))
