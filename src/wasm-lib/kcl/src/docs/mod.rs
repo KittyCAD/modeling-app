@@ -82,7 +82,7 @@ impl StdLibFnArg {
             // TODO: actually use the ast to populate this.
             return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         } else if self.type_ == "[KclValue]" && self.required {
-            return Ok(Some((index, "[0..9]".to_owned())));
+            return Ok(Some((index, format!("${{{}:{}}}", index, "[0..9]"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
     }
@@ -908,7 +908,8 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_map() {
         let map_fn: Box<dyn StdLibFn> = Box::new(crate::std::array::Map);
-        let _snippet = map_fn.to_autocomplete_snippet().unwrap();
+        let snippet = map_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"map(${0:[0..9]})${}"#);
     }
 
     #[test]
@@ -923,5 +924,19 @@ mod tests {
 	axis: [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
+    }
+
+    // We want to test the snippets we compile at lsp start.
+    #[test]
+    fn get_all_stdlib_autocomplete_snippets() {
+        let stdlib = crate::std::StdLib::new();
+        crate::lsp::kcl::get_completions_from_stdlib(&stdlib).unwrap();
+    }
+
+    // We want to test the signatures we compile at lsp start.
+    #[test]
+    fn get_all_stdlib_signatures() {
+        let stdlib = crate::std::StdLib::new();
+        crate::lsp::kcl::get_signatures_from_stdlib(&stdlib).unwrap();
     }
 }
