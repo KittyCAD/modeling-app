@@ -33,7 +33,7 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  test-playwright-browser-chrome:
+  playwright-browser:
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
     strategy:
       fail-fast: false
@@ -228,6 +228,20 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
+        scripts: [".github/ci-cd-scripts/playwright-electron-linux.sh",".github/ci-cd-scripts/playwright-electron-windows.sh", ".github/ci-cd-scripts/playwright-electron-macos.sh"]
+        exclude:
+          - os: ubuntu-latest
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
+          - os: ubuntu-latest
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-macos.sh"
+          - os: windows-latest
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
+          - os: windows-latest
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-macos.sh"
+          - os: macos-14
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
+          - os: macos-14
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
@@ -324,56 +338,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        if [[ ! -f "test-results/.last-run.json" ]]; then
-            # if no last run artifact, than run plawright normally
-            echo "run playwright normally"
-            if [[ "$IS_UBUNTU" == "true" ]]; then
-              xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
-            else
-              yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
-            fi
-            # # send to axiom
-            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-        fi
-
-        retry=1
-        max_retrys=2
-
-        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-        while [[ $retry -le $max_retrys ]]; do
-            if [[ -f "test-results/.last-run.json" ]]; then
-                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-                if [[ $failed_tests -gt 0 ]]; then
-                    echo "retried=true" >>$GITHUB_OUTPUT
-                    echo "run playwright with last failed tests and retry $retry"
-                    if [[ "$IS_UBUNTU" == "true" ]]; then
-                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
-                    else
-                      yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
-                    fi
-                    # send to axiom
-                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-                    retry=$((retry + 1))
-                else
-                    echo "retried=false" >>$GITHUB_OUTPUT
-                    exit 0
-                fi
-            else
-                echo "retried=false" >>$GITHUB_OUTPUT
-                exit 0
-            fi
-        done
-
-        echo "retried=false" >>$GITHUB_OUTPUT
-
-        if [[ -f "test-results/.last-run.json" ]]; then
-            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-            if [[ $failed_tests -gt 0 ]]; then
-                # if it still fails after 3 retrys, then fail the job
-                exit 1
-            fi
-        fi
-        exit 0
+        ${{ matrix.scripts }}
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
