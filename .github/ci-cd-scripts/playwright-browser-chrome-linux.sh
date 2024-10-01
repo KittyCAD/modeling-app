@@ -1,7 +1,7 @@
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"
-    yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --shard=$1/$2 --grep-invert="@snapshot|@electron|@skipLinux" || true
+    yarn test:playwright:browser:chrome:ubuntu -- --shard=$1/$2 || true
     # # send to axiom
     node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
 fi
