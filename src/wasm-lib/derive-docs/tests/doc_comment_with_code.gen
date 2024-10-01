@@ -15,7 +15,7 @@ mod test_examples_my_func {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ExecutorType::Mock,
+            context_type: crate::executor::ContextType::Mock,
         };
         ctx.run(&program, None).await.unwrap();
     }
@@ -48,7 +48,7 @@ mod test_examples_my_func {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ExecutorType::Mock,
+            context_type: crate::executor::ContextType::Mock,
         };
         ctx.run(&program, None).await.unwrap();
     }
