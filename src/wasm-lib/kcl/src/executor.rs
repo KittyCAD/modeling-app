@@ -40,6 +40,8 @@ use crate::{
 pub struct ExecState {
     /// Program variable bindings.
     pub memory: ProgramMemory,
+    /// The stable artifact ID generator.
+    pub id_generator: IdGenerator,
     /// Dynamic state that follows dynamic flow of the program.
     pub dynamic_state: DynamicState,
     /// The current value of the pipe operator returned from the previous
@@ -292,6 +294,34 @@ impl DynamicState {
     }
 }
 
+/// A generator for [ArtifactId]s that can be stable across executions.
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+pub struct IdGenerator {
+    next_id: usize,
+    ids: Vec<uuid::Uuid>,
+}
+
+impl IdGenerator {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn next_uuid(&mut self) -> uuid::Uuid {
+        if let Some(id) = self.ids.get(self.next_id) {
+            self.next_id += 1;
+            id.clone()
+        } else {
+            let id = uuid::Uuid::new_v4();
+            self.ids.push(id);
+            self.next_id += 1;
+            id
+        }
+    }
+    pub fn next_id(&mut self) -> ArtifactId {
+        ArtifactId::new(self.next_uuid())
+    }
+}
+
 /// A memory item.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -393,6 +423,19 @@ impl From<Vec<Box<Solid>>> for KclValue {
         } else {
             KclValue::Solids { value: eg }
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+pub struct ArtifactId(uuid::Uuid);
+
+impl ArtifactId {
+    pub(crate) fn new(id: uuid::Uuid) -> Self {
+        Self(id)
+    }
+
+    pub fn as_uuid(&self) -> uuid::Uuid {
+        self.0
     }
 }
 
@@ -1859,10 +1902,19 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
+        let memory = if let Some(memory) = memory {
+            memory.clone()
+        } else {
+            Default::default()
+        };
+        let mut exec_state = ExecState {
+            memory,
+            ..Default::default()
+        };
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
+                exec_state.id_generator.next_uuid(),
                 SourceRange::default(),
                 &ModelingCmd::from(mcmd::SetSceneUnits {
                     unit: match self.settings.units {
@@ -1876,15 +1928,7 @@ impl ExecutorContext {
                 }),
             )
             .await?;
-        let memory = if let Some(memory) = memory {
-            memory.clone()
-        } else {
-            Default::default()
-        };
-        let mut exec_state = ExecState {
-            memory,
-            ..Default::default()
-        };
+
         self.inner_execute(program, &mut exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();

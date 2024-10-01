@@ -296,7 +296,7 @@ async fn inner_pattern_transform<'a>(
 
     let mut solids = Vec::new();
     for e in starting_solids {
-        let new_solids = send_pattern_transform(transform.clone(), &e, args).await?;
+        let new_solids = send_pattern_transform(transform.clone(), &e, exec_state, args).await?;
         solids.extend(new_solids);
     }
     Ok(solids)
@@ -307,9 +307,10 @@ async fn send_pattern_transform(
     // https://github.com/KittyCAD/modeling-app/issues/2821
     transform: Vec<Transform>,
     solid: &Solid,
+    exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     let resp = args
         .send_modeling_cmd(
@@ -473,7 +474,7 @@ mod tests {
 }
 
 /// A linear pattern on a 2D sketch.
-pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_set): (LinearPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
 
     if data.axis == [0.0, 0.0] {
@@ -485,7 +486,7 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
         }));
     }
 
-    let sketches = inner_pattern_linear_2d(data, sketch_set, args).await?;
+    let sketches = inner_pattern_linear_2d(data, sketch_set, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -509,6 +510,7 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
 async fn inner_pattern_linear_2d(
     data: LinearPattern2dData,
     sketch_set: SketchSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
@@ -522,6 +524,7 @@ async fn inner_pattern_linear_2d(
         let geometries = pattern_linear(
             LinearPattern::TwoD(data.clone()),
             Geometry::Sketch(sketch.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -600,6 +603,7 @@ async fn inner_pattern_linear_3d(
         let geometries = pattern_linear(
             LinearPattern::ThreeD(data.clone()),
             Geometry::Solid(solid.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -617,8 +621,13 @@ async fn inner_pattern_linear_3d(
     Ok(solids)
 }
 
-async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
-    let id = uuid::Uuid::new_v4();
+async fn pattern_linear(
+    data: LinearPattern,
+    geometry: Geometry,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Geometries, KclError> {
+    let id = exec_state.id_generator.next_uuid();
 
     let resp = args
         .send_modeling_cmd(
@@ -745,10 +754,10 @@ impl CircularPattern {
 }
 
 /// A circular pattern on a 2D sketch.
-pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_set): (CircularPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
 
-    let sketches = inner_pattern_circular_2d(data, sketch_set, args).await?;
+    let sketches = inner_pattern_circular_2d(data, sketch_set, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -779,6 +788,7 @@ pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Res
 async fn inner_pattern_circular_2d(
     data: CircularPattern2dData,
     sketch_set: SketchSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
@@ -792,6 +802,7 @@ async fn inner_pattern_circular_2d(
         let geometries = pattern_circular(
             CircularPattern::TwoD(data.clone()),
             Geometry::Sketch(sketch.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -861,6 +872,7 @@ async fn inner_pattern_circular_3d(
         let geometries = pattern_circular(
             CircularPattern::ThreeD(data.clone()),
             Geometry::Solid(solid.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -878,8 +890,13 @@ async fn inner_pattern_circular_3d(
     Ok(solids)
 }
 
-async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
-    let id = uuid::Uuid::new_v4();
+async fn pattern_circular(
+    data: CircularPattern,
+    geometry: Geometry,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Geometries, KclError> {
+    let id = exec_state.id_generator.next_uuid();
 
     let center = data.center();
     let resp = args
