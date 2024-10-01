@@ -41,12 +41,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
-        grepInvert: ["@snapshot|@electron|@skipLinux","@snapshot|@electron|@skipWin"]
+        scripts: ["./github/ci-cd-scripts/playwright-browser-chrome-linux.sh","./github/ci-cd-scripts/playwright-browser-chrome-windows.sh"]
         exclude:
           - os: ubuntu-latest
-            grepInvert: "@snapshot|@electron|@skipWin"
+            grepInvert: "./github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
           - os: windows-latest
-            grepInvert: "@snapshot|@electron|@skipLinux"
+            grepInvert: "./github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
@@ -94,7 +94,7 @@ jobs:
       with:
         workspaces: './src/wasm-lib'
     - name: OR Cache Wasm (because wasm cache failed)
-      if: steps.download-wasm.outcome == 'failure'
+      if: steps.sdsownload-wasm.outcome == 'failure'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
@@ -194,48 +194,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        if [[ ! -f "test-results/.last-run.json" ]]; then
-            # if no last run artifact, than run plawright normally
-            echo "run playwright normally"
-            yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert=${{ matrix.grepInvert }} || true
-            # # send to axiom
-            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-        fi
-
-        retry=1
-        max_retrys=4
-
-        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-        while [[ $retry -le $max_retrys ]]; do
-            if [[ -f "test-results/.last-run.json" ]]; then
-                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-                if [[ $failed_tests -gt 0 ]]; then
-                    echo "retried=true" >>$GITHUB_OUTPUT
-                    echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --last-failed --grep-invert=${{ matrix.grepInvert }} || true
-                    # send to axiom
-                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-                    retry=$((retry + 1))
-                else
-                    echo "retried=false" >>$GITHUB_OUTPUT
-                    exit 0
-                fi
-            else
-                echo "retried=false" >>$GITHUB_OUTPUT
-                exit 0
-            fi
-        done
-
-        echo "retried=false" >>$GITHUB_OUTPUT
-
-        if [[ -f "test-results/.last-run.json" ]]; then
-            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-            if [[ $failed_tests -gt 0 ]]; then
-                # if it still fails after 3 retrys, then fail the job
-                exit 1
-            fi
-        fi
-        exit 0
+        ${{ matrix.scripts }} ${{matrix.shardIndex}} ${{matrix.shardTotal}}
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
