@@ -115,17 +115,17 @@ impl ProgramMemory {
         }))
     }
 
-    /// Find all extrude groups in the memory that are on a specific sketch group id.
+    /// Find all solids in the memory that are on a specific sketch id.
     /// This does not look inside closures.  But as long as we do not allow
     /// mutation of variables in KCL, closure memory should be a subset of this.
-    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
+    pub fn find_solids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<Box<Solid>> {
         self.environments
             .iter()
             .flat_map(|env| {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        KclValue::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                        KclValue::Solid(eg) if eg.sketch.id == sketch_id => Some(eg.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -222,7 +222,7 @@ impl Environment {
         self.bindings.contains_key(key)
     }
 
-    pub fn update_sketch_group_tags(&mut self, sg: &SketchGroup) {
+    pub fn update_sketch_tags(&mut self, sg: &Sketch) {
         if sg.tags.is_empty() {
             return;
         }
@@ -230,19 +230,19 @@ impl Environment {
         for (_, val) in self.bindings.iter_mut() {
             let KclValue::UserVal(v) = val else { continue };
             let meta = v.meta.clone();
-            let maybe_sg: Result<SketchGroup, _> = serde_json::from_value(v.value.clone());
-            let Ok(mut sketch_group) = maybe_sg else {
+            let maybe_sg: Result<Sketch, _> = serde_json::from_value(v.value.clone());
+            let Ok(mut sketch) = maybe_sg else {
                 continue;
             };
 
-            if sketch_group.original_id == sg.original_id {
+            if sketch.original_id == sg.original_id {
                 for tag in sg.tags.iter() {
-                    sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
+                    sketch.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
             *val = KclValue::UserVal(UserVal {
                 meta,
-                value: serde_json::to_value(sketch_group).expect("can always turn SketchGroup into JSON"),
+                value: serde_json::to_value(sketch).expect("can always turn Sketch into JSON"),
             });
         }
     }
@@ -253,7 +253,7 @@ impl Environment {
 /// stack of exception handlers here.
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 pub struct DynamicState {
-    pub extrude_group_ids: Vec<ExtrudeGroupLazyIds>,
+    pub solid_ids: Vec<SolidLazyIds>,
 }
 
 impl DynamicState {
@@ -271,18 +271,18 @@ impl DynamicState {
     pub fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let KclValue::ExtrudeGroup(eg) = item {
-                    self.extrude_group_ids.push(ExtrudeGroupLazyIds::from(eg.as_ref()));
+                if let KclValue::Solid(eg) = item {
+                    self.solid_ids.push(SolidLazyIds::from(eg.as_ref()));
                 }
             }
         }
     }
 
-    pub fn edge_cut_ids_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<uuid::Uuid> {
-        self.extrude_group_ids
+    pub fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
+        self.solid_ids
             .iter()
             .flat_map(|eg| {
-                if eg.sketch_group_id == sketch_group_id {
+                if eg.sketch_id == sketch_id {
                     eg.edge_cuts.clone()
                 } else {
                     Vec::new()
@@ -303,9 +303,9 @@ pub enum KclValue {
     Plane(Box<Plane>),
     Face(Box<Face>),
 
-    ExtrudeGroup(Box<ExtrudeGroup>),
-    ExtrudeGroups {
-        value: Vec<Box<ExtrudeGroup>>,
+    Solid(Box<Solid>),
+    Solids {
+        value: Vec<Box<Solid>>,
     },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
@@ -324,26 +324,26 @@ impl KclValue {
         Self::UserVal(UserVal::new(meta, val))
     }
 
-    pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
+    pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
-            KclValue::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
-            KclValue::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
+            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
+            KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
             KclValue::UserVal(value) => {
                 let value = value.value.clone();
                 match value {
                     JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => Err(anyhow::anyhow!(
-                        "Failed to deserialize extrude group set from JSON {}",
+                        "Failed to deserialize solid set from JSON {}",
                         human_friendly_type(&value)
                     )),
-                    JValue::Array(_) => serde_json::from_value::<Vec<Box<ExtrudeGroup>>>(value)
-                        .map(ExtrudeGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e)),
-                    JValue::Object(_) => serde_json::from_value::<Box<ExtrudeGroup>>(value)
-                        .map(ExtrudeGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize extrude group from JSON: {}", e)),
+                    JValue::Array(_) => serde_json::from_value::<Vec<Box<Solid>>>(value)
+                        .map(SolidSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of solids from JSON: {}", e)),
+                    JValue::Object(_) => serde_json::from_value::<Box<Solid>>(value)
+                        .map(SolidSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize solid from JSON: {}", e)),
                 }
             }
-            _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+            _ => anyhow::bail!("Not a solid or solids: {:?}", self),
         }
     }
 
@@ -354,8 +354,8 @@ impl KclValue {
             KclValue::UserVal(u) => human_friendly_type(&u.value),
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::ExtrudeGroup(_) => "ExtrudeGroup",
-            KclValue::ExtrudeGroups { .. } => "ExtrudeGroups",
+            KclValue::Solid(_) => "Solid",
+            KclValue::Solids { .. } => "Solids",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
@@ -364,34 +364,34 @@ impl KclValue {
     }
 }
 
-impl From<SketchGroupSet> for KclValue {
-    fn from(sg: SketchGroupSet) -> Self {
+impl From<SketchSet> for KclValue {
+    fn from(sg: SketchSet) -> Self {
         KclValue::UserVal(UserVal::new(sg.meta(), sg))
     }
 }
 
-impl From<Vec<Box<SketchGroup>>> for KclValue {
-    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+impl From<Vec<Box<Sketch>>> for KclValue {
+    fn from(sg: Vec<Box<Sketch>>) -> Self {
         let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
         KclValue::UserVal(UserVal::new(meta, sg))
     }
 }
 
-impl From<ExtrudeGroupSet> for KclValue {
-    fn from(eg: ExtrudeGroupSet) -> Self {
+impl From<SolidSet> for KclValue {
+    fn from(eg: SolidSet) -> Self {
         match eg {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => KclValue::ExtrudeGroup(eg),
-            ExtrudeGroupSet::ExtrudeGroups(egs) => KclValue::ExtrudeGroups { value: egs },
+            SolidSet::Solid(eg) => KclValue::Solid(eg),
+            SolidSet::Solids(egs) => KclValue::Solids { value: egs },
         }
     }
 }
 
-impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
-    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+impl From<Vec<Box<Solid>>> for KclValue {
+    fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            KclValue::ExtrudeGroup(eg[0].clone())
+            KclValue::Solid(eg[0].clone())
         } else {
-            KclValue::ExtrudeGroups { value: eg }
+            KclValue::Solids { value: eg }
         }
     }
 }
@@ -401,15 +401,15 @@ impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometry {
-    SketchGroup(Box<SketchGroup>),
-    ExtrudeGroup(Box<ExtrudeGroup>),
+    Sketch(Box<Sketch>),
+    Solid(Box<Solid>),
 }
 
 impl Geometry {
     pub fn id(&self) -> uuid::Uuid {
         match self {
-            Geometry::SketchGroup(s) => s.id,
-            Geometry::ExtrudeGroup(e) => e.id,
+            Geometry::Sketch(s) => s.id,
+            Geometry::Solid(e) => e.id,
         }
     }
 }
@@ -419,148 +419,148 @@ impl Geometry {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometries {
-    SketchGroups(Vec<Box<SketchGroup>>),
-    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+    Sketches(Vec<Box<Sketch>>),
+    Solids(Vec<Box<Solid>>),
 }
 
-/// A sketch group or a group of sketch groups.
+/// A sketch or a group of sketches.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum SketchGroupSet {
-    SketchGroup(Box<SketchGroup>),
-    SketchGroups(Vec<Box<SketchGroup>>),
+pub enum SketchSet {
+    Sketch(Box<Sketch>),
+    Sketches(Vec<Box<Sketch>>),
 }
 
-impl SketchGroupSet {
+impl SketchSet {
     pub fn meta(&self) -> Vec<Metadata> {
         match self {
-            SketchGroupSet::SketchGroup(sg) => sg.meta.clone(),
-            SketchGroupSet::SketchGroups(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
+            SketchSet::Sketch(sg) => sg.meta.clone(),
+            SketchSet::Sketches(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
         }
     }
 }
 
-impl From<SketchGroupSet> for Vec<SketchGroup> {
-    fn from(value: SketchGroupSet) -> Self {
+impl From<SketchSet> for Vec<Sketch> {
+    fn from(value: SketchSet) -> Self {
         match value {
-            SketchGroupSet::SketchGroup(sg) => vec![*sg],
-            SketchGroupSet::SketchGroups(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
+            SketchSet::Sketch(sg) => vec![*sg],
+            SketchSet::Sketches(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
         }
     }
 }
 
-impl From<SketchGroup> for SketchGroupSet {
-    fn from(sg: SketchGroup) -> Self {
-        SketchGroupSet::SketchGroup(Box::new(sg))
+impl From<Sketch> for SketchSet {
+    fn from(sg: Sketch) -> Self {
+        SketchSet::Sketch(Box::new(sg))
     }
 }
 
-impl From<Box<SketchGroup>> for SketchGroupSet {
-    fn from(sg: Box<SketchGroup>) -> Self {
-        SketchGroupSet::SketchGroup(sg)
+impl From<Box<Sketch>> for SketchSet {
+    fn from(sg: Box<Sketch>) -> Self {
+        SketchSet::Sketch(sg)
     }
 }
 
-impl From<Vec<SketchGroup>> for SketchGroupSet {
-    fn from(sg: Vec<SketchGroup>) -> Self {
+impl From<Vec<Sketch>> for SketchSet {
+    fn from(sg: Vec<Sketch>) -> Self {
         if sg.len() == 1 {
-            SketchGroupSet::SketchGroup(Box::new(sg[0].clone()))
+            SketchSet::Sketch(Box::new(sg[0].clone()))
         } else {
-            SketchGroupSet::SketchGroups(sg.into_iter().map(Box::new).collect())
+            SketchSet::Sketches(sg.into_iter().map(Box::new).collect())
         }
     }
 }
 
-impl From<Vec<Box<SketchGroup>>> for SketchGroupSet {
-    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+impl From<Vec<Box<Sketch>>> for SketchSet {
+    fn from(sg: Vec<Box<Sketch>>) -> Self {
         if sg.len() == 1 {
-            SketchGroupSet::SketchGroup(sg[0].clone())
+            SketchSet::Sketch(sg[0].clone())
         } else {
-            SketchGroupSet::SketchGroups(sg)
+            SketchSet::Sketches(sg)
         }
     }
 }
 
-impl From<SketchGroupSet> for Vec<Box<SketchGroup>> {
-    fn from(sg: SketchGroupSet) -> Self {
+impl From<SketchSet> for Vec<Box<Sketch>> {
+    fn from(sg: SketchSet) -> Self {
         match sg {
-            SketchGroupSet::SketchGroup(sg) => vec![sg],
-            SketchGroupSet::SketchGroups(sgs) => sgs,
+            SketchSet::Sketch(sg) => vec![sg],
+            SketchSet::Sketches(sgs) => sgs,
         }
     }
 }
 
-impl From<&SketchGroup> for Vec<Box<SketchGroup>> {
-    fn from(sg: &SketchGroup) -> Self {
+impl From<&Sketch> for Vec<Box<Sketch>> {
+    fn from(sg: &Sketch) -> Self {
         vec![Box::new(sg.clone())]
     }
 }
 
-impl From<Box<SketchGroup>> for Vec<Box<SketchGroup>> {
-    fn from(sg: Box<SketchGroup>) -> Self {
+impl From<Box<Sketch>> for Vec<Box<Sketch>> {
+    fn from(sg: Box<Sketch>) -> Self {
         vec![sg]
     }
 }
 
-/// A extrude group or a group of extrude groups.
+/// A solid or a group of solids.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum ExtrudeGroupSet {
-    ExtrudeGroup(Box<ExtrudeGroup>),
-    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+pub enum SolidSet {
+    Solid(Box<Solid>),
+    Solids(Vec<Box<Solid>>),
 }
 
-impl From<ExtrudeGroup> for ExtrudeGroupSet {
-    fn from(eg: ExtrudeGroup) -> Self {
-        ExtrudeGroupSet::ExtrudeGroup(Box::new(eg))
+impl From<Solid> for SolidSet {
+    fn from(eg: Solid) -> Self {
+        SolidSet::Solid(Box::new(eg))
     }
 }
 
-impl From<Box<ExtrudeGroup>> for ExtrudeGroupSet {
-    fn from(eg: Box<ExtrudeGroup>) -> Self {
-        ExtrudeGroupSet::ExtrudeGroup(eg)
+impl From<Box<Solid>> for SolidSet {
+    fn from(eg: Box<Solid>) -> Self {
+        SolidSet::Solid(eg)
     }
 }
 
-impl From<Vec<ExtrudeGroup>> for ExtrudeGroupSet {
-    fn from(eg: Vec<ExtrudeGroup>) -> Self {
+impl From<Vec<Solid>> for SolidSet {
+    fn from(eg: Vec<Solid>) -> Self {
         if eg.len() == 1 {
-            ExtrudeGroupSet::ExtrudeGroup(Box::new(eg[0].clone()))
+            SolidSet::Solid(Box::new(eg[0].clone()))
         } else {
-            ExtrudeGroupSet::ExtrudeGroups(eg.into_iter().map(Box::new).collect())
+            SolidSet::Solids(eg.into_iter().map(Box::new).collect())
         }
     }
 }
 
-impl From<Vec<Box<ExtrudeGroup>>> for ExtrudeGroupSet {
-    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+impl From<Vec<Box<Solid>>> for SolidSet {
+    fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            ExtrudeGroupSet::ExtrudeGroup(eg[0].clone())
+            SolidSet::Solid(eg[0].clone())
         } else {
-            ExtrudeGroupSet::ExtrudeGroups(eg)
+            SolidSet::Solids(eg)
         }
     }
 }
 
-impl From<ExtrudeGroupSet> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: ExtrudeGroupSet) -> Self {
+impl From<SolidSet> for Vec<Box<Solid>> {
+    fn from(eg: SolidSet) -> Self {
         match eg {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg],
-            ExtrudeGroupSet::ExtrudeGroups(egs) => egs,
+            SolidSet::Solid(eg) => vec![eg],
+            SolidSet::Solids(egs) => egs,
         }
     }
 }
 
-impl From<&ExtrudeGroup> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: &ExtrudeGroup) -> Self {
+impl From<&Solid> for Vec<Box<Solid>> {
+    fn from(eg: &Solid) -> Self {
         vec![Box::new(eg.clone())]
     }
 }
 
-impl From<Box<ExtrudeGroup>> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: Box<ExtrudeGroup>) -> Self {
+impl From<Box<Solid>> for Vec<Box<Solid>> {
+    fn from(eg: Box<Solid>) -> Self {
         vec![eg]
     }
 }
@@ -626,8 +626,8 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
-    /// The extrude group the face is on.
-    pub extrude_group: Box<ExtrudeGroup>,
+    /// The solid the face is on.
+    pub solid: Box<Solid>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -763,8 +763,27 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             KclValue::TagDeclarator(t) => t.into(),
             KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::ExtrudeGroups { value } => value
+            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solids { value } => value
+                .iter()
+                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
+                .collect(),
+            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+        }
+    }
+}
+
+impl From<&KclValue> for Vec<SourceRange> {
+    fn from(item: &KclValue) -> Self {
+        match item {
+            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::TagDeclarator(ref t) => vec![t.into()],
+            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solids { value } => value
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
@@ -906,6 +925,23 @@ impl KclValue {
         }
     }
 
+    /// If this KCL value is a bool, retrieve it.
+    pub fn get_bool(&self) -> Result<bool, KclError> {
+        let Self::UserVal(uv) = self else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", self.human_friendly_type()),
+            }));
+        };
+        let JValue::Bool(b) = uv.value else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", human_friendly_type(&uv.value)),
+            }));
+        };
+        Ok(b)
+    }
+
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
     /// If it's not a function, return Err.
     pub async fn call_fn(
@@ -949,31 +985,31 @@ impl KclValue {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch group the tag is on.
-    pub sketch_group: uuid::Uuid,
+    /// The sketch the tag is on.
+    pub sketch: uuid::Uuid,
     /// The path the tag is on.
     pub path: Option<BasePath>,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
 }
 
-/// A sketch group is a collection of paths.
+/// A sketch is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub struct SketchGroup {
-    /// The id of the sketch group (this will change when the engine's reference to it changes.
+pub struct Sketch {
+    /// The id of the sketch (this will change when the engine's reference to it changes.
     pub id: uuid::Uuid,
-    /// The paths in the sketch group.
+    /// The paths in the sketch.
     pub value: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
-    /// Tag identifiers that have been declared in this sketch group.
+    /// Tag identifiers that have been declared in this sketch.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub tags: HashMap<String, TagIdentifier>,
-    /// The original id of the sketch group. This stays the same even if the sketch group is
+    /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
     #[serde(skip)]
     pub original_id: uuid::Uuid,
@@ -982,7 +1018,7 @@ pub struct SketchGroup {
     pub meta: Vec<Metadata>,
 }
 
-/// A sketch group type.
+/// A sketch type.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -1024,13 +1060,13 @@ pub struct GetTangentialInfoFromPathsResult {
     pub ccw: bool,
 }
 
-impl SketchGroup {
+impl Sketch {
     pub(crate) fn add_tag(&mut self, tag: &TagDeclarator, current_path: &Path) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
-            sketch_group: self.id,
+            sketch: self.id,
             path: Some(base.clone()),
             surface: None,
         });
@@ -1086,24 +1122,24 @@ impl SketchGroup {
     }
 }
 
-/// An extrude group is a collection of extrude surfaces.
+/// An solid is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub struct ExtrudeGroup {
-    /// The id of the extrude group.
+pub struct Solid {
+    /// The id of the solid.
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch group.
-    pub sketch_group: SketchGroup,
-    /// The height of the extrude group.
+    /// The sketch.
+    pub sketch: Sketch,
+    /// The height of the solid.
     pub height: f64,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
     pub end_cap_id: Option<uuid::Uuid>,
-    /// Chamfers or fillets on this extrude group.
+    /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
     /// Metadata.
@@ -1111,28 +1147,28 @@ pub struct ExtrudeGroup {
     pub meta: Vec<Metadata>,
 }
 
-impl ExtrudeGroup {
+impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> Vec<uuid::Uuid> {
         self.edge_cuts.iter().map(|foc| foc.id()).collect()
     }
 }
 
-/// An extrude group ID and its fillet and chamfer IDs.  This is needed for lazy
+/// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
 /// fillet evaluation.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-pub struct ExtrudeGroupLazyIds {
-    pub extrude_group_id: uuid::Uuid,
-    pub sketch_group_id: uuid::Uuid,
-    /// Chamfers or fillets on this extrude group.
+pub struct SolidLazyIds {
+    pub solid_id: uuid::Uuid,
+    pub sketch_id: uuid::Uuid,
+    /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<uuid::Uuid>,
 }
 
-impl From<&ExtrudeGroup> for ExtrudeGroupLazyIds {
-    fn from(eg: &ExtrudeGroup) -> Self {
+impl From<&Solid> for SolidLazyIds {
+    fn from(eg: &Solid) -> Self {
         Self {
-            extrude_group_id: eg.id,
-            sketch_group_id: eg.sketch_group.id,
+            solid_id: eg.id,
+            sketch_id: eg.sketch.id,
             edge_cuts: eg.edge_cuts.iter().map(|foc| foc.id()).collect(),
         }
     }
@@ -1862,20 +1898,22 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<(), KclError> {
+    ) -> Result<Option<KclValue>, KclError> {
+        let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
-                    // Discard return value.
-                    self.execute_expr(
-                        &expression_statement.expression,
-                        exec_state,
-                        &metadata,
-                        StatementKind::Expression,
-                    )
-                    .await?;
+                    last_expr = Some(
+                        self.execute_expr(
+                            &expression_statement.expression,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?,
+                    );
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
@@ -1893,6 +1931,7 @@ impl ExecutorContext {
                             .await?;
                         exec_state.memory.add(&var_name, memory_item, source_range)?;
                     }
+                    last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
@@ -1905,6 +1944,7 @@ impl ExecutorContext {
                         )
                         .await?;
                     exec_state.memory.return_ = Some(value);
+                    last_expr = None;
                 }
             }
         }
@@ -1921,7 +1961,7 @@ impl ExecutorContext {
                 .await?;
         }
 
-        Ok(())
+        Ok(last_expr)
     }
 
     pub async fn execute_expr<'a>(
@@ -1978,6 +2018,7 @@ impl ExecutorContext {
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
+            Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -2106,7 +2147,7 @@ pub(crate) async fn call_user_defined_function(
         (result, fn_memory)
     };
 
-    result.map(|()| fn_memory.return_)
+    result.map(|_| fn_memory.return_)
 }
 
 pub enum StatementKind<'a> {
@@ -3215,10 +3256,10 @@ let w = f() + f()
 
     #[test]
     fn test_serialize_memory_item() {
-        let mem = KclValue::ExtrudeGroups {
+        let mem = KclValue::Solids {
             value: Default::default(),
         };
         let json = serde_json::to_string(&mem).unwrap();
-        assert_eq!(json, r#"{"type":"ExtrudeGroups","value":[]}"#);
+        assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
     }
 }

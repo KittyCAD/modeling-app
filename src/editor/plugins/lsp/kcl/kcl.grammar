@@ -57,7 +57,7 @@ ArgumentList { "(" commaSep<expression> ")" }
 type[@isGroup=Type] {
   @specialize[@name=PrimitiveType]<
     identifier,
-    "string" | "number" | "bool" | "sketch_group" | "sketch_surface" | "extrude_group"
+    "string" | "number" | "bool" | "sketch" | "sketch_surface" | "solid"
   > |
   ArrayType { type !member "[" "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
