@@ -552,7 +552,7 @@ function defaultSelectionFilter(
   engineCommandManager: EngineCommandManager
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  programMemory.hasSketchOrExtrudeGroup() &&
+  programMemory.hasSketchOrSolid() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

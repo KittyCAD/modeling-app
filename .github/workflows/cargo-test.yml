@@ -4,6 +4,7 @@ on:
       - main
     paths:
       - 'src/wasm-lib/**.rs'
+      - 'src/wasm-lib/**.hbs'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
@@ -13,6 +14,7 @@ on:
   pull_request:
     paths:
       - 'src/wasm-lib/**.rs'
+      - 'src/wasm-lib/**.hbs'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
