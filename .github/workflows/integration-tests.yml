@@ -44,9 +44,9 @@ jobs:
         scripts: ["./github/ci-cd-scripts/playwright-browser-chrome-linux.sh","./github/ci-cd-scripts/playwright-browser-chrome-windows.sh"]
         exclude:
           - os: ubuntu-latest
-            grepInvert: "./github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
+            scripts: "./github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
           - os: windows-latest
-            grepInvert: "./github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
+            scripts: "./github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
