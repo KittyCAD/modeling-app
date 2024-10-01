@@ -83,6 +83,7 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -1035,6 +1036,21 @@ export const ModelingMachineProvider = ({
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {
     modelingSend({ type: 'Delete selection' })
+  })
+
+  // Allow ctrl+alt+c to center to selection
+  useHotkeys(['ctrl + alt + c'], () => {
+    console.log('centering!');
+      (
+        async () => {
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'default_camera_center_to_selection',
+            },
+          })        
+      })().catch(reportRejection)
   })
 
   useStateMachineCommands({
