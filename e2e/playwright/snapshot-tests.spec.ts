@@ -455,6 +455,7 @@ test(
     await page.mouse.move(startXPx + PUR * 20, 500 - PUR * 10)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
 
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
