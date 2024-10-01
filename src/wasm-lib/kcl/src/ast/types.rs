@@ -1516,10 +1516,11 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
                 label: variable.id.name.to_string(),
                 label_details: None,
                 kind: Some(match declaration.kind {
-                    crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Let => CompletionItemKind::CONSTANT,
                     crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
-                    crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
+                    crate::ast::types::VariableKind::Var => CompletionItemKind::CONSTANT,
                     crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                    crate::ast::types::VariableKind::None => CompletionItemKind::CONSTANT,
                 }),
                 detail: Some(declaration.kind.to_string()),
                 documentation: None,
@@ -1654,8 +1655,9 @@ impl VariableDeclaration {
             let mut symbol_kind = match self.kind {
                 VariableKind::Fn => SymbolKind::FUNCTION,
                 VariableKind::Const => SymbolKind::CONSTANT,
-                VariableKind::Let => SymbolKind::VARIABLE,
-                VariableKind::Var => SymbolKind::VARIABLE,
+                VariableKind::Let => SymbolKind::CONSTANT,
+                VariableKind::Var => SymbolKind::CONSTANT,
+                VariableKind::None => SymbolKind::CONSTANT,
             };
 
             let children = match &declaration.init {
@@ -1668,7 +1670,7 @@ impl VariableDeclaration {
                         children.push(DocumentSymbol {
                             name: param.identifier.name.clone(),
                             detail: None,
-                            kind: SymbolKind::VARIABLE,
+                            kind: SymbolKind::CONSTANT,
                             range: param_source_range.to_lsp_range(code),
                             selection_range: param_source_range.to_lsp_range(code),
                             children: None,
@@ -1710,7 +1712,7 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
@@ -1724,6 +1726,8 @@ pub enum VariableKind {
     Fn,
     /// Declare a variable.
     Var,
+    /// No keyword
+    None,
 }
 
 impl VariableKind {
@@ -1733,6 +1737,7 @@ impl VariableKind {
             VariableKind::Const => [2],
             VariableKind::Fn => [3],
             VariableKind::Var => [4],
+            VariableKind::None => [5],
         }
     }
 
