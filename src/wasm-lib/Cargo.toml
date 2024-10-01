@@ -24,12 +24,11 @@ wasm-bindgen-futures = "0.4.42"
 
 [dev-dependencies]
 anyhow = "1"
-hyper = { version = "0.14.29", features = ["server", "http1"] }
 image = { version = "0.25.1", default-features = false, features = ["png"] }
 kittycad = { workspace = true, default-features = true }
 kittycad-modeling-cmds = { workspace = true }
 pretty_assertions = "1.4.1"
-reqwest = { version = "0.11.26", default-features = false }
+reqwest = { version = "0.12", default-features = false }
 tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8"
 uuid = { version = "1.10.0", features = ["v4", "js", "serde"] }
@@ -70,9 +69,8 @@ members = [
 ]
 
 [workspace.dependencies]
-http = "0.2.12"
-kittycad = { version = "0.3.22", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-session = "0.1.4"
+http = "1"
+kittycad = { version = "0.3.23", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-cmds = { version = "0.2.64", features = ["websocket"] }
 
 [[test]]
