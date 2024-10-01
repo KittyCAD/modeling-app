@@ -87,8 +87,8 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
       return expedtedExtrudeNodeResult
     }
     const expectedExtrudeNode = expedtedExtrudeNodeResult.node
-    console.error("ADAM", expedtedExtrudeNodeResult)
-    const init = expectedExtrudeNode.declarations?.[0].init || expectedExtrudeNode.init
+    const init =
+      expectedExtrudeNode.declarations?.[0].init || expectedExtrudeNode.init
     if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
       return new Error(
         'Expected extrude expression is not a CallExpression or PipeExpression'

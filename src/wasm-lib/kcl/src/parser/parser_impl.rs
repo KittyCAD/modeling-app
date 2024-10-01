@@ -1218,15 +1218,21 @@ fn possible_operands(i: TokenSlice) -> PResult<Expr> {
 }
 
 fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
-    any.verify_map(|token: Token| token.declaration_keyword().map(|kw| (kw, token)))
-        .parse_next(i)
+    let res = any
+        .verify_map(|token: Token| token.declaration_keyword().map(|kw| (kw, token)))
+        .parse_next(i)?;
+    Ok(res)
 }
 
 /// Parse a variable/constant declaration.
 fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
     let decl_token = opt(declaration_keyword).parse_next(i)?;
+    if decl_token.is_some() {
+        // If there was a declaration keyword like `fn`, then it must be followed by some spaces.
+        // `fnx = ...` is not valid!
+        require_whitespace(i)?;
+    }
 
-    ignore_whitespace(i);
     let id = binding_name
         .context(expected(
             "an identifier, which becomes name you're binding the value to",
@@ -1877,7 +1883,7 @@ mod tests {
 
     #[test]
     fn test_vardec_no_keyword() {
-        let tokens = crate::token::lexer("x=4").unwrap();
+        let tokens = crate::token::lexer("x = 4").unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
         assert_eq!(vardec.kind, VariableKind::Const);
         let vardec = vardec.declarations.first().unwrap();
@@ -2932,6 +2938,7 @@ e
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
+        dbg!(&result);
         assert!(result
             .err()
             .unwrap()
@@ -3349,9 +3356,8 @@ thing(false)
             assert_eq!(
                 result.err().unwrap().to_string(),
                 format!(
-                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}])], message: "Expected a `fn` variable kind, found: `{}`" }}"#,
+                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}])], message: "Expected a `fn` variable kind, found: `const`" }}"#,
                     name.len(),
-                    name
                 )
             );
         }
@@ -3699,7 +3705,7 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
             5
         }"#
     );
-    snapshot_test!(bg, r#"x=4"#);
+    snapshot_test!(bg, r#"x = 4"#);
 }
 
 #[allow(unused)]

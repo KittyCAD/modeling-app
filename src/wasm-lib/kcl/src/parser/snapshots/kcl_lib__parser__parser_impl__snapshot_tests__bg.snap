@@ -35,7 +35,7 @@ expression: actual
           "digest": null
         }
       ],
-      "kind": "none",
+      "kind": "const",
       "digest": null
     }
   ],
