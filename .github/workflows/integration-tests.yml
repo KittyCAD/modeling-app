@@ -231,17 +231,17 @@ jobs:
         scripts: [".github/ci-cd-scripts/playwright-electron-linux.sh",".github/ci-cd-scripts/playwright-electron-windows.sh", ".github/ci-cd-scripts/playwright-electron-macos.sh"]
         exclude:
           - os: ubuntu-latest
-            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
+            scripts: ".github/ci-cd-scripts/playwright-electron-windows.sh"
           - os: ubuntu-latest
-            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-macos.sh"
+            scripts: ".github/ci-cd-scripts/playwright-electron-macos.sh"
           - os: windows-latest
-            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
+            scripts: ".github/ci-cd-scripts/playwright-electron-linux.sh"
           - os: windows-latest
-            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-macos.sh"
+            scripts: ".github/ci-cd-scripts/playwright-electron-macos.sh"
           - os: macos-14
-            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
+            scripts: ".github/ci-cd-scripts/playwright-electron-linux.sh"
           - os: macos-14
-            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
+            scripts: ".github/ci-cd-scripts/playwright-electron-windows.sh"
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
