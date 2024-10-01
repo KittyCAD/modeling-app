@@ -4,18 +4,18 @@ expression: actual
 ---
 {
   "start": 0,
-  "end": 3,
+  "end": 5,
   "body": [
     {
       "type": "VariableDeclaration",
       "type": "VariableDeclaration",
       "start": 0,
-      "end": 3,
+      "end": 5,
       "declarations": [
         {
           "type": "VariableDeclarator",
           "start": 0,
-          "end": 3,
+          "end": 5,
           "id": {
             "type": "Identifier",
             "start": 0,
@@ -26,8 +26,8 @@ expression: actual
           "init": {
             "type": "Literal",
             "type": "Literal",
-            "start": 2,
-            "end": 3,
+            "start": 4,
+            "end": 5,
             "value": 4,
             "raw": "4",
             "digest": null
