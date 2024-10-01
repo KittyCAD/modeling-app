@@ -4,6 +4,7 @@ import { uuidv4 } from 'lib/utils'
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
+  getPixelRGBs,
   openAndClearDebugPanel,
   sendCustomCmd,
 } from '../test-utils'
@@ -88,5 +89,31 @@ export class SceneFixture {
   }
   waitForExecutionDone = async () => {
     await expect(this.exeIndicator).toBeVisible()
+  }
+
+  expectPixelColor = async (
+    colour: [number, number, number],
+    coords: { x: number; y: number },
+    diff: number
+  ) => {
+    let finalValue = colour
+    await expect
+      .poll(async () => {
+        const pixel = (await getPixelRGBs(this.page)(coords, 1))[0]
+        if (!pixel) return null
+        finalValue = pixel
+        const yo = pixel.every(
+          (chanel, index) => Math.abs(chanel - colour[index]) < diff
+        )
+        console.log('yo', yo)
+        return yo
+      })
+      .toBeTruthy()
+      .catch((e) => {
+        console.error(
+          `Error is ExpectPixelColor: expecing ${colour} got ${finalValue}`
+        )
+        throw e
+      })
   }
 }
