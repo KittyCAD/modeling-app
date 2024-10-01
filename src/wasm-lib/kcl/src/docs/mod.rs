@@ -81,6 +81,8 @@ impl StdLibFnArg {
         } else if self.type_ == "TagIdentifier" && self.required {
             // TODO: actually use the ast to populate this.
             return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
+        } else if self.type_ == "[KclValue]" && self.required {
+            return Ok(Some((index, "[0..9]".to_owned())));
         }
         get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
     }
@@ -901,6 +903,12 @@ mod tests {
 	radius: ${2:3.14},
 }, ${3:%})${}"#
         );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_map() {
+        let map_fn: Box<dyn StdLibFn> = Box::new(crate::std::array::Map);
+        let _snippet = map_fn.to_autocomplete_snippet().unwrap();
     }
 
     #[test]
