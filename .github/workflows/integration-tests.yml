@@ -190,6 +190,7 @@ jobs:
         name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
     - uses: actions/checkout@v4
+    - uses: actions/cache@v4
     - name: Run playwright/chrome flow (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
