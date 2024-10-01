@@ -182,8 +182,7 @@ jobs:
         with:
           name: out-x64-${{ matrix.os }}
           path: |
-            out/Zoo*x64*.*
-            out/latest*.yml
+            out/Zoo*x*64*.*
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
