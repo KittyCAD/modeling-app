@@ -1,10 +1,6 @@
 ---
 title: "Axis"
-excerpt: "Co-ordinate axis specifier.
-
-See [cglearn.eu] for background reading.
-
-[cglearn.eu]: https://cglearn.eu/pub/computer-graphics/introduction-to-geometry#material-coordinate-systems-1"
+excerpt: "Co-ordinate axis specifier."
 layout: manual
 ---
 
@@ -20,7 +16,7 @@ See [cglearn.eu] for background reading.
 
 **This schema accepts exactly one of the following:**
 
-&#x27;Y&#x27; axis.
+'Y' axis.
 
 **enum:** `y`
 
@@ -32,7 +28,7 @@ See [cglearn.eu] for background reading.
 
 
 ----
-&#x27;Z&#x27; axis.
+'Z' axis.
 
 **enum:** `z`
 

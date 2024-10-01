@@ -1,5 +1,4 @@
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 use super::{args::FromArgs, Args, FnAsArg};
 use crate::{
@@ -9,7 +8,7 @@ use crate::{
 };
 
 /// For each item in an array, update a value.
-pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (array, start, f): (Vec<u64>, Sketch, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
     let reduce_fn = FunctionParam {
         inner: f.func,
@@ -18,7 +17,7 @@ pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclV
         ctx: args.ctx.clone(),
         memory: *f.memory,
     };
-    inner_array_reduce(array, start, reduce_fn, exec_state, &args)
+    inner_reduce(array, start, reduce_fn, exec_state, &args)
         .await
         .map(|sg| KclValue::UserVal(UserVal::new(sg.meta.clone(), sg)))
 }
@@ -29,7 +28,7 @@ pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// fn decagon = (radius) => {
 ///   let step = (1/10) * tau()
 ///   let sketch001 = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
-///   return arrayReduce([1..10], sketch001, (i, sg) => {
+///   return reduce([1..10], sketch001, (i, sg) => {
 ///       let x = cos(step * i) * radius
 ///       let y = sin(step * i) * radius
 ///       return lineTo([x, y], sg)
@@ -38,9 +37,9 @@ pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// decagon(5.0) |> close(%)
 /// ```
 #[stdlib {
-    name = "arrayReduce",
+    name = "reduce",
 }]
-async fn inner_array_reduce<'a>(
+async fn inner_reduce<'a>(
     array: Vec<u64>,
     start: Sketch,
     reduce_fn: FunctionParam<'a>,

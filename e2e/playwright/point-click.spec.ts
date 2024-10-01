@@ -1,7 +1,7 @@
-import { test, expect, AuthenticatedApp } from './fixtureSetup'
-import { EditorFixture } from './editorFixture'
-import { SceneFixture } from './sceneFixture'
-import { ToolbarFixture } from './toolbarFixture'
+import { test, expect, AuthenticatedApp } from './fixtures/fixtureSetup'
+import { EditorFixture } from './fixtures/editorFixture'
+import { SceneFixture } from './fixtures/sceneFixture'
+import { ToolbarFixture } from './fixtures/toolbarFixture'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 

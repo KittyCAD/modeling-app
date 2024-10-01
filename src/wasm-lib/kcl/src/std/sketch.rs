@@ -1485,9 +1485,7 @@ pub async fn arc(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
-/// Starting at the current sketch's origin, draw a curved line segment along
-/// an imaginary circle of the specified radius.
-///
+/// Draw a curved line segment along an imaginary circle.
 /// The arc is constructed such that the current position of the sketch is
 /// placed along an imaginary circle of the specified radius, at angleStart
 /// degrees. The resulting arc is the segment of the imaginary circle from
@@ -1605,8 +1603,7 @@ pub async fn tangential_arc(_exec_state: &mut ExecState, args: Args) -> Result<K
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
-/// Starting at the current sketch's origin, draw a curved line segment along
-/// some part of an imaginary circle of the specified radius.
+/// Draw a curved line segment along part of an imaginary circle.
 ///
 /// The arc is constructed such that the last line segment is placed tangent
 /// to the imaginary circle of the specified radius. The resulting arc is the

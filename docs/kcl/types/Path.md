@@ -45,8 +45,8 @@ A arc that is tangential to the last path segment that goes to a point
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `TangentialArcTo`|  | No |
-| `center` |`[number, number]`| the arc&#x27;s center | No |
-| `ccw` |`boolean`| arc&#x27;s direction | No |
+| `center` |`[number, number]`| the arc's center | No |
+| `ccw` |`boolean`| arc's direction | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
@@ -67,8 +67,8 @@ A arc that is tangential to the last path segment
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `TangentialArc`|  | No |
-| `center` |`[number, number]`| the arc&#x27;s center | No |
-| `ccw` |`boolean`| arc&#x27;s direction | No |
+| `center` |`[number, number]`| the arc's center | No |
+| `ccw` |`boolean`| arc's direction | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
@@ -89,9 +89,9 @@ a complete arc
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Circle`|  | No |
-| `center` |`[number, number]`| the arc&#x27;s center | No |
-| `radius` |`number`| the arc&#x27;s radius | No |
-| `ccw` |`boolean`| arc&#x27;s direction | No |
+| `center` |`[number, number]`| the arc's center | No |
+| `radius` |`number`| the arc's radius | No |
+| `ccw` |`boolean`| arc's direction | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |

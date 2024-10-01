@@ -90,4 +90,9 @@ gen_test_fail!(
     "semantic: cannot use % outside a pipe expression"
 );
 gen_test!(sketch_in_object);
+gen_test!(if_else);
+// gen_test_fail!(
+//     if_else_no_expr,
+//     "syntax: blocks inside an if/else expression must end in an expression"
+// );
 gen_test!(add_lots);
