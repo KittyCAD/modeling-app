@@ -33,7 +33,7 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  playwright-browser:
+  browser:
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
     strategy:
       fail-fast: false
@@ -223,7 +223,7 @@ jobs:
         overwrite: true
 
 
-  playwright-electron:
+  electron:
     strategy:
       fail-fast: false
       matrix:
