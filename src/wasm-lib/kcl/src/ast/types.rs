@@ -1727,6 +1727,7 @@ pub enum VariableKind {
     /// Declare a variable.
     Var,
     /// No keyword
+    #[display("")]
     None,
 }
 

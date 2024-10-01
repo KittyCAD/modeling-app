@@ -1908,6 +1908,17 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         assert_eq!(recasted.trim(), some_program_string);
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_vardec_keyword() {
+        let some_program_string = r#"distance = 5"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
+    }
+
     #[test]
     fn recast_literal() {
         use winnow::Parser;
