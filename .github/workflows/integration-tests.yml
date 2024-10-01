@@ -41,12 +41,12 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
-        scripts: ["./github/ci-cd-scripts/playwright-browser-chrome-linux.sh","./github/ci-cd-scripts/playwright-browser-chrome-windows.sh"]
+        scripts: [".github/ci-cd-scripts/playwright-browser-chrome-linux.sh",".github/ci-cd-scripts/playwright-browser-chrome-windows.sh"]
         exclude:
           - os: ubuntu-latest
-            scripts: "./github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-windows.sh"
           - os: windows-latest
-            scripts: "./github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
+            scripts: ".github/ci-cd-scripts/playwright-browser-chrome-linux.sh"
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
