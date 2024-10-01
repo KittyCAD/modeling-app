@@ -33,7 +33,7 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  test-playwright-browser-chrome-snapshot:
+  test-playwright-browser-chrome:
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
     strategy:
       fail-fast: false
@@ -94,7 +94,7 @@ jobs:
       with:
         workspaces: './src/wasm-lib'
     - name: OR Cache Wasm (because wasm cache failed)
-      if: steps.sdsownload-wasm.outcome == 'failure'
+      if: steps.download-wasm.outcome == 'failure'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
