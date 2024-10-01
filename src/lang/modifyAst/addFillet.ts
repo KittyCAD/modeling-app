@@ -373,21 +373,6 @@ function getPathToRadiusLiteral(node: ObjectExpression, path: any): PathToNode {
   return pathToFilletObj
 }
 
-function getFilletTag(existingFilletCall: CallExpression): string | null {
-  if (existingFilletCall.arguments[0].type === 'ObjectExpression') {
-    const properties = (existingFilletCall.arguments[0] as ObjectExpression)
-      .properties
-    const tagsProperty = properties.find((prop) => prop.key.name === 'tags')
-    if (tagsProperty && tagsProperty.value.type === 'ArrayExpression') {
-      const elements = (tagsProperty.value as ArrayExpression).elements
-      if (elements.length > 0 && elements[0].type === 'Identifier') {
-        return elements[0].name
-      }
-    }
-  }
-  return null
-}
-
 // Button states
 
 export const hasValidFilletSelection = ({
