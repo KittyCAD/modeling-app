@@ -4,16 +4,17 @@ use std::str::FromStr;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::coord::{Axis, AxisDirectionPair, Direction, System};
-use kcmc::each_cmd as mcmd;
-use kcmc::format::InputFormat;
-use kcmc::ok_response::OkModelingCmdResponse;
-use kcmc::shared::FileImportFormat;
-use kcmc::units::UnitLength;
-use kcmc::websocket::OkWebSocketResponseData;
-use kcmc::{ImportFile, ModelingCmd};
+use kcmc::{
+    coord::{Axis, AxisDirectionPair, Direction, System},
+    each_cmd as mcmd,
+    format::InputFormat,
+    ok_response::OkModelingCmdResponse,
+    shared::FileImportFormat,
+    units::UnitLength,
+    websocket::OkWebSocketResponseData,
+    ImportFile, ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},

@@ -2,11 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::each_cmd as mcmd;
-use kcmc::length_unit::LengthUnit;
-use kcmc::ok_response::OkModelingCmdResponse;
-use kcmc::websocket::OkWebSocketResponseData;
-use kcmc::{shared::CutType, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::CutType,
+    websocket::OkWebSocketResponseData, ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -15,9 +14,7 @@ use uuid::Uuid;
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{
-        EdgeCut, ExecState, ExtrudeGroup, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, TagIdentifier, UserVal,
-    },
+    executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier, UserVal},
     settings::types::UnitLength,
     std::Args,
 };
@@ -47,13 +44,21 @@ pub enum EdgeReference {
     Tag(Box<TagIdentifier>),
 }
 
+impl EdgeReference {
+    pub fn get_engine_id(&self, exec_state: &mut ExecState, args: &Args) -> Result<uuid::Uuid, KclError> {
+        match self {
+            EdgeReference::Uuid(uuid) => Ok(*uuid),
+            EdgeReference::Tag(tag) => Ok(args.get_tag_engine_info(exec_state, tag)?.id),
+        }
+    }
+}
+
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group, tag): (FilletData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
-        args.get_data_and_extrude_group_and_tag()?;
+    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagDeclarator>) = args.get_data_and_solid_and_tag()?;
 
-    let extrude_group = inner_fillet(data, extrude_group, tag, exec_state, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_fillet(data, solid, tag, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Blend a transitional edge along a tagged path, smoothing the sharp edge.
@@ -117,11 +122,11 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 async fn inner_fillet(
     data: FilletData,
-    extrude_group: Box<ExtrudeGroup>,
+    solid: Box<Solid>,
     tag: Option<TagDeclarator>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
     let mut tags = data.tags.clone();
     tags.sort();
@@ -133,29 +138,28 @@ async fn inner_fillet(
         }));
     }
 
-    let mut extrude_group = extrude_group.clone();
-    let mut edge_cuts = Vec::new();
+    let mut solid = solid.clone();
     for edge_tag in data.tags {
-        let edge_id = match edge_tag {
-            EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
-        };
+        let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
         let id = uuid::Uuid::new_v4();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
-                object_id: extrude_group.id,
+                object_id: solid.id,
                 radius: LengthUnit(data.radius),
                 tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
                 cut_type: CutType::Fillet,
-                face_id: None,
+                // We pass in the command id as the face id.
+                // So the resulting face of the fillet will be the same.
+                // This is because that's how most other endpoints work.
+                face_id: Some(id),
             }),
         )
         .await?;
 
-        edge_cuts.push(EdgeCut::Fillet {
+        solid.edge_cuts.push(EdgeCut::Fillet {
             id,
             edge_id,
             radius: data.radius,
@@ -163,8 +167,8 @@ async fn inner_fillet(
         });
 
         if let Some(ref tag) = tag {
-            extrude_group.value.push(ExtrudeSurface::Fillet(FilletSurface {
-                face_id: edge_id,
+            solid.value.push(ExtrudeSurface::Fillet(FilletSurface {
+                face_id: id,
                 tag: Some(tag.clone()),
                 geo_meta: GeoMeta {
                     id,
@@ -174,9 +178,7 @@ async fn inner_fillet(
         }
     }
 
-    extrude_group.edge_cuts = edge_cuts;
-
-    Ok(extrude_group)
+    Ok(solid)
 }
 
 /// Get the opposite edge to the edge given.
@@ -238,7 +240,7 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState,
             uuid::Uuid::new_v4(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: tagged_path.id,
-                object_id: tagged_path.sketch_group,
+                object_id: tagged_path.sketch,
                 face_id,
             }),
         )
@@ -319,7 +321,7 @@ async fn inner_get_next_adjacent_edge(
             uuid::Uuid::new_v4(),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: tagged_path.id,
-                object_id: tagged_path.sketch_group,
+                object_id: tagged_path.sketch,
                 face_id,
             }),
         )
@@ -408,7 +410,7 @@ async fn inner_get_previous_adjacent_edge(
             uuid::Uuid::new_v4(),
             ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
                 edge_id: tagged_path.id,
-                object_id: tagged_path.sketch_group,
+                object_id: tagged_path.sketch,
                 face_id,
             }),
         )

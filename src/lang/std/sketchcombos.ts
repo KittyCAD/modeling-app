@@ -17,7 +17,7 @@ import {
   VariableDeclarator,
   PathToNode,
   ProgramMemory,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
   Literal,
 } from '../wasm'
 import {
@@ -59,6 +59,7 @@ export type LineInputsType =
   | 'length'
   | 'intersectionOffset'
   | 'intersectionTag'
+  | 'radius'
 
 export type ConstraintType =
   | 'equalLength'
@@ -89,7 +90,10 @@ function createCallWrapper(
   tag?: Expr,
   valueUsedInTransform?: number
 ): CreatedSketchExprResult {
-  const args = [createFirstArg(tooltip, val), createPipeSubstitution()]
+  const args =
+    tooltip === 'circle'
+      ? []
+      : [createFirstArg(tooltip, val), createPipeSubstitution()]
   if (tag) {
     args.push(tag)
   }
@@ -1698,33 +1702,29 @@ export function transformAstSketchLines({
 
     const varName = varDec.node.id.name
     let kclVal = programMemory.get(varName)
-    let sketchGroup
-    if (kclVal?.type === 'ExtrudeGroup') {
-      sketchGroup = kclVal.sketchGroup
+    let sketch
+    if (kclVal?.type === 'Solid') {
+      sketch = kclVal.sketch
     } else {
-      sketchGroup = sketchGroupFromKclValue(kclVal, varName)
-      if (err(sketchGroup)) {
+      sketch = sketchFromKclValue(kclVal, varName)
+      if (err(sketch)) {
         return
       }
     }
-    const segMeta = getSketchSegmentFromPathToNode(
-      sketchGroup,
-      ast,
-      _pathToNode
-    )
+    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode)
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
     let referencedSegment
     if (referencedSegmentRange) {
       const _segment = getSketchSegmentFromSourceRange(
-        sketchGroup,
+        sketch,
         referencedSegmentRange
       )
       if (err(_segment)) return _segment
       referencedSegment = _segment.segment
     } else {
-      referencedSegment = sketchGroup.value.find(
+      referencedSegment = sketch.value.find(
         (path) => path.tag?.value === _referencedSegmentName
       )
     }
@@ -1735,11 +1735,20 @@ export function transformAstSketchLines({
       pathToNode: _pathToNode,
       referencedSegment,
       fnName: transformTo || (callExp.node.callee.name as ToolTip),
-      segmentInput: {
-        type: 'straight-segment',
-        to,
-        from,
-      },
+      segmentInput:
+        seg.type === 'Circle'
+          ? {
+              type: 'arc-segment',
+              center: seg.center,
+              radius: seg.radius,
+              from,
+            }
+          : {
+              type: 'straight-segment',
+              to,
+              from,
+            },
+
       replaceExistingCallback: (rawArgs) =>
         callBack({
           referenceSegName: _referencedSegmentName,
@@ -1888,6 +1897,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   return false
 }
 
-function getInputOfType(a: InputArgs, b: LineInputsType): InputArg {
+function getInputOfType(a: InputArgs, b: LineInputsType | 'radius'): InputArg {
   return a.find(({ argType }) => argType === b) || a[0]
 }

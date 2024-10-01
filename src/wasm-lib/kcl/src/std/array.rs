@@ -1,17 +1,15 @@
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
+use super::{args::FromArgs, Args, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, SketchGroup, SourceRange, UserVal},
+    executor::{ExecState, KclValue, Sketch, SourceRange, UserVal},
     function_param::FunctionParam,
 };
 
-use super::{args::FromArgs, Args, FnAsArg};
-
 /// For each item in an array, update a value.
-pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<u64>, SketchGroup, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (array, start, f): (Vec<u64>, Sketch, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
     let reduce_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
@@ -19,7 +17,7 @@ pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclV
         ctx: args.ctx.clone(),
         memory: *f.memory,
     };
-    inner_array_reduce(array, start, reduce_fn, exec_state, &args)
+    inner_reduce(array, start, reduce_fn, exec_state, &args)
         .await
         .map(|sg| KclValue::UserVal(UserVal::new(sg.meta.clone(), sg)))
 }
@@ -29,8 +27,8 @@ pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// ```no_run
 /// fn decagon = (radius) => {
 ///   let step = (1/10) * tau()
-///   let sketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
-///   return arrayReduce([1..10], sketch, (i, sg) => {
+///   let sketch001 = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///   return reduce([1..10], sketch001, (i, sg) => {
 ///       let x = cos(step * i) * radius
 ///       let y = sin(step * i) * radius
 ///       return lineTo([x, y], sg)
@@ -39,15 +37,15 @@ pub async fn array_reduce(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// decagon(5.0) |> close(%)
 /// ```
 #[stdlib {
-    name = "arrayReduce",
+    name = "reduce",
 }]
-async fn inner_array_reduce<'a>(
+async fn inner_reduce<'a>(
     array: Vec<u64>,
-    start: SketchGroup,
+    start: Sketch,
     reduce_fn: FunctionParam<'a>,
     exec_state: &mut ExecState,
     args: &'a Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Sketch, KclError> {
     let mut reduced = start;
     for i in array {
         reduced = call_reduce_closure(i, reduced, &reduce_fn, args.source_range, exec_state).await?;
@@ -58,11 +56,11 @@ async fn inner_array_reduce<'a>(
 
 async fn call_reduce_closure<'a>(
     i: u64,
-    start: SketchGroup,
+    start: Sketch,
     reduce_fn: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Sketch, KclError> {
     // Call the reduce fn for this repetition.
     let reduce_fn_args = vec![
         KclValue::UserVal(UserVal {
@@ -89,7 +87,7 @@ async fn call_reduce_closure<'a>(
     };
     let Some((out, _meta)) = out.get() else {
         return Err(KclError::Semantic(KclErrorDetails {
-            message: "Reducer function must return a SketchGroup".to_string(),
+            message: "Reducer function must return a Sketch".to_string(),
             source_ranges: source_ranges.clone(),
         }));
     };

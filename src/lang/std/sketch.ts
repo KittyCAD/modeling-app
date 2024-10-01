@@ -1,7 +1,7 @@
 import {
   ProgramMemory,
   Path,
-  SketchGroup,
+  Sketch,
   SourceRange,
   PathToNode,
   Program,
@@ -11,12 +11,13 @@ import {
   Expr,
   VariableDeclaration,
   Identifier,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
+  getObjExprProperty,
 } from 'lang/queryAst'
 import {
   isLiteralArrayOrStatic,
@@ -53,14 +54,16 @@ import { roundOff, getLength, getAngle } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { EdgeCutInfo } from 'machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
 )
+const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
 
 export type Coords2d = [number, number]
 
-export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
+export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
   const currentPath = skGroup?.value?.[index]
   if (!currentPath && skGroup?.start) {
     return skGroup.start.to
@@ -925,6 +928,177 @@ export const tangentialArcTo: SketchLineHelper = {
     ]
   },
 }
+export const circle: SketchLineHelper = {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+
+    const { center, radius } = segmentInput
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: pipe } = nodeMeta
+
+    const x = createLiteral(roundOff(center[0], 2))
+    const y = createLiteral(roundOff(center[1], 2))
+
+    const radiusExp = createLiteral(roundOff(radius, 2))
+
+    if (replaceExistingCallback) {
+      const result = replaceExistingCallback([
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'center',
+          argType: 'xAbsolute',
+          expr: x,
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'center',
+          argType: 'yAbsolute',
+          expr: y,
+        },
+        {
+          type: 'objectProperty',
+          key: 'radius',
+          argType: 'radius',
+          expr: radiusExp,
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      pipe.body[callIndex] = callExp
+
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    return new Error('not implemented')
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    const { center, radius } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression, shallowPath } = nodeMeta
+
+    const firstArg = callExpression.arguments?.[0]
+    const newCenter = createArrayExpression([
+      createLiteral(roundOff(center[0])),
+      createLiteral(roundOff(center[1])),
+    ])
+    mutateObjExpProp(firstArg, newCenter, 'center')
+    const newRadius = createLiteral(roundOff(radius))
+    mutateObjExpProp(firstArg, newRadius, 'radius')
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  },
+  getTag: getTag(),
+  addTag: addTag(),
+  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
+    if (callExp.type !== 'CallExpression') return []
+    const firstArg = callExp.arguments?.[0]
+    if (firstArg.type !== 'ObjectExpression') return []
+    const centerDetails = getObjExprProperty(firstArg, 'center')
+    const radiusDetails = getObjExprProperty(firstArg, 'radius')
+    if (!centerDetails || !radiusDetails) return []
+    if (centerDetails.expr.type !== 'ArrayExpression') return []
+
+    const pathToCenterArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [centerDetails.index, 'index'],
+      ['value', 'Property'],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToRadiusLiteral: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [radiusDetails.index, 'index'],
+      ['value', 'Property'],
+    ]
+    const pathToXArg: PathToNode = [
+      ...pathToCenterArrayExpression,
+      [0, 'index'],
+    ]
+    const pathToYArg: PathToNode = [
+      ...pathToCenterArrayExpression,
+      [1, 'index'],
+    ]
+
+    return [
+      constrainInfo(
+        'radius',
+        isNotLiteralArrayOrStatic(radiusDetails.expr),
+        code.slice(radiusDetails.expr.start, radiusDetails.expr.end),
+        'circle',
+        'radius',
+        [radiusDetails.expr.start, radiusDetails.expr.end],
+        pathToRadiusLiteral
+      ),
+      {
+        stdLibFnName: 'circle',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(
+          centerDetails.expr.elements[0]
+        ),
+        sourceRange: [
+          centerDetails.expr.elements[0].start,
+          centerDetails.expr.elements[0].end,
+        ],
+        pathToNode: pathToXArg,
+        value: code.slice(
+          centerDetails.expr.elements[0].start,
+          centerDetails.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'center',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(
+          centerDetails.expr.elements[1]
+        ),
+        sourceRange: [
+          centerDetails.expr.elements[1].start,
+          centerDetails.expr.elements[1].end,
+        ],
+        pathToNode: pathToYArg,
+        value: code.slice(
+          centerDetails.expr.elements[1].start,
+          centerDetails.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'center',
+        },
+      },
+    ]
+  },
+}
 export const angledLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
@@ -1042,7 +1216,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     const { node: varDec } = nodeMeta2
 
     const variableName = varDec.id.name
-    const sketch = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory?.get(variableName),
       variableName
     )
@@ -1157,7 +1331,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
     const { node: varDec } = nodeMeta2
     const variableName = varDec.id.name
-    const sketch = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory?.get(variableName),
       variableName
     )
@@ -1525,12 +1699,12 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const { node: varDec } = nodeMeta2
     const varName = varDec.declarations[0].id.name
-    const sketchGroup = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory.get(varName),
       varName
     )
-    if (err(sketchGroup)) return sketchGroup
-    const intersectPath = sketchGroup.value.find(
+    if (err(sketch)) return sketch
+    const intersectPath = sketch.value.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
     )
     let offset = 0
@@ -1688,16 +1862,28 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
+  circle,
 } as const
 
 export function changeSketchArguments(
   node: Program,
   programMemory: ProgramMemory,
-  sourceRange: SourceRange,
+  sourceRangeOrPath:
+    | {
+        type: 'sourceRange'
+        sourceRange: SourceRange
+      }
+    | {
+        type: 'path'
+        pathToNode: PathToNode
+      },
   input: SegmentInputs
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   const _node = { ...node }
-  const thePath = getNodePathFromSourceRange(_node, sourceRange)
+  const thePath =
+    sourceRangeOrPath.type === 'sourceRange'
+      ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
+      : sourceRangeOrPath.pathToNode
   const nodeMeta = getNodeFromPath<CallExpression>(_node, thePath)
   if (err(nodeMeta)) return nodeMeta
 
@@ -1875,7 +2061,7 @@ export function replaceSketchLine({
       pathToNode: PathToNode
     }
   | Error {
-  if (![...toolTips, 'intersect'].includes(fnName)) {
+  if (![...toolTips, 'intersect', 'circle'].includes(fnName)) {
     return new Error(`The following function name  is not tooltip: ${fnName}`)
   }
   const _node = { ...node }
@@ -1895,12 +2081,169 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
+/** Ostensibly  should be used to add a chamfer tag to a chamfer call expression
+ *
+ * However things get complicated in situations like:
+ * ```ts
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tag1, tagOfInterest]
+ *   }, %)
+ * ```
+ * Because tag declarator is not allowed on a chamfer with more than one tag,
+ * They must be pulled apart into separate chamfer calls:
+ * ```ts
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tag1]
+ *   }, %)
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tagOfInterest]
+ *   }, %, $newTagDeclarator)
+ * ```
+ */
+function addTagToChamfer(
+  tagInfo: AddTagInfo,
+  edgeCutMeta: EdgeCutInfo | null
+):
+  | {
+      modifiedAst: Program
+      tag: string
+    }
+  | Error {
+  const _node = structuredClone(tagInfo.node)
+  let pipeIndex = 0
+  for (let i = 0; i < tagInfo.pathToNode.length; i++) {
+    if (tagInfo.pathToNode[i][1] === 'PipeExpression') {
+      pipeIndex = Number(tagInfo.pathToNode[i + 1][0])
+      break
+    }
+  }
+  const pipeExpr = getNodeFromPath<PipeExpression>(
+    _node,
+    tagInfo.pathToNode,
+    'PipeExpression'
+  )
+  const variableDec = getNodeFromPath<VariableDeclarator>(
+    _node,
+    tagInfo.pathToNode,
+    'VariableDeclarator'
+  )
+  if (err(pipeExpr)) return pipeExpr
+  if (err(variableDec)) return variableDec
+  const isPipeExpression = pipeExpr.node.type === 'PipeExpression'
+
+  console.log('pipeExpr', pipeExpr, variableDec)
+  // const callExpr = isPipeExpression ? pipeExpr.node.body[pipeIndex] : variableDec.node.init
+  const callExpr = isPipeExpression
+    ? pipeExpr.node.body[pipeIndex]
+    : variableDec.node.init
+  if (callExpr.type !== 'CallExpression')
+    return new Error('no chamfer call Expr')
+  const chamferObjArg = callExpr.arguments[0]
+  if (chamferObjArg.type !== 'ObjectExpression')
+    return new Error('first argument should be an object expression')
+  const inputTags = getObjExprProperty(chamferObjArg, 'tags')
+  if (!inputTags) return new Error('no tags property')
+  if (inputTags.expr.type !== 'ArrayExpression')
+    return new Error('tags should be an array expression')
+
+  const isChamferBreakUpNeeded = inputTags.expr.elements.length > 1
+  if (!isChamferBreakUpNeeded) {
+    return addTag(2)(tagInfo)
+  }
+
+  // There's more than one input tag, we need to break that chamfer call into a separate chamfer call
+  // so that it can have a tag declarator added.
+  const tagIndexToPullOut = inputTags.expr.elements.findIndex((tag) => {
+    // e.g. chamfer({ tags: [tagOfInterest, tag2] }, %)
+    //                       ^^^^^^^^^^^^^
+    const elementMatchesBaseTagType =
+      edgeCutMeta?.subType === 'base' &&
+      tag.type === 'Identifier' &&
+      tag.name === edgeCutMeta.tagName
+    if (elementMatchesBaseTagType) return true
+
+    // e.g. chamfer({ tags: [getOppositeEdge(tagOfInterest), tag2] }, %)
+    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    const tagMatchesOppositeTagType =
+      edgeCutMeta?.subType === 'opposite' &&
+      tag.type === 'CallExpression' &&
+      tag.callee.name === 'getOppositeEdge' &&
+      tag.arguments[0].type === 'Identifier' &&
+      tag.arguments[0].name === edgeCutMeta.tagName
+    if (tagMatchesOppositeTagType) return true
+
+    // e.g. chamfer({ tags: [getNextAdjacentEdge(tagOfInterest), tag2] }, %)
+    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    const tagMatchesAdjacentTagType =
+      edgeCutMeta?.subType === 'adjacent' &&
+      tag.type === 'CallExpression' &&
+      (tag.callee.name === 'getNextAdjacentEdge' ||
+        tag.callee.name === 'getPrevAdjacentEdge') &&
+      tag.arguments[0].type === 'Identifier' &&
+      tag.arguments[0].name === edgeCutMeta.tagName
+    if (tagMatchesAdjacentTagType) return true
+    return false
+  })
+  if (tagIndexToPullOut === -1) return new Error('tag not found')
+  // get the tag we're pulling out
+  const tagToPullOut = inputTags.expr.elements[tagIndexToPullOut]
+  // and remove it from the original chamfer call
+  // [pullOutTag, tag2] to [tag2]
+  inputTags.expr.elements.splice(tagIndexToPullOut, 1)
+
+  // get the length of the chamfer we're breaking up, as the new chamfer will have the same length
+  const chamferLength = getObjExprProperty(chamferObjArg, 'length')
+  if (!chamferLength) return new Error('no chamfer length')
+  const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
+  const solid3dIdentifierUsedInOriginalChamfer = callExpr.arguments[1]
+  const newExpressionToInsert = createCallExpression('chamfer', [
+    createObjectExpression({
+      length: chamferLength.expr,
+      // single tag to add to the new chamfer call
+      tags: createArrayExpression([tagToPullOut]),
+    }),
+    isPipeExpression
+      ? createPipeSubstitution()
+      : solid3dIdentifierUsedInOriginalChamfer,
+    tagDec,
+  ])
+
+  // insert the new chamfer call with the tag declarator, add its above the original
+  // alternatively we could use `pipeIndex + 1` to insert it below the original
+  if (isPipeExpression) {
+    pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
+  } else {
+    console.log('yo', createPipeExpression([newExpressionToInsert, callExpr]))
+    callExpr.arguments[1] = createPipeSubstitution()
+    variableDec.node.init = createPipeExpression([
+      newExpressionToInsert,
+      callExpr,
+    ])
+  }
+  return {
+    modifiedAst: _node,
+    tag: tagDec.value,
+  }
+}
+
 export function addTagForSketchOnFace(
   tagInfo: AddTagInfo,
-  expressionName: string
-) {
+  expressionName: string,
+  edgeCutMeta: EdgeCutInfo | null
+):
+  | {
+      modifiedAst: Program
+      tag: string
+    }
+  | Error {
   if (expressionName === 'close') {
     return addTag(1)(tagInfo)
+  }
+  if (expressionName === 'chamfer') {
+    return addTagToChamfer(tagInfo, edgeCutMeta)
   }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
@@ -2065,6 +2408,32 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   }
 }
 
+const getCircle = (
+  callExp: CallExpression
+):
+  | {
+      val: [Expr, Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  const firstArg = callExp.arguments[0]
+  if (firstArg.type === 'ObjectExpression') {
+    const centerDetails = getObjExprProperty(firstArg, 'center')
+    const radiusDetails = getObjExprProperty(firstArg, 'radius')
+    const tag = callExp.arguments[2]
+    if (centerDetails?.expr?.type === 'ArrayExpression' && radiusDetails) {
+      return {
+        val: [
+          centerDetails?.expr.elements[0],
+          centerDetails?.expr.elements[1],
+          radiusDetails.expr,
+        ],
+        tag,
+      }
+    }
+  }
+  return new Error('expected ArrayExpression or ObjectExpression')
+}
 const getAngledLineThatIntersects = (
   callExp: CallExpression
 ):
@@ -2123,6 +2492,9 @@ export function getFirstArg(callExp: CallExpression):
   if (['tangentialArcTo'].includes(name)) {
     // TODO probably needs it's own implementation
     return getFirstArgValuesForXYFns(callExp)
+  }
+  if (name === 'circle') {
+    return getCircle(callExp)
   }
   return new Error('unexpected call expression: ' + name)
 }

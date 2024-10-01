@@ -10,11 +10,11 @@ use winnow::{
 
 use crate::{
     ast::types::{
-        ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, Expr,
-        ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
-        UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+        ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, ElseIf,
+        Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, Literal,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue,
+        ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
+        TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -359,6 +359,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
                 Expr::CallExpression(x) => BinaryPart::CallExpression(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
+                Expr::IfExpression(x) => BinaryPart::IfExpression(x),
             };
             Ok(expr)
         })
@@ -670,6 +671,119 @@ fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
     .parse_next(i)
 }
 
+fn else_if(i: TokenSlice) -> PResult<ElseIf> {
+    let start = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'else'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'else' keyword"))
+        .parse_next(i)?;
+    ignore_whitespace(i);
+    let _if = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'if'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'if' keyword"))
+        .parse_next(i)?;
+    ignore_whitespace(i);
+    let cond = expression(i)?;
+    ignore_whitespace(i);
+    let _ = open_brace(i)?;
+    let then_val = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map(Box::new)?;
+    ignore_whitespace(i);
+    let end = close_brace(i)?.end;
+    ignore_whitespace(i);
+    Ok(ElseIf {
+        start,
+        end,
+        cond,
+        then_val,
+        digest: Default::default(),
+    })
+}
+
+fn if_expr(i: TokenSlice) -> PResult<IfExpression> {
+    let start = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'if'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'if' keyword"))
+        .parse_next(i)?;
+    let _ = whitespace(i)?;
+    let cond = expression(i).map(Box::new)?;
+    let _ = whitespace(i)?;
+    let _ = open_brace(i)?;
+    ignore_whitespace(i);
+    let then_val = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map_err(|e| e.cut())
+        .map(Box::new)?;
+    ignore_whitespace(i);
+    let _ = close_brace(i)?;
+    ignore_whitespace(i);
+    let else_ifs = repeat(0.., else_if).parse_next(i)?;
+
+    ignore_whitespace(i);
+    let _ = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'else'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'else' keyword"))
+        .parse_next(i)?;
+    ignore_whitespace(i);
+    let _ = open_brace(i)?;
+    ignore_whitespace(i);
+
+    let final_else = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map_err(|e| e.cut())
+        .map(Box::new)?;
+    ignore_whitespace(i);
+    let end = close_brace(i)?.end;
+    Ok(IfExpression {
+        start,
+        end,
+        cond,
+        then_val,
+        else_ifs,
+        final_else,
+        digest: Default::default(),
+    })
+}
+
 // Looks like
 // (arg0, arg1) => {
 //     const x = arg0 + arg1;
@@ -701,19 +815,25 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
 /// E.g. `person.name`
 fn member_expression_dot(i: TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     period.parse_next(i)?;
-    let property = identifier.parse_next(i)?;
-    let end = property.end;
-    Ok((LiteralIdentifier::Identifier(Box::new(property)), end, false))
+    let property = alt((
+        sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
+        identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+    ))
+    .parse_next(i)?;
+    let end = property.end();
+    Ok((property, end, false))
 }
 
 /// E.g. `people[0]` or `people[i]` or `people['adam']`
 fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = alt((
+        sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
         literal.map(Box::new).map(LiteralIdentifier::Literal),
         identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
+
     let end = close_bracket.parse_next(i)?.end;
     let computed = matches!(property, LiteralIdentifier::Identifier(_));
     Ok((property, end, computed))
@@ -1063,6 +1183,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
         function_expression.map(Box::new).map(Expr::FunctionExpression),
+        if_expr.map(Box::new).map(Expr::IfExpression),
         unnecessarily_bracketed,
     ))
     .context(expected("a KCL expression (but not a pipe expression)"))
@@ -1191,6 +1312,26 @@ fn identifier(i: TokenSlice) -> PResult<Identifier> {
     any.try_map(Identifier::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
         .parse_next(i)
+}
+
+fn sketch_keyword(i: TokenSlice) -> PResult<Identifier> {
+    any.try_map(|token: Token| {
+        if token.token_type == TokenType::Type && token.value == "sketch" {
+            Ok(Identifier {
+                start: token.start,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("Expected 'sketch' keyword, but found {}", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'sketch' keyword"))
+    .parse_next(i)
 }
 
 impl TryFrom<Token> for TagDeclarator {
@@ -1625,7 +1766,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let args = arguments(i)?;
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         // Type check the arguments.
-        for (i, spec_arg) in std_fn.args().iter().enumerate() {
+        for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
             let Some(arg) = &args.get(i) else {
                 // The executor checks the number of arguments, so we don't need to check it here.
                 continue;
@@ -2568,6 +2709,18 @@ const height = 1 - obj.a"#,
     }
 
     #[test]
+    fn test_parse_member_expression_allowed_type_in_expression() {
+        let tokens = crate::token::lexer(
+            r#"const obj = { thing: 1 }
+startSketchOn(obj.sketch)"#,
+        )
+        .unwrap();
+
+        let parser = crate::parser::Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
     fn test_parse_member_expression_binary_expression_brace_number_first() {
         let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
@@ -3110,6 +3263,42 @@ e
     }
 
     #[test]
+    fn basic_if_else() {
+        let some_program_string = "if true {
+            3
+        } else {
+            4
+        }";
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _res = if_expr(&mut sl).unwrap();
+    }
+
+    #[test]
+    fn basic_else_if() {
+        let some_program_string = "else if true {
+            4
+        }";
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _res = else_if(&mut sl).unwrap();
+    }
+
+    #[test]
+    fn basic_if_else_if() {
+        let some_program_string = "if true {
+            3  
+        } else if true {
+            4
+        } else {
+            5
+        }";
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _res = if_expr(&mut sl).unwrap();
+    }
+
+    #[test]
     fn test_keyword_ok_in_fn_args_return() {
         let some_program_string = r#"fn thing = (param) => {
     return true
@@ -3182,7 +3371,7 @@ thing(false)
     }
 
     #[test]
-    fn test_member_expression_sketch_group() {
+    fn test_member_expression_sketch() {
         let some_program_string = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
@@ -3472,6 +3661,24 @@ const sketch001 = startSketchOn('XY')
         r#"
 const my14 = 4 ^ 2 - 3 ^ 2 * 2
 "#
+    );
+    snapshot_test!(
+        bc,
+        r#"const x = if true {
+            3
+        } else {
+            4
+        }"#
+    );
+    snapshot_test!(
+        bd,
+        r#"const x = if true {
+            3
+        } else if func(radius) {
+            4
+        } else {
+            5
+        }"#
     );
 }
 
