@@ -1520,7 +1520,6 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
                     crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
                     crate::ast::types::VariableKind::Var => CompletionItemKind::CONSTANT,
                     crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
-                    crate::ast::types::VariableKind::None => CompletionItemKind::CONSTANT,
                 }),
                 detail: Some(declaration.kind.to_string()),
                 documentation: None,
@@ -1657,7 +1656,6 @@ impl VariableDeclaration {
                 VariableKind::Const => SymbolKind::CONSTANT,
                 VariableKind::Let => SymbolKind::CONSTANT,
                 VariableKind::Var => SymbolKind::CONSTANT,
-                VariableKind::None => SymbolKind::CONSTANT,
             };
 
             let children = match &declaration.init {
@@ -1726,9 +1724,6 @@ pub enum VariableKind {
     Fn,
     /// Declare a variable.
     Var,
-    /// No keyword
-    #[display("")]
-    None,
 }
 
 impl VariableKind {
@@ -1738,7 +1733,6 @@ impl VariableKind {
             VariableKind::Const => [2],
             VariableKind::Fn => [3],
             VariableKind::Var => [4],
-            VariableKind::None => [5],
         }
     }
 

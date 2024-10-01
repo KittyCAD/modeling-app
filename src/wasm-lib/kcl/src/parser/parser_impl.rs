@@ -1235,7 +1235,7 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
     let (kind, start, dec_end) = if let Some((kind, token)) = &decl_token {
         (*kind, token.start, token.end)
     } else {
-        (VariableKind::None, id.start(), id.end())
+        (VariableKind::Const, id.start(), id.end())
     };
 
     ignore_whitespace(i);
@@ -1879,7 +1879,7 @@ mod tests {
     fn test_vardec_no_keyword() {
         let tokens = crate::token::lexer("x=4").unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
-        assert_eq!(vardec.kind, VariableKind::None);
+        assert_eq!(vardec.kind, VariableKind::Const);
         let vardec = vardec.declarations.first().unwrap();
         assert_eq!(vardec.id.name, "x");
         let Expr::Literal(init_val) = &vardec.init else {

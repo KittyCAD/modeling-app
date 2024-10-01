@@ -170,7 +170,7 @@ impl VariableDeclaration {
         self.declarations.iter().fold(String::new(), |mut output, declaration| {
             let keyword = match self.kind {
                 VariableKind::Fn => "fn ",
-                VariableKind::Let | VariableKind::Const | VariableKind::Var | VariableKind::None => "",
+                VariableKind::Let | VariableKind::Const | VariableKind::Var => "",
             };
             let _ = write!(
                 output,
