@@ -70,6 +70,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - run: yarn build:wasm
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: './src/wasm-lib'
