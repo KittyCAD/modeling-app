@@ -165,7 +165,7 @@ sketch001 = startSketchAt([-0, -0])
     ).toBeVisible()
 
     // change 5 to 67
-    await page.getByText('myVar').click()
+    await page.locator('#code-mirror-override').getByText('myVar').click()
     await page.keyboard.press('End')
     await page.keyboard.press('Backspace')
     await page.keyboard.type('67')
