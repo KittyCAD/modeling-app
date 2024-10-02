@@ -309,7 +309,7 @@ impl IdGenerator {
     pub fn next_uuid(&mut self) -> uuid::Uuid {
         if let Some(id) = self.ids.get(self.next_id) {
             self.next_id += 1;
-            id.clone()
+            *id
         } else {
             let id = uuid::Uuid::new_v4();
             self.ids.push(id);
