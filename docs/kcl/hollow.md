@@ -29,7 +29,7 @@ hollow(thickness: number, solid: Solid) -> Solid
 
 ```js
 // Hollow a basic sketch.
-const firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
   |> line([24, 0], %)
   |> line([0, -24], %)
@@ -43,7 +43,7 @@ const firstSketch = startSketchOn('XY')
 
 ```js
 // Hollow a basic sketch.
-const firstSketch = startSketchOn('-XZ')
+firstSketch = startSketchOn('-XZ')
   |> startProfileAt([-12, 12], %)
   |> line([24, 0], %)
   |> line([0, -24], %)
@@ -57,8 +57,8 @@ const firstSketch = startSketchOn('-XZ')
 
 ```js
 // Hollow a sketch on face object.
-let size = 100
-const case = startSketchOn('-XZ')
+size = 100
+case = startSketchOn('-XZ')
   |> startProfileAt([-size, -size], %)
   |> line([2 * size, 0], %)
   |> line([0, 2 * size], %)
@@ -66,14 +66,14 @@ const case = startSketchOn('-XZ')
   |> close(%)
   |> extrude(65, %)
 
-const thing1 = startSketchOn(case, 'end')
+thing1 = startSketchOn(case, 'end')
   |> circle({
        center: [-size / 2, -size / 2],
        radius: 25
      }, %)
   |> extrude(50, %)
 
-const thing2 = startSketchOn(case, 'end')
+thing2 = startSketchOn(case, 'end')
   |> circle({
        center: [size / 2, -size / 2],
        radius: 25

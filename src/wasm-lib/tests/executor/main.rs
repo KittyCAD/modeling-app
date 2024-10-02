@@ -2027,7 +2027,7 @@ const extrusion = extrude(10, sketch001)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_x_length_270() {
-    let code = r#"const sketch001 = startSketchOn('XZ')
+    let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)

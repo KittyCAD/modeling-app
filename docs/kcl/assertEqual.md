@@ -30,8 +30,8 @@ assertEqual(left: number, right: number, epsilon: number, message: string) -> ()
 ### Examples
 
 ```js
-let n = 1.0285
-let o = 1.0286
+n = 1.0285
+o = 1.0286
 assertEqual(n, o, 0.01, "n is within the given tolerance for o")
 ```
 

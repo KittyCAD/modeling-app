@@ -29,7 +29,7 @@ offsetPlane(std_plane: StandardPlane, offset: number) -> PlaneData
 
 ```js
 // Loft a square and a circle on the `XY` plane using offset.
-const squareSketch = startSketchOn('XY')
+squareSketch = startSketchOn('XY')
   |> startProfileAt([-100, 200], %)
   |> line([200, 0], %)
   |> line([0, -200], %)
@@ -37,7 +37,7 @@ const squareSketch = startSketchOn('XY')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 
-const circleSketch = startSketchOn(offsetPlane('XY', 150))
+circleSketch = startSketchOn(offsetPlane('XY', 150))
   |> circle({ center: [0, 100], radius: 50 }, %)
 
 loft([squareSketch, circleSketch])
@@ -47,7 +47,7 @@ loft([squareSketch, circleSketch])
 
 ```js
 // Loft a square and a circle on the `XZ` plane using offset.
-const squareSketch = startSketchOn('XZ')
+squareSketch = startSketchOn('XZ')
   |> startProfileAt([-100, 200], %)
   |> line([200, 0], %)
   |> line([0, -200], %)
@@ -55,7 +55,7 @@ const squareSketch = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 
-const circleSketch = startSketchOn(offsetPlane('XZ', 150))
+circleSketch = startSketchOn(offsetPlane('XZ', 150))
   |> circle({ center: [0, 100], radius: 50 }, %)
 
 loft([squareSketch, circleSketch])
@@ -65,7 +65,7 @@ loft([squareSketch, circleSketch])
 
 ```js
 // Loft a square and a circle on the `YZ` plane using offset.
-const squareSketch = startSketchOn('YZ')
+squareSketch = startSketchOn('YZ')
   |> startProfileAt([-100, 200], %)
   |> line([200, 0], %)
   |> line([0, -200], %)
@@ -73,7 +73,7 @@ const squareSketch = startSketchOn('YZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 
-const circleSketch = startSketchOn(offsetPlane('YZ', 150))
+circleSketch = startSketchOn(offsetPlane('YZ', 150))
   |> circle({ center: [0, 100], radius: 50 }, %)
 
 loft([squareSketch, circleSketch])
@@ -83,7 +83,7 @@ loft([squareSketch, circleSketch])
 
 ```js
 // Loft a square and a circle on the `-XZ` plane using offset.
-const squareSketch = startSketchOn('-XZ')
+squareSketch = startSketchOn('-XZ')
   |> startProfileAt([-100, 200], %)
   |> line([200, 0], %)
   |> line([0, -200], %)
@@ -91,7 +91,7 @@ const squareSketch = startSketchOn('-XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 
-const circleSketch = startSketchOn(offsetPlane('-XZ', -150))
+circleSketch = startSketchOn(offsetPlane('-XZ', -150))
   |> circle({ center: [0, 100], radius: 50 }, %)
 
 loft([squareSketch, circleSketch])
