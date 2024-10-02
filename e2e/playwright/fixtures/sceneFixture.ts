@@ -107,11 +107,11 @@ export class SceneFixture {
         )
       })
       .toBeTruthy()
-      .catch((e) => {
-        console.error(
-          `Error is ExpectPixelColor: expecting ${colour} got ${finalValue}`
+      .catch((cause) => {
+        throw new Error(
+          `ExpectPixelColor: expecting ${colour} got ${finalValue}`,
+          { cause }
         )
-        throw e
       })
   }
 }
