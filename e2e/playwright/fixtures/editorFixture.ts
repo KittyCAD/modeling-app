@@ -72,7 +72,7 @@ export class EditorFixture {
       const content = await this.diagnosticsTooltip.allTextContents()
       diagnosticsContent.push(content.join(''))
     }
-    return [...new Set(diagnosticsContent)].map((d) => d.trim())
+    return [...new Set(diagnosticsContent)].map((d) => sansWhitespace(d))
   }
 
   private _getHighlightedCode = async () => {
@@ -107,5 +107,12 @@ export class EditorFixture {
         highlightedCode: sansWhitespace(expectedState.highlightedCode),
         diagnostics: expectedState.diagnostics.map(sansWhitespace),
       })
+  }
+  replaceCode = async (findCode: string, replaceCode: string) => {
+    const lines = await this.page.locator('.cm-line').all()
+    let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
+    if (!lines) return
+    code = code.replace(findCode, replaceCode)
+    await this.codeContent.fill(code)
   }
 }
