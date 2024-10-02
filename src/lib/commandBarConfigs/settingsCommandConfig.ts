@@ -49,6 +49,7 @@ const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
         ]
       : [{ name: 'User', value: 'user' as SettingsLevel, isCurrent: true }],
   machineActor: actor,
+  warningMessage: '',
 })
 
 interface CreateSettingsArgs {
