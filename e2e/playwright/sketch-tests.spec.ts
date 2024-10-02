@@ -841,7 +841,7 @@ test.describe('Sketch tests', () => {
   |> line([1.02, -1.32], %, $seg01)
   |> line([-1.01, -0.77], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+|> close(%)
 `
       )
     })
@@ -851,9 +851,17 @@ test.describe('Sketch tests', () => {
 
     await u.waitForAuthSkipAppStart()
 
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
     // click "line([1.32, 0.38], %)"
     await page.getByText(`line([1.32, 0.38], %)`).click()
     await page.waitForTimeout(100)
+    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
+      { timeout: 10_000 }
+    )
     // click edit sketch
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
     await page.waitForTimeout(600) // wait for animation
@@ -873,7 +881,9 @@ test.describe('Sketch tests', () => {
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
       page.getByRole('button', { name: 'selection : 1 face', exact: false })
-    ).toBeVisible()
+    ).toBeVisible({
+      timeout: 10_000,
+    })
   })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
