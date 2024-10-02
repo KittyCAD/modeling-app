@@ -38,7 +38,19 @@ const DownloadAppBanner = () => {
               to download it.
             </p>
           )}
-          <div className="flex gap-4 justify-between mt-6">
+          <div className="flex flex-row-reverse gap-4 justify-between mt-6">
+            <ActionButton
+              Element="externalLink"
+              to="https://zoo.dev/modeling-app/download"
+              className="group text-warn-10 dark:!text-warn-10 pr-1 border-warn-70 hover:border-warn-80 dark:!border-warn-70 dark:hover:!border-warn-80 bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80"
+              iconEnd={{
+                icon: 'arrowRight',
+                iconClassName: 'text-warn-10 dark:text-warn-10',
+                bgClassName: '!bg-transparent',
+              }}
+            >
+              Download Desktop App
+            </ActionButton>
             <ActionButton
               Element="button"
               onClick={() => setIsBannerDismissed(true)}
@@ -51,18 +63,6 @@ const DownloadAppBanner = () => {
               }}
             >
               Proceed at my own risk
-            </ActionButton>
-            <ActionButton
-              Element="externalLink"
-              to="https://zoo.dev/modeling-app/download"
-              className="group text-warn-10 dark:!text-warn-10 pr-1 border-warn-70 hover:border-warn-80 dark:!border-warn-70 dark:hover:!border-warn-80 bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80"
-              iconEnd={{
-                icon: 'arrowRight',
-                iconClassName: 'text-warn-10 dark:text-warn-10',
-                bgClassName: '!bg-transparent',
-              }}
-            >
-              Download Desktop App
             </ActionButton>
           </div>
         </div>
