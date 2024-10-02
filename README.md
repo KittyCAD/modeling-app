@@ -324,9 +324,9 @@ cargo test
 
 ### Mapping CI CD jobs to local commands
 
-When you see the CI CD fail on jobs you may wonder three things 
-- Do I have a bug in my code? 
-- Is the test flaky? 
+When you see the CI CD fail on jobs you may wonder three things
+- Do I have a bug in my code?
+- Is the test flaky?
 - Is there a bug in `main`?
 
 To answer these questions the following commands will give you confidence to locate the issue.
@@ -354,15 +354,15 @@ yarn test:unit:local
 
 > Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
 
-#### Integration Tests
+#### E2E Tests
 
 **Playwright Browser**
 
-These integration tests run in a browser (without electrion).
+These E2E tests run in a browser (without electron).
 There are tests that are skipped if they are ran in a windows OS or Linux OS. We can use playwright tags to implement test skipping.
 
 Breaking down the command `yarn test:playwright:browser:chrome:windows`
-- The integration application is `playwright`
+- The application is `playwright`
 - The runtime is a `browser`
 - The specific `browser` is `chrome`
 - The test should run in a `windows` environment. It will skip tests that are broken or flaky in the windows OS.
@@ -375,7 +375,7 @@ yarn test:playwright:browser:chrome:ubuntu
 
 **Playwright Electron**
 
-These integration tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
+These E2E tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
 
 ```
 yarn test:playwright:electron:local
