@@ -187,13 +187,17 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        echo "Contents of test-results folder:"
-        ls -la test-results
-        if [[ -f "test-results/.last-run.json" ]]; then
-          echo "Contents of test-results/.last-run.json:"
-          cat test-results/.last-run.json
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
         else
-          echo "test-results/.last-run.json does not exist"
+          echo "test-results folder does not exist"
         fi
     - name: Run playwright/chrome flow (with retries)
       id: retry
@@ -254,6 +258,22 @@ jobs:
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
+        else
+          echo "test-results folder does not exist"
+        fi
     - uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -370,13 +390,17 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        echo "Contents of test-results folder:"
-        ls -la test-results
-        if [[ -f "test-results/.last-run.json" ]]; then
-          echo "Contents of test-results/.last-run.json:"
-          cat test-results/.last-run.json
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
         else
-          echo "test-results/.last-run.json does not exist"
+          echo "test-results folder does not exist"
         fi
     - name: Run electron tests (with retries)
       id: retry
@@ -446,6 +470,22 @@ jobs:
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
+        else
+          echo "test-results folder does not exist"
+        fi
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
