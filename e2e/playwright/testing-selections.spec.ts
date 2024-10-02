@@ -78,7 +78,7 @@ test.describe('Testing selections', () => {
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`const sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)`)
 

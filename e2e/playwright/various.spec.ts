@@ -596,6 +596,6 @@ test('Sketch on face', async ({ page }) => {
   await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
   const result2 = result.genNext`
-const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
+  const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
