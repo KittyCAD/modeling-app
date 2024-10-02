@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
+import { test as test2, expect as expect2 } from './fixtures/fixtureSetup'
 
 import {
   getMovementUtils,
@@ -1106,4 +1107,65 @@ const sketch002 = startSketchOn(extrude001, 'END')
       ).toHaveAttribute('aria-pressed', 'true')
     }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
+})
+
+test2.describe('Sketch mode should be toleratant to syntax errors', () => {
+  test2(
+    'adding a syntax error, recovers after fixing',
+    { tag: ['@skipWin'] },
+    async ({ app, scene, editor, toolbar }) => {
+      test.skip(
+        process.platform === 'win32',
+        'a codemirror error appears in this test only on windows, that causes the test to fail only because of our "no new error" logic, but it can not be replicated locally'
+      )
+      const file = await app.getInputFile('e2e-can-sketch-on-chamfer.kcl')
+      await app.initialise(file)
+
+      const [objClick] = scene.makeMouseHelpers(600, 250)
+      const arrowHeadLocation = { x: 604, y: 129 } as const
+      const arrowHeadWhite: [number, number, number] = [255, 255, 255]
+      const backgroundGray: [number, number, number] = [28, 28, 28]
+      const verifyArrowHeadColor = async (c: [number, number, number]) =>
+        scene.expectPixelColor(c, arrowHeadLocation, 15)
+
+      await test.step('check chamfer selection changes cursor positon', async () => {
+        await expect2(async () => {
+          // sometimes initial click doesn't register
+          await objClick()
+          await editor.expectActiveLinesToBe([
+            '|> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]',
+          ])
+        }).toPass({ timeout: 15_000, intervals: [500] })
+      })
+
+      await test.step('enter sketch and sanity check segments have been drawn', async () => {
+        await toolbar.editSketch()
+        // this checks sketch segments have been drawn
+        await verifyArrowHeadColor(arrowHeadWhite)
+      })
+
+      await test.step('Make typo and check the segments have Disappeared and there is a syntax error', async () => {
+        await editor.replaceCode('lineTo([pro', 'badBadBadFn([pro')
+        await editor.expectState({
+          activeLines: [],
+          diagnostics: ['memoryitemkey`badBadBadFn`isnotdefined'],
+          highlightedCode: '',
+        })
+        // this checks sketch segments have failed to be drawn
+        await verifyArrowHeadColor(backgroundGray)
+      })
+
+      await test.step('', async () => {
+        await editor.replaceCode('badBadBadFn([pro', 'lineTo([pro')
+        await editor.expectState({
+          activeLines: [],
+          diagnostics: [],
+          highlightedCode: '',
+        })
+        // this checks sketch segments have been drawn
+        await verifyArrowHeadColor(arrowHeadWhite)
+      })
+      await app.page.waitForTimeout(100)
+    }
+  )
 })
