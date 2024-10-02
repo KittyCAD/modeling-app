@@ -1,3 +1,6 @@
+# bash strict mode
+set -euo pipefail
+
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"

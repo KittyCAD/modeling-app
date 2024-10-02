@@ -35,6 +35,7 @@ jobs:
 
   browser:
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
+    name: playwright:browser:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
     strategy:
       fail-fast: false
       matrix:
@@ -218,6 +219,7 @@ jobs:
 
 
   electron:
+    name: playwright:electron:${{matrix.os}}
     strategy:
       fail-fast: false
       matrix:
