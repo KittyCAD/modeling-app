@@ -383,7 +383,7 @@ impl EngineManager for EngineConnection {
                     let pe = self.pending_errors.lock().unwrap();
                     if !pe.is_empty() {
                         return Err(KclError::Engine(KclErrorDetails {
-                            message: format!("{}", pe.join(", ")),
+                            message: pe.join(", ").to_string(),
                             source_ranges: vec![source_range],
                         }));
                     } else {
