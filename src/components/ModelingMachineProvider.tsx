@@ -244,6 +244,17 @@ export const ModelingMachineProvider = ({
             return {}
           },
         }),
+        'Center camera on selection': () => {
+          engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_center_to_selection',
+              },
+            })
+            .catch(reportRejection)
+        },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
           if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
@@ -1040,17 +1051,7 @@ export const ModelingMachineProvider = ({
 
   // Allow ctrl+alt+c to center to selection
   useHotkeys(['mod + alt + c'], () => {
-    console.log('centering!');
-      (
-        async () => {
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_center_to_selection',
-            },
-          })        
-      })().catch(reportRejection)
+    modelingSend({ type: 'Center camera on selection' })
   })
 
   useStateMachineCommands({
