@@ -1,3 +1,4 @@
+import { Models } from '@kittycad/lib'
 import { MutableRefObject } from 'react'
 import { cameraMouseDragGuards, MouseGuard } from 'lib/cameraControls'
 import {
@@ -922,7 +923,7 @@ export class CameraControls {
       },
     })
 
-    await this.centerModelRelativeToPanes()
+    await this.centerModelRelativeToPanes({ zoomToFit: true, resetLastPaneWidth: true })
 
     this.cameraDragStartXY = new Vector2()
     this.cameraDragStartXY.x = 0
@@ -951,12 +952,20 @@ export class CameraControls {
     })
   }
 
-  async centerModelRelativeToPanes(zoomObjectId?: string): Promise<void> {
+  private lastFramePaneWidth: number = 0
+
+  async centerModelRelativeToPanes(args?: { zoomObjectId?: string, zoomToFit?: boolean, resetLastPaneWidth?: boolean }): Promise<void> {
     const panes = this.modelingSidebarRef?.current
     if (!panes) return
 
     const panesWidth = panes.offsetWidth + panes.offsetLeft
-    const goRightPx = panesWidth > 0 ? panesWidth / 2 : 0
+
+    if (args?.resetLastPaneWidth) {
+      this.lastFramePaneWidth = 0
+    }
+
+    const goPx = ((panesWidth - this.lastFramePaneWidth) / 2) / window.devicePixelRatio
+    this.lastFramePaneWidth = panesWidth
 
     // Originally I had tried to use the default_camera_look_at endpoint and
     // some quaternion math to move the camera right, but it ended up being
@@ -964,40 +973,45 @@ export class CameraControls {
     // camera coordinates after a zoom-to-fit... So this is much easier, and
     // maps better to screen coordinates.
 
+    const requests: Models['ModelingCmdReq_type'][] = [
+      {
+        cmd: {
+          type: 'camera_drag_start',
+          interaction: 'pan',
+          window: { x: goPx < 0 ? -goPx : 0, y: 0 },
+        },
+        cmd_id: uuidv4(),
+      },
+      {
+        cmd: {
+          type: 'camera_drag_move',
+          interaction: 'pan',
+          window: {
+            x: goPx < 0 ? 0 : goPx,
+            y: 0,
+          },
+        },
+        cmd_id: uuidv4(),
+      },
+    ]
+
+    if (args?.zoomToFit) {
+      requests.unshift({
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: args?.zoomObjectId ? [args?.zoomObjectId] : [], // leave empty to zoom to all objects
+          padding: 0.2, // padding around the objects
+        },
+        cmd_id: uuidv4(),
+      })
+    }
+
     await this.engineCommandManager
       .sendSceneCommand({
         type: 'modeling_cmd_batch_req',
         batch_id: uuidv4(),
         responses: true,
-        requests: [
-          {
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'zoom_to_fit',
-              object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-              padding: 0.2, // padding around the objects
-            },
-          },
-          {
-            cmd: {
-              type: 'camera_drag_start',
-              interaction: 'pan',
-              window: { x: 0, y: 0 },
-            },
-            cmd_id: uuidv4(),
-          },
-          {
-            cmd: {
-              type: 'camera_drag_move',
-              interaction: 'pan',
-              window: {
-                x: goRightPx,
-                y: 0,
-              },
-            },
-            cmd_id: uuidv4(),
-          },
-        ],
+        requests,
       })
       // engineCommandManager can't subscribe to batch responses so we'll send
       // this one off by its lonesome after.
@@ -1008,7 +1022,7 @@ export class CameraControls {
             type: 'camera_drag_end',
             interaction: 'pan',
             window: {
-              x: goRightPx,
+              x: goPx < 0 ? 0 : goPx,
               y: 0,
             },
           },

@@ -500,8 +500,14 @@ test('Sketch on face', async ({ page }) => {
 
   const center = await u.getCenterOfModelViewArea()
 
-  await page.mouse.move(center.x, 180)
-  await page.mouse.click(center.x, 180)
+  // This basically waits for sketch mode to be ready.
+  await u.doAndWaitForCmd(
+    async () =>  page.mouse.click(center.x, 180),
+    'default_camera_get_settings',
+    true
+  )
+
+  await page.waitForTimeout(300)
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]

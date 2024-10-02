@@ -252,7 +252,7 @@ export const EngineStream = () => {
     if (modelingMachineState.matches('Sketch')) return
     if (modelingMachineState.matches({ idle: 'showPlanes' })) return
 
-    if (btnName(e).left) {
+    if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sendSelectEventToEngine(e, engineStreamState.context.videoRef.current)
     }

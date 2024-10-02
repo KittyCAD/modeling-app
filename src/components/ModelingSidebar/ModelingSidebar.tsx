@@ -9,6 +9,9 @@ import {
   useContext,
   MutableRefObject,
   forwardRef,
+  // https://stackoverflow.com/a/77055468 Thank you.
+  useImperativeHandle,
+  useRef,
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
@@ -41,21 +44,33 @@ function getPlatformString(): 'web' | 'desktop' {
 }
 
 export const ModelingSidebar = forwardRef<
-  HTMLUListElement | null,
+  HTMLUListElement,
   ModelingSidebarProps
->(function ModelingSidebar({ paneOpacity }, ref) {
+>(function ModelingSidebar({ paneOpacity }, outerRef) {
   const machineManager = useContext(MachineManagerContext)
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
-  const { send, context } = useModelingContext()
+  const { send, state, context } = useModelingContext()
   const pointerEventsCssClass =
     onboardingStatus.current === 'camera' ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   const showDebugPanel = settings.context.modeling.showDebugPanel
+  const innerRef = useRef<HTMLUListElement>(null)
+
+  // forwardRef's type causes me to do this type narrowing.
+  useEffect(() => {
+    if (typeof outerRef === 'function') {
+      outerRef(innerRef.current)
+    } else  {
+      if (outerRef) {
+        outerRef.current = innerRef.current
+      }
+    }
+  }, [innerRef.current])
 
   const paneCallbackProps = useMemo(
     () => ({
@@ -178,19 +193,27 @@ export const ModelingSidebar = forwardRef<
 
   // If the panes are resized then center the model also
   useEffect(() => {
-    let width = ref.current.offsetWidth
+    if (!innerRef.current) return
+
     let last = Date.now()
-    new ResizeObserver(() => {
-      if (width === ref.current.offsetWidth) return
+    const observer = new ResizeObserver(() => {
       if (Date.now() - last < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE) return
+      if (!innerRef.current) return
+
       last = Date.now()
-      width = ref.current.offsetWidth
       void sceneInfra.camControls.centerModelRelativeToPanes()
-    }).observe(ref.current)
-  }, [])
+    })
+
+    observer.observe(innerRef.current)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [state, innerRef.current])
 
   return (
     <Resizable
+      data-testid="modeling-sidebar"
       className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}
       defaultSize={{
         width: '550px',
@@ -222,6 +245,7 @@ export const ModelingSidebar = forwardRef<
         >
           <ul
             id="pane-buttons-section"
+            data-testid="pane-buttons-section"
             className={
               'w-fit p-2 flex flex-col gap-2 ' +
               (context.store?.openPanes.length >= 1 ? 'pr-0.5' : '')
@@ -267,7 +291,7 @@ export const ModelingSidebar = forwardRef<
         <ul
           id="pane-section"
           data-testid="pane-section"
-          ref={ref}
+          ref={innerRef}
           className={
             'ml-[-1px] col-start-2 col-span-1 flex flex-col gap-2 ' +
             (context.store?.openPanes.length >= 1

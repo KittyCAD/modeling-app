@@ -10,8 +10,14 @@ export const codeManager = new CodeManager()
 
 export const engineCommandManager = new EngineCommandManager()
 
-// Accessible for tests mostly
-// @ts-ignore
+declare global {
+    interface Window {
+      tearDown: typeof engineCommandManager.tearDown,
+      sceneInfra: typeof sceneInfra,
+    }
+}
+
+// Accessible for tests
 window.tearDown = engineCommandManager.tearDown
 
 // This needs to be after codeManager is created.
@@ -21,7 +27,9 @@ engineCommandManager.kclManager = kclManager
 engineCommandManager.getAstCb = () => kclManager.ast
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
-engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
+
+// Accessible for tests 
+window.sceneInfra = sceneInfra
 
 export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
 

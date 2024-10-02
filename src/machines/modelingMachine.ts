@@ -539,17 +539,19 @@ export const modelingMachine = setup({
       sketchPlaneId: '',
     }),
     'reset camera position': () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          center: { x: 0, y: 0, z: 0 },
-          vantage: { x: 0, y: -1250, z: 580 },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      })
+      ;(async () => {
+        await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_look_at',
+            center: { x: 0, y: 0, z: 0 },
+            vantage: { x: 0, y: -1250, z: 580 },
+            up: { x: 0, y: 0, z: 1 },
+          },
+        })
+        await sceneInfra.camControls.centerModelRelativeToPanes({ resetLastPaneWidth: true })
+      })().catch(reportRejection)
     },
     'set new sketch metadata': assign(({ event }) => {
       if (
