@@ -49,7 +49,7 @@ test.setTimeout(60_000)
 
 test(
   'exports of each format should work',
-  { tag: '@snapshot' },
+  { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context }) => {
     // skip on macos and windows.
     test.skip(

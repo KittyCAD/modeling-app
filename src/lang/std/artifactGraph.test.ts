@@ -14,7 +14,7 @@ import {
 } from './artifactGraph'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
-import { CI, VITE_KC_DEV_TOKEN } from 'env'
+import { VITE_KC_DEV_TOKEN } from 'env'
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { chromium } from 'playwright'
@@ -96,21 +96,6 @@ type CacheShape = {
 
 beforeAll(async () => {
   await initPromise
-
-  let parsed
-  try {
-    const file = await fsp.readFile(fullPath, 'utf-8')
-    parsed = JSON.parse(file)
-  } catch (e) {
-    parsed = false
-  }
-
-  if (!CI && parsed) {
-    // caching the results of the websocket commands makes testing this locally much faster
-    // real calls to the engine are needed to test the artifact map
-    // bust the cache with: `rm -rf src/lang/std/artifactGraphCache`
-    return
-  }
 
   // THESE TEST WILL FAIL without VITE_KC_DEV_TOKEN set in .env.development.local
   await new Promise((resolve) => {
