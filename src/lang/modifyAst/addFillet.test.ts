@@ -351,7 +351,7 @@ extrude001 = extrude(-15, sketch001)`
   |> line([-20, 0], %, $seg02)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(-15, sketch001)
+extrude001 = extrude(-15, sketch001)
   |> fillet({ radius: 3, tags: [seg02] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
@@ -369,7 +369,7 @@ const extrude001 = extrude(-15, sketch001)
   |> line([-20, 0], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(-15, sketch001)
+extrude001 = extrude(-15, sketch001)
   |> fillet({ radius: 5, tags: [seg01] }, %)`
     const segmentSnippets = ['line([-20, 0], %)']
     const radiusValue = 3
