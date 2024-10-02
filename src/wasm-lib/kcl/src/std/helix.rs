@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, ExtrudeGroup, KclValue},
+    executor::{ExecState, KclValue, Solid},
     std::Args,
 };
 
@@ -27,23 +27,23 @@ pub struct HelixData {
     #[serde(default)]
     pub ccw: bool,
     /// Length of the helix. If this argument is not provided, the height of
-    /// the extrude group is used.
+    /// the solid is used.
     pub length: Option<f64>,
 }
 
 /// Create a helix on a cylinder.
 pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group): (HelixData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, solid): (HelixData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let extrude_group = inner_helix(data, extrude_group, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_helix(data, solid, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Create a helix on a cylinder.
 ///
 /// ```no_run
 /// const part001 = startSketchOn('XY')
-///   |> circle([5, 5], 10, %)
+///   |> circle({ center: [5, 5], radius: 10 }, %)
 ///   |> extrude(10, %)
 ///   |> helix({
 ///     angleStart: 0,
@@ -54,23 +54,19 @@ pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 #[stdlib {
     name = "helix",
 }]
-async fn inner_helix(
-    data: HelixData,
-    extrude_group: Box<ExtrudeGroup>,
-    args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+async fn inner_helix(data: HelixData, solid: Box<Solid>, args: Args) -> Result<Box<Solid>, KclError> {
     let id = uuid::Uuid::new_v4();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EntityMakeHelix {
-            cylinder_id: extrude_group.id,
+            cylinder_id: solid.id,
             is_clockwise: !data.ccw,
-            length: LengthUnit(data.length.unwrap_or(extrude_group.height)),
+            length: LengthUnit(data.length.unwrap_or(solid.height)),
             revolutions: data.revolutions,
             start_angle: Angle::from_degrees(data.angle_start),
         }),
     )
     .await?;
 
-    Ok(extrude_group)
+    Ok(solid)
 }

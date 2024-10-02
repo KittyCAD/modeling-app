@@ -35,13 +35,22 @@ interface StraightSegmentInput {
   to: [number, number]
 }
 
+/** Inputs for arcs, excluding tangentialArcTo for reasons explain in
+ * the @straightSegmentInput comment */
+interface ArcSegmentInput {
+  type: 'arc-segment'
+  from: [number, number]
+  center: [number, number]
+  radius: number
+}
+
 /**
  * SegmentInputs is a union type that can be either a StraightSegmentInput or an ArcSegmentInput.
  *
  * - StraightSegmentInput: Represents a straight segment with a starting point (from) and an ending point (to).
  * - ArcSegmentInput: Represents an arc segment with a starting point (from), a center point, and a radius.
  */
-export type SegmentInputs = StraightSegmentInput // TODO ArcSegmentInput
+export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
 
 /**
  * Interface for adding or replacing a sketch stblib call expression to a sketch.
@@ -66,7 +75,14 @@ interface updateArgs extends ModifyAstBase {
   input: SegmentInputs
 }
 
-export type InputArgKeys = 'angle' | 'offset' | 'length' | 'to' | 'intersectTag'
+export type InputArgKeys =
+  | 'angle'
+  | 'offset'
+  | 'length'
+  | 'to'
+  | 'intersectTag'
+  | 'radius'
+  | 'center'
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType
@@ -182,7 +198,12 @@ export type TransformInfo = {
 
 export interface ConstrainInfo {
   stdLibFnName: ToolTip
-  type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
+  type:
+    | LineInputsType
+    | 'vertical'
+    | 'horizontal'
+    | 'tangentialWithPrevious'
+    | 'radius'
   isConstrained: boolean
   sourceRange: SourceRange
   pathToNode: PathToNode

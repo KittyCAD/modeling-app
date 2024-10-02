@@ -2,7 +2,6 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 use crate::{
     errors::KclError,

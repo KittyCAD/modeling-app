@@ -41,7 +41,7 @@ import {
   canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
-  isRangeInbetweenCharacters,
+  isRangeBetweenCharacters,
   isSketchPipe,
   updateSelections,
 } from 'lib/selections'
@@ -50,8 +50,7 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineCommandConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
-  STRAIGHT_SEGMENT,
-  TANGENTIAL_ARC_TO_SEGMENT,
+  SEGMENT_BODIES,
   getParentGroup,
   getSketchOrientationDetails,
 } from 'clientSideScene/sceneEntities'
@@ -105,7 +104,12 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: {
+          defaultUnit,
+          cameraProjection,
+          highlightEdges,
+          showScaleGrid,
+        },
       },
     },
   } = useSettingsAuthContext()
@@ -146,7 +150,9 @@ export const ModelingMachineProvider = ({
           ;(async () => {
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
@@ -168,10 +174,7 @@ export const ModelingMachineProvider = ({
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {
             if (event.data.type === 'isHovering') {
-              const parent = getParentGroup(event.data.on, [
-                STRAIGHT_SEGMENT,
-                TANGENTIAL_ARC_TO_SEGMENT,
-              ])
+              const parent = getParentGroup(event.data.on, SEGMENT_BODIES)
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
               if (!parent || !pathToNode) return context.segmentHoverMap
@@ -187,10 +190,10 @@ export const ModelingMachineProvider = ({
               event.data.type === 'idle' &&
               context.mouseState.type === 'isHovering'
             ) {
-              const mouseOnParent = getParentGroup(context.mouseState.on, [
-                STRAIGHT_SEGMENT,
-                TANGENTIAL_ARC_TO_SEGMENT,
-              ])
+              const mouseOnParent = getParentGroup(
+                context.mouseState.on,
+                SEGMENT_BODIES
+              )
               if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
                 return context.segmentHoverMap
               const pathToNodeString = JSON.stringify(
@@ -204,8 +207,8 @@ export const ModelingMachineProvider = ({
                     pathToNodeString,
                   },
                 })
-                // overlay timeout
-              }, 800) as unknown as number
+                // overlay timeout is 1s
+              }, 1000) as unknown as number
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: timeoutId,
@@ -495,43 +498,21 @@ export const ModelingMachineProvider = ({
         },
       },
       guards: {
-        'has valid extrude selection': ({ context: { selectionRanges } }) => {
+        'has valid sweep selection': ({ context: { selectionRanges } }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
-          const isPipe = isSketchPipe(selectionRanges)
-
-          if (
+          const hasNoSelection =
             selectionRanges.codeBasedSelections.length === 0 ||
-            isRangeInbetweenCharacters(selectionRanges) ||
+            isRangeBetweenCharacters(selectionRanges) ||
             isSelectionLastLine(selectionRanges, codeManager.code)
-          ) {
+
+          if (hasNoSelection) {
             // they have no selection, we should enable the button
             // so they can select the face through the cmdbar
             // BUT only if there's extrudable geometry
-            if (doesSceneHaveSweepableSketch(kclManager.ast)) return true
-            return false
+            return doesSceneHaveSweepableSketch(kclManager.ast)
           }
-          if (!isPipe) return false
-
-          return canSweepSelection(selectionRanges)
-        },
-        'has valid revolve selection': ({ context: { selectionRanges } }) => {
-          // A user can begin extruding if they either have 1+ faces selected or nothing selected
-          // TODO: I believe this guard only allows for extruding a single face at a time
-          const isPipe = isSketchPipe(selectionRanges)
-
-          if (
-            selectionRanges.codeBasedSelections.length === 0 ||
-            isRangeInbetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-          ) {
-            // they have no selection, we should enable the button
-            // so they can select the face through the cmdbar
-            // BUT only if there's extrudable geometry
-            if (doesSceneHaveSweepableSketch(kclManager.ast)) return true
-            return false
-          }
-          if (!isPipe) return false
+          if (!isSketchPipe(selectionRanges)) return false
 
           return canSweepSelection(selectionRanges)
         },
@@ -605,9 +586,15 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               input.sketchPathToNode,
               input.extrudePathToNode,
-              input.cap
+              input.faceInfo
             )
-            if (trap(sketched)) return Promise.reject(sketched)
+            if (err(sketched)) {
+              const sketchedError = new Error(
+                'Incompatible face, please try another'
+              )
+              trap(sketchedError)
+              return Promise.reject(sketchedError)
+            }
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
             await kclManager.executeAstMock(modifiedAst)
@@ -994,6 +981,7 @@ export const ModelingMachineProvider = ({
       highlightEdges: highlightEdges.current,
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
+      cameraProjection: cameraProjection.current,
     },
     token
   )

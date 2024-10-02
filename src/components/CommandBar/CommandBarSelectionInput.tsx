@@ -31,8 +31,8 @@ function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
   return Array.from(semanticSelectionType)
 }
 
-const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
-  snapshot.context.selectionRanges
+const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
+  snapshot?.context.selectionRanges
 
 function CommandBarSelectionInput({
   arg,
@@ -49,7 +49,7 @@ function CommandBarSelectionInput({
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    const selectionRangeEnd = selection.codeBasedSelections[0]?.range[1]
+    const selectionRangeEnd = selection?.codeBasedSelections[0]?.range[1]
     return !selectionRangeEnd || selectionRangeEnd === code.length
       ? 'none'
       : getSelectionType(selection)

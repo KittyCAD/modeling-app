@@ -3,8 +3,9 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, Expr, FormatOptions,
-        FunctionExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeValue,
-        ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
+        FunctionExpression, IfExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
+        NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
+        VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -121,6 +122,7 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
+            Expr::IfExpression(e) => e.recast(options, indentation_level, is_in_pipe),
             Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
@@ -138,6 +140,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.recast(options, indentation_level, false),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
             BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
+            BinaryPart::IfExpression(e) => e.recast(options, indentation_level, false),
         }
     }
 }
@@ -165,11 +168,14 @@ impl VariableDeclaration {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
         self.declarations.iter().fold(String::new(), |mut output, declaration| {
+            let keyword = match self.kind {
+                VariableKind::Fn => "fn ",
+                VariableKind::Const => "",
+            };
             let _ = write!(
                 output,
-                "{}{} {} = {}",
+                "{}{keyword}{} = {}",
                 indentation,
-                self.kind,
                 declaration.id.name,
                 declaration.init.recast(options, indentation_level, false).trim()
             );
@@ -403,6 +409,7 @@ impl UnaryExpression {
             BinaryPart::Literal(_)
             | BinaryPart::Identifier(_)
             | BinaryPart::MemberExpression(_)
+            | BinaryPart::IfExpression(_)
             | BinaryPart::CallExpression(_) => {
                 format!("{}{}", &self.operator, self.argument.recast(options, 0))
             }
@@ -410,6 +417,32 @@ impl UnaryExpression {
                 format!("{}({})", &self.operator, self.argument.recast(options, 0))
             }
         }
+    }
+}
+
+impl IfExpression {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+        // We can calculate how many lines this will take, so let's do it and avoid growing the vec.
+        // Total lines = starting lines, else-if lines, ending lines.
+        let n = 2 + (self.else_ifs.len() * 2) + 3;
+        let mut lines = Vec::with_capacity(n);
+
+        let cond = self.cond.recast(options, indentation_level, is_in_pipe);
+        lines.push((0, format!("if {cond} {{")));
+        lines.push((1, self.then_val.recast(options, indentation_level + 1)));
+        for else_if in &self.else_ifs {
+            let cond = else_if.cond.recast(options, indentation_level, is_in_pipe);
+            lines.push((0, format!("}} else if {cond} {{")));
+            lines.push((1, else_if.then_val.recast(options, indentation_level + 1)));
+        }
+        lines.push((0, "} else {".to_owned()));
+        lines.push((1, self.final_else.recast(options, indentation_level + 1)));
+        lines.push((0, "}".to_owned()));
+        lines
+            .into_iter()
+            .map(|(ind, line)| format!("{}{}", options.get_indentation(indentation_level + ind), line.trim()))
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }
 
@@ -478,14 +511,46 @@ mod tests {
     use crate::ast::types::FormatOptions;
 
     #[test]
+    fn test_recast_if_else_if_same() {
+        let input = r#"b = if false {
+  3
+} else if true {
+  4
+} else {
+  5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_if_same() {
+        let input = r#"b = if false {
+  3
+} else {
+  5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
     fn test_recast_bug_fn_in_fn() {
         let some_program_string = r#"// Start point (top left)
-const zoo_x = -20
-const zoo_y = 7
+zoo_x = -20
+zoo_y = 7
 // Scale
-const s = 1 // s = 1 -> height of Z is 13.4mm
+s = 1 // s = 1 -> height of Z is 13.4mm
 // Depth
-const d = 1
+d = 1
 
 fn rect = (x, y, w, h) => {
   startSketchOn('XY')
@@ -518,11 +583,11 @@ fn crosshair = (x, y) => {
 }
 
 fn z = (z_x, z_y) => {
-  const z_end_w = s * 8.4
-  const z_end_h = s * 3
-  const z_corner = s * 2
-  const z_w = z_end_w + 2 * z_corner
-  const z_h = z_w * 1.08130081300813
+  z_end_w = s * 8.4
+  z_end_h = s * 3
+  z_corner = s * 2
+  z_w = z_end_w + 2 * z_corner
+  z_h = z_w * 1.08130081300813
   rect(z_x, z_y, z_end_w, -z_end_h)
   rect(z_x + z_w, z_y, -z_corner, -z_corner)
   rect(z_x + z_w, z_y - z_h, -z_end_w, z_end_h)
@@ -532,23 +597,23 @@ fn z = (z_x, z_y) => {
 
 fn o = (c_x, c_y) => {
   // Outer and inner radii
-  const o_r = s * 6.95
-  const i_r = 0.5652173913043478 * o_r
+  o_r = s * 6.95
+  i_r = 0.5652173913043478 * o_r
 
   // Angle offset for diagonal break
-  const a = 7
+  a = 7
 
   // Start point for the top sketch
-  const o_x1 = c_x + o_r * cos((45 + a) / 360 * tau())
-  const o_y1 = c_y + o_r * sin((45 + a) / 360 * tau())
+  o_x1 = c_x + o_r * cos((45 + a) / 360 * tau())
+  o_y1 = c_y + o_r * sin((45 + a) / 360 * tau())
 
   // Start point for the bottom sketch
-  const o_x2 = c_x + o_r * cos((225 + a) / 360 * tau())
-  const o_y2 = c_y + o_r * sin((225 + a) / 360 * tau())
+  o_x2 = c_x + o_r * cos((225 + a) / 360 * tau())
+  o_y2 = c_y + o_r * sin((225 + a) / 360 * tau())
 
   // End point for the bottom startSketchAt
-  const o_x3 = c_x + o_r * cos((45 - a) / 360 * tau())
-  const o_y3 = c_y + o_r * sin((45 - a) / 360 * tau())
+  o_x3 = c_x + o_r * cos((45 - a) / 360 * tau())
+  o_y3 = c_y + o_r * sin((45 - a) / 360 * tau())
 
   // Where is the center?
   // crosshair(c_x, c_y)
@@ -609,13 +674,13 @@ zoo(zoo_x, zoo_y)
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
-const sphereDia = 0.5
-const insideDia = 1
-const thickness = 0.25
-const overHangLength = .4
+sphereDia = 0.5
+insideDia = 1
+thickness = 0.25
+overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-const insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn('XZ')
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -629,7 +694,7 @@ const insideRevolve = startSketchOn('XZ')
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-const sphere = startSketchOn('XZ')
+sphere = startSketchOn('XZ')
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -651,7 +716,7 @@ const sphere = startSketchOn('XZ')
      }, %)
 
 // Sketch and revolve the outside bearing
-const outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn('XZ')
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -678,13 +743,13 @@ const outsideRevolve = startSketchOn('XZ')
 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
-const sphereDia = 0.5
-const insideDia = 1
-const thickness = 0.25
-const overHangLength = .4
+sphereDia = 0.5
+insideDia = 1
+thickness = 0.25
+overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-const insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn('XZ')
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -698,7 +763,7 @@ const insideRevolve = startSketchOn('XZ')
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-const sphere = startSketchOn('XZ')
+sphere = startSketchOn('XZ')
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -720,7 +785,7 @@ const sphere = startSketchOn('XZ')
      }, %)
 
 // Sketch and revolve the outside bearing
-const outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn('XZ')
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -741,8 +806,8 @@ const outsideRevolve = startSketchOn('XZ')
 
     #[test]
     fn test_recast_fn_in_object() {
-        let some_program_string = r#"const bing = { yo: 55 }
-const myNestedVar = [{ prop: callExp(bing.yo) }]
+        let some_program_string = r#"bing = { yo: 55 }
+myNestedVar = [{ prop: callExp(bing.yo) }]
 "#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -754,8 +819,8 @@ const myNestedVar = [{ prop: callExp(bing.yo) }]
 
     #[test]
     fn test_recast_fn_in_array() {
-        let some_program_string = r#"const bing = { yo: 55 }
-const myNestedVar = [callExp(bing.yo)]
+        let some_program_string = r#"bing = { yo: 55 }
+myNestedVar = [callExp(bing.yo)]
 "#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -791,8 +856,8 @@ thing(1)
 
     #[test]
     fn test_recast_object_fn_in_array_weird_bracket() {
-        let some_program_string = r#"const bing = { yo: 55 }
-const myNestedVar = [
+        let some_program_string = r#"bing = { yo: 55 }
+myNestedVar = [
   {
   prop:   line([bing.yo, 21], sketch001)
 }
@@ -805,8 +870,8 @@ const myNestedVar = [
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const bing = { yo: 55 }
-const myNestedVar = [
+            r#"bing = { yo: 55 }
+myNestedVar = [
   { prop: line([bing.yo, 21], sketch001) }
 ]
 "#
@@ -856,7 +921,7 @@ const myNestedVar = [
     #[test]
     fn test_recast_shebang() {
         let some_program_string = r#"#!/usr/local/env zoo kcl
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -873,7 +938,7 @@ const part001 = startSketchOn('XY')
             recasted,
             r#"#!/usr/local/env zoo kcl
 
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -889,7 +954,7 @@ const part001 = startSketchOn('XY')
         
 
 
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -906,7 +971,7 @@ const part001 = startSketchOn('XY')
             recasted,
             r#"#!/usr/local/env zoo kcl
 
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -921,7 +986,7 @@ const part001 = startSketchOn('XY')
         let some_program_string = r#"#!/usr/local/env zoo kcl
         
 // Yo yo my comments.
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -939,7 +1004,7 @@ const part001 = startSketchOn('XY')
             r#"#!/usr/local/env zoo kcl
 
 // Yo yo my comments.
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -951,16 +1016,16 @@ const part001 = startSketchOn('XY')
 
     #[test]
     fn test_recast_large_file() {
-        let some_program_string = r#"// define constants
-const radius = 6.0
-const width = 144.0
-const length = 83.0
-const depth = 45.0
-const thk = 5
-const hole_diam = 5
+        let some_program_string = r#"// define nts
+radius = 6.0
+width = 144.0
+length = 83.0
+depth = 45.0
+thk = 5
+hole_diam = 5
 // define a rectangular shape func
 fn rectShape = (pos, w, l) => {
-  const rr = startSketchOn('xy')
+  rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %,$edge1)
     |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
@@ -970,7 +1035,7 @@ fn rectShape = (pos, w, l) => {
 }
 // build the body of the focusrite scarlett solo gen 4
 // only used for visualization
-const scarlett_body = rectShape([0, 0], width, length)
+scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
   |> fillet({
        radius: radius,
@@ -983,7 +1048,7 @@ const scarlett_body = rectShape([0, 0], width, length)
      }, %)
   // build the bracket sketch around the body
 fn bracketSketch = (w, d, t) => {
-  const s = startSketchOn({
+  s = startSketchOn({
          plane: {
   origin: { x: 0, y: length / 2 + thk, z: 0 },
   x_axis: { x: 1, y: 0, z: 0 },
@@ -1003,7 +1068,7 @@ fn bracketSketch = (w, d, t) => {
   return s
 }
 // build the body of the bracket
-const bracket_body = bracketSketch(width, depth, thk)
+bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
   |> fillet({
        radius: radius,
@@ -1015,7 +1080,7 @@ const bracket_body = bracketSketch(width, depth, thk)
 ]
      }, %)
   // build the tabs of the mounting bracket (right side)
-const tabs_r = startSketchOn({
+tabs_r = startSketchOn({
        plane: {
   origin: { x: 0, y: 0, z: depth + thk },
   x_axis: { x: 1, y: 0, z: 0 },
@@ -1028,10 +1093,13 @@ const tabs_r = startSketchOn({
   |> line([0, -10], %)
   |> line([-10, -5], %)
   |> close(%)
-  |> hole(circle([
-       width / 2 + thk + hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         width / 2 + thk + hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
@@ -1039,7 +1107,7 @@ const tabs_r = startSketchOn({
        distance: length - 10
      }, %)
   // build the tabs of the mounting bracket (left side)
-const tabs_l = startSketchOn({
+tabs_l = startSketchOn({
        plane: {
   origin: { x: 0, y: 0, z: depth + thk },
   x_axis: { x: 1, y: 0, z: 0 },
@@ -1052,10 +1120,13 @@ const tabs_l = startSketchOn({
   |> line([0, -10], %)
   |> line([10, -5], %)
   |> close(%)
-  |> hole(circle([
-       -width / 2 - thk - hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         -width / 2 - thk - hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
@@ -1071,16 +1142,16 @@ const tabs_l = startSketchOn({
         // Its VERY important this comes back with zero new lines.
         assert_eq!(
             recasted,
-            r#"// define constants
-const radius = 6.0
-const width = 144.0
-const length = 83.0
-const depth = 45.0
-const thk = 5
-const hole_diam = 5
+            r#"// define nts
+radius = 6.0
+width = 144.0
+length = 83.0
+depth = 45.0
+thk = 5
+hole_diam = 5
 // define a rectangular shape func
 fn rectShape = (pos, w, l) => {
-  const rr = startSketchOn('xy')
+  rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
     |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
@@ -1090,7 +1161,7 @@ fn rectShape = (pos, w, l) => {
 }
 // build the body of the focusrite scarlett solo gen 4
 // only used for visualization
-const scarlett_body = rectShape([0, 0], width, length)
+scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
   |> fillet({
        radius: radius,
@@ -1103,7 +1174,7 @@ const scarlett_body = rectShape([0, 0], width, length)
      }, %)
 // build the bracket sketch around the body
 fn bracketSketch = (w, d, t) => {
-  const s = startSketchOn({
+  s = startSketchOn({
          plane: {
            origin: { x: 0, y: length / 2 + thk, z: 0 },
            x_axis: { x: 1, y: 0, z: 0 },
@@ -1123,7 +1194,7 @@ fn bracketSketch = (w, d, t) => {
   return s
 }
 // build the body of the bracket
-const bracket_body = bracketSketch(width, depth, thk)
+bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
   |> fillet({
        radius: radius,
@@ -1135,7 +1206,7 @@ const bracket_body = bracketSketch(width, depth, thk)
        ]
      }, %)
 // build the tabs of the mounting bracket (right side)
-const tabs_r = startSketchOn({
+tabs_r = startSketchOn({
        plane: {
          origin: { x: 0, y: 0, z: depth + thk },
          x_axis: { x: 1, y: 0, z: 0 },
@@ -1148,10 +1219,13 @@ const tabs_r = startSketchOn({
   |> line([0, -10], %)
   |> line([-10, -5], %)
   |> close(%)
-  |> hole(circle([
-       width / 2 + thk + hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         width / 2 + thk + hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
@@ -1159,7 +1233,7 @@ const tabs_r = startSketchOn({
        distance: length - 10
      }, %)
 // build the tabs of the mounting bracket (left side)
-const tabs_l = startSketchOn({
+tabs_l = startSketchOn({
        plane: {
          origin: { x: 0, y: 0, z: depth + thk },
          x_axis: { x: 1, y: 0, z: 0 },
@@ -1172,10 +1246,13 @@ const tabs_l = startSketchOn({
   |> line([0, -10], %)
   |> line([10, -5], %)
   |> close(%)
-  |> hole(circle([
-       -width / 2 - thk - hole_diam,
-       length / 2 - hole_diam
-     ], hole_diam / 2, %), %)
+  |> hole(circle({
+       center: [
+         -width / 2 - thk - hole_diam,
+         length / 2 - hole_diam
+       ],
+       radius: hole_diam / 2
+     }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
@@ -1189,7 +1266,7 @@ const tabs_l = startSketchOn({
     #[test]
     fn test_recast_nested_var_declaration_in_fn_body() {
         let some_program_string = r#"fn cube = (pos, scale) => {
-   const sg = startSketchOn('XY')
+   sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
   |> line([0, scale], %)
   |> line([scale, 0], %)
@@ -1205,7 +1282,7 @@ const tabs_l = startSketchOn({
         assert_eq!(
             recasted,
             r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -1219,7 +1296,7 @@ const tabs_l = startSketchOn({
 
     #[test]
     fn test_recast_with_bad_indentation() {
-        let some_program_string = r#"const part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn('XY')
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
     |> line([0.6804562304, 0.9087880491], %)"#;
@@ -1230,7 +1307,7 @@ const tabs_l = startSketchOn({
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn('XY')
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   |> line([0.6804562304, 0.9087880491], %)
@@ -1240,7 +1317,7 @@ const tabs_l = startSketchOn({
 
     #[test]
     fn test_recast_with_bad_indentation_and_inline_comment() {
-        let some_program_string = r#"const part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn('XY')
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %) // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
@@ -1251,7 +1328,7 @@ const tabs_l = startSketchOn({
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn('XY')
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %) // hello world
   |> line([0.6804562304, 0.9087880491], %)
@@ -1260,7 +1337,7 @@ const tabs_l = startSketchOn({
     }
     #[test]
     fn test_recast_with_bad_indentation_and_line_comment() {
-        let some_program_string = r#"const part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn('XY')
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
         // hello world
@@ -1272,7 +1349,7 @@ const tabs_l = startSketchOn({
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const part001 = startSketchOn('XY')
+            r#"part001 = startSketchOn('XY')
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   // hello world
@@ -1285,10 +1362,10 @@ const tabs_l = startSketchOn({
     fn test_recast_comment_in_a_fn_block() {
         let some_program_string = r#"fn myFn = () => {
   // this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
+  yo = { a: { b: { c: '123' } } } /* block
   comment */
 
-  const key = 'c'
+  key = 'c'
   // this is also a comment
     return things
 }"#;
@@ -1301,10 +1378,10 @@ const tabs_l = startSketchOn({
             recasted,
             r#"fn myFn = () => {
   // this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
+  yo = { a: { b: { c: '123' } } } /* block
   comment */
 
-  const key = 'c'
+  key = 'c'
   // this is also a comment
   return things
 }
@@ -1314,9 +1391,9 @@ const tabs_l = startSketchOn({
 
     #[test]
     fn test_recast_comment_under_variable() {
-        let some_program_string = r#"const key = 'c'
+        let some_program_string = r#"key = 'c'
 // this is also a comment
-const thing = 'foo'
+thing = 'foo'
 "#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -1325,9 +1402,9 @@ const thing = 'foo'
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const key = 'c'
+            r#"key = 'c'
 // this is also a comment
-const thing = 'foo'
+thing = 'foo'
 "#
         );
     }
@@ -1336,10 +1413,10 @@ const thing = 'foo'
     fn test_recast_multiline_comment_start_file() {
         let some_program_string = r#"// hello world
 // I am a comment
-const key = 'c'
+key = 'c'
 // this is also a comment
 // hello
-const thing = 'foo'
+thing = 'foo'
 "#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -1350,10 +1427,10 @@ const thing = 'foo'
             recasted,
             r#"// hello world
 // I am a comment
-const key = 'c'
+key = 'c'
 // this is also a comment
 // hello
-const thing = 'foo'
+thing = 'foo'
 "#
         );
     }
@@ -1363,13 +1440,13 @@ const thing = 'foo'
         let some_program_string = r#"// hello world
 //
 // I am a comment
-const key = 'c'
+key = 'c'
 
 //
 // I am a comment
-const thing = 'c'
+thing = 'c'
 
-const foo = 'bar' //
+foo = 'bar' //
 "#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -1381,23 +1458,23 @@ const foo = 'bar' //
             r#"// hello world
 //
 // I am a comment
-const key = 'c'
+key = 'c'
 
 //
 // I am a comment
-const thing = 'c'
+thing = 'c'
 
-const foo = 'bar' //
+foo = 'bar' //
 "#
         );
     }
 
     #[test]
     fn test_recast_multiline_comment_under_variable() {
-        let some_program_string = r#"const key = 'c'
+        let some_program_string = r#"key = 'c'
 // this is also a comment
 // hello
-const thing = 'foo'
+thing = 'foo'
 "#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -1406,10 +1483,10 @@ const thing = 'foo'
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const key = 'c'
+            r#"key = 'c'
 // this is also a comment
 // hello
-const thing = 'foo'
+thing = 'foo'
 "#
         );
     }
@@ -1419,7 +1496,7 @@ const thing = 'foo'
         let test_program = r#"
 /* comment at start */
 
-const mySk1 = startSketchAt([0, 0])"#;
+mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(test_program).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -1429,7 +1506,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             recasted,
             r#"/* comment at start */
 
-const mySk1 = startSketchAt([0, 0])
+mySk1 = startSketchAt([0, 0])
 "#
         );
     }
@@ -1437,7 +1514,7 @@ const mySk1 = startSketchAt([0, 0])
     #[test]
     fn test_recast_lots_of_comments() {
         let some_program_string = r#"// comment at start
-const mySk1 = startSketchOn('XY')
+mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
@@ -1460,7 +1537,7 @@ const mySk1 = startSketchOn('XY')
         assert_eq!(
             recasted,
             r#"// comment at start
-const mySk1 = startSketchOn('XY')
+mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
@@ -1480,7 +1557,7 @@ const mySk1 = startSketchOn('XY')
 
     #[test]
     fn test_recast_multiline_object() {
-        let some_program_string = r#"const part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.08], %)
   |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
@@ -1500,15 +1577,15 @@ const mySk1 = startSketchOn('XY')
 
     #[test]
     fn test_recast_first_level_object() {
-        let some_program_string = r#"const three = 3
+        let some_program_string = r#"three = 3
 
-const yo = {
+yo = {
   aStr: 'str',
   anum: 2,
   identifier: three,
   binExp: 4 + 5
 }
-const yo = [
+yo = [
   1,
   "  2,",
   "three",
@@ -1528,10 +1605,10 @@ const yo = [
     fn test_recast_new_line_before_comment() {
         let some_program_string = r#"
 // this is a comment
-const yo = { a: { b: { c: '123' } } }
+yo = { a: { b: { c: '123' } } }
 
-const key = 'c'
-const things = "things"
+key = 'c'
+things = "things"
 
 // this is also a comment"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -1547,7 +1624,7 @@ const things = "things"
 
     #[test]
     fn test_recast_comment_tokens_inside_strings() {
-        let some_program_string = r#"let b = {
+        let some_program_string = r#"b = {
   end: 141,
   start: 125,
   type: "NonCodeNode",
@@ -1565,12 +1642,12 @@ const things = "things"
 
     #[test]
     fn test_recast_array_new_line_in_pipe() {
-        let some_program_string = r#"const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+        let some_program_string = r#"myVar = 3
+myVar2 = 5
+myVar3 = 6
+myAng = 40
+myAng2 = 134
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
@@ -1591,12 +1668,12 @@ const part001 = startSketchOn('XY')
 
     #[test]
     fn test_recast_array_new_line_in_pipe_custom() {
-        let some_program_string = r#"const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+        let some_program_string = r#"myVar = 3
+myVar2 = 5
+myVar3 = 6
+myAng = 40
+myAng2 = 134
+part001 = startSketchOn('XY')
    |> startProfileAt([0, 0], %)
    |> line([1, 3.82], %, $seg01) // ln-should-get-tag
    |> angledLineToX([
@@ -1625,15 +1702,15 @@ const part001 = startSketchOn('XY')
 
     #[test]
     fn test_recast_after_rename_std() {
-        let some_program_string = r#"const part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn('XY')
   |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
-const part002 = "part002"
-const things = [part001, 0.0]
-let blah = 1
-const foo = false
-let baz = {a: 1, part001: "thing"}
+part002 = "part002"
+things = [part001, 0.0]
+blah = 1
+foo = false
+baz = {a: 1, part001: "thing"}
 
 fn ghi = (part001) => {
   return part001
@@ -1647,15 +1724,15 @@ fn ghi = (part001) => {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const mySuperCoolPart = startSketchOn('XY')
+            r#"mySuperCoolPart = startSketchOn('XY')
   |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
 
-const part002 = "part002"
-const things = [mySuperCoolPart, 0.0]
-let blah = 1
-const foo = false
-let baz = { a: 1, part001: "thing" }
+part002 = "part002"
+things = [mySuperCoolPart, 0.0]
+blah = 1
+foo = false
+baz = { a: 1, part001: "thing" }
 
 fn ghi = (part001) => {
   return part001
@@ -1713,11 +1790,11 @@ fn ghi = (part001) => {
 
     #[test]
     fn test_recast_negative_var() {
-        let some_program_string = r#"const w = 20
-const l = 8
-const h = 10
+        let some_program_string = r#"w = 20
+l = 8
+h = 10
 
-const firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -1732,11 +1809,11 @@ const firstExtrude = startSketchOn('XY')
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const w = 20
-const l = 8
-const h = 10
+            r#"w = 20
+l = 8
+h = 10
 
-const firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -1749,14 +1826,14 @@ const firstExtrude = startSketchOn('XY')
 
     #[test]
     fn test_recast_multiline_comment() {
-        let some_program_string = r#"const w = 20
-const l = 8
-const h = 10
+        let some_program_string = r#"w = 20
+l = 8
+h = 10
 
 // This is my comment
 // It has multiple lines
 // And it's really long
-const firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -1771,14 +1848,14 @@ const firstExtrude = startSketchOn('XY')
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const w = 20
-const l = 8
-const h = 10
+            r#"w = 20
+l = 8
+h = 10
 
 // This is my comment
 // It has multiple lines
 // And it's really long
-const firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
@@ -1791,7 +1868,7 @@ const firstExtrude = startSketchOn('XY')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_start_negative() {
-        let some_program_string = r#"const myVar = -5 + 6"#;
+        let some_program_string = r#"myVar = -5 + 6"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -1802,8 +1879,8 @@ const firstExtrude = startSketchOn('XY')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_negate_parens() {
-        let some_program_string = r#"const wallMountL = 3.82
-const thickness = 0.5
+        let some_program_string = r#"wallMountL = 3.82
+thickness = 0.5
 
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -1821,12 +1898,23 @@ startSketchOn('XY')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_nested_parens() {
-        let some_program_string = r#"const distance = 5
-const p = 3
-const FOS = 2
-const sigmaAllow = 8
-const width = 20
-const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
+        let some_program_string = r#"distance = 5
+p = 3
+FOS = 2
+sigmaAllow = 8
+width = 20
+thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_vardec_keyword() {
+        let some_program_string = r#"distance = 5"#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -1874,7 +1962,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
     #[test]
     fn recast_objects_no_comments() {
         let input = r#"
-const sketch002 = startSketchOn({
+sketch002 = startSketchOn({
        plane: {
     origin: { x: 1, y: 2, z: 3 },
     x_axis: { x: 4, y: 5, z: 6 },
@@ -1883,7 +1971,7 @@ const sketch002 = startSketchOn({
        }
   })
 "#;
-        let expected = r#"const sketch002 = startSketchOn({
+        let expected = r#"sketch002 = startSketchOn({
   plane: {
     origin: { x: 1, y: 2, z: 3 },
     x_axis: { x: 4, y: 5, z: 6 },

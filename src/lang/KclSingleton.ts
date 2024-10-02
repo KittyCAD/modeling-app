@@ -43,6 +43,7 @@ export class KclManager {
     digest: null,
   }
   private _programMemory: ProgramMemory = ProgramMemory.empty()
+  lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
   private _lints: Diagnostic[] = []
   private _kclErrors: KCLError[] = []
@@ -297,6 +298,9 @@ export class KclManager {
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addKclErrors(isInterrupted ? [] : errors)
     this.programMemory = programMemory
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = programMemory
+    }
     this.ast = { ...ast }
     this._executeCallback()
     this.engineCommandManager.addCommandLog({
@@ -342,6 +346,9 @@ export class KclManager {
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = programMemory
+    }
     if (updates !== 'artifactRanges') return
 
     // TODO the below seems like a work around, I wish there's a comment explaining exactly what
@@ -416,7 +423,7 @@ export class KclManager {
     ast: Program,
     execute: boolean,
     optionalParams?: {
-      focusPath?: PathToNode
+      focusPath?: Array<PathToNode>
       zoomToFit?: boolean
       zoomOnRangeAndType?: {
         range: SourceRange
@@ -435,27 +442,34 @@ export class KclManager {
     let returnVal: Selections | undefined = undefined
 
     if (optionalParams?.focusPath) {
-      const _node1 = getNodeFromPath<any>(
-        astWithUpdatedSource,
-        optionalParams?.focusPath
-      )
-      if (err(_node1)) return Promise.reject(_node1)
-      const { node } = _node1
-
-      const { start, end } = node
-      if (!start || !end)
-        return {
-          selections: undefined,
-          newAst: astWithUpdatedSource,
-        }
       returnVal = {
-        codeBasedSelections: [
-          {
+        codeBasedSelections: [],
+        otherSelections: [],
+      }
+
+      for (const path of optionalParams.focusPath) {
+        const getNodeFromPathResult = getNodeFromPath<any>(
+          astWithUpdatedSource,
+          path
+        )
+        if (err(getNodeFromPathResult))
+          return Promise.reject(getNodeFromPathResult)
+        const { node } = getNodeFromPathResult
+
+        const { start, end } = node
+
+        if (!start || !end)
+          return {
+            selections: undefined,
+            newAst: astWithUpdatedSource,
+          }
+
+        if (start && end) {
+          returnVal.codeBasedSelections.push({
             type: 'default',
             range: [start, end],
-          },
-        ],
-        otherSelections: [],
+          })
+        }
       }
     }
 
@@ -545,7 +559,7 @@ function defaultSelectionFilter(
   engineCommandManager: EngineCommandManager
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  programMemory.hasSketchOrExtrudeGroup() &&
+  programMemory.hasSketchOrSolid() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

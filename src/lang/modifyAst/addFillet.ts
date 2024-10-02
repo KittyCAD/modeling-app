@@ -8,7 +8,7 @@ import {
   Expr,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from '../wasm'
 import {
   createCallExpressionStdLib,
@@ -65,7 +65,7 @@ export function modifyAstWithFilletAndTag(
   ast: Program,
   selection: Selections,
   radius: KclCommandValue
-): { modifiedAst: Program; pathToFilletNode: PathToNode } | Error {
+): { modifiedAst: Program; pathToFilletNode: Array<PathToNode> } | Error {
   const astResult = insertRadiusIntoAst(ast, radius)
   if (err(astResult)) return astResult
 
@@ -73,7 +73,8 @@ export function modifyAstWithFilletAndTag(
   const artifactGraph = engineCommandManager.artifactGraph
 
   let clonedAst = structuredClone(ast)
-  let lastPathToFilletNode: PathToNode = []
+  const clonedAstForGetExtrude = structuredClone(ast)
+  let pathToFilletNodes: Array<PathToNode> = []
 
   for (const selectionRange of selection.codeBasedSelections) {
     const singleSelection = {
@@ -82,7 +83,7 @@ export function modifyAstWithFilletAndTag(
     }
     const getPathToExtrudeForSegmentSelectionResult =
       getPathToExtrudeForSegmentSelection(
-        clonedAst,
+        clonedAstForGetExtrude,
         singleSelection,
         programMemory,
         artifactGraph
@@ -101,9 +102,9 @@ export function modifyAstWithFilletAndTag(
     if (trap(addFilletResult)) return addFilletResult
     const { modifiedAst, pathToFilletNode } = addFilletResult
     clonedAst = modifiedAst
-    lastPathToFilletNode = pathToFilletNode
+    pathToFilletNodes.push(pathToFilletNode)
   }
-  return { modifiedAst: clonedAst, pathToFilletNode: lastPathToFilletNode }
+  return { modifiedAst: clonedAst, pathToFilletNode: pathToFilletNodes }
 }
 
 function insertRadiusIntoAst(
@@ -146,13 +147,13 @@ export function getPathToExtrudeForSegmentSelection(
   if (err(varDecNode)) return varDecNode
   const sketchVar = varDecNode.node.declarations[0].id.name
 
-  const sketchGroup = sketchGroupFromKclValue(
+  const sketch = sketchFromKclValue(
     kclManager.programMemory.get(sketchVar),
     sketchVar
   )
-  if (trap(sketchGroup)) return sketchGroup
+  if (trap(sketch)) return sketch
 
-  const extrusion = getSweepFromSuspectedPath(sketchGroup.id, artifactGraph)
+  const extrusion = getSweepFromSuspectedPath(sketch.id, artifactGraph)
   if (err(extrusion)) return extrusion
 
   const pathToExtrudeNode = getNodePathFromSourceRange(
@@ -166,7 +167,7 @@ export function getPathToExtrudeForSegmentSelection(
 
 async function updateAstAndFocus(
   modifiedAst: Program,
-  pathToFilletNode: PathToNode
+  pathToFilletNode: Array<PathToNode>
 ) {
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
     focusPath: pathToFilletNode,
@@ -233,7 +234,8 @@ function mutateAstWithTagForSketchSegment(
       pathToNode: pathToSegmentNode,
       node: astClone,
     },
-    segmentNode.node.callee.name
+    segmentNode.node.callee.name,
+    null
   )
   if (err(taggedSegment)) return taggedSegment
   const { tag } = taggedSegment
