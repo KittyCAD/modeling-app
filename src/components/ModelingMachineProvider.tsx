@@ -1039,7 +1039,7 @@ export const ModelingMachineProvider = ({
   })
 
   // Allow ctrl+alt+c to center to selection
-  useHotkeys(['ctrl + alt + c'], () => {
+  useHotkeys(['mod + alt + c'], () => {
     console.log('centering!');
       (
         async () => {
