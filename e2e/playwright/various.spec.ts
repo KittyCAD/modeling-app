@@ -408,7 +408,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
     await page.mouse.move(800, 200, { steps: 5 })
     await page.mouse.click(800, 200)
     await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible({
-      timeout: 20_000
+      timeout: 20_000,
     })
     await page.getByRole('button', { name: 'Continue' }).click()
     await expect(
