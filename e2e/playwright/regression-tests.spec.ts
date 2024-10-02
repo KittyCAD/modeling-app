@@ -29,8 +29,8 @@ test.describe('Regression tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch2 = startSketchOn("XY")
-const sketch001 = startSketchAt([-0, -0])
+        `sketch2 = startSketchOn("XY")
+sketch001 = startSketchAt([-0, -0])
   |> line([0, 0], %)
   |> line([-4.84, -5.29], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -64,8 +64,8 @@ const sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch2 = startSketchOn("XY")
-const sketch001 = startSketchAt([-0, -0])
+        `sketch2 = startSketchOn("XY")
+sketch001 = startSketchAt([-0, -0])
   |> line([0, 0], %)
   |> line([-4.84, -5.29], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -120,7 +120,7 @@ const sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('-XZ')
+        `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([-6.95, 4.98], %)
     |> line([25.1, 0.41], %)
     |> line([0.73, -14.93], %)
@@ -151,7 +151,7 @@ const sketch001 = startSketchAt([-0, -0])
   test('re-executes', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
-      localStorage.setItem('persistCode', `const myVar = 5`)
+      localStorage.setItem('persistCode', `myVar = 5`)
     })
     await page.setViewportSize({ width: 1000, height: 500 })
 
@@ -165,7 +165,7 @@ const sketch001 = startSketchAt([-0, -0])
     ).toBeVisible()
 
     // change 5 to 67
-    await page.getByText('const myVar').click()
+    await page.getByText('myVar').click()
     await page.keyboard.press('End')
     await page.keyboard.press('Backspace')
     await page.keyboard.type('67')
@@ -179,7 +179,7 @@ const sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const part = startSketchOn('XY')
+        `part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0, 1], %)
     |> line([1, 0], %)
@@ -234,14 +234,14 @@ const sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const exampleSketch = startSketchOn("XZ")
+        `exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
     |> close(%)
     |>
 
-  const example = extrude(5, exampleSketch)
+  example = extrude(5, exampleSketch)
   shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
       )
     })
@@ -289,7 +289,7 @@ const sketch001 = startSketchAt([-0, -0])
     await page.keyboard.press('ArrowLeft')
 
     await expect(page.locator('.cm-content'))
-      .toContainText(`const exampleSketch = startSketchOn("XZ")
+      .toContainText(`exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
