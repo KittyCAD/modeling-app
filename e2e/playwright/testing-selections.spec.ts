@@ -15,234 +15,240 @@ test.afterEach(async ({ page }, testInfo) => {
 
 test.describe('Testing selections', () => {
   test.setTimeout(90_000)
-  test('Selections work on fresh and edited sketch', async ({ page }) => {
-    // Skip on windows its being weird.
-    test.skip(process.platform === 'win32', 'Skip on windows')
+  test(
+    'Selections work on fresh and edited sketch',
+    { tag: ['@skipWin'] },
+    async ({ page }) => {
+      // Skip on windows its being weird.
+      test.skip(process.platform === 'win32', 'Skip on windows')
 
-    // tests mapping works on fresh sketch and edited sketch
-    // tests using hovers which is the same as selections, because if
-    // source ranges are wrong, hovers won't work
-    const u = await getUtils(page)
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+      // tests mapping works on fresh sketch and edited sketch
+      // tests using hovers which is the same as selections, because if
+      // source ranges are wrong, hovers won't work
+      const u = await getUtils(page)
+      const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setViewportSize({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
-    await u.openDebugPanel()
+      await u.waitForAuthSkipAppStart()
+      await u.openDebugPanel()
 
-    const xAxisClick = () =>
-      page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
-    const xAxisClickAfterExitingSketch = () =>
-      page.mouse.click(639, 278).then(() => page.waitForTimeout(100))
-    const emptySpaceHover = () =>
-      test.step('Hover over empty space', async () => {
-        await page.mouse.move(700, 143, { steps: 5 })
-        await expect(page.locator('.hover-highlight')).not.toBeVisible()
-      })
-    const emptySpaceClick = () =>
-      test.step(`Click in empty space`, async () => {
-        await page.mouse.click(700, 143)
-        await expect(page.locator('.cm-line').last()).toHaveClass(
-          /cm-activeLine/
-        )
-      })
-    const topHorzSegmentClick = () =>
-      page.mouse
-        .click(startXPx, 500 - PUR * 20)
-        .then(() => page.waitForTimeout(100))
-    const bottomHorzSegmentClick = () =>
-      page.mouse
-        .click(startXPx + PUR * 10, 500 - PUR * 10)
-        .then(() => page.waitForTimeout(100))
+      const xAxisClick = () =>
+        page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
+      const xAxisClickAfterExitingSketch = () =>
+        page.mouse.click(639, 278).then(() => page.waitForTimeout(100))
+      const emptySpaceHover = () =>
+        test.step('Hover over empty space', async () => {
+          await page.mouse.move(700, 143, { steps: 5 })
+          await expect(page.locator('.hover-highlight')).not.toBeVisible()
+        })
+      const emptySpaceClick = () =>
+        test.step(`Click in empty space`, async () => {
+          await page.mouse.click(700, 143)
+          await expect(page.locator('.cm-line').last()).toHaveClass(
+            /cm-activeLine/
+          )
+        })
+      const topHorzSegmentClick = () =>
+        page.mouse
+          .click(startXPx, 500 - PUR * 20)
+          .then(() => page.waitForTimeout(100))
+      const bottomHorzSegmentClick = () =>
+        page.mouse
+          .click(startXPx + PUR * 10, 500 - PUR * 10)
+          .then(() => page.waitForTimeout(100))
 
-    await u.clearCommandLogs()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await u.clearCommandLogs()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-    // select a plane
-    await page.mouse.click(700, 200)
-    await page.waitForTimeout(700) // wait for animation
+      // select a plane
+      await page.mouse.click(700, 200)
+      await page.waitForTimeout(700) // wait for animation
 
-    const startXPx = 600
-    await u.closeDebugPanel()
-    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      const startXPx = 600
+      await u.closeDebugPanel()
+      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)`)
 
-    await page.waitForTimeout(100)
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+      await page.waitForTimeout(100)
+      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)`)
 
-    await page.waitForTimeout(100)
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      await page.waitForTimeout(100)
+      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
     |> line([0, ${commonPoints.num1 + 0.01}], %)`)
-    await page.waitForTimeout(100)
-    await page.mouse.click(startXPx, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      await page.waitForTimeout(100)
+      await page.mouse.click(startXPx, 500 - PUR * 20)
+      await expect(page.locator('.cm-content'))
+        .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
     |> line([0, ${commonPoints.num1 + 0.01}], %)
     |> line([-${commonPoints.num2}, 0], %)`)
 
-    // deselect line tool
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
+      // deselect line tool
+      await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
-    await u.closeDebugPanel()
-    const selectionSequence = async () => {
-      await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+      await u.closeDebugPanel()
+      const selectionSequence = async () => {
+        await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
-      await page.waitForTimeout(100)
-      await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
+        await page.waitForTimeout(100)
+        await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
 
-      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-      // bg-yellow-300/70 is more brittle than hover-highlight, but is closer to the user experience
-      // and will be an easy fix if it breaks because we change the colour
-      await expect(page.locator('.bg-yellow-300\\/70')).toBeVisible()
-      // check mousing off, than mousing onto another line
-      await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
-      await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-      await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 20) // mouse onto another line
-      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+        await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+        // bg-yellow-300/70 is more brittle than hover-highlight, but is closer to the user experience
+        // and will be an easy fix if it breaks because we change the colour
+        await expect(page.locator('.bg-yellow-300\\/70')).toBeVisible()
+        // check mousing off, than mousing onto another line
+        await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
+        await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+        await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 20) // mouse onto another line
+        await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
 
-      // now check clicking works including axis
+        // now check clicking works including axis
 
-      // click a segment hold shift and click an axis, see that a relevant constraint is enabled
-      await topHorzSegmentClick()
-      await page.keyboard.down('Shift')
-      const constrainButton = page.getByRole('button', {
-        name: 'Length: open menu',
+        // click a segment hold shift and click an axis, see that a relevant constraint is enabled
+        await topHorzSegmentClick()
+        await page.keyboard.down('Shift')
+        const constrainButton = page.getByRole('button', {
+          name: 'Length: open menu',
+        })
+        const absYButton = page.getByRole('button', { name: 'Absolute Y' })
+        await constrainButton.click()
+        await expect(absYButton).toBeDisabled()
+        await page.waitForTimeout(100)
+        await xAxisClick()
+        await page.keyboard.up('Shift')
+        await constrainButton.click()
+        await absYButton.and(page.locator(':not([disabled])')).waitFor()
+        await expect(absYButton).not.toBeDisabled()
+
+        // clear selection by clicking on nothing
+        await emptySpaceClick()
+
+        await page.waitForTimeout(100)
+        // same selection but click the axis first
+        await xAxisClick()
+        await constrainButton.click()
+        await expect(absYButton).toBeDisabled()
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(100)
+        await topHorzSegmentClick()
+        await page.waitForTimeout(100)
+
+        await page.keyboard.up('Shift')
+        await constrainButton.click()
+        await expect(absYButton).not.toBeDisabled()
+
+        // clear selection by clicking on nothing
+        await emptySpaceClick()
+
+        // check the same selection again by putting cursor in code first then selecting axis
+        await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+        await page.keyboard.down('Shift')
+        await constrainButton.click()
+        await expect(absYButton).toBeDisabled()
+        await page.waitForTimeout(100)
+        await xAxisClick()
+        await page.keyboard.up('Shift')
+        await constrainButton.click()
+        await expect(absYButton).not.toBeDisabled()
+
+        // clear selection by clicking on nothing
+        await emptySpaceClick()
+
+        // select segment in editor than another segment in scene and check there are two cursors
+        // TODO change this back to shift click in the scene, not cmd click in the editor
+        await bottomHorzSegmentClick()
+
+        await expect(page.locator('.cm-cursor')).toHaveCount(1)
+
+        await page.keyboard.down(
+          process.platform === 'linux' ? 'Control' : 'Meta'
+        )
+        await page.waitForTimeout(100)
+        await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+
+        await expect(page.locator('.cm-cursor')).toHaveCount(2)
+        await page.waitForTimeout(500)
+        await page.keyboard.up(
+          process.platform === 'linux' ? 'Control' : 'Meta'
+        )
+
+        // clear selection by clicking on nothing
+        await emptySpaceClick()
+      }
+
+      await test.step(`Test hovering and selecting on fresh sketch`, async () => {
+        await selectionSequence()
       })
-      const absYButton = page.getByRole('button', { name: 'Absolute Y' })
-      await constrainButton.click()
-      await expect(absYButton).toBeDisabled()
-      await page.waitForTimeout(100)
-      await xAxisClick()
-      await page.keyboard.up('Shift')
-      await constrainButton.click()
-      await absYButton.and(page.locator(':not([disabled])')).waitFor()
-      await expect(absYButton).not.toBeDisabled()
 
-      // clear selection by clicking on nothing
-      await emptySpaceClick()
+      // hovering in fresh sketch worked, lets try exiting and re-entering
+      await u.openAndClearDebugPanel()
+      await page.getByRole('button', { name: 'Exit Sketch' }).click()
+      await page.waitForTimeout(200)
+      // wait for execution done
 
-      await page.waitForTimeout(100)
-      // same selection but click the axis first
-      await xAxisClick()
-      await constrainButton.click()
-      await expect(absYButton).toBeDisabled()
-      await page.keyboard.down('Shift')
-      await page.waitForTimeout(100)
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
+
+      // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
       await topHorzSegmentClick()
+      await xAxisClickAfterExitingSketch()
       await page.waitForTimeout(100)
+      await emptySpaceHover()
 
-      await page.keyboard.up('Shift')
-      await constrainButton.click()
-      await expect(absYButton).not.toBeDisabled()
-
-      // clear selection by clicking on nothing
-      await emptySpaceClick()
-
-      // check the same selection again by putting cursor in code first then selecting axis
-      await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
-      await page.keyboard.down('Shift')
-      await constrainButton.click()
-      await expect(absYButton).toBeDisabled()
-      await page.waitForTimeout(100)
-      await xAxisClick()
-      await page.keyboard.up('Shift')
-      await constrainButton.click()
-      await expect(absYButton).not.toBeDisabled()
-
-      // clear selection by clicking on nothing
-      await emptySpaceClick()
-
-      // select segment in editor than another segment in scene and check there are two cursors
-      // TODO change this back to shift click in the scene, not cmd click in the editor
-      await bottomHorzSegmentClick()
-
-      await expect(page.locator('.cm-cursor')).toHaveCount(1)
-
-      await page.keyboard.down(
-        process.platform === 'linux' ? 'Control' : 'Meta'
+      // enter sketch again
+      await u.doAndWaitForCmd(
+        () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+        'default_camera_get_settings'
       )
+
+      await page.waitForTimeout(450) // wait for animation
+
+      await u.openAndClearDebugPanel()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          center: { x: 0, y: 0, z: 0 },
+          vantage: { x: 0, y: -1378.01, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
       await page.waitForTimeout(100)
-      await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await page.waitForTimeout(100)
 
-      await expect(page.locator('.cm-cursor')).toHaveCount(2)
-      await page.waitForTimeout(500)
-      await page.keyboard.up(process.platform === 'linux' ? 'Control' : 'Meta')
-
-      // clear selection by clicking on nothing
       await emptySpaceClick()
+
+      await u.closeDebugPanel()
+
+      await test.step(`Test hovering and selecting on edited sketch`, async () => {
+        await selectionSequence()
+      })
     }
-
-    await test.step(`Test hovering and selecting on fresh sketch`, async () => {
-      await selectionSequence()
-    })
-
-    // hovering in fresh sketch worked, lets try exiting and re-entering
-    await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await page.waitForTimeout(200)
-    // wait for execution done
-
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // select a line, this verifies that sketches in the scene can be selected outside of sketch mode
-    await topHorzSegmentClick()
-    await xAxisClickAfterExitingSketch()
-    await page.waitForTimeout(100)
-    await emptySpaceHover()
-
-    // enter sketch again
-    await u.doAndWaitForCmd(
-      () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
-      'default_camera_get_settings'
-    )
-
-    await page.waitForTimeout(450) // wait for animation
-
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center: { x: 0, y: 0, z: 0 },
-        vantage: { x: 0, y: -1378.01, z: 0 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
-
-    await emptySpaceClick()
-
-    await u.closeDebugPanel()
-
-    await test.step(`Test hovering and selecting on edited sketch`, async () => {
-      await selectionSequence()
-    })
-  })
+  )
 
   test('Solids should be select and deletable', async ({ page }) => {
     test.setTimeout(90_000)
