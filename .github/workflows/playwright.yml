@@ -183,6 +183,18 @@ jobs:
       with:
         name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        echo "Contents of test-results folder:"
+        ls -la test-results
+        if [[ -f "test-results/.last-run.json" ]]; then
+          echo "Contents of test-results/.last-run.json:"
+          cat test-results/.last-run.json
+        else
+          echo "test-results/.last-run.json does not exist"
+        fi
     - name: Run playwright/chrome flow (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
@@ -352,8 +364,20 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-${{ matrix.os }}-${{ github.sha }}
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        echo "Contents of test-results folder:"
+        ls -la test-results
+        if [[ -f "test-results/.last-run.json" ]]; then
+          echo "Contents of test-results/.last-run.json:"
+          cat test-results/.last-run.json
+        else
+          echo "test-results/.last-run.json does not exist"
+        fi
     - name: Run electron tests (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
