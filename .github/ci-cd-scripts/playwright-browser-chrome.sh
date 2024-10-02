@@ -4,8 +4,6 @@ set -euo pipefail
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"
-    yarn test:playwright:browser:chrome:ubuntu -- --shard=$1/$2 || true
-
     if [[ "$3" == "ubuntu-latest" ]]; then
         yarn test:playwright:browser:chrome:ubuntu -- --shard=$1/$2 || true
     elif [[ "$3" == "windows-latest" ]]; then
