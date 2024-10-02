@@ -535,7 +535,7 @@ test(
 
       // It actually loads.
       await expect(u.codeLocator).toContainText('mounting bracket')
-      await expect(u.codeLocator).toContainText('const radius =')
+      await expect(u.codeLocator).toContainText('radius =')
     })
 
     await u.openFilePanel()
@@ -833,15 +833,14 @@ test(
       timeout: 20_000,
     })
 
-    await page.locator('.cm-content')
-      .fill(`const sketch001 = startSketchOn('XZ')
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
   |> line([324.07, 27.199], %, $seg01)
   |> line([118.328, -291.754], %)
   |> line([-180.04, -202.08], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(200, sketch001)`)
+extrude001 = extrude(200, sketch001)`)
 
     const pointOnModel = { x: 660, y: 250 }
 

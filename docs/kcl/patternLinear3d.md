@@ -28,14 +28,14 @@ patternLinear3d(data: LinearPattern3dData, solid_set: SolidSet) -> [Solid]
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 2], %)
   |> line([3, 1], %)
   |> line([0, -4], %)
   |> close(%)
 
-const example = extrude(1, exampleSketch)
+example = extrude(1, exampleSketch)
   |> patternLinear3d({
        axis: [1, 0, 1],
        repetitions: 6,

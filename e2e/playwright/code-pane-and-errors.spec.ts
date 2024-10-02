@@ -31,13 +31,13 @@ test.describe('Code pane and errors', () => {
       localStorage.setItem(
         'persistCode',
         `// Extruded Triangle
-const sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> line([-5, 10], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)`
+extrude001 = extrude(5, sketch001)`
       )
     })
 
@@ -211,7 +211,7 @@ const extrude001 = extrude(5, sketch001)`
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('Home')
-    await page.keyboard.type('const foo_bar = 1')
+    await page.keyboard.type('foo_bar = 1')
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
 

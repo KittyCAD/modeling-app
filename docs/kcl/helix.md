@@ -28,7 +28,7 @@ helix(data: HelixData, solid: Solid) -> Solid
 ### Examples
 
 ```js
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> circle({ center: [5, 5], radius: 10 }, %)
   |> extrude(10, %)
   |> helix({

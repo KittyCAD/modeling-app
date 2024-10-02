@@ -27,7 +27,7 @@ getPreviousAdjacentEdge(tag: TagIdentifier) -> Uuid
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('XZ')
+exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> angledLine({ angle: 60, length: 10 }, %)
@@ -36,7 +36,7 @@ const exampleSketch = startSketchOn('XZ')
   |> angledLine({ angle: 240, length: 10 }, %, $referenceEdge)
   |> close(%)
 
-const example = extrude(5, exampleSketch)
+example = extrude(5, exampleSketch)
   |> fillet({
        radius: 3,
        tags: [getPreviousAdjacentEdge(referenceEdge)]

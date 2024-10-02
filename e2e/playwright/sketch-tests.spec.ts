@@ -35,14 +35,14 @@ test.describe('Sketch tests', () => {
         localStorage.setItem(
           'persistCode',
           `
-  const width = 20
-  const height = 10
-  const thickness = 5
-  const screwRadius = 3
-  const wireRadius = 2
-  const wireOffset = 0.5
+  width = 20
+  height = 10
+  thickness = 5
+  screwRadius = 3
+  wireRadius = 2
+  wireOffset = 0.5
 
-  const screwHole = startSketchOn('XY')
+  screwHole = startSketchOn('XY')
     ${startProfileAt1}
     |> arc({
           radius: screwRadius,
@@ -50,7 +50,7 @@ test.describe('Sketch tests', () => {
           angle_end: 360
         }, %)
 
-  const part001 = startSketchOn('XY')
+  part001 = startSketchOn('XY')
     ${startProfileAt2}
     |> xLine(width * .5, %)
     |> yLine(height, %)
@@ -59,7 +59,7 @@ test.describe('Sketch tests', () => {
     |> hole(screwHole, %)
     |> extrude(thickness, %)
 
-  const part002 = startSketchOn('-XZ')
+  part002 = startSketchOn('-XZ')
     ${startProfileAt3}
     |> xLine(width / 4, %)
     |> tangentialArcTo([width / 2, 0], %)
@@ -113,7 +113,7 @@ test.describe('Sketch tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
   |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -5.38], %)`
@@ -154,7 +154,7 @@ test.describe('Sketch tests', () => {
       await page.mouse.click(700, 200)
 
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
-        .toBe(`const sketch001 = startSketchOn('XZ')
+        .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> line([-12.34, 12.34], %)
 
@@ -193,7 +193,7 @@ test.describe('Sketch tests', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const sketch001 = startSketchOn('XZ')
+          `sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
       |> line([12.73, -0.09], %)
       |> tangentialArcTo([24.95, -5.38], %)
@@ -234,8 +234,7 @@ test.describe('Sketch tests', () => {
 
       // If we have the code pane open, we should see the code.
       if (openPanes.includes('code')) {
-        await expect(u.codeLocator)
-          .toHaveText(`const sketch001 = startSketchOn('XZ')
+        await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
       |> line([12.73, -0.09], %)
       |> tangentialArcTo([24.95, -5.38], %)
@@ -312,7 +311,7 @@ test.describe('Sketch tests', () => {
 
       // expect the code to have changed
       await expect(page.locator('.cm-content'))
-        .toHaveText(`const sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn('XZ')
       |> startProfileAt([6.44, -12.07], %)
       |> line([14.72, 1.97], %)
       |> tangentialArcTo([24.95, -5.38], %)
@@ -354,7 +353,7 @@ test.describe('Sketch tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> circle({ center: [4.61, -5.01], radius: 8 }, %)`
       )
     })
@@ -429,7 +428,7 @@ test.describe('Sketch tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
   |> circle({ center: [7.26, -2.37], radius: 11.44 }, %)
 `)
   })
@@ -440,7 +439,7 @@ test.describe('Sketch tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -0.38], %)
@@ -527,7 +526,7 @@ test.describe('Sketch tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -12.68], %)
   |> line([15.39, -2.78], %)
   |> tangentialArcTo([27.6, -3.05], %)
@@ -543,7 +542,7 @@ test.describe('Sketch tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
@@ -629,7 +628,7 @@ test.describe('Sketch tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([6.44, -12.07], %)
     |> line([14.72, 1.97], %)
     |> tangentialArcTo([24.95, -5.38], %)
@@ -663,7 +662,7 @@ test.describe('Sketch tests', () => {
       200
     )
 
-    let codeStr = "const sketch001 = startSketchOn('XY')"
+    let codeStr = "sketch001 = startSketchOn('XY')"
 
     await page.mouse.click(center.x, viewportSize.height * 0.55)
     await expect(u.codeLocator).toHaveText(codeStr)
@@ -702,7 +701,7 @@ test.describe('Sketch tests', () => {
     // so selecting the plane again is a bit easier.
     await page.mouse.click(center.x + 200, center.y + 100)
     await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
-    codeStr += "const sketch002 = startSketchOn('XY')"
+    codeStr += "sketch002 = startSketchOn('XY')"
     await expect(u.codeLocator).toHaveText(codeStr)
     await u.closeDebugPanel()
 
@@ -741,7 +740,7 @@ test.describe('Sketch tests', () => {
       await u.waitForAuthSkipAppStart()
       await u.openDebugPanel()
 
-      const code = `const sketch001 = startSketchOn('-XZ')
+      const code = `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
     |> line([${roundOff(scale * 139.19)}, 0], %)
     |> line([0, -${roundOff(scale * 139.2)}], %)
@@ -769,7 +768,7 @@ test.describe('Sketch tests', () => {
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
       await expect(page.locator('.cm-content')).toHaveText(
-        `const sketch001 = startSketchOn('-XZ')`
+        `sketch001 = startSketchOn('-XZ')`
       )
 
       let prevContent = await page.locator('.cm-content').innerText()
@@ -835,7 +834,7 @@ test.describe('Sketch tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([-0.45, 0.87], %)
   |> line([1.32, 0.38], %)
   |> line([1.02, -1.32], %, $seg01)
@@ -880,14 +879,14 @@ test.describe('Sketch tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([-0.45, 0.87], %)
   |> line([1.32, 0.38], %)
   |> line([1.02, -1.32], %, $seg01)
   |> line([-1.01, -0.77], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)
+extrude001 = extrude(5, sketch001)
 `
       )
     })
@@ -920,15 +919,15 @@ const extrude001 = extrude(5, sketch001)
     ).toBeVisible()
 
     await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
-      `const sketch001 = startSketchOn('XZ')
+      `sketch001 = startSketchOn('XZ')
   |> startProfileAt([-0.45, 0.87], %)
   |> line([1.32, 0.38], %)
   |> line([1.02, -1.32], %, $seg01)
   |> line([-1.01, -0.77], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)
-const sketch002 = startSketchOn(extrude001, 'END')
+extrude001 = extrude(5, sketch001)
+sketch002 = startSketchOn(extrude001, 'END')
   |>
 `.replace(/\s/g, '')
     )
@@ -977,7 +976,7 @@ const sketch002 = startSketchOn(extrude001, 'END')
 
     await u.openAndClearDebugPanel()
 
-    await u.codeLocator.fill(`const sketch001 = startSketchOn('XY')
+    await u.codeLocator.fill(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1016,8 +1015,7 @@ const sketch002 = startSketchOn(extrude001, 'END')
     await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
     await page.waitForTimeout(200)
     await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([11.8, 9.09], %)
   |> line([3.39, -3.39], %)
 `)
@@ -1025,7 +1023,7 @@ const sketch002 = startSketchOn(extrude001, 'END')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([11.8, 9.09], %)
   |> line([3.39, -3.39], %)
 `
@@ -1058,12 +1056,12 @@ const sketch002 = startSketchOn(extrude001, 'END')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const lugHeadLength = 0.25
-        const lugDiameter = 0.5
-        const lugLength = 2
+        `lugHeadLength = 0.25
+        lugDiameter = 0.5
+        lugLength = 2
 
         fn lug = (origin, length, diameter, plane) => {
-          const lugSketch = startSketchOn(plane)
+          lugSketch = startSketchOn(plane)
             |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
             |> angledLineOfYLength({ angle: 60, length: lugHeadLength }, %)
             |> xLineTo(0 + .001, %)
