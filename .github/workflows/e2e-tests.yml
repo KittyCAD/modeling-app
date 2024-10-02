@@ -228,20 +228,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-        scripts: [".github/ci-cd-scripts/playwright-electron-linux.sh",".github/ci-cd-scripts/playwright-electron-windows.sh", ".github/ci-cd-scripts/playwright-electron-macos.sh"]
-        exclude:
-          - os: ubuntu-latest
-            scripts: ".github/ci-cd-scripts/playwright-electron-windows.sh"
-          - os: ubuntu-latest
-            scripts: ".github/ci-cd-scripts/playwright-electron-macos.sh"
-          - os: windows-latest
-            scripts: ".github/ci-cd-scripts/playwright-electron-linux.sh"
-          - os: windows-latest
-            scripts: ".github/ci-cd-scripts/playwright-electron-macos.sh"
-          - os: macos-14
-            scripts: ".github/ci-cd-scripts/playwright-electron-linux.sh"
-          - os: macos-14
-            scripts: ".github/ci-cd-scripts/playwright-electron-windows.sh"
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
@@ -338,7 +324,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        ${{ matrix.scripts }}
+        .github/ci-cd-scripts/playwright-electron.sh ${{ matrix.os }}
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
