@@ -30,19 +30,19 @@ chamfer(data: ChamferData, solid: Solid, tag?: TagDeclarator) -> Solid
 
 ```js
 // Chamfer a mounting plate.
-const width = 20
-const length = 10
-const thickness = 1
-const chamferLength = 2
+width = 20
+length = 10
+thickness = 1
+chamferLength = 2
 
-const mountingPlateSketch = startSketchOn("XY")
+mountingPlateSketch = startSketchOn("XY")
   |> startProfileAt([-width / 2, -length / 2], %)
   |> lineTo([width / 2, -length / 2], %, $edge1)
   |> lineTo([width / 2, length / 2], %, $edge2)
   |> lineTo([-width / 2, length / 2], %, $edge3)
   |> close(%, $edge4)
 
-const mountingPlate = extrude(thickness, mountingPlateSketch)
+mountingPlate = extrude(thickness, mountingPlateSketch)
   |> chamfer({
        length: chamferLength,
        tags: [
@@ -59,7 +59,7 @@ const mountingPlate = extrude(thickness, mountingPlateSketch)
 ```js
 // Sketch on the face of a chamfer.
 fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -68,7 +68,7 @@ fn cube = (pos, scale) => {
   return sg
 }
 
-const part001 = cube([0, 0], 20)
+part001 = cube([0, 0], 20)
   |> close(%, $line1)
   |> extrude(20, %)
   |> chamfer({
@@ -76,7 +76,7 @@ const part001 = cube([0, 0], 20)
        tags: [getOppositeEdge(line1)]
      }, %, $chamfer1) // We tag the chamfer to reference it later.
 
-const sketch001 = startSketchOn(part001, chamfer1)
+sketch001 = startSketchOn(part001, chamfer1)
   |> startProfileAt([10, 10], %)
   |> line([2, 0], %)
   |> line([0, 2], %)

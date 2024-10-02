@@ -28,7 +28,7 @@ assert(data: bool, message: string) -> ()
 ### Examples
 
 ```js
-const myVar = true
+myVar = true
 assert(myVar, "should always be true")
 ```
 

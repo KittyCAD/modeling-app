@@ -48,9 +48,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await page.mouse.click(700, 200)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
-    )
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')`)
   }
   await u.closeDebugPanel()
 
@@ -59,8 +57,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   }
   await page.waitForTimeout(500)
@@ -68,16 +65,14 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await page.waitForTimeout(500)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)`)
@@ -87,8 +82,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await page.waitForTimeout(200)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1 + 0.01}], %)
@@ -146,7 +140,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 
   // Open the code pane.
   await u.openKclCodePanel()
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %, $seg01)
   |> line([0, ${commonPoints.num1 + 0.01}], %)

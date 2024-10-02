@@ -31,52 +31,52 @@ It's needed for testing the artifactGraph, as it is tied to the websocket comman
 const pathStart = 'src/lang/std/artifactMapCache'
 const fullPath = `${pathStart}/artifactMapCache.json`
 
-const exampleCode1 = `const sketch001 = startSketchOn('XY')
+const exampleCode1 = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-5, -5], %)
   |> line([0, 10], %)
   |> line([10.55, 0], %, $seg01)
   |> line([0, -10], %, $seg02)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(-10, sketch001)
+extrude001 = extrude(-10, sketch001)
   |> fillet({ radius: 5, tags: [seg01] }, %)
-const sketch002 = startSketchOn(extrude001, seg02)
+sketch002 = startSketchOn(extrude001, seg02)
   |> startProfileAt([-2, -6], %)
   |> line([2, 3], %)
   |> line([2, -3], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude002 = extrude(5, sketch002)
+extrude002 = extrude(5, sketch002)
 `
 
-const sketchOnFaceOnFaceEtc = `const sketch001 = startSketchOn('XZ')
+const sketchOnFaceOnFaceEtc = `sketch001 = startSketchOn('XZ')
 |> startProfileAt([0, 0], %)
 |> line([4, 8], %)
 |> line([5, -8], %, $seg01)
 |> lineTo([profileStartX(%), profileStartY(%)], %)
 |> close(%)
-const extrude001 = extrude(6, sketch001)
-const sketch002 = startSketchOn(extrude001, seg01)
+extrude001 = extrude(6, sketch001)
+sketch002 = startSketchOn(extrude001, seg01)
 |> startProfileAt([-0.5, 0.5], %)
 |> line([2, 5], %)
 |> line([2, -5], %)
 |> lineTo([profileStartX(%), profileStartY(%)], %)
 |> close(%)
-const extrude002 = extrude(5, sketch002)
-const sketch003 = startSketchOn(extrude002, 'END')
+extrude002 = extrude(5, sketch002)
+sketch003 = startSketchOn(extrude002, 'END')
 |> startProfileAt([1, 1.5], %)
 |> line([0.5, 2], %, $seg02)
 |> line([1, -2], %)
 |> lineTo([profileStartX(%), profileStartY(%)], %)
 |> close(%)
-const extrude003 = extrude(4, sketch003)
-const sketch004 = startSketchOn(extrude003, seg02)
+extrude003 = extrude(4, sketch003)
+sketch004 = startSketchOn(extrude003, seg02)
 |> startProfileAt([-3, 14], %)
 |> line([0.5, 1], %)
 |> line([0.5, -2], %)
 |> lineTo([profileStartX(%), profileStartY(%)], %)
 |> close(%)
-const extrude004 = extrude(3, sketch004)
+extrude004 = extrude(3, sketch004)
 `
 
 // add more code snippets here and use `getCommands` to get the orderedCommands and responseMap for more tests
@@ -523,7 +523,7 @@ describe('testing getArtifactsToUpdate', () => {
         sweepId: '',
         codeRef: {
           pathToNode: [['body', '']],
-          range: [43, 70],
+          range: [37, 64],
         },
       },
     ])
@@ -535,7 +535,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: [],
         edgeIds: [],
         codeRef: {
-          range: [243, 266],
+          range: [231, 254],
           pathToNode: [['body', '']],
         },
       },
@@ -545,7 +545,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [43, 70],
+          range: [37, 64],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -558,7 +558,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: '',
         edgeIds: [],
         codeRef: {
-          range: [76, 92],
+          range: [70, 86],
           pathToNode: [['body', '']],
         },
       },
@@ -568,7 +568,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [43, 70],
+          range: [37, 64],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -582,7 +582,7 @@ describe('testing getArtifactsToUpdate', () => {
         edgeIds: [],
         surfaceId: '',
         codeRef: {
-          range: [272, 311],
+          range: [260, 299],
           pathToNode: [['body', '']],
         },
       },
@@ -592,7 +592,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [98, 125],
+          range: [92, 119],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -612,7 +612,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [162, 209],
+          range: [156, 203],
           pathToNode: [['body', '']],
         },
       },
@@ -623,7 +623,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [243, 266],
+          range: [231, 254],
           pathToNode: [['body', '']],
         },
       },
@@ -640,7 +640,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [131, 156],
+          range: [125, 150],
           pathToNode: [['body', '']],
         },
       },
@@ -651,7 +651,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [243, 266],
+          range: [231, 254],
           pathToNode: [['body', '']],
         },
       },
@@ -668,7 +668,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [98, 125],
+          range: [92, 119],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -680,7 +680,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [243, 266],
+          range: [231, 254],
           pathToNode: [['body', '']],
         },
       },
@@ -697,7 +697,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [76, 92],
+          range: [70, 86],
           pathToNode: [['body', '']],
         },
       },
@@ -708,7 +708,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [243, 266],
+          range: [231, 254],
           pathToNode: [['body', '']],
         },
       },
@@ -726,7 +726,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [243, 266],
+          range: [231, 254],
           pathToNode: [['body', '']],
         },
       },
@@ -744,7 +744,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [243, 266],
+          range: [231, 254],
           pathToNode: [['body', '']],
         },
       },

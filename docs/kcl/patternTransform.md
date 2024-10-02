@@ -61,7 +61,7 @@ fn transform = (id) => {
 }
 
 // Sketch 4 cylinders.
-const sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn('XZ')
   |> circle({ center: [0, 0], radius: 2 }, %)
   |> extrude(5, %)
   |> patternTransform(4, transform, %)
@@ -77,7 +77,7 @@ fn transform = (id) => {
   return { translate: [4 * (1 + id), 0, 0] }
 }
 
-const sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn('XZ')
   |> circle({ center: [0, 0], radius: 2 }, %)
   |> extrude(5, %)
   |> patternTransform(4, transform, %)
@@ -87,13 +87,13 @@ const sketch001 = startSketchOn('XZ')
 
 ```js
 fn cube = (length, center) => {
-  let l = length / 2
-  let x = center[0]
-  let y = center[1]
-  let p0 = [-l + x, -l + y]
-  let p1 = [-l + x, l + y]
-  let p2 = [l + x, l + y]
-  let p3 = [l + x, -l + y]
+  l = length / 2
+  x = center[0]
+  y = center[1]
+  p0 = [-l + x, -l + y]
+  p1 = [-l + x, l + y]
+  p2 = [l + x, l + y]
+  p3 = [l + x, -l + y]
 
   return startSketchAt(p0)
   |> lineTo(p1, %)
@@ -104,7 +104,7 @@ fn cube = (length, center) => {
   |> extrude(length, %)
 }
 
-let width = 20
+width = 20
 fn transform = (i) => {
   return {
   // Move down each time.
@@ -116,7 +116,7 @@ fn transform = (i) => {
 }
 }
 
-let myCubes = cube(width, [100, 0])
+myCubes = cube(width, [100, 0])
   |> patternTransform(25, transform, %)
 ```
 
@@ -124,13 +124,13 @@ let myCubes = cube(width, [100, 0])
 
 ```js
 fn cube = (length, center) => {
-  let l = length / 2
-  let x = center[0]
-  let y = center[1]
-  let p0 = [-l + x, -l + y]
-  let p1 = [-l + x, l + y]
-  let p2 = [l + x, l + y]
-  let p3 = [l + x, -l + y]
+  l = length / 2
+  x = center[0]
+  y = center[1]
+  p0 = [-l + x, -l + y]
+  p1 = [-l + x, l + y]
+  p2 = [l + x, l + y]
+  p3 = [l + x, -l + y]
 
   return startSketchAt(p0)
   |> lineTo(p1, %)
@@ -141,7 +141,7 @@ fn cube = (length, center) => {
   |> extrude(length, %)
 }
 
-let width = 20
+width = 20
 fn transform = (i) => {
   return {
   translate: [0, 0, -i * width],
@@ -152,7 +152,7 @@ fn transform = (i) => {
   }
 }
 }
-let myCubes = cube(width, [100, 100])
+myCubes = cube(width, [100, 100])
   |> patternTransform(4, transform, %)
 ```
 
@@ -160,13 +160,13 @@ let myCubes = cube(width, [100, 100])
 
 ```js
 // Parameters
-const r = 50 // base radius
-const h = 10 // layer height
-const t = 0.005 // taper factor [0-1)
+r = 50 // base radius
+h = 10 // layer height
+t = 0.005 // taper factor [0-1)
 // Defines how to modify each layer of the vase.
 // Each replica is shifted up the Z axis, and has a smoothly-varying radius
 fn transform = (replicaId) => {
-  let scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+  scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
   return {
   translate: [0, 0, replicaId * 10],
   scale: [scale, scale, 0]
@@ -181,7 +181,7 @@ fn layer = () => {
 }
 // The vase is 100 layers tall.
 // The 100 layers are replica of each other, with a slight transformation applied to each.
-let vase = layer()
+vase = layer()
   |> patternTransform(100, transform, %)
 ```
 

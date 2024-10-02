@@ -1516,10 +1516,8 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
                 label: variable.id.name.to_string(),
                 label_details: None,
                 kind: Some(match declaration.kind {
-                    crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
-                    crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
-                    crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
-                    crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                    VariableKind::Const => CompletionItemKind::CONSTANT,
+                    VariableKind::Fn => CompletionItemKind::FUNCTION,
                 }),
                 detail: Some(declaration.kind.to_string()),
                 documentation: None,
@@ -1654,8 +1652,6 @@ impl VariableDeclaration {
             let mut symbol_kind = match self.kind {
                 VariableKind::Fn => SymbolKind::FUNCTION,
                 VariableKind::Const => SymbolKind::CONSTANT,
-                VariableKind::Let => SymbolKind::VARIABLE,
-                VariableKind::Var => SymbolKind::VARIABLE,
             };
 
             let children = match &declaration.init {
@@ -1668,7 +1664,7 @@ impl VariableDeclaration {
                         children.push(DocumentSymbol {
                             name: param.identifier.name.clone(),
                             detail: None,
-                            kind: SymbolKind::VARIABLE,
+                            kind: SymbolKind::CONSTANT,
                             range: param_source_range.to_lsp_range(code),
                             selection_range: param_source_range.to_lsp_range(code),
                             children: None,
@@ -1710,29 +1706,23 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
 pub enum VariableKind {
-    /// Declare a variable.
-    Let,
-    /// Declare a variable that is read-only.
+    /// Declare a named constant.
     Const,
     /// Declare a function.
     Fn,
-    /// Declare a variable.
-    Var,
 }
 
 impl VariableKind {
     fn digestable_id(&self) -> [u8; 1] {
         match self {
-            VariableKind::Let => [1],
             VariableKind::Const => [2],
             VariableKind::Fn => [3],
-            VariableKind::Var => [4],
         }
     }
 
@@ -3696,11 +3686,11 @@ ghi("things")
         let program = parser.ast().unwrap();
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
-        assert_eq!(folding_ranges[0].start_line, 35);
+        assert_eq!(folding_ranges[0].start_line, 29);
         assert_eq!(folding_ranges[0].end_line, 134);
         assert_eq!(
             folding_ranges[0].collapsed_text,
-            Some("const part001 = startSketchOn('XY')".to_string())
+            Some("part001 = startSketchOn('XY')".to_string())
         );
         assert_eq!(folding_ranges[1].start_line, 155);
         assert_eq!(folding_ranges[1].end_line, 254);

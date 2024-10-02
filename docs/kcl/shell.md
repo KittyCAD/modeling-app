@@ -29,7 +29,7 @@ shell(data: ShellData, solid_set: SolidSet) -> SolidSet
 
 ```js
 // Remove the end face for the extrusion.
-const firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
   |> line([24, 0], %)
   |> line([0, -24], %)
@@ -45,7 +45,7 @@ shell({ faces: ['end'], thickness: 0.25 }, firstSketch)
 
 ```js
 // Remove the start face for the extrusion.
-const firstSketch = startSketchOn('-XZ')
+firstSketch = startSketchOn('-XZ')
   |> startProfileAt([-12, 12], %)
   |> line([24, 0], %)
   |> line([0, -24], %)
@@ -61,7 +61,7 @@ shell({ faces: ['start'], thickness: 0.25 }, firstSketch)
 
 ```js
 // Remove a tagged face and the end face for the extrusion.
-const firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
   |> line([24, 0], %)
   |> line([0, -24], %)
@@ -77,7 +77,7 @@ shell({ faces: [myTag], thickness: 0.25 }, firstSketch)
 
 ```js
 // Remove multiple faces at once.
-const firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
   |> line([24, 0], %)
   |> line([0, -24], %)
@@ -96,8 +96,8 @@ shell({
 
 ```js
 // Shell a sketch on face.
-let size = 100
-const case = startSketchOn('-XZ')
+size = 100
+case = startSketchOn('-XZ')
   |> startProfileAt([-size, -size], %)
   |> line([2 * size, 0], %)
   |> line([0, 2 * size], %)
@@ -105,14 +105,14 @@ const case = startSketchOn('-XZ')
   |> close(%)
   |> extrude(65, %)
 
-const thing1 = startSketchOn(case, 'end')
+thing1 = startSketchOn(case, 'end')
   |> circle({
        center: [-size / 2, -size / 2],
        radius: 25
      }, %)
   |> extrude(50, %)
 
-const thing2 = startSketchOn(case, 'end')
+thing2 = startSketchOn(case, 'end')
   |> circle({
        center: [size / 2, -size / 2],
        radius: 25
@@ -127,8 +127,8 @@ shell({ faces: ['start'], thickness: 5 }, case)
 
 ```js
 // Shell a sketch on face object on the end face.
-let size = 100
-const case = startSketchOn('XY')
+size = 100
+case = startSketchOn('XY')
   |> startProfileAt([-size, -size], %)
   |> line([2 * size, 0], %)
   |> line([0, 2 * size], %)
@@ -136,14 +136,14 @@ const case = startSketchOn('XY')
   |> close(%)
   |> extrude(65, %)
 
-const thing1 = startSketchOn(case, 'end')
+thing1 = startSketchOn(case, 'end')
   |> circle({
        center: [-size / 2, -size / 2],
        radius: 25
      }, %)
   |> extrude(50, %)
 
-const thing2 = startSketchOn(case, 'end')
+thing2 = startSketchOn(case, 'end')
   |> circle({
        center: [size / 2, -size / 2],
        radius: 25
@@ -161,8 +161,8 @@ shell({ faces: ['end'], thickness: 5 }, thing1)
 // the entire object.
 
 
-let size = 100
-const case = startSketchOn('XY')
+size = 100
+case = startSketchOn('XY')
   |> startProfileAt([-size, -size], %)
   |> line([2 * size, 0], %)
   |> line([0, 2 * size], %)
@@ -170,14 +170,14 @@ const case = startSketchOn('XY')
   |> close(%)
   |> extrude(65, %)
 
-const thing1 = startSketchOn(case, 'end')
+thing1 = startSketchOn(case, 'end')
   |> circle({
        center: [-size / 2, -size / 2],
        radius: 25
      }, %)
   |> extrude(50, %)
 
-const thing2 = startSketchOn(case, 'end')
+thing2 = startSketchOn(case, 'end')
   |> circle({
        center: [size / 2, -size / 2],
        radius: 25
