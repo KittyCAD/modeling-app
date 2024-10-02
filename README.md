@@ -348,7 +348,6 @@ yarn test-setup
 yarn tsc
 yarn fmt-check
 yarn lint
-yarn xstate:typegen
 yarn test:unit:local
 ```
 
