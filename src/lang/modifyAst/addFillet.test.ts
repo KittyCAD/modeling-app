@@ -7,7 +7,7 @@ import {
   CallExpression,
   makeDefaultPlanes,
   PipeExpression,
-  VariableDeclaration,
+  VariableDeclarator,
 } from '../wasm'
 import {
   addFillet,
@@ -79,7 +79,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
     ]
     const expedtedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
-    const expedtedExtrudeNodeResult = getNodeFromPath<VariableDeclaration>(
+    const expedtedExtrudeNodeResult = getNodeFromPath<VariableDeclarator>(
       ast,
       expedtedExtrudePath
     )
@@ -87,8 +87,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
       return expedtedExtrudeNodeResult
     }
     const expectedExtrudeNode = expedtedExtrudeNodeResult.node
-    const init =
-      expectedExtrudeNode.declarations?.[0].init || expectedExtrudeNode.init
+    const init = expectedExtrudeNode.init
     if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
       return new Error(
         'Expected extrude expression is not a CallExpression or PipeExpression'
