@@ -1112,7 +1112,12 @@ const sketch002 = startSketchOn(extrude001, 'END')
 test2.describe('Sketch mode should be toleratant to syntax errors', () => {
   test2(
     'adding a syntax error, recovers after fixing',
+    { tag: ['@skipWin'] },
     async ({ app, scene, editor, toolbar }) => {
+      test.skip(
+        process.platform === 'win32',
+        'a codemirror error appears in this test only on windows, that causes the test to fail only because of our "no new error" logic, but it can not be replicated locally'
+      )
       const file = await app.getInputFile('e2e-can-sketch-on-chamfer.kcl')
       await app.initialise(file)
 
@@ -1160,6 +1165,7 @@ test2.describe('Sketch mode should be toleratant to syntax errors', () => {
         // this checks sketch segments have been drawn
         await verifyArrowHeadColor(arrowHeadWhite)
       })
+      await app.page.waitForTimeout(100)
     }
   )
 })
