@@ -265,6 +265,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn make_default_plane(
         &self,
+        plane_id: uuid::Uuid,
         x_axis: Point3d,
         y_axis: Point3d,
         color: Option<Color>,
@@ -274,7 +275,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let default_size = 100.0;
         let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
 
-        let plane_id = uuid::Uuid::new_v4();
         self.batch_modeling_cmd(
             plane_id,
             source_range,
@@ -303,10 +303,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     async fn new_default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
-        let plane_settings: HashMap<PlaneName, (Point3d, Point3d, Option<Color>)> = HashMap::from([
+        fn plane_error(_err: uuid::Error) -> KclError {
+            KclError::Internal(KclErrorDetails {
+                message: "Failed to parse UUID".to_owned(),
+                source_ranges: vec![],
+            })
+        }
+        let plane_settings: HashMap<PlaneName, (Uuid, Point3d, Point3d, Option<Color>)> = HashMap::from([
             (
                 PlaneName::Xy,
                 (
+                    Uuid::try_parse("6a4d01f0-c285-43de-b6cb-f9f3ed40ddb4").map_err(plane_error)?,
                     Point3d { x: 1.0, y: 0.0, z: 0.0 },
                     Point3d { x: 0.0, y: 1.0, z: 0.0 },
                     Some(Color {
@@ -320,6 +327,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 (
+                    Uuid::try_parse("4ce310d5-b289-474a-ae49-e73cae8a412b").map_err(plane_error)?,
                     Point3d { x: 0.0, y: 1.0, z: 0.0 },
                     Point3d { x: 0.0, y: 0.0, z: 1.0 },
                     Some(Color {
@@ -333,6 +341,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 (
+                    Uuid::try_parse("2152c729-3a11-4328-94f0-7507081fa734").map_err(plane_error)?,
                     Point3d { x: 1.0, y: 0.0, z: 0.0 },
                     Point3d { x: 0.0, y: 0.0, z: 1.0 },
                     Some(Color {
@@ -346,6 +355,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::NegXy,
                 (
+                    Uuid::try_parse("d8825df8-0634-46e3-b395-fa11ace02850").map_err(plane_error)?,
                     Point3d {
                         x: -1.0,
                         y: 0.0,
@@ -358,6 +368,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::NegYz,
                 (
+                    Uuid::try_parse("d48e7513-e857-4475-bd02-ea0860104cae").map_err(plane_error)?,
                     Point3d {
                         x: 0.0,
                         y: -1.0,
@@ -370,6 +381,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::NegXz,
                 (
+                    Uuid::try_parse("2f098db7-bbfd-4b1d-9ca2-eab3476abf17").map_err(plane_error)?,
                     Point3d {
                         x: -1.0,
                         y: 0.0,
@@ -382,10 +394,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         ]);
 
         let mut planes = HashMap::new();
-        for (name, (x_axis, y_axis, color)) in plane_settings {
+        for (name, (plane_id, x_axis, y_axis, color)) in plane_settings {
             planes.insert(
                 name,
-                self.make_default_plane(x_axis, y_axis, color, source_range).await?,
+                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range)
+                    .await?,
             );
         }
 
