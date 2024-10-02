@@ -16,7 +16,7 @@ while [[ $retry -le $max_retrys ]]; do
         if [[ $failed_tests -gt 0 ]]; then
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
-            yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --last-failed --grep-invert="@snapshot|@electron|@skipWin" || true
+            yarn test:playwright:browser:chrome:windows -- --last-failed || true
             # send to axiom
             node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
             retry=$((retry + 1))
