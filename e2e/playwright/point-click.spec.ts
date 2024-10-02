@@ -178,8 +178,7 @@ test.describe('verify sketch on chamfer works', () => {
       getNextAdjacentEdge(seg02),
       getOppositeEdge(seg01)
     ]}, %)`,
-      afterChamferSelectSnippet:
-        'sketch002 = startSketchOn(extrude001, seg03)',
+      afterChamferSelectSnippet: 'sketch002 = startSketchOn(extrude001, seg03)',
       afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([
@@ -209,8 +208,7 @@ test.describe('verify sketch on chamfer works', () => {
            getNextAdjacentEdge(seg02)
          ]
        }, %)`,
-      afterChamferSelectSnippet:
-        'sketch003 = startSketchOn(extrude001, seg04)',
+      afterChamferSelectSnippet: 'sketch003 = startSketchOn(extrude001, seg04)',
       afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
@@ -235,8 +233,7 @@ test.describe('verify sketch on chamfer works', () => {
            getNextAdjacentEdge(seg02)
          ]
        }, %)`,
-      afterChamferSelectSnippet:
-        'sketch003 = startSketchOn(extrude001, seg04)',
+      afterChamferSelectSnippet: 'sketch003 = startSketchOn(extrude001, seg04)',
       afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
@@ -259,8 +256,7 @@ test.describe('verify sketch on chamfer works', () => {
          length: 30,
          tags: [getNextAdjacentEdge(yo)]
        }, %)`,
-      afterChamferSelectSnippet:
-        'sketch005 = startSketchOn(extrude001, seg06)',
+      afterChamferSelectSnippet: 'sketch005 = startSketchOn(extrude001, seg06)',
       afterRectangle1stClickSnippet: 'startProfileAt([-23.43, 19.69], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 9.1], %, $rectangleSegmentA005)
     |> angledLine([
@@ -391,8 +387,7 @@ test.describe('verify sketch on chamfer works', () => {
       getOppositeEdge(seg01)
     ]}, extrude001)`,
       beforeChamferSnippetEnd: '}, extrude001)',
-      afterChamferSelectSnippet:
-        'sketch002 = startSketchOn(extrude001, seg03)',
+      afterChamferSelectSnippet: 'sketch002 = startSketchOn(extrude001, seg03)',
       afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([

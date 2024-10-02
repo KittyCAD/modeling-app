@@ -303,10 +303,7 @@ sketch001 = startSketchOn('XZ')
     |> line([0.73, -20.93], %)
     |> line([-23.44, 0.52], %)
     |> close(%)
-extrude001 = extrude(distance001, sketch001)`.replace(
-        /(\r\n|\n|\r)/gm,
-        ''
-      ) // remove newlines
+extrude001 = extrude(distance001, sketch001)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
     )
   })
 

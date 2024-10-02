@@ -234,8 +234,7 @@ test.describe('Sketch tests', () => {
 
       // If we have the code pane open, we should see the code.
       if (openPanes.includes('code')) {
-        await expect(u.codeLocator)
-          .toHaveText(`sketch001 = startSketchOn('XZ')
+        await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
       |> line([12.73, -0.09], %)
       |> tangentialArcTo([24.95, -5.38], %)
@@ -1016,8 +1015,7 @@ sketch002 = startSketchOn(extrude001, 'END')
     await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
     await page.waitForTimeout(200)
     await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
-    await expect(u.codeLocator)
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([11.8, 9.09], %)
   |> line([3.39, -3.39], %)
 `)

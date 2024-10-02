@@ -409,9 +409,7 @@ rev = revolve({ axis: 'y' }, part009)
     await page.keyboard.press('Backspace')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
-    await expect(u.codeLocator).not.toContainText(
-      `sketch005 = startSketchOn({`
-    )
+    await expect(u.codeLocator).not.toContainText(`sketch005 = startSketchOn({`)
   })
   test("Deleting solid that the AST mod can't handle results in a toast message", async ({
     page,

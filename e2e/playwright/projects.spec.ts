@@ -833,8 +833,7 @@ test(
       timeout: 20_000,
     })
 
-    await page.locator('.cm-content')
-      .fill(`sketch001 = startSketchOn('XZ')
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
   |> line([324.07, 27.199], %, $seg01)
   |> line([118.328, -291.754], %)
