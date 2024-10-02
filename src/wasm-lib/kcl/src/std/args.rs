@@ -4,13 +4,14 @@ use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use serde::de::DeserializeOwned;
+use serde_json::Value as JValue;
 
 use crate::{
     ast::types::{parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet, SourceRange, TagIdentifier,
+        SolidSet, SourceRange, TagIdentifier, UserVal,
     },
     std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
 };
@@ -43,7 +44,7 @@ impl Args {
                 fs: Arc::new(crate::fs::FileManager::new()),
                 stdlib: Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                is_mock: true,
+                context_type: crate::executor::ContextType::Mock,
             },
         })
     }
@@ -497,18 +498,6 @@ where
     }
 }
 
-impl<'a> FromArgs<'a> for KclValue {
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(v) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Argument at index {i} was missing",),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-        Ok(v.to_owned())
-    }
-}
-
 impl<'a, T> FromArgs<'a> for Option<T>
 where
     T: FromKclValue<'a> + Sized,
@@ -587,6 +576,20 @@ impl<'a> FromKclValue<'a> for i64 {
     }
 }
 
+impl<'a> FromKclValue<'a> for UserVal {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val().map(|x| x.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<JValue> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val()
+            .and_then(|uv| uv.value.as_array())
+            .map(ToOwned::to_owned)
+    }
+}
+
 impl<'a> FromKclValue<'a> for TagDeclarator {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
@@ -599,6 +602,12 @@ impl<'a> FromKclValue<'a> for TagIdentifier {
     }
 }
 
+impl<'a> FromKclValue<'a> for KclValue {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        Some(arg.clone())
+    }
+}
+
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for $typ {
@@ -607,6 +616,15 @@ macro_rules! impl_from_arg_via_json {
             }
         }
     };
+}
+
+impl<'a, T> FromKclValue<'a> for Vec<T>
+where
+    T: serde::de::DeserializeOwned + FromKclValue<'a>,
+{
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        from_user_val(arg)
+    }
 }
 
 macro_rules! impl_from_arg_for_array {
@@ -720,25 +738,5 @@ impl<'a> FromKclValue<'a> for SketchSurface {
             KclValue::Face(sg) => Some(Self::Face(sg.clone())),
             _ => None,
         }
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<Sketch> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::UserVal(uv) = arg else {
-            return None;
-        };
-
-        uv.get::<Vec<Sketch>>().map(|x| x.0)
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<u64> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::UserVal(uv) = arg else {
-            return None;
-        };
-
-        uv.get::<Vec<u64>>().map(|x| x.0)
     }
 }
