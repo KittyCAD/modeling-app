@@ -2041,7 +2041,7 @@ const extrusion = extrude(10, sketch001)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
