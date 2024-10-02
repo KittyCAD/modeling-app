@@ -247,9 +247,19 @@ impl EngineConnection {
                                 request_id,
                                 errors,
                             }) => {
-                                eprintln!("EngineConnection Failure for ID: {:?}", request_id);
-                                for error in errors {
-                                    eprintln!("EngineConnection Failure: {:?}: {}", error.error_code, error.message)
+                                if let Some(id) = request_id {
+                                    responses_clone.insert(
+                                        *id,
+                                        WebSocketResponse::Failure(FailureWebSocketResponse {
+                                            success: false,
+                                            request_id: *request_id,
+                                            errors: errors.clone(),
+                                        }),
+                                    );
+                                } else {
+                                    for error in errors {
+                                        eprintln!("EngineConnection Failure: {:?}: {}", error.error_code, error.message)
+                                    }
                                 }
                             }
                             _ => {}
