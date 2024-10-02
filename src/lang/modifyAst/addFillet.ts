@@ -1,5 +1,4 @@
 import {
-  ArrayExpression,
   CallExpression,
   ObjectExpression,
   PathToNode,
