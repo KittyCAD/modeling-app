@@ -2,10 +2,7 @@ import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import {
   GridHelper,
   LineBasicMaterial,
-  OrthographicCamera,
   PerspectiveCamera,
-  Group,
-  Mesh,
   Quaternion,
   Vector3,
 } from 'three'
@@ -28,15 +25,11 @@ export function createGridHelper({
   gridHelper.rotation.x = Math.PI / 2
   return gridHelper
 }
-const fudgeFactor = 72.66985970437086
 
-export const orthoScale = (cam: OrthographicCamera | PerspectiveCamera) =>
-  (0.55 * fudgeFactor) / cam.zoom / window.innerHeight
 
-export const perspScale = (cam: PerspectiveCamera, group: Group | Mesh) =>
-  (group.position.distanceTo(cam.position) * cam.fov * fudgeFactor) /
-  4000 /
-  window.innerHeight
+// Re-export scale.ts
+export * from './scale'
+
 
 export function isQuaternionVertical(q: Quaternion) {
   const v = new Vector3(0, 0, 1).applyQuaternion(q)

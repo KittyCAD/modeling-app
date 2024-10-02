@@ -8,6 +8,18 @@ import {
   Locator,
   test,
 } from '@playwright/test'
+import {
+  OrthographicCamera,
+  Mesh,
+  Scene,
+  Raycaster,
+  PlaneGeometry,
+  MeshBasicMaterial,
+  DoubleSide,
+  Vector2,
+  Vector3,
+} from 'three'
+import { RAYCASTABLE_PLANE, INTERSECTION_PLANE_LAYER } from 'clientSideScene/constants'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
@@ -238,55 +250,145 @@ export const circleMove = async (
   }
 }
 
-export const getMovementUtils = (opts: any) => {
-  // The way we truncate is kinda odd apparently, so we need this function
-  // "[k]itty[c]ad round"
-  const kcRound = (n: number) => Math.trunc(n * 100) / 100
+export function rollingRound(n: number, digitsAfterDecimal: number) {
+  const s = String(n).split('.')
 
-  // To translate between screen and engine ("[U]nit") coordinates
-  // NOTE: these pretty much can't be perfect because of screen scaling.
-  // Handle on a case-by-case.
-  const toU = (x: number, y: number) => [
-    kcRound(x * 0.0678),
-    kcRound(-y * 0.0678), // Y is inverted in our coordinate system
-  ]
+  // There are no decimals, just return the number.
+  if (s.length === 1) return n
 
-  // Turn the array into a string with specific formatting
-  const fromUToString = (xy: number[]) => `[${xy[0]}, ${xy[1]}]`
+  // Find the closest 9. We don't care about anything beyond that.
+  const nineIndex = s[1].indexOf('9')
 
-  // Combine because used often
-  const toSU = (xy: number[]) => fromUToString(toU(xy[0], xy[1]))
+  const fractStr = nineIndex > 0 ? s[1].slice(0, nineIndex + 1) : s[1]
+
+  let fract = Number(fractStr) / (10 ** fractStr.length)
+
+  for (let i = fractStr.length - 1; i >= 0; i -= 1) {
+    if (i === digitsAfterDecimal) break
+    fract = Math.round(fract*(10**i)) / (10 **i)
+  }
+
+  return (Number(s[0]) + fract).toFixed(digitsAfterDecimal)
+}
+
+
+export const getMovementUtils = async (opts: any) => {
+  const sceneInfra = await opts.page.evaluate(() => window.sceneInfra)
+
+  // Various data for raycasting into the scene to get our XY.
+  const hundredM = 100_0000
+  const planeGeometry = new PlaneGeometry(hundredM, hundredM)
+  const planeMaterial = new MeshBasicMaterial({
+    color: 0xff0000,
+    side: DoubleSide,
+    transparent: true,
+    opacity: 0.5,
+  })
+  const scene = new Scene()
+  const intersectionPlane = new Mesh(planeGeometry, planeMaterial)
+  intersectionPlane.userData = { type: RAYCASTABLE_PLANE }
+  intersectionPlane.name = RAYCASTABLE_PLANE
+  intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
+  scene.add(intersectionPlane)
+  const planeRaycaster = new Raycaster()
+  planeRaycaster.far = Infinity
+  planeRaycaster.layers.enable(INTERSECTION_PLANE_LAYER)
+
+  const kcRound = (n: number) => Math.round(n * 100) / 100
 
   // Make it easier to click around from center ("click [from] zero zero")
   const click00 = (x: number, y: number) =>
-    opts.page.mouse.click(opts.center.x + x, opts.center.y + y, { delay: 100 })
+    opts.page.mouse.click(x, y, { delay: 100 })
 
   // Relative clicker, must keep state
   let last = { x: 0, y: 0 }
+  let lastScreenSpace = { x: 0, y: 0 }
+
   const click00r = async (x?: number, y?: number) => {
     // reset relative coordinates when anything is undefined
     if (x === undefined || y === undefined) {
-      last.x = 0
-      last.y = 0
-      return
+      last = { x: 0, y: 0 }
+      lastScreenSpace = { x: 0, y: 0 }
+      return {
+        nextXY: [0, 0],
+        kcl: `[0, 0]`,
+      }
     }
+
+    const absX = opts.center.x + x
+    const absY = opts.center.y + y
+
+    const nextX = last.x + x
+    const nextY = last.y + y
+
+    const targetX = opts.center.x + nextX
+    const targetY = opts.center.y + -nextY
+
+    // Use the current camera specification
+    const camera = await opts.page.evaluate(() => {
+      window.sceneInfra.camControls.onCameraChange(true)
+      return window.sceneInfra.camControls.camera
+    })
+
+    const windowWH = await opts.page.evaluate(() => ({ w: window.innerWidth, h: window.innerHeight }))
+
+    // I didn't write this math, it's copied from sceneInfra.ts, and I understand
+    // it's just normalizing the point, but why *-2 ± 1 I have no idea.
+    const mouseVector = new Vector2(
+       (targetX / windowWH.w) * 2 - 1,
+      -(targetY / windowWH.h) * 2 + 1,
+    )
+    planeRaycaster.setFromCamera(mouseVector, camera)
+    const intersections = planeRaycaster.intersectObjects(scene.children, true)
+
+    const planePosition = intersections[0].object.position
+    const inversePlaneQuaternion = intersections[0].object.quaternion
+      .clone()
+      .invert()
+    let transformedPoint = intersections[0].point.clone()
+    if (transformedPoint) {
+      transformedPoint.applyQuaternion(inversePlaneQuaternion)
+    }
+    const twoD = new Vector2(
+      // I think the intersection plane doesn't get scale when nearly everything else does, maybe that should change
+      transformedPoint.x / sceneInfra._baseUnitMultiplier,
+      transformedPoint.y / sceneInfra._baseUnitMultiplier
+    ) // z should be 0
+    const planePositionCorrected = new Vector3(
+      ...planePosition
+    ).applyQuaternion(inversePlaneQuaternion)
+    twoD.sub(new Vector2(...planePositionCorrected))
 
     await circleMove(
       opts.page,
-      opts.center.x + last.x + x,
-      opts.center.y + last.y + y,
+      targetX,
+      targetY,
       10,
       10
     )
-    await click00(last.x + x, last.y + y)
+    await click00(targetX, targetY)
+
     last.x += x
     last.y += y
 
-    // Returns the new absolute coordinate if you need it.
-    return [last.x, last.y]
+    const relativeScreenSpace = {
+      x: twoD.x - lastScreenSpace.x,
+      y: -(twoD.y - lastScreenSpace.y),
+    }
+
+    lastScreenSpace.x = kcRound(twoD.x)
+    lastScreenSpace.y = kcRound(twoD.y)
+
+
+    // Returns the new absolute coordinate and the screen space coordinate if you need it.
+    return {
+      nextXY: [last.x, last.y],
+      kcl: `[${kcRound(relativeScreenSpace.x)}, ${-kcRound(relativeScreenSpace.y)}]`,
+    }
+
   }
 
-  return { toSU, click00r }
+  return { click00r }
 }
 
 async function waitForAuthAndLsp(page: Page) {
@@ -337,16 +439,28 @@ export async function getUtils(page: Page, test_?: typeof test) {
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
   const util = {
+    async getModelViewAreaSize() {
+      const windowInnerWidth = await page.evaluate(() => window.innerWidth)
+      const windowInnerHeight = await page.evaluate(() => window.innerHeight)
+
+      const sidebar = page.getByTestId('modeling-sidebar')
+      const bb = await sidebar.boundingBox()
+      return {
+        w: windowInnerWidth - (bb?.width ?? 0),
+        h: windowInnerHeight - (bb?.height ?? 0)
+      }
+    },
     async getCenterOfModelViewArea() {
       const windowInnerWidth = await page.evaluate(() => window.innerWidth)
       const windowInnerHeight = await page.evaluate(() => window.innerHeight)
 
-      const panes = page.getByTestId('pane-section')
-      const bb = await panes.boundingBox()
-      const goRightPx = bb.width > 0 ? (windowInnerWidth - bb.width) / 2 : 0
+      const sidebar = page.getByTestId('modeling-sidebar')
+      const bb = await sidebar.boundingBox()
+      const goRightPx = (bb?.width ?? 0 ) / 2
+      const borderWidthsCombined = 2
       return {
-        x: windowInnerWidth / 2 + goRightPx,
-        y: windowInnerHeight / 2,
+        x: Math.round(windowInnerWidth / 2 + goRightPx) - borderWidthsCombined,
+        y: Math.round(windowInnerHeight / 2),
       }
     },
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),

@@ -622,6 +622,7 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               input.faceId
             )
+            await sceneInfra.camControls.centerModelRelativeToPanes({ resetLastPaneWidth: true })
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,
@@ -642,6 +643,7 @@ export const ModelingMachineProvider = ({
             engineCommandManager,
             input.planeId
           )
+          await sceneInfra.camControls.centerModelRelativeToPanes({ resetLastPaneWidth: true })
 
           return {
             sketchPathToNode: pathToNode,
@@ -664,6 +666,7 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
             )
+            await sceneInfra.camControls.centerModelRelativeToPanes({ resetLastPaneWidth: true })
             return {
               sketchPathToNode: sketchPathToNode || [],
               zAxis: info.sketchDetails.zAxis || null,

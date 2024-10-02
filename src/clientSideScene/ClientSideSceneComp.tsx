@@ -234,7 +234,11 @@ const Overlay = ({
     )
 
   // Line labels will cover the constraints overlay if this is not used.
-  const zIndex = 10
+  // For each line label, ThreeJS increments each CSS2DObject z-index as they
+  // are added. I have looked into overriding renderOrder and depthTest and
+  // while renderOrder is set, ThreeJS still sets z-index on these 2D objects.
+  // It is easier to set this to a large number, such as a billion.
+  const zIndex = 1000000000
 
   return (
     <div className={`absolute w-0 h-0`}>
@@ -449,7 +453,7 @@ const SegmentMenu = ({
   const { send } = useModelingContext()
   const dependentSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
   return (
-    <Popover style={{ style }} className="relative">
+    <Popover style={style} className="relative">
       {({ open }) => (
         <>
           <Popover.Button
