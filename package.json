@@ -84,6 +84,7 @@
     "fetch:wasm": "./get-latest-wasm-bundle.sh",
     "fetch:samples": "echo \"Fetching latest KCL samples...\" && curl -o public/kcl-samples-manifest-fallback.json https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifest.json",
     "isomorphic-copy-wasm": "(copy src/wasm-lib/pkg/wasm_lib_bg.wasm public || cp src/wasm-lib/pkg/wasm_lib_bg.wasm public)",
+    "build:ts-rs": "rimraf src/wasm-lib/kcl/bindings && cd src/wasm-lib && cargo test -p kcl-lib export_bindings",
     "build:wasm-dev": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && yarn isomorphic-copy-wasm && yarn fmt",
     "build:wasm": "yarn wasm-prep && cd src/wasm-lib && wasm-pack build --release --target web --out-dir pkg && cargo test -p kcl-lib export_bindings && cd ../.. && yarn isomorphic-copy-wasm && yarn fmt",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
