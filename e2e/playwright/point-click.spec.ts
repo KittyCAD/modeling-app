@@ -274,7 +274,6 @@ test.describe('verify sketch on chamfer works', () => {
     |> close(%)`,
       })
 
-
       await test.step('verify at the end of the test that final code is what is expected', async () => {
         await editor.expectEditor.toContain(
           `sketch001 = startSketchOn('XZ')
@@ -405,7 +404,6 @@ test.describe('verify sketch on chamfer works', () => {
        ], %, $rectangleSegmentC001)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
     |> close(%)`,
-
       })
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn('XZ')

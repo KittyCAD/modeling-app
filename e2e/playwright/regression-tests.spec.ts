@@ -231,7 +231,6 @@ sketch001 = startSketchAt([-0, -0])
         'This test is being weird on windows'
       )
 
-
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
       await page.setViewportSize({ width: 1200, height: 500 })
