@@ -242,6 +242,16 @@ impl EngineConnection {
                                 let mut sd = session_data2.lock().unwrap();
                                 sd.replace(session.clone());
                             }
+                            WebSocketResponse::Failure(FailureWebSocketResponse {
+                                success: _,
+                                request_id,
+                                errors,
+                            }) => {
+                                eprintln!("EngineConnection Failure for ID: {:?}", request_id);
+                                for error in errors {
+                                    eprintln!("EngineConnection Failure: {:?}: {}", error.error_code, error.message)
+                                }
+                            }
                             _ => {}
                         }
 
