@@ -1,4 +1,5 @@
 import { _test, _expect } from './playwright-deprecated'
+import { test } from './fixtures/fixtureSetup'
 import { getUtils, setup, tearDown } from './test-utils'
 import { uuidv4 } from 'lib/utils'
 import { TEST_CODE_GIZMO } from './storageStates'
@@ -56,7 +57,7 @@ _test.describe('Testing Gizmo', () => {
     expectedCameraTarget,
     testDescription,
   } of cases) {
-_test(`check ${testDescription}`, async ({ page, browserName }) => {
+    _test(`check ${testDescription}`, async ({ page, browserName }) => {
       const u = await getUtils(page)
       await page.addInitScript((TEST_CODE_GIZMO) => {
         localStorage.setItem('persistCode', TEST_CODE_GIZMO)
@@ -116,30 +117,30 @@ _test(`check ${testDescription}`, async ({ page, browserName }) => {
 
       await Promise.all([
         // position
-_expect(page.getByTestId('cam-x-position')).toHaveValue(
+        _expect(page.getByTestId('cam-x-position')).toHaveValue(
           expectedCameraPosition.x.toString()
         ),
-_expect(page.getByTestId('cam-y-position')).toHaveValue(
+        _expect(page.getByTestId('cam-y-position')).toHaveValue(
           expectedCameraPosition.y.toString()
         ),
-_expect(page.getByTestId('cam-z-position')).toHaveValue(
+        _expect(page.getByTestId('cam-z-position')).toHaveValue(
           expectedCameraPosition.z.toString()
         ),
         // target
-_expect(page.getByTestId('cam-x-target')).toHaveValue(
+        _expect(page.getByTestId('cam-x-target')).toHaveValue(
           expectedCameraTarget.x.toString()
         ),
-_expect(page.getByTestId('cam-y-target')).toHaveValue(
+        _expect(page.getByTestId('cam-y-target')).toHaveValue(
           expectedCameraTarget.y.toString()
         ),
-_expect(page.getByTestId('cam-z-target')).toHaveValue(
+        _expect(page.getByTestId('cam-z-target')).toHaveValue(
           expectedCameraTarget.z.toString()
         ),
       ])
     })
   }
 
-_test('Context menu and popover menu', async ({ page }) => {
+  _test('Context menu and popover menu', async ({ page }) => {
     const testCase = {
       testDescription: 'Right view',
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
@@ -214,23 +215,23 @@ _test('Context menu and popover menu', async ({ page }) => {
 
     await Promise.all([
       // position
-_expect(page.getByTestId('cam-x-position')).toHaveValue(
+      _expect(page.getByTestId('cam-x-position')).toHaveValue(
         testCase.expectedCameraPosition.x.toString()
       ),
-_expect(page.getByTestId('cam-y-position')).toHaveValue(
+      _expect(page.getByTestId('cam-y-position')).toHaveValue(
         testCase.expectedCameraPosition.y.toString()
       ),
-_expect(page.getByTestId('cam-z-position')).toHaveValue(
+      _expect(page.getByTestId('cam-z-position')).toHaveValue(
         testCase.expectedCameraPosition.z.toString()
       ),
       // target
-_expect(page.getByTestId('cam-x-target')).toHaveValue(
+      _expect(page.getByTestId('cam-x-target')).toHaveValue(
         testCase.expectedCameraTarget.x.toString()
       ),
-_expect(page.getByTestId('cam-y-target')).toHaveValue(
+      _expect(page.getByTestId('cam-y-target')).toHaveValue(
         testCase.expectedCameraTarget.y.toString()
       ),
-_expect(page.getByTestId('cam-z-target')).toHaveValue(
+      _expect(page.getByTestId('cam-z-target')).toHaveValue(
         testCase.expectedCameraTarget.z.toString()
       ),
     ])
@@ -244,5 +245,57 @@ _expect(page.getByTestId('cam-z-target')).toHaveValue(
     await _expect(gizmoPopoverButton).toBeVisible()
     await gizmoPopoverButton.click()
     await _expect(buttonToTest).toBeVisible()
+  })
+})
+
+test.describe(`Testing gizmo, fixture-based`, () => {
+  test('Center on selection from menu', async ({
+    app,
+    cmdBar,
+    editor,
+    toolbar,
+    scene,
+  }) => {
+    test.skip(
+      process.platform === 'win32',
+      'Fails on windows in CI, can not be replicated locally on windows.'
+    )
+
+    await test.step(`Setup`, async () => {
+      const file = await app.getInputFile('test-circle-extrude.kcl')
+      await app.initialise(file)
+      await scene.expectState({
+        camera: {
+          position: [4982.21, -23865.37, 13810.64],
+          target: [4982.21, 0, 2737.1],
+        },
+      })
+    })
+    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
+
+    await test.step(`Select an edge of this circle`, async () => {
+      const circleSnippet =
+        'circle({ center: [318.33, 168.1], radius: 182.8 }, %)'
+      await moveToCircle()
+      await clickCircle()
+      await editor.expectState({
+        activeLines: [circleSnippet.slice(-5)],
+        highlightedCode: circleSnippet,
+        diagnostics: [],
+      })
+    })
+
+    await test.step(`Center on selection from menu`, async () => {
+      await scene.clickGizmoMenuItem('Center view on selection')
+    })
+
+    await test.step(`Verify the camera moved`, async () => {
+      await scene.expectState({
+        camera: {
+          position: [0, -23865.37, 11073.54],
+          target: [0, 0, 0],
+        },
+      })
+    })
   })
 })
