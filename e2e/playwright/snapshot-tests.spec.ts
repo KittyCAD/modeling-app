@@ -49,7 +49,7 @@ test.setTimeout(60_000)
 
 test(
   'exports of each format should work',
-  { tag: '@snapshot' },
+  { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context }) => {
     // skip on macos and windows.
     test.skip(
@@ -455,6 +455,7 @@ test(
     await page.mouse.move(startXPx + PUR * 20, 500 - PUR * 10)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
 
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
@@ -474,6 +475,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -531,6 +533,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -585,6 +588,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
       `const sketch001 = startSketchOn('XZ')

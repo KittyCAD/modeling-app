@@ -6,7 +6,7 @@ layout: manual
 
 Compute the logarithm of the number with respect to an arbitrary base.
 
-The result might not be correctly rounded owing to implementation details; &#x60;log2()&#x60; can produce more accurate results for base 2, and &#x60;log10()&#x60; can produce more accurate results for base 10.
+The result might not be correctly rounded owing to implementation details; `log2()` can produce more accurate results for base 2, and `log10()` can produce more accurate results for base 10.
 
 ```js
 log(num: number, base: number) -> number
