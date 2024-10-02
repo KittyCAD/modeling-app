@@ -282,6 +282,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true, // TODO: multiple selection like in extrude command
         required: true,
         skip: true,
+        warningMessage:
+          'Fillets cannot touch other fillets yet. This is under development.',
       },
       radius: {
         inputType: 'kcl',

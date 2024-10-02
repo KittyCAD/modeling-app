@@ -106,6 +106,7 @@ export type CommandArgumentConfig<
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
         machineContext?: C
       ) => boolean)
+  warningMessage?: string
   skip?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
@@ -182,6 +183,7 @@ export type CommandArgument<
       ) => boolean)
   skip?: boolean
   machineActor: Actor<T>
+  warningMessage: string
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
