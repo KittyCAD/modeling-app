@@ -1,4 +1,7 @@
-use kcl_lib::{settings::types::UnitLength, test_server::execute_and_snapshot};
+use kcl_lib::{
+    settings::types::UnitLength,
+    test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
+};
 
 /// The minimum permissible difference between asserted twenty-twenty images.
 /// i.e. how different the current model snapshot can be from the previous saved one.
@@ -2146,5 +2149,30 @@ someFunction('INVALID')
     assert_eq!(
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_error_no_auth_websocket() {
+    let code = r#"const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([61.74, 206.13], %)
+  |> xLine(305.11, %, $seg01)
+  |> yLine(-291.85, %)
+  |> xLine(-segLen(seg01), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(40.14, %)
+  |> shell({
+    faces: [seg01],
+    thickness: 3.14,
+  }, %)
+"#;
+
+    let result = execute_and_snapshot_no_auth(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string().replace("\\n", ""),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([18, 37])], message: "Please send the following object over this websocket:
+              { headers: { Authorization: Bearer <token> } }" }"#.replace("\n", "")
     );
 }
