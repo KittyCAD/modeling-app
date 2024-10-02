@@ -20,8 +20,8 @@ const DownloadAppBanner = () => {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl font-bold mb-4">Be warned!</h2>
           <p>
-            Zoo Modeling App Desktop is more reliable! Our web app gets the
-            latest changes first, and may have less stable features.
+            Zoo Modeling App Desktop is more reliable! The web app is not
+            officially supported.
           </p>
           {!navigator?.userAgent.includes('Chrome') && (
             <p className="mt-6">
@@ -42,25 +42,24 @@ const DownloadAppBanner = () => {
             <ActionButton
               Element="button"
               onClick={() => setIsBannerDismissed(true)}
-              className="group text-warn-80 bg-warn-10 border-warn-70 hover:border-warn-80 hover:bg-warn-10 dark:bg-warn-10 dark:!border-warn-70 dark:hover:!border-warn-80 dark:text-warn-80 dark:hover:bg-warn-10"
+              className="group text-warn-80 bg-warn-10 border-warn-50 hover:border-warn-80 hover:bg-warn-10 dark:bg-warn-10 dark:!border-warn-50 dark:hover:!border-warn-80 dark:text-warn-80 dark:hover:bg-warn-10"
               iconStart={{
                 icon: 'checkmark',
                 iconClassName: 'text-warn-10 dark:text-warn-10',
                 bgClassName:
-                  'bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80',
+                  'bg-warn-50 group-hover:bg-warn-80 dark:bg-warn-50 dark:group-hover:bg-warn-80',
               }}
             >
-              OK, I understand
+              Proceed at my own risk
             </ActionButton>
             <ActionButton
               Element="externalLink"
               to="https://zoo.dev/modeling-app/download"
-              className="group bg-warn-10 border-warn-70 hover:border-warn-80 dark:bg-warn-10 dark:!border-warn-70 dark:hover:!border-warn-80 dark:text-warn-80"
-              iconStart={{
-                icon: 'link',
+              className="group text-warn-10 dark:!text-warn-10 pr-1 border-warn-70 hover:border-warn-80 dark:!border-warn-70 dark:hover:!border-warn-80 bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80"
+              iconEnd={{
+                icon: 'arrowRight',
                 iconClassName: 'text-warn-10 dark:text-warn-10',
-                bgClassName:
-                  'bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80',
+                bgClassName: '!bg-transparent',
               }}
             >
               Download Desktop App
