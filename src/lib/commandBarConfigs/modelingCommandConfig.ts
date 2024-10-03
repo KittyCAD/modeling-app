@@ -258,7 +258,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Fillet: {
-    // todo
     description: 'Fillet edge',
     icon: 'fillet',
     needsReview: true,
@@ -269,7 +268,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'default',
           'line-end',
           'line-mid',
-          'extrude-wall', // to fix: accepts only this selection type
+          'extrude-wall',
           'solid2D',
           'start-cap',
           'end-cap',
@@ -279,9 +278,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'arc',
           'all',
         ],
-        multiple: true, // TODO: multiple selection like in extrude command
+        multiple: true,
         required: true,
-        skip: true,
+        skip: false,
         warningMessage:
           'Fillets cannot touch other fillets yet. This is under development.',
       },
