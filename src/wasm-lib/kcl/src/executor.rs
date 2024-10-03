@@ -1893,8 +1893,11 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
+        id_generator: IdGenerator,
     ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory).await.map(|x| x.0)
+        self.run_with_session_data(program, memory, id_generator)
+            .await
+            .map(|x| x.0)
     }
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
@@ -1903,6 +1906,7 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
+        id_generator: IdGenerator,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
         let memory = if let Some(memory) = memory {
             memory.clone()
@@ -1911,6 +1915,7 @@ impl ExecutorContext {
         };
         let mut exec_state = ExecState {
             memory,
+            id_generator,
             ..Default::default()
         };
         // Before we even start executing the program, set the units.
@@ -2076,7 +2081,7 @@ impl ExecutorContext {
 
     /// Execute the program, then get a PNG screenshot.
     pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None).await?;
+        let _ = self.run(program, None, IdGenerator::default()).await?;
 
         // Zoom to fit.
         self.engine
@@ -2221,7 +2226,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None).await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default()).await?;
 
         Ok(exec_state.memory)
     }

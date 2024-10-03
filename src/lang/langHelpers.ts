@@ -11,6 +11,7 @@ import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
+import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
 
 export type ToolTip =
   | 'lineTo'
@@ -49,11 +50,13 @@ export async function executeAst({
   engineCommandManager,
   useFakeExecutor = false,
   programMemoryOverride,
+  idGenerator,
 }: {
   ast: Program
   engineCommandManager: EngineCommandManager
   useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
+  idGenerator?: IdGenerator
   isInterrupted?: boolean
 }): Promise<{
   logs: string[]
@@ -69,7 +72,13 @@ export async function executeAst({
     }
     const execState = await (useFakeExecutor
       ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
-      : _executor(ast, programMemoryInit(), engineCommandManager, false))
+      : _executor(
+          ast,
+          programMemoryInit(),
+          idGenerator,
+          engineCommandManager,
+          false
+        ))
 
     await engineCommandManager.waitForAllCommands()
     return {

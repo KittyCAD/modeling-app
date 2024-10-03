@@ -41,7 +41,7 @@ use tower_lsp::{
 
 use crate::{
     ast::types::{Expr, VariableKind},
-    executor::SourceRange,
+    executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
@@ -591,7 +591,7 @@ impl Backend {
         // Clear the scene, before we execute so it's not fugly as shit.
         executor_ctx.engine.clear_scene(SourceRange::default()).await?;
 
-        let exec_state = match executor_ctx.run(ast, None).await {
+        let exec_state = match executor_ctx.run(ast, None, IdGenerator::default()).await {
             Ok(exec_state) => exec_state,
             Err(err) => {
                 self.memory_map.remove(params.uri.as_str());

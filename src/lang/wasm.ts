@@ -164,7 +164,7 @@ function execStateFromRaw(raw: RawExecState): ExecState {
   }
 }
 
-function defaultIdGenerator(): IdGenerator {
+export function defaultIdGenerator(): IdGenerator {
   return {
     nextId: 0,
     ids: [],
@@ -380,6 +380,7 @@ export function sketchFromKclValue(
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
+  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
 ): Promise<ExecState> => {
@@ -390,6 +391,7 @@ export const executor = async (
   const _programMemory = await _executor(
     node,
     programMemory,
+    idGenerator,
     engineCommandManager,
     isMock
   )
@@ -402,6 +404,7 @@ export const executor = async (
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
+  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ExecState> => {
@@ -419,6 +422,7 @@ export const _executor = async (
     const execState: RawExecState = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory.toRaw()),
+      JSON.stringify(idGenerator),
       baseUnit,
       engineCommandManager,
       fileSystemManager,

@@ -4,6 +4,7 @@ import {
   _executor,
   SourceRange,
   ExecState,
+  defaultIdGenerator,
 } from '../lang/wasm'
 import {
   EngineCommandManager,
@@ -15,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { err, reportRejection } from 'lib/trap'
 import { toSync } from './utils'
+import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 
@@ -83,7 +85,8 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Program | Error,
-  pm: ProgramMemory | Error = ProgramMemory.empty()
+  pm: ProgramMemory | Error = ProgramMemory.empty(),
+  idGenerator: IdGenerator = defaultIdGenerator()
 ): Promise<ExecState> {
   if (err(ast)) return Promise.reject(ast)
   if (err(pm)) return Promise.reject(pm)
@@ -94,14 +97,21 @@ export async function enginelessExecutor(
   }) as any as EngineCommandManager
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   mockEngineCommandManager.startNewSession()
-  const execState = await _executor(ast, pm, mockEngineCommandManager, true)
+  const execState = await _executor(
+    ast,
+    pm,
+    idGenerator,
+    mockEngineCommandManager,
+    true
+  )
   await mockEngineCommandManager.waitForAllCommands()
   return execState
 }
 
 export async function executor(
   ast: Program,
-  pm: ProgramMemory = ProgramMemory.empty()
+  pm: ProgramMemory = ProgramMemory.empty(),
+  idGenerator: IdGenerator = defaultIdGenerator()
 ): Promise<ExecState> {
   const engineCommandManager = new EngineCommandManager()
   engineCommandManager.start({
@@ -123,7 +133,13 @@ export async function executor(
       toSync(async () => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         engineCommandManager.startNewSession()
-        const execState = await _executor(ast, pm, engineCommandManager, false)
+        const execState = await _executor(
+          ast,
+          pm,
+          idGenerator,
+          engineCommandManager,
+          false
+        )
         await engineCommandManager.waitForAllCommands()
         resolve(execState)
       }, reportRejection)
