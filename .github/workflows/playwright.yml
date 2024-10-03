@@ -183,6 +183,22 @@ jobs:
       with:
         name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
+        else
+          echo "test-results folder does not exist"
+        fi
     - name: Run playwright/chrome flow (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
@@ -197,7 +213,7 @@ jobs:
         fi
 
         retry=1
-        max_retrys=4
+        max_retrys=1
 
         # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
         while [[ $retry -le $max_retrys ]]; do
@@ -242,6 +258,22 @@ jobs:
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
+        else
+          echo "test-results folder does not exist"
+        fi
     - uses: actions/upload-artifact@v4
       if: always()
       with:
@@ -352,8 +384,24 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-${{ matrix.os }}-${{ github.sha }}
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
+        else
+          echo "test-results folder does not exist"
+        fi
     - name: Run electron tests (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
@@ -372,7 +420,7 @@ jobs:
         fi
 
         retry=1
-        max_retrys=2
+        max_retrys=1
 
         # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
         while [[ $retry -le $max_retrys ]]; do
@@ -422,6 +470,22 @@ jobs:
       shell: bash
       run: |
         node playwrightProcess.mjs | tee /tmp/github-actions.log
+    - name: Debug test-results folder
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        if [[ -d "test-results" ]]; then
+          echo "Contents of test-results folder:"
+          ls -la test-results
+          if [[ -f "test-results/.last-run.json" ]]; then
+            echo "Contents of test-results/.last-run.json:"
+            cat test-results/.last-run.json
+          else
+            echo "test-results/.last-run.json does not exist"
+          fi
+        else
+          echo "test-results folder does not exist"
+        fi
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
       with:
