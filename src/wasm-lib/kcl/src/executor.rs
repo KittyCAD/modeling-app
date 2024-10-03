@@ -296,8 +296,8 @@ impl DynamicState {
 
 /// A generator for [ArtifactId]s that can be stable across executions.
 #[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[serde(rename_all = "camelCase")]
 #[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub struct IdGenerator {
     next_id: usize,
     ids: Vec<uuid::Uuid>,

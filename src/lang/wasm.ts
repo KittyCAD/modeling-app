@@ -38,9 +38,12 @@ import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
 import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
+import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
+import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
+import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
+import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
-export type { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
 export type { ObjectProperty } from '../wasm-lib/kcl/bindings/ObjectProperty'
@@ -169,26 +172,13 @@ function defaultIdGenerator(): IdGenerator {
 }
 
 interface Memory {
-  [key: string]: KclValue
+  [key: string]: KclValue | undefined
 }
-
-type EnvironmentRef = number
 
 const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
 
-interface Environment {
-  bindings: Memory
-  parent: EnvironmentRef | null
-}
-
 function emptyEnvironment(): Environment {
   return { bindings: {}, parent: null }
-}
-
-interface RawProgramMemory {
-  environments: Environment[]
-  currentEnv: EnvironmentRef
-  return: KclValue | null
 }
 
 /**
@@ -249,7 +239,7 @@ export class ProgramMemory {
     while (true) {
       const env = this.environments[envRef]
       if (env.bindings.hasOwnProperty(name)) {
-        return env.bindings[name]
+        return env.bindings[name] ?? null
       }
       if (!env.parent) {
         break
@@ -292,6 +282,7 @@ export class ProgramMemory {
       }
 
       for (const [name, value] of Object.entries(env.bindings)) {
+        if (value === undefined) continue
         // Check the predicate.
         if (!predicate(value)) {
           continue
@@ -325,6 +316,7 @@ export class ProgramMemory {
     while (true) {
       const env = this.environments[envRef]
       for (const [name, value] of Object.entries(env.bindings)) {
+        if (value === undefined) continue
         // Don't include shadowed variables.
         if (!map.has(name)) {
           map.set(name, value)
