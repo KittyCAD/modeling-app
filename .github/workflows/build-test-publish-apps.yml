@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - pierremtb/update-download-progress-flatten
+      - franknoirot/update-download-progress
   release:
     types: [published]
   schedule:
