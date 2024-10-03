@@ -129,7 +129,7 @@ jobs:
     - name: Run ubuntu/chrome snapshots
       shell: bash
       run: |
-        yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --output test-results-snapshots --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
         CI: true
         NODE_ENV: development

@@ -46,7 +46,6 @@ e2e/playwright/export-snapshots/*
 
 
 /test-results/
-/test-results-snapshots/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
