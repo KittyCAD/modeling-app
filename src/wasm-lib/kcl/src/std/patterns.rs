@@ -290,7 +290,7 @@ async fn inner_pattern_transform<'a>(
 
     let starting_solids: Vec<Box<Solid>> = solid_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.context_type == crate::executor::ContextType::Mock {
         return Ok(starting_solids);
     }
 
@@ -513,7 +513,7 @@ async fn inner_pattern_linear_2d(
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.context_type == crate::executor::ContextType::Mock {
         return Ok(starting_sketches);
     }
 
@@ -591,7 +591,7 @@ async fn inner_pattern_linear_3d(
 
     let starting_solids: Vec<Box<Solid>> = solid_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.context_type == crate::executor::ContextType::Mock {
         return Ok(starting_solids);
     }
 
@@ -783,7 +783,7 @@ async fn inner_pattern_circular_2d(
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.context_type == crate::executor::ContextType::Mock {
         return Ok(starting_sketches);
     }
 
@@ -852,7 +852,7 @@ async fn inner_pattern_circular_3d(
 
     let starting_solids: Vec<Box<Solid>> = solid_set.into();
 
-    if args.ctx.is_mock {
+    if args.ctx.context_type == crate::executor::ContextType::Mock {
         return Ok(starting_solids);
     }
 

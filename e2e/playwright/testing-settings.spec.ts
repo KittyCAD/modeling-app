@@ -258,7 +258,7 @@ test.describe('Testing settings', () => {
 
   test(
     `Project settings override user settings on desktop`,
-    { tag: '@electron' },
+    { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
       test.skip(
         process.platform === 'win32',
@@ -596,14 +596,14 @@ test.describe('Testing settings', () => {
     await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([0, 5], %)
   |> line([-5, 0], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)
+extrude001 = extrude(5, sketch001)
 `
       )
     })
