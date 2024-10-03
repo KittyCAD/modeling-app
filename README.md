@@ -304,7 +304,7 @@ yarn start
 and finally:
 
 ```
-yarn test:nowatch
+yarn test:unit
 ```
 
 For individual testing:
