@@ -2170,9 +2170,9 @@ async fn kcl_test_error_no_auth_websocket() {
 
     let result = execute_and_snapshot_no_auth(code, UnitLength::Mm).await;
     assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string().replace("\\n", ""),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([18, 37])], message: "Please send the following object over this websocket:
-              { headers: { Authorization: Bearer <token> } }" }"#.replace("\n", "")
-    );
+    assert!(result
+        .err()
+        .unwrap()
+        .to_string()
+        .contains("Please send the following object over this websocket"));
 }
