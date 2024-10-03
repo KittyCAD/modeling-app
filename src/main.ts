@@ -271,7 +271,8 @@ app.on('ready', () => {
   })
 
   autoUpdater.prependOnceListener('download-progress', (progress) => {
-    // For now, we'll send the version to the loading toast start.
+    // For now, we'll send nothing and just start a loading spinner.
+    // See below for a TODO to send progress data to the renderer.
     console.log('update-download-start', {
       version: '',
     })

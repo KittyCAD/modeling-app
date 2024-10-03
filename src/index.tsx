@@ -57,8 +57,8 @@ reportWebVitals()
 if (isDesktop()) {
   // Listen for update download progress to begin
   // to show a loading toast.
-  window.electron.onUpdateDownloadStart(({ version }) => {
-    const message = `Downloading update (${version})...`
+  window.electron.onUpdateDownloadStart(() => {
+    const message = `Downloading app update...`
     console.log(message)
     toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
   })
