@@ -344,7 +344,7 @@ extrude001 = extrude(-15, sketch001)
 extrude001 = extrude(-15, sketch001)`
     const segmentSnippets = ['line([-20, 0], %)']
     const radiusValue = 3
-    const expectedCode = `const sketch001 = startSketchOn('XY')
+    const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
@@ -362,7 +362,7 @@ extrude001 = extrude(-15, sketch001)
     )
   })
   it('should add a fillet with existing fillet on other segment', async () => {
-    const code = `const sketch001 = startSketchOn('XY')
+    const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
