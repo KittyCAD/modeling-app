@@ -2,15 +2,13 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
+use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecState, KclValue},
     std::Args,
 };
-
-use super::args::FromArgs;
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.

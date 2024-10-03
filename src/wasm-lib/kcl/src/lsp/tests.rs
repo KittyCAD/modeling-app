@@ -1551,13 +1551,13 @@ const outsideRevolve = startSketchOn('XZ')
 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
-const sphereDia = 0.5
-const insideDia = 1
-const thickness = 0.25
-const overHangLength = .4
+sphereDia = 0.5
+insideDia = 1
+thickness = 0.25
+overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-const insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn('XZ')
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -1571,7 +1571,7 @@ const insideRevolve = startSketchOn('XZ')
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-const sphere = startSketchOn('XZ')
+sphere = startSketchOn('XZ')
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -1593,7 +1593,7 @@ const sphere = startSketchOn('XZ')
      }, %)
 
 // Sketch and revolve the outside bearing
-const outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn('XZ')
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -1653,7 +1653,7 @@ async fn test_kcl_lsp_rename() {
                 start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
                 end: tower_lsp::lsp_types::Position { line: 0, character: 13 }
             },
-            new_text: "const newName = 1\n".to_string()
+            new_text: "newName = 1\n".to_string()
         }]
     );
 }
@@ -1669,7 +1669,7 @@ async fn test_kcl_lsp_diagnostic_no_errors() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const thing= 1"#.to_string(),
+                text: r#"thing= 1"#.to_string(),
             },
         })
         .await;

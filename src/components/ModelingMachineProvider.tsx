@@ -104,7 +104,12 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: {
+          defaultUnit,
+          cameraProjection,
+          highlightEdges,
+          showScaleGrid,
+        },
       },
     },
   } = useSettingsAuthContext()
@@ -145,7 +150,9 @@ export const ModelingMachineProvider = ({
           ;(async () => {
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
@@ -974,6 +981,7 @@ export const ModelingMachineProvider = ({
       highlightEdges: highlightEdges.current,
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
+      cameraProjection: cameraProjection.current,
     },
     token
   )

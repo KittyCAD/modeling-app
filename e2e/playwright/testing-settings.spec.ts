@@ -13,6 +13,7 @@ import {
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS,
+  TEST_SETTINGS_DEFAULT_THEME,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 
@@ -257,7 +258,7 @@ test.describe('Testing settings', () => {
 
   test(
     `Project settings override user settings on desktop`,
-    { tag: '@electron' },
+    { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
       test.skip(
         process.platform === 'win32',
@@ -595,14 +596,14 @@ test.describe('Testing settings', () => {
     await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([0, 5], %)
   |> line([-5, 0], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)
+extrude001 = extrude(5, sketch001)
 `
       )
     })
@@ -652,6 +653,60 @@ const extrude001 = extrude(5, sketch001)
         .poll(() =>
           u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
         )
+        .toBeLessThan(15)
+    })
+  })
+
+  test(`Changing system theme preferences (via media query) should update UI and stream`, async ({
+    page,
+  }) => {
+    // Override the settings so that the theme is set to `system`
+    await page.addInitScript(
+      ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_DEFAULT_THEME,
+        }),
+      }
+    )
+    const u = await getUtils(page)
+
+    // Selectors and constants
+    const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
+    const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
+    const darkBackgroundColor: [number, number, number] = [27, 27, 27]
+    const lightBackgroundColor: [number, number, number] = [245, 245, 245]
+    const streamBackgroundPixelIsColor = async (
+      color: [number, number, number]
+    ) => {
+      return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+    }
+    const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
+
+    await test.step(`Test setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await expect(toolbar).toBeVisible()
+    })
+
+    await test.step(`Check the background color is light before`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', lightBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+        .toBeLessThan(15)
+    })
+
+    await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
+      await page.emulateMedia({ colorScheme: 'dark' })
+    })
+
+    await test.step(`Check the background color is dark after`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
         .toBeLessThan(15)
     })
   })

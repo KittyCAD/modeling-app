@@ -3,7 +3,12 @@ import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
-import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
+import {
+  Themes,
+  getThemeColorForEngine,
+  getOppositeTheme,
+  darkModeMatcher,
+} from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
   ArtifactGraph,
@@ -1375,6 +1380,7 @@ export class EngineCommandManager extends EventTarget {
           highlightEdges: true,
           enableSSAO: true,
           showScaleGrid: false,
+          cameraProjection: 'perspective',
         }
   }
 
@@ -1393,6 +1399,9 @@ export class EngineCommandManager extends EventTarget {
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
+  private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
+    this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
+  }
   private onEngineConnectionStarted = ({ detail: engineConnection }: any) => {}
   private onEngineConnectionNewTrack = ({
     detail,
@@ -1423,6 +1432,7 @@ export class EngineCommandManager extends EventTarget {
       highlightEdges: true,
       enableSSAO: true,
       showScaleGrid: false,
+      cameraProjection: 'orthographic',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
@@ -1479,30 +1489,26 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
-      // Set the stream background color
-      // This takes RGBA values from 0-1
-      // So we convert from the conventional 0-255 found in Figma
+      // Set the stream's camera projection type
+      // We don't send a command to the engine if in perspective mode because
+      // for now it's the engine's default.
+      if (settings.cameraProjection === 'orthographic') {
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_set_orthographic',
+          },
+        }).catch(reportRejection)
+      }
 
-      void this.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'set_background_color',
-          color: getThemeColorForEngine(this.settings.theme),
-        },
-      })
-
-      // Sets the default line colors
-      const opposingTheme = getOppositeTheme(this.settings.theme)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.sendSceneCommand({
-        cmd_id: uuidv4(),
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'set_default_system_properties',
-          color: getThemeColorForEngine(opposingTheme),
-        },
-      })
+      // Set the theme
+      this.setTheme(this.settings.theme).catch(reportRejection)
+      // Set up a listener for the dark theme media query
+      darkModeMatcher?.addEventListener(
+        'change',
+        this.onDarkThemeMediaQueryChange
+      )
 
       // Set the edge lines visibility
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1792,6 +1798,10 @@ export class EngineCommandManager extends EventTarget {
       this.engineConnection.removeEventListener?.(
         EngineConnectionEvents.NewTrack,
         this.onEngineConnectionNewTrack as EventListener
+      )
+      darkModeMatcher?.removeEventListener(
+        'change',
+        this.onDarkThemeMediaQueryChange
       )
 
       this.engineConnection?.tearDown(opts)
@@ -2153,6 +2163,34 @@ export class EngineCommandManager extends EventTarget {
         hidden: hidden,
       },
     })
+  }
+
+  /**
+   * Set the engine's theme
+   */
+  async setTheme(theme: Themes) {
+    // Set the stream background color
+    // This takes RGBA values from 0-1
+    // So we convert from the conventional 0-255 found in Figma
+    this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_background_color',
+        color: getThemeColorForEngine(theme),
+      },
+    }).catch(reportRejection)
+
+    // Sets the default line colors
+    const opposingTheme = getOppositeTheme(theme)
+    this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_default_system_properties',
+        color: getThemeColorForEngine(opposingTheme),
+      },
+    }).catch(reportRejection)
   }
 
   /**

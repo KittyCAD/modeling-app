@@ -2,7 +2,7 @@ import { normaliseKclNumbers } from '../e2e/playwright/test-utils'
 
 test('normaliseKclNumbers', () => {
   expect(
-    normaliseKclNumbers(`const sketch001 = startSketchOn('XY')
+    normaliseKclNumbers(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %)
@@ -10,7 +10,7 @@ test('normaliseKclNumbers', () => {
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 const extrude001 = extrude(-15, sketch001)`)
-  ).toBe(`const sketch001 = startSketchOn('XY')
+  ).toBe(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-12.34, 12.34], %)
   |> line([12.34, 0], %)
   |> line([0, -12.34], %)
@@ -20,7 +20,7 @@ const extrude001 = extrude(-15, sketch001)`)
 const extrude001 = extrude(-12.34, sketch001)`)
   expect(
     normaliseKclNumbers(
-      `const sketch001 = startSketchOn('XY')
+      `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %)
@@ -30,7 +30,7 @@ const extrude001 = extrude(-12.34, sketch001)`)
 const extrude001 = extrude(-15, sketch001)`,
       false
     )
-  ).toBe(`const sketch001 = startSketchOn('XY')
+  ).toBe(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-12.34, 12.34], %)
   |> line([12.34, 12.34], %)
   |> line([12.34, -12.34], %)
