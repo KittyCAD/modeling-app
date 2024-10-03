@@ -40,6 +40,7 @@ import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
 import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
+export type { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
 export type { ObjectProperty } from '../wasm-lib/kcl/bindings/ObjectProperty'
@@ -136,11 +137,6 @@ export const parse = (code: string | Error): Program | Error => {
 }
 
 export type PathToNode = [string | number, string][]
-
-interface RawExecState {
-  memory: RawProgramMemory
-  idGenerator: IdGenerator
-}
 
 export interface ExecState {
   memory: ProgramMemory
