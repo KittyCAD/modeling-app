@@ -21,7 +21,7 @@ const mySketch001 = startSketchOn('XY')
       type: 'UserVal',
       __meta: [{ sourceRange: [46, 71] }],
       value: {
-        type: 'SketchGroup',
+        type: 'Sketch',
         on: expect.any(Object),
         start: {
           to: [0, 0],
@@ -72,7 +72,7 @@ const mySketch001 = startSketchOn('XY')
     // @ts-ignore
     const sketch001 = programMemory?.get('mySketch001')
     expect(sketch001).toEqual({
-      type: 'ExtrudeGroup',
+      type: 'Solid',
       id: expect.any(String),
       value: [
         {
@@ -90,12 +90,12 @@ const mySketch001 = startSketchOn('XY')
           sourceRange: [108, 132],
         },
       ],
-      sketchGroup: {
+      sketch: {
         id: expect.any(String),
         __meta: expect.any(Array),
         on: expect.any(Object),
         start: expect.any(Object),
-        type: 'SketchGroup',
+        type: 'Sketch',
         value: [
           {
             type: 'ToPoint',
@@ -153,7 +153,7 @@ const sk2 = startSketchOn('XY')
     const geos = [programMemory?.get('theExtrude'), programMemory?.get('sk2')]
     expect(geos).toEqual([
       {
-        type: 'ExtrudeGroup',
+        type: 'Solid',
         id: expect.any(String),
         value: [
           {
@@ -184,12 +184,12 @@ const sk2 = startSketchOn('XY')
             sourceRange: [123, 142],
           },
         ],
-        sketchGroup: {
+        sketch: {
           id: expect.any(String),
           __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
-          type: 'SketchGroup',
+          type: 'Sketch',
           tags: {
             p: {
               __meta: [
@@ -247,7 +247,7 @@ const sk2 = startSketchOn('XY')
         __meta: [{ sourceRange: [38, 63] }],
       },
       {
-        type: 'ExtrudeGroup',
+        type: 'Solid',
         id: expect.any(String),
         value: [
           {
@@ -278,12 +278,12 @@ const sk2 = startSketchOn('XY')
             sourceRange: [426, 445],
           },
         ],
-        sketchGroup: {
+        sketch: {
           id: expect.any(String),
           __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
-          type: 'SketchGroup',
+          type: 'Sketch',
           tags: {
             o: {
               __meta: [

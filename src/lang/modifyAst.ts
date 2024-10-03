@@ -17,7 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -1049,7 +1049,7 @@ export async function deleteFromSelection(
             if (err(parent)) {
               return
             }
-            const sketchToPreserve = sketchGroupFromKclValue(
+            const sketchToPreserve = sketchFromKclValue(
               programMemory.get(sketchName),
               sketchName
             )
