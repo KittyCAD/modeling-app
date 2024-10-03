@@ -1,21 +1,6 @@
 # bash strict mode
 set -euo pipefail
 
-echo "print working directory"
-echo $(pwd)
-if [[ -d "test-results" ]]; then
-    echo "Contents of test-results folder:"
-    ls -la test-results
-    if [[ -f "test-results/.last-run.json" ]]; then
-        echo "Contents of test-results/.last-run.json:"
-        cat test-results/.last-run.json
-    else
-        echo "test-results/.last-run.json does not exist"
-    fi
-else
-    echo "test-results folder does not exist"
-fi
-
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"
