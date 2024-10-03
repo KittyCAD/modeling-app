@@ -333,6 +333,7 @@ test.describe('Testing settings', () => {
     `Load desktop app with no settings file`,
     { tag: '@electron' },
     async ({ browser: _ }, testInfo) => {
+      expect(1).toBe(2)
       const { electronApp, page } = await setupElectron({
         // This is what makes no settings file get created
         cleanProjectDir: false,

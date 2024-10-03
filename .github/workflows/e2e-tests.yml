@@ -313,7 +313,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-${{ matrix.os }}-${{ github.sha }}
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
     - name: Run electron tests (with retries)
       id: retry
