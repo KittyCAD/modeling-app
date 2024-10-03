@@ -104,6 +104,7 @@ export function kclCommands(
           required: true,
           skip: true,
           defaultValue: isDesktop() ? 'newFile' : 'overwrite',
+          warningMessage: 'warning',
           options() {
             return [
               {
@@ -126,6 +127,7 @@ export function kclCommands(
         sample: {
           inputType: 'options',
           required: true,
+          warningMessage: 'warning',
           valueSummary(value) {
             const MAX_LENGTH = 12
             if (typeof value === 'string') {
