@@ -80,9 +80,11 @@ extrude001 = extrude(-10, sketch001)`
     await page.waitForTimeout(100)
     await page.getByRole('button', { name: 'Fillet' }).click()
     await page.waitForTimeout(100)
-    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter') // skip selection
     await page.waitForTimeout(100)
-    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter') // accept default radius
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // submit
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toContainText(
       `fillet({ radius: ${KCL_DEFAULT_LENGTH}, tags: [seg01] }, %)`
