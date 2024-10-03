@@ -596,14 +596,14 @@ test.describe('Testing settings', () => {
     await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([0, 5], %)
   |> line([-5, 0], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)
+extrude001 = extrude(5, sketch001)
 `
       )
     })

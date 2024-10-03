@@ -306,7 +306,7 @@ jobs:
         run: "ls -R out"
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.5'
+        uses: 'google-github-actions/auth@v2.1.6'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 

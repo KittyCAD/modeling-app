@@ -54,7 +54,7 @@ test(
       })
       await cmdBar.progressCmdBar()
 
-      const expectString = 'const extrude001 = extrude(5, sketch001)'
+      const expectString = 'extrude001 = extrude(5, sketch001)'
       await editor.expectEditor.not.toContain(expectString)
 
       await cmdBar.expectState({
@@ -144,7 +144,7 @@ test.describe('verify sketch on chamfer works', () => {
       })
       await test.step('Check there is no errors after code created in previous steps executes', async () => {
         await editor.expectState({
-          activeLines: ["const sketch001 = startSketchOn('XZ')"],
+          activeLines: ["sketch001 = startSketchOn('XZ')"],
           highlightedCode: '',
           diagnostics: [],
         })
@@ -174,8 +174,9 @@ test.describe('verify sketch on chamfer works', () => {
       getNextAdjacentEdge(seg02),
       getOppositeEdge(seg01)
     ]}, %)`,
+
         afterChamferSelectSnippet:
-          'const sketch002 = startSketchOn(extrude001, seg03)',
+          'sketch002 = startSketchOn(extrude001, seg03)',
         afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([
@@ -205,8 +206,9 @@ test.describe('verify sketch on chamfer works', () => {
            getNextAdjacentEdge(seg02)
          ]
        }, %)`,
+
         afterChamferSelectSnippet:
-          'const sketch003 = startSketchOn(extrude001, seg04)',
+          'sketch003 = startSketchOn(extrude001, seg04)',
         afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
@@ -232,7 +234,7 @@ test.describe('verify sketch on chamfer works', () => {
          ]
        }, %)`,
         afterChamferSelectSnippet:
-          'const sketch003 = startSketchOn(extrude001, seg04)',
+          'sketch003 = startSketchOn(extrude001, seg04)',
         afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
@@ -256,9 +258,10 @@ test.describe('verify sketch on chamfer works', () => {
          tags: [getNextAdjacentEdge(yo)]
        }, %)`,
         afterChamferSelectSnippet:
-          'const sketch005 = startSketchOn(extrude001, seg06)',
+          'sketch005 = startSketchOn(extrude001, seg06)',
         afterRectangle1stClickSnippet: 'startProfileAt([-23.43, 19.69], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 9.1], %, $rectangleSegmentA005)
+
     |> angledLine([
          segAng(rectangleSegmentA005) - 90,
          84.07
@@ -273,7 +276,8 @@ test.describe('verify sketch on chamfer works', () => {
 
       await test.step('verify at the end of the test that final code is what is expected', async () => {
         await editor.expectEditor.toContain(
-          `const sketch001 = startSketchOn('XZ')
+          `sketch001 = startSketchOn('XZ')
+
       |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
       |> angledLine([0, 268.43], %, $rectangleSegmentA001)
       |> angledLine([
@@ -286,7 +290,7 @@ test.describe('verify sketch on chamfer works', () => {
          ], %, $yo)
       |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
       |> close(%)
-    const extrude001 = extrude(100, sketch001)
+    extrude001 = extrude(100, sketch001)
       |> chamfer({
            length: 30,
            tags: [getOppositeEdge(seg01)]
@@ -300,7 +304,7 @@ test.describe('verify sketch on chamfer works', () => {
            length: 30,
            tags: [getNextAdjacentEdge(yo)]
          }, %, $seg06)
-    const sketch005 = startSketchOn(extrude001, seg06)
+    sketch005 = startSketchOn(extrude001, seg06)
       |> startProfileAt([-23.43, 19.69], %)
       |> angledLine([0, 9.1], %, $rectangleSegmentA005)
       |> angledLine([
@@ -313,7 +317,7 @@ test.describe('verify sketch on chamfer works', () => {
          ], %, $rectangleSegmentC004)
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
-    const sketch004 = startSketchOn(extrude001, seg05)
+    sketch004 = startSketchOn(extrude001, seg05)
       |> startProfileAt([82.57, 322.96], %)
       |> angledLine([0, 11.16], %, $rectangleSegmentA004)
       |> angledLine([
@@ -326,7 +330,7 @@ test.describe('verify sketch on chamfer works', () => {
          ], %, $rectangleSegmentC003)
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
-    const sketch003 = startSketchOn(extrude001, seg04)
+    sketch003 = startSketchOn(extrude001, seg04)
       |> startProfileAt([-209.64, 255.28], %)
       |> angledLine([0, 11.56], %, $rectangleSegmentA003)
       |> angledLine([
@@ -339,7 +343,7 @@ test.describe('verify sketch on chamfer works', () => {
          ], %, $rectangleSegmentC002)
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
-    const sketch002 = startSketchOn(extrude001, seg03)
+    sketch002 = startSketchOn(extrude001, seg03)
       |> startProfileAt([205.96, 254.59], %)
       |> angledLine([0, 11.39], %, $rectangleSegmentA002)
       |> angledLine([
@@ -387,7 +391,7 @@ test.describe('verify sketch on chamfer works', () => {
     ]}, extrude001)`,
         beforeChamferSnippetEnd: '}, extrude001)',
         afterChamferSelectSnippet:
-          'const sketch002 = startSketchOn(extrude001, seg03)',
+          'sketch002 = startSketchOn(extrude001, seg03)',
         afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([
@@ -402,7 +406,7 @@ test.describe('verify sketch on chamfer works', () => {
     |> close(%)`,
       })
       await editor.expectEditor.toContain(
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([75.8, 317.2], %)
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
@@ -415,8 +419,8 @@ test.describe('verify sketch on chamfer works', () => {
      ], %, $yo)
   |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
   |> close(%)
-const extrude001 = extrude(100, sketch001)
-const chamf = chamfer({
+extrude001 = extrude(100, sketch001)
+chamf = chamfer({
        length: 30,
        tags: [getOppositeEdge(seg01)]
      }, extrude001, $seg03)
@@ -428,7 +432,7 @@ const chamf = chamfer({
          getNextAdjacentEdge(seg02)
        ]
      }, %)
-const sketch002 = startSketchOn(extrude001, seg03)
+sketch002 = startSketchOn(extrude001, seg03)
   |> startProfileAt([205.96, 254.59], %)
   |> angledLine([0, 11.39], %, $rectangleSegmentA002)
   |> angledLine([
