@@ -268,6 +268,7 @@ export class KclManager {
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
     })
 
@@ -353,6 +354,7 @@ export class KclManager {
 
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
       useFakeExecutor: true,
     })

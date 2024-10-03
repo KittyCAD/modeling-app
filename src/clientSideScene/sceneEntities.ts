@@ -396,6 +396,7 @@ export class SceneEntities {
       useFakeExecutor: true,
       engineCommandManager: this.engineCommandManager,
       programMemoryOverride,
+      idGenerator: kclManager.execState.idGenerator,
     })
     const programMemory = execState.memory
     const sketch = sketchFromPathToNode({
@@ -807,6 +808,7 @@ export class SceneEntities {
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
+          idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
@@ -855,6 +857,7 @@ export class SceneEntities {
             useFakeExecutor: true,
             engineCommandManager: this.engineCommandManager,
             programMemoryOverride,
+            idGenerator: kclManager.execState.idGenerator,
           })
           const programMemory = execState.memory
 
@@ -973,6 +976,7 @@ export class SceneEntities {
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
+          idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
@@ -1326,6 +1330,7 @@ export class SceneEntities {
         useFakeExecutor: true,
         engineCommandManager: this.engineCommandManager,
         programMemoryOverride,
+        idGenerator: kclManager.execState.idGenerator,
       })
       const programMemory = execState.memory
       this.sceneProgramMemory = programMemory
