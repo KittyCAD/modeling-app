@@ -1,45 +1,7 @@
 import { Selections } from 'lib/selections'
-import { Program, PathToNode } from './wasm'
-import { getNodeFromPath } from './queryAst'
+import { PathToNode } from './wasm'
 import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
-import { err } from 'lib/trap'
-
-export function pathMapToSelections(
-  ast: Program,
-  prevSelections: Selections,
-  pathToNodeMap: { [key: number]: PathToNode }
-): Selections {
-  const newSelections: Selections = {
-    ...prevSelections,
-    codeBasedSelections: [],
-  }
-  Object.entries(pathToNodeMap).forEach(([index, path]) => {
-    const nodeMeta = getNodeFromPath<any>(ast, path)
-    if (err(nodeMeta)) return
-    const node = nodeMeta.node as any
-    const selection = prevSelections.codeBasedSelections[Number(index)]
-    if (node) {
-      if (
-        selection.type === 'base-edgeCut' ||
-        selection.type === 'adjacent-edgeCut' ||
-        selection.type === 'opposite-edgeCut'
-      ) {
-        newSelections.codeBasedSelections.push({
-          range: [node.start, node.end],
-          type: selection.type,
-          secondaryRange: selection.secondaryRange,
-        })
-      } else {
-        newSelections.codeBasedSelections.push({
-          range: [node.start, node.end],
-          type: selection.type,
-        })
-      }
-    }
-  })
-  return newSelections
-}
 
 export function updatePathToNodeFromMap(
   oldPath: PathToNode,
