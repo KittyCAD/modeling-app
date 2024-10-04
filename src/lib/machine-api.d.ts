@@ -4,313 +4,316 @@
  */
 
 export interface paths {
-  '/': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Return the OpenAPI schema in JSON format. */
-    get: operations['api_get_schema']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/machines': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** List available machines and their statuses */
-    get: operations['get_machines']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/machines/{id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Get the status of a specific machine */
-    get: operations['get_machine']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/ping': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** Return pong. */
-    get: operations['ping']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/print': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /** Print a given file. File must be a sliceable 3D model. */
-    post: operations['print_file']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
+    "/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the OpenAPI schema in JSON format. */
+        get: operations["api_get_schema"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/machines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List available machines and their statuses */
+        get: operations["get_machines"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/machines/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the status of a specific machine */
+        get: operations["get_machine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return pong. */
+        get: operations["ping"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/print": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Print a given file. File must be a sliceable 3D model. */
+        post: operations["print_file"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Error information from a response. */
-    Error: {
-      error_code?: string
-      message: string
-      request_id: string
-    }
-    /** @description Extra machine-specific information regarding a connected machine. */
-    ExtraMachineInfoResponse:
-      | {
-          Moonraker: Record<string, never>
-        }
-      | {
-          Usb: Record<string, never>
-        }
-      | {
-          Bambu: Record<string, never>
-        }
-    /** @description Information regarding a connected machine. */
-    MachineInfoResponse: {
-      /** @description Additional, per-machine information which is specific to the underlying machine type. */
-      extra?: components['schemas']['ExtraMachineInfoResponse'] | null
-      /** @description Machine Identifier (ID) for the specific Machine. */
-      id: string
-      /** @description Information regarding the method of manufacture. */
-      machine_type: components['schemas']['MachineType']
-      /** @description Information regarding the make and model of the attached Machine. */
-      make_model: components['schemas']['MachineMakeModel']
-      /** @description Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.
-       *
-       *     This may be `None` if the maximum size is not knowable by the Machine API.
-       *
-       *     What "close" means is up to you! */
-      max_part_volume?: components['schemas']['Volume'] | null
-    }
-    /** @description Information regarding the make/model of a discovered endpoint. */
-    MachineMakeModel: {
-      /** @description The manufacturer that built the connected Machine. */
-      manufacturer?: string | null
-      /** @description The model of the connected Machine. */
-      model?: string | null
-      /** @description The unique serial number of the connected Machine. */
-      serial?: string | null
-    }
-    /** @description Specific technique by which this Machine takes a design, and produces a real-world 3D object. */
-    MachineType: 'Stereolithography' | 'FusedDeposition' | 'Cnc'
-    /** @description The response from the `/ping` endpoint. */
-    Pong: {
-      /** @description The pong response. */
-      message: string
-    }
-    /** @description The response from the `/print` endpoint. */
-    PrintJobResponse: {
-      /** @description The job id used for this print. */
-      job_id: string
-      /** @description The parameters used for this print. */
-      parameters: components['schemas']['PrintParameters']
-    }
-    /** @description Parameters for printing. */
-    PrintParameters: {
-      /** @description The name for the job. */
-      job_name: string
-      /** @description The machine id to print to. */
-      machine_id: string
-    }
-    /** @description Set of three values to represent the extent of a 3-D Volume. This contains the width, depth, and height values, generally used to represent some maximum or minimum.
-     *
-     *     All measurements are in millimeters. */
-    Volume: {
-      /**
-       * Format: double
-       * @description Depth of the volume ("front to back"), in millimeters.
-       */
-      depth: number
-      /**
-       * Format: double
-       * @description Height of the volume ("up and down"), in millimeters.
-       */
-      height: number
-      /**
-       * Format: double
-       * @description Width of the volume ("left and right"), in millimeters.
-       */
-      width: number
-    }
-  }
-  responses: {
-    /** @description Error */
-    Error: {
-      headers: {
-        [name: string]: unknown
-      }
-      content: {
-        'application/json': components['schemas']['Error']
-      }
-    }
-  }
-  parameters: never
-  requestBodies: never
-  headers: never
-  pathItems: never
+    schemas: {
+        /** @description Error information from a response. */
+        Error: {
+            error_code?: string;
+            message: string;
+            request_id: string;
+        };
+        /** @description Extra machine-specific information regarding a connected machine. */
+        ExtraMachineInfoResponse: {
+            Moonraker: Record<string, never>;
+        } | {
+            Usb: Record<string, never>;
+        } | {
+            Bambu: Record<string, never>;
+        };
+        /** @description Information regarding a connected machine. */
+        MachineInfoResponse: {
+            /** @description Additional, per-machine information which is specific to the underlying machine type. */
+            extra?: components["schemas"]["ExtraMachineInfoResponse"] | null;
+            /** @description Machine Identifier (ID) for the specific Machine. */
+            id: string;
+            /** @description Information regarding the method of manufacture. */
+            machine_type: components["schemas"]["MachineType"];
+            /** @description Information regarding the make and model of the attached Machine. */
+            make_model: components["schemas"]["MachineMakeModel"];
+            /** @description Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.
+             *
+             *     This may be `None` if the maximum size is not knowable by the Machine API.
+             *
+             *     What "close" means is up to you! */
+            max_part_volume?: components["schemas"]["Volume"] | null;
+            /** @description Status of the printer -- be it printing, idle, or unreachable. This may dictate if a machine is capable of taking a new job. */
+            state: components["schemas"]["MachineState"];
+        };
+        /** @description Information regarding the make/model of a discovered endpoint. */
+        MachineMakeModel: {
+            /** @description The manufacturer that built the connected Machine. */
+            manufacturer?: string | null;
+            /** @description The model of the connected Machine. */
+            model?: string | null;
+            /** @description The unique serial number of the connected Machine. */
+            serial?: string | null;
+        };
+        /** @description Current state of the machine -- be it printing, idle or offline. This can be used to determine if a printer is in the correct state to take a new job. */
+        MachineState: "Unknown" | "Idle" | "Running" | "Offline" | "Paused" | "Complete" | {
+            Failed: string | null;
+        };
+        /** @description Specific technique by which this Machine takes a design, and produces a real-world 3D object. */
+        MachineType: "Stereolithography" | "FusedDeposition" | "Cnc";
+        /** @description The response from the `/ping` endpoint. */
+        Pong: {
+            /** @description The pong response. */
+            message: string;
+        };
+        /** @description The response from the `/print` endpoint. */
+        PrintJobResponse: {
+            /** @description The job id used for this print. */
+            job_id: string;
+            /** @description The parameters used for this print. */
+            parameters: components["schemas"]["PrintParameters"];
+        };
+        /** @description Parameters for printing. */
+        PrintParameters: {
+            /** @description The name for the job. */
+            job_name: string;
+            /** @description The machine id to print to. */
+            machine_id: string;
+        };
+        /** @description Set of three values to represent the extent of a 3-D Volume. This contains the width, depth, and height values, generally used to represent some maximum or minimum.
+         *
+         *     All measurements are in millimeters. */
+        Volume: {
+            /**
+             * Format: double
+             * @description Depth of the volume ("front to back"), in millimeters.
+             */
+            depth: number;
+            /**
+             * Format: double
+             * @description Height of the volume ("up and down"), in millimeters.
+             */
+            height: number;
+            /**
+             * Format: double
+             * @description Width of the volume ("left and right"), in millimeters.
+             */
+            width: number;
+        };
+    };
+    responses: {
+        /** @description Error */
+        Error: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+    };
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 export interface operations {
-  api_get_schema: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': unknown
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
-  get_machines: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['MachineInfoResponse'][]
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
-  get_machine: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The machine ID. */
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['MachineInfoResponse']
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
-  ping: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Pong']
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
-  print_file: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'multipart/form-data': string
-      }
-    }
-    responses: {
-      /** @description successful operation */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['PrintJobResponse']
-        }
-      }
-      '4XX': components['responses']['Error']
-      '5XX': components['responses']['Error']
-    }
-  }
+    api_get_schema: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    get_machines: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MachineInfoResponse"][];
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    get_machine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The machine ID. */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MachineInfoResponse"];
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    ping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pong"];
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
+    print_file: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": string;
+            };
+        };
+        responses: {
+            /** @description successful operation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrintJobResponse"];
+                };
+            };
+            "4XX": components["responses"]["Error"];
+            "5XX": components["responses"]["Error"];
+        };
+    };
 }
