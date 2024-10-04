@@ -12,10 +12,62 @@ import {
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { join } from 'path'
+import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
+
+test(
+  'projects reload if a new one is created, deleted, or renamed externally',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    let externalCreatedProjectName = 'external-created-project'
+
+    let targetDir = ''
+
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        targetDir = dir
+        setTimeout(() => {
+          const myDir = join(dir, externalCreatedProjectName)
+          ;(async () => {
+            await fsp.mkdir(myDir)
+            await fsp.writeFile(
+              join(myDir, DEFAULT_PROJECT_KCL_FILE),
+              'sca ba be bop de day wawa skee'
+            )
+          })().catch(console.error)
+        }, 5000)
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const projectLinks = page.getByTestId('project-link')
+
+    await projectLinks.first().waitFor()
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rename(
+      join(targetDir, externalCreatedProjectName),
+      join(targetDir, externalCreatedProjectName + '1')
+    )
+
+    externalCreatedProjectName += '1'
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rm(join(targetDir, externalCreatedProjectName), {
+      recursive: true,
+      force: true,
+    })
+
+    await expect(projectLinks).toHaveCount(0)
+
+    await electronApp.close()
+  }
+)
 
 test(
   'click help/keybindings from home page',

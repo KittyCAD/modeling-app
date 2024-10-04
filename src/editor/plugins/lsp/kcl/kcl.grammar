@@ -16,7 +16,7 @@
 
 statement[@isGroup=Statement] {
   FunctionDeclaration { kw<"fn"> VariableDefinition Equals ParamList Arrow Body } |
-  VariableDeclaration { (kw<"var"> | kw<"let"> | kw<"const">) VariableDefinition Equals expression } |
+  VariableDeclaration { (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression }
 }
