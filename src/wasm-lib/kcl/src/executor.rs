@@ -1881,8 +1881,12 @@ impl ExecutorContext {
         Ok(ctx)
     }
 
-    pub async fn reset_scene(&self, source_range: crate::executor::SourceRange) -> Result<()> {
-        self.engine.clear_scene(source_range).await?;
+    pub async fn reset_scene(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<()> {
+        self.engine.clear_scene(id_generator, source_range).await?;
         Ok(())
     }
 
@@ -2080,8 +2084,12 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None, IdGenerator::default()).await?;
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        program: &Program,
+        id_generator: IdGenerator,
+    ) -> Result<TakeSnapshot> {
+        let _ = self.run(program, None, id_generator).await?;
 
         // Zoom to fit.
         self.engine

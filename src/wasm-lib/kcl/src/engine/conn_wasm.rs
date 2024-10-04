@@ -10,7 +10,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::DefaultPlanes,
+    executor::{DefaultPlanes, IdGenerator},
 };
 
 #[wasm_bindgen(module = "/../../lang/std/engineConnection.ts")]
@@ -68,7 +68,11 @@ impl crate::engine::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    async fn default_planes(
+        &self,
+        _id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         // Get the default planes.
         let promise = self.manager.get_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -106,7 +110,11 @@ impl crate::engine::EngineManager for EngineConnection {
         Ok(default_planes)
     }
 
-    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        _id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<(), KclError> {
         self.manager.clear_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: e.to_string().into(),

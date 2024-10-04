@@ -588,10 +588,15 @@ impl Backend {
             return Ok(());
         }
 
-        // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx.engine.clear_scene(SourceRange::default()).await?;
+        let mut id_generator = IdGenerator::default();
 
-        let exec_state = match executor_ctx.run(ast, None, IdGenerator::default()).await {
+        // Clear the scene, before we execute so it's not fugly as shit.
+        executor_ctx
+            .engine
+            .clear_scene(&mut id_generator, SourceRange::default())
+            .await?;
+
+        let exec_state = match executor_ctx.run(ast, None, id_generator).await {
             Ok(exec_state) => exec_state,
             Err(err) => {
                 self.memory_map.remove(params.uri.as_str());

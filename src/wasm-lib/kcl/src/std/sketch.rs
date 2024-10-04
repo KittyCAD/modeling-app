@@ -1164,7 +1164,11 @@ async fn start_sketch_on_plane(
     let mut plane = Plane::from_plane_data(data.clone(), exec_state);
 
     // Get the default planes.
-    let default_planes = args.ctx.engine.default_planes(args.source_range).await?;
+    let default_planes = args
+        .ctx
+        .engine
+        .default_planes(&mut exec_state.id_generator, args.source_range)
+        .await?;
 
     plane.id = match data {
         PlaneData::XY => default_planes.xy,

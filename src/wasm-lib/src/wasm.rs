@@ -99,7 +99,7 @@ pub async fn make_default_planes(
         .await
         .map_err(|e| format!("{:?}", e))?;
     let default_planes = engine
-        .new_default_planes(Default::default())
+        .new_default_planes(&mut kcl_lib::executor::IdGenerator::default(), Default::default())
         .await
         .map_err(String::from)?;
 
