@@ -304,7 +304,7 @@ export function hasLeadingZero(text: string): boolean {
     : false
 }
 
-function isWholeNumber(text: string): boolean | undefined {
+export function hasDigitsLeftOfDecimal(text: string): boolean | undefined {
   const wholeFractionSplit = text.split('.')
 
   if (wholeFractionSplit.length === 2) {
@@ -335,7 +335,7 @@ export function onDragNumberCalculation(text: string, e: MouseEvent) {
   const addition = Number(text) + delta
   const positiveAddition = e.movementX > 0
   const negativeAddition = e.movementX < 0
-  const wholeNumber = isWholeNumber(text)
+  const containsDigitsLeftOfDecimal = hasDigitsLeftOfDecimal(text)
   let precision = Math.max(
     getPrecision(text),
     getPrecision(multiplier.toString())
@@ -354,7 +354,8 @@ export function onDragNumberCalculation(text: string, e: MouseEvent) {
   }
 
   const removeZeros =
-    positiveAddition || (negativeAddition && multiplier < 1 && !wholeNumber)
+    positiveAddition ||
+    (negativeAddition && multiplier < 1 && !containsDigitsLeftOfDecimal)
   if (!leadsWithZero && hasLeadingZero(formattedString) && removeZeros) {
     if (formattedString[0] === '-') {
       return ['-', formattedString.split('.')[1]].join('.')

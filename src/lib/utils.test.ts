@@ -4,6 +4,7 @@ import {
   simulateOnMouseDragMatch,
   onDragNumberCalculation,
   hasLeadingZero,
+  hasDigitsLeftOfDecimal,
 } from './utils'
 import { SourceRange } from '../lang/wasm'
 
@@ -77,6 +78,14 @@ describe('testing hasLeadingZero', () => {
   })
   it('0.0 should have leading zero', () => {
     const actual = hasLeadingZero('0.0')
+    const expected = true
+    expect(actual).toBe(expected)
+  })
+})
+
+describe('testing hasDigitsLeftOfDecimal', () => {
+  it('0.25 should be whole', () => {
+    const actual = hasDigitsLeftOfDecimal('0.25')
     const expected = true
     expect(actual).toBe(expected)
   })
