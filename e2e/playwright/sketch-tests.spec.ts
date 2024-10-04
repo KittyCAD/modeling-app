@@ -840,7 +840,7 @@ test.describe('Sketch tests', () => {
   |> line([1.02, -1.32], %, $seg01)
   |> line([-1.01, -0.77], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+|> close(%)
 `
       )
     })
@@ -850,9 +850,17 @@ test.describe('Sketch tests', () => {
 
     await u.waitForAuthSkipAppStart()
 
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
     // click "line([1.32, 0.38], %)"
     await page.getByText(`line([1.32, 0.38], %)`).click()
     await page.waitForTimeout(100)
+    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
+      { timeout: 10_000 }
+    )
     // click edit sketch
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
     await page.waitForTimeout(600) // wait for animation
@@ -872,7 +880,9 @@ test.describe('Sketch tests', () => {
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
       page.getByRole('button', { name: 'selection : 1 face', exact: false })
-    ).toBeVisible()
+    ).toBeVisible({
+      timeout: 10_000,
+    })
   })
   test("Existing sketch with bad code delete user's code", async ({ page }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
@@ -1104,6 +1114,102 @@ sketch002 = startSketchOn(extrude001, 'END')
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toHaveAttribute('aria-pressed', 'true')
     }).toPass({ timeout: 40_000, intervals: [1_000] })
+  })
+
+  test('Can sketch on face when user defined function was used in the sketch', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    // Checking for a regression that performs a sketch when a user defined function
+    // is declared at the top of the file and used in the sketch that is being drawn on.
+    // fn in2mm is declared at the top of the file and used rail which does a an extrusion with the function.
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `fn in2mm = (inches) => {
+  return inches * 25.4
+}
+
+const railTop = in2mm(.748)
+const railSide = in2mm(.024)
+const railBaseWidth = in2mm(.612)
+const railWideWidth = in2mm(.835)
+const railBaseLength = in2mm(.200)
+const railClampable = in2mm(.200)
+
+const rail = startSketchOn('XZ')
+  |> startProfileAt([
+       -railTop / 2,
+       railClampable + railBaseLength
+     ], %)
+  |> lineTo([
+       railTop / 2,
+       railClampable + railBaseLength
+     ], %)
+  |> lineTo([
+       railWideWidth / 2,
+       railClampable / 2 + railBaseLength
+     ], %, $seg01)
+  |> lineTo([railTop / 2, railBaseLength], %)
+  |> lineTo([railBaseWidth / 2, railBaseLength], %)
+  |> lineTo([railBaseWidth / 2, 0], %)
+  |> lineTo([-railBaseWidth / 2, 0], %)
+  |> lineTo([-railBaseWidth / 2, railBaseLength], %)
+  |> lineTo([-railTop / 2, railBaseLength], %)
+  |> lineTo([
+       -railWideWidth / 2,
+       railClampable / 2 + railBaseLength
+     ], %)
+  |> lineTo([
+       -railTop / 2,
+       railClampable + railBaseLength
+     ], %)
+  |> close(%)
+  |> extrude(in2mm(2), %)`
+      )
+    })
+
+    const center = { x: 600, y: 250 }
+    const rectangleSize = 20
+    await u.waitForAuthSkipAppStart()
+
+    // Start a sketch
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+    // Click the top face of this rail
+    await page.mouse.click(center.x, center.y)
+    await page.waitForTimeout(1000)
+
+    // Draw a rectangle
+    // top left
+    await page.mouse.click(center.x - rectangleSize, center.y - rectangleSize)
+    await page.waitForTimeout(250)
+    // top right
+    await page.mouse.click(center.x + rectangleSize, center.y - rectangleSize)
+    await page.waitForTimeout(250)
+
+    // bottom right
+    await page.mouse.click(center.x + rectangleSize, center.y + rectangleSize)
+    await page.waitForTimeout(250)
+
+    // bottom left
+    await page.mouse.click(center.x - rectangleSize, center.y + rectangleSize)
+    await page.waitForTimeout(250)
+
+    // top left
+    await page.mouse.click(center.x - rectangleSize, center.y - rectangleSize)
+    await page.waitForTimeout(250)
+
+    // exit sketch
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    // Check execution is done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
   })
 })
 
