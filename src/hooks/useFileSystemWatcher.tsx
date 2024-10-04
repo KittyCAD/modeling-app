@@ -11,7 +11,7 @@ type Path = string
 // watcher.addListener(() => { ... }).
 
 export const useFileSystemWatcher = (
-  callback: (path: Path) => void,
+  callback: (path: Path) => any | Promise<any>,
   dependencyArray: Path[]
 ): void => {
   // Track a ref to the callback. This is how we get the callback updated
@@ -35,7 +35,9 @@ export const useFileSystemWatcher = (
     if (!isDesktop()) return
 
     return () => {
-      window.electron.watchFileObliterate()
+      for (let path of dependencyArray) {
+        window.electron.watchFileOff(path)
+      }
     }
   }, [])
 
@@ -46,12 +48,17 @@ export const useFileSystemWatcher = (
     ]
   }
 
+  const hasDiff =
+    difference(dependencyArray, dependencyArrayTracked)[0].length !== 0
+
   // Removing 1 watcher at a time is only possible because in a filesystem,
   // a path is unique (there can never be two paths with the same name).
   // Otherwise we would have to obliterate() the whole list and reconstruct it.
   useEffect(() => {
     // The hook is useless on web.
     if (!isDesktop()) return
+
+    if (!hasDiff) return
 
     const [pathsRemoved, pathsRemaining] = difference(
       dependencyArrayTracked,
@@ -67,5 +74,5 @@ export const useFileSystemWatcher = (
       )
     }
     setDependencyArrayTracked(pathsRemaining.concat(pathsAdded))
-  }, [difference(dependencyArray, dependencyArrayTracked)[0].length !== 0])
+  }, [hasDiff])
 }
