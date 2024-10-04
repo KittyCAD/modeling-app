@@ -1,7 +1,7 @@
 import { StateMachineCommandSetConfig } from 'lib/commandTypes'
-import { homeMachine } from 'machines/homeMachine'
+import { projectsMachine } from 'machines/projectsMachine'
 
-export type HomeCommandSchema = {
+export type ProjectsCommandSchema = {
   'Read projects': {}
   'Create project': {
     name: string
@@ -18,9 +18,9 @@ export type HomeCommandSchema = {
   }
 }
 
-export const homeCommandBarConfig: StateMachineCommandSetConfig<
-  typeof homeMachine,
-  HomeCommandSchema
+export const projectsCommandBarConfig: StateMachineCommandSetConfig<
+  typeof projectsMachine,
+  ProjectsCommandSchema
 > = {
   'Open project': {
     icon: 'arrowRight',

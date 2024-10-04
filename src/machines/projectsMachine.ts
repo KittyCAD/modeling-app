@@ -1,8 +1,8 @@
 import { assign, fromPromise, setup } from 'xstate'
-import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
+import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { Project } from 'lib/project'
 
-export const homeMachine = setup({
+export const projectsMachine = setup({
   types: {
     context: {} as {
       projects: Project[]
@@ -11,10 +11,10 @@ export const homeMachine = setup({
     },
     events: {} as
       | { type: 'Read projects'; data: {} }
-      | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
-      | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
-      | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
-      | { type: 'Delete project'; data: HomeCommandSchema['Delete project'] }
+      | { type: 'Open project'; data: ProjectsCommandSchema['Open project'] }
+      | { type: 'Rename project'; data: ProjectsCommandSchema['Rename project'] }
+      | { type: 'Create project'; data: ProjectsCommandSchema['Create project'] }
+      | { type: 'Delete project'; data: ProjectsCommandSchema['Delete project'] }
       | { type: 'navigate'; data: { name: string } }
       | {
           type: 'xstate.done.actor.read-projects'
@@ -38,7 +38,7 @@ export const homeMachine = setup({
   },
   actors: {
     readProjects: fromPromise(() => Promise.resolve([] as Project[])),
-    createProject: fromPromise((_: { input: { name: string } }) =>
+    createProject: fromPromise((_: { input: { name: string, projects: Project[] } }) =>
       Promise.resolve('')
     ),
     renameProject: fromPromise(
@@ -48,6 +48,7 @@ export const homeMachine = setup({
           newName: string
           defaultProjectName: string
           defaultDirectory: string
+          projects: Project[]
         }
       }) => Promise.resolve('')
     ),
@@ -60,16 +61,14 @@ export const homeMachine = setup({
     'Has at least 1 project': () => false,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAHTK6xampYAOATqgFZj4AusAxAMLMwuLthbtOXANoAGALqJQjVLGJdiqUopAAPRAHYAbPooAWABwBGUwE5zAJgeGArM-MAaEAE9EN0wGYKGX97GX1nGVNDS0MbfwBfeM80TBwCEnIqGiZWDm4+ACUwUlxU8TzpeW1lVXVNbT0EcJNg02d-fzt7fU77Tx8EQ0iKCPtnfUsjGRtLGXtE5IxsPCIySmpacsk+QWFRHIluWQUkEBq1DS1TxqN7ChjzOxtXf0t7a37EcwsRibH-ZzRezA8wLEApZbpNZZTa5ba8AAiYAANmB9lsjlVTuc6ldQDdDOYKP5bm0os5TDJDJ8mlEzPpzIZHA4bO9umCIWlVpkNgcKnwAPKMYp8yTHaoqC71a6IEmBUz6BkWZzWDq2Uw0qzOIJAwz+PXWfSmeZJcFLLkZSi7ERkKCi7i8CCaShkABuqAA1pR8EIRGAALQYyonJSS3ENRDA2wUeyvd6dPVhGw0-RhGOp8IA8xGFkc80rS0Ua3qUh2oO8MDMVjMCiMZEiABmqGY6AoPr2AaD4uxYcuEYQoQpQWNNjsMnMgLGKbT3TC7TcOfsNjzqQL0KKJXQtvtXEdzoobs9lCEm87cMxIbOvel+MQqtMQRmS5ks31sZpAUsZkcIX+cQZJIrpC3KUBupTbuWlbVrW9ZcE2LYUCepRnocwYSrUfYyggbzvBQ+jMq49imLYwTUt4iCft+5i-u0-7UfoQEWtCSKoiWZbnruTqZIeXoUBAKJoihFTdqGGE3rod7UdqsQTI8hiGAqrIauRA7RvYeoqhO1jtAqjFrpkLFohBHEVlWzYwY2zatvxrFCWKWKiVKeISdh4yBJE-jGs4fhhA4zg0kRNgxhplhaW0nn4XpUKZEUuAQMZqF8FxLqkO6vG+hAgYcbAIlXmJzmNERdy0RYNiKgpthxDSEU6q8MSTJYjWGFFIEULF8WljuSX7jxx7CJlQY5ZYl44pht4IP61gyPc8njt0lIuH51UKrVVITEyMy2C1hbtQl-KmdBdaWQhGVZYluWjeJjSTf402shMEyuEyljPAFL0UNmMiuN86lWHMiSmvQ-HwKcnL6WA6FOf2k3mESMRDA4RpUm4U4qf6gSEt0QIvvqfjOCaiyrtF6zZPQXWQ+GWFlUEsbmNMf1TV9NLeXDcqRIySnNaaYPEzC5M9vl-b+IyFCjupryPF9jKWP5Kks-cbMWLERHRNt0LFntkgU2NLk4dqsz43YsTK++Kk2C+MbTOOcxzOMrhqzFxTgZ1Qba1dd6BUE1jGsLMxxK9KlDNqm3tMLUQvqYlgO5QhlsTubsFXesTTUuPTfHExshDS0RftRftGgEnTZtHbX9Zr+QJ-2S4Y3qnmTC+4tMyp1EfeOnmeQqdOhyXQrFOXXCV1hCkmLDOnBJYvRRDSsyRzGjiKj0lKdAkANAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAnogC0ADgDsAOgCM0gEwTFAVgBsitaonqANCAAeiNdJkSALIqYBOGzoDMcm+oC+rg2kw4CJcjORqLFJULA4AJ1QAKzB8HlgKACUwXAgwyJi42GY2JBAuXn5BPOMEB01zKQcLZwVVOQsmJlUDUQRpWSYtGokNG0UFB3dPDGw8IjIwAKCQ9OjY+IoAYXCUnmwI+bicoQLiPgEhUql1WQsJBpsVFXVVHVbEGwsHGSYHaylVJgt1OXUbIYeEBeMa+SbTWBzTKLZKpKELbKsXbcfZFI6IdROGRaLQOJgSCQuWz6ESPAHY5RSKnVN4A4bA0Y+Cb+QKQzbQhLJUi4bzshY7PJ7A7FUDHVSdaqqBwOK6KKr9B4IdTfGRfNRSOQnWxyLr0kFMvxTVnwrLLVa4dYmngCzgo4XohAnRTydSEwl3JwDCyKywSVUatQODRyHESPWM8aGiFWhIAETAABswJa+dskYK7WiSogTn6HE6LKofkWmCS2lIfjILFJdMoVP0Q1Jw95I+DjanFgB5DhgUhWm35TOHbNlKpVqm++rPapPH1yVSvX6KTGYhoVxTN0HMqYrNZkKBWigQARTMgAN1QAGspvhzesxB2B0Ks6KTIoLDZsZ65DLMUwpDYipSP+2LAZ8QbSK6ig2JuBrgruFr7oeYDhJE4QyBwCYWgAZqg4ToDIt5rGAD4ZPy6a2oUw6vgg1hFq8Vh2BI+IaGoQEgXK-5SjoubQbBrb+FyPJIR2R4njI55XlMqzcpgpFbNaFGDlRIpGIgDTVK8NghjYTA6uUigOIqzxyFWyjvIGAI1vm-FgoJvbCaQB6iShaEYVhPC4fhMgyTyJGPkpz7UWpCAhgMMhSHWdzvh+bxlogJlmRIFlSlZyVNkC+oCVM8ZJnwTmHse-iSdeMgQImyb+WRaa5JRqLBaUgwLv8GqEuo6jVv03qkrRH7Ypi9S9A0UrVrZ24yLlyYidVPAUK5eHuTheEEeVeVVQpT5DqpjXii83zVGoTz-ioLQ9e+n7LkGdTDdUkVjVGsIQNNCkJEVp6kBepXmhA8kcptKkOu+zqpecNhUh1H4Aoqt2Lk4fyanIiNuJlEZ2VMj3PRyYnFR9Uk+SkP0dtkci1cp9XbeIDRMC6yoqBWpY6GxPUw6WeKnH80GXPd4IYwVRNzahC2YUt3nfb9CL-eTDpiD+1P9BqGp3JozinW0AyftIzQ6FYro6huKMtmjMjdr2mMLBQkv2iOMsVlWNQaP8eKFqogE9VcC6RcoVi9J8WvuECITlfAeRZWjyIA9bOJ2-O7UAt8dyu20NsWDI+aFponxPF73MsjMoRE+HUsjmDryGcxVw6lTzSKi7fo-lU3y6F1yMjIb43tjNwd1VbNEOLoMh2JdCi6Tovyq4gtfyPmTtN++vw5zud5m3Ehc9yFYULjqqjQU3-y4oqummdYunMdY6p3AvMhCegy88KvL7r+drwNFYffaQC9iKsqC7aYW0qWMqBochL6TXys5Ga98GrqX+NTaCVRLAAn+JiRQX9EbmBlM4Cs04rgZVbluB6BNb5dzJmvUo0EXjtWlDUYCIY-zj3aC8ZiyVngWGrMxKUgI8FwX8CbUgt9IEUwQGIRoqdbh-ClASJodYD4lzlASRo2l0pPH9q4IAA */
   id: 'Home machine',
 
   initial: 'Reading projects',
 
-  context: {
-    projects: [],
-    defaultProjectName: '',
-    defaultDirectory: '',
-  },
+  context: ({ input }) => ({
+    ...input
+  }),
 
   on: {
     assign: {
@@ -119,14 +118,16 @@ export const homeMachine = setup({
       invoke: {
         id: 'create-project',
         src: 'createProject',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Create project') {
             return {
               name: '',
+              projects: context.projects,
             }
           }
           return {
             name: event.data.name,
+            projects: context.projects,
           }
         },
         onDone: [
@@ -156,6 +157,7 @@ export const homeMachine = setup({
               defaultDirectory: context.defaultDirectory,
               oldName: '',
               newName: '',
+              projects: context.projects,
             }
           }
           return {
@@ -163,6 +165,7 @@ export const homeMachine = setup({
             defaultDirectory: context.defaultDirectory,
             oldName: event.data.oldName,
             newName: event.data.newName,
+            projects: context.projects,
           }
         },
         onDone: [
@@ -236,6 +239,8 @@ export const homeMachine = setup({
 
     'Opening project': {
       entry: ['navigateToProject'],
+
+      always: "Reading projects"
     },
   },
 })
