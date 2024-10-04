@@ -111,6 +111,9 @@ export function createMachineCommand<
   if ('displayName' in commandConfig) {
     command.displayName = commandConfig.displayName
   }
+  if ('reviewMessage' in commandConfig) {
+    command.reviewMessage = commandConfig.reviewMessage
+  }
 
   return command
 }

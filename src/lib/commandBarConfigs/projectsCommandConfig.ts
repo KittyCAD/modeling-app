@@ -1,3 +1,4 @@
+import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { StateMachineCommandSetConfig } from 'lib/commandTypes'
 import { projectsMachine } from 'machines/projectsMachine'
 
@@ -53,6 +54,10 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
     icon: 'close',
     description: 'Delete a project',
     needsReview: true,
+    reviewMessage: ({ argumentsToSubmit }) => CommandBarOverwriteWarning({
+      heading: 'Are you sure?',
+      message: `This will permanently delete the project "${argumentsToSubmit.name}".`,
+    }),
     args: {
       name: {
         inputType: 'options',
