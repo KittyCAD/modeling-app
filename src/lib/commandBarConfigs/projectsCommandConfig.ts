@@ -55,8 +55,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
     description: 'Delete a project',
     needsReview: true,
     reviewMessage: ({ argumentsToSubmit }) => CommandBarOverwriteWarning({
-      heading: 'Are you sure?',
-      message: `This will permanently delete the project "${argumentsToSubmit.name}".`,
+      heading: 'Are you sure you want to delete?',
+      message: `This will permanently delete the project "${argumentsToSubmit.name}" and all its contents.`,
     }),
     args: {
       name: {
