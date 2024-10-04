@@ -137,6 +137,11 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sum = reduce(array, 0, (i, result_so_far) => { return i + result_so_far })
 /// assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
 /// ```
+/// ```no_run
+/// fn add = (a, b) => { return a + b }
+/// fn sum = (array) => { return reduce(array, 0, add) }
+/// assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
+/// ```
 #[stdlib {
     name = "reduce",
 }]
