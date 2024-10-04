@@ -353,9 +353,21 @@ export function onDragNumberCalculation(text: string, e: MouseEvent) {
     formattedString = formattedString.toString() + '.0'
   }
 
+  /**
+   * Whenever you add two numbers you can always remove the the leading zero the result will make sense
+   * 1 + -0.01 = 0.99, the code would remove the leading 0 to make it .99 but since the number has a
+   * digit left of the decimal to begin with I want to make it 0.99.
+   * negativeAddition with fractional numbers will provide a leading 0.
+   */
   const removeZeros =
     positiveAddition ||
     (negativeAddition && multiplier < 1 && !containsDigitsLeftOfDecimal)
+
+  /**
+   * If the original value has no leading 0
+   * If if the new updated value has a leading zero
+   * If the math operation means you can actually remove the zero.
+   */
   if (!leadsWithZero && hasLeadingZero(formattedString) && removeZeros) {
     if (formattedString[0] === '-') {
       return ['-', formattedString.split('.')[1]].join('.')
