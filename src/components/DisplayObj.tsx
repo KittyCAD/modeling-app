@@ -19,7 +19,7 @@ export function DisplayArray({
       {arr.map((obj, index) => {
         return (
           <div className="my-2" key={index}>
-            {(obj && typeof obj === 'object' && 'type' in obj) ? (
+            {obj && typeof obj === 'object' && 'type' in obj ? (
               <DisplayObj obj={obj} filterKeys={filterKeys} />
             ) : (
               <span>{obj}</span>
@@ -66,10 +66,7 @@ export function DisplayObj({
                 return (
                   <li key={key}>
                     {`${key}: [`}
-                    <DisplayArray
-                      arr={value}
-                      filterKeys={filterKeys}
-                    />
+                    <DisplayArray arr={value} filterKeys={filterKeys} />
                     {']'}
                   </li>
                 )
@@ -81,10 +78,7 @@ export function DisplayObj({
                 return (
                   <li key={key}>
                     {key}:
-                    <DisplayObj
-                      obj={value}
-                      filterKeys={filterKeys}
-                    />
+                    <DisplayObj obj={value} filterKeys={filterKeys} />
                   </li>
                 )
               } else if (
