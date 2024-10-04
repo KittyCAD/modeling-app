@@ -22,11 +22,13 @@ import { Project } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const { state, send } = useProjectsContext()
+  const { commandBarSend } = useCommandsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
@@ -118,7 +120,16 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  send({ type: 'Create project', data: { name: '' } })
+                  commandBarSend({
+                    type: 'Find and select command',
+                    data: {
+                      groupId: 'projects',
+                      name: 'Create project',
+                      argDefaultValues: {
+                        name: settings.projects.defaultProjectName.current,
+                      },
+                    },
+                  })
                 }
                 className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
                 iconStart={{
