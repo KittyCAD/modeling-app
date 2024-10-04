@@ -1,7 +1,7 @@
 import {
   ProgramMemory,
   Path,
-  SketchGroup,
+  Sketch,
   SourceRange,
   PathToNode,
   Program,
@@ -11,7 +11,7 @@ import {
   Expr,
   VariableDeclaration,
   Identifier,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -63,7 +63,7 @@ const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
 
 export type Coords2d = [number, number]
 
-export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
+export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
   const currentPath = skGroup?.value?.[index]
   if (!currentPath && skGroup?.start) {
     return skGroup.start.to
@@ -1216,7 +1216,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     const { node: varDec } = nodeMeta2
 
     const variableName = varDec.id.name
-    const sketch = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory?.get(variableName),
       variableName
     )
@@ -1331,7 +1331,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
     const { node: varDec } = nodeMeta2
     const variableName = varDec.id.name
-    const sketch = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory?.get(variableName),
       variableName
     )
@@ -1699,12 +1699,12 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const { node: varDec } = nodeMeta2
     const varName = varDec.declarations[0].id.name
-    const sketchGroup = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory.get(varName),
       varName
     )
-    if (err(sketchGroup)) return sketchGroup
-    const intersectPath = sketchGroup.value.find(
+    if (err(sketch)) return sketch
+    const intersectPath = sketch.value.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
     )
     let offset = 0

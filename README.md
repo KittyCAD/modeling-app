@@ -304,7 +304,7 @@ yarn start
 and finally:
 
 ```
-yarn test:nowatch
+yarn test:unit
 ```
 
 For individual testing:
@@ -321,6 +321,69 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 cd src/wasm-lib
 cargo test
 ```
+
+### Mapping CI CD jobs to local commands
+
+When you see the CI CD fail on jobs you may wonder three things
+- Do I have a bug in my code?
+- Is the test flaky?
+- Is there a bug in `main`?
+
+To answer these questions the following commands will give you confidence to locate the issue.
+
+#### Static Analysis
+
+Part of the CI CD pipeline performs static analysis on the code. Use the following commands to mimic the CI CD jobs.
+
+The following set of commands should get us closer to one and done commands to instantly retest issues.
+
+```
+yarn test-setup
+```
+
+> Gotcha, are packages up to date and is the wasm built?
+
+
+```
+yarn tsc
+yarn fmt-check
+yarn lint
+yarn test:unit:local
+```
+
+> Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
+
+#### E2E Tests
+
+**Playwright Browser**
+
+These E2E tests run in a browser (without electron).
+There are tests that are skipped if they are ran in a windows OS or Linux OS. We can use playwright tags to implement test skipping.
+
+Breaking down the command `yarn test:playwright:browser:chrome:windows`
+- The application is `playwright`
+- The runtime is a `browser`
+- The specific `browser` is `chrome`
+- The test should run in a `windows` environment. It will skip tests that are broken or flaky in the windows OS.
+
+```
+yarn test:playwright:browser:chrome
+yarn test:playwright:browser:chrome:windows
+yarn test:playwright:browser:chrome:ubuntu
+```
+
+**Playwright Electron**
+
+These E2E tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
+
+```
+yarn test:playwright:electron:local
+yarn test:playwright:electron:windows:local
+yarn test:playwright:electron:macos:local
+yarn test:playwright:electron:ubuntu:local
+```
+
+> Why does it say local? The CI CD commands that run in the pipeline cannot be ran locally. A single command will not properly setup the testing environment locally.
 
 #### Some notes on CI
 

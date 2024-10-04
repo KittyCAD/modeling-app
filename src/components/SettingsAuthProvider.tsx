@@ -8,7 +8,7 @@ import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import {
-  getThemeColorForEngine,
+  darkModeMatcher,
   getOppositeTheme,
   setThemeClass,
   Themes,
@@ -34,6 +34,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
 import { saveSettings } from 'lib/settings/settingsUtils'
+import { reportRejection } from 'lib/trap'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -113,26 +114,9 @@ export const SettingsAuthProviderBase = ({
           sceneInfra.baseUnit = newBaseUnit
         },
         setEngineTheme: ({ context }) => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'set_background_color',
-              color: getThemeColorForEngine(context.app.theme.current),
-            },
-          })
-
-          const opposingTheme = getOppositeTheme(context.app.theme.current)
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'set_default_system_properties',
-              color: getThemeColorForEngine(opposingTheme),
-            },
-          })
+          engineCommandManager
+            .setTheme(context.app.theme.current)
+            .catch(reportRejection)
         },
         setEngineScaleGridVisibility: ({ context }) => {
           engineCommandManager.setScaleGridVisibility(
@@ -261,14 +245,13 @@ export const SettingsAuthProviderBase = ({
   // because there doesn't seem to be a good way to listen to
   // events outside of the machine that also depend on the machine's context
   useEffect(() => {
-    const matcher = window.matchMedia('(prefers-color-scheme: dark)')
     const listener = (e: MediaQueryListEvent) => {
       if (settingsState.context.app.theme.current !== 'system') return
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
 
-    matcher.addEventListener('change', listener)
-    return () => matcher.removeEventListener('change', listener)
+    darkModeMatcher?.addEventListener('change', listener)
+    return () => darkModeMatcher?.removeEventListener('change', listener)
   }, [settingsState.context])
 
   /**

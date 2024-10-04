@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ExtrudeGroup, KclValue, SketchGroup},
+    executor::{ExecState, KclValue, Sketch, Solid},
     std::{
         extrude::do_post_extrude,
         fillet::{default_tolerance, EdgeReference},
@@ -23,6 +23,7 @@ use crate::{
 pub struct RevolveData {
     /// Angle to revolve (in degrees). Default is 360.
     #[serde(default)]
+    #[schemars(range(min = -360.0, max = 360.0))]
     pub angle: Option<f64>,
     /// Axis of revolution.
     pub axis: AxisOrEdgeReference,
@@ -95,10 +96,10 @@ impl AxisAndOrigin {
 
 /// Revolve a sketch around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_group): (RevolveData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch): (RevolveData, Sketch) = args.get_data_and_sketch()?;
 
-    let extrude_group = inner_revolve(data, sketch_group, exec_state, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_revolve(data, sketch, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
@@ -244,15 +245,17 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 }]
 async fn inner_revolve(
     data: RevolveData,
-    sketch_group: SketchGroup,
+    sketch: Sketch,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+) -> Result<Box<Solid>, KclError> {
     if let Some(angle) = data.angle {
-        // Return an error if the angle is less than -360 or greater than 360.
-        if !(-360.0..=360.0).contains(&angle) {
+        // Return an error if the angle is zero.
+        // We don't use validate() here because we want to return a specific error message that is
+        // nice and we use the other data in the docs, so we still need use the derive above for the json schema.
+        if !(-360.0..=360.0).contains(&angle) || angle == 0.0 {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected angle to be between -360 and 360, found `{}`", angle),
+                message: format!("Expected angle to be between -360 and 360 and not 0, found `{}`", angle),
                 source_ranges: vec![args.source_range],
             }));
         }
@@ -268,7 +271,7 @@ async fn inner_revolve(
                 id,
                 ModelingCmd::from(mcmd::Revolve {
                     angle,
-                    target: sketch_group.id.into(),
+                    target: sketch.id.into(),
                     axis,
                     origin,
                     tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
@@ -283,7 +286,7 @@ async fn inner_revolve(
                 id,
                 ModelingCmd::from(mcmd::RevolveAboutEdge {
                     angle,
-                    target: sketch_group.id.into(),
+                    target: sketch.id.into(),
                     edge_id,
                     tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
                 }),
@@ -292,7 +295,7 @@ async fn inner_revolve(
         }
     }
 
-    do_post_extrude(sketch_group, 0.0, args).await
+    do_post_extrude(sketch, 0.0, args).await
 }
 
 #[cfg(test)]
