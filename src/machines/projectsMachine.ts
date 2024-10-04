@@ -35,7 +35,7 @@ export const projectsMachine = setup({
         }
       | {
           type: 'xstate.done.actor.create-project'
-          output: { message: string }
+          output: { message: string; name: string }
         }
       | {
           type: 'xstate.done.actor.rename-project'

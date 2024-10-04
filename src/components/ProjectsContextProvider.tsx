@@ -69,14 +69,25 @@ export const ProjectsContextProvider = ({
     projectsMachine.provide({
       actions: {
         navigateToProject: ({ context, event }) => {
-          if ('data' in event && event.data && 'name' in event.data) {
+          const nameFromEventData =
+            'data' in event &&
+            event.data &&
+            'name' in event.data &&
+            event.data.name
+          const nameFromOutputData =
+            'output' in event &&
+            event.output &&
+            'name' in event.output &&
+            event.output.name
+
+          const name = nameFromEventData || nameFromOutputData
+
+          if (name) {
             let projectPath =
-              context.defaultDirectory +
-              window.electron.path.sep +
-              event.data.name
+              context.defaultDirectory + window.electron.path.sep + name
             onProjectOpen(
               {
-                name: event.data.name,
+                name,
                 path: projectPath,
               },
               null
@@ -157,6 +168,7 @@ export const ProjectsContextProvider = ({
 
           return {
             message: `Successfully created "${name}"`,
+            name,
           }
         }),
         renameProject: fromPromise(async ({ input }) => {
