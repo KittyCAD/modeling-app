@@ -1,4 +1,5 @@
 import { isDesktop } from 'lib/isDesktop'
+import { reportRejection } from 'lib/trap'
 import { useEffect, useState, useRef } from 'react'
 
 type Path = string
@@ -11,13 +12,13 @@ type Path = string
 // watcher.addListener(() => { ... }).
 
 export const useFileSystemWatcher = (
-  callback: (path: Path) => any | Promise<any>,
+  callback: (path: Path) => Promise<void>,
   dependencyArray: Path[]
 ): void => {
   // Track a ref to the callback. This is how we get the callback updated
   // across the NodeJS<->Browser boundary.
-  const callbackRef = useRef<{ fn: (path: Path) => void }>({
-    fn: (_path) => {},
+  const callbackRef = useRef<{ fn: (path: Path) => Promise<void> }>({
+    fn: async (_path) => {},
   })
 
   useEffect(() => {
@@ -69,9 +70,9 @@ export const useFileSystemWatcher = (
     }
     const [pathsAdded] = difference(dependencyArray, dependencyArrayTracked)
     for (let path of pathsAdded) {
-      window.electron.watchFileOn(path, (_eventType: string, path: Path) =>
-        callbackRef.current.fn(path)
-      )
+      window.electron.watchFileOn(path, (_eventType: string, path: Path) => {
+        callbackRef.current.fn(path).catch(reportRejection)
+      })
     }
     setDependencyArrayTracked(pathsRemaining.concat(pathsAdded))
   }, [hasDiff])
