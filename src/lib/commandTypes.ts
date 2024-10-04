@@ -190,7 +190,7 @@ export type CommandArgument<
       ) => boolean)
   skip?: boolean
   machineActor?: Actor<T>
-  warningMessage: string
+  warningMessage?: string
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
