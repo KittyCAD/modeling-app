@@ -126,6 +126,8 @@ export interface components {
        *
        *     What "close" means is up to you! */
       max_part_volume?: components['schemas']['Volume'] | null
+      /** @description Status of the printer -- be it printing, idle, or unreachable. This may dictate if a machine is capable of taking a new job. */
+      state: components['schemas']['MachineState']
     }
     /** @description Information regarding the make/model of a discovered endpoint. */
     MachineMakeModel: {
@@ -136,6 +138,17 @@ export interface components {
       /** @description The unique serial number of the connected Machine. */
       serial?: string | null
     }
+    /** @description Current state of the machine -- be it printing, idle or offline. This can be used to determine if a printer is in the correct state to take a new job. */
+    MachineState:
+      | 'Unknown'
+      | 'Idle'
+      | 'Running'
+      | 'Offline'
+      | 'Paused'
+      | 'Complete'
+      | {
+          Failed: string | null
+        }
     /** @description Specific technique by which this Machine takes a design, and produces a real-world 3D object. */
     MachineType: 'Stereolithography' | 'FusedDeposition' | 'Cnc'
     /** @description The response from the `/ping` endpoint. */
