@@ -438,34 +438,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       }
       return maxDiff
     },
-    getPixelRGBs: async (
-      coords: { x: number; y: number },
-      radius: number
-    ): Promise<[number, number, number][]> => {
-      const buffer = await page.screenshot({
-        fullPage: true,
-      })
-      const screenshot = await PNG.sync.read(buffer)
-      const pixMultiplier: number = await page.evaluate(
-        'window.devicePixelRatio'
-      )
-      const allCords: [number, number][] = [[coords.x, coords.y]]
-      for (let i = 1; i < radius; i++) {
-        allCords.push([coords.x + i, coords.y])
-        allCords.push([coords.x - i, coords.y])
-        allCords.push([coords.x, coords.y + i])
-        allCords.push([coords.x, coords.y - i])
-      }
-      return allCords.map(([x, y]) => {
-        const index =
-          (screenshot.width * y * pixMultiplier + x * pixMultiplier) * 4 // rbga is 4 channels
-        return [
-          screenshot.data[index],
-          screenshot.data[index + 1],
-          screenshot.data[index + 2],
-        ]
-      })
-    },
+    getPixelRGBs: getPixelRGBs(page),
     doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
       doAndWaitForImageDiff(page, fn, diffCount),
     emulateNetworkConditions: async (
@@ -1069,4 +1042,33 @@ export async function openAndClearDebugPanel(page: Page) {
 
 export function sansWhitespace(str: string) {
   return str.replace(/\s+/g, '').trim()
+}
+
+export function getPixelRGBs(page: Page) {
+  return async (
+    coords: { x: number; y: number },
+    radius: number
+  ): Promise<[number, number, number][]> => {
+    const buffer = await page.screenshot({
+      fullPage: true,
+    })
+    const screenshot = await PNG.sync.read(buffer)
+    const pixMultiplier: number = await page.evaluate('window.devicePixelRatio')
+    const allCords: [number, number][] = [[coords.x, coords.y]]
+    for (let i = 1; i < radius; i++) {
+      allCords.push([coords.x + i, coords.y])
+      allCords.push([coords.x - i, coords.y])
+      allCords.push([coords.x, coords.y + i])
+      allCords.push([coords.x, coords.y - i])
+    }
+    return allCords.map(([x, y]) => {
+      const index =
+        (screenshot.width * y * pixMultiplier + x * pixMultiplier) * 4 // rbga is 4 channels
+      return [
+        screenshot.data[index],
+        screenshot.data[index + 1],
+        screenshot.data[index + 2],
+      ]
+    })
+  }
 }

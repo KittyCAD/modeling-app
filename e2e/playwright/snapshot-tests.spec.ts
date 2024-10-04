@@ -49,7 +49,7 @@ test.setTimeout(60_000)
 
 test(
   'exports of each format should work',
-  { tag: '@snapshot' },
+  { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context }) => {
     // skip on macos and windows.
     test.skip(
@@ -65,14 +65,14 @@ test(
       ;(window as any).playwrightSkipFilePicker = true
       localStorage.setItem(
         'persistCode',
-        `const topAng = 25
-const bottomAng = 35
-const baseLen = 3.5
-const baseHeight = 1
-const totalHeightHalf = 2
-const armThick = 0.5
-const totalLen = 9.5
-const part001 = startSketchOn('-XZ')
+        `topAng = 25
+bottomAng = 35
+baseLen = 3.5
+baseHeight = 1
+totalHeightHalf = 2
+armThick = 0.5
+totalLen = 9.5
+part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> yLine(baseHeight, %)
   |> xLine(baseLen, %)
@@ -334,7 +334,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
     )
   })
 
-  const code = `const part001 = startSketchOn('${plane}')
+  const code = `part001 = startSketchOn('${plane}')
   |> startProfileAt([7.00, 4.40], %)
   |> line([6.60, -0.20], %)
   |> line([2.80, 5.00], %)
@@ -439,7 +439,7 @@ test(
     // select a plane
     await page.mouse.click(700, 200)
 
-    let code = `const sketch001 = startSketchOn('XZ')`
+    let code = `sketch001 = startSketchOn('XZ')`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
@@ -455,6 +455,7 @@ test(
     await page.mouse.move(startXPx + PUR * 20, 500 - PUR * 10)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
 
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
@@ -511,7 +512,7 @@ test(
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn('XZ')`
     )
 
     await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -568,7 +569,7 @@ test(
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn('XZ')`
     )
 
     await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -590,7 +591,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')
+      `sketch001 = startSketchOn('XZ')
   |> circle({ center: [14.44, -2.44], radius: 1 }, %)`
     )
   }
@@ -628,7 +629,7 @@ test.describe(
       // select a plane
       await page.mouse.click(700, 200)
 
-      let code = `const sketch001 = startSketchOn('XZ')`
+      let code = `sketch001 = startSketchOn('XZ')`
       await expect(page.locator('.cm-content')).toHaveText(code)
 
       await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
@@ -731,7 +732,7 @@ test.describe(
       // select a plane
       await page.mouse.click(700, 200)
 
-      let code = `const sketch001 = startSketchOn('XZ')`
+      let code = `sketch001 = startSketchOn('XZ')`
       await expect(u.codeLocator).toHaveText(code)
 
       await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
@@ -804,13 +805,13 @@ test(
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
         'persistCode',
-        `const part001 = startSketchOn('-XZ')
+        `part001 = startSketchOn('-XZ')
   |> startProfileAt([1.4, 2.47], %)
   |> line([9.31, 10.55], %, $seg01)
   |> line([11.91, -10.42], %)
   |> close(%)
   |> extrude(${KCL_DEFAULT_LENGTH}, %)
-const part002 = startSketchOn(part001, seg01)
+part002 = startSketchOn(part001, seg01)
   |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
   |> line([0, -7.79], %)
@@ -869,7 +870,7 @@ test(
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const part001 = startSketchOn('XY')
+        `part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -912,7 +913,7 @@ test(
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const part001 = startSketchOn('XY')
+        `part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -1033,7 +1034,7 @@ test('theme persists', async ({ page, context }) => {
   await context.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('XY')
+      `part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)

@@ -13,10 +13,10 @@ keywords = ["kcl", "KittyCAD", "CAD"]
 [dependencies]
 anyhow = { version = "1.0.89", features = ["backtrace"] }
 async-recursion = "1.1.1"
-async-trait = "0.1.82"
+async-trait = "0.1.83"
 base64 = "0.22.1"
 chrono = "0.4.38"
-clap = { version = "4.5.18", default-features = false, optional = true, features = ["std", "derive"] }
+clap = { version = "4.5.19", default-features = false, optional = true, features = ["std", "derive"] }
 convert_case = "0.6.0"
 dashmap = "6.1.0"
 databake = { version = "0.1.8", features = ["derive"] }
@@ -27,7 +27,7 @@ git_rev = "0.1.0"
 gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.1", default-features = false, features = ["png"] }
-indexmap = { version = "2.5.0", features = ["serde"] }
+indexmap = { version = "2.6.0", features = ["serde"] }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = "1.5.0"
@@ -35,7 +35,7 @@ measurements = "0.11.0"
 mime_guess = "2.0.5"
 parse-display = "0.9.1"
 pyo3 = { version = "0.22.3", optional = true }
-reqwest = { version = "0.11.26", default-features = false, features = ["stream", "rustls-tls"] }
+reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = ["impl_json_schema", "url", "uuid1", "preserve_order"] }
 serde = { version = "1.0.210", features = ["derive"] }
