@@ -85,7 +85,7 @@ expression: actual
           "digest": null
         }
       ],
-      "kind": "let",
+      "kind": "const",
       "digest": null
     }
   ],

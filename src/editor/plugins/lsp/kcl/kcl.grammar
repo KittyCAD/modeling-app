@@ -16,7 +16,7 @@
 
 statement[@isGroup=Statement] {
   FunctionDeclaration { kw<"fn"> VariableDefinition Equals ParamList Arrow Body } |
-  VariableDeclaration { (kw<"var"> | kw<"let"> | kw<"const">) VariableDefinition Equals expression } |
+  VariableDeclaration { (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression }
 }
@@ -40,6 +40,7 @@ expression[@isGroup=Expression] {
   } |
   UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
+  IfExpression { kw<"if"> expression Body kw<"else"> Body } |
   CallExpression { expression !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
@@ -57,7 +58,7 @@ ArgumentList { "(" commaSep<expression> ")" }
 type[@isGroup=Type] {
   @specialize[@name=PrimitiveType]<
     identifier,
-    "string" | "number" | "bool" | "sketch_group" | "sketch_surface" | "extrude_group"
+    "string" | "number" | "bool" | "sketch" | "sketch_surface" | "solid"
   > |
   ArrayType { type !member "[" "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }

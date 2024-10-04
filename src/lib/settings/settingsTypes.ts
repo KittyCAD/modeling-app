@@ -3,6 +3,7 @@ import { Setting, settings } from './initialSettings'
 import { AtLeast, PathValue, Paths } from 'lib/types'
 import { CommandArgumentConfig } from 'lib/commandTypes'
 import { Themes } from 'lib/theme'
+import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 
 export interface SettingsViaQueryString {
   pool: string | null
@@ -10,6 +11,7 @@ export interface SettingsViaQueryString {
   highlightEdges: boolean
   enableSSAO: boolean
   showScaleGrid: boolean
+  cameraProjection: CameraProjectionType
 }
 
 export enum UnitSystem {

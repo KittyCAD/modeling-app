@@ -210,7 +210,7 @@ test.describe('Testing Camera Movement', () => {
     // select a plane
     await page.mouse.click(700, 325)
 
-    let code = `const sketch001 = startSketchOn('XY')`
+    let code = `sketch001 = startSketchOn('XY')`
     await expect(u.codeLocator).toHaveText(code)
     await u.closeDebugPanel()
 
@@ -342,5 +342,141 @@ test.describe('Testing Camera Movement', () => {
     await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
       timeout: 10_000,
     })
+  })
+
+  test(`Zoom by scroll should not fire while orbiting`, async ({ page }) => {
+    /**
+     * Currently we only allow zooming by scroll when no other camera movement is happening,
+     * set within cameraMouseDragGuards in cameraControls.ts,
+     * until the engine supports unifying multiple camera movements.
+     * This verifies that scrollCallback's guard is working as expected.
+     */
+    const u = await getUtils(page)
+
+    // Constants and locators
+    const settingsLink = page.getByTestId('settings-link')
+    const settingsDialogHeading = page.getByRole('heading', {
+      name: 'Settings',
+      exact: true,
+    })
+    const userSettingsTab = page.getByRole('radio', { name: 'User' })
+    const mouseControlsSetting = page
+      .locator('#mouseControls')
+      .getByRole('combobox')
+    const mouseControlSuccesToast = page.getByText(
+      'Set mouse controls to "Solidworks"'
+    )
+    const settingsCloseButton = page.getByTestId('settings-close-button')
+    const gizmo = page.locator('[aria-label*=gizmo]')
+    const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+    const orbitMouseStart = { x: 800, y: 130 }
+    const orbitMouseEnd = { x: 0, y: 130 }
+    const mid = (v1: number, v2: number) => v1 + (v2 - v1) / 2
+    type Point = { x: number; y: number }
+    const midPoint = (p1: Point, p2: Point) => ({
+      x: mid(p1.x, p2.x),
+      y: mid(p1.y, p2.y),
+    })
+    const orbitMouseStepOne = midPoint(orbitMouseStart, orbitMouseEnd)
+    const expectedStartCamZPosition = 64.0
+    const expectedZoomCamZPosition = 32.0
+    const expectedOrbitCamZPosition = 64.0
+
+    await test.step(`Test setup`, async () => {
+      await u.waitForAuthSkipAppStart()
+      await u.closeKclCodePanel()
+      // This test requires the mouse controls to be set to Solidworks
+      await u.openDebugPanel()
+      await test.step(`Set mouse controls setting to Solidworks`, async () => {
+        await settingsLink.click()
+        await expect(settingsDialogHeading).toBeVisible()
+        await userSettingsTab.click()
+        await mouseControlsSetting.selectOption({ label: 'Solidworks' })
+        await expect(mouseControlSuccesToast).toBeVisible()
+        await settingsCloseButton.click()
+      })
+    })
+
+    await test.step(`Test scrolling zoom works`, async () => {
+      await resetCamera()
+      await page.mouse.move(orbitMouseStart.x, orbitMouseStart.y)
+      await page.mouse.wheel(0, -100)
+      await test.step(`Force a refresh of the camera position`, async () => {
+        await u.openAndClearDebugPanel()
+        await u.sendCustomCmd({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
+        await u.waitForCmdReceive('default_camera_get_settings')
+      })
+
+      await expect
+        .poll(getCameraZValue, {
+          message: 'Camera should be at expected position after zooming',
+        })
+        .toEqual(expectedZoomCamZPosition)
+    })
+
+    await test.step(`Test orbiting works`, async () => {
+      await doOrbitWith()
+    })
+
+    await test.step(`Test scrolling while orbiting doesn't zoom`, async () => {
+      await doOrbitWith(async () => {
+        await page.mouse.wheel(0, -100)
+      })
+    })
+
+    // Helper functions
+    async function resetCamera() {
+      await test.step(`Reset camera`, async () => {
+        await u.openDebugPanel()
+        await u.clearCommandLogs()
+        await u.doAndWaitForCmd(async () => {
+          await gizmo.click({ button: 'right' })
+          await resetCameraButton.click()
+        }, 'zoom_to_fit')
+        await expect
+          .poll(getCameraZValue, {
+            message: 'Camera Z should be at expected position after reset',
+          })
+          .toEqual(expectedStartCamZPosition)
+      })
+    }
+
+    async function getCameraZValue() {
+      return page
+        .getByTestId('cam-z-position')
+        .inputValue()
+        .then((value) => parseFloat(value))
+    }
+
+    async function doOrbitWith(callback = async () => {}) {
+      await resetCamera()
+
+      await test.step(`Perform orbit`, async () => {
+        await page.mouse.move(orbitMouseStart.x, orbitMouseStart.y)
+        await page.mouse.down({ button: 'middle' })
+        await page.mouse.move(orbitMouseStepOne.x, orbitMouseStepOne.y, {
+          steps: 3,
+        })
+        await callback()
+        await page.mouse.move(orbitMouseEnd.x, orbitMouseEnd.y, {
+          steps: 3,
+        })
+      })
+
+      await test.step(`Verify orbit`, async () => {
+        await expect
+          .poll(getCameraZValue, {
+            message: 'Camera should be at expected position after orbiting',
+          })
+          .toEqual(expectedOrbitCamZPosition)
+        await page.mouse.up({ button: 'middle' })
+      })
+    }
   })
 })

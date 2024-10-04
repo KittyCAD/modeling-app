@@ -2,13 +2,38 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
+use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecState, KclValue},
     std::Args,
 };
+
+/// Compute the remainder after dividing `num` by `div`.
+/// If `num` is negative, the result will be too.
+pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (n, d) = FromArgs::from_args(&args, 0)?;
+    let result = inner_rem(n, d)?;
+
+    args.make_user_val_from_i64(result)
+}
+
+/// Compute the remainder after dividing `num` by `div`.
+/// If `num` is negative, the result will be too.
+///
+/// ```no_run
+/// assertEqual(rem(int( 7), int(4)),  3, 0.01, "remainder is 3")
+/// assertEqual(rem(int(-7), int(4)), -3, 0.01, "remainder is 3")
+/// assertEqual(rem(int( 7), int(-4)), 3, 0.01, "remainder is 3")
+/// ```
+#[stdlib {
+    name = "rem",
+    tags = ["math"],
+}]
+fn inner_rem(num: i64, divisor: i64) -> Result<i64, KclError> {
+    Ok(num % divisor)
+}
 
 /// Compute the cosine of a number (in radians).
 pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

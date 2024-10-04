@@ -182,7 +182,7 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([5 + 0, 20 + 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -343,14 +343,14 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const yRel001 = -14
-const xRel001 = 0.5
-const angle001 = 3
-const len001 = 32
-const yAbs001 = 11.5
-const xAbs001 = 33
-const xAbs002 = 4
-const part001 = startSketchOn('XZ')
+          `yRel001 = -14
+xRel001 = 0.5
+angle001 = 3
+len001 = 32
+yAbs001 = 11.5
+xAbs001 = 33
+xAbs002 = 4
+part001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0.5, yRel001], %)
   |> angledLine({ angle: angle001, length: len001 }, %)
@@ -420,7 +420,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -548,7 +548,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -704,7 +704,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -778,7 +778,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
   |> circle({ center: [1 + 0, 0], radius: 8 }, %)
 `
         )
@@ -891,7 +891,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0.5, -14 + 0], %)
   |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -1123,12 +1123,12 @@ const part001 = startSketchOn('XZ')
             async ({ lineToBeDeleted, extraLine }) => {
               localStorage.setItem(
                 'persistCode',
-                `const part001 = startSketchOn('XZ')
+                `part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
   |> angledLine([-176, segLen(seg01)], %)        
-${extraLine ? 'const myVar = segLen(seg01)' : ''}`
+${extraLine ? 'myVar = segLen(seg01)' : ''}`
               )
             },
             {
@@ -1283,7 +1283,7 @@ ${extraLine ? 'const myVar = segLen(seg01)' : ''}`
           async ({ lineToBeDeleted }) => {
             localStorage.setItem(
               'persistCode',
-              `const part001 = startSketchOn('XZ')
+              `part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)

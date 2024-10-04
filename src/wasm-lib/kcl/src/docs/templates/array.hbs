@@ -1,0 +1,1 @@
+{{~ #if maxItems ~}}{{~ #if (lte maxItems 3) ~}}`[{{#times maxItems ~}}{{~ #if @first ~}}{{else ~}}, {{/if ~}}{{> propertyType ../items}}{{/times}}]`{{else ~}}`[` {{ > propertyType items }} `]`{{~ /if ~}}{{else ~}}`[` {{ > propertyType items }} `]`{{~ /if ~}}

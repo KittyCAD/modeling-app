@@ -194,7 +194,7 @@ const FileTreeItem = ({
   }
 
   return (
-    <div className="contents" ref={itemRef}>
+    <div className="contents" data-testid="file-tree-item" ref={itemRef}>
       {fileOrDir.children === null ? (
         <li
           className={
@@ -389,12 +389,14 @@ interface FileTreeProps {
 
 export const FileTreeMenu = () => {
   const { send } = useFileContext()
+  const { send: modelingSend } = useModelingContext()
 
   function createFile() {
     send({
       type: 'Create file',
       data: { name: '', makeDir: false, shouldSetToRename: true },
     })
+    modelingSend({ type: 'Cancel' })
   }
 
   function createFolder() {

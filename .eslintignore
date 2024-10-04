@@ -1,2 +1,3 @@
 src/wasm-lib/*
 *.typegen.ts
+packages/codemirror-lsp-client/dist/*

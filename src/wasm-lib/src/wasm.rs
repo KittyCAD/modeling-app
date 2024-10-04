@@ -42,6 +42,11 @@ pub async fn execute_wasm(
         ))
     };
     let fs = Arc::new(kcl_lib::fs::FileManager::new(fs_manager));
+    let context_type = if is_mock {
+        kcl_lib::executor::ContextType::Mock
+    } else {
+        kcl_lib::executor::ContextType::Live
+    };
     let ctx = kcl_lib::executor::ExecutorContext {
         engine,
         fs,
@@ -50,7 +55,7 @@ pub async fn execute_wasm(
             units,
             ..Default::default()
         },
-        is_mock,
+        context_type,
     };
 
     let exec_state = ctx.run(&program, Some(memory)).await.map_err(String::from)?;
@@ -274,7 +279,7 @@ pub async fn kcl_lsp_run(
                 units,
                 ..Default::default()
             },
-            is_mock: false,
+            context_type: kcl_lib::executor::ContextType::Live,
         })
     } else {
         None

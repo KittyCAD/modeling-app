@@ -41,9 +41,10 @@ fn lint_too_many_args_std_lib_function(f: Box<dyn StdLibFn>, exp: &CallExpressio
         return Ok(findings);
     }
 
-    if exp.arguments.len() > f.args().len() {
+    let fn_args_len = f.args(false).len();
+    if exp.arguments.len() > fn_args_len {
         findings.push(Z0002.at(
-            format!("expected {} arguments, found {}", f.args().len(), exp.arguments.len()),
+            format!("expected {} arguments, found {}", fn_args_len, exp.arguments.len()),
             SourceRange::new(exp.start, exp.end),
         ));
     }

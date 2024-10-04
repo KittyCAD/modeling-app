@@ -22,6 +22,7 @@ function CommandComboBox({
   const fuse = new Fuse(options, {
     keys: ['displayName', 'name', 'description'],
     threshold: 0.3,
+    ignoreLocation: true,
   })
 
   useEffect(() => {
