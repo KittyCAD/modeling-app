@@ -106,7 +106,7 @@ describe('testing changeSketchArguments', () => {
   const lineAfterChange = 'lineTo([2, 3], %)'
   test('changeSketchArguments', async () => {
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+    const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)
@@ -142,7 +142,7 @@ describe('testing addNewSketchLn', () => {
   test('addNewSketchLn', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchOn('XY')
+mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -152,7 +152,7 @@ const mySketch001 = startSketchOn('XY')
 
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
-    expect(sourceStart).toBe(95)
+    expect(sourceStart).toBe(89)
     const newSketchLnRetVal = addNewSketchLn({
       node: ast,
       programMemory,
@@ -173,7 +173,7 @@ const mySketch001 = startSketchOn('XY')
     if (err(newSketchLnRetVal)) return newSketchLnRetVal
 
     // Enable rotations #152
-    let expectedCode = `const mySketch001 = startSketchOn('XY')
+    let expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -197,7 +197,7 @@ const mySketch001 = startSketchOn('XY')
     })
     if (err(modifiedAst2)) return modifiedAst2
 
-    expectedCode = `const mySketch001 = startSketchOn('XY')
+    expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -212,7 +212,7 @@ describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
     const originalLine = 'lineTo([-1.59, -1.54], %)'
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+    const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> ${line}
@@ -258,11 +258,11 @@ describe('testing addTagForSketchOnFace', () => {
     },
     {
       desc: 'chamfer with its own variable',
-      originalChamfer: `const chamf = chamfer({
+      originalChamfer: `chamf = chamfer({
        length: 30,
        tags: [seg01, getOppositeEdge(seg01)]
      }, extrude001)`,
-      expectedChamfer: `const chamf = chamfer({
+      expectedChamfer: `chamf = chamfer({
        length: 30,
        tags: [getOppositeEdge(seg01)]
      }, extrude001, $seg03)
@@ -273,9 +273,7 @@ describe('testing addTagForSketchOnFace', () => {
 
   chamferTestCases.forEach(({ originalChamfer, expectedChamfer, desc }) => {
     it(`can break up chamfers in order to add tags - ${desc}`, async () => {
-      const genCode = (
-        insertCode: string
-      ) => `const sketch001 = startSketchOn('XZ')
+      const genCode = (insertCode: string) => `sketch001 = startSketchOn('XZ')
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
@@ -288,7 +286,7 @@ describe('testing addTagForSketchOnFace', () => {
      ], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
   |> close(%)
-const extrude001 = extrude(100, sketch001)
+extrude001 = extrude(100, sketch001)
 ${insertCode}
 `
       const code = genCode(originalChamfer)

@@ -38,7 +38,7 @@ async fn setup(program: &str) -> (ExecutorContext, Program) {
         fs: std::sync::Arc::new(kcl_lib::fs::FileManager::new()),
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
         settings: Default::default(),
-        is_mock: true,
+        context_type: kcl_lib::executor::ContextType::Mock,
     };
     (ctx, program)
 }

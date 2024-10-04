@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: E2E Tests
 on:
   push:
     branches: [ main ]
@@ -33,8 +33,9 @@ jobs:
             rust:
               - 'src/wasm-lib/**'
 
-  playwright-chrome:
+  browser:
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
+    name: playwright:browser:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
     strategy:
       fail-fast: false
       matrix:
@@ -141,6 +142,7 @@ jobs:
       with:
         name: playwright-report-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
+        include-hidden-files: true
         retention-days: 30
         overwrite: true
     - name: Clean up test-results
@@ -176,6 +178,7 @@ jobs:
       with:
         name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
+        include-hidden-files: true
         retention-days: 30
     - uses: actions/download-artifact@v4
       if: ${{ !cancelled() && (success() || failure()) }}
@@ -188,48 +191,7 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        if [[ ! -f "test-results/.last-run.json" ]]; then
-            # if no last run artifact, than run plawright normally
-            echo "run playwright normally"
-            yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep-invert="@snapshot|@electron" || true
-            # # send to axiom
-            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-        fi
-
-        retry=1
-        max_retrys=4
-
-        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-        while [[ $retry -le $max_retrys ]]; do
-            if [[ -f "test-results/.last-run.json" ]]; then
-                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-                if [[ $failed_tests -gt 0 ]]; then
-                    echo "retried=true" >>$GITHUB_OUTPUT
-                    echo "run playwright with last failed tests and retry $retry"
-                    yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --last-failed --grep-invert="@snapshot|@electron" || true
-                    # send to axiom
-                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-                    retry=$((retry + 1))
-                else
-                    echo "retried=false" >>$GITHUB_OUTPUT
-                    exit 0
-                fi
-            else
-                echo "retried=false" >>$GITHUB_OUTPUT
-                exit 0
-            fi
-        done
-
-        echo "retried=false" >>$GITHUB_OUTPUT
-
-        if [[ -f "test-results/.last-run.json" ]]; then
-            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-            if [[ $failed_tests -gt 0 ]]; then
-                # if it still fails after 3 retrys, then fail the job
-                exit 1
-            fi
-        fi
-        exit 0
+        .github/ci-cd-scripts/playwright-browser-chrome.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
@@ -247,6 +209,7 @@ jobs:
       with:
         name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: test-results/
+        include-hidden-files: true
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
@@ -254,11 +217,13 @@ jobs:
       with:
         name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
         path: playwright-report/
+        include-hidden-files: true
         retention-days: 30
         overwrite: true
 
 
-  playwright-electron:
+  electron:
+    name: playwright:electron:${{matrix.os}}
     strategy:
       fail-fast: false
       matrix:
@@ -352,63 +317,14 @@ jobs:
       if: ${{ !cancelled() && (success() || failure()) }}
       continue-on-error: true
       with:
-        name: test-results-${{ matrix.os }}-${{ github.sha }}
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
     - name: Run electron tests (with retries)
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
       run: |
-        if [[ ! -f "test-results/.last-run.json" ]]; then
-            # if no last run artifact, than run plawright normally
-            echo "run playwright normally"
-            if [[ "$IS_UBUNTU" == "true" ]]; then
-              xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
-            else
-              yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
-            fi
-            # # send to axiom
-            node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-        fi
-
-        retry=1
-        max_retrys=2
-
-        # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
-        while [[ $retry -le $max_retrys ]]; do
-            if [[ -f "test-results/.last-run.json" ]]; then
-                failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-                if [[ $failed_tests -gt 0 ]]; then
-                    echo "retried=true" >>$GITHUB_OUTPUT
-                    echo "run playwright with last failed tests and retry $retry"
-                    if [[ "$IS_UBUNTU" == "true" ]]; then
-                      xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn playwright test --config=playwright.electron.config.ts --last-failed --grep=@electron || true
-                    else
-                      yarn playwright test --config=playwright.electron.config.ts --grep=@electron || true
-                    fi
-                    # send to axiom
-                    node playwrightProcess.mjs | tee /tmp/github-actions.log > /dev/null 2>&1
-                    retry=$((retry + 1))
-                else
-                    echo "retried=false" >>$GITHUB_OUTPUT
-                    exit 0
-                fi
-            else
-                echo "retried=false" >>$GITHUB_OUTPUT
-                exit 0
-            fi
-        done
-
-        echo "retried=false" >>$GITHUB_OUTPUT
-
-        if [[ -f "test-results/.last-run.json" ]]; then
-            failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-            if [[ $failed_tests -gt 0 ]]; then
-                # if it still fails after 3 retrys, then fail the job
-                exit 1
-            fi
-        fi
-        exit 0
+        .github/ci-cd-scripts/playwright-electron.sh ${{ matrix.os }}
       env:
         CI: true
         FAIL_ON_CONSOLE_ERRORS: true
@@ -427,6 +343,7 @@ jobs:
       with:
         name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
         path: test-results/
+        include-hidden-files: true
         retention-days: 30
         overwrite: true
     - uses: actions/upload-artifact@v4
@@ -434,5 +351,6 @@ jobs:
       with:
         name: playwright-report-electron-${{ matrix.os }}-${{ github.sha }}
         path: playwright-report/
+        include-hidden-files: true
         retention-days: 30
         overwrite: true

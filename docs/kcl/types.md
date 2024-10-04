@@ -15,10 +15,10 @@ arrays can hold objects and vice versa.
 
 ## Constant declaration
 
-Constants are defined with the `let` keyword like so:
+Constants are defined with a name and a value, like so:
 
 ```
-let myBool = false
+myBool = false
 ```
 
 Currently you cannot redeclare a constant.
@@ -29,7 +29,7 @@ An array is defined with `[]` braces. What is inside the brackets can
 be of any type. For example, the following is completely valid:
 
 ```
-let myArray = ["thing", 2, false]
+myArray = ["thing", 2, false]
 ```
 
 If you want to get a value from an array you can use the index like so:
@@ -41,7 +41,7 @@ If you want to get a value from an array you can use the index like so:
 An object is defined with `{}` braces. Here is an example object:
 
 ```
-let myObj = {a: 0, b: "thing"}
+myObj = {a: 0, b: "thing"}
 ```
 
 We support two different ways of getting properties from objects, you can call
@@ -67,13 +67,13 @@ As you can see above `myFn` just returns whatever it is given.
 You can also do math! Let's show an example below:
 
 ```
-let myMathExpression = 3 + 1 * 2 / 3 - 7
+myMathExpression = 3 + 1 * 2 / 3 - 7
 ```
 
 You can nest expressions in parenthesis as well:
 
 ```
-let myMathExpression = 3 + (1 * 2 / (3 - 7))
+myMathExpression = 3 + (1 * 2 / (3 - 7))
 ```
 
 ## Tags
@@ -163,7 +163,7 @@ fn rect = (origin) => {
 }
 
 rect([0, 0])
-const myRect = rect([20, 0])
+myRect = rect([20, 0])
 
 myRect 
   |> extrude(10, %)

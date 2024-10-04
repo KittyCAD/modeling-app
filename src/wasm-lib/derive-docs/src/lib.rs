@@ -758,7 +758,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),
                 stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                is_mock: true,
+                context_type: crate::executor::ContextType::Mock,
             };
 
             ctx.run(&program, None).await.unwrap();

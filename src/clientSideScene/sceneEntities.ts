@@ -1175,7 +1175,7 @@ export class SceneEntities {
     prepareTruncatedMemoryAndAst(
       sketchPathToNode,
       ast || kclManager.ast,
-      kclManager.programMemory,
+      kclManager.lastSuccessfulProgramMemory,
       draftSegment
     )
   onDragSegment({

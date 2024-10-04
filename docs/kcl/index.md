@@ -61,6 +61,7 @@ layout: manual
 * [`log10`](kcl/log10)
 * [`log2`](kcl/log2)
 * [`m`](kcl/m)
+* [`map`](kcl/map)
 * [`max`](kcl/max)
 * [`min`](kcl/min)
 * [`mirror2d`](kcl/mirror2d)
