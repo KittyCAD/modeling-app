@@ -7,7 +7,7 @@ import { createContext, useEffect, useState } from 'react'
 import { Actor, AnyStateMachine, fromPromise, Prop, StateFrom } from 'xstate'
 import { useLspContext } from './LspProvider'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import {
   createNewProjectDirectory,
@@ -38,6 +38,7 @@ export const ProjectsContextProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { commandBarSend } = useCommandsContext()
   const { onProjectOpen } = useLspContext()
   const {
@@ -84,17 +85,49 @@ export const ProjectsContextProvider = ({
             const newPathName = `${PATHS.FILE}/${encodeURIComponent(
               projectPath
             )}`
-            console.log('navigating to', newPathName)
-            console.log('defaultDirectory is', context.defaultDirectory)
             navigate(newPathName)
+          }
+        },
+        navigateToProjectIfNeeded: ({ event }) => {
+          console.log('navigateToProjectIfNeeded', event)
+          if (
+            event.type.startsWith('xstate.done.actor.') &&
+            'output' in event
+          ) {
+            const isInAProject = location.pathname.startsWith(PATHS.FILE)
+            const isInDeletedProject =
+              event.type === 'xstate.done.actor.delete-project' &&
+              isInAProject &&
+              decodeURIComponent(location.pathname).includes(event.output.name)
+            if (isInDeletedProject) {
+              navigate(PATHS.HOME)
+              return
+            }
+
+            const isInRenamedProject =
+              event.type === 'xstate.done.actor.rename-project' &&
+              isInAProject &&
+              decodeURIComponent(location.pathname).includes(
+                event.output.oldName
+              )
+            console.log('isInRenamedProject', isInRenamedProject)
+            if (isInRenamedProject) {
+              const newPathName = location.pathname.replace(
+                encodeURIComponent(event.output.oldName),
+                encodeURIComponent(event.output.newName)
+              )
+              navigate(newPathName)
+              return
+            }
           }
         },
         toastSuccess: ({ event }) =>
           toast.success(
             ('data' in event && typeof event.data === 'string' && event.data) ||
               ('output' in event &&
-                typeof event.output === 'string' &&
-                event.output) ||
+                'message' in event.output &&
+                typeof event.output.message === 'string' &&
+                event.output.message) ||
               ''
           ),
         toastError: ({ event }) =>
@@ -122,7 +155,9 @@ export const ProjectsContextProvider = ({
 
           await createNewProjectDirectory(name)
 
-          return `Successfully created "${name}"`
+          return {
+            message: `Successfully created "${name}"`,
+          }
         }),
         renameProject: fromPromise(async ({ input }) => {
           const {
@@ -134,7 +169,7 @@ export const ProjectsContextProvider = ({
           } = input
           let name = newName ? newName : defaultProjectName
           if (doesProjectNameNeedInterpolated(name)) {
-            const nextIndex = await getNextProjectIndex(name, projects)
+            const nextIndex = getNextProjectIndex(name, projects)
             name = interpolateProjectNameWithIndex(name, nextIndex)
           }
 
@@ -142,7 +177,11 @@ export const ProjectsContextProvider = ({
             window.electron.path.join(defaultDirectory, oldName),
             name
           )
-          return `Successfully renamed "${oldName}" to "${name}"`
+          return {
+            message: `Successfully renamed "${oldName}" to "${name}"`,
+            oldName: oldName,
+            newName: name,
+          }
         }),
         deleteProject: fromPromise(async ({ input }) => {
           await window.electron.rm(
@@ -151,7 +190,10 @@ export const ProjectsContextProvider = ({
               recursive: true,
             }
           )
-          return `Successfully deleted "${input.name}"`
+          return {
+            message: `Successfully deleted "${input.name}"`,
+            name: input.name,
+          }
         }),
       },
       guards: {

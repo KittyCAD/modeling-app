@@ -12,13 +12,34 @@ export const projectsMachine = setup({
     events: {} as
       | { type: 'Read projects'; data: {} }
       | { type: 'Open project'; data: ProjectsCommandSchema['Open project'] }
-      | { type: 'Rename project'; data: ProjectsCommandSchema['Rename project'] }
-      | { type: 'Create project'; data: ProjectsCommandSchema['Create project'] }
-      | { type: 'Delete project'; data: ProjectsCommandSchema['Delete project'] }
+      | {
+          type: 'Rename project'
+          data: ProjectsCommandSchema['Rename project']
+        }
+      | {
+          type: 'Create project'
+          data: ProjectsCommandSchema['Create project']
+        }
+      | {
+          type: 'Delete project'
+          data: ProjectsCommandSchema['Delete project']
+        }
       | { type: 'navigate'; data: { name: string } }
       | {
           type: 'xstate.done.actor.read-projects'
           output: Project[]
+        }
+      | {
+          type: 'xstate.done.actor.delete-project'
+          output: { message: string; name: string }
+        }
+      | {
+          type: 'xstate.done.actor.create-project'
+          output: { message: string }
+        }
+      | {
+          type: 'xstate.done.actor.rename-project'
+          output: { message: string; oldName: string; newName: string }
         }
       | { type: 'assign'; data: { [key: string]: any } },
     input: {} as {
@@ -30,16 +51,20 @@ export const projectsMachine = setup({
   actions: {
     setProjects: assign({
       projects: ({ context, event }) =>
-        'output' in event ? event.output : context.projects,
+        'output' in event && Array.isArray(event.output)
+          ? event.output
+          : context.projects,
     }),
     toastSuccess: () => {},
     toastError: () => {},
     navigateToProject: () => {},
+    navigateToProjectIfNeeded: () => {},
   },
   actors: {
     readProjects: fromPromise(() => Promise.resolve([] as Project[])),
-    createProject: fromPromise((_: { input: { name: string, projects: Project[] } }) =>
-      Promise.resolve('')
+    createProject: fromPromise(
+      (_: { input: { name: string; projects: Project[] } }) =>
+        Promise.resolve({ message: '' })
     ),
     renameProject: fromPromise(
       (_: {
@@ -50,24 +75,32 @@ export const projectsMachine = setup({
           defaultDirectory: string
           projects: Project[]
         }
-      }) => Promise.resolve('')
+      }) =>
+        Promise.resolve({
+          message: '',
+          oldName: '',
+          newName: '',
+        })
     ),
     deleteProject: fromPromise(
       (_: { input: { defaultDirectory: string; name: string } }) =>
-        Promise.resolve('')
+        Promise.resolve({
+          message: '',
+          name: '',
+        })
     ),
   },
   guards: {
     'Has at least 1 project': () => false,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAnogC0ADgDsAOgCM0gEwTFAVgBsitaonqANCAAeiNdJkSALIqYBOGzoDMcm+oC+rg2kw4CJcjORqLFJULA4AJ1QAKzB8HlgKACUwXAgwyJi42GY2JBAuXn5BPOMEB01zKQcLZwVVOQsmJlUDUQRpWSYtGokNG0UFB3dPDGw8IjIwAKCQ9OjY+IoAYXCUnmwI+bicoQLiPgEhUql1WQsJBpsVFXVVHVbEGwsHGSYHaylVJgt1OXUbIYeEBeMa+SbTWBzTKLZKpKELbKsXbcfZFI6IdROGRaLQOJgSCQuWz6ESPAHY5RSKnVN4A4bA0Y+Cb+QKQzbQhLJUi4bzshY7PJ7A7FUDHVSdaqqBwOK6KKr9B4IdTfGRfNRSOQnWxyLr0kFMvxTVnwrLLVa4dYmngCzgo4XohAnRTydSEwl3JwDCyKywSVUatQODRyHESPWM8aGiFWhIAETAABswJa+dskYK7WiSogTn6HE6LKofkWmCS2lIfjILFJdMoVP0Q1Jw95I+DjanFgB5DhgUhWm35TOHbNlKpVqm++rPapPH1yVSvX6KTGYhoVxTN0HMqYrNZkKBWigQARTMgAN1QAGspvhzesxB2B0Ks6KTIoLDZsZ65DLMUwpDYipSP+2LAZ8QbSK6ig2JuBrgruFr7oeYDhJE4QyBwCYWgAZqg4ToDIt5rGAD4ZPy6a2oUw6vgg1hFq8Vh2BI+IaGoQEgXK-5SjoubQbBrb+FyPJIR2R4njI55XlMqzcpgpFbNaFGDlRIpGIgDTVK8NghjYTA6uUigOIqzxyFWyjvIGAI1vm-FgoJvbCaQB6iShaEYVhPC4fhMgyTyJGPkpz7UWpCAhgMMhSHWdzvh+bxlogJlmRIFlSlZyVNkC+oCVM8ZJnwTmHse-iSdeMgQImyb+WRaa5JRqLBaUgwLv8GqEuo6jVv03qkrRH7Ypi9S9A0UrVrZ24yLlyYidVPAUK5eHuTheEEeVeVVQpT5DqpjXii83zVGoTz-ioLQ9e+n7LkGdTDdUkVjVGsIQNNCkJEVp6kBepXmhA8kcptKkOu+zqpecNhUh1H4Aoqt2Lk4fyanIiNuJlEZ2VMj3PRyYnFR9Uk+SkP0dtkci1cp9XbeIDRMC6yoqBWpY6GxPUw6WeKnH80GXPd4IYwVRNzahC2YUt3nfb9CL-eTDpiD+1P9BqGp3JozinW0AyftIzQ6FYro6huKMtmjMjdr2mMLBQkv2iOMsVlWNQaP8eKFqogE9VcC6RcoVi9J8WvuECITlfAeRZWjyIA9bOJ2-O7UAt8dyu20NsWDI+aFponxPF73MsjMoRE+HUsjmDryGcxVw6lTzSKi7fo-lU3y6F1yMjIb43tjNwd1VbNEOLoMh2JdCi6Tovyq4gtfyPmTtN++vw5zud5m3Ehc9yFYULjqqjQU3-y4oqummdYunMdY6p3AvMhCegy88KvL7r+drwNFYffaQC9iKsqC7aYW0qWMqBochL6TXys5Ga98GrqX+NTaCVRLAAn+JiRQX9EbmBlM4Cs04rgZVbluB6BNb5dzJmvUo0EXjtWlDUYCIY-zj3aC8ZiyVngWGrMxKUgI8FwX8CbUgt9IEUwQGIRoqdbh-ClASJodYD4lzlASRo2l0pPH9q4IAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IAjBIkA2AHQAOCUw0qNkjQE4xYjQF8zMtJhwES5NcmpZSqLBwBOqAFZh8PWAoAJTBcCHcvX39YZjYkEC5efkF40QQFFQBmAHY1Qwz9QwBWU0NMrRl5BGyxBTUVJlVM01rtBXNLEGtsPCIyMEdnVwifPwCKAGEPUJ5sT1H-WKFE4j4BITSMzMzNIsyJDSZMhSYmFWzKxAkTNSYxIuU9zOKT7IsrDB67fsHYEajxiEwv8xjFWMtuKtkhsrpJboZsioincFMdTIjLggVGJ1GImMVMg0JISjEV3l1PrY+g4nH95gDAiFSLgbPSxkt4is1ilQGlrhJ4YjkbU0RoMXJEIYkWoikV8hJinjdOdyd0qfYBrSQdFJtNcLNtTwOZxIdyYQh+YKkSjReKqqYBQoEQpsgiSi9MqrKb0Nb9DYEACJgAA2YANbMW4M5puhqVhAvxQptCnRKkxCleuw0Gm2+2aRVRXpsPp+Woj4wA8hwwKRDcaEjH1nGLXDE9aRSmxWmJVipWocmdsbL8kxC501SWHFMZmQoIaKBABAMyAA3VAAawG+D1swAtOX61zY7zENlEWoMkoatcdPoipjCWIZRIirozsPiYYi19qQNp-rZ3nMAPC8Dw1A4YN9QAM1QDx0DUbcZjAfdInZKMTSSJsT2qc9Lwka8lTvTFTB2WUMiyQwc3yPRv3VH4mRZQDywXJc1FXDcBmmZlMBQhYjXQhtMJ5ERT1wlQr0kQj7kxKiZTxM5s2zbQEVoycBgY9AmNQ-wKGA0DwMgngYLgtQuJZZCDwEo8sJEnD1Dwgjb2kntig0GUkWVfZDEMfFVO+Bwg1DPhSDnZjFwcdjNzUCAQzDCztP4uIMKhGy0jPezxPwySnPvHsTjlPIhyOHRsnwlM-N-NRArDLS+N0kDYIM6DYPgmKgvivjD0bYS+VbBF21RTs7UUUcimfRpXyYRF8LFCrfSBCBaoZFiItINcor1CBeIZLqhPNdKL0yxzs2cqoNDqdpSo0EoSoLOb6NCRaQv9FblzWjjTMe7bQQYBQksElKesUMRjFubRMllCHsm2a5MVldRDBfFpmj0IpxPuhwFqW0F6v0iDmpMzbvuiXbAfNFNQcaI5IaKaH9jETFsUMNRVDxOU5TxBULE6VwYvgeIJ38sAIT25td27KpdzG7yZeho5slHVmMc1IY3HLfnkrNZt2hOW5smRCQM2uhQHkZ6VtkRBFnmu0qFGVv11ZFsnm0kdN8QFJVjlUPZ9co+3-2C0KEqdrXsJMJ8ryc86iUyYiCvxFNzldb3jHtjTsf8EPj1ssQchZlR8jR5EmDRrIGZcuF7maF1aZtslx29IWqtiwPDSz1LxDxepnlOfYDghp03eyOpngzXuYdHNPHozgJ26B9IXR2cTvP0BVkSRXKqgLtyq8OfQcXOwlubMIA */
   id: 'Home machine',
 
   initial: 'Reading projects',
 
   context: ({ input }) => ({
-    ...input
+    ...input,
   }),
 
   on: {
@@ -109,7 +142,9 @@ export const projectsMachine = setup({
         },
 
         'Open project': {
-          target: 'Opening project',
+          target: 'Reading projects',
+          actions: 'navigateToProject',
+          reenter: true,
         },
       },
     },
@@ -133,7 +168,7 @@ export const projectsMachine = setup({
         onDone: [
           {
             target: 'Reading projects',
-            actions: ['toastSuccess'],
+            actions: ['toastSuccess', 'navigateToProject'],
           },
         ],
         onError: [
@@ -171,7 +206,7 @@ export const projectsMachine = setup({
         onDone: [
           {
             target: '#Home machine.Reading projects',
-            actions: ['toastSuccess'],
+            actions: ['toastSuccess', "navigateToProjectIfNeeded"],
           },
         ],
         onError: [
@@ -202,7 +237,7 @@ export const projectsMachine = setup({
         },
         onDone: [
           {
-            actions: ['toastSuccess'],
+            actions: ['toastSuccess', 'navigateToProjectIfNeeded'],
             target: '#Home machine.Reading projects',
           },
         ],
@@ -235,12 +270,6 @@ export const projectsMachine = setup({
           },
         ],
       },
-    },
-
-    'Opening project': {
-      entry: ['navigateToProject'],
-
-      always: "Reading projects"
     },
   },
 })
