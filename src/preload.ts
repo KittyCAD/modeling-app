@@ -47,12 +47,6 @@ const watchFileOff = (path: string) => {
   watcher.close()
   fsWatchListeners.delete(path)
 }
-const watchFileObliterate = () => {
-  for (let [pathAsKey] of fsWatchListeners) {
-    watchFileOff(pathAsKey)
-  }
-  fsWatchListeners = new Map()
-}
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
@@ -103,7 +97,6 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
-  watchFileObliterate,
   readFile,
   writeFile,
   exists,
