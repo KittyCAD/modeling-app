@@ -312,6 +312,8 @@ export class KclManager {
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addKclErrors(isInterrupted ? [] : errors)
+    // Reset the next ID index so that we reuse the previous IDs next time.
+    execState.idGenerator.nextId = 0
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
