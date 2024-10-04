@@ -40,6 +40,7 @@ expression[@isGroup=Expression] {
   } |
   UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
+  IfExpression { kw<"if"> expression Body kw<"else"> Body } |
   CallExpression { expression !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
