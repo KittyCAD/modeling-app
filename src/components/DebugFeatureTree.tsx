@@ -28,7 +28,6 @@ export function DebugFeatureTree() {
 }
 
 function computeTree(artifactGraph: ArtifactGraph): GenericObj[] {
-  // Deep clone so that we can freely mutate.
   let items: GenericObj[] = []
 
   const planes: PlaneArtifactRich[] = []
