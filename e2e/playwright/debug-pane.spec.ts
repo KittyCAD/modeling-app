@@ -47,6 +47,10 @@ test.describe('Debug pane', () => {
       await page.keyboard.type(code, { delay: 0 })
       // Scroll to the feature tree.
       await tree.scrollIntoViewIfNeeded()
+      // Expand the feature tree.
+      await tree.getByText('Feature Tree').click()
+      // Just expanded the details, making the element taller, so scroll again.
+      await tree.getByText('Plane').first().scrollIntoViewIfNeeded()
     })
     // Extract the artifact IDs from the debug feature tree.
     const initialSegmentIds = await segment.innerText({ timeout: 5_000 })

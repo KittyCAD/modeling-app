@@ -16,16 +16,16 @@ export function DebugFeatureTree() {
   console.warn('featureTree', featureTree)
   const filterKeys: string[] = ['__meta']
   return (
-    <div id="debug-feature-tree" className="relative">
-      <h1>Feature Tree</h1>
+    <details data-testid="debug-feature-tree" className="relative">
+      <summary>Feature Tree</summary>
       {featureTree.length > 0 ? (
-        <pre className="text-xs" data-testid="debug-feature-tree">
+        <pre className="text-xs">
           <DisplayArray arr={featureTree} filterKeys={filterKeys} />
         </pre>
       ) : (
         <p>(Empty)</p>
       )}
-    </div>
+    </details>
   )
 }
 
