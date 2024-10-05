@@ -19,7 +19,7 @@ export function DebugFeatureTree() {
     <div id="debug-feature-tree" className="relative">
       <h1>Feature Tree</h1>
       {featureTree.length > 0 ? (
-        <pre className="text-xs">
+        <pre className="text-xs" data-testid="debug-feature-tree">
           <DisplayArray arr={featureTree} filterKeys={filterKeys} />
         </pre>
       ) : (
