@@ -12,8 +12,6 @@ export function DebugFeatureTree() {
     return computeTree(engineCommandManager.artifactGraph)
   }, [engineCommandManager.artifactGraph])
 
-  console.warn('artifactGraph', engineCommandManager.artifactGraph)
-  console.warn('featureTree', featureTree)
   const filterKeys: string[] = ['__meta']
   return (
     <details data-testid="debug-feature-tree" className="relative">
@@ -40,7 +38,6 @@ function computeTree(artifactGraph: ArtifactGraph): GenericObj[] {
     }
   }
   const extraRichPlanes: GenericObj[] = planes.map((plane) => {
-    console.warn('Paths', plane.paths)
     return plane as any as GenericObj
   })
   items = items.concat(extraRichPlanes)
