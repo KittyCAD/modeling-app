@@ -4,14 +4,14 @@ import { useRef, useState } from 'react'
 type Primitive = string | number | null | undefined
 export type GenericObj = {
   type: string
-  [key: string]: GenericObj | GenericObj[] | Primitive | Primitive[]
+  [key: string]: GenericObj | Primitive | Array<GenericObj | Primitive>
 }
 
 export function DisplayArray({
   arr,
   filterKeys,
 }: {
-  arr: GenericObj[] | Primitive[]
+  arr: Array<GenericObj | Primitive>
   filterKeys: string[]
 }) {
   return (
