@@ -23,6 +23,36 @@ const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
 const isLinux = os.platform() === 'linux'
 
+let fsWatchListeners = new Map<
+  string,
+  {
+    watcher: fsSync.FSWatcher
+    callback: (eventType: string, path: string) => void
+  }
+>()
+
+const watchFileOn = (
+  path: string,
+  callback: (eventType: string, path: string) => void
+) => {
+  const watcher = fsSync.watch(path)
+  watcher.on('change', callback)
+  fsWatchListeners.set(path, { watcher, callback })
+}
+const watchFileOff = (path: string) => {
+  const entry = fsWatchListeners.get(path)
+  if (!entry) return
+  const { watcher, callback } = entry
+  watcher.off('change', callback)
+  watcher.close()
+  fsWatchListeners.delete(path)
+}
+const watchFileObliterate = () => {
+  for (let [pathAsKey] of fsWatchListeners) {
+    watchFileOff(pathAsKey)
+  }
+  fsWatchListeners = new Map()
+}
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
@@ -71,6 +101,9 @@ contextBridge.exposeInMainWorld('electron', {
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.
+  watchFileOn,
+  watchFileOff,
+  watchFileObliterate,
   readFile,
   writeFile,
   exists,
