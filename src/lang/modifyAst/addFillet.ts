@@ -20,7 +20,6 @@ import {
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
-  hasSketchPipeBeenExtruded,
   traverse,
 } from '../queryAst'
 import {
