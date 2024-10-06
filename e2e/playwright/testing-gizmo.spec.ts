@@ -1,18 +1,18 @@
-import { test, expect } from '@playwright/test'
-
+import { _test, _expect } from './playwright-deprecated'
+import { test } from './fixtures/fixtureSetup'
 import { getUtils, setup, tearDown } from './test-utils'
 import { uuidv4 } from 'lib/utils'
 import { TEST_CODE_GIZMO } from './storageStates'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
+_test.beforeEach(async ({ context, page }, testInfo) => {
   await setup(context, page, testInfo)
 })
 
-test.afterEach(async ({ page }, testInfo) => {
+_test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
 
-test.describe('Testing Gizmo', () => {
+_test.describe('Testing Gizmo', () => {
   const cases = [
     {
       testDescription: 'top view',
@@ -57,7 +57,7 @@ test.describe('Testing Gizmo', () => {
     expectedCameraTarget,
     testDescription,
   } of cases) {
-    test(`check ${testDescription}`, async ({ page, browserName }) => {
+    _test(`check ${testDescription}`, async ({ page, browserName }) => {
       const u = await getUtils(page)
       await page.addInitScript((TEST_CODE_GIZMO) => {
         localStorage.setItem('persistCode', TEST_CODE_GIZMO)
@@ -117,30 +117,30 @@ test.describe('Testing Gizmo', () => {
 
       await Promise.all([
         // position
-        expect(page.getByTestId('cam-x-position')).toHaveValue(
+        _expect(page.getByTestId('cam-x-position')).toHaveValue(
           expectedCameraPosition.x.toString()
         ),
-        expect(page.getByTestId('cam-y-position')).toHaveValue(
+        _expect(page.getByTestId('cam-y-position')).toHaveValue(
           expectedCameraPosition.y.toString()
         ),
-        expect(page.getByTestId('cam-z-position')).toHaveValue(
+        _expect(page.getByTestId('cam-z-position')).toHaveValue(
           expectedCameraPosition.z.toString()
         ),
         // target
-        expect(page.getByTestId('cam-x-target')).toHaveValue(
+        _expect(page.getByTestId('cam-x-target')).toHaveValue(
           expectedCameraTarget.x.toString()
         ),
-        expect(page.getByTestId('cam-y-target')).toHaveValue(
+        _expect(page.getByTestId('cam-y-target')).toHaveValue(
           expectedCameraTarget.y.toString()
         ),
-        expect(page.getByTestId('cam-z-target')).toHaveValue(
+        _expect(page.getByTestId('cam-z-target')).toHaveValue(
           expectedCameraTarget.z.toString()
         ),
       ])
     })
   }
 
-  test('Context menu and popover menu', async ({ page }) => {
+  _test('Context menu and popover menu', async ({ page }) => {
     const testCase = {
       testDescription: 'Right view',
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
@@ -196,7 +196,7 @@ test.describe('Testing Gizmo', () => {
     const buttonToTest = page.getByRole('button', {
       name: testCase.testDescription,
     })
-    await expect(buttonToTest).toBeVisible()
+    await _expect(buttonToTest).toBeVisible()
     await buttonToTest.click()
 
     // Now assert we've moved to the correct view
@@ -215,23 +215,23 @@ test.describe('Testing Gizmo', () => {
 
     await Promise.all([
       // position
-      expect(page.getByTestId('cam-x-position')).toHaveValue(
+      _expect(page.getByTestId('cam-x-position')).toHaveValue(
         testCase.expectedCameraPosition.x.toString()
       ),
-      expect(page.getByTestId('cam-y-position')).toHaveValue(
+      _expect(page.getByTestId('cam-y-position')).toHaveValue(
         testCase.expectedCameraPosition.y.toString()
       ),
-      expect(page.getByTestId('cam-z-position')).toHaveValue(
+      _expect(page.getByTestId('cam-z-position')).toHaveValue(
         testCase.expectedCameraPosition.z.toString()
       ),
       // target
-      expect(page.getByTestId('cam-x-target')).toHaveValue(
+      _expect(page.getByTestId('cam-x-target')).toHaveValue(
         testCase.expectedCameraTarget.x.toString()
       ),
-      expect(page.getByTestId('cam-y-target')).toHaveValue(
+      _expect(page.getByTestId('cam-y-target')).toHaveValue(
         testCase.expectedCameraTarget.y.toString()
       ),
-      expect(page.getByTestId('cam-z-target')).toHaveValue(
+      _expect(page.getByTestId('cam-z-target')).toHaveValue(
         testCase.expectedCameraTarget.z.toString()
       ),
     ])
@@ -242,8 +242,60 @@ test.describe('Testing Gizmo', () => {
     const gizmoPopoverButton = page.getByRole('button', {
       name: 'view settings',
     })
-    await expect(gizmoPopoverButton).toBeVisible()
+    await _expect(gizmoPopoverButton).toBeVisible()
     await gizmoPopoverButton.click()
-    await expect(buttonToTest).toBeVisible()
+    await _expect(buttonToTest).toBeVisible()
+  })
+})
+
+test.describe(`Testing gizmo, fixture-based`, () => {
+  test('Center on selection from menu', async ({
+    app,
+    cmdBar,
+    editor,
+    toolbar,
+    scene,
+  }) => {
+    test.skip(
+      process.platform === 'win32',
+      'Fails on windows in CI, can not be replicated locally on windows.'
+    )
+
+    await test.step(`Setup`, async () => {
+      const file = await app.getInputFile('test-circle-extrude.kcl')
+      await app.initialise(file)
+      await scene.expectState({
+        camera: {
+          position: [4982.21, -23865.37, 13810.64],
+          target: [4982.21, 0, 2737.1],
+        },
+      })
+    })
+    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
+
+    await test.step(`Select an edge of this circle`, async () => {
+      const circleSnippet =
+        'circle({ center: [318.33, 168.1], radius: 182.8 }, %)'
+      await moveToCircle()
+      await clickCircle()
+      await editor.expectState({
+        activeLines: [circleSnippet.slice(-5)],
+        highlightedCode: circleSnippet,
+        diagnostics: [],
+      })
+    })
+
+    await test.step(`Center on selection from menu`, async () => {
+      await scene.clickGizmoMenuItem('Center view on selection')
+    })
+
+    await test.step(`Verify the camera moved`, async () => {
+      await scene.expectState({
+        camera: {
+          position: [0, -23865.37, 11073.54],
+          target: [0, 0, 0],
+        },
+      })
+    })
   })
 })
