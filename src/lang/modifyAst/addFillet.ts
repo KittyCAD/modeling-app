@@ -443,7 +443,7 @@ export const hasValidFilletSelection = ({
     return true
   }
 
-  // selection extists:
+  // selection exists:
   for (const selection of selectionRanges.codeBasedSelections) {
     // check if all selections are in sketchLineHelperMap
     const path = getNodePathFromSourceRange(ast, selection.range)
