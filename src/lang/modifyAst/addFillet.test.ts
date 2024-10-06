@@ -621,6 +621,6 @@ describe('Testing button states', () => {
     await runButtonStateTest(codeWithBody, `line([10, 0], %)`, true)
   })
   it('should return true when body exists and not a segment is selected', async () => {
-    await runButtonStateTest(codeWithBody, `close(%)`, true) // todo: should be false
+    await runButtonStateTest(codeWithBody, `close(%)`, false)
   })
 })

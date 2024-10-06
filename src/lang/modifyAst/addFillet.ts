@@ -20,6 +20,7 @@ import {
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
+  hasSketchPipeBeenExtruded,
   traverse,
 } from '../queryAst'
 import {
@@ -421,7 +422,7 @@ export const hasValidFilletSelection = ({
   ast: Program
   code: string
 }) => {
-  // case 0: check if there is anything filletable in the scene
+  // check if there is anything filletable in the scene
   let extrudeExists = false
   traverse(ast, {
     enter(node) {
@@ -432,6 +433,96 @@ export const hasValidFilletSelection = ({
   })
   if (!extrudeExists) return false
 
+  // check if nothing is selected
+  if (selectionRanges.codeBasedSelections.length === 0) {
+    return true
+  }
+
+  // check if selection is last string
+  if (selectionRanges.codeBasedSelections[0].range[0] === code.length) {
+    return true
+  }
+
+  // selection extists:
+  for (const selection of selectionRanges.codeBasedSelections) {
+    // check if all selections are in sketchLineHelperMap
+    const path = getNodePathFromSourceRange(ast, selection.range)
+    const segmentNode = getNodeFromPath<CallExpression>(
+      ast,
+      path,
+      'CallExpression'
+    )
+    if (err(segmentNode)) return false
+    if (segmentNode.node.type !== 'CallExpression') {
+      return false
+    }
+    if (!(segmentNode.node.callee.name in sketchLineHelperMap)) {
+      return false
+    }
+
+    // check if selection is extuded
+    // TODO: option 1 : extude is in the sketch pipe
+
+    // option 2: extrude is outside the sketch pipe
+    const extrudeExists = hasSketchPipeBeenExtruded(selection, ast)
+    if (err(extrudeExists)) {
+      return false
+    }
+    if (!extrudeExists) {
+      return false
+    }
+
+    // check if tag exists for the selection
+    let tagExists = false
+    let tag = ''
+    traverse(segmentNode.node, {
+      enter(node) {
+        if (node.type === 'TagDeclarator') {
+          tagExists = true
+          tag = node.value
+        }
+      },
+      leave(node) {
+        if (node.type === 'TagDeclarator') {
+        }
+      },
+    })
+
+    // check if tag is used in fillet
+    if (tagExists) {
+      // create tag call
+      let tagCall: Expr = createIdentifier(tag)
+      if (selection.type === 'edge') {
+        tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
+      } else if (selection.type === 'adjacent-edge') {
+        tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
+      }
+
+      // check if tag is used in fillet
+      let inFillet = false
+      let tagUsedInFillet = false
+      traverse(ast, {
+        enter(node) {
+          if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
+            inFillet = true
+          }
+          if (inFillet && node.type === 'ObjectExpression') {
+            if (hasTag(node, tagCall)) {
+              tagUsedInFillet = true
+            }
+          }
+        },
+        leave(node) {
+          if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
+            inFillet = false
+          }
+        },
+      })
+      if (tagUsedInFillet) {
+        return false
+      }
+    }
+  }
   return true
 }
 
