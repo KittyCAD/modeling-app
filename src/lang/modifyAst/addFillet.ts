@@ -438,7 +438,7 @@ export const hasValidFilletSelection = ({
     return true
   }
 
-  // check if selection is last string
+  // check if selection is last string in code
   if (selectionRanges.codeBasedSelections[0].range[0] === code.length) {
     return true
   }
