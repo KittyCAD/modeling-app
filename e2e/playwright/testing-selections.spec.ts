@@ -928,7 +928,7 @@ extrude001 = extrude(10, sketch001)`
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await selectClose()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled() // todo: this should be disabled
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
     await clickEmpty()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
   })
