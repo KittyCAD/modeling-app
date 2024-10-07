@@ -133,7 +133,6 @@ const ProjectsContextDesktop = ({
           }
         },
         navigateToProjectIfNeeded: ({ event }) => {
-          console.log('navigateToProjectIfNeeded', event)
           if (
             event.type.startsWith('xstate.done.actor.') &&
             'output' in event
@@ -154,7 +153,6 @@ const ProjectsContextDesktop = ({
               decodeURIComponent(location.pathname).includes(
                 event.output.oldName
               )
-            console.log('isInRenamedProject', isInRenamedProject)
             if (isInRenamedProject) {
               const newPathName = location.pathname.replace(
                 encodeURIComponent(event.output.oldName),
