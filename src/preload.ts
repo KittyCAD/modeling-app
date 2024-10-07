@@ -30,7 +30,7 @@ const watchFileOn = (path: string, callback: (path: string) => void) => {
   const watcherMaybe = fsWatchListeners.get(path)
   if (watcherMaybe) return
   const watcher = chokidar.watch(path)
-  watcher.on('change', callback).on('unlink', watchFileOff)
+  watcher.on('all', callback)
   fsWatchListeners.set(path, watcher)
 }
 const watchFileOff = (path: string) => {
