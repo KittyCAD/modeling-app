@@ -16,20 +16,23 @@ legAngX(hypotenuse: number, leg: number) -> number
 
 * `utilities`
 
+
+### Arguments
+
+| Name | Type | Description | Required |
+|----------|------|-------------|----------|
+| `hypotenuse` | `number` |  | Yes |
+| `leg` | `number` |  | Yes |
+
+### Returns
+
+`number` 
+
+
 ### Examples
 
 ```js
 legAngX(5, 3)
 ```
-
-### Arguments
-
-* `hypotenuse`: `number` (REQUIRED)
-* `leg`: `number` (REQUIRED)
-
-### Returns
-
-`number`
-
 
 

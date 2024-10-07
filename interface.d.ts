@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import fsSync from 'node:fs'
 import path from 'path'
 import { dialog, shell } from 'electron'
 import { MachinesListing } from 'lib/machineManager'
@@ -17,6 +18,12 @@ export interface IElectronAPI {
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version
+  watchFileOn: (
+    path: string,
+    callback: (eventType: string, path: string) => void
+  ) => void
+  watchFileOff: (path: string) => void
+  watchFileObliterate: () => void
   readFile: (path: string) => ReturnType<fs.readFile>
   writeFile: (
     path: string,
@@ -63,6 +70,10 @@ export interface IElectronAPI {
   kittycad: (access: string, args: any) => any
   listMachines: () => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  onUpdateDownloaded: (
+    callback: (value: string) => void
+  ) => Electron.IpcRenderer
+  appRestart: () => void
 }
 
 declare global {

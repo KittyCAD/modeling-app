@@ -28,6 +28,7 @@ import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
 import { isQuaternionVertical } from './helpers'
 import { reportRejection } from 'lib/trap'
+import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -88,6 +89,14 @@ export class CameraControls {
   perspectiveFovBeforeOrtho = 45
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
+  }
+
+  setEngineCameraProjection(projection: CameraProjectionType) {
+    if (projection === 'orthographic') {
+      this.useOrthographicCamera()
+    } else {
+      this.usePerspectiveCamera(true).catch(reportRejection)
+    }
   }
 
   handleStart = () => {
@@ -884,6 +893,7 @@ export class CameraControls {
         type: 'zoom_to_fit',
         object_ids: [], // leave empty to zoom to all objects
         padding: 0.2, // padding around the objects
+        animated: false, // don't animate the zoom for now
       },
     })
   }

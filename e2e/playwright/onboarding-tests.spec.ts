@@ -56,7 +56,7 @@ test.describe('Onboarding tests', () => {
   })
 
   test('Code resets after confirmation', async ({ page }) => {
-    const initialCode = `const sketch001 = startSketchOn('XZ')`
+    const initialCode = `sketch001 = startSketchOn('XZ')`
 
     // Load the page up with some code so we see the confirmation warning
     // when we go to replay onboarding
@@ -145,7 +145,7 @@ test.describe('Onboarding tests', () => {
     await page.addInitScript(
       async ({ settingsKey, settings }) => {
         // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+        localStorage.setItem('persistCode', 'sigmaAllow = 15000')
         localStorage.setItem(settingsKey, settings)
       },
       {

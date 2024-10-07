@@ -15,7 +15,6 @@ use kcmc::{
     ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -285,7 +284,7 @@ async fn inner_import(
         }
     }
 
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(ImportedGeometry {
             id: uuid::Uuid::new_v4(),
             value: import_files.iter().map(|f| f.path.to_string()).collect(),

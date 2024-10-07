@@ -27,6 +27,7 @@ pub enum Node<'a> {
     ObjectExpression(&'a types::ObjectExpression),
     MemberExpression(&'a types::MemberExpression),
     UnaryExpression(&'a types::UnaryExpression),
+    IfExpression(&'a types::IfExpression),
 
     Parameter(&'a types::Parameter),
 
@@ -59,6 +60,7 @@ impl From<&Node<'_>> for SourceRange {
             Node::Parameter(p) => SourceRange([p.identifier.start(), p.identifier.end()]),
             Node::ObjectProperty(o) => SourceRange([o.start(), o.end()]),
             Node::MemberObject(m) => SourceRange([m.start(), m.end()]),
+            Node::IfExpression(m) => SourceRange([m.start(), m.end()]),
             Node::LiteralIdentifier(l) => SourceRange([l.start(), l.end()]),
         }
     }
@@ -94,4 +96,5 @@ impl_from!(Node, UnaryExpression);
 impl_from!(Node, Parameter);
 impl_from!(Node, ObjectProperty);
 impl_from!(Node, MemberObject);
+impl_from!(Node, IfExpression);
 impl_from!(Node, LiteralIdentifier);

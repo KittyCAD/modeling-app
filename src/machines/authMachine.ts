@@ -78,7 +78,7 @@ export const authMachine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwBmAEzYA7ABYAbAFZTcgBzGbN44adWANCACeiKbGdthypk4AnBFyVs6uQXYAvom+aFh4BMTk1LSQjExgAE6FVIXYKmIAhuhkpQC2GcLikpDSDPJKSCBqGlo6XQYIrk7YETYWctYRxmMWFk6+AUPj2I5OdjZyrnZOFmbJqRg4Ern0zDkABFQYHbo9mtoMuoOGFhHYxlZOhvbOsUGGRaIL4WbBONzWQxWYwWOx2H4HEBpY4tCAAeQwTEuskUd3UD36oEGIlMNlCuzk8Js0TcVisgP8iG2lmcGysb0mW3ByRSIAYVAgcF0yLxvUez0QIms5ImVJpNjpDKWxmw9PGdLh4Te00+iORjSylFRjFFBKeA0QThGQWcexMwWhniBCGiqrepisUVMdlszgieqO2BOdBNXXufXNRKMHtGVuphlJkXs4Wdriso2CCasdgipOidID6WDkAx6FNEYlCAT5jmcjrckMdj2b3GzpsjbBMVMWezDbGPMSQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
   id: 'Auth',
   initial: 'checkIfLoggedIn',
   context: {
@@ -162,15 +162,15 @@ async function getUser(input: { token?: string }) {
     }
   }
 
-  const userPromise = !isDesktop()
-    ? fetch(url, {
+  const userPromise = isDesktop()
+    ? getUserDesktop(token, VITE_KC_API_BASE_URL)
+    : fetch(url, {
         method: 'GET',
         credentials: 'include',
         headers,
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : getUserDesktop(input.token ?? '', VITE_KC_API_BASE_URL)
 
   const user = await userPromise
 

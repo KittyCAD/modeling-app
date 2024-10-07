@@ -2,6 +2,7 @@ import { styleTags, tags as t } from '@lezer/highlight'
 
 export const kclHighlight = styleTags({
   'fn var let const': t.definitionKeyword,
+  'if else': t.controlKeyword,
   return: t.controlKeyword,
   'true false': t.bool,
   nil: t.null,

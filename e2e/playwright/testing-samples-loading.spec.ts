@@ -4,6 +4,7 @@ import { bracket } from 'lib/exampleKcl'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
+import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   await setup(context, page, testInfo)
@@ -15,8 +16,8 @@ test.afterEach(async ({ page }, testInfo) => {
 
 test.describe('Testing in-app sample loading', () => {
   /**
-   * Note this test implicitly depends on the KCL sample "flange-with-patterns.kcl"
-   * and its title. https://github.com/KittyCAD/kcl-samples/blob/main/flange-with-patterns/flange-with-patterns.kcl
+   * Note this test implicitly depends on the KCL sample "car-wheel.kcl",
+   * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/car-wheel.kcl
    */
   test('Web: should overwrite current code, cannot create new file', async ({
     page,
@@ -33,8 +34,8 @@ test.describe('Testing in-app sample loading', () => {
 
     // Locators and constants
     const newSample = {
-      file: 'flange-with-patterns' + FILE_EXT,
-      title: 'Flange',
+      file: 'car-wheel' + FILE_EXT,
+      title: 'Car Wheel',
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const samplesCommandOption = page.getByRole('option', {
@@ -51,9 +52,11 @@ test.describe('Testing in-app sample loading', () => {
       page.getByRole('option', {
         name,
       })
-    const warningText = page.getByText('Overwrite current file?')
+    const warningText = page.getByText('Overwrite current file and units?')
     const confirmButton = page.getByRole('button', { name: 'Submit command' })
     const codeLocator = page.locator('.cm-content')
+    const unitsToast = (unit: UnitLength_type) =>
+      page.getByText(`Set default unit to "${unit}" for this project`)
 
     await test.step(`Precondition: check the initial code`, async () => {
       await u.openKclCodePanel()
@@ -71,12 +74,13 @@ test.describe('Testing in-app sample loading', () => {
       await confirmButton.click()
 
       await expect(codeLocator).toContainText('// ' + newSample.title)
+      await expect(unitsToast('in')).toBeVisible()
     })
   })
 
   /**
    * Note this test implicitly depends on the KCL samples:
-   * "flange-with-patterns.kcl": https://github.com/KittyCAD/kcl-samples/blob/main/flange-with-patterns/flange-with-patterns.kcl
+   * "car-wheel.kcl": https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/car-wheel.kcl
    * "gear-rack.kcl": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/gear-rack.kcl
    */
   test(
@@ -97,8 +101,8 @@ test.describe('Testing in-app sample loading', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'flange-with-patterns' + FILE_EXT,
-        title: 'Flange',
+        file: 'car-wheel' + FILE_EXT,
+        title: 'Car Wheel',
       }
       const sampleTwo = {
         file: 'gear-rack' + FILE_EXT,
@@ -119,9 +123,11 @@ test.describe('Testing in-app sample loading', () => {
         name: 'Overwrite',
       })
       const newFileWarning = page.getByText(
-        'Create a new file with the example code?'
+        'Create a new file, overwrite project units?'
       )
-      const overwriteWarning = page.getByText('Overwrite current file?')
+      const overwriteWarning = page.getByText(
+        'Overwrite current file and units?'
+      )
       const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const newlyCreatedFile = (name: string) =>
@@ -129,6 +135,8 @@ test.describe('Testing in-app sample loading', () => {
           has: page.getByRole('button', { name }),
         })
       const codeLocator = page.locator('.cm-content')
+      const unitsToast = (unit: UnitLength_type) =>
+        page.getByText(`Set default unit to "${unit}" for this project`)
 
       await test.step(`Test setup`, async () => {
         await page.setViewportSize({ width: 1200, height: 500 })
@@ -158,6 +166,7 @@ test.describe('Testing in-app sample loading', () => {
         await expect(codeLocator).toContainText('// ' + sampleOne.title)
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
+        await expect(unitsToast('in')).toBeVisible()
       })
 
       await test.step(`Now overwrite the current file`, async () => {
@@ -187,6 +196,7 @@ test.describe('Testing in-app sample loading', () => {
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
+        await expect(unitsToast('mm')).toBeVisible()
       })
 
       await electronApp.close()

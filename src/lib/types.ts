@@ -12,9 +12,7 @@ export type FileLoaderData = {
   file?: FileEntry
 }
 
-export type HomeLoaderData = {
-  projects: Project[]
-}
+export type HomeLoaderData = {}
 
 // From the very helpful @jcalz on StackOverflow: https://stackoverflow.com/a/58436959/22753272
 type Join<K, P> = K extends string | number

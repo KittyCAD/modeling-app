@@ -15,7 +15,16 @@ pub struct RequestBody {
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> anyhow::Result<image::DynamicImage> {
-    let ctx = new_context(units).await?;
+    let ctx = new_context(units, true).await?;
+    do_execute_and_snapshot(&ctx, code).await
+}
+
+pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> anyhow::Result<image::DynamicImage> {
+    let ctx = new_context(units, false).await?;
+    do_execute_and_snapshot(&ctx, code).await
+}
+
+async fn do_execute_and_snapshot(ctx: &ExecutorContext, code: &str) -> anyhow::Result<image::DynamicImage> {
     let tokens = crate::token::lexer(code)?;
     let parser = crate::parser::Parser::new(tokens);
     let program = parser.ast()?;
@@ -31,7 +40,7 @@ pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> anyhow::Resu
     Ok(img)
 }
 
-async fn new_context(units: UnitLength) -> anyhow::Result<ExecutorContext> {
+async fn new_context(units: UnitLength, with_auth: bool) -> anyhow::Result<ExecutorContext> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -47,13 +56,19 @@ async fn new_context(units: UnitLength) -> anyhow::Result<ExecutorContext> {
         .tcp_keepalive(std::time::Duration::from_secs(600))
         .http1_only();
 
-    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+    let token = if with_auth {
+        std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set")
+    } else {
+        "bad_token".to_string()
+    };
 
     // Create the client.
     let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
     // Set a local engine address if it's set.
     if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-        client.set_base_url(addr);
+        if with_auth {
+            client.set_base_url(addr);
+        }
     }
 
     let ctx = ExecutorContext::new(

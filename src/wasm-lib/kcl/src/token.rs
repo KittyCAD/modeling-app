@@ -204,10 +204,8 @@ impl Token {
             return None;
         }
         Some(match self.value.as_str() {
-            "var" => VariableKind::Var,
-            "let" => VariableKind::Let,
             "fn" => VariableKind::Fn,
-            "const" => VariableKind::Const,
+            "var" | "let" | "const" => VariableKind::Const,
             _ => return None,
         })
     }

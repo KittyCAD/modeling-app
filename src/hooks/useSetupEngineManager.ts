@@ -22,6 +22,7 @@ export function useSetupEngineManager(
     highlightEdges: true,
     enableSSAO: true,
     showScaleGrid: false,
+    cameraProjection: 'perspective',
   } as SettingsViaQueryString,
   token?: string
 ) {

@@ -251,18 +251,14 @@ export function getAutoUpdater(): AppUpdater {
   return autoUpdater
 }
 
-export async function checkForUpdates(autoUpdater: AppUpdater) {
-  // TODO: figure out how to get the update modal back
-  const result = await autoUpdater.checkForUpdatesAndNotify()
-  console.log(result)
-}
-
 app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
-  checkForUpdates(autoUpdater).catch(reportRejection)
+  setTimeout(() => {
+    autoUpdater.checkForUpdates().catch(reportRejection)
+  }, 1000)
   const fifteenMinutes = 15 * 60 * 1000
   setInterval(() => {
-    checkForUpdates(autoUpdater).catch(reportRejection)
+    autoUpdater.checkForUpdates().catch(reportRejection)
   }, fifteenMinutes)
 
   autoUpdater.on('update-available', (info) => {
@@ -271,6 +267,11 @@ app.on('ready', () => {
 
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
+    mainWindow?.webContents.send('update-downloaded', info.version)
+  })
+
+  ipcMain.handle('app.restart', () => {
+    autoUpdater.quitAndInstall()
   })
 })
 
