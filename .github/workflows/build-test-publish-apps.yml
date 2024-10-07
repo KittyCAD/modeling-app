@@ -200,6 +200,7 @@ jobs:
       - name: Build the app (updater-test)
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: yarn electron-builder --config ${{ env.BUILD_RELEASE && '--publish always' || '' }}
+        shell: bash
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
