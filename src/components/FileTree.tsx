@@ -21,6 +21,7 @@ import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -125,6 +126,7 @@ const FileTreeItem = ({
   level?: number
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
+  const openDirectoriesRef = useRef<string[]>([])
   const { onFileOpen, onFileClose } = useLspContext()
   const navigate = useNavigate()
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
@@ -153,6 +155,27 @@ const FileTreeItem = ({
       },
     })
   }, [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend])
+
+  useFileSystemWatcher(async (path) => {
+    console.log(path)
+  }, openDirectoriesRef.current)
+
+  const clickDirectory = () => {
+    console.log("Before", openDirectoriesRef.current)
+
+    const index = openDirectoriesRef.current.indexOf(fileOrDir.path)
+    if (index >= 0) {
+      openDirectoriesRef.current.splice(index, 1)
+    } else {
+      openDirectoriesRef.current.push(fileOrDir.path)
+    }
+    console.log("After", openDirectoriesRef.current)
+
+    fileSend({
+      type: 'Set selected directory',
+      directory: fileOrDir,
+    })
+  }
 
   function handleKeyUp(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (e.metaKey && e.key === 'Backspace') {
@@ -241,19 +264,7 @@ const FileTreeItem = ({
                       : '')
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
-                  onClick={(e) => e.currentTarget.focus()}
-                  onClickCapture={(e) =>
-                    fileSend({
-                      type: 'Set selected directory',
-                      directory: fileOrDir,
-                    })
-                  }
-                  onFocusCapture={(e) =>
-                    fileSend({
-                      type: 'Set selected directory',
-                      directory: fileOrDir,
-                    })
-                  }
+                  onClick={clickDirectory}
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   onKeyUp={handleKeyUp}
                 >
