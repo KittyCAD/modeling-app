@@ -68,12 +68,13 @@ test.describe('Debug pane', () => {
       }
     })
     await test.step('Enter a comment', async () => {
-      await page.keyboard.press('Enter')
-      await page.keyboard.type('// comment', { delay: 0 })
+      await page.keyboard.type('|> line([2, 2], %)', { delay: 0 })
       // Wait for keyboard input debounce and updated artifact graph.
       await page.waitForTimeout(1000)
     })
     const newSegmentIds = await segment.innerText()
-    expect(initialSegmentIds).toEqual(newSegmentIds)
+    // Strip off the closing bracket.
+    const initialIds = initialSegmentIds.slice(0, initialSegmentIds.length - 1)
+    expect(newSegmentIds.slice(0, initialIds.length)).toEqual(initialIds)
   })
 })
