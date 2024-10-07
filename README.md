@@ -2,7 +2,7 @@
 
 ## Zoo Modeling App
 
-live at [app.zoo.dev](https://app.zoo.dev/)
+download at [zoo.dev/modeling-app/download](https://zoo.dev/modeling-app/download)
 
 A CAD application from the future, brought to you by the [Zoo team](https://zoo.dev).
 
