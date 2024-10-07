@@ -1,9 +1,10 @@
-import { isArray } from 'lib/utils'
+import { isArray, isNonNullable } from 'lib/utils'
 import { useRef, useState } from 'react'
 
-type Primitive = string | number | null | undefined
+type Primitive = string | number | bigint | boolean | symbol | null | undefined
+
 export type GenericObj = {
-  type: string
+  type?: string
   [key: string]: GenericObj | Primitive | Array<GenericObj | Primitive>
 }
 
@@ -19,8 +20,10 @@ export function DisplayArray({
       {arr.map((obj, index) => {
         return (
           <div className="my-2" key={index}>
-            {obj && typeof obj === 'object' && 'type' in obj ? (
+            {obj && typeof obj === 'object' ? (
               <DisplayObj obj={obj} filterKeys={filterKeys} />
+            ) : isNonNullable(obj) ? (
+              <span>{obj.toString()}</span>
             ) : (
               <span>{obj}</span>
             )}
@@ -70,24 +73,17 @@ export function DisplayObj({
                     {']'}
                   </li>
                 )
-              } else if (
-                typeof value === 'object' &&
-                value !== null &&
-                value?.type
-              ) {
+              } else if (typeof value === 'object' && value !== null) {
                 return (
                   <li key={key}>
                     {key}:
                     <DisplayObj obj={value} filterKeys={filterKeys} />
                   </li>
                 )
-              } else if (
-                typeof value === 'string' ||
-                typeof value === 'number'
-              ) {
+              } else if (isNonNullable(value)) {
                 return (
                   <li key={key}>
-                    {key}: {value}
+                    {key}: {value.toString()}
                   </li>
                 )
               }
