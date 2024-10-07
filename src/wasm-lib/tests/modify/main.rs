@@ -87,7 +87,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
 async fn kcl_test_modify_sketch_part001() {
     let name = "part001";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
   |> line([7.37, -11.0], %)
   |> line([-8.69, -3.75], %)
@@ -112,7 +112,7 @@ async fn kcl_test_modify_sketch_part001() {
 async fn kcl_test_modify_sketch_part002() {
     let name = "part002";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -138,7 +138,7 @@ async fn kcl_test_modify_sketch_part002() {
 async fn kcl_test_modify_close_sketch() {
     let name = "part002";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -184,7 +184,7 @@ async fn kcl_test_modify_line_to_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"const {} = startSketchOn("XY")
+            r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -246,7 +246,7 @@ async fn kcl_test_modify_line_should_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"const {} = startSketchOn("XY")
+            r#"{} = startSketchOn("XY")
   |> startProfileAt([13.69, 3.8], %)
   |> line([4.23, -11.79], %)
   |> line([-10.7, -1.16], %)

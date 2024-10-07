@@ -25,9 +25,12 @@ type CmdBarSerialised =
     }
 
 export class CmdBarFixture {
-  public readonly page: Page
+  public page: Page
 
   constructor(page: Page) {
+    this.page = page
+  }
+  reConstruct = (page: Page) => {
     this.page = page
   }
 

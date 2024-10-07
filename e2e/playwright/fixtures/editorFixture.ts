@@ -1,5 +1,6 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
+import { sansWhitespace } from '../test-utils'
 
 interface EditorState {
   activeLines: Array<string>
@@ -7,18 +8,19 @@ interface EditorState {
   diagnostics: Array<string>
 }
 
-function removeWhitespace(str: string) {
-  return str.replace(/\s+/g, '').trim()
-}
 export class EditorFixture {
-  public readonly page: Page
+  public page: Page
 
-  private readonly diagnosticsTooltip: Locator
-  private readonly diagnosticsGutterIcon: Locator
-  private readonly codeContent: Locator
-  private readonly activeLine: Locator
+  private diagnosticsTooltip!: Locator
+  private diagnosticsGutterIcon!: Locator
+  private codeContent!: Locator
+  private activeLine!: Locator
 
   constructor(page: Page) {
+    this.page = page
+    this.reConstruct(page)
+  }
+  reConstruct = (page: Page) => {
     this.page = page
 
     this.codeContent = page.locator('.cm-content')
@@ -70,7 +72,7 @@ export class EditorFixture {
       const content = await this.diagnosticsTooltip.allTextContents()
       diagnosticsContent.push(content.join(''))
     }
-    return [...new Set(diagnosticsContent)].map((d) => d.trim())
+    return [...new Set(diagnosticsContent)].map((d) => sansWhitespace(d))
   }
 
   private _getHighlightedCode = async () => {
@@ -94,16 +96,23 @@ export class EditorFixture {
           this._serialiseDiagnostics(),
         ])
         const state: EditorState = {
-          activeLines: activeLines.map(removeWhitespace).filter(Boolean),
-          highlightedCode: removeWhitespace(highlightedCode),
+          activeLines: activeLines.map(sansWhitespace).filter(Boolean),
+          highlightedCode: sansWhitespace(highlightedCode),
           diagnostics,
         }
         return state
       })
       .toEqual({
-        activeLines: expectedState.activeLines.map(removeWhitespace),
-        highlightedCode: removeWhitespace(expectedState.highlightedCode),
-        diagnostics: expectedState.diagnostics.map(removeWhitespace),
+        activeLines: expectedState.activeLines.map(sansWhitespace),
+        highlightedCode: sansWhitespace(expectedState.highlightedCode),
+        diagnostics: expectedState.diagnostics.map(sansWhitespace),
       })
+  }
+  replaceCode = async (findCode: string, replaceCode: string) => {
+    const lines = await this.page.locator('.cm-line').all()
+    let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
+    if (!lines) return
+    code = code.replace(findCode, replaceCode)
+    await this.codeContent.fill(code)
   }
 }

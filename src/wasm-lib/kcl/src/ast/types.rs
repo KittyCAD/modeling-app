@@ -18,7 +18,11 @@ use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
 
-pub use crate::ast::types::{literal_value::LiteralValue, none::KclNone};
+pub use crate::ast::types::{
+    condition::{ElseIf, IfExpression},
+    literal_value::LiteralValue,
+    none::KclNone,
+};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
@@ -30,12 +34,14 @@ use crate::{
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
 
+mod condition;
 mod literal_value;
 mod none;
 
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];
 
+/// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -72,6 +78,7 @@ macro_rules! compute_digest {
         }
     };
 }
+pub(crate) use compute_digest;
 
 impl Program {
     compute_digest!(|slf, hasher| {
@@ -81,6 +88,14 @@ impl Program {
         }
         hasher.update(slf.non_code_meta.compute_digest());
     });
+
+    /// Is the last body item an expression?
+    pub fn ends_with_expr(&self) -> bool {
+        let Some(ref last) = self.body.last() else {
+            return false;
+        };
+        matches!(last, BodyItem::ExpressionStatement(_))
+    }
 
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         // Check if we are in the non code meta.
@@ -501,6 +516,7 @@ pub enum Expr {
     ObjectExpression(Box<ObjectExpression>),
     MemberExpression(Box<MemberExpression>),
     UnaryExpression(Box<UnaryExpression>),
+    IfExpression(Box<IfExpression>),
     None(KclNone),
 }
 
@@ -519,6 +535,7 @@ impl Expr {
             Expr::ObjectExpression(oe) => oe.compute_digest(),
             Expr::MemberExpression(me) => me.compute_digest(),
             Expr::UnaryExpression(ue) => ue.compute_digest(),
+            Expr::IfExpression(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
@@ -562,6 +579,7 @@ impl Expr {
             Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
             Expr::UnaryExpression(_unary_exp) => None,
             Expr::PipeSubstitution(_pipe_substitution) => None,
+            Expr::IfExpression(_) => None,
             Expr::None(_none) => None,
         }
     }
@@ -584,6 +602,7 @@ impl Expr {
             Expr::TagDeclarator(_) => {}
             Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
+            Expr::IfExpression(_) => {}
             Expr::PipeSubstitution(_) => {}
             Expr::None(_) => {}
         }
@@ -603,6 +622,7 @@ impl Expr {
             Expr::ObjectExpression(object_expression) => object_expression.start(),
             Expr::MemberExpression(member_expression) => member_expression.start(),
             Expr::UnaryExpression(unary_expression) => unary_expression.start(),
+            Expr::IfExpression(expr) => expr.start(),
             Expr::None(none) => none.start,
         }
     }
@@ -621,6 +641,7 @@ impl Expr {
             Expr::ObjectExpression(object_expression) => object_expression.end(),
             Expr::MemberExpression(member_expression) => member_expression.end(),
             Expr::UnaryExpression(unary_expression) => unary_expression.end(),
+            Expr::IfExpression(expr) => expr.end(),
             Expr::None(none) => none.end,
         }
     }
@@ -639,6 +660,7 @@ impl Expr {
             Expr::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
             Expr::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            Expr::IfExpression(expr) => expr.get_hover_value_for_position(pos, code),
             // TODO: LSP hover information for values/types. https://github.com/KittyCAD/modeling-app/issues/1126
             Expr::None(_) => None,
             Expr::Literal(_) => None,
@@ -670,11 +692,12 @@ impl Expr {
                 member_expression.rename_identifiers(old_name, new_name)
             }
             Expr::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            Expr::IfExpression(ref mut expr) => expr.rename_identifiers(old_name, new_name),
             Expr::None(_) => {}
         }
     }
 
-    /// Get the constraint level for a value type.
+    /// Get the constraint level for an expression.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
             Expr::Literal(literal) => literal.get_constraint_level(),
@@ -692,6 +715,7 @@ impl Expr {
             Expr::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
             Expr::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+            Expr::IfExpression(expr) => expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
         }
     }
@@ -720,6 +744,7 @@ pub enum BinaryPart {
     CallExpression(Box<CallExpression>),
     UnaryExpression(Box<UnaryExpression>),
     MemberExpression(Box<MemberExpression>),
+    IfExpression(Box<IfExpression>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -743,6 +768,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(ce) => ce.compute_digest(),
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
+            BinaryPart::IfExpression(e) => e.compute_digest(),
         }
     }
 
@@ -755,6 +781,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+            BinaryPart::IfExpression(e) => e.get_constraint_level(),
         }
     }
 
@@ -772,6 +799,7 @@ impl BinaryPart {
                 unary_expression.replace_value(source_range, new_value)
             }
             BinaryPart::MemberExpression(_) => {}
+            BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
         }
     }
 
@@ -783,6 +811,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.start(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start(),
             BinaryPart::MemberExpression(member_expression) => member_expression.start(),
+            BinaryPart::IfExpression(e) => e.start(),
         }
     }
 
@@ -794,6 +823,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.end(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end(),
             BinaryPart::MemberExpression(member_expression) => member_expression.end(),
+            BinaryPart::IfExpression(e) => e.end(),
         }
     }
 
@@ -809,6 +839,7 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
+            BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
         }
     }
 
@@ -822,6 +853,7 @@ impl BinaryPart {
             }
             BinaryPart::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            BinaryPart::IfExpression(e) => e.get_hover_value_for_position(pos, code),
             BinaryPart::MemberExpression(member_expression) => {
                 member_expression.get_hover_value_for_position(pos, code)
             }
@@ -845,6 +877,7 @@ impl BinaryPart {
             BinaryPart::MemberExpression(ref mut member_expression) => {
                 member_expression.rename_identifiers(old_name, new_name)
             }
+            BinaryPart::IfExpression(ref mut if_expression) => if_expression.rename_identifiers(old_name, new_name),
         }
     }
 }
@@ -1331,7 +1364,7 @@ impl CallExpression {
                 };
 
                 match exec_result {
-                    Ok(()) => {}
+                    Ok(_) => {}
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
                         // function from the stdlib.
@@ -1483,10 +1516,8 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
                 label: variable.id.name.to_string(),
                 label_details: None,
                 kind: Some(match declaration.kind {
-                    crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
-                    crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
-                    crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
-                    crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                    VariableKind::Const => CompletionItemKind::CONSTANT,
+                    VariableKind::Fn => CompletionItemKind::FUNCTION,
                 }),
                 detail: Some(declaration.kind.to_string()),
                 documentation: None,
@@ -1621,8 +1652,6 @@ impl VariableDeclaration {
             let mut symbol_kind = match self.kind {
                 VariableKind::Fn => SymbolKind::FUNCTION,
                 VariableKind::Const => SymbolKind::CONSTANT,
-                VariableKind::Let => SymbolKind::VARIABLE,
-                VariableKind::Var => SymbolKind::VARIABLE,
             };
 
             let children = match &declaration.init {
@@ -1635,7 +1664,7 @@ impl VariableDeclaration {
                         children.push(DocumentSymbol {
                             name: param.identifier.name.clone(),
                             detail: None,
-                            kind: SymbolKind::VARIABLE,
+                            kind: SymbolKind::CONSTANT,
                             range: param_source_range.to_lsp_range(code),
                             selection_range: param_source_range.to_lsp_range(code),
                             children: None,
@@ -1677,29 +1706,23 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
 pub enum VariableKind {
-    /// Declare a variable.
-    Let,
-    /// Declare a variable that is read-only.
+    /// Declare a named constant.
     Const,
     /// Declare a function.
     Fn,
-    /// Declare a variable.
-    Var,
 }
 
 impl VariableKind {
     fn digestable_id(&self) -> [u8; 1] {
         match self {
-            VariableKind::Let => [1],
             VariableKind::Const => [2],
             VariableKind::Fn => [3],
-            VariableKind::Var => [4],
         }
     }
 
@@ -3149,6 +3172,7 @@ async fn inner_execute_pipe_body(
             | Expr::ObjectExpression(_)
             | Expr::MemberExpression(_)
             | Expr::UnaryExpression(_)
+            | Expr::IfExpression(_)
             | Expr::None(_) => {}
         };
         let metadata = Metadata {
@@ -3662,11 +3686,11 @@ ghi("things")
         let program = parser.ast().unwrap();
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
-        assert_eq!(folding_ranges[0].start_line, 35);
+        assert_eq!(folding_ranges[0].start_line, 29);
         assert_eq!(folding_ranges[0].end_line, 134);
         assert_eq!(
             folding_ranges[0].collapsed_text,
-            Some("const part001 = startSketchOn('XY')".to_string())
+            Some("part001 = startSketchOn('XY')".to_string())
         );
         assert_eq!(folding_ranges[1].start_line, 155);
         assert_eq!(folding_ranges[1].end_line, 254);

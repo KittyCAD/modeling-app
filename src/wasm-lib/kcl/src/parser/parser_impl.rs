@@ -10,11 +10,12 @@ use winnow::{
 
 use crate::{
     ast::types::{
-        ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, Expr,
-        ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
-        UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+        ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, ElseIf,
+        Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, Literal,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue,
+        ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
+        TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration, VariableDeclarator,
+        VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -359,6 +360,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
                 Expr::CallExpression(x) => BinaryPart::CallExpression(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
+                Expr::IfExpression(x) => BinaryPart::IfExpression(x),
             };
             Ok(expr)
         })
@@ -670,6 +672,119 @@ fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
     .parse_next(i)
 }
 
+fn else_if(i: TokenSlice) -> PResult<ElseIf> {
+    let start = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'else'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'else' keyword"))
+        .parse_next(i)?;
+    ignore_whitespace(i);
+    let _if = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'if'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'if' keyword"))
+        .parse_next(i)?;
+    ignore_whitespace(i);
+    let cond = expression(i)?;
+    ignore_whitespace(i);
+    let _ = open_brace(i)?;
+    let then_val = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map(Box::new)?;
+    ignore_whitespace(i);
+    let end = close_brace(i)?.end;
+    ignore_whitespace(i);
+    Ok(ElseIf {
+        start,
+        end,
+        cond,
+        then_val,
+        digest: Default::default(),
+    })
+}
+
+fn if_expr(i: TokenSlice) -> PResult<IfExpression> {
+    let start = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'if'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'if' keyword"))
+        .parse_next(i)?;
+    let _ = whitespace(i)?;
+    let cond = expression(i).map(Box::new)?;
+    let _ = whitespace(i)?;
+    let _ = open_brace(i)?;
+    ignore_whitespace(i);
+    let then_val = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map_err(|e| e.cut())
+        .map(Box::new)?;
+    ignore_whitespace(i);
+    let _ = close_brace(i)?;
+    ignore_whitespace(i);
+    let else_ifs = repeat(0.., else_if).parse_next(i)?;
+
+    ignore_whitespace(i);
+    let _ = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not 'else'", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'else' keyword"))
+        .parse_next(i)?;
+    ignore_whitespace(i);
+    let _ = open_brace(i)?;
+    ignore_whitespace(i);
+
+    let final_else = program
+        .verify(|block| block.ends_with_expr())
+        .parse_next(i)
+        .map_err(|e| e.cut())
+        .map(Box::new)?;
+    ignore_whitespace(i);
+    let end = close_brace(i)?.end;
+    Ok(IfExpression {
+        start,
+        end,
+        cond,
+        then_val,
+        else_ifs,
+        final_else,
+        digest: Default::default(),
+    })
+}
+
 // Looks like
 // (arg0, arg1) => {
 //     const x = arg0 + arg1;
@@ -852,7 +967,16 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
             non_code_node.map(WithinFunction::NonCode)
         },
         _ =>
-            (expression_stmt.map(BodyItem::ExpressionStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+            alt((
+                (
+                    declaration.map(BodyItem::VariableDeclaration),
+                    opt(noncode_just_after_code)
+                ).map(WithinFunction::BodyItem),
+                (
+                    expression_stmt.map(BodyItem::ExpressionStatement),
+                    opt(noncode_just_after_code)
+                ).map(WithinFunction::BodyItem),
+            ))
     }
     .context(expected("a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item"))
     .parse_next(i)?;
@@ -1069,6 +1193,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
         function_expression.map(Box::new).map(Expr::FunctionExpression),
+        if_expr.map(Box::new).map(Expr::IfExpression),
         unnecessarily_bracketed,
     ))
     .context(expected("a KCL expression (but not a pipe expression)"))
@@ -1092,23 +1217,35 @@ fn possible_operands(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
+fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
+    let res = any
+        .verify_map(|token: Token| token.declaration_keyword().map(|kw| (kw, token)))
+        .parse_next(i)?;
+    Ok(res)
+}
+
 /// Parse a variable/constant declaration.
 fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
-    const EXPECTED: &str = "expected a variable declaration keyword (e.g. 'let') but found";
-    let (kind, start, dec_end) = any
-        .try_map(|token: Token| {
-            let Some(kind) = token.declaration_keyword() else {
-                return Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{EXPECTED} {}", token.value.as_str()),
-                }));
-            };
+    let decl_token = opt(declaration_keyword).parse_next(i)?;
+    if decl_token.is_some() {
+        // If there was a declaration keyword like `fn`, then it must be followed by some spaces.
+        // `fnx = ...` is not valid!
+        require_whitespace(i)?;
+    }
 
-            Ok((kind, token.start, token.end))
-        })
-        .context(expected("declaring a name, e.g. 'let width = 3'"))
+    let id = binding_name
+        .context(expected(
+            "an identifier, which becomes name you're binding the value to",
+        ))
         .parse_next(i)?;
+    let (kind, start, dec_end) = if let Some((kind, token)) = &decl_token {
+        (*kind, token.start, token.end)
+    } else {
+        (VariableKind::Const, id.start(), id.end())
+    };
 
+    ignore_whitespace(i);
+    equals(i)?;
     // After this point, the parser is DEFINITELY parsing a variable declaration, because
     // `fn`, `let`, `const` etc are all unambiguous. If you've parsed one of those tokens --
     // and we certainly have because `kind` was parsed above -- then the following tokens
@@ -1117,16 +1254,6 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
     // This means, from here until this function returns, any errors should be ErrMode::Cut,
     // not ErrMode::Backtrack. Because the parser is definitely parsing a variable declaration.
     // If there's an error, there's no point backtracking -- instead the parser should fail.
-    require_whitespace(i).map_err(|e| e.cut())?;
-    let id = binding_name
-        .context(expected(
-            "an identifier, which becomes name you're binding the value to",
-        ))
-        .parse_next(i)
-        .map_err(|e| e.cut())?;
-
-    ignore_whitespace(i);
-    equals(i).map_err(|e| e.cut())?;
     ignore_whitespace(i);
 
     let val = if kind == VariableKind::Fn {
@@ -1752,6 +1879,19 @@ mod tests {
                 Err(e) => panic!("Failed test {i}, could not parse binary expressions from \"{test_program}\": {e:?}"),
             };
         }
+    }
+
+    #[test]
+    fn test_vardec_no_keyword() {
+        let tokens = crate::token::lexer("x = 4").unwrap();
+        let vardec = declaration(&mut tokens.as_slice()).unwrap();
+        assert_eq!(vardec.kind, VariableKind::Const);
+        let vardec = vardec.declarations.first().unwrap();
+        assert_eq!(vardec.id.name, "x");
+        let Expr::Literal(init_val) = &vardec.init else {
+            panic!("weird init value")
+        };
+        assert_eq!(init_val.raw, "4");
     }
 
     #[test]
@@ -2798,6 +2938,7 @@ e
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
+        dbg!(&result);
         assert!(result
             .err()
             .unwrap()
@@ -3148,6 +3289,42 @@ e
     }
 
     #[test]
+    fn basic_if_else() {
+        let some_program_string = "if true {
+            3
+        } else {
+            4
+        }";
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _res = if_expr(&mut sl).unwrap();
+    }
+
+    #[test]
+    fn basic_else_if() {
+        let some_program_string = "else if true {
+            4
+        }";
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _res = else_if(&mut sl).unwrap();
+    }
+
+    #[test]
+    fn basic_if_else_if() {
+        let some_program_string = "if true {
+            3  
+        } else if true {
+            4
+        } else {
+            5
+        }";
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let mut sl: &[Token] = &tokens;
+        let _res = if_expr(&mut sl).unwrap();
+    }
+
+    #[test]
     fn test_keyword_ok_in_fn_args_return() {
         let some_program_string = r#"fn thing = (param) => {
     return true
@@ -3179,9 +3356,8 @@ thing(false)
             assert_eq!(
                 result.err().unwrap().to_string(),
                 format!(
-                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}])], message: "Expected a `fn` variable kind, found: `{}`" }}"#,
+                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}])], message: "Expected a `fn` variable kind, found: `const`" }}"#,
                     name.len(),
-                    name
                 )
             );
         }
@@ -3511,6 +3687,25 @@ const sketch001 = startSketchOn('XY')
 const my14 = 4 ^ 2 - 3 ^ 2 * 2
 "#
     );
+    snapshot_test!(
+        bc,
+        r#"const x = if true {
+            3
+        } else {
+            4
+        }"#
+    );
+    snapshot_test!(
+        bd,
+        r#"const x = if true {
+            3
+        } else if func(radius) {
+            4
+        } else {
+            5
+        }"#
+    );
+    snapshot_test!(bg, r#"x = 4"#);
 }
 
 #[allow(unused)]

@@ -9,7 +9,6 @@ use kcmc::{
     shared::ExtrusionFaceCapType, websocket::OkWebSocketResponseData, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 use uuid::Uuid;
 
 use crate::{
@@ -248,7 +247,7 @@ pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> 
                         Some(extrude_surface)
                     }
                 }
-            } else if args.ctx.is_mock {
+            } else if args.ctx.is_mock() {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
                 let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
@@ -297,7 +296,7 @@ fn analyze_faces(args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
     };
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
         faces.start_cap_id = Some(Uuid::new_v4());
         faces.end_cap_id = Some(Uuid::new_v4());

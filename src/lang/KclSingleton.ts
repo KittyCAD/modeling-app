@@ -43,6 +43,7 @@ export class KclManager {
     digest: null,
   }
   private _programMemory: ProgramMemory = ProgramMemory.empty()
+  lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
   private _lints: Diagnostic[] = []
   private _kclErrors: KCLError[] = []
@@ -281,6 +282,7 @@ export class KclManager {
             type: 'zoom_to_fit',
             object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
             padding: 0.1, // padding around the objects
+            animated: false, // don't animate the zoom for now
           },
         })
       }
@@ -297,6 +299,9 @@ export class KclManager {
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addKclErrors(isInterrupted ? [] : errors)
     this.programMemory = programMemory
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = programMemory
+    }
     this.ast = { ...ast }
     this._executeCallback()
     this.engineCommandManager.addCommandLog({
@@ -342,6 +347,9 @@ export class KclManager {
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = programMemory
+    }
     if (updates !== 'artifactRanges') return
 
     // TODO the below seems like a work around, I wish there's a comment explaining exactly what
