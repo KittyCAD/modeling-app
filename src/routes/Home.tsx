@@ -63,7 +63,7 @@ const Home = () => {
     projectsDir ? [projectsDir] : []
   )
 
-  const { projects } = state.context
+  const projects = state?.context.projects ?? []
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
@@ -208,7 +208,7 @@ const Home = () => {
           data-testid="home-section"
           className="flex-1 overflow-y-auto pr-2 pb-24"
         >
-          {state.matches('Reading projects') ? (
+          {state?.matches('Reading projects') ? (
             <Loading>Loading your Projects...</Loading>
           ) : (
             <>
