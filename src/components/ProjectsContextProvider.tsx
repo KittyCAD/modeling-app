@@ -22,9 +22,10 @@ import {
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
+import { isDesktop } from 'lib/isDesktop'
 
 type MachineContext<T extends AnyStateMachine> = {
-  state: StateFrom<T>
+  state?: StateFrom<T>
   send: Prop<Actor<T>, 'send'>
 }
 
@@ -32,7 +33,39 @@ export const ProjectsMachineContext = createContext(
   {} as MachineContext<typeof projectsMachine>
 )
 
+/**
+ * Watches the project directory and provides project management-related commands,
+ * like "Create project", "Open project", "Delete project", etc.
+ *
+ * If in the future we implement full-fledge project management in the web version,
+ * we can unify these components but for now, we need this to be only for the desktop version.
+ */
 export const ProjectsContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  return isDesktop() ? (
+    <ProjectsContextDesktop>{children}</ProjectsContextDesktop>
+  ) : (
+    <ProjectsContextWeb>{children}</ProjectsContextWeb>
+  )
+}
+
+const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <ProjectsMachineContext.Provider
+      value={{
+        state: undefined,
+        send: () => {},
+      }}
+    >
+      {children}
+    </ProjectsMachineContext.Provider>
+  )
+}
+
+const ProjectsContextDesktop = ({
   children,
 }: {
   children: React.ReactNode

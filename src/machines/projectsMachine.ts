@@ -206,7 +206,7 @@ export const projectsMachine = setup({
         onDone: [
           {
             target: '#Home machine.Reading projects',
-            actions: ['toastSuccess', "navigateToProjectIfNeeded"],
+            actions: ['toastSuccess', 'navigateToProjectIfNeeded'],
           },
         ],
         onError: [
