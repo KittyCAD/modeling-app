@@ -504,114 +504,241 @@ test(
 )
 
 test.describe(`Project management commands`, () => {
-  const fromLocation = ['home', 'project'] as const
-  const commands = ['rename', 'delete'] as const
+  test(
+    `Rename from project page`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const projectName = `my_project_to_rename`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+      const u = await getUtils(page)
 
-  for (const from of fromLocation) {
-    for (const command of commands) {
-      test(
-        `${command} from ${from} page`,
-        { tag: '@electron' },
-        async ({ browserName: _ }, testInfo) => {
-          const projectName = `my_project_to_${command}`
-          const { electronApp, page } = await setupElectron({
-            testInfo,
-            folderSetupFn: async (dir) => {
-              await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-              await fsp.copyFile(
-                'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-                `${dir}/${projectName}/main.kcl`
-              )
-            },
-          })
-          const u = await getUtils(page)
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `project-000`
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
+      })
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully renamed`)
 
-          // Constants and locators
-          const projectHomeLink = page.getByText(projectName)
-          const commandButton = page.getByRole('button', { name: 'Commands' })
-          const commandOption = page.getByRole('option', {
-            name: `${command} project`,
-          })
-          const projectNameOption = page.getByRole('option', {
-            name: projectName,
-          })
-          const projectRenamedName = `project-000`
-          const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-          const commandContinueButton = page.getByRole('button', {
-            name: 'Continue',
-          })
-          const commandSubmitButton = page.getByRole('button', {
-            name: 'Submit command',
-          })
-          const toastMessage = page.getByText(`Successfully ${command}d`)
-          const noProjectsMessage = page.getByText('No Projects found')
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
 
-          await test.step(`Setup`, async () => {
-            await page.setViewportSize({ width: 1200, height: 500 })
-            page.on('console', console.log)
+        await projectHomeLink.click()
+        await u.waitForPageLoad()
+      })
 
-            if (from === 'project') {
-              await projectHomeLink.click()
-              await u.waitForPageLoad()
-            }
-          })
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
 
-          await test.step(`Run ${command} command via command palette`, async () => {
-            await commandButton.click()
-            await commandOption.click()
-            await projectNameOption.click()
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
 
-            const expectedButton =
-              command === 'rename' ? commandContinueButton : commandSubmitButton
-            await expect(expectedButton).toBeVisible()
-            if (command === 'rename') {
-              await commandContinueButton.click()
-            }
-            await expect(commandSubmitButton).toBeVisible()
-            await commandSubmitButton.click()
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
 
-            await expect(toastMessage).toBeVisible()
-          })
+        await expect(toastMessage).toBeVisible()
+      })
 
-          if (from === 'project' && command === 'rename') {
-            await test.step(`Check the project was renamed and we navigated`, async () => {
-              // eslint-disable-next-line jest/no-conditional-expect
-              await expect(projectMenuButton).toContainText(projectRenamedName)
-              // eslint-disable-next-line jest/no-conditional-expect
-              await expect(projectMenuButton).not.toContainText(projectName)
-              // eslint-disable-next-line jest/no-conditional-expect
-              expect(page.url()).toContain(projectRenamedName)
-              // eslint-disable-next-line jest/no-conditional-expect
-              expect(page.url()).not.toContain(projectName)
-            })
-          } else if (from === 'project' && command === 'delete') {
-            await test.step(`Check the project was deleted and we navigated home`, async () => {
-              // eslint-disable-next-line jest/no-conditional-expect
-              await expect(noProjectsMessage).toBeVisible()
-            })
-          } else if (from === 'home' && command === 'rename') {
-            await test.step(`Check the project was renamed`, async () => {
-              // eslint-disable-next-line jest/no-conditional-expect
-              await expect(
-                page.getByRole('link', { name: projectRenamedName })
-              ).toBeVisible()
-              // eslint-disable-next-line jest/no-conditional-expect
-              await expect(projectHomeLink).not.toBeVisible()
-            })
-          } else if (from === 'home' && command === 'delete') {
-            await test.step(`Check the project was deleted`, async () => {
-              // eslint-disable-next-line jest/no-conditional-expect
-              await expect(projectHomeLink).not.toBeVisible()
-              // eslint-disable-next-line jest/no-conditional-expect
-              await expect(noProjectsMessage).toBeVisible()
-            })
-          }
+      await test.step(`Check the project was renamed and we navigated`, async () => {
+        await expect(projectMenuButton).toContainText(projectRenamedName)
+        await expect(projectMenuButton).not.toContainText(projectName)
+        expect(page.url()).toContain(projectRenamedName)
+        expect(page.url()).not.toContain(projectName)
+      })
 
-          await electronApp.close()
-        }
-      )
+      await electronApp.close()
     }
-  }
+  )
+
+  test(
+    `Delete from project page`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const projectName = `my_project_to_delete`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+      const u = await getUtils(page)
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const commandWarning = page.getByText('Are you sure you want to delete?')
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully deleted`)
+      const noProjectsMessage = page.getByText('No Projects found')
+
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+
+        await projectHomeLink.click()
+        await u.waitForPageLoad()
+      })
+
+      await test.step(`Run delete command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandWarning).toBeVisible()
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was deleted and we navigated home`, async () => {
+        await expect(noProjectsMessage).toBeVisible()
+      })
+
+      await electronApp.close()
+    }
+  )
+  test(
+    `Rename from home page`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const projectName = `my_project_to_rename`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `project-000`
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
+      })
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully renamed`)
+
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
+
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was renamed`, async () => {
+        await expect(
+          page.getByRole('link', { name: projectRenamedName })
+        ).toBeVisible()
+        await expect(projectHomeLink).not.toHaveText(projectName)
+      })
+
+      await electronApp.close()
+    }
+  )
+  test(
+    `Delete from home page`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const projectName = `my_project_to_delete`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const commandWarning = page.getByText('Are you sure you want to delete?')
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully deleted`)
+      const noProjectsMessage = page.getByText('No Projects found')
+
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run delete command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandWarning).toBeVisible()
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was deleted`, async () => {
+        await expect(projectHomeLink).not.toBeVisible()
+        await expect(noProjectsMessage).toBeVisible()
+      })
+
+      await electronApp.close()
+    }
+  )
 })
 
 test(
