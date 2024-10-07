@@ -294,7 +294,7 @@ impl DynamicState {
     }
 }
 
-/// A generator for [ArtifactId]s that can be stable across executions.
+/// A generator for ArtifactIds that can be stable across executions.
 #[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -318,9 +318,6 @@ impl IdGenerator {
             self.next_id += 1;
             id
         }
-    }
-    pub fn next_id(&mut self) -> ArtifactId {
-        ArtifactId::new(self.next_uuid())
     }
 }
 
@@ -425,19 +422,6 @@ impl From<Vec<Box<Solid>>> for KclValue {
         } else {
             KclValue::Solids { value: eg }
         }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-pub struct ArtifactId(uuid::Uuid);
-
-impl ArtifactId {
-    pub(crate) fn new(id: uuid::Uuid) -> Self {
-        Self(id)
-    }
-
-    pub fn as_uuid(&self) -> uuid::Uuid {
-        self.0
     }
 }
 
