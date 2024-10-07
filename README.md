@@ -345,6 +345,7 @@ yarn test-setup
 
 
 ```
+yarn build:ts-rs
 yarn tsc
 yarn fmt-check
 yarn lint
