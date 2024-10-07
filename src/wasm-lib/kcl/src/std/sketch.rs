@@ -1524,8 +1524,15 @@ pub(crate) async fn inner_arc(
             angle_end,
             radius,
         } => {
-            let a_start = Angle::from_degrees(*angle_start);
-            let a_end = Angle::from_degrees(*angle_end);
+            let mut a_start = Angle::from_degrees(*angle_start);
+            let mut a_end = Angle::from_degrees(*angle_end);
+
+            //duplicating engine logic to make sure this is _exactly_ what engine is doing - mike
+            // if a_start.0 > a_end.0 {
+            //     // this implies a clockwise arc, so swap the angles to a matching counter-clockwise arc
+            //     std::mem::swap(&mut a_end, &mut a_start);
+            // }
+
             let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
             (center, a_start, a_end, *radius, end)
         }

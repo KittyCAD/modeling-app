@@ -218,6 +218,8 @@ pub fn arc_center_and_end(from: Point2d, start_angle: Angle, end_angle: Angle, r
         y: center.y + radius * end_angle.sin(),
     };
 
+    web_sys::console::log_1(&format!("Frontend thinks the arc end is at {end:?}").into());
+
     (center, end)
 }
 
