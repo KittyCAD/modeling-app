@@ -12,7 +12,7 @@ export function DebugFeatureTree() {
     return computeTree(engineCommandManager.artifactGraph)
   }, [engineCommandManager.artifactGraph])
 
-  const filterKeys: string[] = ['__meta']
+  const filterKeys: string[] = ['__meta', 'codeRef', 'pathToNode']
   return (
     <details data-testid="debug-feature-tree" className="relative">
       <summary>Feature Tree</summary>
