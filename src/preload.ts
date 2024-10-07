@@ -27,6 +27,8 @@ const isLinux = os.platform() === 'linux'
 let fsWatchListeners = new Map<string, ReturnType<typeof chokidar.watch>>()
 
 const watchFileOn = (path: string, callback: (path: string) => void) => {
+  const watcherMaybe = fsWatchListeners.get(path)
+  if (watcherMaybe) return
   const watcher = chokidar.watch(path)
   watcher.on('change', callback).on('unlink', watchFileOff)
   fsWatchListeners.set(path, watcher)
