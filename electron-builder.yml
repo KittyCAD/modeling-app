@@ -73,3 +73,5 @@ publish:
   - provider: generic
     url: https://dl.zoo.dev/releases/modeling-app
     channel: latest
+releaseInfo:
+  releaseNotes: true

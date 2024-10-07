@@ -167,7 +167,7 @@ jobs:
         shell: cmd
 
       - name: Build the app
-        run: yarn electron-builder --config ${{ env.BUILD_RELEASE && '--publish always -c.releaseInfo.releaseNotes' || '' }}
+        run: yarn electron-builder --config ${{ env.BUILD_RELEASE && '--publish always' || '' }}
 
       - name: List artifacts in out/
         run: ls -R out
