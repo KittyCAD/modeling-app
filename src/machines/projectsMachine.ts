@@ -1,6 +1,7 @@
 import { assign, fromPromise, setup } from 'xstate'
 import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { Project } from 'lib/project'
+import { isArray } from 'lib/utils'
 
 export const projectsMachine = setup({
   types: {
@@ -51,7 +52,7 @@ export const projectsMachine = setup({
   actions: {
     setProjects: assign({
       projects: ({ context, event }) =>
-        'output' in event && Array.isArray(event.output)
+        'output' in event && isArray(event.output)
           ? event.output
           : context.projects,
     }),
