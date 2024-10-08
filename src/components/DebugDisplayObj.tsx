@@ -69,6 +69,12 @@ export function DebugDisplayObj({
         </button>
       ) : (
         <span className="flex">
+          <button
+            className="m-0 p-0 border-0 mb-auto"
+            onClick={() => setIsCollapsed(true)}
+          >
+            {'⬇️'}
+          </button>
           <ul className="inline-block">
             {Object.entries(obj).map(([key, value]) => {
               if (filterKeys.includes(key)) {
