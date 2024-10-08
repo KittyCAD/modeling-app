@@ -92,8 +92,8 @@ const ProjectsContextDesktop = ({
 
   // Re-read projects listing if the projectDir has any updates.
   useFileSystemWatcher(
-    () => {
-      setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+    async () => {
+      return setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
     },
     projectsDir ? [projectsDir] : []
   )
