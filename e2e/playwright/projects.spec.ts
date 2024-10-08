@@ -874,7 +874,7 @@ test(
     await createProject({ name: 'lego', page, returnHome: true })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
-      const project = page.getByText('bracket')
+      const project = page.getByTestId('project-link').getByText('bracket')
 
       await project.hover()
       await project.focus()
@@ -918,9 +918,7 @@ test(
     })
 
     await test.step('Check we can still create a project', async () => {
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(page.getByText('Successfully created')).toBeVisible()
-      await expect(page.getByText('Successfully created')).not.toBeVisible()
+      await createProject({ name: 'project-000', page, returnHome: true })
       await expect(page.getByText('project-000')).toBeVisible()
     })
 
@@ -1087,19 +1085,12 @@ test(
     // expect to see text "No Projects found"
     await expect(page.getByText('No Projects found')).toBeVisible()
 
-    await page.getByRole('button', { name: 'New project' }).click()
-
-    await expect(page.getByText('Successfully created')).toBeVisible()
-    await expect(page.getByText('Successfully created')).not.toBeVisible()
-
+    await createProject({ name: 'project-000', page, returnHome: true })
     await expect(page.getByText('project-000')).toBeVisible()
 
-    await page.getByText('project-000').click()
+    await page.getByTestId('project-link').getByText('project-000').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await u.waitForPageLoad()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -1320,10 +1311,7 @@ test(
       await page.getByTestId('settings-close-button').click()
 
       await expect(page.getByText('No Projects found')).toBeVisible()
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(page.getByText('Successfully created')).toBeVisible()
-      await expect(page.getByText('Successfully created')).not.toBeVisible()
-
+      await createProject({ name: 'project-000', page, returnHome: true })
       await expect(page.getByText(`project-000`)).toBeVisible()
     })
 
