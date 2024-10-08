@@ -5,7 +5,7 @@ import {
   expandPlane,
   PlaneArtifactRich,
 } from 'lang/std/artifactGraph'
-import { DisplayArray, GenericObj } from './DebugDisplayObj'
+import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
 
 export function DebugFeatureTree() {
   const featureTree = useMemo(() => {
@@ -18,7 +18,7 @@ export function DebugFeatureTree() {
       <summary>Feature Tree</summary>
       {featureTree.length > 0 ? (
         <pre className="text-xs">
-          <DisplayArray arr={featureTree} filterKeys={filterKeys} />
+          <DebugDisplayArray arr={featureTree} filterKeys={filterKeys} />
         </pre>
       ) : (
         <p>(Empty)</p>

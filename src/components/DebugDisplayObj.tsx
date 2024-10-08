@@ -8,7 +8,11 @@ export type GenericObj = {
   [key: string]: GenericObj | Primitive | Array<GenericObj | Primitive>
 }
 
-export function DisplayArray({
+/**
+ * Display an array of objects or primitives for debug purposes. Nullable values
+ * are displayed so that relative indexes are preserved.
+ */
+export function DebugDisplayArray({
   arr,
   filterKeys,
 }: {
@@ -21,7 +25,7 @@ export function DisplayArray({
         return (
           <div className="my-2" key={index}>
             {obj && typeof obj === 'object' ? (
-              <DisplayObj obj={obj} filterKeys={filterKeys} />
+              <DebugDisplayObj obj={obj} filterKeys={filterKeys} />
             ) : isNonNullable(obj) ? (
               <span>{obj.toString()}</span>
             ) : (
@@ -34,7 +38,12 @@ export function DisplayArray({
   )
 }
 
-export function DisplayObj({
+/**
+ * Display an object as a tree for debug purposes. Nullable values are omitted.
+ * The only other property treated specially is the type property, which is
+ * assumed to be a string.
+ */
+export function DebugDisplayObj({
   obj,
   filterKeys,
 }: {
@@ -60,7 +69,6 @@ export function DisplayObj({
         </button>
       ) : (
         <span className="flex">
-          {/* <button className="m-0 p-0 border-0 mb-auto" onClick={() => setIsCollapsed(true)}>{'⬇️'}</button> */}
           <ul className="inline-block">
             {Object.entries(obj).map(([key, value]) => {
               if (filterKeys.includes(key)) {
@@ -69,7 +77,7 @@ export function DisplayObj({
                 return (
                   <li key={key}>
                     {`${key}: [`}
-                    <DisplayArray arr={value} filterKeys={filterKeys} />
+                    <DebugDisplayArray arr={value} filterKeys={filterKeys} />
                     {']'}
                   </li>
                 )
@@ -77,7 +85,7 @@ export function DisplayObj({
                 return (
                   <li key={key}>
                     {key}:
-                    <DisplayObj obj={value} filterKeys={filterKeys} />
+                    <DebugDisplayObj obj={value} filterKeys={filterKeys} />
                   </li>
                 )
               } else if (isNonNullable(value)) {
