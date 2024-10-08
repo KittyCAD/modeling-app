@@ -5,7 +5,7 @@ import {
   expandPlane,
   PlaneArtifactRich,
 } from 'lang/std/artifactGraph'
-import { DisplayArray, GenericObj } from './DisplayObj'
+import { DisplayArray, GenericObj } from './DebugDisplayObj'
 
 export function DebugFeatureTree() {
   const featureTree = useMemo(() => {
