@@ -460,8 +460,8 @@ export const hasValidFilletSelection = ({
       return false
     }
 
-    // check if selection is extuded
-    // TODO: option 1 : extude is in the sketch pipe
+    // check if selection is extruded
+    // TODO: option 1 : extrude is in the sketch pipe
 
     // option 2: extrude is outside the sketch pipe
     const extrudeExists = hasSketchPipeBeenExtruded(selection, ast)
