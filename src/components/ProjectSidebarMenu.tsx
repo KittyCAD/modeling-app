@@ -10,11 +10,14 @@ import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
-import { engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { machineManager } from 'lib/machineManager'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
+import { createFileLink } from 'lib/createFileLink'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import toast from 'react-hot-toast'
 
 const ProjectSidebarMenu = ({
   project,
@@ -96,6 +99,7 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const { settings } = useSettingsAuthContext()
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -154,7 +158,6 @@ function ProjectMenuPopover({
               data: exportCommandInfo,
             }),
         },
-        'break',
         {
           id: 'make',
           Element: 'button',
@@ -178,6 +181,27 @@ function ProjectMenuPopover({
               type: 'Find and select command',
               data: makeCommandInfo,
             })
+          },
+        },
+        {
+          id: 'share-link',
+          Element: 'button',
+          className: !isDesktop() ? 'hidden' : '',
+          children: 'Share link to file',
+          onClick: async () => {
+            const shareUrl = createFileLink({
+              code: codeManager.code,
+              name: file?.name || '',
+              units: settings.context.modeling.defaultUnit.current,
+            })
+
+            await globalThis.navigator.clipboard.writeText(shareUrl)
+            toast.success(
+              'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!',
+              {
+                duration: 5000,
+              }
+            )
           },
         },
         'break',
