@@ -16,8 +16,8 @@ use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, PlaneType, Point2d, Point3d, Sketch, SketchSet,
-        SketchSurface, Solid, TagEngineInfo, TagIdentifier, UserVal,
+        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
+        Solid, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -920,82 +920,6 @@ pub enum PlaneData {
         #[serde(rename = "zAxis", alias = "z_axis")]
         z_axis: Box<Point3d>,
     },
-}
-
-impl Plane {
-    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.id_generator.next_uuid();
-        match value {
-            PlaneData::XY => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 1.0, 0.0),
-                z_axis: Point3d::new(0.0, 0.0, 1.0),
-                value: PlaneType::XY,
-                meta: vec![],
-            },
-            PlaneData::NegXY => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 1.0, 0.0),
-                z_axis: Point3d::new(0.0, 0.0, -1.0),
-                value: PlaneType::XY,
-                meta: vec![],
-            },
-            PlaneData::XZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, -1.0, 0.0),
-                value: PlaneType::XZ,
-                meta: vec![],
-            },
-            PlaneData::NegXZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, 1.0, 0.0),
-                value: PlaneType::XZ,
-                meta: vec![],
-            },
-            PlaneData::YZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(0.0, 1.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(1.0, 0.0, 0.0),
-                value: PlaneType::YZ,
-                meta: vec![],
-            },
-            PlaneData::NegYZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(0.0, 1.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(-1.0, 0.0, 0.0),
-                value: PlaneType::YZ,
-                meta: vec![],
-            },
-            PlaneData::Plane {
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-            } => Plane {
-                id,
-                origin: *origin,
-                x_axis: *x_axis,
-                y_axis: *y_axis,
-                z_axis: *z_axis,
-                value: PlaneType::Custom,
-                meta: vec![],
-            },
-        }
-    }
 }
 
 /// Start a sketch on a specific plane or face.

@@ -628,6 +628,82 @@ pub struct Plane {
     pub meta: Vec<Metadata>,
 }
 
+impl Plane {
+    pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
+        let id = exec_state.id_generator.next_uuid();
+        match value {
+            crate::std::sketch::PlaneData::XY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, 1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, -1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::XZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, -1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::YZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegYZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(-1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::Plane {
+                origin,
+                x_axis,
+                y_axis,
+                z_axis,
+            } => Plane {
+                id,
+                origin: *origin,
+                x_axis: *x_axis,
+                y_axis: *y_axis,
+                z_axis: *z_axis,
+                value: PlaneType::Custom,
+                meta: vec![],
+            },
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
