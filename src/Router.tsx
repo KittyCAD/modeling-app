@@ -71,11 +71,14 @@ const router = createRouter([
     children: [
       {
         path: PATHS.INDEX,
-        loader: async () => {
+        loader: async ({ request }) => {
           const onDesktop = isDesktop()
+          const url = new URL(request.url)
           return onDesktop
-            ? redirect(PATHS.HOME)
-            : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+            ? redirect(PATHS.HOME + (url.search || ''))
+            : redirect(
+                PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+              )
         },
       },
       {
