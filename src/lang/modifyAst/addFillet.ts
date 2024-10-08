@@ -482,10 +482,6 @@ export const hasValidFilletSelection = ({
           tag = node.value
         }
       },
-      leave(node) {
-        if (node.type === 'TagDeclarator') {
-        }
-      },
     })
 
     // check if tag is used in fillet
