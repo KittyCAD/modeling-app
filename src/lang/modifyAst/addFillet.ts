@@ -118,15 +118,7 @@ export function modifyAstCloneWithFilletAndTag(
       'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
 
     const tagCalls = tagInfos.map(({ tag, selectionType }) => {
-      let tagCall: Expr = createIdentifier(tag)
-
-      // Modify the tag based on selectionType
-      if (selectionType === 'edge') {
-        tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
-      } else if (selectionType === 'adjacent-edge') {
-        tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
-      }
-      return tagCall
+      return getEdgeTagCall(tag, selectionType)
     })
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
@@ -295,6 +287,21 @@ function mutateAstWithTagForSketchSegment(
   const { tag } = taggedSegment
 
   return { modifiedAst: astClone, tag }
+}
+
+function getEdgeTagCall(
+  tag: string,
+  selectionType: string
+): Identifier | CallExpression {
+  let tagCall: Expr = createIdentifier(tag)
+
+  // Modify the tag based on selectionType
+  if (selectionType === 'edge') {
+    tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
+  } else if (selectionType === 'adjacent-edge') {
+    tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
+  }
+  return tagCall
 }
 
 function locateExtrudeDeclarator(
@@ -487,12 +494,7 @@ export const hasValidFilletSelection = ({
     // check if tag is used in fillet
     if (tagExists) {
       // create tag call
-      let tagCall: Expr = createIdentifier(tag)
-      if (selection.type === 'edge') {
-        tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
-      } else if (selection.type === 'adjacent-edge') {
-        tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
-      }
+      let tagCall: Expr = getEdgeTagCall(tag, selection.type)
 
       // check if tag is used in fillet
       let inFillet = false
