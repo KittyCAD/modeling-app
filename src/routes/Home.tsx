@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
@@ -8,9 +8,8 @@ import { ActionButton } from 'components/ActionButton'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from 'components/AppHeader'
 import ProjectCard from 'components/ProjectCard/ProjectCard'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { type HomeLoaderData } from 'lib/types'
 import Loading from 'components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
@@ -38,11 +37,17 @@ import {
 } from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { useProjectsLoader } from 'hooks/useProjectsLoader'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
+  const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
+  const { projectPaths, projectsDir } = useProjectsLoader([
+    projectsLoaderTrigger,
+  ])
+
   useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
@@ -158,12 +163,25 @@ const Home = () => {
     }),
     {
       input: {
-        projects: loadedProjects,
+        projects: projectPaths,
         defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
       },
     }
   )
+
+  useEffect(() => {
+    send({ type: 'Read projects', data: {} })
+  }, [projectPaths])
+
+  // Re-read projects listing if the projectDir has any updates.
+  useFileSystemWatcher(
+    async () => {
+      setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
+    },
+    projectsDir ? [projectsDir] : []
+  )
+
   const { projects } = state.context
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)

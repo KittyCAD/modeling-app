@@ -16,7 +16,7 @@
 
 statement[@isGroup=Statement] {
   FunctionDeclaration { kw<"fn"> VariableDefinition Equals ParamList Arrow Body } |
-  VariableDeclaration { (kw<"var"> | kw<"let"> | kw<"const">) VariableDefinition Equals expression } |
+  VariableDeclaration { (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression }
 }
@@ -40,6 +40,7 @@ expression[@isGroup=Expression] {
   } |
   UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
+  IfExpression { kw<"if"> expression Body kw<"else"> Body } |
   CallExpression { expression !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
