@@ -25,6 +25,7 @@ export const projectsMachine = setup({
           type: 'Delete project'
           data: ProjectsCommandSchema['Delete project']
         }
+      | { type: 'Import file from URL'; data: ProjectsCommandSchema['Import file from URL'] }
       | { type: 'navigate'; data: { name: string } }
       | {
           type: 'xstate.done.actor.read-projects'
@@ -93,9 +94,10 @@ export const projectsMachine = setup({
   },
   guards: {
     'Has at least 1 project': () => false,
+    'New project method is used': () => false,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IAjBIkA2AHQAOCUw0qNkjQE4xYjQF8zMtJhwES5NcmpZSqLBwBOqAFZh8PWAoAJTBcCHcvX39YZjYkEC5efkF40QQFFQBmAHY1Qwz9QwBWU0NMrRl5BGyxBTUVJlVM01rtBXNLEGtsPCIyMEdnVwifPwCKAGEPUJ5sT1H-WKFE4j4BITSMzMzNIsyJDSZMhSYmFWzKxAkTNSYxIuU9zOKT7IsrDB67fsHYEajxiEwv8xjFWMtuKtkhsrpJboZsioincFMdTIjLggVGJ1GImMVMg0JISjEV3l1PrY+g4nH95gDAiFSLgbPSxkt4is1ilQGlrhJ4YjkbU0RoMXJEIYkWoikV8hJinjdOdyd0qfYBrSQdFJtNcLNtTwOZxIdyYQh+YKkSjReKqqYBQoEQpsgiSi9MqrKb0Nb9DYEACJgAA2YANbMW4M5puhqVhAvxQptCnRKkxCleuw0Gm2+2aRVRXpsPp+Woj4wA8hwwKRDcaEjH1nGLXDE9aRSmxWmJVipWocmdsbL8kxC501SWHFMZmQoIaKBABAMyAA3VAAawG+D1swAtOX61zY7zENlEWoMkoatcdPoipjCWIZRIirozsPiYYi19qQNp-rZ3nMAPC8Dw1A4YN9QAM1QDx0DUbcZjAfdInZKMTSSJsT2qc9Lwka8lTvTFTB2WUMiyQwc3yPRv3VH4mRZQDywXJc1FXDcBmmZlMBQhYjXQhtMJ5ERT1wlQr0kQj7kxKiZTxM5s2zbQEVoycBgY9AmNQ-wKGA0DwMgngYLgtQuJZZCDwEo8sJEnD1Dwgjb2kntig0GUkWVfZDEMfFVO+Bwg1DPhSDnZjFwcdjNzUCAQzDCztP4uIMKhGy0jPezxPwySnPvHsTjlPIhyOHRsnwlM-N-NRArDLS+N0kDYIM6DYPgmKgvivjD0bYS+VbBF21RTs7UUUcimfRpXyYRF8LFCrfSBCBaoZFiItINcor1CBeIZLqhPNdKL0yxzs2cqoNDqdpSo0EoSoLOb6NCRaQv9FblzWjjTMe7bQQYBQksElKesUMRjFubRMllCHsm2a5MVldRDBfFpmj0IpxPuhwFqW0F6v0iDmpMzbvuiXbAfNFNQcaI5IaKaH9jETFsUMNRVDxOU5TxBULE6VwYvgeIJ38sAIT25td27KpdzG7yZeho5slHVmMc1IY3HLfnkrNZt2hOW5smRCQM2uhQHkZ6VtkRBFnmu0qFGVv11ZFsnm0kdN8QFJVjlUPZ9co+3-2C0KEqdrXsJMJ8ryc86iUyYiCvxFNzldb3jHtjTsf8EPj1ssQchZlR8jR5EmDRrIGZcuF7maF1aZtslx29IWqtiwPDSz1LxDxepnlOfYDghp03eyOpngzXuYdHNPHozgJ26B9IXR2cTvP0BVkSRXKqgLtyq8OfQcXOwlubMIA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IAjBIkA2AHQAOCUw0qNkjQE4xYjQF8zMtJhwES5NcmpZSqLBwBOqAFZh8PWAoAJTBcCHcvX39YZjYkEC5efkF40QQFFQBmAHY1Qwz9QwBWU0NMrRl5BGyxBTUVJlVM01rtBXNLEGtsPCIyMEdnVwifPwCKAGEPUJ5sT1H-WKFE4j4BITSMzMzNIsyJDSZMhSYmFWzKxAkTNSYxIuU9zOKT7IsrDB67fsHYEajxiEwv8xjFWMtuKtkhsrpJboZsioincFMdTIjLggVGJ1GImMVMg0JISjEV3l1PrY+g4nH95gDAiFSLgbPSxkt4is1ilQGlrhJ4YjkbU0RoMXJEIYkWoikV8hJinjdOdyd0qfYBrSQdFJtNcLNtTwOZxIdyYQh+YKkSjReKqqYBQoEQpsgiSi9MqrKb0Nb9DYEACJgAA2YANbMW4M5puhqVhAvxQptCnRKkxCleuw0Gm2+2aRVRXpsPp+Woj4wA8hwwKRDcaEjH1nGLXDE9aRSmxWmJVipWocmdsbL8kxC501SWHFMZmQoIaKBABAMyAA3VAAawG+D1swAtOX61zY7zENlEWoMkoatcdPoipjCWIZRIirozsPiYYi19qQNp-rZ3nMAPC8Dw1A4YN9QAM1QDx0DUbcZjAfdInZKMTSSJsT2qc9Lwka8lTvTFTB2WUMiyQwc3yPRv3VH4mRZQDywXJc1FXDcBmmZlMBQhYjXQhtMJ5ERT1wlQr0kQj7kxKiZTxM5s2zbQEVoycBgY9AmNQ-wKGA0DwMgngYLgtQuJZZCDwEo8sJEnD1Dwgjb2kntig0GUkWVfZDEMfFVO+Bwg1DPhSDnZjFwcdjNzUCAQzDCztP4uIMKhGy0jPezxPwySnPvHsTjlPIhyOHRsnwlM-N-NRArDLS+N0kDYIM6DYPgmKgvivjD0bYS+VbBF21RTs7UUUcimfRpXyYRF8LFCrfSBCBaoZFiItINcor1CBeIZLqhPNdKL0yxzs2cqoNDqdpSo0EoSoLOb6NCRaQv9FblzWjjTMe7bQQYBQksElKesUMRjFubRMllCHsm2a5MVldRDBfFpmj0IpxPuhwFqW0F6v0iDmpMzbvuiXbAfNFNQcaI5IaKaH9jETFsUMNRVDxOU5TxBUMcof8DSg4hQ1Js1mwyfCL2JYlakkA4GZcp16jEaGzylfMsm53UkKwfnBb+iE9pFlQDjUM8HiYV99At2WqhOO5+zPLQqbRyiyXJVwYvgeIJ38sA9bJ5td27KpdzG7zQ70VFslOBVim5v1hnLD3kuF7D2hOW5smRCQM2uhQHkZ6VtkRBFnmu0qFFjssEsTgHk9syR03xAUlWOVQ9gzyjY957H-F92u0hMJ8ryc86iUyYiCvxFNzldVvjFjjTu54XvjzrnIWZUfI0eRM2VCyK3JThe5mhdWnS5dj5i29qrYuC0KEuX1LxDxepnlOfYDghp0G+yOpngzN+Yajnno9Re1drJA3SC6HY4lvL6AVMiJEuUqgbzckfQ4+gcTnUJBYCwQA */
   id: 'Home machine',
 
   initial: 'Reading projects',
@@ -111,6 +113,14 @@ export const projectsMachine = setup({
       })),
       target: '.Reading projects',
     },
+
+    "Import file from URL": [{
+      target: ".Creating project",
+      guard: "New project method is used"
+    }, {
+      target: ".Reading projects",
+      actions: "navigateToProject"
+    }]
   },
   states: {
     'Has no projects': {
@@ -155,7 +165,7 @@ export const projectsMachine = setup({
         id: 'create-project',
         src: 'createProject',
         input: ({ event, context }) => {
-          if (event.type !== 'Create project') {
+          if (event.type !== 'Create project' && event.type !== 'Import file from URL') {
             return {
               name: '',
               projects: context.projects,
@@ -270,7 +280,7 @@ export const projectsMachine = setup({
             actions: ['toastError'],
           },
         ],
-      },
+      }
     },
   },
 })

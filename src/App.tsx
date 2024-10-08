@@ -22,9 +22,11 @@ import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
+import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  useCreateFileLinkQuery()
   useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
