@@ -21,7 +21,7 @@ function countNewlines(input: string): number {
 }
 
 test.describe('Debug pane', () => {
-  test.only('Artifact IDs in the artifact graph are stable across code edits', async ({
+  test('Artifact IDs in the artifact graph are stable across code edits', async ({
     page,
     context,
   }) => {
