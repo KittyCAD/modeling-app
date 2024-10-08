@@ -6,26 +6,31 @@ type KCEngineUtilsEvaluatePath = {
 let kcEngineUtilsEvaluatePath: KCEngineUtilsEvaluatePath
 
 export async function init() {
-  return await new Promise((resolve) => {
-    kcEngineUtilsEvaluatePath = (s: string, t: number) => {
-      return 'banana'
-    }
-    resolve(true)
+  return await new Promise((resolve, reject) => {
+    try {
+      kcEngineUtilsEvaluatePath = (s: string, t: number) => {
+        return 'it works'
+      }
+      resolve(true)
 
-    // EngineUtils.Module().then(() => {
-    //   kcEngineUtilsEvaluatePath = EngineUtils.Module.cwrap(
-    //     'kcEngineCalcPathEndpoint',
-    //     'string',
-    //     ['string', 'number']
-    //   )
-    //   resolve(true)
-    // })
+      // EngineUtils.Module().then(() => {
+      //   kcEngineUtilsEvaluatePath = EngineUtils.Module.cwrap(
+      //     'kcEngineCalcPathEndpoint',
+      //     'string',
+      //     ['string', 'number']
+      //   )
+      //   resolve(true)
+      // })
+    } catch (e) {
+      reject(e)
+    }
   })
 }
 
-export function getTruePathEndPos(sketch: string) {
-  console.log(
-    'did this fucking thing get the function ' + kcEngineUtilsEvaluatePath
-  )
+export async function getTruePathEndPos(sketch: string) {
+  if (!kcEngineUtilsEvaluatePath) {
+    await init()
+  }
+
   return kcEngineUtilsEvaluatePath(sketch, 1.0)
 }

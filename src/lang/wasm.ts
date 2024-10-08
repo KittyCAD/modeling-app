@@ -37,7 +37,6 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import * as EngineUtils from 'lib/engineUtils'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -103,11 +102,10 @@ export const wasmUrl = () => {
 // Initialise the wasm module.
 const initialise = async () => {
   try {
-    await EngineUtils.init()
-
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
+
     return await init(buffer)
   } catch (e) {
     console.log('Error initialising WASM', e)

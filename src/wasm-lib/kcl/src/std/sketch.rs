@@ -12,6 +12,8 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use std::{ cell::RefCell, rc::Rc };
+
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -1483,7 +1485,7 @@ pub enum ArcData {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen(module = "/../../lib/engineUtils.ts")]
 extern "C" {
-    fn getTruePathEndPos(sketch: String) -> String;
+    async fn getTruePathEndPos(sketch: String) -> wasm_bindgen::JsValue;
 }
 
 /// Draw an arc.
@@ -1545,8 +1547,15 @@ pub(crate) async fn inner_arc(
                     })
                 })?;
 
-                let result = getTruePathEndPos(sketch_json_value.into());
-                web_sys::console::log_1(&format!("Did this work? {result:?}").into());        
+                //let str_result: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));
+                //let str_result0 = Rc::clone(&str_result);
+                //wasm_bindgen_futures::spawn_local(async move {
+                    let result = getTruePathEndPos(sketch_json_value.into()).await.as_string().unwrap_or_default();                    
+                    web_sys::console::log_1(&format!("Inside here {result:?}").into());
+                    //*str_result0.borrow_mut() = Some(result);
+                //});
+
+                //web_sys::console::log_1(&format!("Did this work? {str_result:?}").into());
             }
 
             //duplicating engine logic to make sure this is _exactly_ what engine is doing - mike
