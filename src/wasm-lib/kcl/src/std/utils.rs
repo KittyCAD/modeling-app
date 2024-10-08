@@ -218,10 +218,34 @@ pub fn arc_center_and_end(from: Point2d, start_angle: Angle, end_angle: Angle, r
         y: center.y + radius * end_angle.sin(),
     };
 
+    #[cfg(target_arch = "wasm32")]
     web_sys::console::log_1(&format!("Frontend thinks the arc end is at {end:?}").into());
 
     (center, end)
 }
+
+pub fn arc_start_center_and_end(from: Point2d, start_angle: Angle, end_angle: Angle, radius: f64) -> (Point2d, Point2d, Point2d) {
+    let start_angle = start_angle.to_radians();
+    let end_angle = end_angle.to_radians();
+
+    let center = Point2d {
+        x: -1.0 * (radius * start_angle.cos() - from.x),
+        y: -1.0 * (radius * start_angle.sin() - from.y),
+    };
+
+    let start = Point2d {
+        x: center.x + radius * start_angle.cos(),
+        y: center.y + radius * start_angle.sin(),   
+    };
+
+    let end = Point2d {
+        x: center.x + radius * end_angle.cos(),
+        y: center.y + radius * end_angle.sin(),
+    };
+
+    (start, center, end)
+}
+
 
 pub fn arc_angles(
     from: Point2d,

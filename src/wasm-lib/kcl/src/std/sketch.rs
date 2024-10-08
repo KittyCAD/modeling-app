@@ -12,6 +12,9 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
@@ -21,7 +24,7 @@ use crate::{
     },
     std::{
         utils::{
-            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
+            arc_angles, arc_start_center_and_end, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
             get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
         Args,
@@ -1477,6 +1480,12 @@ pub enum ArcData {
     },
 }
 
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(module = "/../../lib/engineUtils.ts")]
+extern "C" {
+    fn getTruePathEndPos(sketch: String) -> String;
+}
+
 /// Draw an arc.
 pub async fn arc(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (ArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
@@ -1527,14 +1536,29 @@ pub(crate) async fn inner_arc(
             let mut a_start = Angle::from_degrees(*angle_start);
             let mut a_end = Angle::from_degrees(*angle_end);
 
-            //duplicating engine logic to make sure this is _exactly_ what engine is doing - mike
-            // if a_start.0 > a_end.0 {
-            //     // this implies a clockwise arc, so swap the angles to a matching counter-clockwise arc
-            //     std::mem::swap(&mut a_end, &mut a_start);
-            // }
+            #[cfg(target_arch = "wasm32")]
+            {
+                let sketch_json_value = serde_json::to_string(&sketch).map_err(|e| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Failed to convert sketch to json: {}", e),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?;
 
-            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
-            (center, a_start, a_end, *radius, end)
+                let result = getTruePathEndPos(sketch_json_value.into());
+                web_sys::console::log_1(&format!("Did this work? {result:?}").into());        
+            }
+
+            //duplicating engine logic to make sure this is _exactly_ what engine is doing - mike
+            if a_start.to_degrees() > a_end.to_degrees() {
+                // this implies a clockwise arc, so swap the angles to a matching counter-clockwise arc
+                std::mem::swap(&mut a_end, &mut a_start);
+            }
+
+            let (start, center, end) = arc_start_center_and_end(from, a_start, a_end, *radius);
+
+            (center, a_start, a_end, *radius, start)
+            //(center, a_start, a_end, *radius, end)
         }
         ArcData::CenterToRadius { center, to, radius } => {
             let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
