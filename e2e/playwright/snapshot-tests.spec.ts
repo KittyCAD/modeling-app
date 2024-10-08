@@ -670,6 +670,7 @@ test.describe(
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
+        mask: [page.getByTestId('model-state-indicator')],
       })
 
       // exit sketch
@@ -687,6 +688,7 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
+        mask: [page.getByTestId('model-state-indicator')],
       })
     })
 
