@@ -7,7 +7,7 @@ import {
   Paths,
   setupElectron,
   tearDown,
-  createProjectAndRenameIt,
+  createProject,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
@@ -863,23 +863,15 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
+    await createProject({
+      name: 'router-template-slate',
+      page,
+      returnHome: true,
+    })
+    await createProject({ name: 'bracket', page, returnHome: true })
+    await createProject({ name: 'lego', page, returnHome: true })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -991,23 +983,15 @@ test(
 
     page.on('console', console.log)
 
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
     // we need to create the folders so that the order is correct
     // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
+    await createProject({
+      name: 'router-template-slate',
+      page,
+      returnHome: true,
+    })
+    await createProject({ name: 'bracket', page, returnHome: true })
+    await createProject({ name: 'lego', page, returnHome: true })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -1158,16 +1142,10 @@ extrude001 = extrude(200, sketch001)`)
       page.getByRole('button', { name: 'New project' })
     ).toBeVisible()
 
-    const createProject = async (projectNum: number) => {
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(page.getByText('Successfully created')).toBeVisible()
-      await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-      const projectNumStr = projectNum.toString().padStart(3, '0')
-      await expect(page.getByText(`project-${projectNumStr}`)).toBeVisible()
-    }
     for (let i = 1; i <= 10; i++) {
-      await createProject(i)
+      const name = `project-${i.toString().padStart(3, '0')}`
+      await createProject({ name, page, returnHome: true })
+      await expect(page.getByText(name)).toBeVisible()
     }
     await electronApp.close()
   }
@@ -1672,7 +1650,7 @@ test(
     page.on('console', console.log)
 
     await test.step('Should create and name a project called wrist brace', async () => {
-      await createProjectAndRenameIt({ name: 'wrist brace', page })
+      await createProject({ name: 'wrist brace', page, returnHome: true })
     })
 
     await test.step('Should go through onboarding', async () => {
