@@ -1154,7 +1154,7 @@ pub struct Sketch {
     /// Tag identifiers that have been declared in this sketch.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub tags: HashMap<String, TagIdentifier>,
-    /// The original id of the sketch. This stays the same even if the sketch is
+    /// The original id of the sketch. This stays the same even if the sketch
     /// is sketched on face etc.
     pub original_id: uuid::Uuid,
     /// Metadata.
