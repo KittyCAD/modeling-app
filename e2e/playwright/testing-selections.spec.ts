@@ -1208,6 +1208,12 @@ extrude001 = extrude(50, sketch001)
   test('Deselecting line tool should mean nothing happens on click', async ({
     page,
   }) => {
+    /**
+     * If the line tool is clicked when the state is 'No Points' it will exit Sketch mode.
+     * This is the same exact workflow as pressing ESC.
+     *
+     * To continue to test this workflow, we now enter sketch mode and place a single point before exiting the line tool.
+     */
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -1228,6 +1234,7 @@ extrude001 = extrude(50, sketch001)
       200
     )
 
+    // Clicks the XZ Plane in the page
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
@@ -1236,6 +1243,11 @@ extrude001 = extrude(50, sketch001)
 
     await page.waitForTimeout(600)
 
+    // Place a point because the line tool will exit if no points are pressed
+    await page.mouse.click(650, 200)
+    await page.waitForTimeout(600)
+
+    // Code before exiting the tool
     let previousCodeContent = await page.locator('.cm-content').innerText()
 
     // deselect the line tool by clicking it
