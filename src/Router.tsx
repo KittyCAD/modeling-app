@@ -117,6 +117,11 @@ const router = createRouter([
                 element: <Onboarding />,
                 children: onboardingRoutes,
               },
+              {
+                path: makeUrlPathRelative(PATHS.TELEMETRY),
+                loader: telemetryLoader,
+                element: <Telemetry />,
+              },
             ],
           },
         ],
