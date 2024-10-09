@@ -1,9 +1,9 @@
 use anyhow::Result;
 use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
-    executor::{ExecutorContext, KclValue, PlaneType, SketchGroup, SourceRange},
+    executor::{ExecutorContext, KclValue, PlaneType, Sketch, SourceRange},
 };
-use kittycad::types::{ModelingCmd, Point3D};
+use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
@@ -38,28 +38,28 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let exec_state = ctx.run(&program, None).await?;
 
     // We need to get the sketch ID.
-    // Get the sketch group ID from memory.
+    // Get the sketch ID from memory.
     let KclValue::UserVal(user_val) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
         anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
     };
-    let Some((sketch_group, _meta)) = user_val.get::<SketchGroup>() else {
-        anyhow::bail!("part001 was not a SketchGroup");
+    let Some((sketch, _meta)) = user_val.get::<Sketch>() else {
+        anyhow::bail!("part001 was not a Sketch");
     };
-    let sketch_id = sketch_group.id;
+    let sketch_id = sketch.id;
 
     let plane_id = uuid::Uuid::new_v4();
     ctx.engine
         .send_modeling_cmd(
             plane_id,
             SourceRange::default(),
-            ModelingCmd::MakePlane {
+            ModelingCmd::from(mcmd::MakePlane {
                 clobber: false,
-                origin: Point3D { x: 0.0, y: 0.0, z: 0.0 },
-                size: 60.0,
-                x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                origin: Point3d::default(),
+                size: LengthUnit(60.0),
+                x_axis: Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                y_axis: Point3d { x: 0.0, y: 1.0, z: 0.0 },
                 hide: Some(true),
-            },
+            }),
         )
         .await?;
 
@@ -70,13 +70,13 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::EnableSketchMode {
+            ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: true,
                 entity_id: plane_id,
-                planar_normal: Some(Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+                planar_normal: Some(Point3d { x: 0.0, y: 0.0, z: 1.0 }),
                 adjust_camera: false,
-            },
+            }),
         )
         .await?;
 
@@ -87,7 +87,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
 async fn kcl_test_modify_sketch_part001() {
     let name = "part001";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
   |> line([7.37, -11.0], %)
   |> line([-8.69, -3.75], %)
@@ -112,7 +112,7 @@ async fn kcl_test_modify_sketch_part001() {
 async fn kcl_test_modify_sketch_part002() {
     let name = "part002";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -138,7 +138,7 @@ async fn kcl_test_modify_sketch_part002() {
 async fn kcl_test_modify_close_sketch() {
     let name = "part002";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -184,7 +184,7 @@ async fn kcl_test_modify_line_to_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"const {} = startSketchOn("XY")
+            r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -246,7 +246,7 @@ async fn kcl_test_modify_line_should_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"const {} = startSketchOn("XY")
+            r#"{} = startSketchOn("XY")
   |> startProfileAt([13.69, 3.8], %)
   |> line([4.23, -11.79], %)
   |> line([-10.7, -1.16], %)

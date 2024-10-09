@@ -258,7 +258,7 @@ jobs:
         run: "ls -R out"
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.5'
+        uses: 'google-github-actions/auth@v2.1.6'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
@@ -295,7 +295,12 @@ jobs:
         with:
           files: 'out/Zoo*'
 
-      # TODO: Add GitHub publisher
+      - name: Invalidate bucket cache on latest*.yml and last_download.json files
+        run: |
+          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/last_download.json" --async
+          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-linux-arm64.yml" --async
+          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-mac.yml" --async
+          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest.yml" --async
 
   announce_release:
     needs: [publish-apps-release]

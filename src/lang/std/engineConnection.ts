@@ -3,7 +3,12 @@ import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
-import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
+import {
+  Themes,
+  getThemeColorForEngine,
+  getOppositeTheme,
+  darkModeMatcher,
+} from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
   ArtifactGraph,
@@ -16,7 +21,11 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  EXPORT_TOAST_MESSAGES,
+  MAKE_TOAST_MESSAGES,
+} from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
@@ -962,7 +971,9 @@ class EngineConnection extends EventTarget {
               ) {
                 // Reject the promise with the error.
                 this.engineCommandManager.pendingExport.reject(errorsString)
-                toast.error(errorsString)
+                toast.error(errorsString, {
+                  id: this.engineCommandManager.pendingExport.toastId,
+                })
                 this.engineCommandManager.pendingExport = undefined
               }
             } else {
@@ -1330,8 +1341,13 @@ export class EngineCommandManager extends EventTarget {
   defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
   pendingExport?: {
+    /** The id of the shared loading/success/error toast for export */
+    toastId: string
+    /** An on-success callback */
     resolve: (a: null) => void
+    /** An on-error callback */
     reject: (reason: string) => void
+    /** The engine command uuid */
     commandId: string
   }
   settings: SettingsViaQueryString
@@ -1367,6 +1383,7 @@ export class EngineCommandManager extends EventTarget {
           highlightEdges: true,
           enableSSAO: true,
           showScaleGrid: false,
+          cameraProjection: 'perspective',
         }
   }
 
@@ -1385,6 +1402,9 @@ export class EngineCommandManager extends EventTarget {
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
+  private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
+    this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
+  }
   private onEngineConnectionStarted = ({ detail: engineConnection }: any) => {}
   private onEngineConnectionNewTrack = ({
     detail,
@@ -1415,6 +1435,7 @@ export class EngineCommandManager extends EventTarget {
       highlightEdges: true,
       enableSSAO: true,
       showScaleGrid: false,
+      cameraProjection: 'orthographic',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
@@ -1471,30 +1492,26 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
-      // Set the stream background color
-      // This takes RGBA values from 0-1
-      // So we convert from the conventional 0-255 found in Figma
+      // Set the stream's camera projection type
+      // We don't send a command to the engine if in perspective mode because
+      // for now it's the engine's default.
+      if (settings.cameraProjection === 'orthographic') {
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_set_orthographic',
+          },
+        }).catch(reportRejection)
+      }
 
-      void this.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'set_background_color',
-          color: getThemeColorForEngine(this.settings.theme),
-        },
-      })
-
-      // Sets the default line colors
-      const opposingTheme = getOppositeTheme(this.settings.theme)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.sendSceneCommand({
-        cmd_id: uuidv4(),
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'set_default_system_properties',
-          color: getThemeColorForEngine(opposingTheme),
-        },
-      })
+      // Set the theme
+      this.setTheme(this.settings.theme).catch(reportRejection)
+      // Set up a listener for the dark theme media query
+      darkModeMatcher?.addEventListener(
+        'change',
+        this.onDarkThemeMediaQueryChange
+      )
 
       // Set the edge lines visibility
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1593,7 +1610,7 @@ export class EngineCommandManager extends EventTarget {
           // because in all other cases we send JSON strings. But in the case of
           // export we send a binary blob.
           // Pass this to our export function.
-          if (this.exportIntent === null) {
+          if (this.exportIntent === null || this.pendingExport === undefined) {
             toast.error(
               'Export intent was not set, but export data was received'
             )
@@ -1605,19 +1622,22 @@ export class EngineCommandManager extends EventTarget {
 
           switch (this.exportIntent) {
             case ExportIntent.Save: {
-              exportSave(event.data).then(() => {
+              exportSave(event.data, this.pendingExport.toastId).then(() => {
                 this.pendingExport?.resolve(null)
               }, this.pendingExport?.reject)
               break
             }
             case ExportIntent.Make: {
-              exportMake(event.data).then((result) => {
-                if (result) {
-                  this.pendingExport?.resolve(null)
-                } else {
-                  this.pendingExport?.reject('Failed to make export')
-                }
-              }, this.pendingExport?.reject)
+              exportMake(event.data, this.pendingExport.toastId).then(
+                (result) => {
+                  if (result) {
+                    this.pendingExport?.resolve(null)
+                  } else {
+                    this.pendingExport?.reject('Failed to make export')
+                  }
+                },
+                this.pendingExport?.reject
+              )
               break
             }
           }
@@ -1782,6 +1802,10 @@ export class EngineCommandManager extends EventTarget {
         EngineConnectionEvents.NewTrack,
         this.onEngineConnectionNewTrack as EventListener
       )
+      darkModeMatcher?.removeEventListener(
+        'change',
+        this.onDarkThemeMediaQueryChange
+      )
 
       this.engineConnection?.tearDown(opts)
 
@@ -1932,7 +1956,20 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve(null)
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
+        if (this.exportIntent === null) {
+          if (this.exportIntent === null) {
+            toast.error('Export intent was not set, but export is being sent')
+            console.error('Export intent was not set, but export is being sent')
+            return
+          }
+        }
+        const toastId = toast.loading(
+          this.exportIntent === ExportIntent.Save
+            ? EXPORT_TOAST_MESSAGES.START
+            : MAKE_TOAST_MESSAGES.START
+        )
         this.pendingExport = {
+          toastId,
           resolve: (passThrough) => {
             this.addCommandLog({
               type: 'export-done',
@@ -2129,6 +2166,34 @@ export class EngineCommandManager extends EventTarget {
         hidden: hidden,
       },
     })
+  }
+
+  /**
+   * Set the engine's theme
+   */
+  async setTheme(theme: Themes) {
+    // Set the stream background color
+    // This takes RGBA values from 0-1
+    // So we convert from the conventional 0-255 found in Figma
+    this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_background_color',
+        color: getThemeColorForEngine(theme),
+      },
+    }).catch(reportRejection)
+
+    // Sets the default line colors
+    const opposingTheme = getOppositeTheme(theme)
+    this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_default_system_properties',
+        color: getThemeColorForEngine(opposingTheme),
+      },
+    }).catch(reportRejection)
   }
 
   /**

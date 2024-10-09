@@ -9,10 +9,12 @@ import {
   executorInputPath,
 } from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
+import { SETTINGS_FILE_NAME } from 'lib/constants'
 import {
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS,
+  TEST_SETTINGS_DEFAULT_THEME,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 
@@ -69,12 +71,15 @@ test.describe('Testing settings', () => {
     page,
   }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
+    await test.step(`Setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await page
+        .getByRole('button', { name: 'Start Sketch' })
+        .waitFor({ state: 'visible' })
+    })
 
+    // Selectors and constants
     const paneButtonLocator = page.getByTestId('debug-pane-button')
     const headingLocator = page.getByRole('heading', {
       name: 'Settings',
@@ -82,11 +87,23 @@ test.describe('Testing settings', () => {
     })
     const inputLocator = page.locator('input[name="modeling-showDebugPanel"]')
 
-    // Open the settings modal with the browser keyboard shortcut
-    await page.keyboard.press('ControlOrMeta+Shift+,')
+    await test.step('Open settings dialog and set "Show debug panel" to on', async () => {
+      await page.keyboard.press('ControlOrMeta+Shift+,')
+      await expect(headingLocator).toBeVisible()
 
-    await expect(headingLocator).toBeVisible()
-    await page.locator('#showDebugPanel').getByText('OffOn').click()
+      /** Test to close https://github.com/KittyCAD/modeling-app/issues/2713 */
+      await test.step(`Confirm that this dialog has a solid background`, async () => {
+        await expect
+          .poll(() => u.getGreatestPixDiff({ x: 600, y: 250 }, [28, 28, 28]), {
+            timeout: 1000,
+            message:
+              'Checking for solid background, should not see default plane colors',
+          })
+          .toBeLessThan(15)
+      })
+
+      await page.locator('#showDebugPanel').getByText('OffOn').click()
+    })
 
     // Close it and open again with keyboard shortcut, while KCL editor is focused
     // Put the cursor in the editor
@@ -242,7 +259,7 @@ test.describe('Testing settings', () => {
 
   test(
     `Project settings override user settings on desktop`,
-    { tag: '@electron' },
+    { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
       test.skip(
         process.platform === 'win32',
@@ -262,8 +279,6 @@ test.describe('Testing settings', () => {
 
       await page.setViewportSize({ width: 1200, height: 500 })
 
-      page.on('console', console.log)
-
       // Selectors and constants
       const userThemeColor = '120'
       const projectThemeColor = '50'
@@ -277,7 +292,6 @@ test.describe('Testing settings', () => {
       const projectLink = page.getByText('bracket')
       const logoLink = page.getByTestId('app-logo')
 
-      // Open the app and set the user theme color
       await test.step('Set user theme color on home', async () => {
         await expect(settingsOpenButton).toBeVisible()
         await settingsOpenButton.click()
@@ -296,13 +310,15 @@ test.describe('Testing settings', () => {
         await expect(projectSettingsTab).toBeChecked()
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
+        await settingsCloseButton.click()
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
+        // Make sure we're done navigating before we reload
+        await expect(settingsCloseButton).not.toBeVisible()
         await page.reload({ waitUntil: 'domcontentloaded' })
 
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-        await settingsCloseButton.click()
       })
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
@@ -328,7 +344,7 @@ test.describe('Testing settings', () => {
 
       // Selectors and constants
       const errorHeading = page.getByRole('heading', {
-        name: 'An unextected error occurred',
+        name: 'An unexpected error occurred',
       })
       const projectDirLink = page.getByText('Loaded from')
 
@@ -357,7 +373,7 @@ test.describe('Testing settings', () => {
 
       // Selectors and constants
       const errorHeading = page.getByRole('heading', {
-        name: 'An unextected error occurred',
+        name: 'An unexpected error occurred',
       })
       const projectDirLink = page.getByText('Loaded from')
 
@@ -365,6 +381,66 @@ test.describe('Testing settings', () => {
       await expect(errorHeading).not.toBeVisible()
       await expect(projectDirLink).toBeVisible()
 
+      await electronApp.close()
+    }
+  )
+
+  // It was much easier to test the logo color than the background stream color.
+  test(
+    'user settings reload on external change, on project and modeling view',
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
+        testInfo,
+        appSettings: {
+          app: {
+            // Doesn't matter what you set it to. It will
+            // default to 264.5
+            themeColor: '0',
+          },
+        },
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const logoLink = page.getByTestId('app-logo')
+      const projectDirLink = page.getByText('Loaded from')
+
+      await test.step('Wait for project view', async () => {
+        await expect(projectDirLink).toBeVisible()
+        await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
+      })
+
+      const changeColor = async (color: string) => {
+        const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
+        let tomlStr = await fsp.readFile(tempSettingsFilePath, 'utf-8')
+        tomlStr = tomlStr.replace(/(themeColor = ")[0-9]+(")/, `$1${color}$2`)
+        await fsp.writeFile(tempSettingsFilePath, tomlStr)
+      }
+
+      await test.step('Check color of logo changed', async () => {
+        await changeColor('99')
+        await expect(logoLink).toHaveCSS('--primary-hue', '99')
+      })
+
+      await test.step('Check color of logo changed when in modeling view', async () => {
+        await page.getByRole('button', { name: 'New project' }).click()
+        await page.getByTestId('project-link').first().click()
+        await page.getByRole('button', { name: 'Dismiss' }).click()
+        await changeColor('58')
+        await expect(logoLink).toHaveCSS('--primary-hue', '58')
+      })
+
+      await test.step('Check going back to projects view still changes the color', async () => {
+        await logoLink.click()
+        await expect(projectDirLink).toBeVisible()
+        await changeColor('21')
+        await expect(logoLink).toHaveCSS('--primary-hue', '21')
+      })
       await electronApp.close()
     }
   )
@@ -581,14 +657,14 @@ test.describe('Testing settings', () => {
     await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([0, 5], %)
   |> line([-5, 0], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)
+extrude001 = extrude(5, sketch001)
 `
       )
     })
@@ -638,6 +714,60 @@ const extrude001 = extrude(5, sketch001)
         .poll(() =>
           u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
         )
+        .toBeLessThan(15)
+    })
+  })
+
+  test(`Changing system theme preferences (via media query) should update UI and stream`, async ({
+    page,
+  }) => {
+    // Override the settings so that the theme is set to `system`
+    await page.addInitScript(
+      ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_DEFAULT_THEME,
+        }),
+      }
+    )
+    const u = await getUtils(page)
+
+    // Selectors and constants
+    const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
+    const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
+    const darkBackgroundColor: [number, number, number] = [27, 27, 27]
+    const lightBackgroundColor: [number, number, number] = [245, 245, 245]
+    const streamBackgroundPixelIsColor = async (
+      color: [number, number, number]
+    ) => {
+      return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+    }
+    const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
+
+    await test.step(`Test setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await expect(toolbar).toBeVisible()
+    })
+
+    await test.step(`Check the background color is light before`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', lightBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+        .toBeLessThan(15)
+    })
+
+    await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
+      await page.emulateMedia({ colorScheme: 'dark' })
+    })
+
+    await test.step(`Check the background color is dark after`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
         .toBeLessThan(15)
     })
   })

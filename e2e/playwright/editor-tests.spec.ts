@@ -21,7 +21,7 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -33,7 +33,7 @@ test.describe('Editor tests', () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -46,7 +46,7 @@ test.describe('Editor tests', () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -66,7 +66,7 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -76,7 +76,7 @@ test.describe('Editor tests', () => {
     await page.locator('button:has-text("Format code")').click()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -96,7 +96,7 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`const sketch_001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch_001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -124,7 +124,7 @@ test.describe('Editor tests', () => {
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch_001 = startSketchOn('XY')
+      .toHaveText(`sketch_001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -144,7 +144,7 @@ test.describe('Editor tests', () => {
   test('fold gutters work', async ({ page }) => {
     const u = await getUtils(page)
 
-    const fullCode = `const sketch001 = startSketchOn('XY')
+    const fullCode = `sketch001 = startSketchOn('XY')
      |> startProfileAt([-10, -10], %)
      |> line([20, 0], %)
      |> line([0, 20], %)
@@ -153,7 +153,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
      |> startProfileAt([-10, -10], %)
      |> line([20, 0], %)
      |> line([0, 20], %)
@@ -191,7 +191,7 @@ test.describe('Editor tests', () => {
     await foldGutterFoldLine.click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XY')…   `
+      `sketch001 = startSketchOn('XY')…   `
     )
     await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
     await expect(foldGutterFoldLine).not.toBeVisible()
@@ -219,7 +219,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -263,7 +263,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -290,7 +290,7 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('Alt+Shift+KeyF')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -305,7 +305,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch_001 = startSketchOn('XY')
+        `sketch_001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -342,7 +342,7 @@ test.describe('Editor tests', () => {
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch_001 = startSketchOn('XY')
+      .toHaveText(`sketch_001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -369,9 +369,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type('const my_snake_case_var = 5')
+    await page.keyboard.type('my_snake_case_var = 5')
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const myCamelCaseVar = 5')
+    await page.keyboard.type('myCamelCaseVar = 5')
     await page.keyboard.press('Enter')
 
     // press arrows to clear autocomplete
@@ -388,7 +388,7 @@ test.describe('Editor tests', () => {
     ).toBeVisible()
 
     // select the line that's causing the error and delete it
-    await page.getByText('const my_snake_case_var = 5').click()
+    await page.getByText('my_snake_case_var = 5').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('Home')
@@ -404,7 +404,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
@@ -459,9 +459,9 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowRight')
 
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const topAng = 30')
+    await page.keyboard.type('topAng = 30')
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const bottomAng = 25')
+    await page.keyboard.type('bottomAng = 25')
     await page.keyboard.press('Enter')
 
     // error in guter
@@ -483,11 +483,11 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     // let's check we get an error when defining the same variable twice
-    await page.getByText('const bottomAng = 25').click()
+    await page.getByText('bottomAng = 25').click()
     await page.keyboard.press('Enter')
     await page.keyboard.type("// Let's define the same thing twice")
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const topAng = 42')
+    await page.keyboard.type('topAng = 42')
     await page.keyboard.press('ArrowLeft')
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -513,13 +513,13 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const length = .750
-  const width = 0.500
-  const height = 0.500
-  const dia = 4
+        `length = .750
+  width = 0.500
+  height = 0.500
+  dia = 4
 
   fn squareHole = (l, w) => {
-    const squareHoleSketch = startSketchOn('XY')
+    squareHoleSketch = startSketchOn('XY')
     |> startProfileAt([-width / 2, -length / 2], %)
     |> lineTo([width / 2, -length / 2], %)
     |> lineTo([width / 2, length / 2], %)
@@ -557,8 +557,8 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await page.keyboard.type(`const extrusion = startSketchOn('XY')
-    |> circle([0, 0], dia/2, %)
+    await page.keyboard.type(`extrusion = startSketchOn('XY')
+    |> circle({ center: [0, 0], radius: dia/2 }, %)
   |> hole(squareHole(length, width, height), %)
   |> extrude(height, %)`)
 
@@ -579,7 +579,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const box = startSketchOn('XY')
+        `box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -587,7 +587,7 @@ test.describe('Editor tests', () => {
   |> close(%)
   |> extrude(10, %)
 
-  const sketch001 = startSketchOn(box, revolveAxis)
+  sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
@@ -628,7 +628,7 @@ test.describe('Editor tests', () => {
       // and arrowing down to an option
 
       await u.codeLocator.click()
-      await page.keyboard.type('const sketch001 = start')
+      await page.keyboard.type('sketch001 = start')
 
       // expect there to be six auto complete options
       await expect(page.locator('.cm-completionLabel')).toHaveCount(8)
@@ -679,7 +679,7 @@ test.describe('Editor tests', () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`const sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([3.14, 12], %)
     |> xLine(5, %) // lin`)
     })
@@ -697,7 +697,7 @@ test.describe('Editor tests', () => {
       // and arrowing down to an option
 
       await u.codeLocator.click()
-      await page.keyboard.type('const sketch001 = startSketchO')
+      await page.keyboard.type('sketch001 = startSketchO')
       await page.waitForTimeout(100)
 
       // Make sure just hitting tab will take the only one left
@@ -750,7 +750,7 @@ test.describe('Editor tests', () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`const sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([3.14, 12], %)
     |> xLine(5, %) // lin`)
     })
@@ -760,7 +760,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
@@ -812,7 +812,7 @@ test.describe('Editor tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)const extrude001 = extrude(5, sketch001)`
+      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)extrude001 = extrude(5, sketch001)`
     )
 
     // Now hit undo
@@ -822,7 +822,7 @@ test.describe('Editor tests', () => {
 
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
@@ -834,7 +834,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -0.38], %)
@@ -925,7 +925,7 @@ test.describe('Editor tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -12.68], %)
   |> line([15.39, -2.78], %)
   |> tangentialArcTo([27.6, -3.05], %)
@@ -939,7 +939,7 @@ test.describe('Editor tests', () => {
     await page.keyboard.up('Control')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -12.68], %)
   |> line([15.39, -2.78], %)
   |> tangentialArcTo([24.95, -0.38], %)
@@ -952,7 +952,7 @@ test.describe('Editor tests', () => {
     await page.keyboard.up('Control')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -12.68], %)
   |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -0.38], %)
@@ -967,7 +967,7 @@ test.describe('Editor tests', () => {
 
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -0.38], %)

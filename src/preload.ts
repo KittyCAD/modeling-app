@@ -5,19 +5,40 @@ import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
+import chokidar from 'chokidar'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const login = (host: string): Promise<string> =>
-  ipcRenderer.invoke('login', host)
+const startDeviceFlow = (host: string): Promise<string> =>
+  ipcRenderer.invoke('startDeviceFlow', host)
+const loginWithDeviceFlow = (): Promise<string> =>
+  ipcRenderer.invoke('loginWithDeviceFlow')
+const onUpdateDownloaded = (callback: (value: string) => void) =>
+  ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+const appRestart = () => ipcRenderer.invoke('app.restart')
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
 const isLinux = os.platform() === 'linux'
 
+let fsWatchListeners = new Map<string, ReturnType<typeof chokidar.watch>>()
+
+const watchFileOn = (path: string, callback: (path: string) => void) => {
+  const watcherMaybe = fsWatchListeners.get(path)
+  if (watcherMaybe) return
+  const watcher = chokidar.watch(path)
+  watcher.on('all', callback)
+  fsWatchListeners.set(path, watcher)
+}
+const watchFileOff = (path: string) => {
+  const watcher = fsWatchListeners.get(path)
+  if (!watcher) return
+  watcher.unwatch(path)
+  fsWatchListeners.delete(path)
+}
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
@@ -61,10 +82,13 @@ const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
 contextBridge.exposeInMainWorld('electron', {
-  login,
+  startDeviceFlow,
+  loginWithDeviceFlow,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.
+  watchFileOn,
+  watchFileOff,
   readFile,
   writeFile,
   exists,
@@ -120,4 +144,6 @@ contextBridge.exposeInMainWorld('electron', {
   kittycad,
   listMachines,
   getMachineApiIp,
+  onUpdateDownloaded,
+  appRestart,
 })

@@ -5,7 +5,7 @@ import {
   ProgramMemory,
   Path,
   ExtrudeSurface,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
@@ -89,8 +89,8 @@ export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
   for (const [key, val] of programMemory?.visibleEntries()) {
     if (typeof val.value !== 'function') {
-      const sg = sketchGroupFromKclValue(val, null)
-      if (val.type === 'ExtrudeGroup') {
+      const sg = sketchFromKclValue(val, null)
+      if (val.type === 'Solid') {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })

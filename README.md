@@ -2,7 +2,7 @@
 
 ## Zoo Modeling App
 
-live at [app.zoo.dev](https://app.zoo.dev/)
+download at [zoo.dev/modeling-app/download](https://zoo.dev/modeling-app/download)
 
 A CAD application from the future, brought to you by the [Zoo team](https://zoo.dev).
 
@@ -128,7 +128,18 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-#### 1. Bump the versions by running `./make-release.sh` and create a Cut Release PR
+#### 1. Bump the versions by running `./make-release.sh`
+
+The `./make-release.sh` script has git commands to pull main but to be sure you can run the following git commands to have a fresh `main` locally.
+
+```
+git branch -D main
+git checkout main
+git pull origin
+./make-release.sh
+# Copy within the back ticks and paste the stdout of the change log
+git push --set-upstream origin <branch name created from ./make-release.sh>
+```
 
 That will create the branch with the updated json files for you:
 - run `./make-release.sh` or `./make-release.sh patch` for a patch update;
@@ -137,28 +148,32 @@ That will create the branch with the updated json files for you:
 
 After it runs you should just need the push the branch and open a PR.
 
-**Important:** It needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
+#### 2. Create a Cut Release PR
+
+When you open the PR copy the change log from the output of the `./make-release.sh` script into the description of the PR.
+
+**Important:** Pull request title needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
 
 The PR may then serve as a place to discuss the human-readable changelog and extra QA. The `make-release.sh` tool suggests a changelog for you too to be used as PR description, just make sure to delete lines that are not user facing.
 
-#### 2. Smoke test artifacts from the Cut Release PR
+#### 3. Manually test artifacts from the Cut Release PR
 
 The release builds can be find under the `artifact` zip, at the very bottom of the `ci` action page for each commit on this branch.
 
-We don't have a strict process, but click around and check for anything obvious, posting results as comments in the Cut Release PR.
+Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the Cut Release PR.
 
 The other `ci` output in Cut Release PRs is `updater-test`, because we don't have a way to test this fully automated, we have a semi-automated process. Download updater-test zip file, install the app, run it, expect an updater prompt to a dummy v0.99.99, install it and check that the app comes back at that version (on both macOS and Windows).
 
-#### 3. Merge the Cut Release PR
+#### 4. Merge the Cut Release PR
 
 This will kick the `create-release` action, that creates a _Draft_ release out of this Cut Release PR merge after less than a minute, with the new version as title and Cut Release PR as description.
 
 
-#### 4. Publish the release
+#### 5. Publish the release
 
 Head over to https://github.com/KittyCAD/modeling-app/releases, the draft release corresponding to the merged Cut Release PR should show up at the top as _Draft_. Click on it, verify the content, and hit _Publish_.
 
-#### 5. Profit
+#### 6. Profit
 
 A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter.
 
@@ -304,7 +319,7 @@ yarn start
 and finally:
 
 ```
-yarn test:nowatch
+yarn test:unit
 ```
 
 For individual testing:
@@ -321,6 +336,69 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 cd src/wasm-lib
 cargo test
 ```
+
+### Mapping CI CD jobs to local commands
+
+When you see the CI CD fail on jobs you may wonder three things
+- Do I have a bug in my code?
+- Is the test flaky?
+- Is there a bug in `main`?
+
+To answer these questions the following commands will give you confidence to locate the issue.
+
+#### Static Analysis
+
+Part of the CI CD pipeline performs static analysis on the code. Use the following commands to mimic the CI CD jobs.
+
+The following set of commands should get us closer to one and done commands to instantly retest issues.
+
+```
+yarn test-setup
+```
+
+> Gotcha, are packages up to date and is the wasm built?
+
+
+```
+yarn tsc
+yarn fmt-check
+yarn lint
+yarn test:unit:local
+```
+
+> Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
+
+#### E2E Tests
+
+**Playwright Browser**
+
+These E2E tests run in a browser (without electron).
+There are tests that are skipped if they are ran in a windows OS or Linux OS. We can use playwright tags to implement test skipping.
+
+Breaking down the command `yarn test:playwright:browser:chrome:windows`
+- The application is `playwright`
+- The runtime is a `browser`
+- The specific `browser` is `chrome`
+- The test should run in a `windows` environment. It will skip tests that are broken or flaky in the windows OS.
+
+```
+yarn test:playwright:browser:chrome
+yarn test:playwright:browser:chrome:windows
+yarn test:playwright:browser:chrome:ubuntu
+```
+
+**Playwright Electron**
+
+These E2E tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
+
+```
+yarn test:playwright:electron:local
+yarn test:playwright:electron:windows:local
+yarn test:playwright:electron:macos:local
+yarn test:playwright:electron:ubuntu:local
+```
+
+> Why does it say local? The CI CD commands that run in the pipeline cannot be ran locally. A single command will not properly setup the testing environment locally.
 
 #### Some notes on CI
 
