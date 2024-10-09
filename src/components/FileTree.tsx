@@ -2,7 +2,7 @@ import type { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, useCallback, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,7 +13,6 @@ import { sortProject } from 'lib/desktopFS'
 import { FILE_EXT } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { codeManager, kclManager } from 'lib/singletons'
-import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -22,6 +21,7 @@ import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { normalizeLineEndings } from 'lib/codeEditor'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -126,12 +126,28 @@ const FileTreeItem = ({
   level?: number
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
-  const openDirectoriesRef = useRef<string[]>([])
   const { onFileOpen, onFileClose } = useLspContext()
   const navigate = useNavigate()
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
   const itemRef = useRef(null)
+
+  // Since every file or directory gets its own FileTreeItem, we can do this.
+  // Because subtrees only render when they are opened, that means this
+  // only listens when they open. Because this acts like a useEffect, when
+  // the ReactNodes are destroyed, so is this listener :)
+  useFileSystemWatcher(
+    async (eventType, path) => {
+      // Don't try to read a file that was removed.
+      if (isCurrentFile && eventType !== 'unlink') {
+        let code = await window.electron.readFile(path)
+        code = normalizeLineEndings(code)
+        codeManager.updateCodeStateEditor(code)
+      }
+      fileSend({ type: 'Refresh' })
+    },
+    [fileOrDir.path]
+  )
 
   const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
   const removeCurrentItemFromRenaming = useCallback(
@@ -156,21 +172,7 @@ const FileTreeItem = ({
     })
   }, [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend])
 
-  useFileSystemWatcher(async (path) => {
-    console.log(path)
-  }, openDirectoriesRef.current)
-
   const clickDirectory = () => {
-    console.log("Before", openDirectoriesRef.current)
-
-    const index = openDirectoriesRef.current.indexOf(fileOrDir.path)
-    if (index >= 0) {
-      openDirectoriesRef.current.splice(index, 1)
-    } else {
-      openDirectoriesRef.current.push(fileOrDir.path)
-    }
-    console.log("After", openDirectoriesRef.current)
-
     fileSend({
       type: 'Set selected directory',
       directory: fileOrDir,
@@ -477,30 +479,39 @@ export const FileTreeInner = ({
 }: {
   onNavigateToFile?: () => void
 }) => {
+  const navigate = useNavigate()
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
-  const documentHasFocus = useDocumentHasFocus()
 
-  // Refresh the file tree when the document gets focus
-  useEffect(() => {
-    fileSend({ type: 'Refresh' })
-  }, [documentHasFocus])
+  // Refresh the file tree when there are changes.
+  useFileSystemWatcher(
+    async (eventType, path) => {
+      if (eventType === 'unlinkDir' && path === loaderData?.project?.path) {
+        navigate(PATHS.HOME)
+        return
+      }
+
+      fileSend({ type: 'Refresh' })
+    },
+    [loaderData?.project?.path, fileContext.selectedDirectory.path].filter(
+      (x: string | undefined) => x !== undefined
+    )
+  )
+
+  const clickDirectory = () => {
+    fileSend({
+      type: 'Set selected directory',
+      directory: fileContext.project,
+    })
+  }
 
   return (
     <div
       className="overflow-auto pb-12 absolute inset-0"
       data-testid="file-pane-scroll-container"
     >
-      <ul
-        className="m-0 p-0 text-sm"
-        onClickCapture={(e) => {
-          fileSend({
-            type: 'Set selected directory',
-            directory: fileContext.project,
-          })
-        }}
-      >
+      <ul className="m-0 p-0 text-sm" onClick={clickDirectory}>
         {sortProject(fileContext.project?.children || []).map((fileOrDir) => (
           <FileTreeItem
             project={fileContext.project}

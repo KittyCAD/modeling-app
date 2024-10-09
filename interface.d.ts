@@ -20,9 +20,10 @@ export interface IElectronAPI {
   version: typeof process.env.version
   watchFileOn: (
     path: string,
+    key: string,
     callback: (eventType: string, path: string) => void
   ) => void
-  watchFileOff: (path: string) => void
+  watchFileOff: (path: string, key: string) => void
   readFile: (path: string) => ReturnType<fs.readFile>
   writeFile: (
     path: string,

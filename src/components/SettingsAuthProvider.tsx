@@ -228,7 +228,9 @@ export const SettingsAuthProviderBase = ({
         doNotPersist: true,
       })
     },
-    settingsPath ? [settingsPath] : []
+    [settingsPath, loadedProject?.project?.path].filter(
+      (x: string | undefined) => x !== undefined
+    )
   )
 
   // Add settings commands to the command bar

@@ -29,20 +29,53 @@ const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
 const isLinux = os.platform() === 'linux'
 
-let fsWatchListeners = new Map<string, ReturnType<typeof chokidar.watch>>()
+let fsWatchListeners = new Map<
+  string,
+  Map<
+    string,
+    {
+      watcher: ReturnType<typeof chokidar.watch>
+      callback: (eventType: string, path: string) => void
+    }
+  >
+>()
 
-const watchFileOn = (path: string, callback: (event: string, path: string) => void) => {
-  const watcherMaybe = fsWatchListeners.get(path)
-  if (watcherMaybe) return
-  const watcher = chokidar.watch(path)
+const watchFileOn = (
+  path: string,
+  key: string,
+  callback: (eventType: string, path: string) => void
+) => {
+  let watchers = fsWatchListeners.get(path)
+  if (!watchers) {
+    watchers = new Map()
+  }
+  console.log('watchers', watchers)
+  const watcher = chokidar.watch(path, { depth: 1 })
   watcher.on('all', callback)
-  fsWatchListeners.set(path, watcher)
+  watchers.set(key, { watcher, callback })
+  fsWatchListeners.set(path, watchers)
 }
-const watchFileOff = (path: string) => {
-  const watcher = fsWatchListeners.get(path)
-  if (!watcher) return
-  watcher.unwatch(path)
-  fsWatchListeners.delete(path)
+const watchFileOff = (path: string, key: string) => {
+  console.log('unmounting', path)
+  const watchers = fsWatchListeners.get(path)
+  if (!watchers) return
+  const data = watchers.get(key)
+  if (!data) {
+    console.warn(
+      "Trying to remove a watcher, callback that doesn't exist anymore. Suspicious."
+    )
+    return
+  }
+  console.log('watchers before remove', watchers)
+  const { watcher, callback } = data
+  watcher.off('all', callback)
+  watchers.delete(key)
+  if (watchers.size === 0) {
+    fsWatchListeners.delete(path)
+  } else {
+    fsWatchListeners.set(path, watchers)
+  }
+  console.log('watchers after remove', watchers)
 }
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 // It seems like from the node source code this does not actually block but also
