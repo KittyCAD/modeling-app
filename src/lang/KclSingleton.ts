@@ -295,6 +295,12 @@ export class KclManager {
       this._cancelTokens.delete(currentExecutionId)
       return
     }
+
+    // Exit sketch mode if the AST is empty
+    if (this._isAstEmpty(ast)) {
+      await this.disableSketchMode()
+    }
+
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addKclErrors(isInterrupted ? [] : errors)
@@ -552,6 +558,24 @@ export class KclManager {
   }
   defaultSelectionFilter() {
     defaultSelectionFilter(this.programMemory, this.engineCommandManager)
+  }
+
+  /**
+   * We can send a single command of 'enable_sketch_mode' or send this in a batched request.
+   * When there is no code in the KCL editor we should be sending 'sketch_mode_disable' since any previous half finished
+   * code could leave the state of the application in sketch mode on the engine side.
+   */
+  async disableSketchMode() {
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'sketch_mode_disable' },
+    })
+  }
+
+  // Determines if there is no KCL code which means it is executing a blank KCL file
+  _isAstEmpty(ast: Program) {
+    return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
 }
 
