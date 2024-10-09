@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
+import { Telemetry } from './routes/Telemetry'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
@@ -27,6 +28,7 @@ import {
   homeLoader,
   onboardingRedirectLoader,
   settingsLoader,
+  telemetryLoader,
 } from 'lib/routeLoaders'
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
@@ -141,6 +143,11 @@ const router = createRouter([
             path: makeUrlPathRelative(PATHS.SETTINGS),
             loader: settingsLoader,
             element: <Settings />,
+          },
+          {
+            path: makeUrlPathRelative(PATHS.TELEMETRY),
+            loader: telemetryLoader,
+            element: <Telemetry />,
           },
         ],
       },

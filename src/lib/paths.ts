@@ -42,6 +42,7 @@ export const PATHS = {
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
   ONBOARDING: prependRoutes(onboardingPaths)('/onboarding') as OnboardingPaths,
+  TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 

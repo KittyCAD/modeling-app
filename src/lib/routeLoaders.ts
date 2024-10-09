@@ -47,6 +47,12 @@ export const settingsLoader: LoaderFunction = async ({
   return settings
 }
 
+export const telemetryLoader: LoaderFunction = async ({
+  params,
+}): Promise<ReturnType<typeof redirect>> => {
+  return 'telemetry'
+}
+
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const { settings } = await loadAndValidateSettings()

@@ -98,6 +98,23 @@ export function LowerRightControls({
         <Link
           to={
             location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.TELEMETRY + '?tab=project'
+              : PATHS.HOME + PATHS.TELEMETRY
+          }
+          data-testid="settings-link"
+        >
+          <CustomIcon
+            name="settings"
+            className={`w-5 h-5 ${linkOverrideClassName}`}
+          />
+          <span className="sr-only">Telemetry</span>
+          <Tooltip position="top" contentClassName="text-xs">
+            Telemetry
+          </Tooltip>
+        </Link>
+        <Link
+          to={
+            location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS + '?tab=project'
               : PATHS.HOME + PATHS.SETTINGS
           }
