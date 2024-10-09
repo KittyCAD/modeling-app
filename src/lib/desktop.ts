@@ -565,3 +565,7 @@ export const getUser = async (
   }
   return Promise.reject(new Error('unreachable'))
 }
+
+export async function readNaturalScrollDirection() {
+  return window.electron.readNaturalScrollDirection()
+}

@@ -22,7 +22,7 @@ import {
   UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import { toSync, uuidv4 } from 'lib/utils'
+import { cachedNaturalScrollDirection, toSync, uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
@@ -78,8 +78,13 @@ export class CameraControls {
   enablePan = true
   enableZoom = true
   zoomDataFromLastFrame?: number = undefined
-  // holds coordinates, and interaction
-  moveDataFromLastFrame?: [number, number, string] = undefined
+  // Holds event type, coordinates (for wheel, it's delta), and interaction
+  moveDataFromLastFrame?: [
+    'pointer' | 'wheel',
+    number,
+    number,
+    interactionType
+  ] = undefined
   lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -283,19 +288,75 @@ export class CameraControls {
 
     const doMove = () => {
       if (this.moveDataFromLastFrame !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'camera_drag_move',
-            interaction: this.moveDataFromLastFrame[2] as any,
-            window: {
-              x: this.moveDataFromLastFrame[0],
-              y: this.moveDataFromLastFrame[1],
-            },
-          },
-          cmd_id: uuidv4(),
-        })
+        const interaction = this.moveDataFromLastFrame[3]
+        if (this.moveDataFromLastFrame[0] === 'pointer') {
+          this.engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd: {
+                type: 'camera_drag_move',
+                interaction,
+                window: {
+                  x: this.moveDataFromLastFrame[1],
+                  y: this.moveDataFromLastFrame[2],
+                },
+              },
+              cmd_id: uuidv4(),
+            })
+            .catch(reportRejection)
+        } else if (this.moveDataFromLastFrame[0] === 'wheel') {
+          const deltaX = this.moveDataFromLastFrame[1]
+          const deltaY = this.moveDataFromLastFrame[2]
+          this.isDragging = true
+          this.handleStart()
+
+          this.engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_batch_req',
+              batch_id: uuidv4(),
+              requests: [
+                {
+                  cmd: {
+                    type: 'camera_drag_start',
+                    interaction,
+                    window: { x: 0, y: 0 },
+                  },
+                  cmd_id: uuidv4(),
+                },
+                {
+                  cmd: {
+                    type: 'camera_drag_move',
+                    interaction,
+                    window: {
+                      x: -deltaX,
+                      y: -deltaY,
+                    },
+                  },
+                  cmd_id: uuidv4(),
+                },
+                {
+                  cmd: {
+                    type: 'camera_drag_end',
+                    interaction,
+                    window: {
+                      x: -deltaX,
+                      y: -deltaY,
+                    },
+                  },
+                  cmd_id: uuidv4(),
+                },
+              ],
+              responses: false,
+            })
+            .catch(reportRejection)
+
+          this.isDragging = false
+          this.handleEnd()
+        } else {
+          console.error(
+            `Unknown moveDataFromLastFrame event type: ${this.moveDataFromLastFrame[0]}`
+          )
+        }
       }
       this.moveDataFromLastFrame = undefined
     }
@@ -386,32 +447,16 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
-        this.moveDataFromLastFrame = [event.clientX, event.clientY, interaction]
+        this.moveDataFromLastFrame = [
+          'pointer',
+          event.clientX,
+          event.clientY,
+          interaction,
+        ]
         return
       }
 
-      // Implement camera movement logic here based on deltaMove
-      // For example, for rotating the camera around the target:
-      if (interaction === 'rotate') {
-        this.pendingRotation = this.pendingRotation
-          ? this.pendingRotation
-          : new Vector2()
-        this.pendingRotation.x += deltaMove.x
-        this.pendingRotation.y += deltaMove.y
-      } else if (interaction === 'zoom') {
-        this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-        this.pendingZoom *= 1 + deltaMove.y * 0.01
-      } else if (interaction === 'pan') {
-        this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
-        let distance = this.camera.position.distanceTo(this.target)
-        if (this.camera instanceof OrthographicCamera) {
-          const zoomFudgeFactor = 2280
-          distance = zoomFudgeFactor / (this.camera.zoom * 45)
-        }
-        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
-        this.pendingPan.x += -deltaMove.x * panSpeed
-        this.pendingPan.y += deltaMove.y * panSpeed
-      }
+      this.moveCamera(interaction, deltaMove)
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -430,6 +475,31 @@ export class CameraControls {
           cmd_id: newCmdId,
         })
       }
+    }
+  }
+
+  moveCamera(interaction: interactionType, deltaMove: Vector2) {
+    // Implement camera movement logic here based on deltaMove
+    // For example, for rotating the camera around the target:
+    if (interaction === 'rotate') {
+      this.pendingRotation = this.pendingRotation
+        ? this.pendingRotation
+        : new Vector2()
+      this.pendingRotation.x += deltaMove.x
+      this.pendingRotation.y += deltaMove.y
+    } else if (interaction === 'zoom') {
+      this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
+      this.pendingZoom *= 1 + deltaMove.y * 0.01
+    } else if (interaction === 'pan') {
+      this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
+      let distance = this.camera.position.distanceTo(this.target)
+      if (this.camera instanceof OrthographicCamera) {
+        const zoomFudgeFactor = 2280
+        distance = zoomFudgeFactor / (this.camera.zoom * 45)
+      }
+      const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
+      this.pendingPan.x += -deltaMove.x * panSpeed
+      this.pendingPan.y += deltaMove.y * panSpeed
     }
   }
 
@@ -452,6 +522,20 @@ export class CameraControls {
     }
   }
 
+  zoomDirection = (event: WheelEvent): 1 | -1 => {
+    if (this.interactionGuards.zoom.pinchToZoom && isPinchToZoom(event)) {
+      return 1
+    }
+
+    if (!this.interactionGuards.zoom.scrollAllowInvertY) return 1
+    // Safari provides the updated user setting on every event, so it's more
+    // accurate than our cached value.
+    if ('webkitDirectionInvertedFromDevice' in event) {
+      return event.webkitDirectionInvertedFromDevice ? -1 : 1
+    }
+    return cachedNaturalScrollDirection ? -1 : 1
+  }
+
   onMouseWheel = (event: WheelEvent) => {
     const interaction = this.getInteractionType(event)
     if (interaction === 'none') return
@@ -459,12 +543,15 @@ export class CameraControls {
 
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
-        this.zoomDataFromLastFrame = event.deltaY
+        const zoomDir = this.zoomDirection(event)
+        this.zoomDataFromLastFrame = event.deltaY * zoomDir
       } else {
-        // This case will get handled when we add pan and rotate using Apple trackpad.
-        console.error(
-          `Unexpected interaction type for engineToClient wheel event: ${interaction}`
-        )
+        this.moveDataFromLastFrame = [
+          'wheel',
+          event.deltaX,
+          event.deltaY,
+          interaction,
+        ]
       }
       return
     }
@@ -478,12 +565,20 @@ export class CameraControls {
 
     this.handleStart()
     if (interaction === 'zoom') {
-      this.pendingZoom = 1 + (event.deltaY / window.devicePixelRatio) * 0.001
+      const zoomDir = this.zoomDirection(event)
+      this.pendingZoom =
+        1 + (event.deltaY / window.devicePixelRatio) * 0.001 * zoomDir
     } else {
-      // This case will get handled when we add pan and rotate using Apple trackpad.
-      console.error(
-        `Unexpected interaction type for wheel event: ${interaction}`
+      this.isDragging = true
+      this.mouseDownPosition.set(event.clientX, event.clientY)
+
+      this.moveCamera(interaction, new Vector2(-event.deltaX, -event.deltaY))
+
+      this.mouseDownPosition.set(
+        event.clientX + event.deltaX,
+        event.clientY + event.deltaY
       )
+      this.isDragging = false
     }
     this.handleEnd()
   }
@@ -1266,8 +1361,17 @@ function _getInteractionType(
   enableZoom: boolean
 ): interactionType | 'none' {
   if (event instanceof WheelEvent) {
-    if (enableZoom && interactionGuards.zoom.scrollCallback(event))
-      return 'zoom'
+    // If the control scheme accepts pinch-to-zoom, and the event is
+    // pinch-to-zoom, never consider other interaction types.
+    if (interactionGuards.zoom.pinchToZoom && isPinchToZoom(event)) {
+      if (enableZoom) return 'zoom'
+    } else {
+      if (enablePan && interactionGuards.pan.scrollCallback(event)) return 'pan'
+      if (enableRotate && interactionGuards.rotate.scrollCallback(event))
+        return 'rotate'
+      if (enableZoom && interactionGuards.zoom.scrollCallback(event))
+        return 'zoom'
+    }
   } else {
     if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
     if (enableRotate && interactionGuards.rotate.callback(event))
@@ -1275,6 +1379,18 @@ function _getInteractionType(
     if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
   }
   return 'none'
+}
+
+function isPinchToZoom(event: WheelEvent): boolean {
+  // Browsers do this hack.  A couple issues:
+  //
+  // - According to MDN, it doesn't work on iOS.
+  // - It doesn't differentiate with a user actually holding Control and
+  //   scrolling normally.  It's possible to detect this by using onKeyDown and
+  //   onKeyUp to track the state of the Control key.  But we currently don't
+  //   care about this since only the Apple Trackpad scheme looks for
+  //   pinch-to-zoom events using interactionGuards.zoom.pinchToZoom.
+  return event.ctrlKey
 }
 
 /**
