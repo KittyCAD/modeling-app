@@ -57,7 +57,7 @@ yarn install
 followed by:
 
 ```
-yarn build:wasm-dev
+yarn build:wasm
 ```
 
 or if you have the gh cli installed
@@ -66,15 +66,15 @@ or if you have the gh cli installed
 ./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
 ```
 
-That will build the WASM binary and put in the `public` dir (though gitignored)
+That will build the WASM binary and put in the `public` dir (though gitignored).
 
-finally, to run the web app only, run:
+Finally, to run the web app only, run:
 
 ```
 yarn start
 ```
 
-If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens ofcourse, then navigate to localhost:3000 again. Note that navigating to localhost:3000/signin removes your token so you will need to set the token again.
+If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
 
 ### Development environment variables
 
@@ -91,13 +91,13 @@ Third-Party Cookies".
 
 ## Desktop
 
-To spin up the desktop app, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
+To spin up the desktop app, `yarn install` and `yarn build:wasm` need to have been done before hand then
 
 ```
-yarn electron:start
+yarn tron:start
 ```
 
-This will start the application and hot-reload on changed.
+This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Cmd/Ctrl-Shift-I.
 
@@ -334,7 +334,16 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 ```bash
 cd src/wasm-lib
-cargo test
+KITTYCAD_API_TOKEN=XXX cargo test -- --test-threads=1
+```
+
+Where `XXX` is an API token from the production engine (NOT the dev environment).
+
+We recommend using [nextest](https://nexte.st/) to run the Rust tests (its faster and is used in CI). Once installed, run the tests using
+
+```
+cd src/wasm-lib
+KITTYCAD_API_TOKEN=XXX cargo run nextest
 ```
 
 ### Mapping CI CD jobs to local commands
