@@ -253,6 +253,9 @@ export type ModelingMachineEvent =
       data: SegmentOverlayPayload
     }
   | {
+      type: 'Center camera on selection'
+    }
+  | {
       type: 'Delete segment'
       data: PathToNode
     }
@@ -938,6 +941,7 @@ export const modelingMachine = setup({
     'Set selection': () => {},
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
+    'Center camera on selection': () => {},
     'Engine export': () => {},
     'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
@@ -2104,6 +2108,10 @@ export const modelingMachine = setup({
     'Set Segment Overlays': {
       reenter: false,
       actions: 'Set Segment Overlays',
+    },
+    'Center camera on selection': {
+      reenter: false,
+      actions: 'Center camera on selection',
     },
   },
 })
