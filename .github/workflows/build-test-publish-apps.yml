@@ -256,9 +256,6 @@ jobs:
             }' > last_download.json
             cat last_download.json
 
-      - name: Generate release notes
-        run: echo '$NOTES' > out/release-notes.md
-
       - name: List artifacts
         run: "ls -R out"
 
@@ -285,13 +282,6 @@ jobs:
         with:
           path: out
           glob: 'latest*'
-          parent: false
-          destination: ${{ env.BUCKET_DIR }}
-
-      - name: Upload release notes to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.0
-        with:
-          path: out/release-notes.md
           parent: false
           destination: ${{ env.BUCKET_DIR }}
 
