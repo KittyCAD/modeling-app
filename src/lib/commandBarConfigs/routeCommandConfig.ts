@@ -1,6 +1,4 @@
 import { Command } from '../commandTypes'
-import { useLocation, useNavigate } from 'react-router-dom'
-import decamelize from 'decamelize'
 import { PATHS } from 'lib/paths'
 
 export function createRouteCommands(navigate, location, filePath) {
