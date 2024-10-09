@@ -152,6 +152,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    warningMessage: arg.warningMessage ?? '',
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
