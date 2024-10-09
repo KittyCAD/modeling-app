@@ -1,8 +1,4 @@
-import {
-  IconDefinition,
-  faBugSlash,
-  faMagnifyingGlassChart,
-} from '@fortawesome/free-solid-svg-icons'
+import { IconDefinition, faBugSlash } from '@fortawesome/free-solid-svg-icons'
 import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
 import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
@@ -10,7 +6,6 @@ import { MouseEventHandler, ReactNode } from 'react'
 import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
 import { LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
-import { TelemetryPane } from './TelemetryPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
 import { useKclContext } from 'lang/KclProvider'
 import { editorManager } from 'lib/singletons'
@@ -112,12 +107,5 @@ export const sidebarPanes: SidebarPane[] = [
     Content: DebugPane,
     keybinding: 'Shift + D',
     hide: ({ settings }) => !settings.modeling.showDebugPanel.current,
-  },
-  {
-    id: 'telemetry',
-    title: 'Telemetry',
-    icon: faMagnifyingGlassChart,
-    Content: TelemetryPane,
-    keybinding: 'Shift + T',
   },
 ]
