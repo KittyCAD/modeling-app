@@ -1,10 +1,10 @@
 ---
 title: "KclValue"
-excerpt: "A memory item."
+excerpt: "Any KCL value."
 layout: manual
 ---
 
-A memory item.
+Any KCL value.
 
 
 
@@ -80,7 +80,7 @@ A plane.
 |----------|------|-------------|----------|
 | `type` |enum: `Plane`|  | No |
 | `id` |`string`| The id of the plane. | No |
-| `value` |[`PlaneType`](/docs/kcl/types/PlaneType)| A memory item. | No |
+| `value` |[`PlaneType`](/docs/kcl/types/PlaneType)| Any KCL value. | No |
 | `origin` |[`Point3d`](/docs/kcl/types/Point3d)| Origin of the plane. | No |
 | `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane’s X axis be? | No |
 | `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane’s Y axis be? | No |
@@ -183,8 +183,8 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Function`|  | No |
-| `expression` |[`FunctionExpression`](/docs/kcl/types/FunctionExpression)| A memory item. | No |
-| `memory` |[`ProgramMemory`](/docs/kcl/types/ProgramMemory)| A memory item. | No |
+| `expression` |[`FunctionExpression`](/docs/kcl/types/FunctionExpression)| Any KCL value. | No |
+| `memory` |[`ProgramMemory`](/docs/kcl/types/ProgramMemory)| Any KCL value. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

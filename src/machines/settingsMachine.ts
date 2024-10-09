@@ -19,7 +19,7 @@ export const settingsMachine = setup({
   types: {
     context: {} as ReturnType<typeof createSettings>,
     input: {} as ReturnType<typeof createSettings>,
-    events: {} as
+    events: {} as (
       | WildcardSetEvent<SettingsPaths>
       | SetEventTypes
       | {
@@ -34,7 +34,8 @@ export const settingsMachine = setup({
           type: 'Reset settings'
           level: SettingsLevel
         }
-      | { type: 'Set all settings'; settings: typeof settings },
+      | { type: 'Set all settings'; settings: typeof settings }
+    ) & { doNotPersist?: boolean },
   },
   actions: {
     setEngineTheme: () => {},

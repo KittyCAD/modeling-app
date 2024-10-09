@@ -249,7 +249,7 @@ export async function submitAndAwaitTextToKcl({
 
 export async function sendTelemetry(
   id: string,
-  feedback: Models['AiFeedback_type'],
+  feedback: Models['MlFeedback_type'],
   token?: string
 ): Promise<void> {
   const url =

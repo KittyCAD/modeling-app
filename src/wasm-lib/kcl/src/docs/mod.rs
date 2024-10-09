@@ -83,6 +83,8 @@ impl StdLibFnArg {
             return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         } else if self.type_ == "[KclValue]" && self.required {
             return Ok(Some((index, format!("${{{}:{}}}", index, "[0..9]"))));
+        } else if self.type_ == "KclValue" && self.required {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "3"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
     }
