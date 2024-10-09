@@ -1485,7 +1485,8 @@ pub enum ArcData {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen(module = "/../../lib/engineUtils.ts")]
 extern "C" {
-    async fn getTruePathEndPos(sketch: String) -> wasm_bindgen::JsValue;
+    #[wasm_bindgen(js_name = getTruePathEndPos, catch)]
+    fn get_true_path_end_pos(sketch: String) -> Result<js_sys::Promise, js_sys::Error>;
 }
 
 /// Draw an arc.
@@ -1550,7 +1551,8 @@ pub(crate) async fn inner_arc(
                 //let str_result: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));
                 //let str_result0 = Rc::clone(&str_result);
                 //wasm_bindgen_futures::spawn_local(async move {
-                    let result = getTruePathEndPos(sketch_json_value.into()).await.as_string().unwrap_or_default();                    
+                    let promise = get_true_path_end_pos(sketch_json_value.into()).unwrap();
+                    let result = crate::wasm::JsFuture::from(promise).await.unwrap();
                     web_sys::console::log_1(&format!("Inside here {result:?}").into());
                     //*str_result0.borrow_mut() = Some(result);
                 //});
