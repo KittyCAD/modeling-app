@@ -321,7 +321,7 @@ impl IdGenerator {
     }
 }
 
-/// A memory item.
+/// Any KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
