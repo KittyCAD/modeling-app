@@ -443,6 +443,6 @@ async function exe(
 ) {
   const ast = parse(code)
 
-  const result = await enginelessExecutor(ast, programMemory)
-  return result
+  const execState = await enginelessExecutor(ast, programMemory)
+  return execState.memory
 }

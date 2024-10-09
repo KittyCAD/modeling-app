@@ -229,7 +229,7 @@ async fn inner_shell(
     }
 
     args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
+        exec_state.id_generator.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: false,
             face_ids,
@@ -314,7 +314,7 @@ async fn inner_hollow(
     args.flush_batch_for_solid_set(exec_state, solid.clone().into()).await?;
 
     args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
+        exec_state.id_generator.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: true,
             face_ids: Vec::new(), // This is empty because we want to hollow the entire object.

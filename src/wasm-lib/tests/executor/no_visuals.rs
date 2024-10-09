@@ -1,4 +1,8 @@
-use kcl_lib::{ast::types::Program, errors::KclError, executor::ExecutorContext};
+use kcl_lib::{
+    ast::types::Program,
+    errors::KclError,
+    executor::{ExecutorContext, IdGenerator},
+};
 
 macro_rules! gen_test {
     ($file:ident) => {
@@ -22,12 +26,12 @@ macro_rules! gen_test_fail {
 }
 
 async fn run(code: &str) {
-    let (ctx, program) = setup(code).await;
+    let (ctx, program, id_generator) = setup(code).await;
 
-    ctx.run(&program, None).await.unwrap();
+    ctx.run(&program, None, id_generator).await.unwrap();
 }
 
-async fn setup(program: &str) -> (ExecutorContext, Program) {
+async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
     let tokens = kcl_lib::token::lexer(program).unwrap();
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().unwrap();
@@ -40,12 +44,12 @@ async fn setup(program: &str) -> (ExecutorContext, Program) {
         settings: Default::default(),
         context_type: kcl_lib::executor::ContextType::Mock,
     };
-    (ctx, program)
+    (ctx, program, IdGenerator::default())
 }
 
 async fn run_fail(code: &str) -> KclError {
-    let (ctx, program) = setup(code).await;
-    let Err(e) = ctx.run(&program, None).await else {
+    let (ctx, program, id_generator) = setup(code).await;
+    let Err(e) = ctx.run(&program, None, id_generator).await else {
         panic!("Expected this KCL program to fail, but it (incorrectly) never threw an error.");
     };
     e
