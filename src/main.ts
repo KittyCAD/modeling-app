@@ -9,6 +9,8 @@ import {
   dialog,
   shell,
   nativeTheme,
+  desktopCapturer,
+  systemPreferences,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -20,6 +22,8 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
+
+import * as packageJSON from '../package.json'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -159,6 +163,44 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
 ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
 })
+
+ipcMain.handle(
+  'take.screenshot',
+  async (event, data: { width: number; height: number }) => {
+    /**
+     * Operation system access to getting screen sources, even though we are only use application windows
+     * Linux: Yes!
+     * Mac OS: This user consent was not required on macOS 10.13 High Sierra so this method will always return granted. macOS 10.14 Mojave or higher requires consent for microphone and camera access. macOS 10.15 Catalina or higher requires consent for screen access.
+     * Windows 10: has a global setting controlling microphone and camera access for all win32 applications. It will always return granted for screen and for all media types on older versions of Windows.
+     */
+    let accessToScreenSources = true
+
+    // Can we check for access and if so, is it granted
+    // Linux does not even have access to the function getMediaAccessStatus, not going to polyfill
+    if (systemPreferences && systemPreferences.getMediaAccessStatus) {
+      const accessString = systemPreferences.getMediaAccessStatus('screen')
+      accessToScreenSources = accessString === 'granted' ? true : false
+    }
+
+    if (accessToScreenSources) {
+      const sources = await desktopCapturer.getSources({
+        types: ['window'],
+        thumbnailSize: { width: data.width, height: data.height },
+      })
+
+      for (const source of sources) {
+        // electron-builder uses the value of productName in package.json for the title of the application
+        if (source.name === packageJSON.productName) {
+          // @ts-ignore image/png is real.
+          return source.thumbnail.toDataURL('image/png') // The image to display the screenshot
+        }
+      }
+    }
+
+    // Cannot take a native desktop screenshot, unable to access screens
+    return ''
+  }
+)
 
 ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.

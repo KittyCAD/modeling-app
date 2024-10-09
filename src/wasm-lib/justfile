@@ -5,3 +5,6 @@ new-test name:
 
 lint:
     cargo clippy --all --tests --benches -- -D warnings
+
+test:
+    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
