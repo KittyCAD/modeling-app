@@ -26,6 +26,7 @@ import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery()
   useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()

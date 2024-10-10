@@ -1,6 +1,7 @@
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { StateMachineCommandSetConfig } from 'lib/commandTypes'
+import { isDesktop } from 'lib/isDesktop'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { projectsMachine } from 'machines/projectsMachine'
 
@@ -112,16 +113,27 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: true,
         skip: true,
-        options: [
-          { name: 'New Project', value: 'newProject' },
-          { name: 'Existing Project', value: 'existingProject' },
-        ],
+        options: isDesktop()
+          ? [
+              { name: 'New project', value: 'newProject' },
+              { name: 'Existing project', value: 'existingProject' },
+            ]
+          : [{ name: 'Overwrite', value: 'existingProject' }],
+        valueSummary(value) {
+          return isDesktop()
+            ? value === 'newProject'
+              ? 'New project'
+              : 'Existing project'
+            : 'Overwrite'
+        },
       },
       // TODO: We can't get the currently-opened project to auto-populate here because
       // it's not available on projectMachine, but lower in fileMachine. Unify these.
       projectName: {
         inputType: 'options',
-        required: (commandsContext) => commandsContext.argumentsToSubmit.method === 'existingProject',
+        required: (commandsContext) =>
+          isDesktop() &&
+          commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
         options: [],
         optionsFromContext: (context) =>
@@ -132,13 +144,16 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
       },
       name: {
         inputType: 'string',
-        required: true,
+        required: isDesktop(),
         skip: true,
       },
       code: {
         inputType: 'text',
-        required: false,
+        required: true,
         skip: true,
+        valueSummary(value) {
+          return value?.trim().split('\n').length + ' lines'
+        },
       },
       units: {
         inputType: 'options',
@@ -151,7 +166,17 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
       },
     },
     reviewMessage(commandBarContext) {
-      return `Will add the contents from URL to a new ${commandBarContext.argumentsToSubmit.method === 'newProject' ? 'project with file main.kcl' : `file within the project "${commandBarContext.argumentsToSubmit.projectName}"`} named "${commandBarContext.argumentsToSubmit.name}", and set default units to "${commandBarContext.argumentsToSubmit.units}".`
+      return isDesktop()
+        ? `Will add the contents from URL to a new ${
+            commandBarContext.argumentsToSubmit.method === 'newProject'
+              ? 'project with file main.kcl'
+              : `file within the project "${commandBarContext.argumentsToSubmit.projectName}"`
+          } named "${
+            commandBarContext.argumentsToSubmit.name
+          }", and set default units to "${
+            commandBarContext.argumentsToSubmit.units
+          }".`
+        : `Will overwrite the contents of the current file with the contents from the URL.`
     },
-  }
+  },
 }

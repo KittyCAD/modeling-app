@@ -186,7 +186,6 @@ function ProjectMenuPopover({
         {
           id: 'share-link',
           Element: 'button',
-          className: !isDesktop() ? 'hidden' : '',
           children: 'Share link to file',
           onClick: async () => {
             const shareUrl = createFileLink({

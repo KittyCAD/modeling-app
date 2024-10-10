@@ -104,7 +104,7 @@ export const fileLoader: LoaderFunction = async (
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
-          )}`
+          )}${new URL(routerData.request.url).search || ''}`
         )
       }
 

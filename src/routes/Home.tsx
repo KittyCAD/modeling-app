@@ -28,6 +28,7 @@ import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery()
   const { state, send } = useProjectsContext()
   const { commandBarSend } = useCommandsContext()
@@ -207,7 +208,7 @@ const Home = () => {
           </p>
           <p>
             <Link
-              to="/?create-file&name=Untitled-1.kcl&units=mm&code=c2tldGNoMDAxID0gc3RhcnRTa2V0Y2hPbignWFknKQogIHw%2BIGNpcmNsZSh7CiAgICAgICBjZW50ZXI6IFstMTUuNTEsIDE1LjMzXSwKICAgICAgIHJhZGl1czogMTIuMTkKICAgICB9LCAlKQpleHRydXNpb25EaXN0YW5jZSA9IDEyCmV4dHJ1ZGUwMDEgPSBleHRydWRlKGV4dHJ1c2lvbkRpc3RhbmNlLCBza2V0Y2gwMDEpCnNrZXRjaDAwMiA9IHN0YXJ0U2tldGNoT24oZXh0cnVkZTAwMSwgJ0VORCcpCiAgfD4gY2lyY2xlKHsKICAgICAgIGNlbnRlcjogWy0xOC42OSwgMjAuMjNdLAogICAgICAgcmFkaXVzOiA0LjgzCiAgICAgfSwgJSkKZXh0cnVkZTAwMiA9IGV4dHJ1ZGUoLWV4dHJ1c2lvbkRpc3RhbmNlLCBza2V0Y2gwMDIpCgo%3D"
+              to="/?create-file&name=Untitled-1.kcl&units=in&code=c2tldGNoMDAxID0gc3RhcnRTa2V0Y2hPbignWFknKQogIHw%2BIGNpcmNsZSh7CiAgICAgICBjZW50ZXI6IFstMTUuNTEsIDE1LjMzXSwKICAgICAgIHJhZGl1czogMTIuMTkKICAgICB9LCAlKQpleHRydXNpb25EaXN0YW5jZSA9IDEyCmV4dHJ1ZGUwMDEgPSBleHRydWRlKGV4dHJ1c2lvbkRpc3RhbmNlLCBza2V0Y2gwMDEpCnNrZXRjaDAwMiA9IHN0YXJ0U2tldGNoT24oZXh0cnVkZTAwMSwgJ0VORCcpCiAgfD4gY2lyY2xlKHsKICAgICAgIGNlbnRlcjogWy0xOC42OSwgMjAuMjNdLAogICAgICAgcmFkaXVzOiA0LjgzCiAgICAgfSwgJSkKZXh0cnVkZTAwMiA9IGV4dHJ1ZGUoLWV4dHJ1c2lvbkRpc3RhbmNlLCBza2V0Y2gwMDIpCgo%3D"
               className="text-primary underline underline-offset-2"
             >
               Go to a test create-file link
