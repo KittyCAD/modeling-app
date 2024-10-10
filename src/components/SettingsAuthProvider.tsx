@@ -33,7 +33,6 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import {
   saveSettings,
   loadAndValidateSettings,
@@ -105,7 +104,6 @@ export const SettingsAuthProviderBase = ({
 }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const filePath = useAbsoluteFilePath()
   const { commandBarSend } = useCommandsContext()
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined
@@ -154,7 +152,7 @@ export const SettingsAuthProviderBase = ({
           if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
-            string
+            string,
           ]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
           const message =

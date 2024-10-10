@@ -19,7 +19,7 @@ import {
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
-import { getMarks, mark } from 'lib/performance'
+import { mark } from 'lib/performance'
 
 interface ExecuteArgs {
   ast?: Program

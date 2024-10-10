@@ -5,7 +5,6 @@ import {
   Outlet,
   redirect,
   RouterProvider,
-  useNavigation,
 } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'

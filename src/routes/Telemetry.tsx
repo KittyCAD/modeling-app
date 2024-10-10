@@ -2,11 +2,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { PATHS } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CustomIcon } from 'components/CustomIcon'
 import { TelemetryExplorer } from 'components/TelemetryExplorer'
-import { mark } from 'lib/performance'
 
 export const Telemetry = () => {
   const navigate = useNavigate()
