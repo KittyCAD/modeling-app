@@ -1,6 +1,12 @@
 import { Command } from '../commandTypes'
 import { PATHS } from 'lib/paths'
 
+export type RouteCommandSchema = {
+  'Go to Telemetry': {}
+  'Go to Home': {}
+  'Go to Settings': {}
+}
+
 export function createRouteCommands(navigate, location, filePath) {
   const RouteTelemetryCommand: Command = {
     name: 'Go to Telemetry',
@@ -17,5 +23,32 @@ export function createRouteCommands(navigate, location, filePath) {
     },
   }
 
-  return RouteTelemetryCommand
+  const RouteHomeCommand: Command = {
+    name: 'Go to Home',
+    displayName: `Go to Home`,
+    description: 'Go to the home page',
+    groupId: 'routes',
+    icon: 'settings',
+    needsReview: false,
+    onSubmit: (data) => {
+      navigate(PATHS.HOME)
+    },
+  }
+
+  const RouteSettingsCommand: Command = {
+    name: 'Go to Settings',
+    displayName: `Go to Settings`,
+    description: 'Go to the settings page',
+    groupId: 'routes',
+    icon: 'settings',
+    needsReview: false,
+    onSubmit: (data) => {
+      const path = location.pathname.includes(PATHS.FILE)
+        ? filePath + PATHS.SETTINGS + '?tab=project'
+        : PATHS.HOME + PATHS.SETTINGS
+      navigate(path)
+    },
+  }
+
+  return [RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand]
 }

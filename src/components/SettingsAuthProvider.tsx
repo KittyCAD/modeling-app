@@ -155,7 +155,7 @@ export const SettingsAuthProviderBase = ({
           if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
-            string
+            string,
           ]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
           const message =
@@ -256,8 +256,7 @@ export const SettingsAuthProviderBase = ({
       )
       .filter((c) => c !== null) as Command[]
     const routeCommands = createRouteCommands(navigate, location, filePath)
-    console.log(routeCommands)
-    commands.push(routeCommands)
+    commands.push(...routeCommands)
 
     commandBarSend({ type: 'Add commands', data: { commands: commands } })
 
