@@ -44,6 +44,7 @@ import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
+import { mark } from 'lib/performance'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 

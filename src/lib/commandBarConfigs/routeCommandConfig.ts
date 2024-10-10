@@ -44,5 +44,5 @@ export function createRouteCommands(navigate, location, filePath) {
     },
   }
 
-  return [RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand]
+  return { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand }
 }
