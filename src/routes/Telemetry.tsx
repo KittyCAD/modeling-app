@@ -2,12 +2,16 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { PATHS } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CustomIcon } from 'components/CustomIcon'
 import { TelemetryExplorer } from 'components/TelemetryExplorer'
+import { mark } from 'lib/performance'
 
 export const Telemetry = () => {
+  useEffect(() => {
+    mark('code/didLoadTelemetry')
+  }, [])
   const navigate = useNavigate()
   const close = () => navigate(location.pathname.replace(PATHS.TELEMETRY, ''))
   const location = useLocation()

@@ -23,6 +23,7 @@ import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import { bracket } from 'lib/exampleKcl'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { mark } from 'lib/performance'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -205,6 +206,10 @@ export function OnboardingButtons({
 const Onboarding = () => {
   const dismiss = useDismiss()
   useHotkeys('esc', dismiss)
+
+  useEffect(() => {
+    mark('code/didLoadOnboarding')
+  }, [])
 
   return (
     <div className="content" data-testid="onboarding-content">

@@ -23,6 +23,7 @@ export const settingsLoader: LoaderFunction = async ({
 }): Promise<
   ReturnType<typeof createSettings> | ReturnType<typeof redirect>
 > => {
+  mark('code/willLoadSettings')
   let { settings, configuration } = await loadAndValidateSettings()
 
   // I don't love that we have to read the settings again here,
@@ -46,12 +47,14 @@ export const settingsLoader: LoaderFunction = async ({
 
 export const telemetryLoader: LoaderFunction = async ({
   params,
-}): Promise<ReturnType<typeof redirect>> => {
-  return 'telemetry'
+}): Promise<null> => {
+  mark('code/willLoadTelemetry')
+  return null
 }
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
+  mark('code/willLoadOnboarding')
   const { settings } = await loadAndValidateSettings()
   const onboardingStatus = settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(

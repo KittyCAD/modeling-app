@@ -29,6 +29,7 @@ import {
   KclSamplesManifestItem,
 } from 'lib/getKclSamplesManifest'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { mark } from 'lib/performance'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -54,6 +55,7 @@ export const FileMachineProvider = ({
   )
 
   useEffect(() => {
+    mark('code/didLoadFile')
     async function fetchKclSamples() {
       setKclSamples(await getKclSamplesManifest())
     }
