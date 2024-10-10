@@ -21,7 +21,7 @@ use tokio_tungstenite::tungstenite::Message as WsMsg;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::DefaultPlanes,
+    executor::{DefaultPlanes, IdGenerator},
 };
 
 #[derive(Debug, PartialEq)]
@@ -314,7 +314,11 @@ impl EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    async fn default_planes(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         {
             let opt = self.default_planes.read().await.as_ref().cloned();
             if let Some(planes) = opt {
@@ -322,15 +326,19 @@ impl EngineManager for EngineConnection {
             }
         } // drop the read lock
 
-        let new_planes = self.new_default_planes(source_range).await?;
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
         *self.default_planes.write().await = Some(new_planes.clone());
 
         Ok(new_planes)
     }
 
-    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
-        let new_planes = self.new_default_planes(source_range).await?;
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
         *self.default_planes.write().await = Some(new_planes);
 
         Ok(())
