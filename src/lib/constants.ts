@@ -106,3 +106,6 @@ export const KCL_SAMPLES_MANIFEST_URLS = {
 
 /** URL parameter to create a file */
 export const CREATE_FILE_URL_PARAM = 'create-file'
+
+/** Toast id for the app auto-updater toast */
+export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'

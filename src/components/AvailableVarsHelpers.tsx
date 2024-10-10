@@ -157,7 +157,7 @@ export function useCalc({
         engineCommandManager,
         useFakeExecutor: true,
         programMemoryOverride: kclManager.programMemory.clone(),
-      }).then(({ programMemory }) => {
+      }).then(({ execState }) => {
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&
@@ -166,7 +166,7 @@ export function useCalc({
         const init =
           resultDeclaration?.type === 'VariableDeclaration' &&
           resultDeclaration?.declarations?.[0]?.init
-        const result = programMemory?.get('__result__')?.value
+        const result = execState.memory?.get('__result__')?.value
         setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
         init && setValueNode(init)
       })
