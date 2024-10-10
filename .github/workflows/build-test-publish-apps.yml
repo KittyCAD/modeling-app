@@ -198,7 +198,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
-          name: out-update-yml
+          name: out-yml
           path: |
             out/latest*.yml
 
@@ -221,7 +221,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
-          name: updater-test-arm64-${{ matrix.os }}
+          name: updater-test-arm64-${{ matrix.platform }}
           path: |
             out/*-arm64-win.exe
             out/*-arm64-mac.dmg
@@ -230,7 +230,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         with:
-          name: updater-test-x64-${{ matrix.os }}
+          name: updater-test-x64-${{ matrix.platform }}
           path: |
             out/*-x64-win.exe
             out/*-x64-mac.dmg
@@ -286,7 +286,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: out-update-yml
+          name: out-yml
           path: out
 
       - name: Generate the download static endpoint
