@@ -1548,16 +1548,19 @@ pub(crate) async fn inner_arc(
                     })
                 })?;
 
-                //let str_result: Rc<RefCell<Option<String>>> = Rc::new(RefCell::new(None));
-                //let str_result0 = Rc::clone(&str_result);
-                //wasm_bindgen_futures::spawn_local(async move {
-                    let promise = get_true_path_end_pos(sketch_json_value.into()).unwrap();
-                    let result = crate::wasm::JsFuture::from(promise).await.unwrap();
-                    web_sys::console::log_1(&format!("Inside here {result:?}").into());
-                    //*str_result0.borrow_mut() = Some(result);
-                //});
-
-                //web_sys::console::log_1(&format!("Did this work? {str_result:?}").into());
+                let promise = get_true_path_end_pos(sketch_json_value.into()).map_err(|e| {
+                    KclError::Internal(KclErrorDetails {
+                        message: format!("{:?}", e),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?;
+                let result = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
+                    KclError::Internal(KclErrorDetails {
+                        message: format!("{:?}", e),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?;
+                web_sys::console::log_1(&format!("Testing here {result:?}").into());
             }
 
             //duplicating engine logic to make sure this is _exactly_ what engine is doing - mike
