@@ -59,6 +59,7 @@ function detectEnvironment(): MarkHelpers {
         ...options,
       }
 
+      // Automatically append detail data for a canonical form
       if (!_options.detail) {
         _options.detail = {}
       }
@@ -93,6 +94,7 @@ function detectEnvironment(): MarkHelpers {
             name: entry.name,
             // Make everything unix time
             startTime: Math.round(timeOrigin + entry.startTime),
+            // @ts-ignore - we can assume this is just any object with [key:string]: any
             detail: entry.detail,
             entryType: entry.entryType,
           })
