@@ -1,48 +1,18 @@
-import { SettingsLevel } from 'lib/settings/settingsTypes'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { PATHS } from 'lib/paths'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CustomIcon } from 'components/CustomIcon'
-import { SettingsSearchBar } from 'components/Settings/SettingsSearchBar'
-import { SettingsTabs } from 'components/Settings/SettingsTabs'
-import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
-import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
-import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
-import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
-import { isDesktop } from 'lib/isDesktop'
-import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
-import { NODE_ENV } from 'env'
 import { TelemetryExplorer } from 'components/TelemetryExplorer'
-
-const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
-
-export const APP_VERSION =
-  isTestEnv && NODE_ENV === 'development'
-    ? '11.22.33'
-    : isDesktop()
-      ? // @ts-ignore
-        window.electron.packageJson.version
-      : 'main'
 
 export const Telemetry = () => {
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
   const close = () => navigate(location.pathname.replace(PATHS.TELEMETRY, ''))
   const location = useLocation()
-  const isFileSettings = location.pathname.includes(PATHS.FILE)
-  const searchParamTab =
-    (searchParams.get('tab') as SettingsLevel | 'keybindings') ??
-    (isFileSettings ? 'project' : 'user')
-
-  const scrollRef = useRef<HTMLDivElement>(null)
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
-
-  // todo a focus?
-
   return (
     <Transition appear show={true} as={Fragment}>
       <Dialog

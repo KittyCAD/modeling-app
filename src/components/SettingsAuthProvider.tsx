@@ -33,7 +33,6 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
-import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import {
   saveSettings,
@@ -255,8 +254,6 @@ export const SettingsAuthProviderBase = ({
         })
       )
       .filter((c) => c !== null) as Command[]
-    const routeCommands = createRouteCommands(navigate, location, filePath)
-    commands.push(...routeCommands)
 
     commandBarSend({ type: 'Add commands', data: { commands: commands } })
 

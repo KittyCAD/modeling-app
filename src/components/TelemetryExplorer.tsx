@@ -13,6 +13,7 @@ export function TelemetryExplorer() {
   const rawMarks = printRawMarks(marks)
   const deltaTotalTable = printDeltaTotal(marks)
   const invocationCount = printInvocationCount(marks)
+  console.log(marks)
   // TODO data-telemetry-type
   // TODO data-telemetry-name
   return (

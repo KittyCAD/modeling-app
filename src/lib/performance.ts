@@ -1,3 +1,5 @@
+import { isDesktop } from 'lib/isDesktop'
+
 function isWeb(): boolean {
   // Identify browser environment when following property is not present
   // https://nodejs.org/dist/latest-v16.x/docs/api/perf_hooks.html#performancenodetiming
@@ -15,7 +17,9 @@ function isNode(): boolean {
 }
 
 function getRuntime(): string {
-  if (isNode()) {
+  if (isDesktop()) {
+    return 'electron'
+  } else if (isNode()) {
     return 'nodejs'
   } else if (isWeb()) {
     return 'web'
@@ -46,7 +50,7 @@ export interface MarkHelpers {
  */
 function detectEnvironment(): MarkHelpers {
   const seenMarks: { [key: string]: boolean } = {}
-  if (isWeb() || isNode()) {
+  if (isWeb() || isNode() || isDesktop()) {
     // in a browser context, reuse performance-util
     // https://developer.mozilla.org/en-US/docs/Web/API/Performance
 

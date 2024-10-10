@@ -1,12 +1,6 @@
 import { Command } from '../commandTypes'
 import { PATHS } from 'lib/paths'
 
-export type RouteCommandSchema = {
-  'Go to Telemetry': {}
-  'Go to Home': {}
-  'Go to Settings': {}
-}
-
 export function createRouteCommands(navigate, location, filePath) {
   const RouteTelemetryCommand: Command = {
     name: 'Go to Telemetry',
