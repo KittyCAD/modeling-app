@@ -23,9 +23,9 @@ export const APP_VERSION =
   isTestEnv && NODE_ENV === 'development'
     ? '11.22.33'
     : isDesktop()
-      ? // @ts-ignore
-        window.electron.packageJson.version
-      : 'main'
+    ? // @ts-ignore
+      window.electron.packageJson.version
+    : 'main'
 
 export const Settings = () => {
   useEffect(() => {
