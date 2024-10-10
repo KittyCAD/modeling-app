@@ -70,7 +70,7 @@ export interface IElectronAPI {
   listMachines: () => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
   onUpdateDownloaded: (
-    callback: (value: string) => void
+    callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   appRestart: () => void
 }

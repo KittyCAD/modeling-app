@@ -293,6 +293,18 @@ code {
     which lets you use them with @apply in your CSS, and get 
     autocomplete in classNames in your JSX.
   */
+  .parsed-markdown ul,
+  .parsed-markdown ol {
+    @apply list-outside pl-4 lg:pl-8;
+  }
+
+  .parsed-markdown ul li {
+    @apply list-disc;
+  }
+
+  .parsed-markdown li p {
+    @apply inline;
+  }
 }
 
 #code-mirror-override .cm-scroller,

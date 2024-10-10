@@ -1,14 +1,21 @@
 import toast from 'react-hot-toast'
 import { ActionButton } from './ActionButton'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { Marked } from '@ts-stack/markdown'
 
 export function ToastUpdate({
   version,
+  releaseNotes,
   onRestart,
 }: {
   version: string
+  releaseNotes: string
   onRestart: () => void
 }) {
+  const containsBreakingChanges = releaseNotes
+    .toLocaleLowerCase()
+    .includes('breaking')
+
   return (
     <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md">
       <div className="max-w-3xl min-w-[35rem] p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
@@ -19,7 +26,7 @@ export function ToastUpdate({
           >
             v{version}
           </span>
-          <span className="ml-4 text-md text-bold">
+          <p className="ml-4 text-md text-bold">
             A new update has downloaded and will be available next time you
             start the app. You can view the release notes{' '}
             <a
@@ -32,8 +39,26 @@ export function ToastUpdate({
             >
               here on GitHub.
             </a>
-          </span>
+          </p>
         </div>
+        <details className="my-4" open={containsBreakingChanges}>
+          <summary>
+            Release notes
+            {containsBreakingChanges && (
+              <strong className="text-destroy-50"> (Breaking changes)</strong>
+            )}
+          </summary>
+          <div
+            className="parsed-markdown my-4 max-h-60 overflow-y-auto"
+            dangerouslySetInnerHTML={{
+              __html: Marked.parse(releaseNotes, {
+                gfm: true,
+                breaks: true,
+                sanitize: true,
+              }),
+            }}
+          ></div>
+        </details>
         <div className="flex justify-between gap-8">
           <ActionButton
             Element="button"
