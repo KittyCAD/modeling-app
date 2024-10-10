@@ -9,6 +9,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
 import { ToastUpdate } from 'components/ToastUpdate'
 import { mark } from 'lib/performance'
+import { RouteWatcher } from './routeWatcher'
 
 mark('code/willAuth')
 // uncomment for xstate inspector

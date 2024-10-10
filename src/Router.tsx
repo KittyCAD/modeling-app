@@ -5,6 +5,7 @@ import {
   Outlet,
   redirect,
   RouterProvider,
+  useNavigation,
 } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
@@ -44,7 +45,7 @@ import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
-import { mark } from 'lib/performance'
+import { RouteProvider } from 'components/RouteProvider'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -56,15 +57,17 @@ const router = createRouter([
      * inefficient re-renders, use the react profiler to see. */
     element: (
       <CommandBarProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <Outlet />
-              </AppStateProvider>
-            </KclContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
+        <RouteProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <Outlet />
+                </AppStateProvider>
+              </KclContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </RouteProvider>
       </CommandBarProvider>
     ),
     errorElement: <ErrorPage />,
@@ -118,9 +121,14 @@ const router = createRouter([
                 element: <Onboarding />,
                 children: onboardingRoutes,
               },
+            ],
+          },
+          {
+            id: PATHS.FILE + 'TELEMETRY',
+            loader: telemetryLoader,
+            children: [
               {
                 path: makeUrlPathRelative(PATHS.TELEMETRY),
-                loader: telemetryLoader,
                 element: <Telemetry />,
               },
             ],

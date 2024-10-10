@@ -207,10 +207,6 @@ const Onboarding = () => {
   const dismiss = useDismiss()
   useHotkeys('esc', dismiss)
 
-  useEffect(() => {
-    mark('code/didLoadOnboarding')
-  }, [])
-
   return (
     <div className="content" data-testid="onboarding-content">
       <Outlet />

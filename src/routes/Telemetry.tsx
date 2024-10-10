@@ -9,9 +9,6 @@ import { TelemetryExplorer } from 'components/TelemetryExplorer'
 import { mark } from 'lib/performance'
 
 export const Telemetry = () => {
-  useEffect(() => {
-    mark('code/didLoadTelemetry')
-  }, [])
   const navigate = useNavigate()
   const close = () => navigate(location.pathname.replace(PATHS.TELEMETRY, ''))
   const location = useLocation()

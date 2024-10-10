@@ -23,15 +23,11 @@ export const APP_VERSION =
   isTestEnv && NODE_ENV === 'development'
     ? '11.22.33'
     : isDesktop()
-    ? // @ts-ignore
-      window.electron.packageJson.version
-    : 'main'
+      ? // @ts-ignore
+        window.electron.packageJson.version
+      : 'main'
 
 export const Settings = () => {
-  useEffect(() => {
-    mark('code/didLoadSettings')
-  }, [])
-
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const close = () => navigate(location.pathname.replace(PATHS.SETTINGS, ''))

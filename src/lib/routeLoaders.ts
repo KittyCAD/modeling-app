@@ -14,7 +14,6 @@ import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
-import { mark } from 'lib/performance'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -23,7 +22,6 @@ export const settingsLoader: LoaderFunction = async ({
 }): Promise<
   ReturnType<typeof createSettings> | ReturnType<typeof redirect>
 > => {
-  mark('code/willLoadSettings')
   let { settings, configuration } = await loadAndValidateSettings()
 
   // I don't love that we have to read the settings again here,
@@ -48,13 +46,11 @@ export const settingsLoader: LoaderFunction = async ({
 export const telemetryLoader: LoaderFunction = async ({
   params,
 }): Promise<null> => {
-  mark('code/willLoadTelemetry')
   return null
 }
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
-  mark('code/willLoadOnboarding')
   const { settings } = await loadAndValidateSettings()
   const onboardingStatus = settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
@@ -79,7 +75,6 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 export const fileLoader: LoaderFunction = async (
   routerData
 ): Promise<FileLoaderData | Response> => {
-  mark('code/willLoadFile')
   const { params } = routerData
   let { configuration } = await loadAndValidateSettings()
 
@@ -188,7 +183,6 @@ export const fileLoader: LoaderFunction = async (
 export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
-  mark('code/willLoadHome')
   if (!isDesktop()) {
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
