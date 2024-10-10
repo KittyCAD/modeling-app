@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { AnyStateMachine, Actor, StateFrom } from 'xstate'
+import { AnyStateMachine, Actor, StateFrom, EventFrom } from 'xstate'
 import { createMachineCommand } from '../lib/createMachineCommand'
 import { useCommandsContext } from './useCommandsContext'
 import { modelingMachine } from 'machines/modelingMachine'
@@ -15,7 +15,6 @@ import { useKclContext } from 'lang/KclProvider'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { useAppState } from 'AppState'
-import { getActorNextEvents } from 'lib/utils'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -60,21 +59,21 @@ export default function useStateMachineCommands<
         overallState !== NetworkHealthState.Weak) ||
       isExecuting ||
       !isStreamReady
-    const newCommands = getActorNextEvents(state)
+    const newCommands = Object.keys(commandBarConfig || {})
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
-      .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .flatMap((type) =>
-        createMachineCommand<T, S>({
+      .flatMap((type) => {
+        const typeWithProperType = type as EventFrom<T>['type']
+        return createMachineCommand<T, S>({
           // The group is the owner machine's ID.
           groupId: machineId,
-          type,
+          type: typeWithProperType,
           state,
           send,
           actor,
           commandBarConfig,
           onCancel,
         })
-      )
+      })
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
@@ -85,5 +84,5 @@ export default function useStateMachineCommands<
         data: { commands: newCommands },
       })
     }
-  }, [state, overallState, isExecuting, isStreamReady])
+  }, [overallState, isExecuting, isStreamReady])
 }

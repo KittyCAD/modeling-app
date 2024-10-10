@@ -22,6 +22,7 @@ export const CommandBar = () => {
 
   // Close the command bar when navigating
   useEffect(() => {
+    if (commandBarState.matches('Closed')) return
     commandBarSend({ type: 'Close' })
   }, [pathname])
 

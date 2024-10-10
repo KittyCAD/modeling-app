@@ -89,6 +89,7 @@ export function createMachineCommand<
     icon,
     description: commandConfig.description,
     needsReview: commandConfig.needsReview || false,
+    machineActor: actor,
     onSubmit: (data?: S[typeof type]) => {
       if (data !== undefined && data !== null) {
         send({ type, data })
