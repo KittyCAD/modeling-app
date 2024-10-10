@@ -42,6 +42,7 @@ import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
+import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -55,11 +56,13 @@ const router = createRouter([
       <CommandBarProvider>
         <SettingsAuthProvider>
           <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <Outlet />
-              </AppStateProvider>
-            </KclContextProvider>
+            <ProjectsContextProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <Outlet />
+                </AppStateProvider>
+              </KclContextProvider>
+            </ProjectsContextProvider>
           </LspProvider>
         </SettingsAuthProvider>
       </CommandBarProvider>
