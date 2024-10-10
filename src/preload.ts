@@ -5,6 +5,7 @@ import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
+import chokidar from 'chokidar'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
@@ -15,43 +16,33 @@ const startDeviceFlow = (host: string): Promise<string> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
+const onUpdateDownloadStart = (
+  callback: (value: { version: string }) => void
+) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
 const onUpdateDownloaded = (callback: (value: string) => void) =>
   ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+const onUpdateError = (callback: (value: Error) => void) =>
+  ipcRenderer.on('update-error', (_event, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
 const isLinux = os.platform() === 'linux'
 
-let fsWatchListeners = new Map<
-  string,
-  {
-    watcher: fsSync.FSWatcher
-    callback: (eventType: string, path: string) => void
-  }
->()
+let fsWatchListeners = new Map<string, ReturnType<typeof chokidar.watch>>()
 
-const watchFileOn = (
-  path: string,
-  callback: (eventType: string, path: string) => void
-) => {
-  const watcher = fsSync.watch(path)
-  watcher.on('change', callback)
-  fsWatchListeners.set(path, { watcher, callback })
+const watchFileOn = (path: string, callback: (path: string) => void) => {
+  const watcherMaybe = fsWatchListeners.get(path)
+  if (watcherMaybe) return
+  const watcher = chokidar.watch(path)
+  watcher.on('all', callback)
+  fsWatchListeners.set(path, watcher)
 }
 const watchFileOff = (path: string) => {
-  const entry = fsWatchListeners.get(path)
-  if (!entry) return
-  const { watcher, callback } = entry
-  watcher.off('change', callback)
-  watcher.close()
+  const watcher = fsWatchListeners.get(path)
+  if (!watcher) return
+  watcher.unwatch(path)
   fsWatchListeners.delete(path)
-}
-const watchFileObliterate = () => {
-  for (let [pathAsKey] of fsWatchListeners) {
-    watchFileOff(pathAsKey)
-  }
-  fsWatchListeners = new Map()
 }
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 // It seems like from the node source code this does not actually block but also
@@ -103,7 +94,6 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
-  watchFileObliterate,
   readFile,
   writeFile,
   exists,
@@ -159,6 +149,8 @@ contextBridge.exposeInMainWorld('electron', {
   kittycad,
   listMachines,
   getMachineApiIp,
+  onUpdateDownloadStart,
   onUpdateDownloaded,
+  onUpdateError,
   appRestart,
 })

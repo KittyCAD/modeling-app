@@ -379,7 +379,7 @@ const getAppFolderName = () => {
   return window.electron.packageJson.name
 }
 
-const getAppSettingsFilePath = async () => {
+export const getAppSettingsFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
   const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY
   const appConfig = await window.electron.getPath('appData')

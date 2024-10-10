@@ -23,7 +23,6 @@ export interface IElectronAPI {
     callback: (eventType: string, path: string) => void
   ) => void
   watchFileOff: (path: string) => void
-  watchFileObliterate: () => void
   readFile: (path: string) => ReturnType<fs.readFile>
   writeFile: (
     path: string,
@@ -70,9 +69,13 @@ export interface IElectronAPI {
   kittycad: (access: string, args: any) => any
   listMachines: () => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  onUpdateDownloadStart: (
+    callback: (value: { version: string }) => void
+  ) => Electron.IpcRenderer
   onUpdateDownloaded: (
     callback: (value: string) => void
   ) => Electron.IpcRenderer
+  onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
 }
 
