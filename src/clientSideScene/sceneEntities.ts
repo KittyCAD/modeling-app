@@ -391,12 +391,14 @@ export class SceneEntities {
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       prepared
 
-    const { programMemory } = await executeAst({
+    const { execState } = await executeAst({
       ast: truncatedAst,
       useFakeExecutor: true,
       engineCommandManager: this.engineCommandManager,
       programMemoryOverride,
+      idGenerator: kclManager.execState.idGenerator,
     })
+    const programMemory = execState.memory
     const sketch = sketchFromPathToNode({
       pathToNode: sketchPathToNode,
       ast: maybeModdedAst,
@@ -801,12 +803,14 @@ export class SceneEntities {
           updateRectangleSketch(sketchInit, x, y, tags[0])
         }
 
-        const { programMemory } = await executeAst({
+        const { execState } = await executeAst({
           ast: truncatedAst,
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
+          idGenerator: kclManager.execState.idGenerator,
         })
+        const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
         const sketch = sketchFromKclValue(
           programMemory.get(variableDeclarationName),
@@ -848,12 +852,14 @@ export class SceneEntities {
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'Finish rectangle' })
 
-          const { programMemory } = await executeAst({
+          const { execState } = await executeAst({
             ast: _ast,
             useFakeExecutor: true,
             engineCommandManager: this.engineCommandManager,
             programMemoryOverride,
+            idGenerator: kclManager.execState.idGenerator,
           })
+          const programMemory = execState.memory
 
           // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
@@ -965,12 +971,14 @@ export class SceneEntities {
           modded = moddedResult.modifiedAst
         }
 
-        const { programMemory } = await executeAst({
+        const { execState } = await executeAst({
           ast: modded,
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
+          idGenerator: kclManager.execState.idGenerator,
         })
+        const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
         const sketch = sketchFromKclValue(
           programMemory.get(variableDeclarationName),
@@ -1317,12 +1325,14 @@ export class SceneEntities {
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
         codeManager.updateCodeEditor(code)
-      const { programMemory } = await executeAst({
+      const { execState } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,
         engineCommandManager: this.engineCommandManager,
         programMemoryOverride,
+        idGenerator: kclManager.execState.idGenerator,
       })
+      const programMemory = execState.memory
       this.sceneProgramMemory = programMemory
 
       const maybeSketch = programMemory.get(variableDeclarationName)

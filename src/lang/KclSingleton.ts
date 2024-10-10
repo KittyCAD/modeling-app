@@ -8,6 +8,8 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  emptyExecState,
+  ExecState,
   initPromise,
   parse,
   PathToNode,
@@ -42,6 +44,7 @@ export class KclManager {
     },
     digest: null,
   }
+  private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
@@ -72,9 +75,19 @@ export class KclManager {
   get programMemory() {
     return this._programMemory
   }
-  set programMemory(programMemory) {
+  // This is private because callers should be setting the entire execState.
+  private set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
+  }
+
+  set execState(execState) {
+    this._execState = execState
+    this.programMemory = execState.memory
+  }
+
+  get execState() {
+    return this._execState
   }
 
   get logs() {
@@ -253,8 +266,9 @@ export class KclManager {
     // Make sure we clear before starting again. End session will do this.
     this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
-    const { logs, errors, programMemory, isInterrupted } = await executeAst({
+    const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
     })
 
@@ -264,7 +278,7 @@ export class KclManager {
       this.lints = await lintAst({ ast: ast })
 
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
-      defaultSelectionFilter(programMemory, this.engineCommandManager)
+      defaultSelectionFilter(execState.memory, this.engineCommandManager)
 
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
@@ -304,9 +318,11 @@ export class KclManager {
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addKclErrors(isInterrupted ? [] : errors)
-    this.programMemory = programMemory
+    // Reset the next ID index so that we reuse the previous IDs next time.
+    execState.idGenerator.nextId = 0
+    this.execState = execState
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = programMemory
+      this.lastSuccessfulProgramMemory = execState.memory
     }
     this.ast = { ...ast }
     this._executeCallback()
@@ -344,17 +360,19 @@ export class KclManager {
     await codeManager.writeToFile()
     this._ast = { ...newAst }
 
-    const { logs, errors, programMemory } = await executeAst({
+    const { logs, errors, execState } = await executeAst({
       ast: newAst,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
       useFakeExecutor: true,
     })
 
     this._logs = logs
     this._kclErrors = errors
-    this._programMemory = programMemory
+    this._execState = execState
+    this._programMemory = execState.memory
     if (!errors.length) {
-      this.lastSuccessfulProgramMemory = programMemory
+      this.lastSuccessfulProgramMemory = execState.memory
     }
     if (updates !== 'artifactRanges') return
 
