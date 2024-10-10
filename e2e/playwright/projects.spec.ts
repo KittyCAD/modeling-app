@@ -1102,7 +1102,7 @@ test(
 
     await createProject({ name: 'project-000', page, returnHome: true })
     await expect(
-      page.getByTestId('projectLink').getByText('project-000')
+      page.getByTestId('project-link').getByText('project-000')
     ).toBeVisible()
 
     await page.getByTestId('project-link').getByText('project-000').click()
