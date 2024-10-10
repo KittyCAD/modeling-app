@@ -8,7 +8,9 @@ import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
 import { ToastUpdate } from 'components/ToastUpdate'
+import { mark } from 'lib/performance'
 
+mark('code/willAuth')
 // uncomment for xstate inspector
 // import { DEV } from 'env'
 // import { inspect } from '@xstate/inspect'

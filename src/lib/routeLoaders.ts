@@ -14,6 +14,7 @@ import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
+import { mark } from 'lib/performance'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -75,6 +76,7 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 export const fileLoader: LoaderFunction = async (
   routerData
 ): Promise<FileLoaderData | Response> => {
+  mark('code/willLoadFile')
   const { params } = routerData
   let { configuration } = await loadAndValidateSettings()
 
@@ -183,6 +185,7 @@ export const fileLoader: LoaderFunction = async (
 export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
+  mark('code/willLoadHome')
   if (!isDesktop()) {
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }

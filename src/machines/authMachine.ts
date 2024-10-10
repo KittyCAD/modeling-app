@@ -14,6 +14,7 @@ import {
   writeTokenFile,
 } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
+import { mark } from 'lib/performance'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
 
@@ -156,6 +157,7 @@ async function getUser(input: { token?: string }) {
       LOCAL_USER.image = ''
     }
 
+    mark('code/didAuth')
     return {
       user: LOCAL_USER,
       token,

@@ -59,7 +59,7 @@ const Home = () => {
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
-    mark('code/didHomeLoad')
+    mark('code/didLoadHome')
     kclManager.cancelAllExecutions()
   }, [])
 
