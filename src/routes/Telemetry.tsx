@@ -17,23 +17,15 @@ import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 import { NODE_ENV } from 'env'
 import { TelemetryExplorer } from 'components/TelemetryExplorer'
 
-import {
-  getMarks,
-  printDeltaTotal,
-  printInvocationCount,
-  printMarkDownTable,
-  printRawMarks,
-} from 'lib/performance'
-
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
 export const APP_VERSION =
   isTestEnv && NODE_ENV === 'development'
     ? '11.22.33'
     : isDesktop()
-    ? // @ts-ignore
-      window.electron.packageJson.version
-    : 'main'
+      ? // @ts-ignore
+        window.electron.packageJson.version
+      : 'main'
 
 export const Telemetry = () => {
   const navigate = useNavigate()
@@ -50,12 +42,6 @@ export const Telemetry = () => {
   useHotkeys('esc', () => navigate(dotDotSlash()))
 
   // todo a focus?
-
-  const marks = getMarks()
-  const markdownTable = printMarkDownTable(marks)
-  const rawMarks = printRawMarks(marks)
-  const deltaTotalTable = printDeltaTotal(marks)
-  const invocationCount = printInvocationCount(marks)
 
   return (
     <Transition appear show={true} as={Fragment}>

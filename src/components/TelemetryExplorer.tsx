@@ -1,10 +1,11 @@
+import { getMarks } from 'lib/performance'
+
 import {
-  getMarks,
   printDeltaTotal,
   printInvocationCount,
   printMarkDownTable,
   printRawMarks,
-} from 'lib/performance'
+} from 'lib/telemetry'
 
 export function TelemetryExplorer() {
   const marks = getMarks()
