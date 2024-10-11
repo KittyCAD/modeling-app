@@ -116,4 +116,5 @@ gen_test!(if_else);
 //     "syntax: blocks inside an if/else expression must end in an expression"
 // );
 gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
+gen_test!(import_simple);
 gen_test!(add_lots);
