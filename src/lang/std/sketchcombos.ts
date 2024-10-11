@@ -1562,7 +1562,7 @@ export function transformSecondarySketchLinesTagFirst({
 
   // We need to sort the selections by their start position
   // so that we can process them in dependency order and not write invalid KCL.
-  const sortedCodeBasedSelections = selectionRanges.codeBasedSelections.sort(
+  const sortedCodeBasedSelections = selectionRanges.codeBasedSelections.toSorted(
     (a, b) => a.range[0] - b.range[0]
   )
   const primarySelection = sortedCodeBasedSelections[0].range
