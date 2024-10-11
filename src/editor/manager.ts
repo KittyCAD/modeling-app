@@ -65,12 +65,18 @@ export default class EditorManager {
   }
 
   overrideTreeHighlighterUpdateForPerformanceTracking() {
-    const TREE_HIGHLIGHTER = 'TreeHighlighter'
     // @ts-ignore
     this._editorView?.plugins.forEach((e) => {
       let sawATreeDiff = false
-      const constructorName = e.value.constructor.name
-      if (constructorName === TREE_HIGHLIGHTER) {
+
+      // we cannot use <>.constructor.name since it will get destroyed
+      // when packaging the application.
+      const isTreeHighlightPlugin =
+        e.value.hasOwnProperty('tree') &&
+        e.value.hasOwnProperty('decoratedTo') &&
+        e.value.hasOwnProperty('decorations')
+
+      if (isTreeHighlightPlugin) {
         let originalUpdate = e.value.update
         // @ts-ignore
         function performanceTrackingUpdate(args) {

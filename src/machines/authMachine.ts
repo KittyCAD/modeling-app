@@ -183,6 +183,7 @@ async function getUser(input: { token?: string }) {
 
   if ('error_code' in user) return Promise.reject(new Error(user.message))
 
+  mark('code/didAuth')
   return {
     user: user as Models['User_type'],
     token,
