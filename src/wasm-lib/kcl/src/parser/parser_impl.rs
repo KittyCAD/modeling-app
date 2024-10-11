@@ -11,11 +11,11 @@ use winnow::{
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, ElseIf,
-        Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, Literal,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue,
-        ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
-        TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration, VariableDeclarator,
-        VariableKind,
+        Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
+        ImportStatement, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta,
+        NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
+        Program, ReturnStatement, TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration,
+        VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -967,6 +967,8 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     let item = dispatch! {peek(any);
         token if token.declaration_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        Token { ref value, .. } if value == "import" =>
+            (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if !token.is_code_token() => {
@@ -1129,6 +1131,113 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
         non_code_meta,
         digest: None,
     })
+}
+
+fn import_stmt(i: TokenSlice) -> PResult<ImportStatement> {
+    let start = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "import" {
+                Ok(token.start)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not an import keyword or identifier", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'import' keyword"))
+        .parse_next(i)?;
+
+    require_whitespace(i)?;
+
+    let items = separated(1.., import_item, comma_sep).parse_next(i)?;
+
+    require_whitespace(i)?;
+
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
+            Ok(())
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("{} is not the 'from' keyword", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'from' keyword"))
+    .parse_next(i)?;
+
+    require_whitespace(i)?;
+
+    let path = string_literal(i)?;
+    let end = path.end();
+    let path_string = match path.value {
+        LiteralValue::String(s) => s,
+        _ => unreachable!(),
+    };
+    if path_string
+        .chars()
+        .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+    {
+        return Err(ErrMode::Cut(
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![SourceRange::new(path.start, path.end)],
+                message: "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.".to_owned(),
+            })
+            .into(),
+        ));
+    }
+    Ok(ImportStatement {
+        items,
+        path: path_string,
+        start,
+        end,
+        digest: None,
+    })
+}
+
+fn import_item(i: TokenSlice) -> PResult<ImportItem> {
+    let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
+    let start = name.start;
+    let alias = opt(preceded(
+        (whitespace, import_as_keyword, whitespace),
+        identifier.context(expected("an identifier to alias the import")),
+    ))
+    .parse_next(i)?;
+    if let Some(alias) = alias {
+        let end = alias.end();
+        Ok(ImportItem {
+            name,
+            alias: Some(alias),
+            start,
+            end,
+            digest: None,
+        })
+    } else {
+        let end = name.end();
+        Ok(ImportItem {
+            name,
+            alias: None,
+            start,
+            end,
+            digest: None,
+        })
+    }
+}
+
+fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "as" {
+            Ok(token)
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("{} is not the 'as' keyword", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'as' keyword"))
+    .parse_next(i)
 }
 
 /// Parse a return statement of a user-defined function, e.g. `return x`.
