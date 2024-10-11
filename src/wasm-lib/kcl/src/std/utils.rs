@@ -224,7 +224,12 @@ pub fn arc_center_and_end(from: Point2d, start_angle: Angle, end_angle: Angle, r
     (center, end)
 }
 
-pub fn arc_start_center_and_end(from: Point2d, start_angle: Angle, end_angle: Angle, radius: f64) -> (Point2d, Point2d, Point2d) {
+pub fn arc_start_center_and_end(
+    from: Point2d,
+    start_angle: Angle,
+    end_angle: Angle,
+    radius: f64,
+) -> (Point2d, Point2d, Point2d) {
     let start_angle = start_angle.to_radians();
     let end_angle = end_angle.to_radians();
 
@@ -235,7 +240,7 @@ pub fn arc_start_center_and_end(from: Point2d, start_angle: Angle, end_angle: An
 
     let start = Point2d {
         x: center.x + radius * start_angle.cos(),
-        y: center.y + radius * start_angle.sin(),   
+        y: center.y + radius * start_angle.sin(),
     };
 
     let end = Point2d {
@@ -245,7 +250,6 @@ pub fn arc_start_center_and_end(from: Point2d, start_angle: Angle, end_angle: An
 
     (start, center, end)
 }
-
 
 pub fn arc_angles(
     from: Point2d,

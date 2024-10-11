@@ -21,15 +21,16 @@ use crate::{
     },
     std::{
         utils::{
-            arc_angles, arc_start_center_and_end, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
-            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, arc_start_center_and_end, get_tangent_point_from_previous_arc,
+            get_tangential_arc_to_info, get_x_component, get_y_component, intersection_with_parallel_line,
+            TangentialArcInfoInput,
         },
         Args,
     },
 };
 
 #[cfg(not(target_arch = "wasm32"))]
-use crate::engine::engine_utils as engine_utils;
+use crate::engine::engine_utils;
 
 #[cfg(target_arch = "wasm32")]
 use crate::engine::engine_utils_wasm as engine_utils;
@@ -1537,19 +1538,19 @@ pub(crate) async fn inner_arc(
 
             if engine_utils::is_available() {
                 let mut path_plus_arc = sketch.clone();
-                let to = [ 0.0, 0.0 ];
+                let to = [0.0, 0.0];
                 let arc = Path::Arc {
-                    base: BasePath { 
+                    base: BasePath {
                         from: from.into(),
                         to,
                         tag: None,
                         geo_meta: GeoMeta {
                             id: uuid::Uuid::new_v4(),
                             metadata: args.source_range.into(),
-                        },  
+                        },
                     },
-                    angle_range: [ *angle_start, *angle_end ],
-                    center: [ center.x, center.y ],
+                    angle_range: [*angle_start, *angle_end],
+                    center: [center.x, center.y],
                     radius: *radius,
                 };
 
@@ -1569,7 +1570,7 @@ pub(crate) async fn inner_arc(
                         source_ranges: vec![args.source_range],
                     })
                 })?;
-                
+
                 end = result_end;
             }
 

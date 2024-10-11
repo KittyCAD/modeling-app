@@ -1,11 +1,11 @@
 //! Functions for calling into the engine-utils library (a set of C++ utilities containing various logic for client-side CAD processing)
 //! Note that this binary may not be available to all builds of kcl, so fallbacks that call the engine API should be implemented
 
-use anyhow::Result;
 use crate::{
     errors::{KclError, KclErrorDetails},
     std::Args,
 };
+use anyhow::Result;
 
 mod cpp {
     use wasm_bindgen::prelude::wasm_bindgen;
@@ -31,7 +31,7 @@ where
             source_ranges: vec![args.source_range],
         })
     })?;
-    
+
     let result = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
         KclError::Internal(KclErrorDetails {
             message: format!("{:?}", e),
@@ -42,6 +42,6 @@ where
     Ok(result.as_string().unwrap_or_default())
 }
 
-pub async fn get_true_path_end_pos(sketch: String, args: &Args) -> Result<String, KclError> {    
+pub async fn get_true_path_end_pos(sketch: String, args: &Args) -> Result<String, KclError> {
     call_cpp(args, || cpp::get_true_path_end_pos(sketch.into())).await
 }
