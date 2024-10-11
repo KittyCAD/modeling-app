@@ -265,6 +265,12 @@ where
     // We don't walk a BodyItem since it's an enum itself.
 
     match node {
+        BodyItem::ImportStatement(xs) => {
+            if !f.walk(xs.into())? {
+                return Ok(false);
+            }
+            Ok(true)
+        }
         BodyItem::ExpressionStatement(xs) => {
             if !f.walk(xs.into())? {
                 return Ok(false);

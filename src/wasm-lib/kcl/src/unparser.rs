@@ -3,9 +3,9 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, Expr, FormatOptions,
-        FunctionExpression, IfExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
-        NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
-        VariableKind,
+        FunctionExpression, IfExpression, ImportStatement, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
+        MemberObject, NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression,
+        VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -17,6 +17,7 @@ impl Program {
             .body
             .iter()
             .map(|statement| match statement.clone() {
+                BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
                 BodyItem::ExpressionStatement(expression_statement) => {
                     expression_statement
                         .expression
@@ -105,6 +106,17 @@ impl NonCodeValue {
             Self::InlineComment { .. } => false,
             Self::Shebang { .. } | Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
         }
+    }
+}
+
+impl ImportStatement {
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let indentation = options.get_indentation(indentation_level);
+        let mut string = format!("{}import {}", indentation, self.path,);
+        if let Some(alias) = &self.alias {
+            string.push_str(&format!(" as {}", alias.name));
+        }
+        string
     }
 }
 

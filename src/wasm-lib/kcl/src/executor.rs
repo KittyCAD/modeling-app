@@ -23,12 +23,12 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program,
-        ReturnStatement, TagDeclarator,
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, KclNone,
+        Program, ReturnStatement, TagDeclarator,
     },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    fs::FileManager,
+    fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{FnAsArg, StdLib},
 };
@@ -47,6 +47,9 @@ pub struct ExecState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
+    /// The stack of use statements for detecting circular module imports.  If
+    /// this is empty, we're not currently executing a use statement.
+    pub use_stack: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1504,6 +1507,14 @@ impl From<SourceRange> for Metadata {
     }
 }
 
+impl From<&ImportStatement> for Metadata {
+    fn from(stmt: &ImportStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(stmt.start, stmt.end),
+        }
+    }
+}
+
 impl From<&ExpressionStatement> for Metadata {
     fn from(exp_statement: &ExpressionStatement) -> Self {
         Self {
@@ -2027,6 +2038,37 @@ impl ExecutorContext {
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
+                BodyItem::ImportStatement(import_stmt) => {
+                    let source_range = SourceRange::from(import_stmt);
+                    let path = import_stmt.path.clone();
+                    let source = self.fs.read_to_string(&path, source_range).await?;
+                    let program = crate::parser::parse(&source)?;
+                    if exec_state.use_stack.contains(&path) {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: format!(
+                                "circular use of modules is not allowed: {} -> {}",
+                                exec_state.use_stack.join(" -> "),
+                                path
+                            ),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
+                    }
+                    let module = {
+                        exec_state.use_stack.push(path.clone());
+                        let original_memory = std::mem::take(&mut exec_state.memory);
+                        let result = self
+                            .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
+                            .await;
+                        exec_state.memory = original_memory;
+                        exec_state.use_stack.pop();
+
+                        result?
+                    };
+                    if let Some(module) = module {
+                        exec_state.memory.add(import_stmt.identifier(), module, source_range)?;
+                    }
+                    last_expr = None;
+                }
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
                     last_expr = Some(

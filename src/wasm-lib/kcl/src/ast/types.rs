@@ -199,6 +199,7 @@ impl Program {
 
         // Recurse over the item.
         match item {
+            BodyItem::ImportStatement(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
@@ -215,6 +216,7 @@ impl Program {
 
         // Recurse over the item.
         let expr = match item {
+            BodyItem::ImportStatement(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
@@ -258,6 +260,7 @@ impl Program {
         // We only care about the top level things in the program.
         for item in &self.body {
             match item {
+                BodyItem::ImportStatement(_) => continue,
                 BodyItem::ExpressionStatement(expression_statement) => {
                     if let Some(folding_range) = expression_statement.expression.get_lsp_folding_range() {
                         ranges.push(folding_range)
@@ -281,6 +284,12 @@ impl Program {
         let mut old_name = None;
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(stmt) => {
+                    if let Some(var_old_name) = stmt.rename_symbol(new_name, pos) {
+                        old_name = Some(var_old_name);
+                        break;
+                    }
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
@@ -307,6 +316,7 @@ impl Program {
 
             // Recurse over the item.
             let mut value = match item {
+                BodyItem::ImportStatement(_) => None, // TODO
                 BodyItem::ExpressionStatement(ref mut expression_statement) => {
                     Some(&mut expression_statement.expression)
                 }
@@ -338,6 +348,9 @@ impl Program {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(ref mut stmt) => {
+                    stmt.rename_identifiers(old_name, new_name);
+                }
                 BodyItem::ExpressionStatement(ref mut expression_statement) => {
                     expression_statement.expression.rename_identifiers(old_name, new_name);
                 }
@@ -355,6 +368,9 @@ impl Program {
     pub fn replace_variable(&mut self, name: &str, declarator: VariableDeclarator) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(_) => {
+                    continue;
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
@@ -375,6 +391,7 @@ impl Program {
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(_) => {} // TODO
                 BodyItem::ExpressionStatement(ref mut expression_statement) => expression_statement
                     .expression
                     .replace_value(source_range, new_value.clone()),
@@ -392,6 +409,13 @@ impl Program {
     pub fn get_variable(&self, name: &str) -> Option<&VariableDeclarator> {
         for item in &self.body {
             match item {
+                BodyItem::ImportStatement(_stmt) => {
+                    // TODO: Should we do this?
+                    // if stmt.identifier() == name {
+                    //     return Some(stmt);
+                    // }
+                    continue;
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
@@ -455,6 +479,7 @@ pub(crate) use impl_value_meta;
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
+    ImportStatement(ImportStatement),
     ExpressionStatement(ExpressionStatement),
     VariableDeclaration(VariableDeclaration),
     ReturnStatement(ReturnStatement),
@@ -463,6 +488,7 @@ pub enum BodyItem {
 impl BodyItem {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
+            BodyItem::ImportStatement(s) => s.compute_digest(),
             BodyItem::ExpressionStatement(es) => es.compute_digest(),
             BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
             BodyItem::ReturnStatement(rs) => rs.compute_digest(),
@@ -471,6 +497,7 @@ impl BodyItem {
 
     pub fn start(&self) -> usize {
         match self {
+            BodyItem::ImportStatement(stmt) => stmt.start(),
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.start(),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.start(),
             BodyItem::ReturnStatement(return_statement) => return_statement.start(),
@@ -479,6 +506,7 @@ impl BodyItem {
 
     pub fn end(&self) -> usize {
         match self {
+            BodyItem::ImportStatement(stmt) => stmt.end(),
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.end(),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end(),
             BodyItem::ReturnStatement(return_statement) => return_statement.end(),
@@ -1128,6 +1156,77 @@ impl NonCodeMeta {
         self.non_code_nodes
             .iter()
             .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct ImportStatement {
+    pub start: usize,
+    pub end: usize,
+    pub path: String,
+    /// The explicit name for the module after "as".
+    pub alias: Option<Identifier>,
+
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ImportStatement);
+
+impl ImportStatement {
+    compute_digest!(|slf, hasher| {
+        let path = slf.path.as_bytes();
+        hasher.update(path.len().to_ne_bytes());
+        hasher.update(path);
+        if let Some(alias) = &mut slf.alias {
+            hasher.update([1]);
+            hasher.update(alias.compute_digest());
+        } else {
+            hasher.update([0]);
+        }
+    });
+
+    pub fn identifier(&self) -> &str {
+        match &self.alias {
+            Some(alias) => &alias.name,
+            None => {
+                let parts = self.path.split('/').rev().take(1).collect::<Vec<_>>();
+                let name = parts.first().unwrap_or(&"");
+                let base_name = name.trim_end_matches(".kcl");
+                // The parser should have prevented this.
+                assert_ne!(base_name, "");
+                base_name
+            }
+        }
+    }
+
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        match &mut self.alias {
+            Some(alias) => {
+                let alias_source_range = SourceRange::from(&*alias);
+                if !alias_source_range.contains(pos) {
+                    return None;
+                }
+                let old_name = std::mem::replace(&mut alias.name, new_name.to_owned());
+                Some(old_name)
+            }
+            None => {
+                let use_source_range = SourceRange::from(&*self);
+                if use_source_range.contains(pos) {
+                    self.alias = Some(Identifier::new(new_name));
+                }
+                // Return implicit name.
+                return Some(self.identifier().to_owned());
+            }
+        }
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        if let Some(alias) = &mut self.alias {
+            alias.rename(old_name, new_name);
+        }
     }
 }
 
