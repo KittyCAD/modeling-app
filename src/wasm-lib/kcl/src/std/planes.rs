@@ -48,10 +48,10 @@ impl From<StandardPlane> for PlaneData {
 }
 
 /// Offset a plane by a distance along its normal.
-pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
 
-    let plane = inner_offset_plane(std_plane, offset).await?;
+    let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
 
     Ok(KclValue::UserVal(UserVal::new(
         vec![Metadata {
@@ -132,11 +132,15 @@ pub async fn offset_plane(_exec_state: &mut ExecState, args: Args) -> Result<Kcl
 #[stdlib {
     name = "offsetPlane",
 }]
-async fn inner_offset_plane(std_plane: StandardPlane, offset: f64) -> Result<PlaneData, KclError> {
+async fn inner_offset_plane(
+    std_plane: StandardPlane,
+    offset: f64,
+    exec_state: &mut ExecState,
+) -> Result<PlaneData, KclError> {
     // Convert to the plane type.
     let plane_data: PlaneData = std_plane.into();
     // Convert to a plane.
-    let mut plane = Plane::from(plane_data);
+    let mut plane = Plane::from_plane_data(plane_data, exec_state);
 
     match std_plane {
         StandardPlane::XY => {

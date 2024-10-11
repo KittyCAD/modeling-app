@@ -261,8 +261,28 @@ app.on('ready', () => {
     autoUpdater.checkForUpdates().catch(reportRejection)
   }, fifteenMinutes)
 
+  autoUpdater.on('error', (error) => {
+    console.error('updater-error', error)
+    mainWindow?.webContents.send('updater-error', error)
+  })
+
   autoUpdater.on('update-available', (info) => {
     console.log('update-available', info)
+  })
+
+  autoUpdater.prependOnceListener('download-progress', (progress) => {
+    // For now, we'll send nothing and just start a loading spinner.
+    // See below for a TODO to send progress data to the renderer.
+    console.log('update-download-start', {
+      version: '',
+    })
+    mainWindow?.webContents.send('update-download-start', progress)
+  })
+
+  autoUpdater.on('download-progress', (progress) => {
+    // TODO: in a future PR (https://github.com/KittyCAD/modeling-app/issues/3994)
+    // send this data to mainWindow to show a progress bar for the download.
+    console.log('download-progress', progress)
   })
 
   autoUpdater.on('update-downloaded', (info) => {
