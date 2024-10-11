@@ -1163,23 +1163,25 @@ impl NonCodeMeta {
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct ImportStatement {
+pub struct ImportItem {
+    /// Name of the item to import.
+    pub name: Identifier,
+    /// Rename the item using an identifier after "as".
+    pub alias: Option<Identifier>,
+
     pub start: usize,
     pub end: usize,
-    pub path: String,
-    /// The explicit name for the module after "as".
-    pub alias: Option<Identifier>,
 
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(ImportStatement);
+impl_value_meta!(ImportItem);
 
-impl ImportStatement {
+impl ImportItem {
     compute_digest!(|slf, hasher| {
-        let path = slf.path.as_bytes();
-        hasher.update(path.len().to_ne_bytes());
-        hasher.update(path);
+        let name = slf.name.name.as_bytes();
+        hasher.update(name.len().to_ne_bytes());
+        hasher.update(name);
         if let Some(alias) = &mut slf.alias {
             hasher.update([1]);
             hasher.update(alias.compute_digest());
@@ -1191,14 +1193,7 @@ impl ImportStatement {
     pub fn identifier(&self) -> &str {
         match &self.alias {
             Some(alias) => &alias.name,
-            None => {
-                let parts = self.path.split('/').rev().take(1).collect::<Vec<_>>();
-                let name = parts.first().unwrap_or(&"");
-                let base_name = name.trim_end_matches(".kcl");
-                // The parser should have prevented this.
-                assert_ne!(base_name, "");
-                base_name
-            }
+            None => &self.name.name,
         }
     }
 
@@ -1226,6 +1221,51 @@ impl ImportStatement {
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         if let Some(alias) = &mut self.alias {
             alias.rename(old_name, new_name);
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct ImportStatement {
+    pub start: usize,
+    pub end: usize,
+    pub items: Vec<ImportItem>,
+    pub path: String,
+
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ImportStatement);
+
+impl ImportStatement {
+    compute_digest!(|slf, hasher| {
+        for item in &mut slf.items {
+            hasher.update(item.compute_digest());
+        }
+        let path = slf.path.as_bytes();
+        hasher.update(path.len().to_ne_bytes());
+        hasher.update(path);
+    });
+
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        for item in &mut self.items {
+            let source_range = SourceRange::from(&*item);
+            if source_range.contains(pos) {
+                let old_name = item.rename_symbol(new_name, pos);
+                if old_name.is_some() {
+                    return old_name;
+                }
+            }
+        }
+        None
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_identifiers(old_name, new_name);
         }
     }
 }

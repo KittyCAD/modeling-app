@@ -112,10 +112,17 @@ impl NonCodeValue {
 impl ImportStatement {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        let mut string = format!("{}import {}", indentation, self.path,);
-        if let Some(alias) = &self.alias {
-            string.push_str(&format!(" as {}", alias.name));
+        let mut string = format!("{}import ", indentation);
+        for (i, item) in self.items.iter().enumerate() {
+            if i > 0 {
+                string.push_str(", ");
+            }
+            string.push_str(&item.name.name);
+            if let Some(alias) = &item.alias {
+                string.push_str(&format!(" as {}", alias.name));
+            }
         }
+        string.push_str(&format!(" from {}", self.path));
         string
     }
 }

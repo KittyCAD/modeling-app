@@ -2053,19 +2053,42 @@ impl ExecutorContext {
                             source_ranges: vec![import_stmt.into()],
                         }));
                     }
-                    let module = {
+                    let module_memory = {
                         exec_state.use_stack.push(path.clone());
                         let original_memory = std::mem::take(&mut exec_state.memory);
                         let result = self
                             .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
                             .await;
-                        exec_state.memory = original_memory;
+                        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
                         exec_state.use_stack.pop();
 
-                        result?
+                        result.map_err(|err| {
+                            KclError::Semantic(KclErrorDetails {
+                                message: format!(
+                                    "Error loading imported file. Open it to view more details. {path}: {err}"
+                                ),
+                                source_ranges: vec![source_range],
+                            })
+                        })?;
+
+                        module_memory
                     };
-                    if let Some(module) = module {
-                        exec_state.memory.add(import_stmt.identifier(), module, source_range)?;
+                    for import_item in &import_stmt.items {
+                        // Extract the item from the module.
+                        let item = module_memory
+                            .get(&import_item.name.name, import_item.into())
+                            .map_err(|_err| {
+                                KclError::UndefinedValue(KclErrorDetails {
+                                    message: format!("{} is not defined in module", import_item.name.name),
+                                    source_ranges: vec![SourceRange::from(&import_item.name)],
+                                })
+                            })?;
+                        // Add the item to the current module.
+                        exec_state.memory.add(
+                            import_item.identifier(),
+                            item.clone(),
+                            SourceRange::from(&import_item.name),
+                        )?;
                     }
                     last_expr = None;
                 }
