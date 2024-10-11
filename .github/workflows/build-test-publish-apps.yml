@@ -237,6 +237,51 @@ jobs:
             out/*-x86_64-linux.AppImage
 
 
+  fake-publish:
+    runs-on: ubuntu-22.04
+    needs: [prepare-files, build-apps]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-arm64-win
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-x64-win
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-arm64-mac
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-x64-mac
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-arm64-linux
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-x64-linux
+          path: out
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: out-yml
+          path: out
+
+      - name: List artifacts
+        run: "ls -R out"
+
+
   publish-apps-release:
     runs-on: ubuntu-22.04
     permissions:
