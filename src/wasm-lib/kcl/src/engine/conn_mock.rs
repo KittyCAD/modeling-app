@@ -17,7 +17,10 @@ use kcmc::{
 };
 use kittycad_modeling_cmds::{self as kcmc};
 
-use crate::{errors::KclError, executor::DefaultPlanes};
+use crate::{
+    errors::KclError,
+    executor::{DefaultPlanes, IdGenerator},
+};
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
@@ -44,11 +47,19 @@ impl crate::engine::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, _source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    async fn default_planes(
+        &self,
+        _id_generator: &mut IdGenerator,
+        _source_range: crate::executor::SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         Ok(DefaultPlanes::default())
     }
 
-    async fn clear_scene_post_hook(&self, _source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        _id_generator: &mut IdGenerator,
+        _source_range: crate::executor::SourceRange,
+    ) -> Result<(), KclError> {
         Ok(())
     }
 
