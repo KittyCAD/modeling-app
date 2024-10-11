@@ -1693,7 +1693,7 @@ async fn inner_tangential_arc(
 
     let id = uuid::Uuid::new_v4();
 
-    let (center, to, ccw) = match data {
+    let (center, to, ccw, radius, offset) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // KCL stdlib types use degrees.
             let offset = Angle::from_degrees(offset);
@@ -1731,13 +1731,15 @@ async fn inner_tangential_arc(
                 }),
             )
             .await?;
-            (center, to.into(), ccw)
+            (center, to.into(), ccw, radius, offset)
         }
     };
 
     let current_path = Path::TangentialArc {
         ccw,
         center: center.into(),
+        radius,
+        offset: offset.to_degrees(),
         base: BasePath {
             from: from.into(),
             to,

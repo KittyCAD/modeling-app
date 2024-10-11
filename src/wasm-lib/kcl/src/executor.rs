@@ -1459,8 +1459,10 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
         /// angle range
+        #[ts(type = "[number, number]")]
         angle_range: [f64; 2],
         /// center
+        #[ts(type = "[number, number]")]
         center: [f64; 2],
         /// the arc's radius
         radius: f64,
@@ -1484,6 +1486,10 @@ pub enum Path {
         center: [f64; 2],
         /// arc's direction
         ccw: bool,
+        /// the arc's radius
+        radius: f64,
+        /// the arc's angle offset
+        offset: f64,
     },
     // TODO: consolidate segment enums, remove Circle. https://github.com/KittyCAD/modeling-app/issues/3940
     /// a complete arc
