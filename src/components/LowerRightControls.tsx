@@ -104,7 +104,7 @@ export function LowerRightControls({
           data-testid="telemetry-link"
         >
           <CustomIcon
-            name="magGlassChart"
+            name="stopwatch"
             className={`w-5 h-5 ${linkOverrideClassName}`}
           />
           <span className="sr-only">Telemetry</span>
