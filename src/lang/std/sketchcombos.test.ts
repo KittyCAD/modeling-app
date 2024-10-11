@@ -220,7 +220,7 @@ part001 = startSketchOn('XY')
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -231,7 +231,7 @@ part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -311,7 +311,7 @@ part001 = startSketchOn('XY')
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -322,7 +322,7 @@ part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -373,7 +373,7 @@ part001 = startSketchOn('XY')
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -384,7 +384,7 @@ part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -470,7 +470,7 @@ async function helperThing(
       }
     })
 
-  const programMemory = await enginelessExecutor(ast)
+  const execState = await enginelessExecutor(ast)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,
@@ -481,7 +481,7 @@ async function helperThing(
     ast,
     selectionRanges: makeSelections(selectionRanges),
     transformInfos,
-    programMemory,
+    programMemory: execState.memory,
   })
 
   if (err(newAst)) return Promise.reject(newAst)
