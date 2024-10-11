@@ -18,12 +18,12 @@ reduce(array: [KclValue], start: KclValue, reduce_fn: FunctionParam) -> KclValue
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `array` | [`[KclValue]`](/docs/kcl/types/KclValue) |  | Yes |
-| `start` | [`KclValue`](/docs/kcl/types/KclValue) | A memory item. | Yes |
+| `start` | [`KclValue`](/docs/kcl/types/KclValue) | Any KCL value. | Yes |
 | `reduce_fn` | `FunctionParam` |  | Yes |
 
 ### Returns
 
-[`KclValue`](/docs/kcl/types/KclValue) - A memory item.
+[`KclValue`](/docs/kcl/types/KclValue) - Any KCL value.
 
 
 ### Examples
