@@ -1,4 +1,5 @@
 import { EditorView, ViewUpdate } from '@codemirror/view'
+import { syntaxTree } from '@codemirror/language'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
 import { engineCommandManager } from 'lib/singletons'
 import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
@@ -12,6 +13,7 @@ import {
   setDiagnosticsEffect,
 } from '@codemirror/lint'
 import { StateFrom } from 'xstate'
+import { markOnce } from 'lib/performance'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -59,6 +61,42 @@ export default class EditorManager {
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView
+    this.overrideTreeHighlighterUpdateForPerformanceTracking()
+  }
+
+  overrideTreeHighlighterUpdateForPerformanceTracking() {
+    const TREE_HIGHLIGHTER = 'TreeHighlighter'
+    // @ts-ignore
+    this._editorView?.plugins.forEach((e) => {
+      let sawATreeDiff = false
+      const constructorName = e.value.constructor.name
+      if (constructorName === TREE_HIGHLIGHTER) {
+        let originalUpdate = e.value.update
+        // @ts-ignore
+        function performanceTrackingUpdate(args) {
+          /**
+           * TreeHighlighter.update will be called multiple times on start up.
+           * We do not want to track the highlight peformance of an empty update.
+           * mark the syntax highlight one time when the new tree comes in with the
+           * initial code
+           */
+          const treeIsDifferent =
+            // @ts-ignore
+            !sawATreeDiff && this.tree !== syntaxTree(args.state)
+          if (treeIsDifferent && !sawATreeDiff) {
+            markOnce('code/willSyntaxHighlight')
+          }
+          // Call the original function
+          // @ts-ignore
+          originalUpdate.apply(this, [args])
+          if (treeIsDifferent && !sawATreeDiff) {
+            markOnce('code/didSyntaxHighlight')
+            sawATreeDiff = true
+          }
+        }
+        e.value.update = performanceTrackingUpdate
+      }
+    })
   }
 
   get editorView(): EditorView | null {
