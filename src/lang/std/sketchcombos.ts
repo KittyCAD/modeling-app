@@ -1559,9 +1559,7 @@ export function transformSecondarySketchLinesTagFirst({
     }
   | Error {
   // let node = structuredClone(ast)
-  const primarySelection = selectionRanges.codeBasedSelections.sort(
-    (a, b) => a.range[0] - b.range[0]
-  )[0].range
+  const primarySelection = selectionRanges.codeBasedSelections[0].range
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
   if (err(_tag)) return _tag
