@@ -45,11 +45,11 @@ variableBelowShouldNotBeIncluded = 3
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,
-      programMemory,
+      execState.memory,
       [rangeStart, rangeStart]
     )
     expect(variables).toEqual([
@@ -351,11 +351,11 @@ part001 = startSketchAt([-1.41, 3.46])
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [100, 101] },
-      programMemory,
+      programMemory: execState.memory,
     })
     expect(result).toEqual(true)
   })
@@ -370,11 +370,11 @@ part001 = startSketchAt([-1.41, 3.46])
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [100, 101] },
-      programMemory,
+      programMemory: execState.memory,
     })
     expect(result).toEqual(true)
   })
@@ -383,11 +383,11 @@ part001 = startSketchAt([-1.41, 3.46])
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [10, 11] },
-      programMemory,
+      programMemory: execState.memory,
     })
     expect(result).toEqual(false)
   })

@@ -40,6 +40,8 @@ use crate::{
 pub struct ExecState {
     /// Program variable bindings.
     pub memory: ProgramMemory,
+    /// The stable artifact ID generator.
+    pub id_generator: IdGenerator,
     /// Dynamic state that follows dynamic flow of the program.
     pub dynamic_state: DynamicState,
     /// The current value of the pipe operator returned from the previous
@@ -289,6 +291,33 @@ impl DynamicState {
                 }
             })
             .collect::<Vec<_>>()
+    }
+}
+
+/// A generator for ArtifactIds that can be stable across executions.
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct IdGenerator {
+    next_id: usize,
+    ids: Vec<uuid::Uuid>,
+}
+
+impl IdGenerator {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn next_uuid(&mut self) -> uuid::Uuid {
+        if let Some(id) = self.ids.get(self.next_id) {
+            self.next_id += 1;
+            *id
+        } else {
+            let id = uuid::Uuid::new_v4();
+            self.ids.push(id);
+            self.next_id += 1;
+            id
+        }
     }
 }
 
@@ -597,6 +626,82 @@ pub struct Plane {
     pub z_axis: Point3d,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
+}
+
+impl Plane {
+    pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
+        let id = exec_state.id_generator.next_uuid();
+        match value {
+            crate::std::sketch::PlaneData::XY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, 1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, -1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::XZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, -1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::YZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegYZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(-1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::Plane {
+                origin,
+                x_axis,
+                y_axis,
+                z_axis,
+            } => Plane {
+                id,
+                origin: *origin,
+                x_axis: *x_axis,
+                y_axis: *y_axis,
+                z_axis: *z_axis,
+                value: PlaneType::Custom,
+                meta: vec![],
+            },
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1836,8 +1941,12 @@ impl ExecutorContext {
         Ok(ctx)
     }
 
-    pub async fn reset_scene(&self, source_range: crate::executor::SourceRange) -> Result<()> {
-        self.engine.clear_scene(source_range).await?;
+    pub async fn reset_scene(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<()> {
+        self.engine.clear_scene(id_generator, source_range).await?;
         Ok(())
     }
 
@@ -1848,8 +1957,11 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
+        id_generator: IdGenerator,
     ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory).await.map(|x| x.0)
+        self.run_with_session_data(program, memory, id_generator)
+            .await
+            .map(|x| x.0)
     }
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
@@ -1858,11 +1970,22 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
+        id_generator: IdGenerator,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
+        let memory = if let Some(memory) = memory {
+            memory.clone()
+        } else {
+            Default::default()
+        };
+        let mut exec_state = ExecState {
+            memory,
+            id_generator,
+            ..Default::default()
+        };
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
+                exec_state.id_generator.next_uuid(),
                 SourceRange::default(),
                 &ModelingCmd::from(mcmd::SetSceneUnits {
                     unit: match self.settings.units {
@@ -1876,15 +1999,7 @@ impl ExecutorContext {
                 }),
             )
             .await?;
-        let memory = if let Some(memory) = memory {
-            memory.clone()
-        } else {
-            Default::default()
-        };
-        let mut exec_state = ExecState {
-            memory,
-            ..Default::default()
-        };
+
         self.inner_execute(program, &mut exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
@@ -2029,8 +2144,12 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None).await?;
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        program: &Program,
+        id_generator: IdGenerator,
+    ) -> Result<TakeSnapshot> {
+        let _ = self.run(program, None, id_generator).await?;
 
         // Zoom to fit.
         self.engine
@@ -2175,7 +2294,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None).await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default()).await?;
 
         Ok(exec_state.memory)
     }
