@@ -70,7 +70,7 @@ if (isDesktop()) {
       id: AUTO_UPDATER_TOAST_ID,
     })
   })
-  window.electron.onUpdateDownloaded((version: string, releaseNotes) => {
+  window.electron.onUpdateDownloaded(({ version, releaseNotes }) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
     toast.custom(
@@ -80,6 +80,7 @@ if (isDesktop()) {
         onRestart: () => {
           window.electron.appRestart()
         },
+        onDismiss: () => {},
       }),
       { duration: 30000, id: AUTO_UPDATER_TOAST_ID }
     )
