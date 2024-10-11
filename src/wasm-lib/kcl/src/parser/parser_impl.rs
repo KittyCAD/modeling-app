@@ -12,10 +12,10 @@ use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, ElseIf,
         Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
-        ImportStatement, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta,
-        NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
-        Program, ReturnStatement, TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration,
-        VariableDeclarator, VariableKind,
+        ImportStatement, ItemVisibility, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
+        NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+        PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta,
+        VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -965,7 +965,7 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
-        token if token.declaration_keyword().is_some() =>
+        token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "import" =>
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
@@ -1332,6 +1332,19 @@ fn possible_operands(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
+/// Parse an item visibility specifier, e.g. export.
+fn item_visibility(i: TokenSlice) -> PResult<(ItemVisibility, Token)> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Keyword && token.value == "export" {
+            Some((ItemVisibility::Export, token))
+        } else {
+            None
+        }
+    })
+    .context(expected("item visibility, e.g. 'export'"))
+    .parse_next(i)
+}
+
 fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
     let res = any
         .verify_map(|token: Token| token.declaration_keyword().map(|kw| (kw, token)))
@@ -1341,6 +1354,9 @@ fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
 
 /// Parse a variable/constant declaration.
 fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
+    let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
+        .parse_next(i)?
+        .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
     let decl_token = opt(declaration_keyword).parse_next(i)?;
     if decl_token.is_some() {
         // If there was a declaration keyword like `fn`, then it must be followed by some spaces.
@@ -1353,11 +1369,14 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             "an identifier, which becomes name you're binding the value to",
         ))
         .parse_next(i)?;
-    let (kind, start, dec_end) = if let Some((kind, token)) = &decl_token {
+    let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
         (*kind, token.start, token.end)
     } else {
         (VariableKind::Const, id.start(), id.end())
     };
+    if let Some(token) = visibility_token {
+        start = token.start;
+    }
 
     ignore_whitespace(i);
     equals(i)?;
@@ -1406,6 +1425,7 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             init: val,
             digest: None,
         }],
+        visibility,
         kind,
         digest: None,
     })
@@ -3276,6 +3296,7 @@ e
                     })),
                     digest: None,
                 }],
+                visibility: ItemVisibility::Default,
                 kind: VariableKind::Const,
                 digest: None,
             })],

@@ -1,6 +1,9 @@
 //! The executor for the AST.
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -23,8 +26,8 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, KclNone,
-        Program, ReturnStatement, TagDeclarator,
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, ItemVisibility,
+        KclNone, Program, ReturnStatement, TagDeclarator,
     },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -47,6 +50,8 @@ pub struct ExecState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
+    /// Identifiers that have been exported from the current module.
+    pub module_exports: HashSet<String>,
     /// The stack of use statements for detecting circular module imports.  If
     /// this is empty, we're not currently executing a use statement.
     pub use_stack: Vec<std::path::PathBuf>,
@@ -2069,12 +2074,14 @@ impl ExecutorContext {
                     }
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
                     let program = crate::parser::parse(&source)?;
-                    let module_memory = {
+                    let (module_memory, module_exports) = {
                         exec_state.use_stack.push(resolved_path.clone());
                         let original_memory = std::mem::take(&mut exec_state.memory);
+                        let original_exports = std::mem::take(&mut exec_state.module_exports);
                         let result = self
                             .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
                             .await;
+                        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
                         let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
                         exec_state.use_stack.pop();
 
@@ -2087,7 +2094,7 @@ impl ExecutorContext {
                             })
                         })?;
 
-                        module_memory
+                        (module_memory, module_exports)
                     };
                     for import_item in &import_stmt.items {
                         // Extract the item from the module.
@@ -2099,6 +2106,17 @@ impl ExecutorContext {
                                     source_ranges: vec![SourceRange::from(&import_item.name)],
                                 })
                             })?;
+                        // Check that the item is allowed to be imported.
+                        if !module_exports.contains(&import_item.name.name) {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: format!(
+                                    "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                    import_item.name.name
+                                ),
+                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                            }));
+                        }
+
                         // Add the item to the current module.
                         exec_state.memory.add(
                             import_item.identifier(),
@@ -2135,6 +2153,13 @@ impl ExecutorContext {
                             )
                             .await?;
                         exec_state.memory.add(&var_name, memory_item, source_range)?;
+                        // Track exports.
+                        match variable_declaration.visibility {
+                            ItemVisibility::Export => {
+                                exec_state.module_exports.insert(var_name);
+                            }
+                            ItemVisibility::Default => {}
+                        }
                     }
                     last_expr = None;
                 }

@@ -3,9 +3,9 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, Expr, FormatOptions,
-        FunctionExpression, IfExpression, ImportStatement, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-        MemberObject, NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression,
-        VariableDeclaration, VariableKind,
+        FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator,
+        UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -186,7 +186,11 @@ impl CallExpression {
 impl VariableDeclaration {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        self.declarations.iter().fold(String::new(), |mut output, declaration| {
+        let output = match self.visibility {
+            ItemVisibility::Default => String::new(),
+            ItemVisibility::Export => "export ".to_owned(),
+        };
+        self.declarations.iter().fold(output, |mut output, declaration| {
             let keyword = match self.kind {
                 VariableKind::Fn => "fn ",
                 VariableKind::Const => "",

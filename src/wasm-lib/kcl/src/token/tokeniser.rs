@@ -173,7 +173,7 @@ fn keyword(i: &mut Located<&str>) -> PResult<Token> {
     // These are the keywords themselves.
     let keyword_candidates = alt((
         "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
-        "nil", "and", "or", "not", "var", "const",
+        "nil", "and", "or", "not", "var", "const", "export",
     ));
     // Look ahead. If any of these characters follow the keyword, then it's not a keyword, it's just
     // the start of a normal word.

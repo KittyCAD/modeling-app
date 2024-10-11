@@ -1634,6 +1634,25 @@ impl PartialEq for Function {
     }
 }
 
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum ItemVisibility {
+    #[default]
+    Default,
+    Export,
+}
+
+impl ItemVisibility {
+    fn digestable_id(&self) -> [u8; 1] {
+        match self {
+            ItemVisibility::Default => [0],
+            ItemVisibility::Export => [1],
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1642,6 +1661,7 @@ pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
+    pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
 
     pub digest: Option<Digest>,
@@ -1687,14 +1707,16 @@ impl VariableDeclaration {
         for declarator in &mut slf.declarations {
             hasher.update(declarator.compute_digest());
         }
+        hasher.update(slf.visibility.digestable_id());
         hasher.update(slf.kind.digestable_id());
     });
 
-    pub fn new(declarations: Vec<VariableDeclarator>, kind: VariableKind) -> Self {
+    pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
             start: 0,
             end: 0,
             declarations,
+            visibility,
             kind,
             digest: None,
         }
