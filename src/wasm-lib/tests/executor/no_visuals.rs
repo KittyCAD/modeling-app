@@ -28,7 +28,14 @@ macro_rules! gen_test_fail {
 async fn run(code: &str) {
     let (ctx, program, id_generator) = setup(code).await;
 
-    ctx.run(&program, None, id_generator).await.unwrap();
+    ctx.run(
+        &program,
+        None,
+        id_generator,
+        Some("tests/executor/inputs/no_visuals/".to_owned()),
+    )
+    .await
+    .unwrap();
 }
 
 async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
@@ -49,7 +56,15 @@ async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
 
 async fn run_fail(code: &str) -> KclError {
     let (ctx, program, id_generator) = setup(code).await;
-    let Err(e) = ctx.run(&program, None, id_generator).await else {
+    let Err(e) = ctx
+        .run(
+            &program,
+            None,
+            id_generator,
+            Some("tests/executor/inputs/no_visuals/".to_owned()),
+        )
+        .await
+    else {
         panic!("Expected this KCL program to fail, but it (incorrectly) never threw an error.");
     };
     e

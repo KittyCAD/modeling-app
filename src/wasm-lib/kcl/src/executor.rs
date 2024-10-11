@@ -49,7 +49,10 @@ pub struct ExecState {
     pub pipe_value: Option<KclValue>,
     /// The stack of use statements for detecting circular module imports.  If
     /// this is empty, we're not currently executing a use statement.
-    pub use_stack: Vec<String>,
+    pub use_stack: Vec<std::path::PathBuf>,
+    /// The directory of the current project.  This is used for resolving import
+    /// paths.
+    pub project_directory: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1978,8 +1981,9 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory, id_generator)
+        self.run_with_session_data(program, memory, id_generator, project_directory)
             .await
             .map(|x| x.0)
     }
@@ -1991,6 +1995,7 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
         let memory = if let Some(memory) = memory {
             memory.clone()
@@ -2000,6 +2005,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState {
             memory,
             id_generator,
+            project_directory,
             ..Default::default()
         };
         // Before we even start executing the program, set the units.
@@ -2041,20 +2047,30 @@ impl ExecutorContext {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
                     let path = import_stmt.path.clone();
-                    if exec_state.use_stack.contains(&path) {
+                    let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
+                        std::path::PathBuf::from(project_dir).join(&path)
+                    } else {
+                        std::path::PathBuf::from(&path)
+                    };
+                    if exec_state.use_stack.contains(&resolved_path) {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: format!(
                                 "circular use of modules is not allowed: {} -> {}",
-                                exec_state.use_stack.join(" -> "),
-                                path
+                                exec_state
+                                    .use_stack
+                                    .iter()
+                                    .map(|p| p.as_path().to_string_lossy())
+                                    .collect::<Vec<_>>()
+                                    .join(" -> "),
+                                resolved_path.to_string_lossy()
                             ),
                             source_ranges: vec![import_stmt.into()],
                         }));
                     }
-                    let source = self.fs.read_to_string(&path, source_range).await?;
+                    let source = self.fs.read_to_string(&resolved_path, source_range).await?;
                     let program = crate::parser::parse(&source)?;
                     let module_memory = {
-                        exec_state.use_stack.push(path.clone());
+                        exec_state.use_stack.push(resolved_path.clone());
                         let original_memory = std::mem::take(&mut exec_state.memory);
                         let result = self
                             .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
@@ -2222,8 +2238,9 @@ impl ExecutorContext {
         &self,
         program: &Program,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None, id_generator).await?;
+        let _ = self.run(program, None, id_generator, project_directory).await?;
 
         // Zoom to fit.
         self.engine
@@ -2368,7 +2385,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None, IdGenerator::default()).await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
         Ok(exec_state.memory)
     }
