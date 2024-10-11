@@ -295,7 +295,7 @@ code {
   */
   .parsed-markdown ul,
   .parsed-markdown ol {
-    @apply list-outside pl-4 lg:pl-8;
+    @apply list-outside pl-4 lg:pl-8 my-2;
   }
 
   .parsed-markdown ul li {
@@ -304,6 +304,12 @@ code {
 
   .parsed-markdown li p {
     @apply inline;
+  }
+
+  .parsed-markdown code {
+    @apply px-1 py-0.5 rounded-sm;
+    @apply bg-chalkboard-20 text-chalkboard-80;
+    @apply dark:bg-chalkboard-80 dark:text-chalkboard-30;
   }
 }
 

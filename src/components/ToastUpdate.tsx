@@ -7,13 +7,15 @@ export function ToastUpdate({
   version,
   releaseNotes,
   onRestart,
+  onDismiss,
 }: {
   version: string
-  releaseNotes: string
+  releaseNotes?: string
   onRestart: () => void
+  onDismiss: () => void
 }) {
   const containsBreakingChanges = releaseNotes
-    .toLocaleLowerCase()
+    ?.toLocaleLowerCase()
     .includes('breaking')
 
   return (
@@ -41,31 +43,37 @@ export function ToastUpdate({
             </a>
           </p>
         </div>
-        <details className="my-4" open={containsBreakingChanges}>
-          <summary>
-            Release notes
-            {containsBreakingChanges && (
-              <strong className="text-destroy-50"> (Breaking changes)</strong>
-            )}
-          </summary>
-          <div
-            className="parsed-markdown my-4 max-h-60 overflow-y-auto"
-            dangerouslySetInnerHTML={{
-              __html: Marked.parse(releaseNotes, {
-                gfm: true,
-                breaks: true,
-                sanitize: true,
-              }),
-            }}
-          ></div>
-        </details>
+        {releaseNotes && (
+          <details
+            className="my-4 border border-chalkboard-30 dark:border-chalkboard-60 rounded"
+            open={containsBreakingChanges}
+            data-testid="release-notes"
+          >
+            <summary className="p-2 select-none cursor-pointer">
+              Release notes
+              {containsBreakingChanges && (
+                <strong className="text-destroy-50"> (Breaking changes)</strong>
+              )}
+            </summary>
+            <div
+              className="parsed-markdown py-2 px-4 mt-2 border-t border-chalkboard-30 dark:border-chalkboard-60 max-h-60 overflow-y-auto"
+              dangerouslySetInnerHTML={{
+                __html: Marked.parse(releaseNotes, {
+                  gfm: true,
+                  breaks: true,
+                  sanitize: true,
+                }),
+              }}
+            ></div>
+          </details>
+        )}
         <div className="flex justify-between gap-8">
           <ActionButton
             Element="button"
             iconStart={{
               icon: 'arrowRotateRight',
             }}
-            name="Restart app now"
+            name="restart"
             onClick={onRestart}
           >
             Restart app now
@@ -75,9 +83,10 @@ export function ToastUpdate({
             iconStart={{
               icon: 'checkmark',
             }}
-            name="Got it"
+            name="dismiss"
             onClick={() => {
               toast.dismiss()
+              onDismiss()
             }}
           >
             Got it
