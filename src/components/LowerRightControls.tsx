@@ -101,10 +101,10 @@ export function LowerRightControls({
               ? filePath + PATHS.TELEMETRY + '?tab=project'
               : PATHS.HOME + PATHS.TELEMETRY
           }
-          data-testid="settings-link"
+          data-testid="telemetry-link"
         >
           <CustomIcon
-            name="settings"
+            name="magGlassChart"
             className={`w-5 h-5 ${linkOverrideClassName}`}
           />
           <span className="sr-only">Telemetry</span>
