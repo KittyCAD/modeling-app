@@ -12,8 +12,6 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use std::{ cell::RefCell, rc::Rc };
-
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -1536,18 +1534,39 @@ pub(crate) async fn inner_arc(
             angle_end,
             radius,
         } => {
-            let mut a_start = Angle::from_degrees(*angle_start);
-            let mut a_end = Angle::from_degrees(*angle_end);
+            let a_start = Angle::from_degrees(*angle_start);
+            let a_end = Angle::from_degrees(*angle_end);
+
+            let (start, center, mut end) = arc_start_center_and_end(from, a_start, a_end, *radius);
 
             #[cfg(target_arch = "wasm32")]
             {
-                let sketch_json_value = serde_json::to_string(&sketch).map_err(|e| {
+                let mut path_plus_arc = sketch.clone();
+                let to = [ 0.0, 0.0 ];
+                let arc = Path::Arc {
+                    base: BasePath { 
+                        from: from.into(),
+                        to,
+                        tag: None,
+                        geo_meta: GeoMeta {
+                            id: uuid::Uuid::new_v4(),
+                            metadata: args.source_range.into(),
+                        },  
+                    },
+                    angle_range: [ *angle_start, *angle_end ],
+                    center: [ center.x, center.y ],
+                    radius: *radius,
+                };
+
+                path_plus_arc.value.push(arc);
+
+                let sketch_json_value = serde_json::to_string(&path_plus_arc).map_err(|e| {
                     KclError::Type(KclErrorDetails {
                         message: format!("Failed to convert sketch to json: {}", e),
                         source_ranges: vec![args.source_range],
                     })
                 })?;
-
+                
                 let promise = get_true_path_end_pos(sketch_json_value.into()).map_err(|e| {
                     KclError::Internal(KclErrorDetails {
                         message: format!("{:?}", e),
@@ -1560,19 +1579,21 @@ pub(crate) async fn inner_arc(
                         source_ranges: vec![args.source_range],
                     })
                 })?;
+                
                 web_sys::console::log_1(&format!("Testing here {result:?}").into());
+
+                let result_str: String = result.as_string().unwrap_or_default();
+                let result_end: Point2d = serde_json::from_str(&result_str).map_err(|e| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Failed to convert arc center from json: {}", e),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?;
+                
+                end = result_end;
             }
 
-            //duplicating engine logic to make sure this is _exactly_ what engine is doing - mike
-            if a_start.to_degrees() > a_end.to_degrees() {
-                // this implies a clockwise arc, so swap the angles to a matching counter-clockwise arc
-                std::mem::swap(&mut a_end, &mut a_start);
-            }
-
-            let (start, center, end) = arc_start_center_and_end(from, a_start, a_end, *radius);
-
-            (center, a_start, a_end, *radius, start)
-            //(center, a_start, a_end, *radius, end)
+            (center, a_start, a_end, *radius, end)
         }
         ArcData::CenterToRadius { center, to, radius } => {
             let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;

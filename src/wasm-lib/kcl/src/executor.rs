@@ -1454,6 +1454,17 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// An arc (only used for engine-utils arg serialization for now)
+    Arc {
+        #[serde(flatten)]
+        base: BasePath,
+        /// angle range
+        angle_range: [f64; 2],
+        /// center
+        center: [f64; 2],
+        /// the arc's radius
+        radius: f64,
+    },
     /// A arc that is tangential to the last path segment that goes to a point
     TangentialArcTo {
         #[serde(flatten)]
@@ -1521,6 +1532,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1533,6 +1545,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::Arc { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1545,6 +1558,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::Arc { base, .. } => base,
         }
     }
 
@@ -1557,6 +1571,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::Arc { base, .. } => Some(base),
         }
     }
 }

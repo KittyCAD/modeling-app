@@ -245,7 +245,8 @@ pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> 
                             },
                         });
                         Some(extrude_surface)
-                    }
+                    },
+                    Path::Arc { .. } => todo!(),
                 }
             } else if args.ctx.is_mock() {
                 // Only pre-populate the extrude surface if we are in mock mode.
