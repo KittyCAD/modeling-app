@@ -220,11 +220,11 @@ yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
@@ -235,11 +235,11 @@ yo2 = hmm([identifierGuy + 5])`
   it('should move a value into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
@@ -250,11 +250,11 @@ yo2 = hmm([identifierGuy + 5])`
   it('should move a callExpression into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
@@ -265,11 +265,11 @@ yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression with call expression into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
@@ -280,11 +280,11 @@ yo2 = hmm([identifierGuy + 5])`
   it('should move a identifier into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
@@ -465,7 +465,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> line([306.21, 198.87], %)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const lineOfInterest = 'line([306.21, 198.85], %, $a)'
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
@@ -475,7 +475,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const modifiedAst = deleteSegmentFromPipeExpression(
       [],
       ast,
-      programMemory,
+      execState.memory,
       code,
       pathToNode
     )
@@ -543,7 +543,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const code = makeCode(line)
       const ast = parse(code)
       if (err(ast)) throw ast
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
       const range: [number, number] = [
         code.indexOf(lineOfInterest),
@@ -554,7 +554,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const modifiedAst = deleteSegmentFromPipeExpression(
         dependentSegments,
         ast,
-        programMemory,
+        execState.memory,
         code,
         pathToNode
       )
@@ -632,7 +632,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       const ast = parse(code)
       if (err(ast)) throw ast
 
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
       const range: [number, number] = [
         code.indexOf(lineOfInterest) + 1,
@@ -661,7 +661,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        programMemory
+        execState.memory
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -686,7 +686,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       const ast = parse(code)
       if (err(ast)) throw ast
 
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
       const range: [number, number] = [
         code.indexOf(lineOfInterest) + 1,
@@ -711,7 +711,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        programMemory
+        execState.memory
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -882,7 +882,7 @@ sketch002 = startSketchOn({
       // const lineOfInterest = 'line([-2.94, 2.7], %)'
       const ast = parse(codeBefore)
       if (err(ast)) throw ast
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
 
       // deleteFromSelection
       const range: [number, number] = [
@@ -895,7 +895,7 @@ sketch002 = startSketchOn({
           range,
           type,
         },
-        programMemory,
+        execState.memory,
         async () => {
           await new Promise((resolve) => setTimeout(resolve, 100))
           return {

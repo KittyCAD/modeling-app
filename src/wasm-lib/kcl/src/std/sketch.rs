@@ -16,8 +16,8 @@ use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, PlaneType, Point2d, Point3d, Sketch, SketchSet,
-        SketchSurface, Solid, TagEngineInfo, TagIdentifier, UserVal,
+        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
+        Solid, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
         utils::{
@@ -93,10 +93,10 @@ pub enum StartOrEnd {
 }
 
 /// Draw a line to a point.
-pub async fn line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_line_to(to, sketch, tag, args).await?;
+    let new_sketch = inner_line_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -119,10 +119,11 @@ async fn inner_line_to(
     to: [f64; 2],
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -159,10 +160,10 @@ async fn inner_line_to(
 }
 
 /// Draw a line to a point on the x-axis.
-pub async fn x_line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_x_line_to(to, sketch, tag, args).await?;
+    let new_sketch = inner_x_line_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -192,19 +193,25 @@ pub async fn x_line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclVal
 #[stdlib {
     name = "xLineTo",
 }]
-async fn inner_x_line_to(to: f64, sketch: Sketch, tag: Option<TagDeclarator>, args: Args) -> Result<Sketch, KclError> {
+async fn inner_x_line_to(
+    to: f64,
+    sketch: Sketch,
+    tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
 
-    let new_sketch = inner_line_to([to, from.y], sketch, tag, args).await?;
+    let new_sketch = inner_line_to([to, from.y], sketch, tag, exec_state, args).await?;
 
     Ok(new_sketch)
 }
 
 /// Draw a line to a point on the y-axis.
-pub async fn y_line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_y_line_to(to, sketch, tag, args).await?;
+    let new_sketch = inner_y_line_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -227,18 +234,24 @@ pub async fn y_line_to(_exec_state: &mut ExecState, args: Args) -> Result<KclVal
 #[stdlib {
     name = "yLineTo",
 }]
-async fn inner_y_line_to(to: f64, sketch: Sketch, tag: Option<TagDeclarator>, args: Args) -> Result<Sketch, KclError> {
+async fn inner_y_line_to(
+    to: f64,
+    sketch: Sketch,
+    tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
 
-    let new_sketch = inner_line_to([from.x, to], sketch, tag, args).await?;
+    let new_sketch = inner_line_to([from.x, to], sketch, tag, exec_state, args).await?;
     Ok(new_sketch)
 }
 
 /// Draw a line.
-pub async fn line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_line(delta, sketch, tag, args).await?;
+    let new_sketch = inner_line(delta, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -273,12 +286,13 @@ async fn inner_line(
     delta: [f64; 2],
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
     let to = [from.x + delta[0], from.y + delta[1]];
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -315,10 +329,10 @@ async fn inner_line(
 }
 
 /// Draw a line on the x-axis.
-pub async fn x_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (length, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_x_line(length, sketch, tag, args).await?;
+    let new_sketch = inner_x_line(length, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -347,15 +361,21 @@ pub async fn x_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[stdlib {
     name = "xLine",
 }]
-async fn inner_x_line(length: f64, sketch: Sketch, tag: Option<TagDeclarator>, args: Args) -> Result<Sketch, KclError> {
-    inner_line([length, 0.0], sketch, tag, args).await
+async fn inner_x_line(
+    length: f64,
+    sketch: Sketch,
+    tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    inner_line([length, 0.0], sketch, tag, exec_state, args).await
 }
 
 /// Draw a line on the y-axis.
-pub async fn y_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (length, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_y_line(length, sketch, tag, args).await?;
+    let new_sketch = inner_y_line(length, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -379,8 +399,14 @@ pub async fn y_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 #[stdlib {
     name = "yLine",
 }]
-async fn inner_y_line(length: f64, sketch: Sketch, tag: Option<TagDeclarator>, args: Args) -> Result<Sketch, KclError> {
-    inner_line([0.0, length], sketch, tag, args).await
+async fn inner_y_line(
+    length: f64,
+    sketch: Sketch,
+    tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    inner_line([0.0, length], sketch, tag, exec_state, args).await
 }
 
 /// Data to draw an angled line.
@@ -400,10 +426,10 @@ pub enum AngledLineData {
 }
 
 /// Draw an angled line.
-pub async fn angled_line(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_angled_line(data, sketch, tag, args).await?;
+    let new_sketch = inner_angled_line(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -431,6 +457,7 @@ async fn inner_angled_line(
     data: AngledLineData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
@@ -448,7 +475,7 @@ async fn inner_angled_line(
 
     let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -484,10 +511,10 @@ async fn inner_angled_line(
 }
 
 /// Draw an angled line of a given x length.
-pub async fn angled_line_of_x_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_angled_line_of_x_length(data, sketch, tag, args).await?;
+    let new_sketch = inner_angled_line_of_x_length(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -511,6 +538,7 @@ async fn inner_angled_line_of_x_length(
     data: AngledLineData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let (angle, length) = match data {
@@ -534,7 +562,7 @@ async fn inner_angled_line_of_x_length(
 
     let to = get_y_component(Angle::from_degrees(angle), length);
 
-    let new_sketch = inner_line(to.into(), sketch, tag, args).await?;
+    let new_sketch = inner_line(to.into(), sketch, tag, exec_state, args).await?;
 
     Ok(new_sketch)
 }
@@ -551,10 +579,10 @@ pub struct AngledLineToData {
 }
 
 /// Draw an angled line to a given x coordinate.
-pub async fn angled_line_to_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_angled_line_to_x(data, sketch, tag, args).await?;
+    let new_sketch = inner_angled_line_to_x(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -579,6 +607,7 @@ async fn inner_angled_line_to_x(
     data: AngledLineToData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
@@ -602,15 +631,15 @@ async fn inner_angled_line_to_x(
     let y_component = x_component * f64::tan(angle.to_radians());
     let y_to = from.y + y_component;
 
-    let new_sketch = inner_line_to([x_to, y_to], sketch, tag, args).await?;
+    let new_sketch = inner_line_to([x_to, y_to], sketch, tag, exec_state, args).await?;
     Ok(new_sketch)
 }
 
 /// Draw an angled line of a given y length.
-pub async fn angled_line_of_y_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_angled_line_of_y_length(data, sketch, tag, args).await?;
+    let new_sketch = inner_angled_line_of_y_length(data, sketch, tag, exec_state, args).await?;
 
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
@@ -637,6 +666,7 @@ async fn inner_angled_line_of_y_length(
     data: AngledLineData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let (angle, length) = match data {
@@ -660,16 +690,16 @@ async fn inner_angled_line_of_y_length(
 
     let to = get_x_component(Angle::from_degrees(angle), length);
 
-    let new_sketch = inner_line(to.into(), sketch, tag, args).await?;
+    let new_sketch = inner_line(to.into(), sketch, tag, exec_state, args).await?;
 
     Ok(new_sketch)
 }
 
 /// Draw an angled line to a given y coordinate.
-pub async fn angled_line_to_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_angled_line_to_y(data, sketch, tag, args).await?;
+    let new_sketch = inner_angled_line_to_y(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -694,6 +724,7 @@ async fn inner_angled_line_to_y(
     data: AngledLineToData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
@@ -717,7 +748,7 @@ async fn inner_angled_line_to_y(
     let x_component = y_component / f64::tan(angle.to_radians());
     let x_to = from.x + x_component;
 
-    let new_sketch = inner_line_to([x_to, y_to], sketch, tag, args).await?;
+    let new_sketch = inner_line_to([x_to, y_to], sketch, tag, exec_state, args).await?;
     Ok(new_sketch)
 }
 
@@ -788,7 +819,7 @@ async fn inner_angled_line_that_intersects(
         from,
     );
 
-    let new_sketch = inner_line_to(to.into(), sketch, tag, args).await?;
+    let new_sketch = inner_line_to(to.into(), sketch, tag, exec_state, args).await?;
     Ok(new_sketch)
 }
 
@@ -889,82 +920,6 @@ pub enum PlaneData {
         #[serde(rename = "zAxis", alias = "z_axis")]
         z_axis: Box<Point3d>,
     },
-}
-
-impl From<PlaneData> for Plane {
-    fn from(value: PlaneData) -> Self {
-        let id = uuid::Uuid::new_v4();
-        match value {
-            PlaneData::XY => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 1.0, 0.0),
-                z_axis: Point3d::new(0.0, 0.0, 1.0),
-                value: PlaneType::XY,
-                meta: vec![],
-            },
-            PlaneData::NegXY => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 1.0, 0.0),
-                z_axis: Point3d::new(0.0, 0.0, -1.0),
-                value: PlaneType::XY,
-                meta: vec![],
-            },
-            PlaneData::XZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, -1.0, 0.0),
-                value: PlaneType::XZ,
-                meta: vec![],
-            },
-            PlaneData::NegXZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, 1.0, 0.0),
-                value: PlaneType::XZ,
-                meta: vec![],
-            },
-            PlaneData::YZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(0.0, 1.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(1.0, 0.0, 0.0),
-                value: PlaneType::YZ,
-                meta: vec![],
-            },
-            PlaneData::NegYZ => Plane {
-                id,
-                origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(0.0, 1.0, 0.0),
-                y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(-1.0, 0.0, 0.0),
-                value: PlaneType::YZ,
-                meta: vec![],
-            },
-            PlaneData::Plane {
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-            } => Plane {
-                id,
-                origin: *origin,
-                x_axis: *x_axis,
-                y_axis: *y_axis,
-                z_axis: *z_axis,
-                value: PlaneType::Custom,
-                meta: vec![],
-            },
-        }
-    }
 }
 
 /// Start a sketch on a specific plane or face.
@@ -1089,7 +1044,7 @@ async fn inner_start_sketch_on(
 ) -> Result<SketchSurface, KclError> {
     match data {
         SketchData::Plane(plane_data) => {
-            let plane = start_sketch_on_plane(plane_data, args).await?;
+            let plane = start_sketch_on_plane(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
         SketchData::Solid(solid) => {
@@ -1125,11 +1080,19 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn start_sketch_on_plane(data: PlaneData, args: &Args) -> Result<Box<Plane>, KclError> {
-    let mut plane: Plane = data.clone().into();
+async fn start_sketch_on_plane(
+    data: PlaneData,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Box<Plane>, KclError> {
+    let mut plane = Plane::from_plane_data(data.clone(), exec_state);
 
     // Get the default planes.
-    let default_planes = args.ctx.engine.default_planes(args.source_range).await?;
+    let default_planes = args
+        .ctx
+        .engine
+        .default_planes(&mut exec_state.id_generator, args.source_range)
+        .await?;
 
     plane.id = match data {
         PlaneData::XY => default_planes.xy,
@@ -1145,7 +1108,7 @@ async fn start_sketch_on_plane(data: PlaneData, args: &Args) -> Result<Box<Plane
             z_axis: _,
         } => {
             // Create the custom plane on the fly.
-            let id = uuid::Uuid::new_v4();
+            let id = exec_state.id_generator.next_uuid();
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::MakePlane {
@@ -1228,7 +1191,7 @@ pub(crate) async fn inner_start_profile_at(
 
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EnableSketchMode {
@@ -1246,8 +1209,8 @@ pub(crate) async fn inner_start_profile_at(
     )
     .await?;
 
-    let id = uuid::Uuid::new_v4();
-    let path_id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
+    let path_id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
         .await?;
@@ -1375,10 +1338,10 @@ pub(crate) fn inner_profile_start(sketch: Sketch) -> Result<[f64; 2], KclError> 
 }
 
 /// Close the current sketch.
-pub async fn close(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (sketch, tag): (Sketch, Option<TagDeclarator>) = args.get_sketch_and_optional_tag()?;
 
-    let new_sketch = inner_close(sketch, tag, args).await?;
+    let new_sketch = inner_close(sketch, tag, exec_state, args).await?;
 
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
@@ -1407,11 +1370,16 @@ pub async fn close(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 #[stdlib {
     name = "close",
 }]
-pub(crate) async fn inner_close(sketch: Sketch, tag: Option<TagDeclarator>, args: Args) -> Result<Sketch, KclError> {
+pub(crate) async fn inner_close(
+    sketch: Sketch,
+    tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
     let to: Point2d = sketch.start.from.into();
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
         .await?;
@@ -1420,7 +1388,7 @@ pub(crate) async fn inner_close(sketch: Sketch, tag: Option<TagDeclarator>, args
     if let SketchSurface::Plane(_) = sketch.on {
         // We were on a plane, disable the sketch mode.
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
@@ -1478,10 +1446,10 @@ pub enum ArcData {
 }
 
 /// Draw an arc.
-pub async fn arc(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (ArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_arc(data, sketch, tag, args).await?;
+    let new_sketch = inner_arc(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -1514,6 +1482,7 @@ pub(crate) async fn inner_arc(
     data: ArcData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
@@ -1542,7 +1511,7 @@ pub(crate) async fn inner_arc(
         }));
     }
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -1596,10 +1565,10 @@ pub enum TangentialArcData {
 }
 
 /// Draw a tangential arc.
-pub async fn tangential_arc(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (TangentialArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_tangential_arc(data, sketch, tag, args).await?;
+    let new_sketch = inner_tangential_arc(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -1633,6 +1602,7 @@ async fn inner_tangential_arc(
     data: TangentialArcData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
@@ -1644,7 +1614,7 @@ async fn inner_tangential_arc(
         tangent_info.center_or_tangent_point
     };
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
@@ -1723,18 +1693,18 @@ fn tan_arc_to(sketch: &Sketch, to: &[f64; 2]) -> ModelingCmd {
 }
 
 /// Draw a tangential arc to a specific point.
-pub async fn tangential_arc_to(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn tangential_arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (to, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = super::args::FromArgs::from_args(&args, 0)?;
 
-    let new_sketch = inner_tangential_arc_to(to, sketch, tag, args).await?;
+    let new_sketch = inner_tangential_arc_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
 /// Draw a tangential arc to point some distance away..
-pub async fn tangential_arc_to_relative(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = super::args::FromArgs::from_args(&args, 0)?;
 
-    let new_sketch = inner_tangential_arc_to_relative(delta, sketch, tag, args).await?;
+    let new_sketch = inner_tangential_arc_to_relative(delta, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -1762,6 +1732,7 @@ async fn inner_tangential_arc_to(
     to: [f64; 2],
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
@@ -1780,7 +1751,7 @@ async fn inner_tangential_arc_to(
     });
 
     let delta = [to_x - from.x, to_y - from.y];
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
@@ -1831,6 +1802,7 @@ async fn inner_tangential_arc_to_relative(
     delta: [f64; 2],
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
@@ -1864,7 +1836,7 @@ async fn inner_tangential_arc_to_relative(
         }));
     }
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
@@ -1905,10 +1877,10 @@ pub struct BezierData {
 }
 
 /// Draw a bezier curve.
-pub async fn bezier_curve(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (BezierData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
 
-    let new_sketch = inner_bezier_curve(data, sketch, tag, args).await?;
+    let new_sketch = inner_bezier_curve(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -1937,6 +1909,7 @@ async fn inner_bezier_curve(
     data: BezierData,
     sketch: Sketch,
     tag: Option<TagDeclarator>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
@@ -1945,7 +1918,7 @@ async fn inner_bezier_curve(
     let delta = data.to;
     let to = [from.x + data.to[0], from.y + data.to[1]];
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -1984,10 +1957,10 @@ async fn inner_bezier_curve(
 }
 
 /// Use a sketch to cut a hole in another sketch.
-pub async fn hole(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hole_sketch, sketch): (SketchSet, Sketch) = args.get_sketches()?;
 
-    let new_sketch = inner_hole(hole_sketch, sketch, args).await?;
+    let new_sketch = inner_hole(hole_sketch, sketch, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
@@ -2025,11 +1998,16 @@ pub async fn hole(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 #[stdlib {
     name = "hole",
 }]
-async fn inner_hole(hole_sketch: SketchSet, sketch: Sketch, args: Args) -> Result<Sketch, KclError> {
+async fn inner_hole(
+    hole_sketch: SketchSet,
+    sketch: Sketch,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
     let hole_sketches: Vec<Sketch> = hole_sketch.into();
     for hole_sketch in hole_sketches {
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::from(mcmd::Solid2dAddHole {
                 object_id: sketch.id,
                 hole_id: hole_sketch.id,
@@ -2040,7 +2018,7 @@ async fn inner_hole(hole_sketch: SketchSet, sketch: Sketch, args: Args) -> Resul
         // suggestion (mike)
         // we also hide the source hole since its essentially "consumed" by this operation
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: hole_sketch.id,
                 hidden: true,

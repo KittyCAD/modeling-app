@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import {
   doExport,
   executorInputPath,
@@ -618,30 +618,29 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
-
     page.on('console', console.log)
-
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -744,32 +743,32 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
 
     page.on('console', console.log)
-
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
