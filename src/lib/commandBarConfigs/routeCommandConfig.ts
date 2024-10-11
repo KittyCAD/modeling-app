@@ -1,7 +1,11 @@
 import { Command } from '../commandTypes'
 import { PATHS } from 'lib/paths'
-
-export function createRouteCommands(navigate, location, filePath) {
+import { NavigateFunction, Location } from 'react-router-dom'
+export function createRouteCommands(
+  navigate: NavigateFunction,
+  location: Location,
+  filePath: string
+) {
   const RouteTelemetryCommand: Command = {
     name: 'Go to Telemetry',
     displayName: `Go to Telemetry`,
