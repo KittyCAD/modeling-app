@@ -49,14 +49,12 @@ const watchFileOn = (
   if (!watchers) {
     watchers = new Map()
   }
-  console.log('watchers', watchers)
   const watcher = chokidar.watch(path, { depth: 1 })
   watcher.on('all', callback)
   watchers.set(key, { watcher, callback })
   fsWatchListeners.set(path, watchers)
 }
 const watchFileOff = (path: string, key: string) => {
-  console.log('unmounting', path)
   const watchers = fsWatchListeners.get(path)
   if (!watchers) return
   const data = watchers.get(key)
@@ -66,7 +64,6 @@ const watchFileOff = (path: string, key: string) => {
     )
     return
   }
-  console.log('watchers before remove', watchers)
   const { watcher, callback } = data
   watcher.off('all', callback)
   watchers.delete(key)
@@ -75,7 +72,6 @@ const watchFileOff = (path: string, key: string) => {
   } else {
     fsWatchListeners.set(path, watchers)
   }
-  console.log('watchers after remove', watchers)
 }
 const readFile = (path: string) => fs.readFile(path, 'utf-8')
 // It seems like from the node source code this does not actually block but also

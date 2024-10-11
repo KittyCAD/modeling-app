@@ -266,7 +266,9 @@ const FileTreeItem = ({
                       : '')
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
-                  onClick={clickDirectory}
+                  onClick={(e) => e.currentTarget.focus()}
+                  onClickCapture={clickDirectory}
+                  onFocusCapture={clickDirectory}
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   onKeyUp={handleKeyUp}
                 >
@@ -479,7 +481,6 @@ export const FileTreeInner = ({
 }: {
   onNavigateToFile?: () => void
 }) => {
-  const navigate = useNavigate()
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
@@ -487,11 +488,6 @@ export const FileTreeInner = ({
   // Refresh the file tree when there are changes.
   useFileSystemWatcher(
     async (eventType, path) => {
-      if (eventType === 'unlinkDir' && path === loaderData?.project?.path) {
-        navigate(PATHS.HOME)
-        return
-      }
-
       fileSend({ type: 'Refresh' })
     },
     [loaderData?.project?.path, fileContext.selectedDirectory.path].filter(
@@ -511,7 +507,7 @@ export const FileTreeInner = ({
       className="overflow-auto pb-12 absolute inset-0"
       data-testid="file-pane-scroll-container"
     >
-      <ul className="m-0 p-0 text-sm" onClick={clickDirectory}>
+      <ul className="m-0 p-0 text-sm" onClickCapture={clickDirectory}>
         {sortProject(fileContext.project?.children || []).map((fileOrDir) => (
           <FileTreeItem
             project={fileContext.project}
