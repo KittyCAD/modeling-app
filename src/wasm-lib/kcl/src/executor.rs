@@ -2041,8 +2041,6 @@ impl ExecutorContext {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
                     let path = import_stmt.path.clone();
-                    let source = self.fs.read_to_string(&path, source_range).await?;
-                    let program = crate::parser::parse(&source)?;
                     if exec_state.use_stack.contains(&path) {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: format!(
@@ -2053,6 +2051,8 @@ impl ExecutorContext {
                             source_ranges: vec![import_stmt.into()],
                         }));
                     }
+                    let source = self.fs.read_to_string(&path, source_range).await?;
+                    let program = crate::parser::parse(&source)?;
                     let module_memory = {
                         exec_state.use_stack.push(path.clone());
                         let original_memory = std::mem::take(&mut exec_state.memory);
