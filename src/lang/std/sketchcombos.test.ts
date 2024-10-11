@@ -173,9 +173,6 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       ]
 
       const newCode = await applyTransformation(inputScript, selectionRanges)
-      console.log('newCode', newCode)
-      console.log('expectedModifiedScript', expectedModifiedScript)
-      console.log('newCode === expectedModifiedScript', newCode === expectedModifiedScript)
       expect(newCode).toBe(expectedModifiedScript)
     })
   })
