@@ -12,9 +12,6 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::wasm_bindgen;
-
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
@@ -30,6 +27,12 @@ use crate::{
         Args,
     },
 };
+
+#[cfg(not(target_arch = "wasm32"))]
+use crate::engine::engine_utils as engine_utils;
+
+#[cfg(target_arch = "wasm32")]
+use crate::engine::engine_utils_wasm as engine_utils;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1480,13 +1483,6 @@ pub enum ArcData {
     },
 }
 
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen(module = "/../../lib/engineUtils.ts")]
-extern "C" {
-    #[wasm_bindgen(js_name = getTruePathEndPos, catch)]
-    fn get_true_path_end_pos(sketch: String) -> Result<js_sys::Promise, js_sys::Error>;
-}
-
 /// Draw an arc.
 pub async fn arc(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (ArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
@@ -1539,8 +1535,7 @@ pub(crate) async fn inner_arc(
 
             let (start, center, mut end) = arc_start_center_and_end(from, a_start, a_end, *radius);
 
-            #[cfg(target_arch = "wasm32")]
-            {
+            if engine_utils::is_available() {
                 let mut path_plus_arc = sketch.clone();
                 let to = [ 0.0, 0.0 ];
                 let arc = Path::Arc {
@@ -1566,23 +1561,8 @@ pub(crate) async fn inner_arc(
                         source_ranges: vec![args.source_range],
                     })
                 })?;
-                
-                let promise = get_true_path_end_pos(sketch_json_value.into()).map_err(|e| {
-                    KclError::Internal(KclErrorDetails {
-                        message: format!("{:?}", e),
-                        source_ranges: vec![args.source_range],
-                    })
-                })?;
-                let result = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
-                    KclError::Internal(KclErrorDetails {
-                        message: format!("{:?}", e),
-                        source_ranges: vec![args.source_range],
-                    })
-                })?;
-                
-                web_sys::console::log_1(&format!("Testing here {result:?}").into());
 
-                let result_str: String = result.as_string().unwrap_or_default();
+                let result_str = engine_utils::get_true_path_end_pos(sketch_json_value, &args).await?;
                 let result_end: Point2d = serde_json::from_str(&result_str).map_err(|e| {
                     KclError::Type(KclErrorDetails {
                         message: format!("Failed to convert arc center from json: {}", e),

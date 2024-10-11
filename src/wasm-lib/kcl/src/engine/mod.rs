@@ -8,6 +8,11 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
+#[cfg(not(target_arch = "wasm32"))]
+pub mod engine_utils;
+#[cfg(target_arch = "wasm32")]
+pub mod engine_utils_wasm;
+
 use std::{
     collections::HashMap,
     sync::{Arc, Mutex},
