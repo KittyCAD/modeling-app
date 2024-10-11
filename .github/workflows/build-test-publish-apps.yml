@@ -183,7 +183,7 @@ jobs:
           # first one will pick both Zoo Modeling App-$VERSION-arm64-win.exe and Zoo Modeling App-$VERSION-win.exe
           # last one will also include update yml files for all archs
           path: |
-            out/*-win.*
+            out/*-${{ env.VERSION_NO_V }}-win.*
             out/*-arm64-mac.*
             out/*-arm64-linux.*
 
