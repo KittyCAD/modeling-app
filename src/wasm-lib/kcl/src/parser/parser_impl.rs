@@ -967,8 +967,6 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     let item = dispatch! {peek(any);
         token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
-        Token { ref value, .. } if value == "import" =>
-            (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if !token.is_code_token() => {
@@ -976,6 +974,10 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
         },
         _ =>
             alt((
+                (
+                    import_stmt.map(BodyItem::ImportStatement),
+                    opt(noncode_just_after_code)
+                ).map(WithinFunction::BodyItem),
                 (
                     declaration.map(BodyItem::VariableDeclaration),
                     opt(noncode_just_after_code)
@@ -1133,24 +1135,30 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
     })
 }
 
+fn import_keyword(i: TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "import" {
+            Ok(token)
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("{} is not the 'import' keyword", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'import' keyword"))
+    .parse_next(i)
+}
+
 fn import_stmt(i: TokenSlice) -> PResult<ImportStatement> {
-    let start = any
-        .try_map(|token: Token| {
-            if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "import" {
-                Ok(token.start)
-            } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not an import keyword or identifier", token.value.as_str()),
-                }))
-            }
-        })
-        .context(expected("the 'import' keyword"))
-        .parse_next(i)?;
+    let import_token = import_keyword(i)?;
+    let start = import_token.start;
 
     require_whitespace(i)?;
 
-    let items = separated(1.., import_item, comma_sep).parse_next(i)?;
+    let items = separated(1.., import_item, comma_sep)
+        .parse_next(i)
+        .map_err(|e| e.cut())?;
 
     require_whitespace(i)?;
 
@@ -1165,7 +1173,8 @@ fn import_stmt(i: TokenSlice) -> PResult<ImportStatement> {
         }
     })
     .context(expected("the 'from' keyword"))
-    .parse_next(i)?;
+    .parse_next(i)
+    .map_err(|e| e.cut())?;
 
     require_whitespace(i)?;
 
