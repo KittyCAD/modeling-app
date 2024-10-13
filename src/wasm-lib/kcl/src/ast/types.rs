@@ -1234,6 +1234,7 @@ pub struct ImportStatement {
     pub end: usize,
     pub items: Vec<ImportItem>,
     pub path: String,
+    pub raw_path: String,
 
     pub digest: Option<Digest>,
 }

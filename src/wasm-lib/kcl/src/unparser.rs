@@ -122,7 +122,7 @@ impl ImportStatement {
                 string.push_str(&format!(" as {}", alias.name));
             }
         }
-        string.push_str(&format!(" from {}", self.path));
+        string.push_str(&format!(" from {}", self.raw_path));
         string
     }
 }
@@ -556,6 +556,35 @@ mod tests {
   3
 } else {
   5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_import() {
+        let input = r#"import a from "a.kcl"
+import a as aaa from "a.kcl"
+import a, b from "a.kcl"
+import a as aaa, b from "a.kcl"
+import a, b as bbb from "a.kcl"
+import a as aaa, b as bbb from "a.kcl"
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_export_fn() {
+        let input = r#"export fn a = () => {
+  return 0
 }
 "#;
         let tokens = crate::token::lexer(input).unwrap();

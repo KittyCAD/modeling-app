@@ -1199,6 +1199,7 @@ fn import_stmt(i: TokenSlice) -> PResult<ImportStatement> {
     Ok(ImportStatement {
         items,
         path: path_string,
+        raw_path: path.raw,
         start,
         end,
         digest: None,
