@@ -54,7 +54,7 @@ pub struct ExecState {
     pub module_exports: HashSet<String>,
     /// The stack of use statements for detecting circular module imports.  If
     /// this is empty, we're not currently executing a use statement.
-    pub use_stack: Vec<std::path::PathBuf>,
+    pub import_stack: Vec<std::path::PathBuf>,
     /// The directory of the current project.  This is used for resolving import
     /// paths.
     pub project_directory: Option<String>,
@@ -2057,12 +2057,12 @@ impl ExecutorContext {
                     } else {
                         std::path::PathBuf::from(&path)
                     };
-                    if exec_state.use_stack.contains(&resolved_path) {
+                    if exec_state.import_stack.contains(&resolved_path) {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: format!(
                                 "circular use of modules is not allowed: {} -> {}",
                                 exec_state
-                                    .use_stack
+                                    .import_stack
                                     .iter()
                                     .map(|p| p.as_path().to_string_lossy())
                                     .collect::<Vec<_>>()
@@ -2075,7 +2075,7 @@ impl ExecutorContext {
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
                     let program = crate::parser::parse(&source)?;
                     let (module_memory, module_exports) = {
-                        exec_state.use_stack.push(resolved_path.clone());
+                        exec_state.import_stack.push(resolved_path.clone());
                         let original_memory = std::mem::take(&mut exec_state.memory);
                         let original_exports = std::mem::take(&mut exec_state.module_exports);
                         let result = self
@@ -2083,7 +2083,7 @@ impl ExecutorContext {
                             .await;
                         let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
                         let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
-                        exec_state.use_stack.pop();
+                        exec_state.import_stack.pop();
 
                         result.map_err(|err| {
                             KclError::Semantic(KclErrorDetails {
