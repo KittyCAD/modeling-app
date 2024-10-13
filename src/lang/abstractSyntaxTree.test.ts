@@ -52,6 +52,7 @@ describe('testing AST', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 15,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -92,6 +93,7 @@ const newVar = myVar + 1
         type: 'VariableDeclaration',
         start: 0,
         end: 15,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -122,6 +124,7 @@ const newVar = myVar + 1
         type: 'VariableDeclaration',
         start: 16,
         end: 40,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -179,6 +182,7 @@ describe('testing function declaration', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 39,
+        visibility: 'default',
         kind: 'fn',
         digest: null,
         declarations: [
@@ -277,6 +281,7 @@ const myVar = funcN(1, 2)`
         type: 'VariableDeclaration',
         start: 0,
         end: 37,
+        visibility: 'default',
         kind: 'fn',
         digest: null,
         declarations: [
@@ -365,6 +370,7 @@ const myVar = funcN(1, 2)`
         type: 'VariableDeclaration',
         start: 38,
         end: 63,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -436,6 +442,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 131,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -690,6 +697,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 36,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -781,6 +789,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 33,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -868,6 +877,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 15,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -898,6 +908,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 16,
         end: 83,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -1036,6 +1047,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 37,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -1116,6 +1128,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 26,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -1191,6 +1204,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 23,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -1256,6 +1270,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 26,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -1322,6 +1337,7 @@ describe('testing pipe operator special', () => {
         type: 'VariableDeclaration',
         start: 0,
         end: 27,
+        visibility: 'default',
         kind: 'const',
         digest: null,
         declarations: [
@@ -1390,6 +1406,7 @@ describe('nests binary expressions correctly', () => {
       type: 'VariableDeclaration',
       start: 0,
       end: 16,
+      visibility: 'default',
       kind: 'const',
       digest: null,
       declarations: [
@@ -1442,6 +1459,7 @@ describe('nests binary expressions correctly', () => {
       type: 'VariableDeclaration',
       start: 0,
       end: 20,
+      visibility: 'default',
       kind: 'const',
       digest: null,
       declarations: [
@@ -1509,6 +1527,7 @@ describe('nests binary expressions correctly', () => {
       type: 'VariableDeclaration',
       start: 0,
       end: 20,
+      visibility: 'default',
       kind: 'const',
       digest: null,
       declarations: [
