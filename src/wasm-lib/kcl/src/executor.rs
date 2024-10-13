@@ -2139,6 +2139,7 @@ impl ExecutorContext {
                 },
             },
             Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
+            Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
@@ -3011,6 +3012,24 @@ check(false)
         assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notFalse"));
         assert_eq!(serde_json::json!(true), mem_get_json(&mem, "c"));
         assert_eq!(serde_json::json!(false), mem_get_json(&mem, "d"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_range() {
+        let ast = r#"
+r1 = [0..4]
+four = 4
+zero = 0
+r2 = [zero..four]
+five = int(four + 1)
+r3 = [zero..five]
+r4 = [int(zero + 1) .. int(five - 1)]
+"#;
+        let mem = parse_execute(ast).await.unwrap();
+        assert_eq!(serde_json::json!(vec![0, 1, 2, 3]), mem_get_json(&mem, "r1"));
+        assert_eq!(serde_json::json!(vec![0, 1, 2, 3]), mem_get_json(&mem, "r2"));
+        assert_eq!(serde_json::json!(vec![0, 1, 2, 3, 4]), mem_get_json(&mem, "r3"));
+        assert_eq!(serde_json::json!(vec![1, 2, 3]), mem_get_json(&mem, "r4"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
