@@ -1635,10 +1635,13 @@ impl PartialEq for Function {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
+#[derive(
+    Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake,
+)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
 pub enum ItemVisibility {
     #[default]
     Default,

@@ -683,7 +683,7 @@ export function createPipeExpression(
 export function createVariableDeclaration(
   varName: string,
   init: VariableDeclarator['init'],
-  visibility: VariableDeclaration['visibility'] = { type: 'Default' },
+  visibility: VariableDeclaration['visibility'] = 'default',
   kind: VariableDeclaration['kind'] = 'const'
 ): VariableDeclaration {
   return {
