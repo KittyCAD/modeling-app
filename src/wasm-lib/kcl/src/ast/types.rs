@@ -479,7 +479,7 @@ pub(crate) use impl_value_meta;
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
-    ImportStatement(ImportStatement),
+    ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
     VariableDeclaration(VariableDeclaration),
     ReturnStatement(ReturnStatement),

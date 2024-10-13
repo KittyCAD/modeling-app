@@ -1150,7 +1150,7 @@ fn import_keyword(i: TokenSlice) -> PResult<Token> {
     .parse_next(i)
 }
 
-fn import_stmt(i: TokenSlice) -> PResult<ImportStatement> {
+fn import_stmt(i: TokenSlice) -> PResult<Box<ImportStatement>> {
     let import_token = import_keyword(i)?;
     let start = import_token.start;
 
@@ -1196,14 +1196,14 @@ fn import_stmt(i: TokenSlice) -> PResult<ImportStatement> {
             .into(),
         ));
     }
-    Ok(ImportStatement {
+    Ok(Box::new(ImportStatement {
         items,
         path: path_string,
         raw_path: path.raw,
         start,
         end,
         digest: None,
-    })
+    }))
 }
 
 fn import_item(i: TokenSlice) -> PResult<ImportItem> {

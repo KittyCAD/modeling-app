@@ -266,7 +266,7 @@ where
 
     match node {
         BodyItem::ImportStatement(xs) => {
-            if !f.walk(xs.into())? {
+            if !f.walk(xs.as_ref().into())? {
                 return Ok(false);
             }
             Ok(true)
