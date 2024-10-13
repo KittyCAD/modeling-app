@@ -129,4 +129,13 @@ gen_test_fail!(
     import_side_effect,
     "semantic: Error loading imported file. Open it to view more details. export_side_effect.kcl: Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file."
 );
+// TODO: We'd like these tests.
+// gen_test_fail!(
+//     import_in_if,
+//     "syntax: Can import only import at the top level"
+// );
+// gen_test_fail!(
+//     import_in_function,
+//     "syntax: Can import only import at the top level"
+// );
 gen_test!(add_lots);
