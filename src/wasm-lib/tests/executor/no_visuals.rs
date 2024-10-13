@@ -117,4 +117,8 @@ gen_test!(if_else);
 // );
 gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
 gen_test!(import_simple);
+gen_test_fail!(
+    import_cycle1,
+    "import cycle: circular import of modules is not allowed: tests/executor/inputs/no_visuals/import_cycle2.kcl -> tests/executor/inputs/no_visuals/import_cycle3.kcl -> tests/executor/inputs/no_visuals/import_cycle1.kcl -> tests/executor/inputs/no_visuals/import_cycle2.kcl"
+);
 gen_test!(add_lots);

@@ -2058,9 +2058,9 @@ impl ExecutorContext {
                         std::path::PathBuf::from(&path)
                     };
                     if exec_state.import_stack.contains(&resolved_path) {
-                        return Err(KclError::Semantic(KclErrorDetails {
+                        return Err(KclError::ImportCycle(KclErrorDetails {
                             message: format!(
-                                "circular use of modules is not allowed: {} -> {}",
+                                "circular import of modules is not allowed: {} -> {}",
                                 exec_state
                                     .import_stack
                                     .iter()
@@ -2086,12 +2086,17 @@ impl ExecutorContext {
                         exec_state.import_stack.pop();
 
                         result.map_err(|err| {
-                            KclError::Semantic(KclErrorDetails {
-                                message: format!(
-                                    "Error loading imported file. Open it to view more details. {path}: {err}"
-                                ),
-                                source_ranges: vec![source_range],
-                            })
+                            if let KclError::ImportCycle(_) = err {
+                                // It was an import cycle.  Keep the original message.
+                                err.override_source_ranges(vec![source_range])
+                            } else {
+                                KclError::Semantic(KclErrorDetails {
+                                    message: format!(
+                                        "Error loading imported file. Open it to view more details. {path}: {err}"
+                                    ),
+                                    source_ranges: vec![source_range],
+                                })
+                            }
                         })?;
 
                         (module_memory, module_exports)
