@@ -1,6 +1,5 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3423
 expression: actual
 ---
 {
@@ -195,6 +194,7 @@ expression: actual
           "digest": null
         }
       ],
+      "visibility": "default",
       "kind": "const",
       "digest": null
     }

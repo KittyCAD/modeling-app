@@ -76,6 +76,7 @@ expression: actual
           "digest": null
         }
       ],
+      "visibility": "default",
       "kind": "fn",
       "digest": null
     }

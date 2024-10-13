@@ -95,6 +95,7 @@ expression: actual
           "digest": null
         }
       ],
+      "visibility": "default",
       "kind": "const",
       "digest": null
     }
