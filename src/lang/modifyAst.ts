@@ -501,6 +501,7 @@ export function sketchOnExtrudedFace(
       createIdentifier(extrudeName ? extrudeName : oldSketchName),
       _tag,
     ]),
+    undefined,
     'const'
   )
 
@@ -682,6 +683,7 @@ export function createPipeExpression(
 export function createVariableDeclaration(
   varName: string,
   init: VariableDeclarator['init'],
+  visibility: VariableDeclaration['visibility'] = { type: 'Default' },
   kind: VariableDeclaration['kind'] = 'const'
 ): VariableDeclaration {
   return {
@@ -699,6 +701,7 @@ export function createVariableDeclaration(
         init,
       },
     ],
+    visibility,
     kind,
   }
 }
