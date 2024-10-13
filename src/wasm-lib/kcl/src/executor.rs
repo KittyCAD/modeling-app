@@ -29,7 +29,7 @@ use crate::{
         human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, ItemVisibility,
         KclNone, Program, ReturnStatement, TagDeclarator,
     },
-    engine::EngineManager,
+    engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
     settings::types::UnitLength,
@@ -2090,6 +2090,7 @@ impl ExecutorContext {
                     let program = crate::parser::parse(&source)?;
                     let (module_memory, module_exports) = {
                         exec_state.import_stack.push(resolved_path.clone());
+                        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
                         let original_memory = std::mem::take(&mut exec_state.memory);
                         let original_exports = std::mem::take(&mut exec_state.module_exports);
                         let result = self
@@ -2097,6 +2098,7 @@ impl ExecutorContext {
                             .await;
                         let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
                         let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
+                        self.engine.replace_execution_kind(original_execution);
                         exec_state.import_stack.pop();
 
                         result.map_err(|err| {

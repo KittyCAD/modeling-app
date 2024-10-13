@@ -125,4 +125,8 @@ gen_test_fail!(
     import_constant,
     "semantic: Error loading imported file. Open it to view more details. export_constant.kcl: Only functions can be exported"
 );
+gen_test_fail!(
+    import_side_effect,
+    "semantic: Error loading imported file. Open it to view more details. export_side_effect.kcl: Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file."
+);
 gen_test!(add_lots);
