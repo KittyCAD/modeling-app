@@ -402,6 +402,20 @@ impl KclValue {
             KclValue::Face(_) => "Face",
         }
     }
+
+    pub(crate) fn is_function(&self) -> bool {
+        match self {
+            KclValue::UserVal(..)
+            | KclValue::TagIdentifier(..)
+            | KclValue::TagDeclarator(..)
+            | KclValue::Plane(..)
+            | KclValue::Face(..)
+            | KclValue::Solid(..)
+            | KclValue::Solids { .. }
+            | KclValue::ImportedGeometry(..) => false,
+            KclValue::Function { .. } => true,
+        }
+    }
 }
 
 impl From<SketchSet> for KclValue {
@@ -2092,7 +2106,8 @@ impl ExecutorContext {
                             } else {
                                 KclError::Semantic(KclErrorDetails {
                                     message: format!(
-                                        "Error loading imported file. Open it to view more details. {path}: {err}"
+                                        "Error loading imported file. Open it to view more details. {path}: {}",
+                                        err.message()
                                     ),
                                     source_ranges: vec![source_range],
                                 })
@@ -2157,10 +2172,17 @@ impl ExecutorContext {
                                 StatementKind::Declaration { name: &var_name },
                             )
                             .await?;
+                        let is_function = memory_item.is_function();
                         exec_state.memory.add(&var_name, memory_item, source_range)?;
                         // Track exports.
                         match variable_declaration.visibility {
                             ItemVisibility::Export => {
+                                if !is_function {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "Only functions can be exported".to_owned(),
+                                        source_ranges: vec![source_range],
+                                    }));
+                                }
                                 exec_state.module_exports.insert(var_name);
                             }
                             ItemVisibility::Default => {}

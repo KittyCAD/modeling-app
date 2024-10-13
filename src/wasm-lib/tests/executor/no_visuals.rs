@@ -121,4 +121,8 @@ gen_test_fail!(
     import_cycle1,
     "import cycle: circular import of modules is not allowed: tests/executor/inputs/no_visuals/import_cycle2.kcl -> tests/executor/inputs/no_visuals/import_cycle3.kcl -> tests/executor/inputs/no_visuals/import_cycle1.kcl -> tests/executor/inputs/no_visuals/import_cycle2.kcl"
 );
+gen_test_fail!(
+    import_constant,
+    "semantic: Error loading imported file. Open it to view more details. export_constant.kcl: Only functions can be exported"
+);
 gen_test!(add_lots);
