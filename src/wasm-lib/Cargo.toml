@@ -42,7 +42,7 @@ wasm-bindgen-futures = { version = "0.4.44", features = ["futures-core-03-stream
 wasm-streams = "0.4.1"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
-version = "0.3.69"
+version = "0.3.72"
 features = [
   "console",
   "HtmlTextAreaElement",
