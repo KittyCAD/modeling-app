@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
+      notes: ${{ steps.export_version.outputs.notes }}
     steps:
       - uses: actions/checkout@v4
 
@@ -53,20 +54,31 @@ jobs:
 
       # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
 
+      - name: Generate release notes
+        env:
+          NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
+        run: |
+          echo "$NOTES" > release-notes.md
+          cat release-notes.md
+
       - uses: actions/upload-artifact@v3
         with:
           name: prepared-files
           path: |
             package.json
             src/wasm-lib/pkg/wasm_lib*
+            release-notes.md
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
+      - id: export_notes
+        run: echo "notes=`cat release-notes.md'`" >> "$GITHUB_OUTPUT"
+
       - name: Prepare electron-builder.yml file for updater test
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
-          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test"' electron-builder.yml
+          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test-release-notes"' electron-builder.yml
 
       - uses: actions/upload-artifact@v3
         with:
@@ -107,6 +119,7 @@ jobs:
           cp prepared-files/src/wasm-lib/pkg/wasm_lib_bg.wasm public
           mkdir src/wasm-lib/pkg
           cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
+          cp prepared-files/release-notes.md release-notes.md
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
@@ -192,7 +205,7 @@ jobs:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
-      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
+      NOTES: ${{ needs.prepare-files.outputs.notes }}
       BUCKET_DIR: ${{ github.event_name == 'schedule' && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app' }}
       WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
       URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
