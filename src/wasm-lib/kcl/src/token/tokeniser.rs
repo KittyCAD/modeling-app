@@ -27,7 +27,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         '.' => alt((number, double_period, period)),
         '#' => hash,
         '$' => dollar,
-        '!' => bang,
+        '!' => alt((operator, bang)),
         ' ' | '\t' | '\n' => whitespace,
         _ => alt((operator, keyword,type_, word))
     }
@@ -90,7 +90,7 @@ fn word(i: &mut Located<&str>) -> PResult<Token> {
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!= ", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
     ))
     .with_span()
     .parse_next(i)?;
@@ -1520,6 +1520,18 @@ const things = "things"
             },
         ];
         assert_tokens(expected, actual);
+    }
+
+    #[test]
+    fn not_eq() {
+        let actual = lexer("!=").unwrap();
+        let expected = vec![Token {
+            token_type: TokenType::Operator,
+            value: "!=".to_owned(),
+            start: 0,
+            end: 2,
+        }];
+        assert_eq!(actual, expected);
     }
 
     #[test]
