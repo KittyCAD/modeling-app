@@ -1,0 +1,111 @@
+// L-System KCL
+// Zoo Corporation ⓒ 2024
+
+// Comparators
+
+fn cond = (bools) => {
+  return (a, b) => {
+    x = int(min(max(-1, a-b), 1) + 1)
+    return bools[x]
+  }
+}
+
+fn Not = (b) => { return if b { false } else { true } }
+fn And = (a, b) => { return if a { if b { true } else { false } } else { false }}
+fn Or = (a, b) => { return if a { true } else { if b { true } else { false }}}
+
+Eq = cond([false, true, false])
+Lt = cond([true, false, false])
+Gt = cond([false, false, true])
+
+fn Lte = (a, b) => { return Not(Gt(a, b)) }
+fn Gte = (a, b) => { return Not(Lt(a, b)) }
+
+// L-system 
+// Note: it was most concise to encode productions directly in axioms.
+// Change them as you need.
+
+deg = pi()*2 / 360
+
+fn setSketch = (state, _) => {
+  return {
+    depthMax: state.depthMax,
+    depth: state.depth + 1,
+    angle: state.angle,
+    length: state.length,
+    _: _
+  }
+}
+
+fn setDepth = (state, _) => {
+  return {
+    depthMax: state.depthMax,
+    depth: _,
+    angle: state.angle,
+    length: state.length,
+    _:  state._
+  }
+}
+
+fn setAngle = (state, _) => {
+  return {
+    depthMax: state.depthMax,
+    depth: state.depth,
+    angle: _,
+    length: state.length,
+    _:  state._
+  }
+}
+
+fn setLength = (state, _) => {
+  return {
+    depthMax: state.depthMax,
+    depth: state.depth,
+    angle: state.lengh,
+    length: _,
+    _:  state._
+  }
+}
+
+factor = 1.36
+fn Gt2 = (state) => { return setLength(state, length * factor) }
+fn Lt2 = (state) => { return setLength(state, length / factor) }
+fn Add = (state) => { return setAngle(state, rem(int(state.angle - 60), 360)) }
+fn Sub = (state) => { return setAngle(state, rem(int(state.angle + 60), 360)) }
+
+// Only necessary to get around recursion limitations...
+fn F = (state, F) => {
+  return if Lt(state.depth, state.depthMax) {
+    stateNext = state |> setDepth(%, state.depth + 1)
+
+    // Produce
+    stateNext
+      |> F(%, F) |> Add(%) |> F(%, F)
+      |> Sub(%) |> Sub(%)
+      |> F(%, F) |> Add(%) |> F(%, F)
+      |> setDepth(%, stateNext.depth - 1)
+
+  } else {
+    // Pass onto the next instruction
+    state |> setSketch(%, angledLine({ angle: state.angle, length: state.length }, state._))
+  }
+}
+
+fn LSystem = (args, axioms) => {
+  return axioms({
+    depthMax: args.iterations,
+    depth: 0,
+    length: args.length,
+    angle: args.angle,
+    _: startSketchAt([0, 0]),
+  })
+}
+
+LSystem({
+  iterations: 2,
+  length: 1.0,
+  angle: pi() / 3,
+}, (_) => {
+  result = _ |> F(%, F)
+  return result._
+})

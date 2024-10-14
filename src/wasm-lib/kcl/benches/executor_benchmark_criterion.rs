@@ -4,10 +4,11 @@ use tokio::runtime::Runtime;
 
 pub fn bench_execute(c: &mut Criterion) {
     for (name, code) in [
-        ("big_kitt", KITT_PROGRAM),
-        ("cube", CUBE_PROGRAM),
-        ("server_rack_lite", SERVER_RACK_LITE_PROGRAM),
-        ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
+        // ("big_kitt", KITT_PROGRAM),
+        // ("cube", CUBE_PROGRAM),
+        // ("server_rack_lite", SERVER_RACK_LITE_PROGRAM),
+        // ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
+        ("l_system", L_SYSTEM_PROGRAM),
     ] {
         let mut group = c.benchmark_group("executor");
         // Configure Criterion.rs to detect smaller differences and increase sample size to improve
@@ -52,3 +53,4 @@ const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const SERVER_RACK_HEAVY_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-heavy.kcl");
 const SERVER_RACK_LITE_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-lite.kcl");
 const LEGO_PROGRAM: &str = include_str!("../../tests/executor/inputs/slow_lego.kcl.tmpl");
+const L_SYSTEM_PROGRAM: &str = include_str!("../../tests/executor/inputs/l_sys.kcl");
