@@ -467,7 +467,7 @@ sketch003 = startSketchOn(extrude001, 'END')
   |> close(%)
   |> extrude(3.14, %)
 `
-it('identifies sketch001 pipe as extruded (extrusion after pipe)', async () => {
+  it('identifies sketch001 pipe as extruded (extrusion after pipe)', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
     const lineOfInterest = `line([4.99, -0.46], %, $seg01)`

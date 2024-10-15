@@ -887,20 +887,21 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
     },
   })
   // option 2: extrude or revolve is called in the separate pipe
-  if (!extruded){
-  traverse(ast as any, {
-    enter(node) {
-      if (
-        node.type === 'CallExpression' &&
-        node.callee.type === 'Identifier' &&
-        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
-        node.arguments?.[1]?.type === 'Identifier' &&
-        node.arguments[1].name === varDec.id.name
-      ) {
-        extruded = true
-      }
-    },
-  })}
+  if (!extruded) {
+    traverse(ast as any, {
+      enter(node) {
+        if (
+          node.type === 'CallExpression' &&
+          node.callee.type === 'Identifier' &&
+          (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
+          node.arguments?.[1]?.type === 'Identifier' &&
+          node.arguments[1].name === varDec.id.name
+        ) {
+          extruded = true
+        }
+      },
+    })
+  }
   return extruded
 }
 
