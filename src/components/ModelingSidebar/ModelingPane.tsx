@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import styles from './ModelingPane.module.css'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ActionButton } from 'components/ActionButton'
@@ -6,11 +7,12 @@ import { CustomIconName } from 'components/CustomIcon'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from 'components/ActionIcon'
 
-export interface ModelingPaneProps
-  extends React.PropsWithChildren,
-    React.HTMLAttributes<HTMLDivElement> {
+export interface ModelingPaneProps {
+  id: string
+  children: ReactNode | ReactNode[]
+  className?: string
   icon?: CustomIconName | IconDefinition
-  title: string
+  title: ReactNode
   Menu?: React.ReactNode | React.FC
   detailsTestId?: string
   onClose: () => void

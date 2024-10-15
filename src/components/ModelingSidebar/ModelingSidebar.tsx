@@ -1,6 +1,12 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
-import { MouseEventHandler, useCallback, useEffect, useMemo } from 'react'
+import {
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  ReactNode,
+} from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
@@ -263,7 +269,7 @@ interface ModelingPaneButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
   paneConfig: {
     id: string
-    title: string
+    title: ReactNode
     icon: CustomIconName | IconDefinition
     keybinding: string
     iconClassName?: string
@@ -292,7 +298,7 @@ function ModelingPaneButton({
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
-        name={paneConfig.title}
+        name={typeof paneConfig.title === 'string' ? paneConfig.title : ''}
         data-testid={paneConfig.id + '-pane-button'}
         disabled={disabledText !== undefined}
         aria-disabled={disabledText !== undefined}
