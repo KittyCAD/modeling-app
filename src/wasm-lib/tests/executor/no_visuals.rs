@@ -40,14 +40,22 @@ macro_rules! gen_test_parse_fail {
 async fn run(code: &str) {
     let (ctx, program, id_generator) = setup(code).await;
 
-    ctx.run(
-        &program,
-        None,
-        id_generator,
-        ProjectDirectory::Directory("tests/executor/inputs/no_visuals/".to_owned()),
-    )
-    .await
-    .unwrap();
+    let res = ctx
+        .run(
+            &program,
+            None,
+            id_generator,
+            ProjectDirectory::Directory("tests/executor/inputs/no_visuals/".to_owned()),
+        )
+        .await;
+    match res {
+        Ok(state) => {
+            println!("{:#?}", state.memory);
+        }
+        Err(e) => {
+            panic!("{e}");
+        }
+    }
 }
 
 async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
@@ -162,3 +170,4 @@ gen_test_parse_fail!(
 //     "syntax: Can import only import at the top level"
 // );
 gen_test!(add_lots);
+gen_test!(double_map);
