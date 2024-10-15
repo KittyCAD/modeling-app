@@ -459,17 +459,6 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return text.replace(/\s+/g, '')
     },
 
-    createAndSelectProject: async (hasText: string) => {
-      return test_?.step(
-        `Create and select project with text "${hasText}"`,
-        async () => {
-          await page.getByTestId('home-new-file').click()
-          const projectLinksPost = page.getByTestId('project-link')
-          await projectLinksPost.filter({ hasText }).click()
-        }
-      )
-    },
-
     editorTextMatches: async (code: string) => {
       const editor = page.locator(editorSelector)
       return expect(editor).toHaveText(code, { useInnerText: true })
@@ -954,30 +943,25 @@ export async function isOutOfViewInScrollContainer(
   return isOutOfView
 }
 
-export async function createProjectAndRenameIt({
+export async function createProject({
   name,
   page,
+  returnHome = false,
 }: {
   name: string
   page: Page
+  returnHome?: boolean
 }) {
-  await page.getByRole('button', { name: 'New project' }).click()
-  await expect(page.getByText('Successfully created')).toBeVisible()
-  await expect(page.getByText('Successfully created')).not.toBeVisible()
+  await test.step(`Create project and navigate to it`, async () => {
+    await page.getByRole('button', { name: 'New project' }).click()
+    await page.getByRole('textbox', { name: 'Name' }).fill(name)
+    await page.getByRole('button', { name: 'Continue' }).click()
 
-  await expect(page.getByText(`project-000`)).toBeVisible()
-  await page.getByText(`project-000`).hover()
-  await page.getByText(`project-000`).focus()
-
-  await page.getByLabel('sketch').first().click()
-
-  await page.waitForTimeout(100)
-
-  // type the name passed in
-  await page.keyboard.press('Backspace')
-  await page.keyboard.type(name)
-
-  await page.getByLabel('checkmark').last().click()
+    if (returnHome) {
+      await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+      await page.getByTestId('app-logo').click()
+    }
+  })
 }
 
 export function executorInputPath(fileName: string): string {
