@@ -102,3 +102,4 @@ gen_test!(if_else);
 // );
 gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
 gen_test!(add_lots);
+gen_test!(double_map);

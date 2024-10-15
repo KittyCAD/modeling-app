@@ -1,0 +1,5 @@
+fn increment = (i) => { return i + 1 }
+
+xs = [0..2]
+|> map(%, increment)
+|> map(%, increment)
