@@ -1655,6 +1655,10 @@ impl ItemVisibility {
             ItemVisibility::Export => [1],
         }
     }
+
+    fn is_default<T: Default + PartialEq>(t: &T) -> bool {
+        t == &T::default()
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -1665,6 +1669,7 @@ pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
 
