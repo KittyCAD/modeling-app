@@ -285,6 +285,12 @@ async fn inner_pattern_transform<'a>(
 ) -> Result<Vec<Box<Solid>>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
+    if total_instances < 1 {
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: MUST_HAVE_ONE_INSTANCE.to_owned(),
+        }));
+    }
     for i in 1..total_instances {
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
