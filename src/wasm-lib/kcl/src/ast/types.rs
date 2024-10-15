@@ -2200,6 +2200,8 @@ pub struct ArrayRangeExpression {
     pub end: usize,
     pub start_element: Box<Expr>,
     pub end_element: Box<Expr>,
+    /// Is the `end_element` included in the range?
+    pub end_inclusive: bool,
     // TODO (maybe) comments on range components?
     pub digest: Option<Digest>,
 }
@@ -2219,6 +2221,7 @@ impl ArrayRangeExpression {
             end: 0,
             start_element,
             end_element,
+            end_inclusive: true,
             digest: None,
         }
     }
@@ -2275,7 +2278,11 @@ impl ArrayRangeExpression {
             }));
         }
 
-        let range: Vec<_> = (start..end).map(JValue::from).collect();
+        let range: Vec<_> = if self.end_inclusive {
+            (start..=end).map(JValue::from).collect()
+        } else {
+            (start..end).map(JValue::from).collect()
+        };
 
         Ok(KclValue::UserVal(UserVal {
             value: range.into(),

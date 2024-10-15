@@ -206,6 +206,7 @@ An expression can be evaluated to yield a single KCL value.
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `startElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
 | `endElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `endInclusive` |`boolean`| Is the `end_element` included in the range? | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 

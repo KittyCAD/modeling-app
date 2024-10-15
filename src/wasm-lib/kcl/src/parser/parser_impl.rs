@@ -560,6 +560,7 @@ fn array_end_start(i: TokenSlice) -> PResult<ArrayRangeExpression> {
         end,
         start_element,
         end_element,
+        end_inclusive: true,
         digest: None,
     })
 }
