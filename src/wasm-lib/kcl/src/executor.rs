@@ -452,6 +452,15 @@ pub enum Geometries {
     Solids(Vec<Box<Solid>>),
 }
 
+impl From<Geometry> for Geometries {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketches(vec![x]),
+            Geometry::Solid(x) => Self::Solids(vec![x]),
+        }
+    }
+}
+
 /// A sketch or a group of sketches.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
