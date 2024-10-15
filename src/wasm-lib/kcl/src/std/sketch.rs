@@ -21,12 +21,19 @@ use crate::{
     },
     std::{
         utils::{
-            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
-            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, arc_start_center_and_end, get_tangent_point_from_previous_arc,
+            get_tangential_arc_to_info, get_x_component, get_y_component, intersection_with_parallel_line,
+            TangentialArcInfoInput,
         },
         Args,
     },
 };
+
+#[cfg(not(target_arch = "wasm32"))]
+use crate::engine::engine_utils;
+
+#[cfg(target_arch = "wasm32")]
+use crate::engine::engine_utils_wasm as engine_utils;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1495,7 +1502,47 @@ pub(crate) async fn inner_arc(
         } => {
             let a_start = Angle::from_degrees(*angle_start);
             let a_end = Angle::from_degrees(*angle_end);
-            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
+
+            let (start, center, mut end) = arc_start_center_and_end(from, a_start, a_end, *radius);
+
+            if engine_utils::is_available() {
+                let mut path_plus_arc = sketch.clone();
+                let to = [0.0, 0.0];
+                let arc = Path::Arc {
+                    base: BasePath {
+                        from: from.into(),
+                        to,
+                        tag: None,
+                        geo_meta: GeoMeta {
+                            id: uuid::Uuid::new_v4(),
+                            metadata: args.source_range.into(),
+                        },
+                    },
+                    angle_range: [*angle_start, *angle_end],
+                    center: [center.x, center.y],
+                    radius: *radius,
+                };
+
+                path_plus_arc.value.push(arc);
+
+                let sketch_json_value = serde_json::to_string(&path_plus_arc).map_err(|e| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Failed to convert sketch to json: {}", e),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?;
+
+                let result_str = engine_utils::get_true_path_end_pos(sketch_json_value, &args).await?;
+                let result_end: Point2d = serde_json::from_str(&result_str).map_err(|e| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Failed to convert arc center from json: {}", e),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?;
+
+                end = result_end;
+            }
+
             (center, a_start, a_end, *radius, end)
         }
         ArcData::CenterToRadius { center, to, radius } => {
@@ -1616,7 +1663,7 @@ async fn inner_tangential_arc(
 
     let id = exec_state.id_generator.next_uuid();
 
-    let (center, to, ccw) = match data {
+    let (center, to, ccw, radius, offset) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // KCL stdlib types use degrees.
             let offset = Angle::from_degrees(offset);
@@ -1654,13 +1701,15 @@ async fn inner_tangential_arc(
                 }),
             )
             .await?;
-            (center, to.into(), ccw)
+            (center, to.into(), ccw, radius, offset)
         }
     };
 
     let current_path = Path::TangentialArc {
         ccw,
         center: center.into(),
+        radius,
+        offset: offset.to_degrees(),
         base: BasePath {
             from: from.into(),
             to,

@@ -1,3 +1,4 @@
 src/wasm-lib/*
+src/lib/engine-utils/engine.js
 *.typegen.ts
 packages/codemirror-lsp-client/dist/*
