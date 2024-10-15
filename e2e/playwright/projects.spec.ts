@@ -1097,15 +1097,16 @@ test(
 
     page.on('console', console.log)
 
+    // Constants and locators
+    const projectLinks = page.getByTestId('project-link')
+
     // expect to see text "No Projects found"
     await expect(page.getByText('No Projects found')).toBeVisible()
 
     await createProject({ name: 'project-000', page, returnHome: true })
-    await expect(
-      page.getByTestId('project-link').getByText('project-000')
-    ).toBeVisible()
+    await expect(projectLinks.getByText('project-000')).toBeVisible()
 
-    await page.getByTestId('project-link').getByText('project-000').click()
+    await projectLinks.getByText('project-000').click()
 
     await u.waitForPageLoad()
 
@@ -1153,7 +1154,7 @@ extrude001 = extrude(200, sketch001)`)
     for (let i = 1; i <= 10; i++) {
       const name = `project-${i.toString().padStart(3, '0')}`
       await createProject({ name, page, returnHome: true })
-      await expect(page.getByText(name)).toBeVisible()
+      await expect(projectLinks.getByText(name)).toBeVisible()
     }
     await electronApp.close()
   }
