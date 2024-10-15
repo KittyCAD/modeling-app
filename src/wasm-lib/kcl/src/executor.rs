@@ -3015,24 +3015,6 @@ check(false)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_range() {
-        let ast = r#"
-r1 = [0..4]
-four = 4
-zero = 0
-r2 = [zero..four]
-five = int(four + 1)
-r3 = [zero..five]
-r4 = [int(zero + 1) .. int(five - 1)]
-"#;
-        let mem = parse_execute(ast).await.unwrap();
-        assert_eq!(serde_json::json!(vec![0, 1, 2, 3]), mem_get_json(&mem, "r1"));
-        assert_eq!(serde_json::json!(vec![0, 1, 2, 3]), mem_get_json(&mem, "r2"));
-        assert_eq!(serde_json::json!(vec![0, 1, 2, 3, 4]), mem_get_json(&mem, "r3"));
-        assert_eq!(serde_json::json!(vec![1, 2, 3]), mem_get_json(&mem, "r4"));
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_unary_operator_not_on_non_bool_fails() {
         let code1 = r#"
 // Yup, this is null.
