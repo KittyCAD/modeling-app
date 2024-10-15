@@ -41,6 +41,11 @@ mod none;
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];
 
+pub enum Definition<'a> {
+    Variable(&'a VariableDeclarator),
+    Import(&'a ImportStatement),
+}
+
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -406,15 +411,15 @@ impl Program {
     }
 
     /// Get the variable declaration with the given name.
-    pub fn get_variable(&self, name: &str) -> Option<&VariableDeclarator> {
+    pub fn get_variable(&self, name: &str) -> Option<Definition<'_>> {
         for item in &self.body {
             match item {
-                BodyItem::ImportStatement(_stmt) => {
-                    // TODO: Should we do this?
-                    // if stmt.identifier() == name {
-                    //     return Some(stmt);
-                    // }
-                    continue;
+                BodyItem::ImportStatement(stmt) => {
+                    for import_item in &stmt.items {
+                        if import_item.identifier() == name {
+                            return Some(Definition::Import(stmt.as_ref()));
+                        }
+                    }
                 }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
@@ -422,7 +427,7 @@ impl Program {
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         if declaration.id.name == name {
-                            return Some(declaration);
+                            return Some(Definition::Variable(&declaration));
                         }
                     }
                 }
@@ -1250,6 +1255,12 @@ impl ImportStatement {
         hasher.update(path.len().to_ne_bytes());
         hasher.update(path);
     });
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
 
     pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
         for item in &mut self.items {
