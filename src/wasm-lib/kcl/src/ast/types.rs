@@ -114,7 +114,7 @@ impl Program {
             }
         }
 
-        let value = self.get_value_for_position(pos)?;
+        let value = self.get_expr_for_position(pos)?;
 
         value.get_hover_value_for_position(pos, code)
     }
@@ -192,15 +192,15 @@ impl Program {
         None
     }
 
-    /// Returns a value that includes the given character position.
+    /// Returns an Expr that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
         match item {
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         }
     }
@@ -214,15 +214,15 @@ impl Program {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
-        let value = match item {
+        let expr = match item {
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         };
 
-        // Check if the value's non code meta contains the position.
-        if let Some(value) = value {
-            if let Some(non_code_meta) = value.get_non_code_meta() {
+        // Check if the expr's non code meta contains the position.
+        if let Some(expr) = expr {
+            if let Some(non_code_meta) = expr.get_non_code_meta() {
                 if non_code_meta.contains(pos) {
                     return Some(non_code_meta);
                 }
@@ -311,7 +311,7 @@ impl Program {
                     Some(&mut expression_statement.expression)
                 }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
-                    variable_declaration.get_mut_value_for_position(pos)
+                    variable_declaration.get_mut_expr_for_position(pos)
                 }
                 BodyItem::ReturnStatement(ref mut return_statement) => Some(&mut return_statement.argument),
             };
@@ -1586,8 +1586,8 @@ impl VariableDeclaration {
         }
     }
 
-    /// Returns a value that includes the given character position.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
+    /// Returns an Expr that includes the given character position.
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
         for declaration in &self.declarations {
             let source_range: SourceRange = declaration.into();
             if source_range.contains(pos) {
@@ -1598,8 +1598,8 @@ impl VariableDeclaration {
         None
     }
 
-    /// Returns a value that includes the given character position.
-    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
+    /// Returns an Expr that includes the given character position.
+    pub fn get_mut_expr_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
         for declaration in &mut self.declarations {
             let source_range: SourceRange = declaration.clone().into();
             if source_range.contains(pos) {
@@ -3436,7 +3436,7 @@ impl FunctionExpression {
 
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        if let Some(value) = self.body.get_value_for_position(pos) {
+        if let Some(value) = self.body.get_expr_for_position(pos) {
             return value.get_hover_value_for_position(pos, code);
         }
 

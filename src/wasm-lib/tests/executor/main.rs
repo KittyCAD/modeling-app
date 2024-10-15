@@ -382,7 +382,7 @@ async fn kcl_test_patterns_linear_basic_with_math() {
 distance = 5
 part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: num -1, distance: distance - 1}, %)
+    |> patternLinear2d({axis: [0,1], instances: num, distance: distance - 1}, %)
     |> extrude(1, %)
 "#;
 
@@ -394,7 +394,7 @@ part =  startSketchOn('XY')
 async fn kcl_test_patterns_linear_basic() {
     let code = r#"part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
+    |> patternLinear2d({axis: [0,1], instances: 13, distance: 4}, %)
     |> extrude(1, %)
 "#;
 
@@ -411,7 +411,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternLinear3d({axis: [1, 0, 1], repetitions: 3, distance: 6}, %)
+    |> patternLinear3d({axis: [1, 0, 1], instances: 4, distance: 6}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -422,7 +422,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
 async fn kcl_test_patterns_linear_basic_negative_distance() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
+    |> patternLinear2d({axis: [0,1], instances: 13, distance: -2}, %)
     |> extrude(1, %)
 "#;
 
@@ -434,7 +434,7 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
 async fn kcl_test_patterns_linear_basic_negative_axis() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,-1], instances: 13, distance: 2}, %)
     |> extrude(1, %)
 "#;
 
@@ -446,7 +446,7 @@ async fn kcl_test_patterns_linear_basic_negative_axis() {
 async fn kcl_test_patterns_linear_basic_holes() {
     let code = r#"circles = startSketchOn('XY')
     |> circle({ center: [5, 5], radius: 1 }, %)
-    |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
+    |> patternLinear2d({axis: [1,1], instances: 13, distance: 3}, %)
 
 rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -467,7 +467,7 @@ rectangle = startSketchOn('XY')
 async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular2d({center: [20, 20], instances: 13, arcDegrees: 210, rotateDuplicates: true}, %)
     |> extrude(1, %)
 "#;
 
@@ -484,7 +484,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -500,7 +500,7 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], instances: 11, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -1429,14 +1429,14 @@ async fn kcl_test_linear_pattern3d_a_pattern() {
 
 pattn1 = patternLinear3d({
        axis: [1, 0, 0],
-       repetitions: 6,
+       instances: 7,
        distance: 6
      }, exampleSketch)
 
 pattn2 = patternLinear3d({
        axis: [0, 0, 1],
        distance: 1,
-       repetitions: 6
+       instances: 7
      }, pattn1)
 "#;
 
@@ -1456,11 +1456,11 @@ async fn kcl_test_circular_pattern3d_a_pattern() {
 
 pattn1 = patternLinear3d({
        axis: [1, 0, 0],
-       repetitions: 6,
+       instances: 7,
        distance: 6
      }, exampleSketch)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, pattn1)
+pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, pattn1)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -1586,7 +1586,7 @@ let extrudes = [sketch001, sketch002]
 
 pattn1 = patternLinear3d({
        axis: [0, 1, 0],
-       repetitions: 2,
+       instances: 3,
        distance: 20
      }, extrudes)
 "#;
@@ -1732,7 +1732,7 @@ part001 = cube([0,0], 20)
 
 pattn1 = patternLinear3d({
        axis: [1, 0, 0],
-       repetitions: 3,
+       instances: 4,
        distance: 40
      }, part001)
 
@@ -1761,7 +1761,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
 
 "#;
 
@@ -1788,7 +1788,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
 
 "#;
 
@@ -1915,7 +1915,7 @@ async fn kcl_test_arc_error_same_start_end() {
   |> patternCircular2d({
        arcDegrees: 360,
        center: [0, 0],
-       repetitions: 5,
+       instances: 6,
        rotateDuplicates: true
      }, %)
 "#;
