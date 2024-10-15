@@ -57,6 +57,7 @@ async fn run_fail(code: &str) -> KclError {
 
 gen_test!(property_of_object);
 gen_test!(index_of_array);
+gen_test!(comparisons);
 gen_test_fail!(
     invalid_index_str,
     "semantic: Only integers >= 0 can be used as the index of an array, but you're using a string"
@@ -99,4 +100,5 @@ gen_test!(if_else);
 //     if_else_no_expr,
 //     "syntax: blocks inside an if/else expression must end in an expression"
 // );
+gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
 gen_test!(add_lots);

@@ -425,6 +425,34 @@
         ]
       }
     },
+    "/metrics": {
+      "get": {
+        "operationId": "get_metrics",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "String",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "List available machines and their statuses",
+        "tags": [
+          "hidden"
+        ]
+      }
+    },
     "/ping": {
       "get": {
         "operationId": "ping",
@@ -492,6 +520,13 @@
     }
   },
   "tags": [
+    {
+      "description": "Hidden API endpoints that should not show up in the docs.",
+      "externalDocs": {
+        "url": "https://docs.zoo.dev/api/machines"
+      },
+      "name": "hidden"
+    },
     {
       "description": "Utilities for making parts and discovering machines.",
       "externalDocs": {

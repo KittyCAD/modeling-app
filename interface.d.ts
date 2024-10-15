@@ -73,7 +73,7 @@ export interface IElectronAPI {
     callback: (value: { version: string }) => void
   ) => Electron.IpcRenderer
   onUpdateDownloaded: (
-    callback: (value: string) => void
+    callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void

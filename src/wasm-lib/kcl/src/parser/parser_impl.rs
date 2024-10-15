@@ -303,6 +303,12 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             "*" => BinaryOperator::Mul,
             "%" => BinaryOperator::Mod,
             "^" => BinaryOperator::Pow,
+            "==" => BinaryOperator::Eq,
+            "!=" => BinaryOperator::Neq,
+            ">" => BinaryOperator::Gt,
+            ">=" => BinaryOperator::Gte,
+            "<" => BinaryOperator::Lt,
+            "<=" => BinaryOperator::Lte,
             _ => {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: token.as_source_ranges(),
@@ -3705,6 +3711,8 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
             5
         }"#
     );
+    snapshot_test!(be, "let x = 3 == 3");
+    snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
 }
 
