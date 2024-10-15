@@ -119,7 +119,10 @@ impl ImportStatement {
             }
             string.push_str(&item.name.name);
             if let Some(alias) = &item.alias {
-                string.push_str(&format!(" as {}", alias.name));
+                // If the alias is the same, don't output it.
+                if item.name.name != alias.name {
+                    string.push_str(&format!(" as {}", alias.name));
+                }
             }
         }
         string.push_str(&format!(" from {}", self.raw_path));
@@ -579,6 +582,17 @@ import a as aaa, b as bbb from "a.kcl"
         let program = parser.ast().unwrap();
         let output = program.recast(&Default::default(), 0);
         assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_import_as_same_name() {
+        let input = r#"import a as a from "a.kcl"
+"#;
+        let program = crate::parser::parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        let expected = r#"import a from "a.kcl"
+"#;
+        assert_eq!(output, expected);
     }
 
     #[test]
