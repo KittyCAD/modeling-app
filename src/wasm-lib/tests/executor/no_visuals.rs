@@ -1,7 +1,7 @@
 use kcl_lib::{
     ast::types::Program,
     errors::KclError,
-    executor::{ExecutorContext, IdGenerator},
+    executor::{ExecutorContext, IdGenerator, ProjectDirectory},
 };
 
 macro_rules! gen_test {
@@ -32,7 +32,7 @@ async fn run(code: &str) {
         &program,
         None,
         id_generator,
-        Some("tests/executor/inputs/no_visuals/".to_owned()),
+        ProjectDirectory::Directory("tests/executor/inputs/no_visuals/".to_owned()),
     )
     .await
     .unwrap();
@@ -61,7 +61,7 @@ async fn run_fail(code: &str) -> KclError {
             &program,
             None,
             id_generator,
-            Some("tests/executor/inputs/no_visuals/".to_owned()),
+            ProjectDirectory::Directory("tests/executor/inputs/no_visuals/".to_owned()),
         )
         .await
     else {

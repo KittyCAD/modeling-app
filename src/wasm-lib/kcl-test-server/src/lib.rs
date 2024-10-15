@@ -15,7 +15,11 @@ use hyper::{
     service::{make_service_fn, service_fn},
     Body, Error, Response, Server,
 };
-use kcl_lib::{executor::ExecutorContext, settings::types::UnitLength, test_server::RequestBody};
+use kcl_lib::{
+    executor::{ExecutorContext, ProjectDirectory},
+    settings::types::UnitLength,
+    test_server::RequestBody,
+};
 use tokio::{
     sync::{mpsc, oneshot},
     task::JoinHandle,
@@ -178,7 +182,10 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
     // Let users know if the test is taking a long time.
     let (done_tx, done_rx) = oneshot::channel::<()>();
     let timer = time_until(done_rx);
-    let snapshot = match state.execute_and_prepare_snapshot(&program, id_generator, None).await {
+    let snapshot = match state
+        .execute_and_prepare_snapshot(&program, id_generator, ProjectDirectory::default())
+        .await
+    {
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };

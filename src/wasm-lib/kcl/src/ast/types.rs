@@ -427,7 +427,7 @@ impl Program {
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         if declaration.id.name == name {
-                            return Some(Definition::Variable(&declaration));
+                            return Some(Definition::Variable(declaration));
                         }
                     }
                 }
