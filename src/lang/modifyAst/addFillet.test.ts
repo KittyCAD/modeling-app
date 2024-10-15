@@ -87,7 +87,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     const expectedExtrudeNode = expedtedExtrudeNodeResult.node
 
     // check whether extrude is in the sketch pipe
-    const extrudeInSketchPipe = expectedExtrudeNode.type == 'CallExpression'
+    const extrudeInSketchPipe = expectedExtrudeNode.type === 'CallExpression'
     if (extrudeInSketchPipe) {
       return expectedExtrudeNode
     }
