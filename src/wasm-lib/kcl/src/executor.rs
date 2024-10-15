@@ -52,8 +52,8 @@ pub struct ExecState {
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: HashSet<String>,
-    /// The stack of use statements for detecting circular module imports.  If
-    /// this is empty, we're not currently executing a use statement.
+    /// The stack of import statements for detecting circular module imports.
+    /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<std::path::PathBuf>,
     /// The directory of the current project.  This is used for resolving import
     /// paths.
