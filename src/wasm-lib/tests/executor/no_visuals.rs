@@ -28,7 +28,15 @@ macro_rules! gen_test_fail {
 async fn run(code: &str) {
     let (ctx, program, id_generator) = setup(code).await;
 
-    ctx.run(&program, None, id_generator).await.unwrap();
+    let res = ctx.run(&program, None, id_generator).await;
+    match res {
+        Ok(state) => {
+            println!("{:#?}", state.memory);
+        }
+        Err(e) => {
+            panic!("{e}");
+        }
+    }
 }
 
 async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
@@ -102,3 +110,4 @@ gen_test!(if_else);
 // );
 gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
 gen_test!(add_lots);
+gen_test!(double_map);
