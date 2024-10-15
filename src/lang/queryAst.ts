@@ -875,6 +875,19 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   const varDec = _varDec.node
   if (varDec.type !== 'VariableDeclarator') return false
   let extruded = false
+  // option 1: extrude or revolve is called in the sketch pipe
+  traverse(pipeExpression, {
+    enter(node) {
+      if (
+        node.type === 'CallExpression' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve')
+      ) {
+        extruded = true
+      }
+    },
+  })
+  // option 2: extrude or revolve is called in the separate pipe
+  if (!extruded){
   traverse(ast as any, {
     enter(node) {
       if (
@@ -887,7 +900,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
         extruded = true
       }
     },
-  })
+  })}
   return extruded
 }
 
