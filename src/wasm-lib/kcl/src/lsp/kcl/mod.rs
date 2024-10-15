@@ -1123,7 +1123,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(value) = ast.get_value_for_position(pos) else {
+        let Some(value) = ast.get_expr_for_position(pos) else {
             return Ok(None);
         };
 
