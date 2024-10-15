@@ -2,6 +2,7 @@ use kcl_lib::{
     ast::types::Program,
     errors::KclError,
     executor::{ExecutorContext, IdGenerator, ProjectDirectory},
+    parser,
 };
 
 macro_rules! gen_test {
@@ -20,6 +21,17 @@ macro_rules! gen_test_fail {
         async fn $file() {
             let code = include_str!(concat!("inputs/no_visuals/", stringify!($file), ".kcl"));
             let actual = run_fail(&code).await;
+            assert_eq!(actual.get_message(), $expected);
+        }
+    };
+}
+
+macro_rules! gen_test_parse_fail {
+    ($file:ident, $expected:literal) => {
+        #[tokio::test]
+        async fn $file() {
+            let code = include_str!(concat!("inputs/no_visuals/", stringify!($file), ".kcl"));
+            let actual = run_parse_fail(&code).await;
             assert_eq!(actual.get_message(), $expected);
         }
     };
@@ -66,6 +78,13 @@ async fn run_fail(code: &str) -> KclError {
         .await
     else {
         panic!("Expected this KCL program to fail, but it (incorrectly) never threw an error.");
+    };
+    e
+}
+
+async fn run_parse_fail(code: &str) -> KclError {
+    let Err(e) = parser::parse(code) else {
+        panic!("Expected this KCL program to fail to parse, but it (incorrectly) never threw an error.");
     };
     e
 }
@@ -128,6 +147,10 @@ gen_test_fail!(
 gen_test_fail!(
     import_side_effect,
     "semantic: Error loading imported file. Open it to view more details. export_side_effect.kcl: Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file."
+);
+gen_test_parse_fail!(
+    import_from_other_directory,
+    "syntax: import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported."
 );
 // TODO: We'd like these tests.
 // gen_test_fail!(
