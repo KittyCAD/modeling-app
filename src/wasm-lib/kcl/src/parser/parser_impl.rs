@@ -968,10 +968,6 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
         _ =>
             alt((
                 (
-                    import_stmt.map(BodyItem::ImportStatement),
-                    opt(noncode_just_after_code)
-                ).map(WithinFunction::BodyItem),
-                (
                     declaration.map(BodyItem::VariableDeclaration),
                     opt(noncode_just_after_code)
                 ).map(WithinFunction::BodyItem),
