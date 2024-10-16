@@ -1059,18 +1059,6 @@ pub struct ImportItem {
 impl_value_meta!(ImportItem);
 
 impl ImportItem {
-    compute_digest!(|slf, hasher| {
-        let name = slf.name.name.as_bytes();
-        hasher.update(name.len().to_ne_bytes());
-        hasher.update(name);
-        if let Some(alias) = &mut slf.alias {
-            hasher.update([1]);
-            hasher.update(alias.compute_digest());
-        } else {
-            hasher.update([0]);
-        }
-    });
-
     pub fn identifier(&self) -> &str {
         match &self.alias {
             Some(alias) => &alias.name,
@@ -1123,15 +1111,6 @@ pub struct ImportStatement {
 impl_value_meta!(ImportStatement);
 
 impl ImportStatement {
-    compute_digest!(|slf, hasher| {
-        for item in &mut slf.items {
-            hasher.update(item.compute_digest());
-        }
-        let path = slf.path.as_bytes();
-        hasher.update(path.len().to_ne_bytes());
-        hasher.update(path);
-    });
-
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],

@@ -2,10 +2,10 @@ use sha2::{Digest as DigestTrait, Sha256};
 
 use super::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ElseIf, Expr,
-    ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, Literal, LiteralIdentifier,
-    MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
-    Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression,
-    VariableDeclaration, VariableDeclarator,
+    ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement, Literal,
+    LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+    ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+    UnaryExpression, VariableDeclaration, VariableDeclarator,
 };
 
 /// Position-independent digest of the AST node.
@@ -33,6 +33,31 @@ macro_rules! compute_digest {
             node_digest
         }
     };
+}
+
+impl ImportItem {
+    compute_digest!(|slf, hasher| {
+        let name = slf.name.name.as_bytes();
+        hasher.update(name.len().to_ne_bytes());
+        hasher.update(name);
+        if let Some(alias) = &mut slf.alias {
+            hasher.update([1]);
+            hasher.update(alias.compute_digest());
+        } else {
+            hasher.update([0]);
+        }
+    });
+}
+
+impl ImportStatement {
+    compute_digest!(|slf, hasher| {
+        for item in &mut slf.items {
+            hasher.update(item.compute_digest());
+        }
+        let path = slf.path.as_bytes();
+        hasher.update(path.len().to_ne_bytes());
+        hasher.update(path);
+    });
 }
 
 impl Program {
