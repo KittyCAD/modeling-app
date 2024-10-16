@@ -46,6 +46,7 @@ expression: actual
               "raw": "10",
               "digest": null
             },
+            "endInclusive": true,
             "digest": null
           },
           "digest": null
