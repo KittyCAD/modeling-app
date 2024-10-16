@@ -7,7 +7,6 @@ use crate::executor::Metadata;
 use crate::executor::SourceRange;
 use crate::executor::StatementKind;
 
-use super::compute_digest;
 use super::impl_value_meta;
 use super::ConstraintLevel;
 use super::Hover;
@@ -15,7 +14,6 @@ use super::{Digest, Expr};
 use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use sha2::{Digest as DigestTrait, Sha256};
 
 // TODO: This should be its own type, similar to Program,
 // but guaranteed to have an Expression as its final item.
@@ -56,14 +54,6 @@ impl_value_meta!(IfExpression);
 impl_value_meta!(ElseIf);
 
 impl IfExpression {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.cond.compute_digest());
-        hasher.update(slf.then_val.compute_digest());
-        for else_if in &mut slf.else_ifs {
-            hasher.update(else_if.compute_digest());
-        }
-        hasher.update(slf.final_else.compute_digest());
-    });
     fn source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange::from(self)]
     }
@@ -101,10 +91,6 @@ impl From<&ElseIf> for Metadata {
 }
 
 impl ElseIf {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.cond.compute_digest());
-        hasher.update(slf.then_val.compute_digest());
-    });
     #[allow(dead_code)]
     fn source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange([self.start, self.end])]
