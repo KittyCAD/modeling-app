@@ -1456,8 +1456,8 @@ impl ItemVisibility {
         }
     }
 
-    fn is_default<T: Default + PartialEq>(t: &T) -> bool {
-        t == &T::default()
+    fn is_default(&self) -> bool {
+        matches!(self, Self::Default)
     }
 }
 
