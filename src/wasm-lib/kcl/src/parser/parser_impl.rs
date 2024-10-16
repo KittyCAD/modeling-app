@@ -967,7 +967,7 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     let item = dispatch! {peek(any);
         token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
-        Token { ref value, .. } if value == "import" =>
+        token if token.value == "import" && matches!(token.token_type, TokenType::Keyword) =>
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
