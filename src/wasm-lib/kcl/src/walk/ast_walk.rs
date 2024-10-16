@@ -183,6 +183,18 @@ where
             }
             Ok(true)
         }
+        Expr::ArrayRangeExpression(are) => {
+            if !f.walk(are.as_ref().into())? {
+                return Ok(false);
+            }
+            if !walk_value::<WalkT>(&are.start_element, f)? {
+                return Ok(false);
+            }
+            if !walk_value::<WalkT>(&are.end_element, f)? {
+                return Ok(false);
+            }
+            Ok(true)
+        }
         Expr::ObjectExpression(oe) => walk_object_expression(oe, f),
         Expr::MemberExpression(me) => walk_member_expression(me, f),
         Expr::UnaryExpression(ue) => walk_unary_expression(ue, f),
