@@ -1204,25 +1204,18 @@ fn import_item(i: TokenSlice) -> PResult<ImportItem> {
         identifier.context(expected("an identifier to alias the import")),
     ))
     .parse_next(i)?;
-    if let Some(alias) = alias {
-        let end = alias.end();
-        Ok(ImportItem {
-            name,
-            alias: Some(alias),
-            start,
-            end,
-            digest: None,
-        })
+    let end = if let Some(ref alias) = alias {
+        alias.end()
     } else {
-        let end = name.end();
-        Ok(ImportItem {
-            name,
-            alias: None,
-            start,
-            end,
-            digest: None,
-        })
-    }
+        name.end()
+    };
+    Ok(ImportItem {
+        name,
+        alias,
+        start,
+        end,
+        digest: None,
+    })
 }
 
 fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
