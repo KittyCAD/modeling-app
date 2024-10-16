@@ -577,6 +577,7 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Expr>> {
 
 fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    ignore_whitespace(i);
     colon
         .context(expected(
             "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
@@ -3714,6 +3715,7 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     snapshot_test!(be, "let x = 3 == 3");
     snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
+    snapshot_test!(bh, "const obj = {center : [10, 10], radius: 5}");
 }
 
 #[allow(unused)]
