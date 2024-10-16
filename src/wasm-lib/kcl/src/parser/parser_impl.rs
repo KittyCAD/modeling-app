@@ -10,12 +10,12 @@ use winnow::{
 
 use crate::{
     ast::types::{
-        ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, ElseIf,
-        Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, Literal,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue,
-        ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
-        TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration, VariableDeclarator,
-        VariableKind,
+        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
+        CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier,
+        IfExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta,
+        NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
+        Program, ReturnStatement, TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration,
+        VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -303,6 +303,12 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             "*" => BinaryOperator::Mul,
             "%" => BinaryOperator::Mod,
             "^" => BinaryOperator::Pow,
+            "==" => BinaryOperator::Eq,
+            "!=" => BinaryOperator::Neq,
+            ">" => BinaryOperator::Gt,
+            ">=" => BinaryOperator::Gte,
+            "<" => BinaryOperator::Lt,
+            "<=" => BinaryOperator::Lte,
             _ => {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: token.as_source_ranges(),
@@ -330,6 +336,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
                 | Expr::ArrayExpression(_)
+                | Expr::ArrayRangeExpression(_)
                 | Expr::ObjectExpression(_) => {
                     return Err(KclError::Syntax(KclErrorDetails {
                         source_ranges,
@@ -460,8 +467,13 @@ pub enum NonCodeOr<T> {
 }
 
 /// Parse a KCL array of elements.
-fn array(i: TokenSlice) -> PResult<ArrayExpression> {
-    alt((array_empty, array_elem_by_elem, array_end_start)).parse_next(i)
+fn array(i: TokenSlice) -> PResult<Expr> {
+    alt((
+        array_empty.map(Box::new).map(Expr::ArrayExpression),
+        array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
+        array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
+    ))
+    .parse_next(i)
 }
 
 /// Match an empty array.
@@ -533,44 +545,29 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<ArrayExpression> {
     })
 }
 
-fn array_end_start(i: TokenSlice) -> PResult<ArrayExpression> {
+fn array_end_start(i: TokenSlice) -> PResult<ArrayRangeExpression> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
-    let elements = integer_range
-        .context(expected("array contents, a numeric range (like 0..10)"))
-        .parse_next(i)?;
+    let start_element = Box::new(expression.parse_next(i)?);
+    ignore_whitespace(i);
+    double_period.parse_next(i)?;
+    ignore_whitespace(i);
+    let end_element = Box::new(expression.parse_next(i)?);
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(ArrayExpression {
+    Ok(ArrayRangeExpression {
         start,
         end,
-        elements,
-        non_code_meta: Default::default(),
+        start_element,
+        end_element,
+        end_inclusive: true,
         digest: None,
     })
 }
 
-/// Parse n..m into a vec of numbers [n, n+1, ..., m-1]
-fn integer_range(i: TokenSlice) -> PResult<Vec<Expr>> {
-    let (token0, floor) = integer.parse_next(i)?;
-    double_period.parse_next(i)?;
-    let (_token1, ceiling) = integer.parse_next(i)?;
-    Ok((floor..=ceiling)
-        .map(|num| {
-            let num = num as i64;
-            Expr::Literal(Box::new(Literal {
-                start: token0.start,
-                end: token0.end,
-                value: num.into(),
-                raw: num.to_string(),
-                digest: None,
-            }))
-        })
-        .collect())
-}
-
 fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    ignore_whitespace(i);
     colon
         .context(expected(
             "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
@@ -1189,7 +1186,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
         literal.map(Box::new).map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
         identifier.map(Box::new).map(Expr::Identifier),
-        array.map(Box::new).map(Expr::ArrayExpression),
+        array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
         function_expression.map(Box::new).map(Expr::FunctionExpression),
@@ -1503,25 +1500,6 @@ fn expression_stmt(i: TokenSlice) -> PResult<ExpressionStatement> {
         expression: val,
         digest: None,
     })
-}
-
-/// Parse a KCL integer, and the token that held it.
-fn integer(i: TokenSlice) -> PResult<(Token, u64)> {
-    let num = one_of(TokenType::Number)
-        .context(expected("a number token e.g. 3"))
-        .try_map(|token: Token| {
-            let source_ranges = token.as_source_ranges();
-            let value = token.value.clone();
-            token.value.parse().map(|num| (token, num)).map_err(|e| {
-                KclError::Syntax(KclErrorDetails {
-                    source_ranges,
-                    message: format!("invalid integer {value}: {e}"),
-                })
-            })
-        })
-        .context(expected("an integer e.g. 3 (but not 3.1)"))
-        .parse_next(i)?;
-    Ok(num)
 }
 
 /// Parse the given brace symbol.
@@ -3055,123 +3033,6 @@ e
     }
 
     #[test]
-    fn test_parse_expand_array() {
-        let code = "const myArray = [0..10]";
-        let parser = crate::parser::Parser::new(crate::token::lexer(code).unwrap());
-        let result = parser.ast().unwrap();
-        let expected_result = Program {
-            start: 0,
-            end: 23,
-            body: vec![BodyItem::VariableDeclaration(VariableDeclaration {
-                start: 0,
-                end: 23,
-                declarations: vec![VariableDeclarator {
-                    start: 6,
-                    end: 23,
-                    id: Identifier {
-                        start: 6,
-                        end: 13,
-                        name: "myArray".to_string(),
-                        digest: None,
-                    },
-                    init: Expr::ArrayExpression(Box::new(ArrayExpression {
-                        start: 16,
-                        end: 23,
-                        non_code_meta: Default::default(),
-                        elements: vec![
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 0u32.into(),
-                                raw: "0".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 1u32.into(),
-                                raw: "1".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 2u32.into(),
-                                raw: "2".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 3u32.into(),
-                                raw: "3".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 4u32.into(),
-                                raw: "4".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 5u32.into(),
-                                raw: "5".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 6u32.into(),
-                                raw: "6".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 7u32.into(),
-                                raw: "7".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 8u32.into(),
-                                raw: "8".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 9u32.into(),
-                                raw: "9".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 10u32.into(),
-                                raw: "10".to_string(),
-                                digest: None,
-                            })),
-                        ],
-                        digest: None,
-                    })),
-                    digest: None,
-                }],
-                kind: VariableKind::Const,
-                digest: None,
-            })],
-            non_code_meta: NonCodeMeta::default(),
-            digest: None,
-        };
-
-        assert_eq!(result, expected_result);
-    }
-
-    #[test]
     fn test_error_keyword_in_variable() {
         let some_program_string = r#"const let = "thing""#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -3705,7 +3566,10 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
             5
         }"#
     );
+    snapshot_test!(be, "let x = 3 == 3");
+    snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
+    snapshot_test!(bh, "const obj = {center : [10, 10], radius: 5}");
 }
 
 #[allow(unused)]

@@ -114,7 +114,7 @@ impl Program {
             }
         }
 
-        let value = self.get_value_for_position(pos)?;
+        let value = self.get_expr_for_position(pos)?;
 
         value.get_hover_value_for_position(pos, code)
     }
@@ -192,15 +192,15 @@ impl Program {
         None
     }
 
-    /// Returns a value that includes the given character position.
+    /// Returns an Expr that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
         match item {
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         }
     }
@@ -214,15 +214,15 @@ impl Program {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
-        let value = match item {
+        let expr = match item {
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         };
 
-        // Check if the value's non code meta contains the position.
-        if let Some(value) = value {
-            if let Some(non_code_meta) = value.get_non_code_meta() {
+        // Check if the expr's non code meta contains the position.
+        if let Some(expr) = expr {
+            if let Some(non_code_meta) = expr.get_non_code_meta() {
                 if non_code_meta.contains(pos) {
                     return Some(non_code_meta);
                 }
@@ -311,7 +311,7 @@ impl Program {
                     Some(&mut expression_statement.expression)
                 }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
-                    variable_declaration.get_mut_value_for_position(pos)
+                    variable_declaration.get_mut_expr_for_position(pos)
                 }
                 BodyItem::ReturnStatement(ref mut return_statement) => Some(&mut return_statement.argument),
             };
@@ -513,6 +513,7 @@ pub enum Expr {
     PipeExpression(Box<PipeExpression>),
     PipeSubstitution(Box<PipeSubstitution>),
     ArrayExpression(Box<ArrayExpression>),
+    ArrayRangeExpression(Box<ArrayRangeExpression>),
     ObjectExpression(Box<ObjectExpression>),
     MemberExpression(Box<MemberExpression>),
     UnaryExpression(Box<UnaryExpression>),
@@ -532,6 +533,7 @@ impl Expr {
             Expr::PipeExpression(pe) => pe.compute_digest(),
             Expr::PipeSubstitution(ps) => ps.compute_digest(),
             Expr::ArrayExpression(ae) => ae.compute_digest(),
+            Expr::ArrayRangeExpression(are) => are.compute_digest(),
             Expr::ObjectExpression(oe) => oe.compute_digest(),
             Expr::MemberExpression(me) => me.compute_digest(),
             Expr::UnaryExpression(ue) => ue.compute_digest(),
@@ -569,6 +571,7 @@ impl Expr {
         match self {
             Expr::BinaryExpression(_bin_exp) => None,
             Expr::ArrayExpression(_array_exp) => None,
+            Expr::ArrayRangeExpression(_array_exp) => None,
             Expr::ObjectExpression(_obj_exp) => None,
             Expr::MemberExpression(_mem_exp) => None,
             Expr::Literal(_literal) => None,
@@ -593,6 +596,7 @@ impl Expr {
         match self {
             Expr::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
             Expr::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
+            Expr::ArrayRangeExpression(ref mut array_range) => array_range.replace_value(source_range, new_value),
             Expr::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
             Expr::MemberExpression(_) => {}
             Expr::Literal(_) => {}
@@ -619,6 +623,7 @@ impl Expr {
             Expr::PipeExpression(pipe_expression) => pipe_expression.start(),
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start(),
             Expr::ArrayExpression(array_expression) => array_expression.start(),
+            Expr::ArrayRangeExpression(array_range) => array_range.start(),
             Expr::ObjectExpression(object_expression) => object_expression.start(),
             Expr::MemberExpression(member_expression) => member_expression.start(),
             Expr::UnaryExpression(unary_expression) => unary_expression.start(),
@@ -638,6 +643,7 @@ impl Expr {
             Expr::PipeExpression(pipe_expression) => pipe_expression.end(),
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end(),
             Expr::ArrayExpression(array_expression) => array_expression.end(),
+            Expr::ArrayRangeExpression(array_range) => array_range.end(),
             Expr::ObjectExpression(object_expression) => object_expression.end(),
             Expr::MemberExpression(member_expression) => member_expression.end(),
             Expr::UnaryExpression(unary_expression) => unary_expression.end(),
@@ -657,6 +663,7 @@ impl Expr {
             Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
             Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
+            Expr::ArrayRangeExpression(array_range) => array_range.get_hover_value_for_position(pos, code),
             Expr::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
             Expr::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
@@ -685,6 +692,7 @@ impl Expr {
             Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
             Expr::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
+            Expr::ArrayRangeExpression(ref mut array_range) => array_range.rename_identifiers(old_name, new_name),
             Expr::ObjectExpression(ref mut object_expression) => {
                 object_expression.rename_identifiers(old_name, new_name)
             }
@@ -712,6 +720,7 @@ impl Expr {
                 source_ranges: vec![pipe_substitution.into()],
             },
             Expr::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
+            Expr::ArrayRangeExpression(array_range) => array_range.get_constraint_level(),
             Expr::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
             Expr::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
@@ -1586,8 +1595,8 @@ impl VariableDeclaration {
         }
     }
 
-    /// Returns a value that includes the given character position.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
+    /// Returns an Expr that includes the given character position.
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
         for declaration in &self.declarations {
             let source_range: SourceRange = declaration.into();
             if source_range.contains(pos) {
@@ -1598,8 +1607,8 @@ impl VariableDeclaration {
         None
     }
 
-    /// Returns a value that includes the given character position.
-    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
+    /// Returns an Expr that includes the given character position.
+    pub fn get_mut_expr_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
         for declaration in &mut self.declarations {
             let source_range: SourceRange = declaration.clone().into();
             if source_range.contains(pos) {
@@ -2179,6 +2188,114 @@ impl ArrayExpression {
         for element in &mut self.elements {
             element.rename_identifiers(old_name, new_name);
         }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", tag = "type")]
+pub struct ArrayRangeExpression {
+    pub start: usize,
+    pub end: usize,
+    pub start_element: Box<Expr>,
+    pub end_element: Box<Expr>,
+    /// Is the `end_element` included in the range?
+    pub end_inclusive: bool,
+    // TODO (maybe) comments on range components?
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ArrayRangeExpression);
+
+impl From<ArrayRangeExpression> for Expr {
+    fn from(array_expression: ArrayRangeExpression) -> Self {
+        Expr::ArrayRangeExpression(Box::new(array_expression))
+    }
+}
+
+impl ArrayRangeExpression {
+    pub fn new(start_element: Box<Expr>, end_element: Box<Expr>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            start_element,
+            end_element,
+            end_inclusive: true,
+            digest: None,
+        }
+    }
+
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.start_element.compute_digest());
+        hasher.update(slf.end_element.compute_digest());
+    });
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.start_element.replace_value(source_range, new_value.clone());
+        self.end_element.replace_value(source_range, new_value.clone());
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        let mut constraint_levels = ConstraintLevels::new();
+        constraint_levels.push(self.start_element.get_constraint_level());
+        constraint_levels.push(self.end_element.get_constraint_level());
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+
+    /// Returns a hover value that includes the given character position.
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        for element in [&*self.start_element, &*self.end_element] {
+            let element_source_range: SourceRange = element.into();
+            if element_source_range.contains(pos) {
+                return element.get_hover_value_for_position(pos, code);
+            }
+        }
+
+        None
+    }
+
+    #[async_recursion::async_recursion]
+    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let metadata = Metadata::from(&*self.start_element);
+        let start = ctx
+            .execute_expr(&self.start_element, exec_state, &metadata, StatementKind::Expression)
+            .await?
+            .get_json_value()?;
+        let start = parse_json_number_as_u64(&start, (&*self.start_element).into())?;
+        let metadata = Metadata::from(&*self.end_element);
+        let end = ctx
+            .execute_expr(&self.end_element, exec_state, &metadata, StatementKind::Expression)
+            .await?
+            .get_json_value()?;
+        let end = parse_json_number_as_u64(&end, (&*self.end_element).into())?;
+
+        if end < start {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.into()],
+                message: format!("Range start is greater than range end: {start} .. {end}"),
+            }));
+        }
+
+        let range: Vec<_> = if self.end_inclusive {
+            (start..=end).map(JValue::from).collect()
+        } else {
+            (start..end).map(JValue::from).collect()
+        };
+
+        Ok(KclValue::UserVal(UserVal {
+            value: range.into(),
+            meta: vec![Metadata {
+                source_range: self.into(),
+            }],
+        }))
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.start_element.rename_identifiers(old_name, new_name);
+        self.end_element.rename_identifiers(old_name, new_name);
     }
 }
 
@@ -2778,6 +2895,12 @@ impl BinaryExpression {
             BinaryOperator::Div => (left / right).into(),
             BinaryOperator::Mod => (left % right).into(),
             BinaryOperator::Pow => (left.powf(right)).into(),
+            BinaryOperator::Eq => (left == right).into(),
+            BinaryOperator::Neq => (left != right).into(),
+            BinaryOperator::Gt => (left > right).into(),
+            BinaryOperator::Gte => (left >= right).into(),
+            BinaryOperator::Lt => (left < right).into(),
+            BinaryOperator::Lte => (left <= right).into(),
         };
 
         Ok(KclValue::UserVal(UserVal {
@@ -2807,6 +2930,22 @@ pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange
         Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![source_range],
             message: format!("Invalid number: {}", j),
+        }))
+    }
+}
+
+pub fn parse_json_number_as_u64(j: &serde_json::Value, source_range: SourceRange) -> Result<u64, KclError> {
+    if let serde_json::Value::Number(n) = &j {
+        n.as_u64().ok_or_else(|| {
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![source_range],
+                message: format!("Invalid integer: {}", j),
+            })
+        })
+    } else {
+        Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![source_range],
+            message: format!("Invalid integer: {}", j),
         }))
     }
 }
@@ -2861,6 +3000,30 @@ pub enum BinaryOperator {
     #[serde(rename = "^")]
     #[display("^")]
     Pow,
+    /// Are two numbers equal?
+    #[serde(rename = "==")]
+    #[display("==")]
+    Eq,
+    /// Are two numbers not equal?
+    #[serde(rename = "!=")]
+    #[display("!=")]
+    Neq,
+    /// Is left greater than right
+    #[serde(rename = ">")]
+    #[display(">")]
+    Gt,
+    /// Is left greater than or equal to right
+    #[serde(rename = ">=")]
+    #[display(">=")]
+    Gte,
+    /// Is left less than right
+    #[serde(rename = "<")]
+    #[display("<")]
+    Lt,
+    /// Is left less than or equal to right
+    #[serde(rename = "<=")]
+    #[display("<=")]
+    Lte,
 }
 
 /// Mathematical associativity.
@@ -2889,6 +3052,12 @@ impl BinaryOperator {
             BinaryOperator::Div => *b"div",
             BinaryOperator::Mod => *b"mod",
             BinaryOperator::Pow => *b"pow",
+            BinaryOperator::Eq => *b"eqq",
+            BinaryOperator::Neq => *b"neq",
+            BinaryOperator::Gt => *b"gtr",
+            BinaryOperator::Gte => *b"gte",
+            BinaryOperator::Lt => *b"ltr",
+            BinaryOperator::Lte => *b"lte",
         }
     }
 
@@ -2899,6 +3068,8 @@ impl BinaryOperator {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
             BinaryOperator::Mul | BinaryOperator::Div | BinaryOperator::Mod => 12,
             BinaryOperator::Pow => 13,
+            Self::Gt | Self::Gte | Self::Lt | Self::Lte => 9,
+            Self::Eq | Self::Neq => 8,
         }
     }
 
@@ -2908,6 +3079,7 @@ impl BinaryOperator {
         match self {
             Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
             Self::Pow => Associativity::Right,
+            Self::Gt | Self::Gte | Self::Lt | Self::Lte | Self::Eq | Self::Neq => Associativity::Left, // I don't know if this is correct
         }
     }
 }
@@ -3169,6 +3341,7 @@ async fn inner_execute_pipe_body(
             | Expr::PipeExpression(_)
             | Expr::PipeSubstitution(_)
             | Expr::ArrayExpression(_)
+            | Expr::ArrayRangeExpression(_)
             | Expr::ObjectExpression(_)
             | Expr::MemberExpression(_)
             | Expr::UnaryExpression(_)
@@ -3397,7 +3570,7 @@ impl FunctionExpression {
 
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        if let Some(value) = self.body.get_value_for_position(pos) {
+        if let Some(value) = self.body.get_expr_for_position(pos) {
             return value.get_hover_value_for_position(pos, code);
         }
 

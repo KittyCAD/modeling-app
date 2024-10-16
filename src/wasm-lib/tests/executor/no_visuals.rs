@@ -28,7 +28,15 @@ macro_rules! gen_test_fail {
 async fn run(code: &str) {
     let (ctx, program, id_generator) = setup(code).await;
 
-    ctx.run(&program, None, id_generator).await.unwrap();
+    let res = ctx.run(&program, None, id_generator).await;
+    match res {
+        Ok(state) => {
+            println!("{:#?}", state.memory);
+        }
+        Err(e) => {
+            panic!("{e}");
+        }
+    }
 }
 
 async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
@@ -57,6 +65,9 @@ async fn run_fail(code: &str) -> KclError {
 
 gen_test!(property_of_object);
 gen_test!(index_of_array);
+gen_test!(comparisons);
+gen_test!(array_range_expr);
+gen_test_fail!(array_range_negative_expr, "syntax: Invalid integer: -5.0");
 gen_test_fail!(
     invalid_index_str,
     "semantic: Only integers >= 0 can be used as the index of an array, but you're using a string"
@@ -99,4 +110,6 @@ gen_test!(if_else);
 //     if_else_no_expr,
 //     "syntax: blocks inside an if/else expression must end in an expression"
 // );
+gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
 gen_test!(add_lots);
+gen_test!(double_map);
