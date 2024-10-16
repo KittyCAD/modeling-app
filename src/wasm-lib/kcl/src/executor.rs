@@ -56,7 +56,7 @@ pub struct ExecState {
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<std::path::PathBuf>,
     /// The directory of the current project.  This is used for resolving import
-    /// paths.
+    /// paths.  If None is given, the current working directory is used.
     pub project_directory: Option<String>,
 }
 
