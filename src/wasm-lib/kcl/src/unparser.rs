@@ -2,10 +2,10 @@ use std::fmt::Write;
 
 use crate::{
     ast::types::{
-        ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, Expr, FormatOptions,
-        FunctionExpression, IfExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
-        NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration,
-        VariableKind,
+        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
+        Expr, FormatOptions, FunctionExpression, IfExpression, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator,
+        UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -113,6 +113,7 @@ impl Expr {
         match &self {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, is_in_pipe),
             Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
             Expr::MemberExpression(mem_exp) => mem_exp.recast(),
             Expr::Literal(literal) => literal.recast(),
@@ -277,6 +278,44 @@ impl ArrayExpression {
             options.get_indentation(indentation_level)
         };
         format!("[\n{formatted_array_lines}{end_indent}]")
+    }
+}
+
+/// An expression is syntactically trivial: i.e., a literal, identifier, or similar.
+fn expr_is_trivial(expr: &Expr) -> bool {
+    match expr {
+        Expr::Literal(_) | Expr::Identifier(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::None(_) => {
+            true
+        }
+        Expr::BinaryExpression(_)
+        | Expr::FunctionExpression(_)
+        | Expr::CallExpression(_)
+        | Expr::PipeExpression(_)
+        | Expr::ArrayExpression(_)
+        | Expr::ArrayRangeExpression(_)
+        | Expr::ObjectExpression(_)
+        | Expr::MemberExpression(_)
+        | Expr::UnaryExpression(_)
+        | Expr::IfExpression(_) => false,
+    }
+}
+
+impl ArrayRangeExpression {
+    fn recast(&self, options: &FormatOptions, _: usize, _: bool) -> String {
+        let s1 = self.start_element.recast(options, 0, false);
+        let s2 = self.end_element.recast(options, 0, false);
+
+        // Format these items into a one-line array. Put spaces around the `..` if either expression
+        // is non-trivial. This is a bit arbitrary but people seem to like simple ranges to be formatted
+        // tightly, but this is a misleading visual representation of the precedence if the range
+        // components are compound expressions.
+        if expr_is_trivial(&self.start_element) && expr_is_trivial(&self.end_element) {
+            format!("[{s1}..{s2}]")
+        } else {
+            format!("[{s1} .. {s2}]")
+        }
+
+        // Assume a range expression fits on one line.
     }
 }
 
@@ -821,6 +860,20 @@ myNestedVar = [{ prop: callExp(bing.yo) }]
     fn test_recast_fn_in_array() {
         let some_program_string = r#"bing = { yo: 55 }
 myNestedVar = [callExp(bing.yo)]
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_ranges() {
+        let some_program_string = r#"foo = [0..10]
+ten = 10
+bar = [0 + 1 .. ten]
 "#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
