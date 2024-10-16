@@ -57,16 +57,7 @@ pub struct ExecState {
     pub import_stack: Vec<std::path::PathBuf>,
     /// The directory of the current project.  This is used for resolving import
     /// paths.
-    pub project_directory: ProjectDirectory,
-}
-
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub enum ProjectDirectory {
-    #[default]
-    CurrentWorkingDirectory,
-    Directory(String),
+    pub project_directory: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -2009,7 +2000,7 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
-        project_directory: ProjectDirectory,
+        project_directory: Option<String>,
     ) -> Result<ExecState, KclError> {
         self.run_with_session_data(program, memory, id_generator, project_directory)
             .await
@@ -2023,7 +2014,7 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
-        project_directory: ProjectDirectory,
+        project_directory: Option<String>,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
         let memory = if let Some(memory) = memory {
             memory.clone()
@@ -2075,9 +2066,10 @@ impl ExecutorContext {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
                     let path = import_stmt.path.clone();
-                    let resolved_path = match &exec_state.project_directory {
-                        ProjectDirectory::Directory(project_dir) => std::path::PathBuf::from(project_dir).join(&path),
-                        ProjectDirectory::CurrentWorkingDirectory => std::path::PathBuf::from(&path),
+                    let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
+                        std::path::PathBuf::from(project_dir).join(&path)
+                    } else {
+                        std::path::PathBuf::from(&path)
                     };
                     if exec_state.import_stack.contains(&resolved_path) {
                         return Err(KclError::ImportCycle(KclErrorDetails {
@@ -2300,7 +2292,7 @@ impl ExecutorContext {
         &self,
         program: &Program,
         id_generator: IdGenerator,
-        project_directory: ProjectDirectory,
+        project_directory: Option<String>,
     ) -> Result<TakeSnapshot> {
         let _ = self.run(program, None, id_generator, project_directory).await?;
 
@@ -2447,9 +2439,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx
-            .run(&program, None, IdGenerator::default(), ProjectDirectory::default())
-            .await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
         Ok(exec_state.memory)
     }

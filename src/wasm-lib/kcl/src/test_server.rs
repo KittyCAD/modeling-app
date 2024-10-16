@@ -1,7 +1,7 @@
 //! Types used to send data to the test server.
 
 use crate::{
-    executor::{ExecutorContext, ExecutorSettings, IdGenerator, ProjectDirectory},
+    executor::{ExecutorContext, ExecutorSettings, IdGenerator},
     settings::types::UnitLength,
 };
 
@@ -30,7 +30,7 @@ async fn do_execute_and_snapshot(ctx: &ExecutorContext, code: &str) -> anyhow::R
     let program = parser.ast()?;
 
     let snapshot = ctx
-        .execute_and_prepare_snapshot(&program, IdGenerator::default(), ProjectDirectory::default())
+        .execute_and_prepare_snapshot(&program, IdGenerator::default(), None)
         .await?;
 
     // Create a temporary file to write the output to.

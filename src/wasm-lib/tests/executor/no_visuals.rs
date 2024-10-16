@@ -1,7 +1,7 @@
 use kcl_lib::{
     ast::types::Program,
     errors::KclError,
-    executor::{ExecutorContext, IdGenerator, ProjectDirectory},
+    executor::{ExecutorContext, IdGenerator},
     parser,
 };
 
@@ -45,7 +45,7 @@ async fn run(code: &str) {
             &program,
             None,
             id_generator,
-            ProjectDirectory::Directory("tests/executor/inputs/no_visuals/".to_owned()),
+            Some("tests/executor/inputs/no_visuals/".to_owned()),
         )
         .await;
     match res {
@@ -81,7 +81,7 @@ async fn run_fail(code: &str) -> KclError {
             &program,
             None,
             id_generator,
-            ProjectDirectory::Directory("tests/executor/inputs/no_visuals/".to_owned()),
+            Some("tests/executor/inputs/no_visuals/".to_owned()),
         )
         .await
     else {
