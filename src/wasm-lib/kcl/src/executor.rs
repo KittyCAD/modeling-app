@@ -452,6 +452,15 @@ pub enum Geometries {
     Solids(Vec<Box<Solid>>),
 }
 
+impl From<Geometry> for Geometries {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketches(vec![x]),
+            Geometry::Solid(x) => Self::Solids(vec![x]),
+        }
+    }
+}
+
 /// A sketch or a group of sketches.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -2130,6 +2139,7 @@ impl ExecutorContext {
                 },
             },
             Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
+            Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
