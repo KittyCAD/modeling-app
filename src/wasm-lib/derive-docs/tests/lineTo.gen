@@ -7,6 +7,7 @@ mod test_examples_line_to {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let id_generator = crate::executor::IdGenerator::default();
+        let project_directory = crate::executor::ProjectDirectory::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -18,7 +19,9 @@ mod test_examples_line_to {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator, None).await.unwrap();
+        ctx.run(&program, None, id_generator, project_directory)
+            .await
+            .unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -41,6 +44,7 @@ mod test_examples_line_to {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let id_generator = crate::executor::IdGenerator::default();
+        let project_directory = crate::executor::ProjectDirectory::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -52,7 +56,9 @@ mod test_examples_line_to {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator, None).await.unwrap();
+        ctx.run(&program, None, id_generator, project_directory)
+            .await
+            .unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
