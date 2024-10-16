@@ -24,6 +24,7 @@ pub enum Node<'a> {
     PipeExpression(&'a types::PipeExpression),
     PipeSubstitution(&'a types::PipeSubstitution),
     ArrayExpression(&'a types::ArrayExpression),
+    ArrayRangeExpression(&'a types::ArrayRangeExpression),
     ObjectExpression(&'a types::ObjectExpression),
     MemberExpression(&'a types::MemberExpression),
     UnaryExpression(&'a types::UnaryExpression),
@@ -54,6 +55,7 @@ impl From<&Node<'_>> for SourceRange {
             Node::PipeExpression(p) => SourceRange([p.start(), p.end()]),
             Node::PipeSubstitution(p) => SourceRange([p.start(), p.end()]),
             Node::ArrayExpression(a) => SourceRange([a.start(), a.end()]),
+            Node::ArrayRangeExpression(a) => SourceRange([a.start(), a.end()]),
             Node::ObjectExpression(o) => SourceRange([o.start(), o.end()]),
             Node::MemberExpression(m) => SourceRange([m.start(), m.end()]),
             Node::UnaryExpression(u) => SourceRange([u.start(), u.end()]),
@@ -90,6 +92,7 @@ impl_from!(Node, CallExpression);
 impl_from!(Node, PipeExpression);
 impl_from!(Node, PipeSubstitution);
 impl_from!(Node, ArrayExpression);
+impl_from!(Node, ArrayRangeExpression);
 impl_from!(Node, ObjectExpression);
 impl_from!(Node, MemberExpression);
 impl_from!(Node, UnaryExpression);
