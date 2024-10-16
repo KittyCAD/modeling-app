@@ -18,7 +18,7 @@ class FileSystemManager {
     return Promise.resolve(window.electron.path.join(dir, path))
   }
 
-  async readFile(path: string): Promise<Uint8Array | void> {
+  async readFile(path: string): Promise<Uint8Array> {
     // Using local file system only works from desktop.
     if (!isDesktop()) {
       return Promise.reject(

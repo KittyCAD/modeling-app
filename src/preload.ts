@@ -45,7 +45,7 @@ const watchFileOff = (path: string) => {
   watcher.unwatch(path)
   fsWatchListeners.delete(path)
 }
-const readFile = (path: string) => fs.readFile(path, 'utf-8')
+const readFile = fs.readFile
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
 const exists = (path: string) => fsSync.existsSync(path)
