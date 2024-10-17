@@ -27,7 +27,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         '.' => alt((number, double_period, period)),
         '#' => hash,
         '$' => dollar,
-        '!' => bang,
+        '!' => alt((operator, bang)),
         ' ' | '\t' | '\n' => whitespace,
         _ => alt((operator, keyword,type_, word))
     }
@@ -90,7 +90,7 @@ fn word(i: &mut Located<&str>) -> PResult<Token> {
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!= ", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
     ))
     .with_span()
     .parse_next(i)?;
@@ -169,11 +169,17 @@ fn string(i: &mut Located<&str>) -> PResult<Token> {
     Ok(Token::from_range(range, TokenType::String, value.to_string()))
 }
 
-fn keyword(i: &mut Located<&str>) -> PResult<Token> {
+fn import_keyword(i: &mut Located<&str>) -> PResult<Token> {
+    let (value, range) = "import".with_span().parse_next(i)?;
+    let token_type = peek(alt((' '.map(|_| TokenType::Keyword), '('.map(|_| TokenType::Word)))).parse_next(i)?;
+    Ok(Token::from_range(range, token_type, value.to_owned()))
+}
+
+fn unambiguous_keywords(i: &mut Located<&str>) -> PResult<Token> {
     // These are the keywords themselves.
     let keyword_candidates = alt((
         "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
-        "nil", "and", "or", "not", "var", "const",
+        "nil", "and", "or", "not", "var", "const", "export",
     ));
     // Look ahead. If any of these characters follow the keyword, then it's not a keyword, it's just
     // the start of a normal word.
@@ -183,6 +189,10 @@ fn keyword(i: &mut Located<&str>) -> PResult<Token> {
     );
     let (value, range) = keyword.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Keyword, value.to_owned()))
+}
+
+fn keyword(i: &mut Located<&str>) -> PResult<Token> {
+    alt((import_keyword, unambiguous_keywords)).parse_next(i)
 }
 
 fn type_(i: &mut Located<&str>) -> PResult<Token> {
@@ -1523,6 +1533,18 @@ const things = "things"
     }
 
     #[test]
+    fn not_eq() {
+        let actual = lexer("!=").unwrap();
+        let expected = vec![Token {
+            token_type: TokenType::Operator,
+            value: "!=".to_owned(),
+            start: 0,
+            end: 2,
+        }];
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn test_unrecognized_token() {
         let actual = lexer("12 ; 8").unwrap();
         let expected = vec![
@@ -1559,5 +1581,29 @@ const things = "things"
         ];
 
         assert_tokens(expected, actual);
+    }
+
+    #[test]
+    fn import_keyword() {
+        let actual = lexer("import foo").unwrap();
+        let expected = Token {
+            token_type: TokenType::Keyword,
+            value: "import".to_owned(),
+            start: 0,
+            end: 6,
+        };
+        assert_eq!(actual[0], expected);
+    }
+
+    #[test]
+    fn import_function() {
+        let actual = lexer("import(3)").unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "import".to_owned(),
+            start: 0,
+            end: 6,
+        };
+        assert_eq!(actual[0], expected);
     }
 }

@@ -37,6 +37,19 @@ impl FileSystem for FileManager {
         })
     }
 
+    async fn read_to_string<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
+        &self,
+        path: P,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<String, KclError> {
+        tokio::fs::read_to_string(&path).await.map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to read file `{}`: {}", path.as_ref().display(), e),
+                source_ranges: vec![source_range],
+            })
+        })
+    }
+
     async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,

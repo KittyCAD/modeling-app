@@ -201,6 +201,27 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
+| `type` |enum: `ArrayRangeExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `startElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `endElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `endInclusive` |`boolean`| Is the `end_element` included in the range? | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
 | `type` |enum: `ObjectExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |

@@ -178,7 +178,7 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
     // Let users know if the test is taking a long time.
     let (done_tx, done_rx) = oneshot::channel::<()>();
     let timer = time_until(done_rx);
-    let snapshot = match state.execute_and_prepare_snapshot(&program, id_generator).await {
+    let snapshot = match state.execute_and_prepare_snapshot(&program, id_generator, None).await {
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };
