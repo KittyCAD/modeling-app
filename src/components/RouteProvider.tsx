@@ -1,7 +1,7 @@
 import { useEffect, useState, createContext, ReactNode } from 'react'
 import { useNavigation, useLocation } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
-import { mark } from 'lib/performance'
+import { markOnce } from 'lib/performance'
 
 export const RouteProviderContext = createContext({})
 
@@ -18,9 +18,9 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       pathname?.includes(PATHS.FILE) &&
       pathname?.substring(pathname?.length - 4) === '.kcl'
     if (isHome) {
-      mark('code/willLoadHome')
+      markOnce('code/willLoadHome')
     } else if (isFile) {
-      mark('code/willLoadFile')
+      markOnce('code/willLoadFile')
     }
     setFirstState(false)
   }, [navigation])

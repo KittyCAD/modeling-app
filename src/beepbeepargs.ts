@@ -5,7 +5,7 @@ const argv = yargs(hideBin(process.argv))
   .option('telemetry', {
     alias: 't',
     type: 'boolean',
-    description: 'Run with local telemetry logs to disk',
+    description: 'Writes startup telemetry to file on disk.',
   })
   .parse()
 

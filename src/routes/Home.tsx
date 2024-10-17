@@ -37,7 +37,7 @@ import {
 } from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
-import { mark } from 'lib/performance'
+import { markOnce } from 'lib/performance'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 
@@ -59,7 +59,7 @@ const Home = () => {
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
-    mark('code/didLoadHome')
+    markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
   }, [])
 
