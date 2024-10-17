@@ -285,7 +285,10 @@ export class KclManager {
           )
         }
 
-        await sceneInfra.camControls.centerModelRelativeToPanes({ zoomToFit: true, zoomObjectId })
+        await sceneInfra.camControls.centerModelRelativeToPanes({
+          zoomToFit: true,
+          zoomObjectId,
+        })
       }
     }
 

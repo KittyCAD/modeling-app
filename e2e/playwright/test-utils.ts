@@ -19,7 +19,10 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import { RAYCASTABLE_PLANE, INTERSECTION_PLANE_LAYER } from 'clientSideScene/constants'
+import {
+  RAYCASTABLE_PLANE,
+  INTERSECTION_PLANE_LAYER,
+} from 'clientSideScene/constants'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
@@ -261,16 +264,15 @@ export function rollingRound(n: number, digitsAfterDecimal: number) {
 
   const fractStr = nineIndex > 0 ? s[1].slice(0, nineIndex + 1) : s[1]
 
-  let fract = Number(fractStr) / (10 ** fractStr.length)
+  let fract = Number(fractStr) / 10 ** fractStr.length
 
   for (let i = fractStr.length - 1; i >= 0; i -= 1) {
     if (i === digitsAfterDecimal) break
-    fract = Math.round(fract*(10**i)) / (10 **i)
+    fract = Math.round(fract * 10 ** i) / 10 ** i
   }
 
   return (Number(s[0]) + fract).toFixed(digitsAfterDecimal)
 }
-
 
 export const getMovementUtils = async (opts: any) => {
   const sceneInfra = await opts.page.evaluate(() => window.sceneInfra)
@@ -330,13 +332,16 @@ export const getMovementUtils = async (opts: any) => {
       return window.sceneInfra.camControls.camera
     })
 
-    const windowWH = await opts.page.evaluate(() => ({ w: window.innerWidth, h: window.innerHeight }))
+    const windowWH = await opts.page.evaluate(() => ({
+      w: window.innerWidth,
+      h: window.innerHeight,
+    }))
 
     // I didn't write this math, it's copied from sceneInfra.ts, and I understand
     // it's just normalizing the point, but why *-2 ± 1 I have no idea.
     const mouseVector = new Vector2(
-       (targetX / windowWH.w) * 2 - 1,
-      -(targetY / windowWH.h) * 2 + 1,
+      (targetX / windowWH.w) * 2 - 1,
+      -(targetY / windowWH.h) * 2 + 1
     )
     planeRaycaster.setFromCamera(mouseVector, camera)
     const intersections = planeRaycaster.intersectObjects(scene.children, true)
@@ -359,13 +364,7 @@ export const getMovementUtils = async (opts: any) => {
     ).applyQuaternion(inversePlaneQuaternion)
     twoD.sub(new Vector2(...planePositionCorrected))
 
-    await circleMove(
-      opts.page,
-      targetX,
-      targetY,
-      10,
-      10
-    )
+    await circleMove(opts.page, targetX, targetY, 10, 10)
     await click00(targetX, targetY)
 
     last.x += x
@@ -379,13 +378,13 @@ export const getMovementUtils = async (opts: any) => {
     lastScreenSpace.x = kcRound(twoD.x)
     lastScreenSpace.y = kcRound(twoD.y)
 
-
     // Returns the new absolute coordinate and the screen space coordinate if you need it.
     return {
       nextXY: [last.x, last.y],
-      kcl: `[${kcRound(relativeScreenSpace.x)}, ${-kcRound(relativeScreenSpace.y)}]`,
+      kcl: `[${kcRound(relativeScreenSpace.x)}, ${-kcRound(
+        relativeScreenSpace.y
+      )}]`,
     }
-
   }
 
   return { click00r }
@@ -447,7 +446,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const bb = await sidebar.boundingBox()
       return {
         w: windowInnerWidth - (bb?.width ?? 0),
-        h: windowInnerHeight - (bb?.height ?? 0)
+        h: windowInnerHeight - (bb?.height ?? 0),
       }
     },
     async getCenterOfModelViewArea() {
@@ -456,7 +455,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
       const sidebar = page.getByTestId('modeling-sidebar')
       const bb = await sidebar.boundingBox()
-      const goRightPx = (bb?.width ?? 0 ) / 2
+      const goRightPx = (bb?.width ?? 0) / 2
       const borderWidthsCombined = 2
       return {
         x: Math.round(windowInnerWidth / 2 + goRightPx) - borderWidthsCombined,

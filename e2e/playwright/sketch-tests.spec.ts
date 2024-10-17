@@ -273,7 +273,6 @@ test.describe('Sketch tests', () => {
       await page.waitForTimeout(1000)
       await u.closeDebugPanel()
 
-
       const step5 = { steps: 5 }
 
       await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
@@ -288,7 +287,6 @@ test.describe('Sketch tests', () => {
           prevContent = await page.locator('.cm-content').innerText()
         }
       })
-
 
       await page.waitForTimeout(100)
 
@@ -309,7 +307,11 @@ test.describe('Sketch tests', () => {
         const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
         await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
         await page.mouse.down()
-        await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
+        await page.mouse.move(
+          tangentEnd.x + dragPX,
+          tangentEnd.y - dragPX,
+          step5
+        )
         await page.mouse.up()
         await page.waitForTimeout(100)
         if (openPanes.includes('code')) {
@@ -654,10 +656,8 @@ test.describe('Sketch tests', () => {
     const viewportSize = { width: 1200, height: 500 }
     await page.setViewportSize(viewportSize)
 
-
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
-
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })

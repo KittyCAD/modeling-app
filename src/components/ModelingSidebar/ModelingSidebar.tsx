@@ -62,7 +62,7 @@ export const ModelingSidebar = forwardRef<
   useEffect(() => {
     if (typeof outerRef === 'function') {
       outerRef(innerRef.current)
-    } else  {
+    } else {
       if (outerRef) {
         outerRef.current = innerRef.current
       }
@@ -186,7 +186,6 @@ export const ModelingSidebar = forwardRef<
 
     void sceneInfra.camControls.centerModelRelativeToPanes()
   }, [context.store?.openPanes])
-
 
   // If the panes are resized then center the model also
   useEffect(() => {
