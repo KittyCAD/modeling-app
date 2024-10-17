@@ -1,6 +1,7 @@
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
+    engine::ExecutionKind,
     errors::KclError,
     executor::{DefaultPlanes, IdGenerator},
 };
@@ -26,6 +27,7 @@ pub struct EngineConnection {
     batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
     core_test: Arc<Mutex<String>>,
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 impl EngineConnection {
@@ -39,6 +41,7 @@ impl EngineConnection {
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
+            execution_kind: Default::default(),
         })
     }
 
@@ -358,6 +361,18 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
 
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
     }
 
     async fn default_planes(
