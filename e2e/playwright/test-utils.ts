@@ -874,8 +874,8 @@ export async function setupElectron({
       appSettings
         ? { settings: appSettings }
         : {
-            ...TEST_SETTINGS,
             settings: {
+              ...TEST_SETTINGS,
               app: {
                 ...TEST_SETTINGS.app,
                 projectDirectory: projectDirName,

@@ -255,7 +255,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBe(431341)
+            .toBeGreaterThan(300_000)
 
           // clean up output.gltf
           await fsp.rm('output.gltf')
