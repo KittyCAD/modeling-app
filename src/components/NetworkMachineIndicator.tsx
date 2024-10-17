@@ -52,15 +52,12 @@ export const NetworkMachineIndicator = ({
               return (
                 <li key={machine.id} className={'px-2 py-4 gap-1 last:mb-0 '}>
                   <p className="">{machine.id}</p>
-                  {machine.state.Failed ? (
-                    <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                      {machine.state.Failed}
-                    </p>
-                  ) : (
-                    <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                      {machine.state}
-                    </p>
-                  )}
+                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                    {machine.state.state}
+                    {machine.state.state === 'failed' && machine.state.message
+                      ? ': ' + machine.state.message
+                      : ''}
+                  </p>
                 </li>
               )
             })}
