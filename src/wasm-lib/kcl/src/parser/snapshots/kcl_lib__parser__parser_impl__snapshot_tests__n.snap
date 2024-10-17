@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 12,
-            "name": "height",
-            "digest": null
+            "name": "height"
           },
           "init": {
             "type": "BinaryExpression",
@@ -35,8 +34,7 @@ expression: actual
               "start": 15,
               "end": 16,
               "value": 1,
-              "raw": "1",
-              "digest": null
+              "raw": "1"
             },
             "right": {
               "type": "MemberExpression",
@@ -48,33 +46,21 @@ expression: actual
                 "type": "Identifier",
                 "start": 19,
                 "end": 22,
-                "name": "obj",
-                "digest": null
+                "name": "obj"
               },
               "property": {
                 "type": "Identifier",
                 "type": "Identifier",
                 "start": 23,
                 "end": 24,
-                "name": "a",
-                "digest": null
+                "name": "a"
               },
-              "computed": false,
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              "computed": false
+            }
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

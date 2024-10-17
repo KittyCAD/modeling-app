@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 11,
-            "name": "myVar",
-            "digest": null
+            "name": "myVar"
           },
           "init": {
             "type": "CallExpression",
@@ -32,8 +31,7 @@ expression: actual
               "type": "Identifier",
               "start": 14,
               "end": 17,
-              "name": "min",
-              "digest": null
+              "name": "min"
             },
             "arguments": [
               {
@@ -42,8 +40,7 @@ expression: actual
                 "start": 18,
                 "end": 19,
                 "value": 5,
-                "raw": "5",
-                "digest": null
+                "raw": "5"
               },
               {
                 "type": "UnaryExpression",
@@ -60,8 +57,7 @@ expression: actual
                     "type": "Identifier",
                     "start": 23,
                     "end": 29,
-                    "name": "legLen",
-                    "digest": null
+                    "name": "legLen"
                   },
                   "arguments": [
                     {
@@ -70,8 +66,7 @@ expression: actual
                       "start": 30,
                       "end": 31,
                       "value": 5,
-                      "raw": "5",
-                      "digest": null
+                      "raw": "5"
                     },
                     {
                       "type": "Literal",
@@ -79,30 +74,18 @@ expression: actual
                       "start": 33,
                       "end": 34,
                       "value": 4,
-                      "raw": "4",
-                      "digest": null
+                      "raw": "4"
                     }
                   ],
-                  "optional": false,
-                  "digest": null
-                },
-                "digest": null
+                  "optional": false
+                }
               }
             ],
-            "optional": false,
-            "digest": null
-          },
-          "digest": null
+            "optional": false
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }
