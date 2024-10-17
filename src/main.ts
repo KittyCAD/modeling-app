@@ -238,6 +238,7 @@ ipcMain.handle('find_machine_api', () => {
         const ip = service.addresses[0]
         const port = service.port
         // We want to return the ip address of the machine API.
+        console.log(`Machine API found at ${ip}:${port}`)
         resolve(`${ip}:${port}`)
       }
     )
