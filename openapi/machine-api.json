@@ -125,66 +125,143 @@
         "oneOf": [
           {
             "description": "polylactic acid based plastics",
-            "enum": [
-              "Pla"
+            "properties": {
+              "type": {
+                "enum": [
+                  "pla"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
             "description": "acrylonitrile butadiene styrene based plastics",
-            "enum": [
-              "Abs"
+            "properties": {
+              "type": {
+                "enum": [
+                  "abs"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
             "description": "polyethylene terephthalate glycol based plastics",
-            "enum": [
-              "Petg"
+            "properties": {
+              "type": {
+                "enum": [
+                  "petg"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
             "description": "unsuprisingly, nylon based",
-            "enum": [
-              "Nylon"
+            "properties": {
+              "type": {
+                "enum": [
+                  "nylon"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
             "description": "thermoplastic polyurethane based urethane material",
-            "enum": [
-              "Tpu"
+            "properties": {
+              "type": {
+                "enum": [
+                  "tpu"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
             "description": "polyvinyl alcohol based material",
-            "enum": [
-              "Pva"
+            "properties": {
+              "type": {
+                "enum": [
+                  "pva"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
             "description": "high impact polystyrene based material",
-            "enum": [
-              "Hips"
+            "properties": {
+              "type": {
+                "enum": [
+                  "hips"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
             "description": "composite material with stuff in other stuff, something like PLA mixed with carbon fiber, kevlar, or fiberglass",
-            "enum": [
-              "Composite"
+            "properties": {
+              "type": {
+                "enum": [
+                  "composite"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           },
           {
-            "description": "none of the above, buyer beware",
-            "enum": [
-              "Other"
+            "description": "None of the above, likely a custom material that we get directly from the printer.",
+            "properties": {
+              "name": {
+                "description": "The name of the material.",
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "other"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "type"
             ],
-            "type": "string"
+            "type": "object"
           }
         ]
       },
@@ -193,21 +270,40 @@
         "oneOf": [
           {
             "description": "No configuration is possible. This isn't the same conceptually as an `Option<HardwareConfiguration>`, because this indicates we positively know there is no possible configuration changes that are possible with this method of manufcture.",
-            "enum": [
-              "None"
-            ],
-            "type": "string"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Hardware configuration specific to FDM based printers",
             "properties": {
-              "Fdm": {
-                "$ref": "#/components/schemas/FdmHardwareConfiguration"
+              "type": {
+                "enum": [
+                  "none"
+                ],
+                "type": "string"
               }
             },
             "required": [
-              "Fdm"
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Hardware configuration specific to FDM based printers",
+            "properties": {
+              "config": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/FdmHardwareConfiguration"
+                  }
+                ],
+                "description": "The configuration for the FDM printer."
+              },
+              "type": {
+                "enum": [
+                  "fdm"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "config",
+              "type"
             ],
             "type": "object"
           }
@@ -422,21 +518,21 @@
           {
             "description": "Use light to cure a resin to build up layers.",
             "enum": [
-              "Stereolithography"
+              "stereolithography"
             ],
             "type": "string"
           },
           {
             "description": "Fused Deposition Modeling, layers of melted plastic.",
             "enum": [
-              "FusedDeposition"
+              "fused_deposition"
             ],
             "type": "string"
           },
           {
             "description": "\"Computer numerical control\" - machine that grinds away material from a hunk of material to construct a part.",
             "enum": [
-              "Cnc"
+              "cnc"
             ],
             "type": "string"
           }
