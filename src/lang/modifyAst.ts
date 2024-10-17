@@ -241,7 +241,6 @@ export function mutateObjExpProp(
         value: updateWith,
         start: 0,
         end: 0,
-        digest: null,
       })
     }
   }
@@ -579,7 +578,6 @@ export function createLiteral(value: string | number): Literal {
     end: 0,
     value,
     raw: `${value}`,
-    digest: null,
   }
 }
 
@@ -588,7 +586,7 @@ export function createTagDeclarator(value: string): TagDeclarator {
     type: 'TagDeclarator',
     start: 0,
     end: 0,
-    digest: null,
+
     value,
   }
 }
@@ -598,7 +596,7 @@ export function createIdentifier(name: string): Identifier {
     type: 'Identifier',
     start: 0,
     end: 0,
-    digest: null,
+
     name,
   }
 }
@@ -608,7 +606,6 @@ export function createPipeSubstitution(): PipeSubstitution {
     type: 'PipeSubstitution',
     start: 0,
     end: 0,
-    digest: null,
   }
 }
 
@@ -624,12 +621,11 @@ export function createCallExpressionStdLib(
       type: 'Identifier',
       start: 0,
       end: 0,
-      digest: null,
+
       name,
     },
     optional: false,
     arguments: args,
-    digest: null,
   }
 }
 
@@ -645,12 +641,11 @@ export function createCallExpression(
       type: 'Identifier',
       start: 0,
       end: 0,
-      digest: null,
+
       name,
     },
     optional: false,
     arguments: args,
-    digest: null,
   }
 }
 
@@ -661,7 +656,7 @@ export function createArrayExpression(
     type: 'ArrayExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
   }
@@ -674,7 +669,7 @@ export function createPipeExpression(
     type: 'PipeExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
   }
@@ -690,13 +685,13 @@ export function createVariableDeclaration(
     type: 'VariableDeclaration',
     start: 0,
     end: 0,
-    digest: null,
+
     declarations: [
       {
         type: 'VariableDeclarator',
         start: 0,
         end: 0,
-        digest: null,
+
         id: createIdentifier(varName),
         init,
       },
@@ -713,14 +708,14 @@ export function createObjectExpression(properties: {
     type: 'ObjectExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
       end: 0,
       key: createIdentifier(key),
-      digest: null,
+
       value,
     })),
   }
@@ -734,7 +729,7 @@ export function createUnaryExpression(
     type: 'UnaryExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     operator,
     argument,
   }
@@ -749,7 +744,7 @@ export function createBinaryExpression([left, operator, right]: [
     type: 'BinaryExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     operator,
     left,
     right,
@@ -1139,5 +1134,5 @@ export async function deleteFromSelection(
 }
 
 const nonCodeMetaEmpty = () => {
-  return { nonCodeNodes: {}, start: [], digest: null }
+  return { nonCodeNodes: {}, start: [] }
 }
