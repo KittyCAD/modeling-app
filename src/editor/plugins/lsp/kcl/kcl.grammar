@@ -90,7 +90,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   MultOp { "/" | "*" | "\\" }
   ExpOp { "^" }
   BangOp { "!" }
-  CompOp { $[<>] "="? | "!=" | "==" }
+  CompOp { "==" | "!=" | "<=" | ">=" | "<" | ">" }
   Equals { "=" }
   Arrow { "=>" }
   PipeOperator { "|>" }
