@@ -1,7 +1,7 @@
 extern crate alloc;
 use kcl_lib::ast::types::{
-    BodyItem, Expr, Identifier, Literal, LiteralValue, NonCodeMeta, Program, VariableDeclaration, VariableDeclarator,
-    VariableKind,
+    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, NonCodeMeta, Program, VariableDeclaration,
+    VariableDeclarator, VariableKind,
 };
 use kcl_macros::parse;
 use pretty_assertions::assert_eq;
@@ -33,6 +33,7 @@ fn basic() {
                 })),
                 digest: None,
             }],
+            visibility: ItemVisibility::Default,
             kind: VariableKind::Const,
             digest: None,
         })],
