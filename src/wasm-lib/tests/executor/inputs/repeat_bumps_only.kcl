@@ -8,15 +8,15 @@ let case = startSketchOn('XY')
     |> extrude(65, %)
 
 let bump1 = startSketchOn(case, 'end')
-    |> circle([-size / 2, -size / 2], 25, %)
+    |> circle({center: [-size / 2, -size / 2], radius: 25}, %)
     |> extrude(50, %)
 let bump2 = startSketchOn(case, 'end')
-    |> circle([size / 2, -size / 2], 25, %)
+    |> circle({center: [size / 2, -size / 2], radius: 25}, %)
     |> extrude(50, %)
 
 // We pass in "bump1" here since we want to pattern just this object on the face.
 patternLinear3d({
     axis: [0, 1, 0],
     distance: 60,
-    repetitions:2,
+    instances: 3,
 }, bump1)
