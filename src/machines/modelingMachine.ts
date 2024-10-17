@@ -550,7 +550,9 @@ export const modelingMachine = setup({
             up: { x: 0, y: 0, z: 1 },
           },
         })
-        await sceneInfra.camControls.centerModelRelativeToPanes({ resetLastPaneWidth: true })
+        await sceneInfra.camControls.centerModelRelativeToPanes({
+          resetLastPaneWidth: true,
+        })
       })().catch(reportRejection)
     },
     'set new sketch metadata': assign(({ event }) => {

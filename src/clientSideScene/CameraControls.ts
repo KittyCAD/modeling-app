@@ -923,7 +923,10 @@ export class CameraControls {
       },
     })
 
-    await this.centerModelRelativeToPanes({ zoomToFit: true, resetLastPaneWidth: true })
+    await this.centerModelRelativeToPanes({
+      zoomToFit: true,
+      resetLastPaneWidth: true,
+    })
 
     this.cameraDragStartXY = new Vector2()
     this.cameraDragStartXY.x = 0
@@ -954,7 +957,11 @@ export class CameraControls {
 
   private lastFramePaneWidth: number = 0
 
-  async centerModelRelativeToPanes(args?: { zoomObjectId?: string, zoomToFit?: boolean, resetLastPaneWidth?: boolean }): Promise<void> {
+  async centerModelRelativeToPanes(args?: {
+    zoomObjectId?: string
+    zoomToFit?: boolean
+    resetLastPaneWidth?: boolean
+  }): Promise<void> {
     const panes = this.modelingSidebarRef?.current
     if (!panes) return
 
@@ -964,7 +971,8 @@ export class CameraControls {
       this.lastFramePaneWidth = 0
     }
 
-    const goPx = ((panesWidth - this.lastFramePaneWidth) / 2) / window.devicePixelRatio
+    const goPx =
+      (panesWidth - this.lastFramePaneWidth) / 2 / window.devicePixelRatio
     this.lastFramePaneWidth = panesWidth
 
     // Originally I had tried to use the default_camera_look_at endpoint and

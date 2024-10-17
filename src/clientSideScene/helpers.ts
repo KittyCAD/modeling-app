@@ -26,10 +26,8 @@ export function createGridHelper({
   return gridHelper
 }
 
-
 // Re-export scale.ts
 export * from './scale'
-
 
 export function isQuaternionVertical(q: Quaternion) {
   const v = new Vector3(0, 0, 1).applyQuaternion(q)

@@ -85,34 +85,33 @@ export function App() {
   useEngineConnectionSubscriptions()
 
   return (
-    <div
-      className="relative h-full flex flex-col"
-      ref={ref}
-    >
-        <AppHeader
-          className={'transition-opacity transition-duration-75 ' + paneOpacity}
-          project={{ project, file }}
-          enableMenu={true}
-        />
-        <ModalContainer />
-        <ModelingSidebar paneOpacity={paneOpacity} ref={modelingSidebarRef} />
-        <EngineStreamContext.Provider options={{
+    <div className="relative h-full flex flex-col" ref={ref}>
+      <AppHeader
+        className={'transition-opacity transition-duration-75 ' + paneOpacity}
+        project={{ project, file }}
+        enableMenu={true}
+      />
+      <ModalContainer />
+      <ModelingSidebar paneOpacity={paneOpacity} ref={modelingSidebarRef} />
+      <EngineStreamContext.Provider
+        options={{
           input: {
             videoRef,
             canvasRef,
             mediaStream: null,
             authToken: auth?.context?.token ?? null,
-            pool
-          }
-        }}>
-          <EngineStream />
-          {/* <CamToggle /> */}
-          <LowerRightControls coreDumpManager={coreDumpManager}>
-            <UnitsMenu />
-            <Gizmo />
-            <CameraProjectionToggle />
-          </LowerRightControls>
-        </EngineStreamContext.Provider>
+            pool,
+          },
+        }}
+      >
+        <EngineStream />
+        {/* <CamToggle /> */}
+        <LowerRightControls coreDumpManager={coreDumpManager}>
+          <UnitsMenu />
+          <Gizmo />
+          <CameraProjectionToggle />
+        </LowerRightControls>
+      </EngineStreamContext.Provider>
     </div>
   )
 }

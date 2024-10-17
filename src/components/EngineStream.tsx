@@ -19,7 +19,6 @@ import useEngineStreamContext, {
 } from 'hooks/useEngineStreamContext'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from 'lib/timings'
 
-
 export const EngineStream = () => {
   const { setAppState } = useAppState()
 
@@ -33,6 +32,7 @@ export const EngineStream = () => {
     enableSSAO: settings.context.app.enableSSAO.current,
     highlightEdges: settings.context.modeling.highlightEdges.current,
     showScaleGrid: settings.context.modeling.showScaleGrid.current,
+    cameraProjection: settings.context.modeling.cameraProjection.current,
   }
 
   const { state: modelingMachineState, send: modelingMachineActorSend } =
@@ -86,7 +86,8 @@ export const EngineStream = () => {
     if (!canvas) return
 
     new ResizeObserver(() => {
-      if (Date.now() - last.current < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE) return
+      if (Date.now() - last.current < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
+        return
       last.current = Date.now()
 
       if (
@@ -97,7 +98,6 @@ export const EngineStream = () => {
         configure()
       }
     }).observe(document.body)
-
   }, [engineStreamState.value])
 
   // When the video and canvas element references are set, start the engine.

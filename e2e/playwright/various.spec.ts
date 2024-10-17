@@ -502,7 +502,7 @@ test('Sketch on face', async ({ page }) => {
 
   // This basically waits for sketch mode to be ready.
   await u.doAndWaitForCmd(
-    async () =>  page.mouse.click(center.x, 180),
+    async () => page.mouse.click(center.x, 180),
     'default_camera_get_settings',
     true
   )

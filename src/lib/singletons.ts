@@ -11,10 +11,10 @@ export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
 
 declare global {
-    interface Window {
-      tearDown: typeof engineCommandManager.tearDown,
-      sceneInfra: typeof sceneInfra,
-    }
+  interface Window {
+    tearDown: typeof engineCommandManager.tearDown
+    sceneInfra: typeof sceneInfra
+  }
 }
 
 // Accessible for tests
@@ -28,7 +28,7 @@ engineCommandManager.getAstCb = () => kclManager.ast
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
 
-// Accessible for tests 
+// Accessible for tests
 window.sceneInfra = sceneInfra
 
 export const sceneEntitiesManager = new SceneEntities(engineCommandManager)

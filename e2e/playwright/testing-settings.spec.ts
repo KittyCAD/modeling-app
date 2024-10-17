@@ -744,14 +744,12 @@ extrude001 = extrude(5, sketch001)
     // Our lines are translucent (surprise!), so we need to get on portion
     // of the line that is only on the background, and not on top of something
     // like the axis lines.
-    line1.x -= 1 
+    line1.x -= 1
     line1.y -= 1
 
     await test.step(`Check the sketch line color before`, async () => {
       await expect
-        .poll(() =>
-          u.getGreatestPixDiff(line1, darkThemeSegmentColor)
-        )
+        .poll(() => u.getGreatestPixDiff(line1, darkThemeSegmentColor))
         .toBeLessThanOrEqual(34)
     })
 
@@ -767,9 +765,7 @@ extrude001 = extrude(5, sketch001)
 
     await test.step(`Check the sketch line color after`, async () => {
       await expect
-        .poll(() =>
-          u.getGreatestPixDiff(line1, lightThemeSegmentColor)
-        )
+        .poll(() => u.getGreatestPixDiff(line1, lightThemeSegmentColor))
         .toBeLessThanOrEqual(34)
     })
   })
