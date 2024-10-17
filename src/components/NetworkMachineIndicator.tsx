@@ -53,14 +53,20 @@ export const NetworkMachineIndicator = ({
                 <li key={machine.id} className={'px-2 py-4 gap-1 last:mb-0 '}>
                   <p className="">{machine.id.toUpperCase()}</p>
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                    {machine.make_model.model}
+                  </p>
+                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
                     {machine.state.state.toUpperCase()}
                     {machine.state.state === 'failed' && machine.state.message
                       ? ': ' + machine.state.message
                       : ''}
                   </p>
-                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                    {machine.nozzle_diameter}
-                  </p>
+                  {machine.extra.Bambu &&
+                    machine.extra.Bambu.nozzle_diameter && (
+                      <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                        Nozzle Diameter: {machine.extra.Bambu.nozzle_diameter}
+                      </p>
+                    )}
                 </li>
               )
             })}
