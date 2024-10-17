@@ -1,22 +1,20 @@
-let size = 100
-let case = startSketchOn('XY')
-    |> startProfileAt([-size, -size], %)
-    |> line([2 * size, 0], %)
-    |> line([0, 2 * size], %)
-    |> tangentialArcTo([-size, size], %)
-    |> close(%)
-    |> extrude(65, %)
+w = 400
 
-let bump1 = startSketchOn(case, 'end')
-    |> circle({center: [-size / 2, -size / 2], radius: 25}, %)
-    |> extrude(50, %)
-let bump2 = startSketchOn(case, 'end')
-    |> circle({center: [size / 2, -size / 2], radius: 25}, %)
-    |> extrude(50, %)
+case = startSketchOn('XY')
+    |> startProfileAt([-w, -w], %)
+    |> lineTo([-w,  w], %)
+    |> lineTo([ w, -w], %)
+    |> lineTo([-w, -w], %)
+    |> close(%)
+    |> extrude(200, %)
+
+bump1 = startSketchOn(case, 'end')
+    |> circle({center: [-50, -50], radius: 40}, %)
+    |> extrude(20, %)
 
 // We pass in "bump1" here since we want to pattern just this object on the face.
-patternLinear3d({
-    axis: [0, 1, 0],
-    distance: 60,
-    instances: 3,
-}, bump1)
+|> patternLinear3d({
+       axis: [1, 0, 0],
+       instances: 3,
+       distance: -100,
+     }, %)
