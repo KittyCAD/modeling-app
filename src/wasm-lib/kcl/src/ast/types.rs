@@ -40,6 +40,11 @@ mod none;
 /// Position-independent digest of the AST node.
 pub type Digest = [u8; 32];
 
+pub enum Definition<'a> {
+    Variable(&'a VariableDeclarator),
+    Import(&'a ImportStatement),
+}
+
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -198,6 +203,7 @@ impl Program {
 
         // Recurse over the item.
         match item {
+            BodyItem::ImportStatement(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
@@ -214,6 +220,7 @@ impl Program {
 
         // Recurse over the item.
         let expr = match item {
+            BodyItem::ImportStatement(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
@@ -257,6 +264,7 @@ impl Program {
         // We only care about the top level things in the program.
         for item in &self.body {
             match item {
+                BodyItem::ImportStatement(_) => continue,
                 BodyItem::ExpressionStatement(expression_statement) => {
                     if let Some(folding_range) = expression_statement.expression.get_lsp_folding_range() {
                         ranges.push(folding_range)
@@ -280,6 +288,12 @@ impl Program {
         let mut old_name = None;
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(stmt) => {
+                    if let Some(var_old_name) = stmt.rename_symbol(new_name, pos) {
+                        old_name = Some(var_old_name);
+                        break;
+                    }
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
@@ -306,6 +320,7 @@ impl Program {
 
             // Recurse over the item.
             let mut value = match item {
+                BodyItem::ImportStatement(_) => None, // TODO
                 BodyItem::ExpressionStatement(ref mut expression_statement) => {
                     Some(&mut expression_statement.expression)
                 }
@@ -337,6 +352,9 @@ impl Program {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(ref mut stmt) => {
+                    stmt.rename_identifiers(old_name, new_name);
+                }
                 BodyItem::ExpressionStatement(ref mut expression_statement) => {
                     expression_statement.expression.rename_identifiers(old_name, new_name);
                 }
@@ -354,6 +372,9 @@ impl Program {
     pub fn replace_variable(&mut self, name: &str, declarator: VariableDeclarator) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(_) => {
+                    continue;
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
@@ -374,6 +395,7 @@ impl Program {
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(_) => {} // TODO
                 BodyItem::ExpressionStatement(ref mut expression_statement) => expression_statement
                     .expression
                     .replace_value(source_range, new_value.clone()),
@@ -388,16 +410,23 @@ impl Program {
     }
 
     /// Get the variable declaration with the given name.
-    pub fn get_variable(&self, name: &str) -> Option<&VariableDeclarator> {
+    pub fn get_variable(&self, name: &str) -> Option<Definition<'_>> {
         for item in &self.body {
             match item {
+                BodyItem::ImportStatement(stmt) => {
+                    for import_item in &stmt.items {
+                        if import_item.identifier() == name {
+                            return Some(Definition::Import(stmt.as_ref()));
+                        }
+                    }
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         if declaration.id.name == name {
-                            return Some(declaration);
+                            return Some(Definition::Variable(declaration));
                         }
                     }
                 }
@@ -454,6 +483,7 @@ pub(crate) use impl_value_meta;
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
+    ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
     VariableDeclaration(VariableDeclaration),
     ReturnStatement(ReturnStatement),
@@ -462,6 +492,7 @@ pub enum BodyItem {
 impl BodyItem {
     pub fn compute_digest(&mut self) -> Digest {
         match self {
+            BodyItem::ImportStatement(s) => s.compute_digest(),
             BodyItem::ExpressionStatement(es) => es.compute_digest(),
             BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
             BodyItem::ReturnStatement(rs) => rs.compute_digest(),
@@ -470,6 +501,7 @@ impl BodyItem {
 
     pub fn start(&self) -> usize {
         match self {
+            BodyItem::ImportStatement(stmt) => stmt.start(),
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.start(),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.start(),
             BodyItem::ReturnStatement(return_statement) => return_statement.start(),
@@ -478,6 +510,7 @@ impl BodyItem {
 
     pub fn end(&self) -> usize {
         match self {
+            BodyItem::ImportStatement(stmt) => stmt.end(),
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.end(),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end(),
             BodyItem::ReturnStatement(return_statement) => return_statement.end(),
@@ -1127,6 +1160,124 @@ impl NonCodeMeta {
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
+pub struct ImportItem {
+    /// Name of the item to import.
+    pub name: Identifier,
+    /// Rename the item using an identifier after "as".
+    pub alias: Option<Identifier>,
+
+    pub start: usize,
+    pub end: usize,
+
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ImportItem);
+
+impl ImportItem {
+    compute_digest!(|slf, hasher| {
+        let name = slf.name.name.as_bytes();
+        hasher.update(name.len().to_ne_bytes());
+        hasher.update(name);
+        if let Some(alias) = &mut slf.alias {
+            hasher.update([1]);
+            hasher.update(alias.compute_digest());
+        } else {
+            hasher.update([0]);
+        }
+    });
+
+    pub fn identifier(&self) -> &str {
+        match &self.alias {
+            Some(alias) => &alias.name,
+            None => &self.name.name,
+        }
+    }
+
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        match &mut self.alias {
+            Some(alias) => {
+                let alias_source_range = SourceRange::from(&*alias);
+                if !alias_source_range.contains(pos) {
+                    return None;
+                }
+                let old_name = std::mem::replace(&mut alias.name, new_name.to_owned());
+                Some(old_name)
+            }
+            None => {
+                let use_source_range = SourceRange::from(&*self);
+                if use_source_range.contains(pos) {
+                    self.alias = Some(Identifier::new(new_name));
+                }
+                // Return implicit name.
+                return Some(self.identifier().to_owned());
+            }
+        }
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        if let Some(alias) = &mut self.alias {
+            alias.rename(old_name, new_name);
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct ImportStatement {
+    pub start: usize,
+    pub end: usize,
+    pub items: Vec<ImportItem>,
+    pub path: String,
+    pub raw_path: String,
+
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ImportStatement);
+
+impl ImportStatement {
+    compute_digest!(|slf, hasher| {
+        for item in &mut slf.items {
+            hasher.update(item.compute_digest());
+        }
+        let path = slf.path.as_bytes();
+        hasher.update(path.len().to_ne_bytes());
+        hasher.update(path);
+    });
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        for item in &mut self.items {
+            let source_range = SourceRange::from(&*item);
+            if source_range.contains(pos) {
+                let old_name = item.rename_symbol(new_name, pos);
+                if old_name.is_some() {
+                    return old_name;
+                }
+            }
+        }
+        None
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_identifiers(old_name, new_name);
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
@@ -1284,6 +1435,32 @@ impl PartialEq for Function {
     }
 }
 
+#[derive(
+    Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake,
+)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum ItemVisibility {
+    #[default]
+    Default,
+    Export,
+}
+
+impl ItemVisibility {
+    fn digestable_id(&self) -> [u8; 1] {
+        match self {
+            ItemVisibility::Default => [0],
+            ItemVisibility::Export => [1],
+        }
+    }
+
+    fn is_default(&self) -> bool {
+        matches!(self, Self::Default)
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1292,6 +1469,8 @@ pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
+    pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
 
     pub digest: Option<Digest>,
@@ -1337,14 +1516,16 @@ impl VariableDeclaration {
         for declarator in &mut slf.declarations {
             hasher.update(declarator.compute_digest());
         }
+        hasher.update(slf.visibility.digestable_id());
         hasher.update(slf.kind.digestable_id());
     });
 
-    pub fn new(declarations: Vec<VariableDeclarator>, kind: VariableKind) -> Self {
+    pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
             start: 0,
             end: 0,
             declarations,
+            visibility,
             kind,
             digest: None,
         }
