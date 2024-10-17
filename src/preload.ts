@@ -77,11 +77,12 @@ const kittycad = (access: string, args: any) =>
 
 // We could probably do this from the renderer side, but I fear CORS will
 // bite our butts.
-const listMachines = async (): Promise<MachinesListing> => {
-  const machineApi = await ipcRenderer.invoke('find_machine_api')
-  if (!machineApi) return []
-
-  return fetch(`http://${machineApi}/machines`).then((resp) => resp.json())
+const listMachines = async (
+  machineApiAddr: string
+): Promise<MachinesListing> => {
+  return fetch(`http://${machineApiAddr}/machines`).then((resp) => {
+    return resp.json()
+  })
 }
 
 const getMachineApiIp = async (): Promise<String | null> =>

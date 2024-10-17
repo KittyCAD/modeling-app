@@ -1,7 +1,7 @@
 use super::{
     human_friendly_type, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart,
-    CallExpression, Expr, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, ObjectExpression,
-    TagDeclarator, UnaryExpression, UnaryOperator,
+    CallExpression, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
+    ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -736,5 +736,50 @@ pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
         JValue::String(_) => None,
         JValue::Array(_) => None,
         JValue::Object(_) => None,
+    }
+}
+
+impl IfExpression {
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        // Check the `if` branch.
+        let cond = ctx
+            .execute_expr(&self.cond, exec_state, &Metadata::from(self), StatementKind::Expression)
+            .await?
+            .get_bool()?;
+        if cond {
+            let block_result = ctx.inner_execute(&self.then_val, exec_state, BodyType::Block).await?;
+            // Block must end in an expression, so this has to be Some.
+            // Enforced by the parser.
+            // See https://github.com/KittyCAD/modeling-app/issues/4015
+            return Ok(block_result.unwrap());
+        }
+
+        // Check any `else if` branches.
+        for else_if in &self.else_ifs {
+            let cond = ctx
+                .execute_expr(
+                    &else_if.cond,
+                    exec_state,
+                    &Metadata::from(self),
+                    StatementKind::Expression,
+                )
+                .await?
+                .get_bool()?;
+            if cond {
+                let block_result = ctx
+                    .inner_execute(&else_if.then_val, exec_state, BodyType::Block)
+                    .await?;
+                // Block must end in an expression, so this has to be Some.
+                // Enforced by the parser.
+                // See https://github.com/KittyCAD/modeling-app/issues/4015
+                return Ok(block_result.unwrap());
+            }
+        }
+
+        // Run the final `else` branch.
+        ctx.inner_execute(&self.final_else, exec_state, BodyType::Block)
+            .await
+            .map(|expr| expr.unwrap())
     }
 }
