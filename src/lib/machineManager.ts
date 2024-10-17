@@ -85,7 +85,11 @@ export class MachineManager {
       return
     }
 
-    this._machines = await window.electron.listMachines()
+    if (this._machineApiIp === null) {
+      return
+    }
+
+    this._machines = await window.electron.listMachines(this._machineApiIp)
   }
 
   private async updateMachineApiIp(): Promise<void> {
