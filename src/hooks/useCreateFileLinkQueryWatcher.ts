@@ -1,7 +1,7 @@
 import { base64ToString } from 'lib/base64'
 import { CREATE_FILE_URL_PARAM, DEFAULT_FILE_NAME } from 'lib/constants'
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { useCommandsContext } from './useCommandsContext'
 import { useSettingsAuthContext } from './useSettingsAuthContext'
 import { isDesktop } from 'lib/isDesktop'
@@ -16,6 +16,7 @@ import { baseUnitsUnion } from 'lib/settings/settingsTypes'
  * URL parameters.
  */
 export function useCreateFileLinkQuery() {
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const { commandBarSend } = useCommandsContext()
   const { settings } = useSettingsAuthContext()
@@ -41,7 +42,7 @@ export function useCreateFileLinkQuery() {
             settings.context.modeling.defaultUnit.default) ??
           settings.context.modeling.defaultUnit.current,
       }
-      console.log('createFileParam', params)
+      console.log('createFileParam', { ...params, location })
 
       // For initializing the command arguments, we actually want `method` to be undefined
       // so that we don't skip it in the command palette.

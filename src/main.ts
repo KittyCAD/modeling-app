@@ -10,7 +10,8 @@ import {
   shell,
   nativeTheme,
 } from 'electron'
-import path from 'path'
+import path, { join } from 'path'
+import fs from 'fs'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
@@ -395,6 +396,10 @@ function registerStartupListeners() {
     event.preventDefault()
 
     console.log('open-url', url)
+    fs.writeFileSync(
+      '/Users/frankjohnson/open-url.txt',
+      `at ${new Date().toLocaleTimeString()} opened url: ${url}`
+    )
 
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {
