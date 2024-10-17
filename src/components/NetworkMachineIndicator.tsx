@@ -61,10 +61,11 @@ export const NetworkMachineIndicator = ({
                       ? ': ' + machine.state.message
                       : ''}
                   </p>
-                  {machine.extra.Bambu &&
-                    machine.extra.Bambu.nozzle_diameter && (
+                  {machine.extra &&
+                    machine.extra.type === 'bambu' &&
+                    machine.extra.nozzle_diameter && (
                       <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                        Nozzle Diameter: {machine.extra.Bambu.nozzle_diameter}
+                        Nozzle Diameter: {machine.extra.nozzle_diameter}
                       </p>
                     )}
                 </li>

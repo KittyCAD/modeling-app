@@ -119,21 +119,54 @@ export interface components {
     /** @description Extra machine-specific information regarding a connected machine. */
     ExtraMachineInfoResponse:
       | {
-          Moonraker: Record<string, never>
+          /** @enum {string} */
+          type: 'moonraker'
         }
       | {
-          Usb: Record<string, never>
+          /** @enum {string} */
+          type: 'usb'
         }
       | {
-          Bambu: {
-            /** @description The current stage of the machine as defined by Bambu which can include errors, etc. */
-            current_stage?: components['schemas']['Stage'] | null
-          }
+          /** @description The current stage of the machine as defined by Bambu which can include errors, etc. */
+          current_stage?: components['schemas']['Stage'] | null
+          /** @description The nozzle diameter of the machine. */
+          nozzle_diameter: components['schemas']['NozzleDiameter']
+          /** @enum {string} */
+          type: 'bambu'
+        }
+    /** @description Configuration for a FDM-based printer. */
+    FdmHardwareConfiguration: {
+      /** @description type of material being extruded */
+      filament_material: components['schemas']['FilamentMaterial']
+      /**
+       * Format: double
+       * @description Diameter of the extrusion nozzle, in mm.
+       */
+      nozzle_diameter: number
+    }
+    /** @description The material that the filament is made of. */
+    FilamentMaterial:
+      | 'Pla'
+      | 'Abs'
+      | 'Petg'
+      | 'Nylon'
+      | 'Tpu'
+      | 'Pva'
+      | 'Hips'
+      | 'Composite'
+      | 'Other'
+    /** @description The hardware configuration of a machine. */
+    HardwareConfiguration:
+      | 'None'
+      | {
+          Fdm: components['schemas']['FdmHardwareConfiguration']
         }
     /** @description Information regarding a connected machine. */
     MachineInfoResponse: {
       /** @description Additional, per-machine information which is specific to the underlying machine type. */
       extra?: components['schemas']['ExtraMachineInfoResponse'] | null
+      /** @description Information about how the Machine is currently configured. */
+      hardware_configuration: components['schemas']['HardwareConfiguration']
       /** @description Machine Identifier (ID) for the specific Machine. */
       id: string
       /** @description Information regarding the method of manufacture. */
@@ -192,6 +225,8 @@ export interface components {
         }
     /** @description Specific technique by which this Machine takes a design, and produces a real-world 3D object. */
     MachineType: 'Stereolithography' | 'FusedDeposition' | 'Cnc'
+    /** @description A nozzle diameter. */
+    NozzleDiameter: '0.2' | '0.4' | '0.6' | '0.8'
     /** @description The response from the `/ping` endpoint. */
     Pong: {
       /** @description The pong response. */
@@ -210,7 +245,11 @@ export interface components {
       job_name: string
       /** @description The machine id to print to. */
       machine_id: string
+      /** @description Requested design-specific slicer configurations. */
+      slicer_configuration?: components['schemas']['SlicerConfiguration'] | null
     }
+    /** @description The slicer configuration is a set of parameters that are passed to the slicer to control how the gcode is generated. */
+    SlicerConfiguration: Record<string, never>
     /** @description The print stage. These come from: https://github.com/SoftFever/OrcaSlicer/blob/431978baf17961df90f0d01871b0ad1d839d7f5d/src/slic3r/GUI/DeviceManager.cpp#L78 */
     Stage:
       | 'nothing'
