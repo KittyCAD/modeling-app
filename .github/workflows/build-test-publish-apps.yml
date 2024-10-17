@@ -199,6 +199,7 @@ jobs:
           # last one will also include update yml files for all archs
           path: |
             out/*-${{ env.VERSION_NO_V }}-win.*
+            out/*-${{ env.VERSION_NO_V }}-arm64-win.*
             out/*-arm64-mac.*
             out/*-arm64-linux.*
 
