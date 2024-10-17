@@ -776,7 +776,9 @@ fn jvalue_to_prop(value: &JValue, property_sr: Vec<SourceRange>, name: &str) -> 
             } else if let Some(iint) = num.as_i64() {
                 make_err(format!("'{iint}' is not a valid index, {MUST_BE_POSINT}"))
             } else if let Some(fnum) = num.as_f64() {
-                if fnum.fract() == 0.0 {
+                if fnum < 0.0 {
+                    make_err(format!("'{fnum}' is not a valid index, {MUST_BE_POSINT}"))
+                } else if fnum.fract() == 0.0 {
                     make_err(format!("'{fnum:.1}' is stored as a fractional number but indices must be whole numbers, {TRY_INT}"))
                 } else {
                     make_err(format!("'{fnum}' is not a valid index, {MUST_BE_POSINT}, {TRY_INT}"))
