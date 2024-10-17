@@ -21,6 +21,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
+import { ZOO_STUDIO_PROTOCOL } from 'lib/link'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -52,9 +53,8 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
-const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
 
-/// Register our application to handle all "zoo-studio://" protocols.
+/// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [

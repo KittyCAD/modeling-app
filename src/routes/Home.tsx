@@ -28,8 +28,6 @@ import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
-  useCreateFileLinkQuery()
   const { state, send } = useProjectsContext()
   const { commandBarSend } = useCommandsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)

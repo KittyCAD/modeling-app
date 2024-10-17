@@ -10,14 +10,32 @@ export interface FileLinkParams {
 
 /**
  * Given a file's code, name, and units, creates shareable link
- * TODO: make the app respect this link
  */
-export function createFileLink({ code, name, units }: FileLinkParams) {
+export async function createFileLink({ code, name, units }: FileLinkParams) {
+  const token = await getAndSyncStoredToken(input)
+  const urlUserShortlinks = withBaseURL('/user/shortlinks')
+
   const origin = globalThis.window.location.origin
-  return new URL(
+
+  if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
+
+  let headers = {
+    'Content-Type': 'application/json',
+  }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const urlFileToShare = new URL(
     `/?${CREATE_FILE_URL_PARAM}&name=${encodeURIComponent(
       name
     )}&units=${units}&code=${encodeURIComponent(stringToBase64(code))}`,
     origin
-  ).href
+  ).toString()
+
+  const resp = await fetch(urlUserShortlinks, {
+    headers,
+    body: JSON.stringify({ url: urlFileToShare }),
+  })
+  const shortlink = await resp.json()
+
+  return shortlink.url
 }
