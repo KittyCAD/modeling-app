@@ -86,6 +86,10 @@ const listMachines = async (): Promise<MachinesListing> => {
 const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
+const getArgvParsed = () => {
+  return ipcRenderer.invoke('argv.parser')
+}
+
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
@@ -153,4 +157,5 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateDownloaded,
   onUpdateError,
   appRestart,
+  getArgvParsed,
 })

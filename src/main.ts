@@ -18,8 +18,9 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-
 import { reportRejection } from 'lib/trap'
+import dog from './beepbeepargs'
+
 let mainWindow: BrowserWindow | null = null
 
 // Check the command line arguments for a project path
@@ -157,6 +158,10 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
 
 ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
+})
+
+ipcMain.handle('argv.parser', (event, data) => {
+  return dog
 })
 
 ipcMain.handle('startDeviceFlow', async (_, host: string) => {

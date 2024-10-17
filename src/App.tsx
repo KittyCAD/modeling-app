@@ -22,6 +22,10 @@ import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
+import { maybeWriteToDisk } from 'lib/telemetry'
+maybeWriteToDisk()
+  .then(() => {})
+  .catch(() => {})
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData

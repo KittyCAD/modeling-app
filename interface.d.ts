@@ -77,6 +77,7 @@ export interface IElectronAPI {
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
+  getArgvParsed: () => any
 }
 
 declare global {

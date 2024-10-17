@@ -1,4 +1,6 @@
-import { PerformanceMark } from 'lib/performance'
+import { PerformanceMark, getMarks } from 'lib/performance'
+import { writeTelemetryFile } from 'lib/desktop'
+let args: any = null
 
 // Get the longest width of values or column name
 export function columnWidth(arr: { [key: string]: any }, key: string): number {
@@ -147,4 +149,19 @@ export function printInvocationCount(marks: Array<PerformanceMark>): string[] {
     }
   })
   return printMarkDownTable(formattedCounts)
+}
+
+export async function maybeWriteToDisk() {
+  if (!args) {
+    args = await window.electron.getArgvParsed()
+  }
+  if (args.telemetry) {
+    setInterval(() => {
+      const marks = getMarks()
+      const deltaTotalTable = printDeltaTotal(marks)
+      writeTelemetryFile(deltaTotalTable.join('\n'))
+        .then(() => {})
+        .catch(() => {})
+    }, 5000)
+  }
 }
