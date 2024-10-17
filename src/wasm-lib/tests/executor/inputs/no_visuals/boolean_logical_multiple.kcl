@@ -1,0 +1,25 @@
+
+let ii = true & true | false
+let i = if ii {
+  1
+} else {
+  2
+}
+assertEqual(i, 1, 0.001, "true & true | false is true")
+
+let jj = true | false & false
+let j = if jj {
+  1
+} else {
+  2
+}
+assertEqual(j, 1, 0.001, "true | false & false is true")
+
+let kk = !false & true | false
+let k = if kk {
+  1
+} else {
+  2
+}
+assertEqual(k, 1, 0.001, "!false & true | false is true")
+

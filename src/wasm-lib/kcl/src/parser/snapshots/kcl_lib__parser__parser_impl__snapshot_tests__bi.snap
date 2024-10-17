@@ -1,0 +1,57 @@
+---
+source: kcl/src/parser/parser_impl.rs
+assertion_line: 3713
+expression: actual
+---
+{
+  "start": 0,
+  "end": 15,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 15,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 15,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 7,
+            "name": "x",
+            "digest": null
+          },
+          "init": {
+            "type": "UnaryExpression",
+            "type": "UnaryExpression",
+            "start": 10,
+            "end": 15,
+            "operator": "!",
+            "argument": {
+              "type": "Literal",
+              "type": "Literal",
+              "start": 11,
+              "end": 15,
+              "value": true,
+              "raw": "true",
+              "digest": null
+            },
+            "digest": null
+          },
+          "digest": null
+        }
+      ],
+      "kind": "const",
+      "digest": null
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": [],
+    "digest": null
+  },
+  "digest": null
+}

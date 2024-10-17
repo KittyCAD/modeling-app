@@ -309,6 +309,8 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             ">=" => BinaryOperator::Gte,
             "<" => BinaryOperator::Lt,
             "<=" => BinaryOperator::Lte,
+            "&" => BinaryOperator::And,
+            "|" => BinaryOperator::Or,
             _ => {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: token.as_source_ranges(),
@@ -3448,6 +3450,17 @@ let myBox = box([0,0], -3, -16, -10)
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
         );
     }
+
+    #[test]
+    fn test_unary_not_operator() {
+        let input = "!true";
+        let tokens = crate::token::lexer(input).unwrap();
+        let actual = match unary_expression.parse(&tokens) {
+            Ok(x) => x,
+            Err(e) => panic!("{e:?}"),
+        };
+        assert_eq!(actual.operator, UnaryOperator::Not);
+    }
 }
 
 #[cfg(test)]
@@ -3697,6 +3710,11 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
     snapshot_test!(bh, "const obj = {center : [10, 10], radius: 5}");
+    snapshot_test!(bi, "const x = !true");
+    snapshot_test!(bj, "const x = true & false");
+    snapshot_test!(bk, "const x = false | true");
+    snapshot_test!(bl, "true");
+    snapshot_test!(bm, "truee");
 }
 
 #[allow(unused)]

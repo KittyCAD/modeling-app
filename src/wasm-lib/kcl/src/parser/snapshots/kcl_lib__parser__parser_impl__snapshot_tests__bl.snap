@@ -1,0 +1,33 @@
+---
+source: kcl/src/parser/parser_impl.rs
+assertion_line: 3717
+expression: actual
+---
+{
+  "start": 0,
+  "end": 4,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 4,
+      "expression": {
+        "type": "Literal",
+        "type": "Literal",
+        "start": 0,
+        "end": 4,
+        "value": true,
+        "raw": "true",
+        "digest": null
+      },
+      "digest": null
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": [],
+    "digest": null
+  },
+  "digest": null
+}

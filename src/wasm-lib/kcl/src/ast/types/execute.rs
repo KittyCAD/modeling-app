@@ -243,6 +243,34 @@ impl BinaryExpression {
             }
         }
 
+        // Check for logical operators.
+        if self.operator == BinaryOperator::And || self.operator == BinaryOperator::Or {
+            let left = json_as_bool(&left_json_value);
+            let right = json_as_bool(&right_json_value);
+
+            // If either left or right is None, we must return a KclError.
+            if left.is_none() || right.is_none() {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("Logical operators can only be used with boolean values, got {:?} and {:?}", left, right),
+                    source_ranges: vec![self.into()],
+                }));
+            }
+
+            let left = left.unwrap();
+            let right = right.unwrap();
+
+            let value = match self.operator {
+                BinaryOperator::And => (left && right).into(),
+                BinaryOperator::Or => (left || right).into(),
+                _ => unreachable!(),
+            };
+            return Ok(KclValue::UserVal(UserVal {
+                value,
+                meta: vec![Metadata {
+                    source_range: self.into(),
+                }],
+            }));
+        }
         let left = parse_json_number_as_f64(&left_json_value, self.left.clone().into())?;
         let right = parse_json_number_as_f64(&right_json_value, self.right.clone().into())?;
 
@@ -259,6 +287,7 @@ impl BinaryExpression {
             BinaryOperator::Gte => (left >= right).into(),
             BinaryOperator::Lt => (left < right).into(),
             BinaryOperator::Lte => (left <= right).into(),
+            BinaryOperator::And | BinaryOperator::Or => unreachable!(),
         };
 
         Ok(KclValue::UserVal(UserVal {

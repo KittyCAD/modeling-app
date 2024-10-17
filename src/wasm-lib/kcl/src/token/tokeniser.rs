@@ -1,6 +1,6 @@
 use winnow::{
     ascii::{digit1, multispace1},
-    combinator::{alt, opt, peek, preceded, repeat, terminated},
+    combinator::{alt, opt, peek, preceded, repeat, terminated, not},
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
@@ -90,7 +90,7 @@ fn word(i: &mut Located<&str>) -> PResult<Token> {
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "&", "|"
     ))
     .with_span()
     .parse_next(i)?;
@@ -178,18 +178,21 @@ fn import_keyword(i: &mut Located<&str>) -> PResult<Token> {
 fn unambiguous_keywords(i: &mut Located<&str>) -> PResult<Token> {
     // These are the keywords themselves.
     let keyword_candidates = alt((
-        "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
-        "nil", "and", "or", "not", "var", "const", "export",
+        "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop",
+        "true", "false", "nil", "and", "or", "not", "var", "const", "export",
     ));
-    // Look ahead. If any of these characters follow the keyword, then it's not a keyword, it's just
+
+    // Look ahead. If any of these characters follow the keyword, then it's not a keyword; it's just
     // the start of a normal word.
     let keyword = terminated(
         keyword_candidates,
-        peek(none_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9'))),
+        not(peek(one_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9')))),
     );
+
     let (value, range) = keyword.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Keyword, value.to_owned()))
 }
+
 
 fn keyword(i: &mut Located<&str>) -> PResult<Token> {
     alt((import_keyword, unambiguous_keywords)).parse_next(i)
@@ -266,7 +269,7 @@ mod tests {
     #[test]
     fn test_operator() {
         for valid in [
-            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "| ", "|> ", "^ ", "% ", "+* ",
+            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "|> ", "^ ", "% ", "+* ", "&", "|"
         ] {
             assert_parse_ok(operator, valid);
         }
@@ -1544,6 +1547,29 @@ const things = "things"
         assert_eq!(actual, expected);
     }
 
+    #[test]
+    fn test_boolean_literal() {
+        let actual = lexer("true").unwrap();
+        let expected = vec![Token {
+            token_type: TokenType::Keyword,
+            value: "true".to_owned(),
+            start: 0,
+            end: 4,
+        }];
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn test_word_starting_with_keyword() {
+        let actual = lexer("truee").unwrap();
+        let expected = vec![Token {
+            token_type: TokenType::Word,
+            value: "truee".to_owned(),
+            start: 0,
+            end: 5,
+        }];
+        assert_eq!(expected, actual);
+    }
     #[test]
     fn test_unrecognized_token() {
         let actual = lexer("12 ; 8").unwrap();

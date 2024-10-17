@@ -1,0 +1,32 @@
+---
+source: kcl/src/parser/parser_impl.rs
+assertion_line: 3718
+expression: actual
+---
+{
+  "start": 0,
+  "end": 5,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 5,
+      "expression": {
+        "type": "Identifier",
+        "type": "Identifier",
+        "start": 0,
+        "end": 5,
+        "name": "truee",
+        "digest": null
+      },
+      "digest": null
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": [],
+    "digest": null
+  },
+  "digest": null
+}

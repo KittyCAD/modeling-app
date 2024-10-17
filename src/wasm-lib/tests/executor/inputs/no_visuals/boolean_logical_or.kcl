@@ -1,0 +1,32 @@
+let aa = true | false
+let a = if aa {
+  1
+} else {
+  2
+}
+assertEqual(a, 1, 0.001, "true | false is true")
+
+
+let bb = false | true
+let b = if bb {
+  1
+} else {
+  2
+}
+assertEqual(b, 1, 0.001, "false | true is true")
+
+let cc = true | true
+let c = if cc {
+  1
+} else {
+  2
+}
+assertEqual(c, 1, 0.001, "true | true is true")
+
+let dd = false | false
+let d = if dd {
+  1
+} else {
+  2
+}
+assertEqual(d, 2, 0.001, "false | false is false")
