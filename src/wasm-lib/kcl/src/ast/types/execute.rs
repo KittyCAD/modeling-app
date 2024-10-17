@@ -249,15 +249,24 @@ impl BinaryExpression {
             let right = json_as_bool(&right_json_value);
 
             // If either left or right is None, we must return a KclError.
-            if left.is_none() || right.is_none() {
+            let Some(left) = left else {
                 return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Logical operators can only be used with boolean values, got {:?} and {:?}", left, right),
+                    message: format!(
+                        "Logical operators can only be used with boolean values, got {:?} and {:?}",
+                        left, right
+                    ),
                     source_ranges: vec![self.into()],
                 }));
-            }
-
-            let left = left.unwrap();
-            let right = right.unwrap();
+            };
+            let Some(right) = right else {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Logical operators can only be used with boolean values, got {:?} and {:?}",
+                        left, right
+                    ),
+                    source_ranges: vec![self.into()],
+                }));
+            };
 
             let value = match self.operator {
                 BinaryOperator::And => (left && right).into(),

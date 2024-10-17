@@ -1,6 +1,6 @@
 use winnow::{
     ascii::{digit1, multispace1},
-    combinator::{alt, opt, peek, preceded, repeat, terminated, not},
+    combinator::{alt, not, opt, peek, preceded, repeat, terminated},
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
@@ -90,7 +90,7 @@ fn word(i: &mut Located<&str>) -> PResult<Token> {
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "&", "|"
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "&", "|",
     ))
     .with_span()
     .parse_next(i)?;
@@ -178,8 +178,8 @@ fn import_keyword(i: &mut Located<&str>) -> PResult<Token> {
 fn unambiguous_keywords(i: &mut Located<&str>) -> PResult<Token> {
     // These are the keywords themselves.
     let keyword_candidates = alt((
-        "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop",
-        "true", "false", "nil", "and", "or", "not", "var", "const", "export",
+        "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
+        "nil", "and", "or", "not", "var", "const", "export",
     ));
 
     // Look ahead. If any of these characters follow the keyword, then it's not a keyword; it's just
@@ -192,7 +192,6 @@ fn unambiguous_keywords(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = keyword.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Keyword, value.to_owned()))
 }
-
 
 fn keyword(i: &mut Located<&str>) -> PResult<Token> {
     alt((import_keyword, unambiguous_keywords)).parse_next(i)
@@ -269,7 +268,7 @@ mod tests {
     #[test]
     fn test_operator() {
         for valid in [
-            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "|> ", "^ ", "% ", "+* ", "&", "|"
+            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "|> ", "^ ", "% ", "+* ", "&", "|",
         ] {
             assert_parse_ok(operator, valid);
         }

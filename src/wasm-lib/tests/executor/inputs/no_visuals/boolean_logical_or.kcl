@@ -1,5 +1,5 @@
-let aa = true | false
-let a = if aa {
+aa = true | false
+a = if aa {
   1
 } else {
   2
@@ -7,24 +7,24 @@ let a = if aa {
 assertEqual(a, 1, 0.001, "true | false is true")
 
 
-let bb = false | true
-let b = if bb {
+bb = false | true
+b = if bb {
   1
 } else {
   2
 }
 assertEqual(b, 1, 0.001, "false | true is true")
 
-let cc = true | true
-let c = if cc {
+cc = true | true
+c = if cc {
   1
 } else {
   2
 }
 assertEqual(c, 1, 0.001, "true | true is true")
 
-let dd = false | false
-let d = if dd {
+dd = false | false
+d = if dd {
   1
 } else {
   2
