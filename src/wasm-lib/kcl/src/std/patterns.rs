@@ -964,7 +964,7 @@ async fn pattern_circular(
             id,
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
+                entity_id: geometry.original_id(),
                 center: kcmc::shared::Point3d {
                     x: LengthUnit(center[0]),
                     y: LengthUnit(center[1]),
