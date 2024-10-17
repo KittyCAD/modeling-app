@@ -77,6 +77,8 @@ function detectEnvironment(): MarkHelpers {
         const marks = getMarks()
         const deltaTotalTable = printDeltaTotal(marks)
         writeTelemetryFile(deltaTotalTable.join('\n'))
+          .then(() => {})
+          .catch(() => {})
       },
       markOnce(name: string, options?: PerformanceMark) {
         if (seenMarks[name]) {
@@ -88,6 +90,8 @@ function detectEnvironment(): MarkHelpers {
         const marks = getMarks()
         const deltaTotalTable = printDeltaTotal(marks)
         writeTelemetryFile(deltaTotalTable.join('\n'))
+          .then(() => {})
+          .catch(() => {})
       },
       getMarks() {
         let timeOrigin = performance.timeOrigin
