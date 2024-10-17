@@ -20,8 +20,7 @@ expression: actual
           "type": "Identifier",
           "start": 0,
           "end": 3,
-          "name": "log",
-          "digest": null
+          "name": "log"
         },
         "arguments": [
           {
@@ -30,8 +29,7 @@ expression: actual
             "start": 4,
             "end": 5,
             "value": 5,
-            "raw": "5",
-            "digest": null
+            "raw": "5"
           },
           {
             "type": "Literal",
@@ -39,28 +37,18 @@ expression: actual
             "start": 7,
             "end": 14,
             "value": "hello",
-            "raw": "\"hello\"",
-            "digest": null
+            "raw": "\"hello\""
           },
           {
             "type": "Identifier",
             "type": "Identifier",
             "start": 16,
             "end": 27,
-            "name": "aIdentifier",
-            "digest": null
+            "name": "aIdentifier"
           }
         ],
-        "optional": false,
-        "digest": null
-      },
-      "digest": null
+        "optional": false
+      }
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }
