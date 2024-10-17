@@ -1,6 +1,6 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3718
+assertion_line: 3717
 expression: actual
 ---
 {
@@ -17,16 +17,8 @@ expression: actual
         "type": "Identifier",
         "start": 0,
         "end": 5,
-        "name": "truee",
-        "digest": null
-      },
-      "digest": null
+        "name": "truee"
+      }
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

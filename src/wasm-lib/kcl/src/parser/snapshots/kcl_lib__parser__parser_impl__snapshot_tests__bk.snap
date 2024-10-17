@@ -21,8 +21,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 7,
-            "name": "x",
-            "digest": null
+            "name": "x"
           },
           "init": {
             "type": "BinaryExpression",
@@ -36,8 +35,7 @@ expression: actual
               "start": 10,
               "end": 15,
               "value": false,
-              "raw": "false",
-              "digest": null
+              "raw": "false"
             },
             "right": {
               "type": "Literal",
@@ -45,22 +43,12 @@ expression: actual
               "start": 18,
               "end": 22,
               "value": true,
-              "raw": "true",
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              "raw": "true"
+            }
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }
