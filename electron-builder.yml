@@ -32,10 +32,10 @@ win:
       arch:
         - x64
         - arm64
-    - target: msi
-      arch:
-        - x64
-        - arm64
+    # - target: msi
+    #   arch:
+    #     - x64
+    #     - arm64
   signingHashAlgorithms:
     - sha256
   sign: "./sign-win.js"
@@ -47,9 +47,9 @@ win:
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
       role: Editor
-msi:
-  oneClick: false
-  perMachine: true
+# msi:
+#   oneClick: false
+#   perMachine: true
 nsis:
   oneClick: false
   perMachine: true
@@ -73,3 +73,5 @@ publish:
   - provider: generic
     url: https://dl.zoo.dev/releases/modeling-app
     channel: latest
+releaseInfo:
+  releaseNotesFile: release-notes.md

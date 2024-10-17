@@ -16,7 +16,7 @@ test.describe('Testing constraints', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -55,7 +55,7 @@ test.describe('Testing constraints', () => {
     await page.getByText('Add constraining value').click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const length001 = 20const sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
+      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -76,14 +76,14 @@ test.describe('Testing constraints', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const yo = 79
-const part001 = startSketchOn('XZ')
+        `yo = 79
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
   |> angledLine([segAng(seg01), yo], %)
   |> line([41.19, 58.97 + 5], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 120], %)
   |> xLine(-385.34, %, $seg_what)
   |> yLine(-170.06, %)
@@ -134,14 +134,14 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %, $seg01)
   |> line([78.92, -120.11], %)
   |> angledLine([segAng(seg01), 78.33], %)
   |> line([51.19, 48.97], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -233,14 +233,14 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
   |> line([51.19, 48.97], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -339,14 +339,14 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
   |> line([51.19, 48.97], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -446,14 +446,14 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
   |> line([51.19, 48.97], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -556,14 +556,14 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
   |> line([51.19, 48.97], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -632,14 +632,14 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async (customCode) => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
   |> line([51.19, 48.97], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -729,13 +729,13 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -806,13 +806,13 @@ const part002 = startSketchOn('XZ')
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `const yo = 5
-const part001 = startSketchOn('XZ')
+            `yo = 5
+part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
   |> line([74.36, 130.4], %)
   |> line([78.92, -120.11], %)
   |> line([9.16, 77.79], %)
-const part002 = startSketchOn('XZ')
+part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
@@ -862,7 +862,7 @@ const part002 = startSketchOn('XZ')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
   |> startProfileAt([-1.05, -1.07], %)
   |> line([3.79, 2.68], %, $seg01)
   |> line([3.13, -2.4], %)`

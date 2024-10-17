@@ -22,7 +22,7 @@ import {
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
+import { PathToNode, Sketch, getTangentialArcToInfo } from 'lang/wasm'
 import {
   CIRCLE_CENTER_HANDLE,
   CIRCLE_SEGMENT,
@@ -58,7 +58,7 @@ import { err } from 'lib/trap'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
-  prevSegment: SketchGroup['value'][number]
+  prevSegment: Sketch['value'][number]
   id: string
   pathToNode: PathToNode
   isDraftSegment?: boolean
@@ -72,7 +72,7 @@ interface CreateSegmentArgs {
 
 interface UpdateSegmentArgs {
   input: SegmentInputs
-  prevSegment: SketchGroup['value'][number]
+  prevSegment: Sketch['value'][number]
   group: Group
   sceneInfra: SceneInfra
   scale?: number

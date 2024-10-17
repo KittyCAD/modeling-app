@@ -113,12 +113,21 @@
             ],
             "description": "Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.\n\nThis may be `None` if the maximum size is not knowable by the Machine API.\n\nWhat \"close\" means is up to you!",
             "nullable": true
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MachineState"
+              }
+            ],
+            "description": "Status of the printer -- be it printing, idle, or unreachable. This may dictate if a machine is capable of taking a new job."
           }
         },
         "required": [
           "id",
           "machine_type",
-          "make_model"
+          "make_model",
+          "state"
         ],
         "type": "object"
       },
@@ -142,6 +151,67 @@
           }
         },
         "type": "object"
+      },
+      "MachineState": {
+        "description": "Current state of the machine -- be it printing, idle or offline. This can be used to determine if a printer is in the correct state to take a new job.",
+        "oneOf": [
+          {
+            "description": "If a print state can not be resolved at this time, an Unknown may be returned.",
+            "enum": [
+              "Unknown"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Idle, and ready for another job.",
+            "enum": [
+              "Idle"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Running a job -- 3D printing or CNC-ing a part.",
+            "enum": [
+              "Running"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Machine is currently offline or unreachable.",
+            "enum": [
+              "Offline"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Job is underway but halted, waiting for some action to take place.",
+            "enum": [
+              "Paused"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Job is finished, but waiting manual action to move back to Idle.",
+            "enum": [
+              "Complete"
+            ],
+            "type": "string"
+          },
+          {
+            "additionalProperties": false,
+            "description": "The printer has failed and is in an unknown state that may require manual attention to resolve. The inner value is a human readable description of what specifically has failed.",
+            "properties": {
+              "Failed": {
+                "nullable": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "Failed"
+            ],
+            "type": "object"
+          }
+        ]
       },
       "MachineType": {
         "description": "Specific technique by which this Machine takes a design, and produces a real-world 3D object.",
@@ -355,6 +425,34 @@
         ]
       }
     },
+    "/metrics": {
+      "get": {
+        "operationId": "get_metrics",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "String",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "List available machines and their statuses",
+        "tags": [
+          "hidden"
+        ]
+      }
+    },
     "/ping": {
       "get": {
         "operationId": "ping",
@@ -422,6 +520,13 @@
     }
   },
   "tags": [
+    {
+      "description": "Hidden API endpoints that should not show up in the docs.",
+      "externalDocs": {
+        "url": "https://docs.zoo.dev/api/machines"
+      },
+      "name": "hidden"
+    },
     {
       "description": "Utilities for making parts and discovering machines.",
       "externalDocs": {

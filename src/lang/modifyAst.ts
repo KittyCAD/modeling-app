@@ -17,7 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -501,6 +501,7 @@ export function sketchOnExtrudedFace(
       createIdentifier(extrudeName ? extrudeName : oldSketchName),
       _tag,
     ]),
+    undefined,
     'const'
   )
 
@@ -682,6 +683,7 @@ export function createPipeExpression(
 export function createVariableDeclaration(
   varName: string,
   init: VariableDeclarator['init'],
+  visibility: VariableDeclaration['visibility'] = 'default',
   kind: VariableDeclaration['kind'] = 'const'
 ): VariableDeclaration {
   return {
@@ -699,6 +701,7 @@ export function createVariableDeclaration(
         init,
       },
     ],
+    visibility,
     kind,
   }
 }
@@ -1049,7 +1052,7 @@ export async function deleteFromSelection(
             if (err(parent)) {
               return
             }
-            const sketchToPreserve = sketchGroupFromKclValue(
+            const sketchToPreserve = sketchFromKclValue(
               programMemory.get(sketchName),
               sketchName
             )

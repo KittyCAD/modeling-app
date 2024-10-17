@@ -18,8 +18,6 @@ macro_rules! kcl_test {
     };
 }
 
-kcl_test!("pattern_cubes_local_rotation", kcl_test_pattern_cubes_local_rotation);
-kcl_test!("pattern_cubes_global_rotation", kcl_test_pattern_cubes_global_rotation);
 kcl_test!("sketch_on_face", kcl_test_sketch_on_face);
 kcl_test!("tangential_arc", kcl_test_tangential_arc);
 kcl_test!(

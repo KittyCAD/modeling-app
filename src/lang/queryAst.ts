@@ -13,7 +13,7 @@ import {
   Program,
   ProgramMemory,
   ReturnStatement,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
@@ -28,6 +28,7 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err } from 'lib/trap'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -120,7 +121,12 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node: Expr | ExpressionStatement | VariableDeclaration | ReturnStatement,
+  node:
+    | Expr
+    | ImportStatement
+    | ExpressionStatement
+    | VariableDeclaration
+    | ReturnStatement,
   sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
@@ -663,7 +669,7 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const sg = sketchGroupFromKclValue(programMemory?.get(varName), varName)
+    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
@@ -757,7 +763,7 @@ export function doesPipeHaveCallExp({
   )
 }
 
-export function hasExtrudeSketchGroup({
+export function hasExtrudeSketch({
   ast,
   selection,
   programMemory,
@@ -781,8 +787,7 @@ export function hasExtrudeSketchGroup({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'ExtrudeGroup' ||
-    !err(sketchGroupFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
   )
 }
 

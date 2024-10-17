@@ -24,111 +24,29 @@ expression: actual
             "digest": null
           },
           "init": {
-            "type": "ArrayExpression",
-            "type": "ArrayExpression",
+            "type": "ArrayRangeExpression",
+            "type": "ArrayRangeExpression",
             "start": 16,
             "end": 23,
-            "elements": [
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 0,
-                "raw": "0",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 1,
-                "raw": "1",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 2,
-                "raw": "2",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 3,
-                "raw": "3",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 4,
-                "raw": "4",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 5,
-                "raw": "5",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 6,
-                "raw": "6",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 7,
-                "raw": "7",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 8,
-                "raw": "8",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 9,
-                "raw": "9",
-                "digest": null
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
-                "end": 18,
-                "value": 10,
-                "raw": "10",
-                "digest": null
-              }
-            ],
+            "startElement": {
+              "type": "Literal",
+              "type": "Literal",
+              "start": 17,
+              "end": 18,
+              "value": 0,
+              "raw": "0",
+              "digest": null
+            },
+            "endElement": {
+              "type": "Literal",
+              "type": "Literal",
+              "start": 20,
+              "end": 22,
+              "value": 10,
+              "raw": "10",
+              "digest": null
+            },
+            "endInclusive": true,
             "digest": null
           },
           "digest": null

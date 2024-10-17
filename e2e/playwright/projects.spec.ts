@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import {
   doExport,
   executorInputPath,
@@ -12,10 +12,62 @@ import {
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { join } from 'path'
+import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
+
+test(
+  'projects reload if a new one is created, deleted, or renamed externally',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    let externalCreatedProjectName = 'external-created-project'
+
+    let targetDir = ''
+
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        targetDir = dir
+        setTimeout(() => {
+          const myDir = join(dir, externalCreatedProjectName)
+          ;(async () => {
+            await fsp.mkdir(myDir)
+            await fsp.writeFile(
+              join(myDir, DEFAULT_PROJECT_KCL_FILE),
+              'sca ba be bop de day wawa skee'
+            )
+          })().catch(console.error)
+        }, 5000)
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const projectLinks = page.getByTestId('project-link')
+
+    await projectLinks.first().waitFor()
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rename(
+      join(targetDir, externalCreatedProjectName),
+      join(targetDir, externalCreatedProjectName + '1')
+    )
+
+    externalCreatedProjectName += '1'
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rm(join(targetDir, externalCreatedProjectName), {
+      recursive: true,
+      force: true,
+    })
+
+    await expect(projectLinks).toHaveCount(0)
+
+    await electronApp.close()
+  }
+)
 
 test(
   'click help/keybindings from home page',
@@ -535,7 +587,7 @@ test(
 
       // It actually loads.
       await expect(u.codeLocator).toContainText('mounting bracket')
-      await expect(u.codeLocator).toContainText('const radius =')
+      await expect(u.codeLocator).toContainText('radius =')
     })
 
     await u.openFilePanel()
@@ -566,30 +618,29 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
-
     page.on('console', console.log)
-
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -692,32 +743,32 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
 
     page.on('console', console.log)
-
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -833,15 +884,14 @@ test(
       timeout: 20_000,
     })
 
-    await page.locator('.cm-content')
-      .fill(`const sketch001 = startSketchOn('XZ')
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
   |> line([324.07, 27.199], %, $seg01)
   |> line([118.328, -291.754], %)
   |> line([-180.04, -202.08], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(200, sketch001)`)
+extrude001 = extrude(200, sketch001)`)
 
     const pointOnModel = { x: 660, y: 250 }
 
@@ -1199,7 +1249,7 @@ test(
           'kittycad_svg.kcl',
           'lego.kcl',
           'math.kcl',
-          'member_expression_sketch_group.kcl',
+          'member_expression_sketch.kcl',
           'mike_stress_test.kcl',
           'negative_args.kcl',
           'order-sketch-extrude-in-order.kcl',

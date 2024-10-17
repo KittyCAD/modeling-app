@@ -39,11 +39,11 @@ import {
   Program,
   ProgramMemory,
   recast,
-  SketchGroup,
-  ExtrudeGroup,
+  Sketch,
+  Solid,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -378,7 +378,7 @@ export class SceneEntities {
   }): Promise<{
     truncatedAst: Program
     programMemoryOverride: ProgramMemory
-    sketchGroup: SketchGroup
+    sketch: Sketch
     variableDeclarationName: string
   }> {
     this.createIntersectionPlane()
@@ -391,25 +391,27 @@ export class SceneEntities {
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       prepared
 
-    const { programMemory } = await executeAst({
+    const { execState } = await executeAst({
       ast: truncatedAst,
       useFakeExecutor: true,
       engineCommandManager: this.engineCommandManager,
       programMemoryOverride,
+      idGenerator: kclManager.execState.idGenerator,
     })
-    const sketchGroup = sketchGroupFromPathToNode({
+    const programMemory = execState.memory
+    const sketch = sketchFromPathToNode({
       pathToNode: sketchPathToNode,
       ast: maybeModdedAst,
       programMemory,
     })
-    if (err(sketchGroup)) return Promise.reject(sketchGroup)
-    if (!sketchGroup) return Promise.reject('sketchGroup not found')
+    if (err(sketch)) return Promise.reject(sketch)
+    if (!sketch) return Promise.reject('sketch not found')
 
-    if (!isArray(sketchGroup?.value))
+    if (!isArray(sketch?.value))
       return {
         truncatedAst,
         programMemoryOverride,
-        sketchGroup,
+        sketch,
         variableDeclarationName,
       }
     this.sceneProgramMemory = programMemory
@@ -431,12 +433,12 @@ export class SceneEntities {
 
     const segPathToNode = getNodePathFromSourceRange(
       maybeModdedAst,
-      sketchGroup.start.__geoMeta.sourceRange
+      sketch.start.__geoMeta.sourceRange
     )
-    if (sketchGroup?.value?.[0]?.type !== 'Circle') {
+    if (sketch?.value?.[0]?.type !== 'Circle') {
       const _profileStart = createProfileStartHandle({
-        from: sketchGroup.start.from,
-        id: sketchGroup.start.__geoMeta.id,
+        from: sketch.start.from,
+        id: sketch.start.__geoMeta.id,
         pathToNode: segPathToNode,
         scale: factor,
         theme: sceneInfra._theme,
@@ -449,17 +451,16 @@ export class SceneEntities {
       this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
     }
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
-    sketchGroup.value.forEach((segment, index) => {
+    sketch.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         maybeModdedAst,
         segment.__geoMeta.sourceRange
       )
       if (
         draftExpressionsIndices &&
-        (sketchGroup.value[index - 1] || sketchGroup.start)
+        (sketch.value[index - 1] || sketch.start)
       ) {
-        const previousSegment =
-          sketchGroup.value[index - 1] || sketchGroup.start
+        const previousSegment = sketch.value[index - 1] || sketch.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
           maybeModdedAst,
           previousSegment.__geoMeta.sourceRange
@@ -510,7 +511,7 @@ export class SceneEntities {
               to: segment.to,
             }
       const result = initSegment({
-        prevSegment: sketchGroup.value[index - 1],
+        prevSegment: sketch.value[index - 1],
         callExpName,
         input,
         id: segment.__geoMeta.id,
@@ -554,7 +555,7 @@ export class SceneEntities {
     return {
       truncatedAst,
       programMemoryOverride,
-      sketchGroup,
+      sketch,
       variableDeclarationName,
     }
   }
@@ -604,7 +605,7 @@ export class SceneEntities {
     const variableDeclarationName =
       _node1.node?.declarations?.[0]?.id?.name || ''
 
-    const sg = sketchGroupFromKclValue(
+    const sg = sketchFromKclValue(
       kclManager.programMemory.get(variableDeclarationName),
       variableDeclarationName
     )
@@ -632,7 +633,7 @@ export class SceneEntities {
     if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
 
-    const { truncatedAst, programMemoryOverride, sketchGroup } =
+    const { truncatedAst, programMemoryOverride, sketch } =
       await this.setupSketch({
         sketchPathToNode,
         forward,
@@ -653,7 +654,7 @@ export class SceneEntities {
 
         let modifiedAst
         if (profileStart) {
-          const lastSegment = sketchGroup.value.slice(-1)[0]
+          const lastSegment = sketch.value.slice(-1)[0]
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
@@ -685,7 +686,7 @@ export class SceneEntities {
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else if (intersection2d) {
-          const lastSegment = sketchGroup.value.slice(-1)[0]
+          const lastSegment = sketch.value.slice(-1)[0]
           const tmp = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
@@ -802,31 +803,26 @@ export class SceneEntities {
           updateRectangleSketch(sketchInit, x, y, tags[0])
         }
 
-        const { programMemory } = await executeAst({
+        const { execState } = await executeAst({
           ast: truncatedAst,
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
+          idGenerator: kclManager.execState.idGenerator,
         })
+        const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
-        const sketchGroup = sketchGroupFromKclValue(
+        const sketch = sketchFromKclValue(
           programMemory.get(variableDeclarationName),
           variableDeclarationName
         )
-        if (err(sketchGroup)) return Promise.reject(sketchGroup)
-        const sgPaths = sketchGroup.value
+        if (err(sketch)) return Promise.reject(sketch)
+        const sgPaths = sketch.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-        this.updateSegment(
-          sketchGroup.start,
-          0,
-          0,
-          _ast,
-          orthoFactor,
-          sketchGroup
-        )
+        this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketch)
         )
       },
       onClick: async (args) => {
@@ -856,35 +852,30 @@ export class SceneEntities {
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'Finish rectangle' })
 
-          const { programMemory } = await executeAst({
+          const { execState } = await executeAst({
             ast: _ast,
             useFakeExecutor: true,
             engineCommandManager: this.engineCommandManager,
             programMemoryOverride,
+            idGenerator: kclManager.execState.idGenerator,
           })
+          const programMemory = execState.memory
 
           // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
-          const sketchGroup = sketchGroupFromKclValue(
+          const sketch = sketchFromKclValue(
             programMemory.get(variableDeclarationName),
             variableDeclarationName
           )
-          if (err(sketchGroup)) return
-          const sgPaths = sketchGroup.value
+          if (err(sketch)) return
+          const sgPaths = sketch.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
           // Update the starting segment of the THREEjs scene
-          this.updateSegment(
-            sketchGroup.start,
-            0,
-            0,
-            _ast,
-            orthoFactor,
-            sketchGroup
-          )
+          this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
           // Update the rest of the segments of the THREEjs scene
           sgPaths.forEach((seg, index) =>
-            this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+            this.updateSegment(seg, index, 0, _ast, orthoFactor, sketch)
           )
         }
       },
@@ -980,31 +971,26 @@ export class SceneEntities {
           modded = moddedResult.modifiedAst
         }
 
-        const { programMemory } = await executeAst({
+        const { execState } = await executeAst({
           ast: modded,
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
+          idGenerator: kclManager.execState.idGenerator,
         })
+        const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
-        const sketchGroup = sketchGroupFromKclValue(
+        const sketch = sketchFromKclValue(
           programMemory.get(variableDeclarationName),
           variableDeclarationName
         )
-        if (err(sketchGroup)) return
-        const sgPaths = sketchGroup.value
+        if (err(sketch)) return
+        const sgPaths = sketch.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-        this.updateSegment(
-          sketchGroup.start,
-          0,
-          0,
-          _ast,
-          orthoFactor,
-          sketchGroup
-        )
+        this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketch)
         )
       },
       onClick: async (args) => {
@@ -1106,20 +1092,20 @@ export class SceneEntities {
             (x) => x[1] === 'PipeExpression'
           )
 
-          const sketchGroup = sketchGroupFromPathToNode({
+          const sketch = sketchFromPathToNode({
             pathToNode,
             ast: kclManager.ast,
             programMemory: kclManager.programMemory,
           })
-          if (trap(sketchGroup)) return
-          if (!sketchGroup) {
-            trap(new Error('sketchGroup not found'))
+          if (trap(sketch)) return
+          if (!sketch) {
+            trap(new Error('sketch not found'))
             return
           }
 
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketchGroup.value[pipeIndex - 2]
+            const prevSegment = sketch.value[pipeIndex - 2]
             const mod = addNewSketchLn({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
@@ -1197,7 +1183,7 @@ export class SceneEntities {
     prepareTruncatedMemoryAndAst(
       sketchPathToNode,
       ast || kclManager.ast,
-      kclManager.programMemory,
+      kclManager.lastSuccessfulProgramMemory,
       draftSegment
     )
   onDragSegment({
@@ -1339,37 +1325,36 @@ export class SceneEntities {
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
         codeManager.updateCodeEditor(code)
-      const { programMemory } = await executeAst({
+      const { execState } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,
         engineCommandManager: this.engineCommandManager,
         programMemoryOverride,
+        idGenerator: kclManager.execState.idGenerator,
       })
+      const programMemory = execState.memory
       this.sceneProgramMemory = programMemory
 
-      const maybeSketchGroup = programMemory.get(variableDeclarationName)
-      let sketchGroup = undefined
-      const sg = sketchGroupFromKclValue(
-        maybeSketchGroup,
-        variableDeclarationName
-      )
+      const maybeSketch = programMemory.get(variableDeclarationName)
+      let sketch = undefined
+      const sg = sketchFromKclValue(maybeSketch, variableDeclarationName)
       if (!err(sg)) {
-        sketchGroup = sg
-      } else if ((maybeSketchGroup as ExtrudeGroup).sketchGroup) {
-        sketchGroup = (maybeSketchGroup as ExtrudeGroup).sketchGroup
+        sketch = sg
+      } else if ((maybeSketch as Solid).sketch) {
+        sketch = (maybeSketch as Solid).sketch
       }
-      if (!sketchGroup) return
+      if (!sketch) return
 
-      const sgPaths = sketchGroup.value
+      const sgPaths = sketch.value
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
       this.updateSegment(
-        sketchGroup.start,
+        sketch.start,
         0,
         varDecIndex,
         modifiedAst,
         orthoFactor,
-        sketchGroup
+        sketch
       )
 
       const callBacks = sgPaths.map((group, index) =>
@@ -1379,7 +1364,7 @@ export class SceneEntities {
           varDecIndex,
           modifiedAst,
           orthoFactor,
-          sketchGroup
+          sketch
         )
       )
       sceneInfra.overlayCallbacks(callBacks)
@@ -1394,29 +1379,29 @@ export class SceneEntities {
    * @param varDecIndex
    * @param modifiedAst
    * @param orthoFactor
-   * @param sketchGroup
+   * @param sketch
    */
   updateSegment = (
-    segment: Path | SketchGroup['start'],
+    segment: Path | Sketch['start'],
     index: number,
     varDecIndex: number,
     modifiedAst: Program,
     orthoFactor: number,
-    sketchGroup: SketchGroup
+    sketch: Sketch
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
       segment.__geoMeta.sourceRange
     )
-    const sgPaths = sketchGroup.value
+    const sgPaths = sketch.value
     const originalPathToNodeStr = JSON.stringify(segPathToNode)
     segPathToNode[1][0] = varDecIndex
     const pathToNodeStr = JSON.stringify(segPathToNode)
-    // more hacks to hopefully be solved by proper pathToNode info in memory/sketchGroup segments
+    // more hacks to hopefully be solved by proper pathToNode info in memory/sketch segments
     const group =
       this.activeSegments[pathToNodeStr] ||
       this.activeSegments[originalPathToNodeStr]
-    // const prevSegment = sketchGroup.slice(index - 1)[0]
+    // const prevSegment = sketch.slice(index - 1)[0]
     const type = group?.userData?.type
     const factor =
       (sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -1711,7 +1696,7 @@ function prepareTruncatedMemoryAndAst(
   )
   if (err(_node)) return _node
   const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
-  const sg = sketchGroupFromKclValue(
+  const sg = sketchFromKclValue(
     programMemory.get(variableDeclarationName),
     variableDeclarationName
   )
@@ -1739,7 +1724,7 @@ function prepareTruncatedMemoryAndAst(
         .init as PipeExpression
     ).body.push(newSegment)
     // update source ranges to section we just added.
-    // hacks like this wouldn't be needed if the AST put pathToNode info in memory/sketchGroup segments
+    // hacks like this wouldn't be needed if the AST put pathToNode info in memory/sketch segments
     const updatedSrcRangeAst = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
     if (err(updatedSrcRangeAst)) return updatedSrcRangeAst
 
@@ -1820,7 +1805,7 @@ export function getParentGroup(
   return null
 }
 
-export function sketchGroupFromPathToNode({
+export function sketchFromPathToNode({
   pathToNode,
   ast,
   programMemory,
@@ -1828,7 +1813,7 @@ export function sketchGroupFromPathToNode({
   pathToNode: PathToNode
   ast: Program
   programMemory: ProgramMemory
-}): SketchGroup | null | Error {
+}): Sketch | null | Error {
   const _varDec = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     pathToNode,
@@ -1837,10 +1822,10 @@ export function sketchGroupFromPathToNode({
   if (err(_varDec)) return _varDec
   const varDec = _varDec.node
   const result = programMemory.get(varDec?.id?.name || '')
-  if (result?.type === 'ExtrudeGroup') {
-    return result.sketchGroup
+  if (result?.type === 'Solid') {
+    return result.sketch
   }
-  const sg = sketchGroupFromKclValue(result, varDec?.id?.name)
+  const sg = sketchFromKclValue(result, varDec?.id?.name)
   if (err(sg)) {
     return null
   }
@@ -1872,14 +1857,14 @@ export function getSketchQuaternion(
   sketchPathToNode: PathToNode,
   sketchNormalBackUp: [number, number, number] | null
 ): Quaternion | Error {
-  const sketchGroup = sketchGroupFromPathToNode({
+  const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
     ast: kclManager.ast,
     programMemory: kclManager.programMemory,
   })
-  if (err(sketchGroup)) return sketchGroup
-  const zAxis = sketchGroup?.on.zAxis || sketchNormalBackUp
-  if (!zAxis) return Error('SketchGroup zAxis not found')
+  if (err(sketch)) return sketch
+  const zAxis = sketch?.on.zAxis || sketchNormalBackUp
+  if (!zAxis) return Error('Sketch zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
@@ -1889,34 +1874,30 @@ export async function getSketchOrientationDetails(
   quat: Quaternion
   sketchDetails: SketchDetails & { faceId?: string }
 }> {
-  const sketchGroup = sketchGroupFromPathToNode({
+  const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
     ast: kclManager.ast,
     programMemory: kclManager.programMemory,
   })
-  if (err(sketchGroup)) return Promise.reject(sketchGroup)
-  if (!sketchGroup) return Promise.reject('sketchGroup not found')
+  if (err(sketch)) return Promise.reject(sketch)
+  if (!sketch) return Promise.reject('sketch not found')
 
-  if (sketchGroup.on.type === 'plane') {
-    const zAxis = sketchGroup?.on.zAxis
+  if (sketch.on.type === 'plane') {
+    const zAxis = sketch?.on.zAxis
     return {
       quat: getQuaternionFromZAxis(massageFormats(zAxis)),
       sketchDetails: {
         sketchPathToNode,
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
-        yAxis: [
-          sketchGroup.on.yAxis.x,
-          sketchGroup.on.yAxis.y,
-          sketchGroup.on.yAxis.z,
-        ],
+        yAxis: [sketch.on.yAxis.x, sketch.on.yAxis.y, sketch.on.yAxis.z],
         origin: [0, 0, 0],
-        faceId: sketchGroup.on.id,
+        faceId: sketch.on.id,
       },
     }
   }
 
-  if (sketchGroup.on.type === 'face') {
-    const faceInfo = await getFaceDetails(sketchGroup.on.id)
+  if (sketch.on.type === 'face') {
+    const faceInfo = await getFaceDetails(sketch.on.id)
 
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       return Promise.reject('face info')
@@ -1932,12 +1913,12 @@ export async function getSketchOrientationDetails(
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
         yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],
-        faceId: sketchGroup.on.id,
+        faceId: sketch.on.id,
       },
     }
   }
   return Promise.reject(
-    'sketchGroup.on.type not recognized, has a new type been added?'
+    'sketch.on.type not recognized, has a new type been added?'
   )
 }
 

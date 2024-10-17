@@ -83,6 +83,7 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
+import { uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -104,7 +105,12 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: {
+          defaultUnit,
+          cameraProjection,
+          highlightEdges,
+          showScaleGrid,
+        },
       },
     },
   } = useSettingsAuthContext()
@@ -143,9 +149,18 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ context: { store } }) => {
           ;(async () => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
+            })
+
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
@@ -236,6 +251,17 @@ export const ModelingMachineProvider = ({
             return {}
           },
         }),
+        'Center camera on selection': () => {
+          engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_center_to_selection',
+              },
+            })
+            .catch(reportRejection)
+        },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
           if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
@@ -974,6 +1000,7 @@ export const ModelingMachineProvider = ({
       highlightEdges: highlightEdges.current,
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
+      cameraProjection: cameraProjection.current,
     },
     token
   )
@@ -1027,6 +1054,11 @@ export const ModelingMachineProvider = ({
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {
     modelingSend({ type: 'Delete selection' })
+  })
+
+  // Allow ctrl+alt+c to center to selection
+  useHotkeys(['mod + alt + c'], () => {
+    modelingSend({ type: 'Center camera on selection' })
   })
 
   useStateMachineCommands({
