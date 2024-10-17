@@ -13,7 +13,6 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
-use sha2::{Digest as DigestTrait, Sha256};
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
@@ -33,12 +32,12 @@ use crate::{
 };
 
 mod condition;
+pub(crate) mod digest;
 pub(crate) mod execute;
 mod literal_value;
 mod none;
 
-/// Position-independent digest of the AST node.
-pub type Digest = [u8; 32];
+use digest::Digest;
 
 pub enum Definition<'a> {
     Variable(&'a VariableDeclarator),
@@ -59,40 +58,7 @@ pub struct Program {
     pub digest: Option<Digest>,
 }
 
-macro_rules! compute_digest {
-    (|$slf:ident, $hasher:ident| $body:block) => {
-        /// Compute a digest over the AST node.
-        pub fn compute_digest(&mut self) -> Digest {
-            if let Some(node_digest) = self.digest {
-                return node_digest;
-            }
-
-            let mut $hasher = Sha256::new();
-
-            #[allow(unused_mut)]
-            let mut $slf = self;
-
-            $hasher.update(std::any::type_name::<Self>());
-
-            $body
-
-            let node_digest: Digest = $hasher.finalize().into();
-            $slf.digest = Some(node_digest);
-            node_digest
-        }
-    };
-}
-pub(crate) use compute_digest;
-
 impl Program {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.body.len().to_ne_bytes());
-        for body_item in slf.body.iter_mut() {
-            hasher.update(body_item.compute_digest());
-        }
-        hasher.update(slf.non_code_meta.compute_digest());
-    });
-
     /// Is the last body item an expression?
     pub fn ends_with_expr(&self) -> bool {
         let Some(ref last) = self.body.last() else {
@@ -490,15 +456,6 @@ pub enum BodyItem {
 }
 
 impl BodyItem {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            BodyItem::ImportStatement(s) => s.compute_digest(),
-            BodyItem::ExpressionStatement(es) => es.compute_digest(),
-            BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
-            BodyItem::ReturnStatement(rs) => rs.compute_digest(),
-        }
-    }
-
     pub fn start(&self) -> usize {
         match self {
             BodyItem::ImportStatement(stmt) => stmt.start(),
@@ -554,30 +511,6 @@ pub enum Expr {
 }
 
 impl Expr {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            Expr::Literal(lit) => lit.compute_digest(),
-            Expr::Identifier(id) => id.compute_digest(),
-            Expr::TagDeclarator(tag) => tag.compute_digest(),
-            Expr::BinaryExpression(be) => be.compute_digest(),
-            Expr::FunctionExpression(fe) => fe.compute_digest(),
-            Expr::CallExpression(ce) => ce.compute_digest(),
-            Expr::PipeExpression(pe) => pe.compute_digest(),
-            Expr::PipeSubstitution(ps) => ps.compute_digest(),
-            Expr::ArrayExpression(ae) => ae.compute_digest(),
-            Expr::ArrayRangeExpression(are) => are.compute_digest(),
-            Expr::ObjectExpression(oe) => oe.compute_digest(),
-            Expr::MemberExpression(me) => me.compute_digest(),
-            Expr::UnaryExpression(ue) => ue.compute_digest(),
-            Expr::IfExpression(e) => e.compute_digest(),
-            Expr::None(_) => {
-                let mut hasher = Sha256::new();
-                hasher.update(b"Value::None");
-                hasher.finalize().into()
-            }
-        }
-    }
-
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
         let recasted = self.recast(&FormatOptions::default(), 0, false);
         // If the code only has one line then we don't need to fold it.
@@ -801,18 +734,6 @@ impl From<&BinaryPart> for SourceRange {
 }
 
 impl BinaryPart {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            BinaryPart::Literal(lit) => lit.compute_digest(),
-            BinaryPart::Identifier(id) => id.compute_digest(),
-            BinaryPart::BinaryExpression(be) => be.compute_digest(),
-            BinaryPart::CallExpression(ce) => ce.compute_digest(),
-            BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
-            BinaryPart::MemberExpression(me) => me.compute_digest(),
-            BinaryPart::IfExpression(e) => e.compute_digest(),
-        }
-    }
-
     /// Get the constraint level.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
@@ -932,29 +853,6 @@ impl From<&NonCodeNode> for SourceRange {
 }
 
 impl NonCodeNode {
-    compute_digest!(|slf, hasher| {
-        match &slf.value {
-            NonCodeValue::Shebang { value } => {
-                hasher.update(value);
-            }
-            NonCodeValue::InlineComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::BlockComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::NewLine => {
-                hasher.update(b"\r\n");
-            }
-        }
-    });
-
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
     }
@@ -1127,20 +1025,6 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
 }
 
 impl NonCodeMeta {
-    compute_digest!(|slf, hasher| {
-        let mut keys = slf.non_code_nodes.keys().copied().collect::<Vec<_>>();
-        keys.sort();
-
-        for key in keys.into_iter() {
-            hasher.update(key.to_ne_bytes());
-            let nodes = slf.non_code_nodes.get_mut(&key).unwrap();
-            hasher.update(nodes.len().to_ne_bytes());
-            for node in nodes.iter_mut() {
-                hasher.update(node.compute_digest());
-            }
-        }
-    });
-
     pub fn insert(&mut self, i: usize, new: NonCodeNode) {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
@@ -1175,18 +1059,6 @@ pub struct ImportItem {
 impl_value_meta!(ImportItem);
 
 impl ImportItem {
-    compute_digest!(|slf, hasher| {
-        let name = slf.name.name.as_bytes();
-        hasher.update(name.len().to_ne_bytes());
-        hasher.update(name);
-        if let Some(alias) = &mut slf.alias {
-            hasher.update([1]);
-            hasher.update(alias.compute_digest());
-        } else {
-            hasher.update([0]);
-        }
-    });
-
     pub fn identifier(&self) -> &str {
         match &self.alias {
             Some(alias) => &alias.name,
@@ -1239,15 +1111,6 @@ pub struct ImportStatement {
 impl_value_meta!(ImportStatement);
 
 impl ImportStatement {
-    compute_digest!(|slf, hasher| {
-        for item in &mut slf.items {
-            hasher.update(item.compute_digest());
-        }
-        let path = slf.path.as_bytes();
-        hasher.update(path.len().to_ne_bytes());
-        hasher.update(path);
-    });
-
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
@@ -1288,12 +1151,6 @@ pub struct ExpressionStatement {
 
 impl_value_meta!(ExpressionStatement);
 
-impl ExpressionStatement {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.expression.compute_digest());
-    });
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1327,15 +1184,6 @@ impl CallExpression {
             digest: None,
         })
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.callee.compute_digest());
-        hasher.update(slf.arguments.len().to_ne_bytes());
-        for argument in slf.arguments.iter_mut() {
-            hasher.update(argument.compute_digest());
-        }
-        hasher.update(if slf.optional { [1] } else { [0] });
-    });
 
     /// Is at least one argument the '%' i.e. the substitution operator?
     pub fn has_substitution_arg(&self) -> bool {
@@ -1511,15 +1359,6 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.declarations.len().to_ne_bytes());
-        for declarator in &mut slf.declarations {
-            hasher.update(declarator.compute_digest());
-        }
-        hasher.update(slf.visibility.digestable_id());
-        hasher.update(slf.kind.digestable_id());
-    });
-
     pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
             start: 0,
@@ -1752,11 +1591,6 @@ impl VariableDeclarator {
         }
     }
 
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.id.compute_digest());
-        hasher.update(slf.init.compute_digest());
-    });
-
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         self.init.get_constraint_level()
     }
@@ -1787,10 +1621,6 @@ impl Literal {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.value.digestable_id());
-    });
 
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
@@ -1846,12 +1676,6 @@ impl Identifier {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        let name = slf.name.as_bytes();
-        hasher.update(name.len().to_ne_bytes());
-        hasher.update(name);
-    });
 
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
@@ -1955,12 +1779,6 @@ impl TagDeclarator {
         }
     }
 
-    compute_digest!(|slf, hasher| {
-        let name = slf.name.as_bytes();
-        hasher.update(name.len().to_ne_bytes());
-        hasher.update(name);
-    });
-
     /// Get the constraint level for this identifier.
     /// TagDeclarator are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2016,10 +1834,6 @@ impl PipeSubstitution {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(b"PipeSubstitution");
-    });
 }
 
 impl Default for PipeSubstitution {
@@ -2066,13 +1880,6 @@ impl ArrayExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.elements.len().to_ne_bytes());
-        for value in slf.elements.iter_mut() {
-            hasher.update(value.compute_digest());
-        }
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for element in &mut self.elements {
@@ -2150,11 +1957,6 @@ impl ArrayRangeExpression {
         }
     }
 
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.start_element.compute_digest());
-        hasher.update(slf.end_element.compute_digest());
-    });
-
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.start_element.replace_value(source_range, new_value.clone());
         self.end_element.replace_value(source_range, new_value.clone());
@@ -2211,13 +2013,6 @@ impl ObjectExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.properties.len().to_ne_bytes());
-        for prop in slf.properties.iter_mut() {
-            hasher.update(prop.compute_digest());
-        }
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for property in &mut self.properties {
@@ -2278,11 +2073,6 @@ pub struct ObjectProperty {
 impl_value_meta!(ObjectProperty);
 
 impl ObjectProperty {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.key.compute_digest());
-        hasher.update(slf.value.compute_digest());
-    });
-
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
         let source_range: SourceRange = self.clone().into();
         let inner_source_range: SourceRange = self.key.clone().into();
@@ -2322,13 +2112,6 @@ pub enum MemberObject {
 }
 
 impl MemberObject {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            MemberObject::MemberExpression(me) => me.compute_digest(),
-            MemberObject::Identifier(id) => id.compute_digest(),
-        }
-    }
-
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
@@ -2376,13 +2159,6 @@ pub enum LiteralIdentifier {
 }
 
 impl LiteralIdentifier {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            LiteralIdentifier::Identifier(id) => id.compute_digest(),
-            LiteralIdentifier::Literal(lit) => lit.compute_digest(),
-        }
-    }
-
     pub fn start(&self) -> usize {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.start,
@@ -2427,12 +2203,6 @@ pub struct MemberExpression {
 impl_value_meta!(MemberExpression);
 
 impl MemberExpression {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.object.compute_digest());
-        hasher.update(slf.property.compute_digest());
-        hasher.update(if slf.computed { [1] } else { [0] });
-    });
-
     /// Get the constraint level for a member expression.
     /// This is always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2502,12 +2272,6 @@ impl BinaryExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.operator.digestable_id());
-        hasher.update(slf.left.compute_digest());
-        hasher.update(slf.right.compute_digest());
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.left.replace_value(source_range, new_value.clone());
@@ -2690,11 +2454,6 @@ impl UnaryExpression {
         }
     }
 
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.operator.digestable_id());
-        hasher.update(slf.argument.compute_digest());
-    });
-
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.argument.replace_value(source_range, new_value);
     }
@@ -2777,14 +2536,6 @@ impl PipeExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.body.len().to_ne_bytes());
-        for value in slf.body.iter_mut() {
-            hasher.update(value.compute_digest());
-        }
-        hasher.update(slf.non_code_meta.compute_digest());
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for value in &mut self.body {
@@ -2884,32 +2635,6 @@ pub enum FnArgType {
     },
 }
 
-impl FnArgType {
-    pub fn compute_digest(&mut self) -> Digest {
-        let mut hasher = Sha256::new();
-
-        match self {
-            FnArgType::Primitive(prim) => {
-                hasher.update(b"FnArgType::Primitive");
-                hasher.update(prim.digestable_id())
-            }
-            FnArgType::Array(prim) => {
-                hasher.update(b"FnArgType::Array");
-                hasher.update(prim.digestable_id())
-            }
-            FnArgType::Object { properties } => {
-                hasher.update(b"FnArgType::Object");
-                hasher.update(properties.len().to_ne_bytes());
-                for prop in properties.iter_mut() {
-                    hasher.update(prop.compute_digest());
-                }
-            }
-        }
-
-        hasher.finalize().into()
-    }
-}
-
 /// Parameter of a KCL function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -2926,22 +2651,6 @@ pub struct Parameter {
     pub optional: bool,
 
     pub digest: Option<Digest>,
-}
-
-impl Parameter {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.identifier.compute_digest());
-        match &mut slf.type_ {
-            Some(arg) => {
-                hasher.update(b"Parameter::type_::Some");
-                hasher.update(arg.compute_digest())
-            }
-            None => {
-                hasher.update(b"Parameter::type_::None");
-            }
-        }
-        hasher.update(if slf.optional { [1] } else { [0] })
-    });
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -2977,23 +2686,6 @@ impl FunctionExpression {
             source_ranges: vec![self.into()],
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.params.len().to_ne_bytes());
-        for param in slf.params.iter_mut() {
-            hasher.update(param.compute_digest());
-        }
-        hasher.update(slf.body.compute_digest());
-        match &mut slf.return_type {
-            Some(rt) => {
-                hasher.update(b"FunctionExpression::return_type::Some");
-                hasher.update(rt.compute_digest());
-            }
-            None => {
-                hasher.update(b"FunctionExpression::return_type::None");
-            }
-        }
-    });
 
     pub fn required_and_optional_params(
         &self,
@@ -3063,12 +2755,6 @@ pub struct ReturnStatement {
 }
 
 impl_value_meta!(ReturnStatement);
-
-impl ReturnStatement {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.argument.compute_digest());
-    });
-}
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
