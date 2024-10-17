@@ -882,7 +882,7 @@ export async function setupElectron({
       appSettings
         ? { settings: appSettings }
         : {
-          settings: {
+            settings: {
               ...TEST_SETTINGS,
               app: {
                 ...TEST_SETTINGS.app,

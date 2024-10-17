@@ -1009,10 +1009,16 @@ test.describe('Editor tests', () => {
       const projectLink = page.getByRole('link', { name: 'cube' })
       const gizmo = page.locator('[aria-label*=gizmo]')
       const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-      const locationToHavColor = async (position: { x: number, y: number }, color: [number, number, number]) => {
+      const locationToHavColor = async (
+        position: { x: number; y: number },
+        color: [number, number, number]
+      ) => {
         return u.getGreatestPixDiff(position, color)
       }
-      const notTheOrigin = { x: viewportSize.width * .55, y: viewportSize.height * .3 }
+      const notTheOrigin = {
+        x: viewportSize.width * 0.55,
+        y: viewportSize.height * 0.3,
+      }
       const origin = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
       const errorIndicators = page.locator('.cm-lint-marker-error')
 
@@ -1020,10 +1026,13 @@ test.describe('Editor tests', () => {
         await projectLink.click()
         await u.waitForPageLoad()
         await expect
-          .poll(async () => locationToHavColor(notTheOrigin, darkModePlaneColorXZ), {
-            timeout: 5000,
-            message: 'XZ plane color is visible',
-          })
+          .poll(
+            async () => locationToHavColor(notTheOrigin, darkModePlaneColorXZ),
+            {
+              timeout: 5000,
+              message: 'XZ plane color is visible',
+            }
+          )
           .toBeLessThan(15)
       })
       await test.step(`Write the import function line`, async () => {
