@@ -660,7 +660,7 @@ async fn pattern_linear(
             id,
             ModelingCmd::from(mcmd::EntityLinearPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
+                entity_id: dbg!(geometry.id()),
                 num_repetitions,
                 spacing: LengthUnit(data.distance()),
             }),
