@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
+import { Telemetry } from './routes/Telemetry'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
@@ -27,6 +28,7 @@ import {
   homeLoader,
   onboardingRedirectLoader,
   settingsLoader,
+  telemetryLoader,
 } from 'lib/routeLoaders'
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
@@ -42,6 +44,7 @@ import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
+import { RouteProvider } from 'components/RouteProvider'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -53,15 +56,17 @@ const router = createRouter([
      * inefficient re-renders, use the react profiler to see. */
     element: (
       <CommandBarProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <Outlet />
-              </AppStateProvider>
-            </KclContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
+        <RouteProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <Outlet />
+                </AppStateProvider>
+              </KclContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </RouteProvider>
       </CommandBarProvider>
     ),
     errorElement: <ErrorPage />,
@@ -117,6 +122,16 @@ const router = createRouter([
               },
             ],
           },
+          {
+            id: PATHS.FILE + 'TELEMETRY',
+            loader: telemetryLoader,
+            children: [
+              {
+                path: makeUrlPathRelative(PATHS.TELEMETRY),
+                element: <Telemetry />,
+              },
+            ],
+          },
         ],
       },
       {
@@ -141,6 +156,11 @@ const router = createRouter([
             path: makeUrlPathRelative(PATHS.SETTINGS),
             loader: settingsLoader,
             element: <Settings />,
+          },
+          {
+            path: makeUrlPathRelative(PATHS.TELEMETRY),
+            loader: telemetryLoader,
+            element: <Telemetry />,
           },
         ],
       },
