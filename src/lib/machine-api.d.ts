@@ -146,20 +146,55 @@ export interface components {
     }
     /** @description The material that the filament is made of. */
     FilamentMaterial:
-      | 'Pla'
-      | 'Abs'
-      | 'Petg'
-      | 'Nylon'
-      | 'Tpu'
-      | 'Pva'
-      | 'Hips'
-      | 'Composite'
-      | 'Other'
+      | {
+          /** @enum {string} */
+          type: 'pla'
+        }
+      | {
+          /** @enum {string} */
+          type: 'abs'
+        }
+      | {
+          /** @enum {string} */
+          type: 'petg'
+        }
+      | {
+          /** @enum {string} */
+          type: 'nylon'
+        }
+      | {
+          /** @enum {string} */
+          type: 'tpu'
+        }
+      | {
+          /** @enum {string} */
+          type: 'pva'
+        }
+      | {
+          /** @enum {string} */
+          type: 'hips'
+        }
+      | {
+          /** @enum {string} */
+          type: 'composite'
+        }
+      | {
+          /** @description The name of the material. */
+          name: string
+          /** @enum {string} */
+          type: 'other'
+        }
     /** @description The hardware configuration of a machine. */
     HardwareConfiguration:
-      | 'None'
       | {
-          Fdm: components['schemas']['FdmHardwareConfiguration']
+          /** @enum {string} */
+          type: 'none'
+        }
+      | {
+          /** @description The configuration for the FDM printer. */
+          config: components['schemas']['FdmHardwareConfiguration']
+          /** @enum {string} */
+          type: 'fdm'
         }
     /** @description Information regarding a connected machine. */
     MachineInfoResponse: {
@@ -224,7 +259,7 @@ export interface components {
           state: 'failed'
         }
     /** @description Specific technique by which this Machine takes a design, and produces a real-world 3D object. */
-    MachineType: 'Stereolithography' | 'FusedDeposition' | 'Cnc'
+    MachineType: 'stereolithography' | 'fused_deposition' | 'cnc'
     /** @description A nozzle diameter. */
     NozzleDiameter: '0.2' | '0.4' | '0.6' | '0.8'
     /** @description The response from the `/ping` endpoint. */
