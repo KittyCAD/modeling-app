@@ -65,93 +65,9 @@ impl MemberExpression {
             }))
         }
     }
+
     pub fn get_result(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
-        #[derive(Debug)]
-        enum Property {
-            Number(usize),
-            String(String),
-        }
-
-        impl Property {
-            fn type_name(&self) -> &'static str {
-                match self {
-                    Property::Number(_) => "number",
-                    Property::String(_) => "string",
-                }
-            }
-        }
-
-        let property_src: SourceRange = self.property.clone().into();
-        let property_sr = vec![property_src];
-
-        let property: Property = match self.property.clone() {
-            LiteralIdentifier::Identifier(identifier) => {
-                let name = identifier.name;
-                if !self.computed {
-                    // Treat the property as a literal
-                    Property::String(name.to_string())
-                } else {
-                    // Actually evaluate memory to compute the property.
-                    let prop = exec_state.memory.get(&name, property_src)?;
-                    let KclValue::UserVal(prop) = prop else {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            source_ranges: property_sr,
-                            message: format!(
-                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
-                            ),
-                        }));
-                    };
-                    match prop.value {
-                        JValue::Number(ref num) => {
-                            num
-                                .as_u64()
-                                .and_then(|x| usize::try_from(x).ok())
-                                .map(Property::Number)
-                                .ok_or_else(|| {
-                                    KclError::Semantic(KclErrorDetails {
-                                        source_ranges: property_sr,
-                                        message: format!(
-                                            "{name}'s value is not a valid property/index, you can only use a string or int (>= 0) here",
-                                        ),
-                                    })
-                                })?
-                        }
-                        JValue::String(ref x) => Property::String(x.to_owned()),
-                        _ => {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                source_ranges: property_sr,
-                                message: format!(
-                                    "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
-                                ),
-                            }));
-                        }
-                    }
-                }
-            }
-            LiteralIdentifier::Literal(literal) => {
-                let value = literal.value.clone();
-                match value {
-                    LiteralValue::IInteger(x) => {
-                        if let Ok(x) = u64::try_from(x) {
-                            Property::Number(x.try_into().unwrap())
-                        } else {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                source_ranges: property_sr,
-                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
-                            }));
-                        }
-                    }
-                    LiteralValue::String(s) => Property::String(s),
-                    _ => {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            source_ranges: vec![self.into()],
-                            message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
-                        }));
-                    }
-                }
-            }
-        };
-
+        let property = Property::try_from(self.computed, self.property.clone(), exec_state, self.into())?;
         let object = match &self.object {
             // TODO: Don't use recursion here, use a loop.
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
@@ -819,5 +735,107 @@ impl IfExpression {
         ctx.inner_execute(&self.final_else, exec_state, BodyType::Block)
             .await
             .map(|expr| expr.unwrap())
+    }
+}
+
+#[derive(Debug)]
+enum Property {
+    Number(usize),
+    String(String),
+}
+
+impl Property {
+    fn try_from(
+        computed: bool,
+        value: LiteralIdentifier,
+        exec_state: &ExecState,
+        sr: SourceRange,
+    ) -> Result<Self, KclError> {
+        let property_sr = vec![sr];
+        let property_src: SourceRange = value.clone().into();
+        match value {
+            LiteralIdentifier::Identifier(identifier) => {
+                let name = identifier.name;
+                if !computed {
+                    // Treat the property as a literal
+                    Ok(Property::String(name.to_string()))
+                } else {
+                    // Actually evaluate memory to compute the property.
+                    let prop = exec_state.memory.get(&name, property_src)?;
+                    let KclValue::UserVal(prop) = prop else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            source_ranges: property_sr,
+                            message: format!(
+                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
+                            ),
+                        }));
+                    };
+                    jvalue_to_prop(&prop.value, property_sr, &name)
+                }
+            }
+            LiteralIdentifier::Literal(literal) => {
+                let value = literal.value.clone();
+                match value {
+                    LiteralValue::IInteger(x) => {
+                        if let Ok(x) = u64::try_from(x) {
+                            Ok(Property::Number(x.try_into().unwrap()))
+                        } else {
+                            Err(KclError::Semantic(KclErrorDetails {
+                                source_ranges: property_sr,
+                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
+                            }))
+                        }
+                    }
+                    LiteralValue::String(s) => Ok(Property::String(s)),
+                    _ => Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges: vec![sr],
+                        message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
+                    })),
+                }
+            }
+        }
+    }
+}
+
+fn jvalue_to_prop(value: &JValue, property_sr: Vec<SourceRange>, name: &str) -> Result<Property, KclError> {
+    let make_err = |message: String| {
+        Err::<Property, _>(KclError::Semantic(KclErrorDetails {
+            source_ranges: property_sr,
+            message,
+        }))
+    };
+    const MUST_BE_POSINT: &str = "indices must be whole positive numbers";
+    const TRY_INT: &str = "try using the int() function to make this a whole number";
+    match value {
+        JValue::Number(ref num) => {
+            let maybe_uint = num.as_u64().and_then(|x| usize::try_from(x).ok());
+            if let Some(uint) = maybe_uint {
+                Ok(Property::Number(uint))
+            } else if let Some(iint) = num.as_i64() {
+                make_err(format!("'{iint}' is not a valid index, {MUST_BE_POSINT}"))
+            } else if let Some(fnum) = num.as_f64() {
+                if fnum < 0.0 {
+                    make_err(format!("'{fnum}' is not a valid index, {MUST_BE_POSINT}"))
+                } else if fnum.fract() == 0.0 {
+                    make_err(format!("'{fnum:.1}' is stored as a fractional number but indices must be whole numbers, {TRY_INT}"))
+                } else {
+                    make_err(format!("'{fnum}' is not a valid index, {MUST_BE_POSINT}, {TRY_INT}"))
+                }
+            } else {
+                make_err(format!("'{num}' is not a valid index, {MUST_BE_POSINT}"))
+            }
+        }
+        JValue::String(ref x) => Ok(Property::String(x.to_owned())),
+        _ => {
+            make_err(format!("{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array"))
+        }
+    }
+}
+impl Property {
+    fn type_name(&self) -> &'static str {
+        match self {
+            Property::Number(_) => "number",
+            Property::String(_) => "string",
+        }
     }
 }
