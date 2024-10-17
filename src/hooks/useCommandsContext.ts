@@ -6,5 +6,6 @@ export const useCommandsContext = () => {
   return {
     commandBarSend: commandBarActor.send,
     commandBarState,
+    commandBarActor,
   }
 }

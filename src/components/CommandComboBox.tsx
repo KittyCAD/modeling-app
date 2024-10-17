@@ -4,6 +4,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { useEffect, useState } from 'react'
 import { CustomIcon } from './CustomIcon'
+import { getActorNextEvents } from 'lib/utils'
 
 function CommandComboBox({
   options,
@@ -73,7 +74,8 @@ function CommandComboBox({
           <Combobox.Option
             key={option.groupId + option.name + (option.displayName || '')}
             value={option}
-            className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
+            className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50"
+            disabled={optionIsDisabled(option)}
           >
             {'icon' in option && option.icon && (
               <CustomIcon name={option.icon} className="w-5 h-5" />
@@ -96,3 +98,11 @@ function CommandComboBox({
 }
 
 export default CommandComboBox
+
+function optionIsDisabled(option: Command): boolean {
+  return (
+    'machineActor' in option &&
+    option.machineActor !== undefined &&
+    !getActorNextEvents(option.machineActor.getSnapshot()).includes(option.name)
+  )
+}
