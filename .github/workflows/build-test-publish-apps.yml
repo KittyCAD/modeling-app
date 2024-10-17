@@ -195,8 +195,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: out-arm64-${{ matrix.platform }}
-          # first one will pick both Zoo Modeling App-$VERSION-arm64-win.exe and Zoo Modeling App-$VERSION-win.exe
-          # last one will also include update yml files for all archs
+          # first two will pick both Zoo Modeling App-$VERSION-arm64-win.exe and Zoo Modeling App-$VERSION-win.exe
           path: |
             out/*-${{ env.VERSION_NO_V }}-win.*
             out/*-${{ env.VERSION_NO_V }}-arm64-win.*
@@ -251,51 +250,6 @@ jobs:
             out/*-x64-win.exe
             out/*-x64-mac.dmg
             out/*-x86_64-linux.AppImage
-
-
-  fake-publish:
-    runs-on: ubuntu-22.04
-    needs: [prepare-files, build-apps]
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: out-arm64-win
-          path: out
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: out-x64-win
-          path: out
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: out-arm64-mac
-          path: out
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: out-x64-mac
-          path: out
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: out-arm64-linux
-          path: out
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: out-x64-linux
-          path: out
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: out-yml
-          path: out
-
-      - name: List artifacts
-        run: "ls -R out"
 
 
   publish-apps-release:
