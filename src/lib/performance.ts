@@ -1,4 +1,6 @@
 import { isDesktop } from 'lib/isDesktop'
+import { writeTelemetryFile } from 'lib/desktop'
+import { printDeltaTotal } from 'lib/telemetry'
 
 function isWeb(): boolean {
   // Identify browser environment when following property is not present
@@ -71,6 +73,10 @@ function detectEnvironment(): MarkHelpers {
     const _helpers: MarkHelpers = {
       mark(name: string, options?: PerformanceMark) {
         _mark(name, options)
+
+        const marks = getMarks()
+        const deltaTotalTable = printDeltaTotal(marks)
+        writeTelemetryFile(deltaTotalTable.join('\n'))
       },
       markOnce(name: string, options?: PerformanceMark) {
         if (seenMarks[name]) {
@@ -78,6 +84,10 @@ function detectEnvironment(): MarkHelpers {
         }
         _mark(name, options)
         seenMarks[name] = true
+
+        const marks = getMarks()
+        const deltaTotalTable = printDeltaTotal(marks)
+        writeTelemetryFile(deltaTotalTable.join('\n'))
       },
       getMarks() {
         let timeOrigin = performance.timeOrigin

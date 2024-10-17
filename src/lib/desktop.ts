@@ -12,6 +12,7 @@ import {
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
+  TELEMETRY_FILE_NAME,
   TOKEN_FILE_NAME,
 } from './constants'
 import { DeepPartial } from './types'
@@ -414,6 +415,20 @@ const getTokenFilePath = async () => {
   return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
 }
 
+const getTelemetryFilePath = async () => {
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  return window.electron.path.join(fullPath, TELEMETRY_FILE_NAME)
+}
+
 const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
     await window.electron.stat(projectPath)
@@ -539,6 +554,12 @@ export const writeTokenFile = async (token: string) => {
   const tokenFilePath = await getTokenFilePath()
   if (err(token)) return Promise.reject(token)
   return window.electron.writeFile(tokenFilePath, token)
+}
+
+export const writeTelemetryFile = async (content: string) => {
+  const telemetryFilePath = await getTelemetryFilePath()
+  if (err(content)) return Promise.reject(content)
+  return window.electron.writeFile(telemetryFilePath, content)
 }
 
 let appStateStore: Project | undefined = undefined

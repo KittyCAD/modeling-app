@@ -1,6 +1,5 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
-
 import dotenv from 'dotenv'
 import {
   app,
@@ -19,8 +18,8 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
-import { reportRejection } from 'lib/trap'
 
+import { reportRejection } from 'lib/trap'
 let mainWindow: BrowserWindow | null = null
 
 // Check the command line arguments for a project path
@@ -210,10 +209,7 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 ipcMain.handle('kittycad', (event, data) => {
   return data.access
     .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
+    .reduce((obj: any, prop: any) => obj[prop], kittycad)(data.args)
 })
 
 ipcMain.handle('find_machine_api', () => {

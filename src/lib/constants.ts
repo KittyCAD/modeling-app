@@ -69,6 +69,7 @@ export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
+export const TELEMETRY_FILE_NAME = 'boot.txt'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'

@@ -11,6 +11,7 @@ import {
 import {
   getUser as getUserDesktop,
   readTokenFile,
+  writeTelemetryFile,
   writeTokenFile,
 } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
