@@ -192,7 +192,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             ([_, machine]) => ({
               name: `${machine.id} (${
                 machine.make_model.model || machine.make_model.manufacturer
-              }) via ${machineManager.machineApiIp || 'the local network'}`,
+              }) (${machine.state.state})`,
               isCurrent: false,
               disabled: machine.state.state !== 'idle',
               value: machine as components['schemas']['MachineInfoResponse'],
