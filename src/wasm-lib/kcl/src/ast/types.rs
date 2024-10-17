@@ -2412,7 +2412,7 @@ impl BinaryOperator {
             BinaryOperator::Lt => *b"ltr",
             BinaryOperator::Lte => *b"lte",
             BinaryOperator::And => *b"and",
-            BinaryOperator::Or => *b"lor"
+            BinaryOperator::Or => *b"lor",
         }
     }
 
