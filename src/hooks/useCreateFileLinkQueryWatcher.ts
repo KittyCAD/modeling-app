@@ -48,7 +48,6 @@ export function useCreateFileLinkQuery(callback: (args: CreateFileSchemaMethodOp
             settings.context.modeling.defaultUnit.default) ??
           settings.context.modeling.defaultUnit.current,
       }
-      console.log('createFileParam', { ...params, location })
 
       const argDefaultValues: CreateFileSchemaMethodOptional = {
         name: params.name
