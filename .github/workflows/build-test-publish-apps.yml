@@ -211,7 +211,7 @@ jobs:
             out/*-x86_64-linux.*
 
       - uses: actions/upload-artifact@v3
-        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         with:
           name: out-yml
           path: |
