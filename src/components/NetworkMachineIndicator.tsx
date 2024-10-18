@@ -55,6 +55,13 @@ export const NetworkMachineIndicator = ({
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
                     {machine.make_model.model}
                   </p>
+                  {machine.extra &&
+                    machine.extra.type === 'bambu' &&
+                    machine.extra.nozzle_diameter && (
+                      <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                        Nozzle Diameter: {machine.extra.nozzle_diameter}
+                      </p>
+                    )}
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
                     {`Status: ${machine.state.state
                       .charAt(0)
@@ -66,13 +73,6 @@ export const NetworkMachineIndicator = ({
                       ? ` (${Math.round(machine.progress)}%)`
                       : ''}
                   </p>
-                  {machine.extra &&
-                    machine.extra.type === 'bambu' &&
-                    machine.extra.nozzle_diameter && (
-                      <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                        Nozzle Diameter: {machine.extra.nozzle_diameter}
-                      </p>
-                    )}
                 </li>
               )
             })}
