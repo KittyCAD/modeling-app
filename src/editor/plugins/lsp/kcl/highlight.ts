@@ -11,7 +11,7 @@ export const kclHighlight = styleTags({
   nil: t.null,
   'AddOp MultOp ExpOp': t.arithmeticOperator,
   BangOp: t.logicOperator,
-  CompOp: t.logicOperator,
+  CompOp: t.compareOperator,
   'Equals Arrow': t.definitionOperator,
   PipeOperator: t.controlOperator,
   String: t.string,
