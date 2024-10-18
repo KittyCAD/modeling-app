@@ -23,7 +23,7 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
         settings: Default::default(),
         context_type: kcl_lib::executor::ContextType::MockCustomForwarded,
     };
-    let _memory = ctx.run(&program, None, IdGenerator::default()).await?;
+    let _memory = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
     let result = result.lock().expect("mutex lock").clone();
     Ok(result)

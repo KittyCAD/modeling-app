@@ -67,13 +67,13 @@ export interface IElectronAPI {
     }
   }
   kittycad: (access: string, args: any) => any
-  listMachines: () => Promise<MachinesListing>
+  listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
   onUpdateDownloadStart: (
     callback: (value: { version: string }) => void
   ) => Electron.IpcRenderer
   onUpdateDownloaded: (
-    callback: (value: string) => void
+    callback: (value: { version: string; releaseNotes: string }) => void
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
