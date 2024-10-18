@@ -290,6 +290,9 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
 /// Parse a KCL operator that takes a left- and right-hand side argument.
 fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
     any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword) && token.value == "mod" {
+            return Ok(BinaryOperator::Mod);
+        }
         if !matches!(token.token_type, TokenType::Operator) {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -301,7 +304,6 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             "-" => BinaryOperator::Sub,
             "/" => BinaryOperator::Div,
             "*" => BinaryOperator::Mul,
-            "%" => BinaryOperator::Mod,
             "^" => BinaryOperator::Pow,
             "==" => BinaryOperator::Eq,
             "!=" => BinaryOperator::Neq,
@@ -3448,6 +3450,20 @@ let myBox = box([0,0], -3, -16, -10)
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
         );
     }
+    #[test]
+    fn test_mod_operator() {
+        let some_program_string = r#"const x = 10 mod 3"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        assert_eq!(
+            tokens[8],
+            Token {
+                token_type: TokenType::Keyword,
+                value: "mod".to_string(),
+                start: 13,
+                end: 16
+            }
+        );
+    }
 }
 
 #[cfg(test)]
@@ -3482,6 +3498,7 @@ mod snapshot_math_tests {
     snapshot_test!(i, "1 * ((( 2 + 3 )))");
     snapshot_test!(j, "distance * p * FOS * 6 / (sigmaAllow * width)");
     snapshot_test!(k, "2 + (((3)))");
+    snapshot_test!(l, "2 mod 3");
 }
 
 #[cfg(test)]

@@ -301,7 +301,7 @@ describe('testing math operators', () => {
     expect(mem.get('myVar')?.value).toBe(0.5)
   })
   it('can modulus', async () => {
-    const code = ['const myVar = 5 % 2'].join('\n')
+    const code = ['const myVar = 5 mod 2'].join('\n')
     const mem = await exe(code)
     expect(mem.get('myVar')?.value).toBe(1)
   })

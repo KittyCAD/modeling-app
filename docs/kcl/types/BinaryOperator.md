@@ -61,7 +61,7 @@ Divide two numbers.
 ----
 Modulo two numbers.
 
-**enum:** `%`
+**enum:** `mod`
 
 
 
