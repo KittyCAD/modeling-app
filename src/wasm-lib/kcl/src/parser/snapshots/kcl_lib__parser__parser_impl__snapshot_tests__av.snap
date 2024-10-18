@@ -24,7 +24,6 @@ expression: actual
           },
           "init": {
             "type": "FunctionExpression",
-            "type": "FunctionExpression",
             "start": 7,
             "end": 49,
             "params": [
@@ -50,7 +49,6 @@ expression: actual
                   "end": 47,
                   "argument": {
                     "type": "CallExpression",
-                    "type": "CallExpression",
                     "start": 28,
                     "end": 47,
                     "callee": {
@@ -62,13 +60,11 @@ expression: actual
                     "arguments": [
                       {
                         "type": "Identifier",
-                        "type": "Identifier",
                         "start": 36,
                         "end": 41,
                         "name": "angle"
                       },
                       {
-                        "type": "Literal",
                         "type": "Literal",
                         "start": 43,
                         "end": 46,
