@@ -8,6 +8,7 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
       "start": 0,
       "end": 91,
       "declarations": [
@@ -23,10 +24,12 @@ expression: actual
           },
           "init": {
             "type": "ArrayExpression",
+            "type": "ArrayExpression",
             "start": 14,
             "end": 91,
             "elements": [
               {
+                "type": "Literal",
                 "type": "Literal",
                 "start": 28,
                 "end": 29,
@@ -34,6 +37,7 @@ expression: actual
                 "raw": "1"
               },
               {
+                "type": "Literal",
                 "type": "Literal",
                 "start": 79,
                 "end": 80,
