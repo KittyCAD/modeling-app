@@ -38,7 +38,7 @@ expression[@isGroup=Expression] {
   PipeSubstitution |
   BinaryExpression {
     expression !add AddOp expression |
-    expression !mult MultOp expression |
+    expression !mult (MultOp | ModOp) expression |
     expression !exp ExpOp expression |
     expression !comp CompOp expression
   } |
@@ -88,6 +88,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
 
   AddOp { "+" | "-" }
   MultOp { "/" | "*" | "\\" }
+  ModOp { "mod" whitespace }
   ExpOp { "^" }
   BangOp { "!" }
   CompOp { "==" | "!=" | "<=" | ">=" | "<" | ">" }
@@ -108,7 +109,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   blockCommentRest { @eof | ![*] blockCommentRest | "*" blockCommentStar }
   blockCommentStar { @eof | "/" | ![/] blockCommentRest | "*" blockCommentStar }
 
-  @precedence { LineComment, BlockComment, MultOp }
+  @precedence { LineComment, BlockComment, MultOp, ModOp, identifier }
 
   Shebang { "#!" ![\n]* }
 

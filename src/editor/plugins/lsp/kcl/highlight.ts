@@ -9,7 +9,7 @@ export const kclHighlight = styleTags({
   return: t.controlKeyword,
   'true false': t.bool,
   nil: t.null,
-  'AddOp MultOp ExpOp': t.arithmeticOperator,
+  'AddOp MultOp ModOp ExpOp': t.arithmeticOperator,
   BangOp: t.logicOperator,
   CompOp: t.compareOperator,
   'Equals Arrow': t.definitionOperator,
