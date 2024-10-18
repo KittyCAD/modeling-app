@@ -450,7 +450,7 @@ pub(crate) use impl_value_meta;
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BodyItem {
     ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
@@ -1106,8 +1106,8 @@ impl ImportItem {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct ImportStatement {
+    pub r#type: ImportStatementTag,
     pub start: usize,
     pub end: usize,
     pub items: Vec<ImportItem>,
@@ -1328,8 +1328,8 @@ impl ItemVisibility {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct VariableDeclaration {
+    pub r#type: VariableDeclarationTag,
     pub start: usize,
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
@@ -1379,6 +1379,7 @@ impl_value_meta!(VariableDeclaration);
 impl VariableDeclaration {
     pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             declarations,
@@ -1646,6 +1647,9 @@ gen_tag!(MemberExpression, MemberExpressionTag);
 gen_tag!(UnaryExpression, UnaryExpressionTag);
 gen_tag!(IfExpression, IfExpressionTag);
 gen_tag!(KclNone, KclNoneTag);
+gen_tag!(VariableDeclaration, VariableDeclarationTag);
+gen_tag!(ImportStatement, ImportStatementTag);
+gen_tag!(ReturnStatement, ReturnStatementTag);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -2840,8 +2844,8 @@ impl FunctionExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct ReturnStatement {
+    pub r#type: ReturnStatementTag,
     pub start: usize,
     pub end: usize,
     pub argument: Expr,

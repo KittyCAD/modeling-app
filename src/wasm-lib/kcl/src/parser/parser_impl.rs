@@ -1195,6 +1195,7 @@ fn import_stmt(i: TokenSlice) -> PResult<Box<ImportStatement>> {
         ));
     }
     Ok(Box::new(ImportStatement {
+        r#type: Default::default(),
         items,
         path: path_string,
         raw_path: path.raw,
@@ -1261,6 +1262,7 @@ pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
     require_whitespace(i)?;
     let argument = expression(i)?;
     Ok(ReturnStatement {
+        r#type: Default::default(),
         start,
         end: argument.end(),
         argument,
@@ -1417,6 +1419,7 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
 
     let end = val.end();
     Ok(VariableDeclaration {
+        r#type: Default::default(),
         start,
         end,
         declarations: vec![VariableDeclarator {
@@ -2133,6 +2136,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     start: 7,
                     end: 47,
                     body: vec![BodyItem::ReturnStatement(ReturnStatement {
+                        r#type: Default::default(),
                         start: 25,
                         end: 33,
                         argument: Expr::Literal(Box::new(Literal {

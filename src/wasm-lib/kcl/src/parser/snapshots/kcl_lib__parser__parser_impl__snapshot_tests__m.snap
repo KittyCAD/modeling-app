@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 26,
       "declarations": [
@@ -70,7 +69,6 @@ expression: actual
       "kind": "const"
     },
     {
-      "type": "VariableDeclaration",
       "type": "VariableDeclaration",
       "start": 31,
       "end": 62,
