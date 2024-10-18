@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
       "start": 0,
       "end": 22,
       "expression": {
