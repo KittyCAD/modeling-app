@@ -183,7 +183,7 @@ function CommandArgOptionInput({
               <p
                 className={`flex-grow ${
                   (option.disabled &&
-                    'text-chalkboard-70 dark:text-chalkboard-50') ||
+                    'text-chalkboard-70 dark:text-chalkboard-50 cursor-not-allowed') ||
                   ''
                 }`}
               >
