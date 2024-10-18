@@ -91,13 +91,11 @@ expression: actual
             "end": 54,
             "object": {
               "type": "Identifier",
-              "type": "Identifier",
               "start": 46,
               "end": 49,
               "name": "obj"
             },
             "property": {
-              "type": "Literal",
               "type": "Literal",
               "start": 50,
               "end": 53,

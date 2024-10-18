@@ -40,13 +40,11 @@ expression: actual
               "end": 24,
               "object": {
                 "type": "Identifier",
-                "type": "Identifier",
                 "start": 19,
                 "end": 22,
                 "name": "obj"
               },
               "property": {
-                "type": "Identifier",
                 "type": "Identifier",
                 "start": 23,
                 "end": 24,

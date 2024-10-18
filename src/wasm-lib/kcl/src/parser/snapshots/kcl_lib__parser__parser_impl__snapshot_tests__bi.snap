@@ -1,0 +1,271 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 100,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 31,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 0,
+          "end": 31,
+          "id": {
+            "type": "Identifier",
+            "start": 0,
+            "end": 2,
+            "name": "yo"
+          },
+          "init": {
+            "type": "ObjectExpression",
+            "start": 5,
+            "end": 31,
+            "properties": [
+              {
+                "type": "ObjectProperty",
+                "start": 7,
+                "end": 29,
+                "key": {
+                  "type": "Identifier",
+                  "start": 7,
+                  "end": 8,
+                  "name": "a"
+                },
+                "value": {
+                  "type": "ObjectExpression",
+                  "start": 10,
+                  "end": 29,
+                  "properties": [
+                    {
+                      "type": "ObjectProperty",
+                      "start": 12,
+                      "end": 27,
+                      "key": {
+                        "type": "Identifier",
+                        "start": 12,
+                        "end": 13,
+                        "name": "b"
+                      },
+                      "value": {
+                        "type": "ObjectExpression",
+                        "start": 15,
+                        "end": 27,
+                        "properties": [
+                          {
+                            "type": "ObjectProperty",
+                            "start": 17,
+                            "end": 25,
+                            "key": {
+                              "type": "Identifier",
+                              "start": 17,
+                              "end": 18,
+                              "name": "c"
+                            },
+                            "value": {
+                              "type": "Literal",
+                              "start": 20,
+                              "end": 25,
+                              "value": "123",
+                              "raw": "'123'"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 32,
+      "end": 41,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 32,
+          "end": 41,
+          "id": {
+            "type": "Identifier",
+            "start": 32,
+            "end": 35,
+            "name": "key"
+          },
+          "init": {
+            "type": "Literal",
+            "start": 38,
+            "end": 41,
+            "value": "c",
+            "raw": "'c'"
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 42,
+      "end": 64,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 42,
+          "end": 64,
+          "id": {
+            "type": "Identifier",
+            "start": 42,
+            "end": 47,
+            "name": "myVar"
+          },
+          "init": {
+            "type": "MemberExpression",
+            "start": 50,
+            "end": 64,
+            "object": {
+              "type": "MemberExpression",
+              "start": 50,
+              "end": 59,
+              "object": {
+                "type": "MemberExpression",
+                "start": 50,
+                "end": 54,
+                "object": {
+                  "type": "Identifier",
+                  "start": 50,
+                  "end": 52,
+                  "name": "yo"
+                },
+                "property": {
+                  "type": "Identifier",
+                  "start": 53,
+                  "end": 54,
+                  "name": "a"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Literal",
+                "start": 55,
+                "end": 58,
+                "value": "b",
+                "raw": "'b'"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "start": 60,
+              "end": 63,
+              "name": "key"
+            },
+            "computed": true
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 65,
+      "end": 75,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 65,
+          "end": 75,
+          "id": {
+            "type": "Identifier",
+            "start": 65,
+            "end": 69,
+            "name": "key2"
+          },
+          "init": {
+            "type": "Literal",
+            "start": 72,
+            "end": 75,
+            "value": "b",
+            "raw": "'b'"
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 76,
+      "end": 100,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 76,
+          "end": 100,
+          "id": {
+            "type": "Identifier",
+            "start": 76,
+            "end": 82,
+            "name": "myVar2"
+          },
+          "init": {
+            "type": "MemberExpression",
+            "start": 85,
+            "end": 100,
+            "object": {
+              "type": "MemberExpression",
+              "start": 85,
+              "end": 98,
+              "object": {
+                "type": "MemberExpression",
+                "start": 85,
+                "end": 92,
+                "object": {
+                  "type": "Identifier",
+                  "start": 85,
+                  "end": 87,
+                  "name": "yo"
+                },
+                "property": {
+                  "type": "Literal",
+                  "start": 88,
+                  "end": 91,
+                  "value": "a",
+                  "raw": "'a'"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "start": 93,
+                "end": 97,
+                "name": "key2"
+              },
+              "computed": true
+            },
+            "property": {
+              "type": "Identifier",
+              "start": 99,
+              "end": 100,
+              "name": "c"
+            },
+            "computed": false
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ]
+}
