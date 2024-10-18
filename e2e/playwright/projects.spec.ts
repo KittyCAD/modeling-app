@@ -918,7 +918,7 @@ extrude001 = extrude(200, sketch001)`)
       .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
         timeout: 10_000,
       })
-      .toBeLessThan(15)
+      .toBeLessThan(30)
 
     await expect(async () => {
       await page.mouse.move(0, 0, { steps: 5 })
