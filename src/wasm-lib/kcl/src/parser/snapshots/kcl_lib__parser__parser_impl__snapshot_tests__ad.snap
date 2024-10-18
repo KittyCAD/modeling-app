@@ -24,7 +24,6 @@ expression: actual
           },
           "init": {
             "type": "FunctionExpression",
-            "type": "FunctionExpression",
             "start": 27,
             "end": 57,
             "params": [],
@@ -38,7 +37,6 @@ expression: actual
                   "start": 43,
                   "end": 51,
                   "argument": {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 50,
                     "end": 51,
@@ -59,7 +57,6 @@ expression: actual
       "start": 62,
       "end": 80,
       "expression": {
-        "type": "CallExpression",
         "type": "CallExpression",
         "start": 62,
         "end": 80,
