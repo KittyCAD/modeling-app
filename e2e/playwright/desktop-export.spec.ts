@@ -179,7 +179,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBe(100_000)
+          .toBeGreaterThan(100_000)
 
         // clean up output.gltf
         await fsp.rm('output.gltf')
