@@ -12,6 +12,7 @@ expression: actual
       "end": 35,
       "expression": {
         "type": "CallExpression",
+        "type": "CallExpression",
         "start": 0,
         "end": 35,
         "callee": {
@@ -22,6 +23,7 @@ expression: actual
         },
         "arguments": [
           {
+            "type": "ObjectExpression",
             "type": "ObjectExpression",
             "start": 7,
             "end": 34,
@@ -38,10 +40,12 @@ expression: actual
                 },
                 "value": {
                   "type": "ArrayExpression",
+                  "type": "ArrayExpression",
                   "start": 13,
                   "end": 19,
                   "elements": [
                     {
+                      "type": "Literal",
                       "type": "Literal",
                       "start": 14,
                       "end": 15,
@@ -49,6 +53,7 @@ expression: actual
                       "raw": "0"
                     },
                     {
+                      "type": "Literal",
                       "type": "Literal",
                       "start": 17,
                       "end": 18,
@@ -70,10 +75,12 @@ expression: actual
                 },
                 "value": {
                   "type": "ArrayExpression",
+                  "type": "ArrayExpression",
                   "start": 26,
                   "end": 32,
                   "elements": [
                     {
+                      "type": "Literal",
                       "type": "Literal",
                       "start": 27,
                       "end": 28,
@@ -81,6 +88,7 @@ expression: actual
                       "raw": "3"
                     },
                     {
+                      "type": "Literal",
                       "type": "Literal",
                       "start": 30,
                       "end": 31,

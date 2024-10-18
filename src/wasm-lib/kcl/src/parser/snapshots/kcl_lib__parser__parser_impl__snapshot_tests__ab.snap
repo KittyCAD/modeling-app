@@ -12,6 +12,7 @@ expression: actual
       "end": 23,
       "expression": {
         "type": "CallExpression",
+        "type": "CallExpression",
         "start": 0,
         "end": 23,
         "callee": {
@@ -22,6 +23,7 @@ expression: actual
         },
         "arguments": [
           {
+            "type": "ObjectExpression",
             "type": "ObjectExpression",
             "start": 7,
             "end": 22,
@@ -38,10 +40,12 @@ expression: actual
                 },
                 "value": {
                   "type": "ArrayExpression",
+                  "type": "ArrayExpression",
                   "start": 13,
                   "end": 20,
                   "elements": [
                     {
+                      "type": "Literal",
                       "type": "Literal",
                       "start": 14,
                       "end": 15,
@@ -49,6 +53,7 @@ expression: actual
                       "raw": "0"
                     },
                     {
+                      "type": "UnaryExpression",
                       "type": "UnaryExpression",
                       "start": 17,
                       "end": 19,

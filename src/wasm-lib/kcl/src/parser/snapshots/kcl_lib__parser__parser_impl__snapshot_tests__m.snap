@@ -23,6 +23,7 @@ expression: actual
           },
           "init": {
             "type": "ObjectExpression",
+            "type": "ObjectExpression",
             "start": 12,
             "end": 26,
             "properties": [
@@ -37,6 +38,7 @@ expression: actual
                   "name": "a"
                 },
                 "value": {
+                  "type": "Literal",
                   "type": "Literal",
                   "start": 17,
                   "end": 18,
@@ -55,6 +57,7 @@ expression: actual
                   "name": "b"
                 },
                 "value": {
+                  "type": "Literal",
                   "type": "Literal",
                   "start": 23,
                   "end": 24,
@@ -85,10 +88,12 @@ expression: actual
           },
           "init": {
             "type": "ArrayExpression",
+            "type": "ArrayExpression",
             "start": 46,
             "end": 62,
             "elements": [
               {
+                "type": "BinaryExpression",
                 "type": "BinaryExpression",
                 "start": 47,
                 "end": 58,
@@ -121,6 +126,7 @@ expression: actual
                 }
               },
               {
+                "type": "Literal",
                 "type": "Literal",
                 "start": 60,
                 "end": 61,

@@ -23,6 +23,7 @@ expression: actual
           },
           "init": {
             "type": "FunctionExpression",
+            "type": "FunctionExpression",
             "start": 7,
             "end": 58,
             "params": [],
@@ -36,6 +37,7 @@ expression: actual
                   "end": 32,
                   "argument": {
                     "type": "Identifier",
+                    "type": "Identifier",
                     "start": 30,
                     "end": 32,
                     "name": "sg"
@@ -46,6 +48,7 @@ expression: actual
                   "start": 41,
                   "end": 50,
                   "argument": {
+                    "type": "Identifier",
                     "type": "Identifier",
                     "start": 48,
                     "end": 50,

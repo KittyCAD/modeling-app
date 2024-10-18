@@ -23,6 +23,7 @@ expression: actual
           },
           "init": {
             "type": "CallExpression",
+            "type": "CallExpression",
             "start": 14,
             "end": 30,
             "callee": {
@@ -33,6 +34,7 @@ expression: actual
             },
             "arguments": [
               {
+                "type": "Identifier",
                 "type": "Identifier",
                 "start": 28,
                 "end": 29,
