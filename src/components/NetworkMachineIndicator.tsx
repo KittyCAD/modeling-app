@@ -58,10 +58,10 @@ export const NetworkMachineIndicator = ({
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
                     {`Status: ${machine.state.state.charAt(0).toUpperCase()}${machine.state.state.slice(1)}`}
                     {machine.state.state === 'failed' && machine.state.message
-                      ? `(${machine.state.message})`
+                      ? ` (${machine.state.message})`
                       : ''}
                     {machine.state.state === 'running' && machine.progress
-                      ? `(${Math.floor(machine.progress * 100)}%)`
+                      ? ` (${Math.round(machine.progress)}%)`
                       : ''}
                   </p>
                   {machine.extra &&
