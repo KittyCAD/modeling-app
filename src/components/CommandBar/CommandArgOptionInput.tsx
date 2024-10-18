@@ -180,10 +180,12 @@ function CommandArgOptionInput({
               disabled={option.disabled}
               className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
-              {/* TODO: change opacity hack to a real class */}
               <p
-                className="flex-grow"
-                style={{ opacity: option.disabled ? 0.5 : 1.0 }}
+                className={`flex-grow ${
+                  (option.disabled &&
+                    'text-chalkboard-70 dark:text-chalkboard-50') ||
+                  ''
+                }`}
               >
                 {option.name}
               </p>
