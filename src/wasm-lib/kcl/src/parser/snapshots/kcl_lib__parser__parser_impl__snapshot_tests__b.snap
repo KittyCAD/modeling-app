@@ -24,7 +24,6 @@ expression: actual
           },
           "init": {
             "type": "CallExpression",
-            "type": "CallExpression",
             "start": 14,
             "end": 36,
             "callee": {
@@ -36,14 +35,12 @@ expression: actual
             "arguments": [
               {
                 "type": "Literal",
-                "type": "Literal",
                 "start": 18,
                 "end": 19,
                 "value": 5,
                 "raw": "5"
               },
               {
-                "type": "UnaryExpression",
                 "type": "UnaryExpression",
                 "start": 22,
                 "end": 35,
@@ -62,14 +59,12 @@ expression: actual
                   "arguments": [
                     {
                       "type": "Literal",
-                      "type": "Literal",
                       "start": 30,
                       "end": 31,
                       "value": 5,
                       "raw": "5"
                     },
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 33,
                       "end": 34,
