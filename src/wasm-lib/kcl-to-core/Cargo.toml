@@ -20,4 +20,4 @@ kcl-lib = { path = "../kcl" }
 kittycad = { workspace = true, features = ["clap"] }
 kittycad-modeling-cmds = { workspace = true }
 tokio = { version = "1.38", features = ["full", "time", "rt", "tracing"] }
-uuid = { version = "1.9.1", features = ["v4", "js", "serde"] }
+uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }

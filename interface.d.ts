@@ -20,9 +20,10 @@ export interface IElectronAPI {
   version: typeof process.env.version
   watchFileOn: (
     path: string,
+    key: string,
     callback: (eventType: string, path: string) => void
   ) => void
-  watchFileOff: (path: string) => void
+  watchFileOff: (path: string, key: string) => void
   readFile: (path: string) => ReturnType<fs.readFile>
   writeFile: (
     path: string,
@@ -67,7 +68,7 @@ export interface IElectronAPI {
     }
   }
   kittycad: (access: string, args: any) => any
-  listMachines: () => Promise<MachinesListing>
+  listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
   onUpdateDownloadStart: (
     callback: (value: { version: string }) => void

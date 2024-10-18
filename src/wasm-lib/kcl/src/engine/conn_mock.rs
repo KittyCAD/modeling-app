@@ -22,10 +22,13 @@ use crate::{
     executor::{DefaultPlanes, IdGenerator},
 };
 
+use super::ExecutionKind;
+
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
     batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 impl EngineConnection {
@@ -33,6 +36,7 @@ impl EngineConnection {
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            execution_kind: Default::default(),
         })
     }
 }
@@ -45,6 +49,18 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
     }
 
     async fn default_planes(
