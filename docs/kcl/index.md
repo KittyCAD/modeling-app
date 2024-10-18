@@ -78,6 +78,7 @@ layout: manual
 * [`profileStart`](kcl/profileStart)
 * [`profileStartX`](kcl/profileStartX)
 * [`profileStartY`](kcl/profileStartY)
+* [`push`](kcl/push)
 * [`reduce`](kcl/reduce)
 * [`rem`](kcl/rem)
 * [`revolve`](kcl/revolve)
