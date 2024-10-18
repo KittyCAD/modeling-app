@@ -861,6 +861,12 @@ test(
 
     page.on('console', console.log)
 
+    // Locators and constants
+    const gizmo = page.locator('[aria-label*=gizmo]')
+    const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+    const pointOnModel = { x: 660, y: 250 }
+    const expectedStartCamZPosition = 15633.47
+
     // expect to see text "No Projects found"
     await expect(page.getByText('No Projects found')).toBeVisible()
 
@@ -873,16 +879,7 @@ test(
 
     await page.getByText('project-000').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
+    await u.waitForPageLoad()
 
     await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
@@ -892,8 +889,28 @@ test(
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(200, sketch001)`)
+      await page.waitForTimeout(800)
 
-    const pointOnModel = { x: 660, y: 250 }
+    async function getCameraZValue() {
+      return page
+        .getByTestId('cam-z-position')
+        .inputValue()
+        .then((value) => parseFloat(value))
+    }
+
+    await test.step(`Reset camera`, async () => {
+      await u.openDebugPanel()
+      await u.clearCommandLogs()
+      await u.doAndWaitForCmd(async () => {
+        await gizmo.click({ button: 'right' })
+        await resetCameraButton.click()
+      }, 'zoom_to_fit')
+      await expect
+        .poll(getCameraZValue, {
+          message: 'Camera Z should be at expected position after reset',
+        })
+        .toEqual(expectedStartCamZPosition)
+    })
 
     // gray at this pixel means the stream has loaded in the most
     // user way we can verify it (pixel color)
