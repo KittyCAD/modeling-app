@@ -463,6 +463,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return test_?.step(
         `Create and select project with text "${hasText}"`,
         async () => {
+          // Without this, we get unreliable project creation. It's probably
+          // due to a race between the FS being read and clicking doing something.
+          await page.waitForTimeout(100)
           await page.getByTestId('home-new-file').click()
           const projectLinksPost = page.getByTestId('project-link')
           await projectLinksPost.filter({ hasText }).click()
@@ -492,6 +495,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
+        // If the application is in the middle of connecting a stream
+        // then creating a new file won't work in the end.
+        await expect(
+          page.getByRole('button', { name: 'Start Sketch' })
+        ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')

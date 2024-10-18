@@ -24,11 +24,9 @@ expression: actual
           },
           "init": {
             "type": "IfExpression",
-            "type": "IfExpression",
             "start": 10,
             "end": 121,
             "cond": {
-              "type": "Literal",
               "type": "Literal",
               "start": 13,
               "end": 17,
@@ -46,7 +44,6 @@ expression: actual
                   "end": 33,
                   "expression": {
                     "type": "Literal",
-                    "type": "Literal",
                     "start": 32,
                     "end": 33,
                     "value": 3,
@@ -62,7 +59,6 @@ expression: actual
                 "end": 90,
                 "cond": {
                   "type": "CallExpression",
-                  "type": "CallExpression",
                   "start": 52,
                   "end": 64,
                   "callee": {
@@ -73,7 +69,6 @@ expression: actual
                   },
                   "arguments": [
                     {
-                      "type": "Identifier",
                       "type": "Identifier",
                       "start": 57,
                       "end": 63,
@@ -92,7 +87,6 @@ expression: actual
                       "start": 79,
                       "end": 80,
                       "expression": {
-                        "type": "Literal",
                         "type": "Literal",
                         "start": 79,
                         "end": 80,
@@ -115,7 +109,6 @@ expression: actual
                   "start": 110,
                   "end": 111,
                   "expression": {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 110,
                     "end": 111,
