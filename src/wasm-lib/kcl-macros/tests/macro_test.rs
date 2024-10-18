@@ -19,12 +19,14 @@ fn basic() {
                 start: 6,
                 end: 11,
                 id: Identifier {
+                    r#type: Default::default(),
                     start: 6,
                     end: 7,
                     name: "y".to_owned(),
                     digest: None,
                 },
                 init: Expr::Literal(Box::new(Literal {
+                    r#type: Default::default(),
                     start: 10,
                     end: 11,
                     value: LiteralValue::IInteger(4),
