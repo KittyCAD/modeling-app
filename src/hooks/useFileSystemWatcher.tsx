@@ -12,35 +12,51 @@ type Path = string
 // watcher.addListener(() => { ... }).
 
 export const useFileSystemWatcher = (
-  callback: (path: Path) => Promise<void>,
-  dependencyArray: Path[]
+  callback: (eventType: string, path: Path) => Promise<void>,
+  paths: Path[]
 ): void => {
-  // Track a ref to the callback. This is how we get the callback updated
-  // across the NodeJS<->Browser boundary.
-  const callbackRef = useRef<{ fn: (path: Path) => Promise<void> }>({
-    fn: async (_path) => {},
-  })
+  // Used to track this instance of useFileSystemWatcher.
+  // Assign to ref so it doesn't change between renders.
+  const key = useRef(Math.random().toString())
+
+  const [output, setOutput] = useState<
+    { eventType: string; path: string } | undefined
+  >(undefined)
+
+  // Used to track if paths list changes.
+  const [pathsTracked, setPathsTracked] = useState<Path[]>([])
 
   useEffect(() => {
-    callbackRef.current.fn = callback
-  }, [callback])
-
-  // Used to track if dependencyArrray changes.
-  const [dependencyArrayTracked, setDependencyArrayTracked] = useState<Path[]>(
-    []
-  )
+    if (!output) return
+    callback(output.eventType, output.path).catch(reportRejection)
+  }, [output])
 
   // On component teardown obliterate all watchers.
   useEffect(() => {
     // The hook is useless on web.
     if (!isDesktop()) return
 
+    const cbWatcher = (eventType: string, path: string) => {
+      setOutput({ eventType, path })
+    }
+
+    for (let path of pathsTracked) {
+      // Because functions don't retain refs between NodeJS-Browser I need to
+      // pass an identifying key so we can later remove it.
+      // A way to think of the function call is:
+      // "For this path, add a new handler with this key"
+      // "There can be many keys (functions) per path"
+      // Again if refs were preserved, we wouldn't need to do this. Keys
+      // gives us uniqueness.
+      window.electron.watchFileOn(path, key.current, cbWatcher)
+    }
+
     return () => {
-      for (let path of dependencyArray) {
-        window.electron.watchFileOff(path)
+      for (let path of pathsTracked) {
+        window.electron.watchFileOff(path, key.current)
       }
     }
-  }, [])
+  }, [pathsTracked])
 
   function difference<T>(l1: T[], l2: T[]): [T[], T[]] {
     return [
@@ -49,8 +65,7 @@ export const useFileSystemWatcher = (
     ]
   }
 
-  const hasDiff =
-    difference(dependencyArray, dependencyArrayTracked)[0].length !== 0
+  const hasDiff = difference(paths, pathsTracked)[0].length !== 0
 
   // Removing 1 watcher at a time is only possible because in a filesystem,
   // a path is unique (there can never be two paths with the same name).
@@ -61,19 +76,8 @@ export const useFileSystemWatcher = (
 
     if (!hasDiff) return
 
-    const [pathsRemoved, pathsRemaining] = difference(
-      dependencyArrayTracked,
-      dependencyArray
-    )
-    for (let path of pathsRemoved) {
-      window.electron.watchFileOff(path)
-    }
-    const [pathsAdded] = difference(dependencyArray, dependencyArrayTracked)
-    for (let path of pathsAdded) {
-      window.electron.watchFileOn(path, (_eventType: string, path: Path) => {
-        callbackRef.current.fn(path).catch(reportRejection)
-      })
-    }
-    setDependencyArrayTracked(pathsRemaining.concat(pathsAdded))
+    const [, pathsRemaining] = difference(pathsTracked, paths)
+    const [pathsAdded] = difference(paths, pathsTracked)
+    setPathsTracked(pathsRemaining.concat(pathsAdded))
   }, [hasDiff])
 }
