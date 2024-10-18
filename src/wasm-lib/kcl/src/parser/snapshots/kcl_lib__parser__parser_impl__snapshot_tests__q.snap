@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 12,
-            "name": "height",
-            "digest": null
+            "name": "height"
           },
           "init": {
             "type": "ArrayExpression",
@@ -39,8 +38,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 17,
                   "end": 20,
-                  "name": "obj",
-                  "digest": null
+                  "name": "obj"
                 },
                 "property": {
                   "type": "Literal",
@@ -48,11 +46,9 @@ expression: actual
                   "start": 21,
                   "end": 24,
                   "value": "a",
-                  "raw": "\"a\"",
-                  "digest": null
+                  "raw": "\"a\""
                 },
-                "computed": false,
-                "digest": null
+                "computed": false
               },
               {
                 "type": "Literal",
@@ -60,23 +56,13 @@ expression: actual
                 "start": 27,
                 "end": 28,
                 "value": 0,
-                "raw": "0",
-                "digest": null
+                "raw": "0"
               }
-            ],
-            "digest": null
-          },
-          "digest": null
+            ]
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }
