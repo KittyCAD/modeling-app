@@ -23,8 +23,8 @@ export interface IElectronAPI {
     key: string,
     callback: (eventType: string, path: string) => void
   ) => void
+  readFile: typeof fs.readFile
   watchFileOff: (path: string, key: string) => void
-  readFile: (path: string) => ReturnType<fs.readFile>
   writeFile: (
     path: string,
     data: string | Uint8Array
