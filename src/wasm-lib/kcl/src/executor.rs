@@ -2002,6 +2002,7 @@ impl ExecutorContext {
         id_generator: IdGenerator,
         project_directory: Option<String>,
     ) -> Result<ExecState, KclError> {
+        println!("Running");
         self.run_with_session_data(program, memory, id_generator, project_directory)
             .await
             .map(|x| x.0)
@@ -2059,6 +2060,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
+        dbg!("Inner execute");
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
@@ -2230,7 +2232,8 @@ impl ExecutorContext {
         metadata: &Metadata,
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
-        let item = match init {
+        eprintln!("Executing expression");
+        let item = match dbg!(init) {
             Expr::None(none) => KclValue::from(none),
             Expr::Literal(literal) => KclValue::from(literal),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,

@@ -368,6 +368,7 @@ impl EngineManager for EngineConnection {
         cmd: WebSocketRequest,
         _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
+        dbg!(&cmd);
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
@@ -401,7 +402,7 @@ impl EngineManager for EngineConnection {
 
         // Wait for the response.
         let current_time = std::time::Instant::now();
-        while current_time.elapsed().as_secs() < 60 {
+        while current_time.elapsed().as_secs() < 8 {
             if let Ok(guard) = self.socket_health.lock() {
                 if *guard == SocketHealth::Inactive {
                     // Check if we have any pending errors.

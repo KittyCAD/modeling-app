@@ -183,6 +183,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         batch_end: bool,
         source_range: crate::executor::SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        println!("Flushing");
         let all_requests = if batch_end {
             let mut requests = self.batch().lock().unwrap().clone();
             requests.extend(self.batch_end().lock().unwrap().values().cloned());
@@ -190,6 +191,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         } else {
             self.batch().lock().unwrap().clone()
         };
+        // dbg!(&all_requests);
 
         // Return early if we have no commands to send.
         if all_requests.is_empty() {
@@ -254,9 +256,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }) => {
                 // Get the last command ID.
                 let last_id = requests.last().unwrap().cmd_id;
+                eprintln!("ADAM: Sending inner commands");
                 let ws_resp = self
                     .inner_send_modeling_cmd(batch_id.into(), source_range, final_req, id_to_source_range.clone())
                     .await?;
+                eprintln!("ADAM: Sent them");
                 let response = self.parse_websocket_response(ws_resp, source_range)?;
 
                 // If we have a batch response, we want to return the specific id we care about.
