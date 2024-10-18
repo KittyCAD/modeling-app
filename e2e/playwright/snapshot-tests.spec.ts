@@ -528,6 +528,7 @@ test(
     // Draw the rectangle
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
     await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
+    await page.waitForTimeout(800)
 
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
