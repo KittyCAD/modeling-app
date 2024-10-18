@@ -494,7 +494,7 @@ impl From<&BodyItem> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum Expr {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),

@@ -24,7 +24,6 @@ expression: actual
           },
           "init": {
             "type": "ObjectExpression",
-            "type": "ObjectExpression",
             "start": 12,
             "end": 79,
             "properties": [
@@ -39,7 +38,6 @@ expression: actual
                   "name": "a"
                 },
                 "value": {
-                  "type": "Literal",
                   "type": "Literal",
                   "start": 29,
                   "end": 30,
@@ -58,7 +56,6 @@ expression: actual
                   "name": "c"
                 },
                 "value": {
-                  "type": "Literal",
                   "type": "Literal",
                   "start": 68,
                   "end": 69,
