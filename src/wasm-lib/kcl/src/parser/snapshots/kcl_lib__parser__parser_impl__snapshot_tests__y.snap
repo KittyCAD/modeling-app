@@ -8,6 +8,7 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
       "start": 0,
       "end": 29,
       "declarations": [

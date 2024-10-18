@@ -8,6 +8,7 @@ expression: actual
   "body": [
     {
       "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
       "start": 0,
       "end": 23,
       "expression": {
@@ -59,6 +60,7 @@ expression: actual
                       "end": 19,
                       "operator": "-",
                       "argument": {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 18,
                         "end": 19,

@@ -8,6 +8,7 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
       "start": 0,
       "end": 35,
       "declarations": [
@@ -40,6 +41,7 @@ expression: actual
                 "end": 31,
                 "operator": "-",
                 "argument": {
+                  "type": "CallExpression",
                   "type": "CallExpression",
                   "start": 19,
                   "end": 31,

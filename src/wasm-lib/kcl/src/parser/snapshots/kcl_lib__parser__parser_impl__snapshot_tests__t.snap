@@ -8,6 +8,7 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
       "start": 0,
       "end": 17,
       "declarations": [
@@ -28,11 +29,13 @@ expression: actual
             "end": 17,
             "object": {
               "type": "Identifier",
+              "type": "Identifier",
               "start": 12,
               "end": 14,
               "name": "b1"
             },
             "property": {
+              "type": "Identifier",
               "type": "Identifier",
               "start": 15,
               "end": 16,

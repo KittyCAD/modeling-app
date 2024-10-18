@@ -8,6 +8,7 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
       "start": 5,
       "end": 57,
       "declarations": [
@@ -33,6 +34,7 @@ expression: actual
               "body": [
                 {
                   "type": "ReturnStatement",
+                  "type": "ReturnStatement",
                   "start": 43,
                   "end": 51,
                   "argument": {
@@ -52,6 +54,7 @@ expression: actual
       "kind": "fn"
     },
     {
+      "type": "ExpressionStatement",
       "type": "ExpressionStatement",
       "start": 62,
       "end": 80,

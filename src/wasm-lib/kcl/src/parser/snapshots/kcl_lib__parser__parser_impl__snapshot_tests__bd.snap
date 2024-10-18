@@ -8,6 +8,7 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
       "start": 0,
       "end": 121,
       "declarations": [
@@ -39,6 +40,7 @@ expression: actual
               "end": 42,
               "body": [
                 {
+                  "type": "ExpressionStatement",
                   "type": "ExpressionStatement",
                   "start": 32,
                   "end": 33,
@@ -86,6 +88,7 @@ expression: actual
                   "body": [
                     {
                       "type": "ExpressionStatement",
+                      "type": "ExpressionStatement",
                       "start": 79,
                       "end": 80,
                       "expression": {
@@ -107,6 +110,7 @@ expression: actual
               "end": 120,
               "body": [
                 {
+                  "type": "ExpressionStatement",
                   "type": "ExpressionStatement",
                   "start": 110,
                   "end": 111,
