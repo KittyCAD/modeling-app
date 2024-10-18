@@ -1,6 +1,7 @@
 //! Types used to send data to the test server.
 
 use crate::{
+    ast::types::Program,
     executor::{ExecutorContext, ExecutorSettings, IdGenerator},
     settings::types::UnitLength,
 };
@@ -22,6 +23,18 @@ pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> anyhow::Resu
 pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> anyhow::Result<image::DynamicImage> {
     let ctx = new_context(units, false).await?;
     do_execute_and_snapshot(&ctx, code).await
+}
+
+pub async fn execute_and_snapshot_ast(program: Program) -> anyhow::Result<image::DynamicImage> {
+    let ctx = new_context(UnitLength::Mm, true).await?;
+    let snapshot = ctx
+        .execute_and_prepare_snapshot(&program, IdGenerator::default(), None)
+        .await?;
+    let bytes = snapshot.contents.0;
+    let img = image::ImageReader::new(std::io::Cursor::new(bytes))
+        .with_guessed_format()?
+        .decode()?;
+    Ok(img)
 }
 
 async fn do_execute_and_snapshot(ctx: &ExecutorContext, code: &str) -> anyhow::Result<image::DynamicImage> {

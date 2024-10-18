@@ -28,6 +28,8 @@ pub mod settings;
 pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
+#[cfg(test)]
+mod tests;
 pub mod thread;
 pub mod token;
 mod unparser;
