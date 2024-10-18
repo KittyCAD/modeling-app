@@ -1,13 +1,13 @@
 const ANSWER = 41803
 
 fn t = (s) => {
-  return (ANSWER * s + 12345) % 214748
+  return (ANSWER * s + 12345) mod 214748
 }
 
 let xs = 205804
 let ys = 71816
-  let ox = 35 - (t(xs) % 70)
-  let oy = 35 - (t(ys) % 70)
+  let ox = 35 - (t(xs) mod 70)
+  let oy = 35 - (t(ys) mod 70)
   const r = startSketchOn('XZ')
     |> startProfileAt([ox, oy], %)
     |> line([1, 0], %)

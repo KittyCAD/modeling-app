@@ -3390,6 +3390,17 @@ let w = f() + f()
         parse_execute(ast).await.unwrap();
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn weird_percent() {
+        let ast = r#"let n = 10
+        let d = n % 2"#;
+        let res = parse_execute(ast).await;
+        if let Ok(mem) = res {
+            let d = mem.get("d", Default::default()).unwrap();
+            panic!("This should not have parsed, but it did, and d == {d:?}");
+        }
+    }
+
     #[test]
     fn test_assign_args_to_params() {
         // Set up a little framework for this test.
