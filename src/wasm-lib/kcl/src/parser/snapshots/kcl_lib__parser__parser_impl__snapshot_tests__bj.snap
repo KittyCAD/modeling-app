@@ -1,0 +1,124 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 50,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 26,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 26,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 8,
+            "name": "yo"
+          },
+          "init": {
+            "type": "ObjectExpression",
+            "start": 11,
+            "end": 26,
+            "properties": [
+              {
+                "type": "ObjectProperty",
+                "start": 12,
+                "end": 25,
+                "key": {
+                  "type": "Identifier",
+                  "start": 12,
+                  "end": 13,
+                  "name": "a"
+                },
+                "value": {
+                  "type": "ObjectExpression",
+                  "start": 15,
+                  "end": 25,
+                  "properties": [
+                    {
+                      "type": "ObjectProperty",
+                      "start": 16,
+                      "end": 24,
+                      "key": {
+                        "type": "Identifier",
+                        "start": 16,
+                        "end": 17,
+                        "name": "b"
+                      },
+                      "value": {
+                        "type": "Literal",
+                        "start": 19,
+                        "end": 24,
+                        "value": "123",
+                        "raw": "'123'"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 27,
+      "end": 50,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 33,
+          "end": 50,
+          "id": {
+            "type": "Identifier",
+            "start": 33,
+            "end": 38,
+            "name": "myVar"
+          },
+          "init": {
+            "type": "MemberExpression",
+            "start": 41,
+            "end": 50,
+            "object": {
+              "type": "MemberExpression",
+              "start": 41,
+              "end": 45,
+              "object": {
+                "type": "Identifier",
+                "start": 41,
+                "end": 43,
+                "name": "yo"
+              },
+              "property": {
+                "type": "Identifier",
+                "start": 44,
+                "end": 45,
+                "name": "a"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Literal",
+              "start": 46,
+              "end": 49,
+              "value": "b",
+              "raw": "'b'"
+            },
+            "computed": false
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ]
+}

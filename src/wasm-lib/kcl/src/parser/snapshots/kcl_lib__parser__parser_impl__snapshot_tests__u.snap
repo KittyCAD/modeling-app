@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 34,
       "declarations": [
@@ -24,33 +23,27 @@ expression: actual
           },
           "init": {
             "type": "MemberExpression",
-            "type": "MemberExpression",
             "start": 13,
             "end": 34,
             "object": {
-              "type": "MemberExpression",
               "type": "MemberExpression",
               "start": 13,
               "end": 29,
               "object": {
                 "type": "MemberExpression",
-                "type": "MemberExpression",
                 "start": 13,
                 "end": 23,
                 "object": {
                   "type": "MemberExpression",
-                  "type": "MemberExpression",
                   "start": 13,
                   "end": 19,
                   "object": {
-                    "type": "Identifier",
                     "type": "Identifier",
                     "start": 13,
                     "end": 15,
                     "name": "yo"
                   },
                   "property": {
-                    "type": "Identifier",
                     "type": "Identifier",
                     "start": 16,
                     "end": 19,
@@ -60,7 +53,6 @@ expression: actual
                 },
                 "property": {
                   "type": "Identifier",
-                  "type": "Identifier",
                   "start": 20,
                   "end": 23,
                   "name": "two"
@@ -69,7 +61,6 @@ expression: actual
               },
               "property": {
                 "type": "Identifier",
-                "type": "Identifier",
                 "start": 24,
                 "end": 29,
                 "name": "three"
@@ -77,7 +68,6 @@ expression: actual
               "computed": false
             },
             "property": {
-              "type": "Identifier",
               "type": "Identifier",
               "start": 30,
               "end": 34,
