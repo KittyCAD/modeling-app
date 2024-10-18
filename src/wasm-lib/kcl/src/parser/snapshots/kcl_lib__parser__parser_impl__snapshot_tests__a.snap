@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 143,
       "declarations": [
@@ -138,7 +137,6 @@ expression: actual
                         "operator": "-",
                         "argument": {
                           "type": "Literal",
-                          "type": "Literal",
                           "start": 87,
                           "end": 88,
                           "value": 5,
@@ -197,7 +195,6 @@ expression: actual
                         "end": 116,
                         "operator": "-",
                         "argument": {
-                          "type": "Literal",
                           "type": "Literal",
                           "start": 114,
                           "end": 116,

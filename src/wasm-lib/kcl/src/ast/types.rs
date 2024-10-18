@@ -450,7 +450,7 @@ pub(crate) use impl_value_meta;
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BodyItem {
     ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
@@ -713,7 +713,7 @@ impl From<&Expr> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BinaryPart {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
@@ -2140,7 +2140,7 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum MemberObject {
     MemberExpression(Box<MemberExpression>),
     Identifier(Box<Identifier>),
@@ -2187,7 +2187,7 @@ impl From<&MemberObject> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum LiteralIdentifier {
     Identifier(Box<Identifier>),
     Literal(Box<Literal>),
