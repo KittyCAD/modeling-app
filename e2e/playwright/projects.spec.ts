@@ -889,7 +889,7 @@ test(
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(200, sketch001)`)
-      await page.waitForTimeout(800)
+    await page.waitForTimeout(800)
 
     async function getCameraZValue() {
       return page
