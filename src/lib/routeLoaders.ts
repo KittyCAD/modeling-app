@@ -14,6 +14,7 @@ import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
+import { normalizeLineEndings } from 'lib/codeEditor'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -108,7 +109,9 @@ export const fileLoader: LoaderFunction = async (
         )
       }
 
-      code = await window.electron.readFile(currentFilePath)
+      code = await window.electron.readFile(currentFilePath, {
+        encoding: 'utf-8',
+      })
       code = normalizeLineEndings(code)
 
       // Update both the state and the editor's code.
@@ -181,8 +184,4 @@ export const homeLoader: LoaderFunction = async (): Promise<
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
   return {}
-}
-
-const normalizeLineEndings = (str: string, normalized = '\n') => {
-  return str.replace(/\r?\n/g, normalized)
 }

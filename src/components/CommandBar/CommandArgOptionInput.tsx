@@ -135,7 +135,9 @@ function CommandArgOptionInput({
           <Combobox.Input
             id="option-input"
             ref={inputRef}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) =>
+              !event.target.disabled && setQuery(event.target.value)
+            }
             className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
             onKeyDown={(event) => {
               if (event.metaKey && event.key === 'k')
@@ -175,9 +177,18 @@ function CommandArgOptionInput({
             <Combobox.Option
               key={option.name}
               value={option}
+              disabled={option.disabled}
               className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
-              <p className="flex-grow">{option.name} </p>
+              <p
+                className={`flex-grow ${
+                  (option.disabled &&
+                    'text-chalkboard-70 dark:text-chalkboard-50 cursor-not-allowed') ||
+                  ''
+                }`}
+              >
+                {option.name}
+              </p>
               {option.value === currentOption?.value && (
                 <small className="text-chalkboard-70 dark:text-chalkboard-50">
                   current

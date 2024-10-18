@@ -108,7 +108,7 @@ gen_test_fail!(
 );
 gen_test_fail!(
     invalid_index_negative,
-    "semantic: i's value is not a valid property/index, you can only use a string or int (>= 0) here"
+    "semantic: '-1' is not a valid index, indices must be whole positive numbers"
 );
 gen_test_fail!(
     invalid_index_fractional,
