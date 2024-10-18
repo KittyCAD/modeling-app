@@ -136,19 +136,32 @@ export interface components {
         }
     /** @description Configuration for a FDM-based printer. */
     FdmHardwareConfiguration: {
-      /** @description type of material being extruded */
-      filament_material: components['schemas']['FilamentMaterial']
+      /** @description The filaments the printer has access to. */
+      filaments: components['schemas']['Filament'][]
       /**
        * Format: double
        * @description Diameter of the extrusion nozzle, in mm.
        */
       nozzle_diameter: number
     }
+    /** @description Information about the filament being used in a FDM printer. */
+    Filament: {
+      /** @description The color (as hex without the `#`) of the filament, this is likely specific to the manufacturer. */
+      color?: string | null
+      /** @description The material that the filament is made of. */
+      material: components['schemas']['FilamentMaterial']
+      /** @description The name of the filament, this is likely specfic to the manufacturer. */
+      name?: string | null
+    }
     /** @description The material that the filament is made of. */
     FilamentMaterial:
       | {
           /** @enum {string} */
           type: 'pla'
+        }
+      | {
+          /** @enum {string} */
+          type: 'pla_support'
         }
       | {
           /** @enum {string} */
@@ -177,12 +190,6 @@ export interface components {
       | {
           /** @enum {string} */
           type: 'composite'
-        }
-      | {
-          /** @description The name of the material. */
-          name: string
-          /** @enum {string} */
-          type: 'other'
         }
     /** @description The hardware configuration of a machine. */
     HardwareConfiguration:
@@ -214,6 +221,11 @@ export interface components {
        *
        *     What "close" means is up to you! */
       max_part_volume?: components['schemas']['Volume'] | null
+      /**
+       * Format: double
+       * @description Progress of the current print, if printing.
+       */
+      progress?: number | null
       /** @description Status of the printer -- be it printing, idle, or unreachable. This may dictate if a machine is capable of taking a new job. */
       state: components['schemas']['MachineState']
     }
@@ -284,7 +296,13 @@ export interface components {
       slicer_configuration?: components['schemas']['SlicerConfiguration'] | null
     }
     /** @description The slicer configuration is a set of parameters that are passed to the slicer to control how the gcode is generated. */
-    SlicerConfiguration: Record<string, never>
+    SlicerConfiguration: {
+      /**
+       * Format: uint
+       * @description The filament to use for the print.
+       */
+      filament_idx?: number | null
+    }
     /** @description The print stage. These come from: https://github.com/SoftFever/OrcaSlicer/blob/431978baf17961df90f0d01871b0ad1d839d7f5d/src/slic3r/GUI/DeviceManager.cpp#L78 */
     Stage:
       | 'nothing'

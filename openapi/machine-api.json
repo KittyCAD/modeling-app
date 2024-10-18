@@ -100,13 +100,12 @@
       "FdmHardwareConfiguration": {
         "description": "Configuration for a FDM-based printer.",
         "properties": {
-          "filament_material": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FilamentMaterial"
-              }
-            ],
-            "description": "type of material being extruded"
+          "filaments": {
+            "description": "The filaments the printer has access to.",
+            "items": {
+              "$ref": "#/components/schemas/Filament"
+            },
+            "type": "array"
           },
           "nozzle_diameter": {
             "description": "Diameter of the extrusion nozzle, in mm.",
@@ -115,8 +114,37 @@
           }
         },
         "required": [
-          "filament_material",
+          "filaments",
           "nozzle_diameter"
+        ],
+        "type": "object"
+      },
+      "Filament": {
+        "description": "Information about the filament being used in a FDM printer.",
+        "properties": {
+          "color": {
+            "description": "The color (as hex without the `#`) of the filament, this is likely specific to the manufacturer.",
+            "maxLength": 6,
+            "minLength": 6,
+            "nullable": true,
+            "type": "string"
+          },
+          "material": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FilamentMaterial"
+              }
+            ],
+            "description": "The material that the filament is made of."
+          },
+          "name": {
+            "description": "The name of the filament, this is likely specfic to the manufacturer.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "material"
         ],
         "type": "object"
       },
@@ -124,11 +152,26 @@
         "description": "The material that the filament is made of.",
         "oneOf": [
           {
-            "description": "polylactic acid based plastics",
+            "description": "Polylactic acid based plastics",
             "properties": {
               "type": {
                 "enum": [
                   "pla"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Pla support",
+            "properties": {
+              "type": {
+                "enum": [
+                  "pla_support"
                 ],
                 "type": "string"
               }
@@ -242,26 +285,6 @@
               "type"
             ],
             "type": "object"
-          },
-          {
-            "description": "None of the above, likely a custom material that we get directly from the printer.",
-            "properties": {
-              "name": {
-                "description": "The name of the material.",
-                "type": "string"
-              },
-              "type": {
-                "enum": [
-                  "other"
-                ],
-                "type": "string"
-              }
-            },
-            "required": [
-              "name",
-              "type"
-            ],
-            "type": "object"
           }
         ]
       },
@@ -357,6 +380,12 @@
             ],
             "description": "Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.\n\nThis may be `None` if the maximum size is not knowable by the Machine API.\n\nWhat \"close\" means is up to you!",
             "nullable": true
+          },
+          "progress": {
+            "description": "Progress of the current print, if printing.",
+            "format": "double",
+            "nullable": true,
+            "type": "number"
           },
           "state": {
             "allOf": [
@@ -635,6 +664,15 @@
       },
       "SlicerConfiguration": {
         "description": "The slicer configuration is a set of parameters that are passed to the slicer to control how the gcode is generated.",
+        "properties": {
+          "filament_idx": {
+            "description": "The filament to use for the print.",
+            "format": "uint",
+            "minimum": 0,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
         "type": "object"
       },
       "Stage": {
