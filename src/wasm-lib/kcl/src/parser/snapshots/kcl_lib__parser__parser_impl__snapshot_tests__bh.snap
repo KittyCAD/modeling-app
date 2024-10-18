@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 42,
       "declarations": [
@@ -23,7 +22,6 @@ expression: actual
             "name": "obj"
           },
           "init": {
-            "type": "ObjectExpression",
             "type": "ObjectExpression",
             "start": 12,
             "end": 42,
@@ -40,12 +38,10 @@ expression: actual
                 },
                 "value": {
                   "type": "ArrayExpression",
-                  "type": "ArrayExpression",
                   "start": 22,
                   "end": 30,
                   "elements": [
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 23,
                       "end": 25,
@@ -53,7 +49,6 @@ expression: actual
                       "raw": "10"
                     },
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 27,
                       "end": 29,
@@ -74,7 +69,6 @@ expression: actual
                   "name": "radius"
                 },
                 "value": {
-                  "type": "Literal",
                   "type": "Literal",
                   "start": 40,
                   "end": 41,

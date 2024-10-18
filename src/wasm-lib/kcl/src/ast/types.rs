@@ -450,7 +450,7 @@ pub(crate) use impl_value_meta;
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BodyItem {
     ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
@@ -494,7 +494,7 @@ impl From<&BodyItem> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum Expr {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
@@ -713,7 +713,7 @@ impl From<&Expr> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BinaryPart {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
@@ -1106,8 +1106,8 @@ impl ImportItem {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct ImportStatement {
+    pub r#type: ImportStatementTag,
     pub start: usize,
     pub end: usize,
     pub items: Vec<ImportItem>,
@@ -1167,8 +1167,8 @@ impl_value_meta!(ExpressionStatement);
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct CallExpression {
+    pub r#type: CallExpressionTag,
     pub start: usize,
     pub end: usize,
     pub callee: Identifier,
@@ -1191,6 +1191,7 @@ impl From<CallExpression> for Expr {
 impl CallExpression {
     pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Self, KclError> {
         Ok(Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             callee: Identifier::new(name),
@@ -1327,8 +1328,8 @@ impl ItemVisibility {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct VariableDeclaration {
+    pub r#type: VariableDeclarationTag,
     pub start: usize,
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
@@ -1378,6 +1379,7 @@ impl_value_meta!(VariableDeclaration);
 impl VariableDeclaration {
     pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             declarations,
@@ -1615,11 +1617,45 @@ impl VariableDeclarator {
     }
 }
 
+// This is a simple macro named `say_hello`.
+macro_rules! gen_tag {
+    ($name:ident, $name_tag:ident) => {
+        #[derive(
+            Debug, Default, serde::Serialize, serde::Deserialize, Clone, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq,
+        )]
+        #[databake(path = kcl_lib::ast::types)]
+        #[serde(rename_all = "PascalCase")]
+        pub enum $name_tag {
+            #[default]
+            $name,
+        }
+    };
+}
+
+gen_tag!(Literal, LiteralTag);
+gen_tag!(Identifier, IdentifierTag);
+gen_tag!(TagDeclarator, TagDeclaratorTag);
+gen_tag!(BinaryExpression, BinaryExpressionTag);
+gen_tag!(FunctionExpression, FunctionExpressionTag);
+gen_tag!(CallExpression, CallExpressionTag);
+gen_tag!(PipeExpression, PipeExpressionTag);
+gen_tag!(PipeSubstitution, PipeSubstitutionTag);
+gen_tag!(ArrayExpression, ArrayExpressionTag);
+gen_tag!(ArrayRangeExpression, ArrayRangeExpressionTag);
+gen_tag!(ObjectExpression, ObjectExpressionTag);
+gen_tag!(MemberExpression, MemberExpressionTag);
+gen_tag!(UnaryExpression, UnaryExpressionTag);
+gen_tag!(IfExpression, IfExpressionTag);
+gen_tag!(KclNone, KclNoneTag);
+gen_tag!(VariableDeclaration, VariableDeclarationTag);
+gen_tag!(ImportStatement, ImportStatementTag);
+gen_tag!(ReturnStatement, ReturnStatementTag);
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct Literal {
+    pub r#type: LiteralTag,
     pub start: usize,
     pub end: usize,
     pub value: LiteralValue,
@@ -1635,6 +1671,7 @@ impl_value_meta!(Literal);
 impl Literal {
     pub fn new(value: LiteralValue) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             raw: JValue::from(value.clone()).to_string(),
@@ -1677,8 +1714,8 @@ impl From<&Box<Literal>> for KclValue {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct Identifier {
+    pub r#type: IdentifierTag,
     pub start: usize,
     pub end: usize,
     pub name: String,
@@ -1693,6 +1730,7 @@ impl_value_meta!(Identifier);
 impl Identifier {
     pub fn new(name: &str) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             name: name.to_string(),
@@ -1719,8 +1757,8 @@ impl Identifier {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct TagDeclarator {
+    pub r#type: TagDeclaratorTag,
     pub start: usize,
     pub end: usize,
     #[serde(rename = "value")]
@@ -1797,6 +1835,7 @@ impl From<&TagDeclarator> for CompletionItem {
 impl TagDeclarator {
     pub fn new(name: &str) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             name: name.to_string(),
@@ -1841,8 +1880,8 @@ impl TagDeclarator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct PipeSubstitution {
+    pub r#type: PipeSubstitutionTag,
     pub start: usize,
     pub end: usize,
 
@@ -1856,6 +1895,7 @@ impl_value_meta!(PipeSubstitution);
 impl PipeSubstitution {
     pub fn new() -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             digest: None,
@@ -1878,8 +1918,9 @@ impl From<PipeSubstitution> for Expr {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct ArrayExpression {
+    pub r#type: ArrayExpressionTag,
     pub start: usize,
     pub end: usize,
     pub elements: Vec<Expr>,
@@ -1902,6 +1943,7 @@ impl From<ArrayExpression> for Expr {
 impl ArrayExpression {
     pub fn new(elements: Vec<Expr>) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             elements,
@@ -1954,8 +1996,9 @@ impl ArrayExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct ArrayRangeExpression {
+    pub r#type: ArrayRangeExpressionTag,
     pub start: usize,
     pub end: usize,
     pub start_element: Box<Expr>,
@@ -1979,6 +2022,7 @@ impl From<ArrayRangeExpression> for Expr {
 impl ArrayRangeExpression {
     pub fn new(start_element: Box<Expr>, end_element: Box<Expr>) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             start_element,
@@ -2023,8 +2067,9 @@ impl ArrayRangeExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct ObjectExpression {
+    pub r#type: ObjectExpressionTag,
     pub start: usize,
     pub end: usize,
     pub properties: Vec<ObjectProperty>,
@@ -2039,6 +2084,7 @@ pub struct ObjectExpression {
 impl ObjectExpression {
     pub fn new(properties: Vec<ObjectProperty>) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             properties,
@@ -2092,8 +2138,8 @@ impl_value_meta!(ObjectExpression);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
-#[ts(export)]
 #[serde(tag = "type")]
+#[ts(export)]
 pub struct ObjectProperty {
     pub start: usize,
     pub end: usize,
@@ -2140,7 +2186,7 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum MemberObject {
     MemberExpression(Box<MemberExpression>),
     Identifier(Box<Identifier>),
@@ -2187,7 +2233,7 @@ impl From<&MemberObject> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum LiteralIdentifier {
     Identifier(Box<Identifier>),
     Literal(Box<Literal>),
@@ -2224,8 +2270,8 @@ impl From<&LiteralIdentifier> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct MemberExpression {
+    pub r#type: MemberExpressionTag,
     pub start: usize,
     pub end: usize,
     pub object: MemberObject,
@@ -2285,8 +2331,8 @@ pub struct ObjectKeyInfo {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct BinaryExpression {
+    pub r#type: BinaryExpressionTag,
     pub start: usize,
     pub end: usize,
     pub operator: BinaryOperator,
@@ -2303,6 +2349,7 @@ impl_value_meta!(BinaryExpression);
 impl BinaryExpression {
     pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Self {
         Self {
+            r#type: Default::default(),
             start: left.start(),
             end: right.end(),
             operator,
@@ -2470,8 +2517,8 @@ impl BinaryOperator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct UnaryExpression {
+    pub r#type: UnaryExpressionTag,
     pub start: usize,
     pub end: usize,
     pub operator: UnaryOperator,
@@ -2487,6 +2534,7 @@ impl_value_meta!(UnaryExpression);
 impl UnaryExpression {
     pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: argument.end(),
             operator,
@@ -2547,8 +2595,9 @@ impl UnaryOperator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct PipeExpression {
+    pub r#type: PipeExpressionTag,
     pub start: usize,
     pub end: usize,
     // TODO: Only the first body expression can be any Value.
@@ -2573,6 +2622,7 @@ impl From<PipeExpression> for Expr {
 impl PipeExpression {
     pub fn new(body: Vec<Expr>) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             body,
@@ -2702,8 +2752,8 @@ pub struct Parameter {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct FunctionExpression {
+    pub r#type: FunctionExpressionTag,
     pub start: usize,
     pub end: usize,
     pub params: Vec<Parameter>,
@@ -2741,6 +2791,7 @@ impl FunctionExpression {
         let Self {
             start: _,
             end: _,
+            r#type: _,
             params,
             body: _,
             digest: _,
@@ -2793,8 +2844,8 @@ impl FunctionExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct ReturnStatement {
+    pub r#type: ReturnStatementTag,
     pub start: usize,
     pub end: usize,
     pub argument: Expr,
@@ -3245,6 +3296,7 @@ const cylinder = startSketchOn('-XZ')
                 properties: vec![
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 35,
                             end: 40,
                             name: "thing".to_owned(),
@@ -3256,6 +3308,7 @@ const cylinder = startSketchOn('-XZ')
                     },
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 50,
                             end: 56,
                             name: "things".to_owned(),
@@ -3267,6 +3320,7 @@ const cylinder = startSketchOn('-XZ')
                     },
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 68,
                             end: 72,
                             name: "more".to_owned(),
@@ -3307,6 +3361,7 @@ const cylinder = startSketchOn('-XZ')
                 properties: vec![
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 18,
                             end: 23,
                             name: "thing".to_owned(),
@@ -3318,6 +3373,7 @@ const cylinder = startSketchOn('-XZ')
                     },
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 33,
                             end: 39,
                             name: "things".to_owned(),
@@ -3329,6 +3385,7 @@ const cylinder = startSketchOn('-XZ')
                     },
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 51,
                             end: 55,
                             name: "more".to_owned(),
@@ -3350,6 +3407,7 @@ const cylinder = startSketchOn('-XZ')
                 "no params",
                 (0..=0),
                 FunctionExpression {
+                    r#type: Default::default(),
                     start: 0,
                     end: 0,
                     params: vec![],
@@ -3368,10 +3426,12 @@ const cylinder = startSketchOn('-XZ')
                 "all required params",
                 (1..=1),
                 FunctionExpression {
+                    r#type: Default::default(),
                     start: 0,
                     end: 0,
                     params: vec![Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
@@ -3396,10 +3456,12 @@ const cylinder = startSketchOn('-XZ')
                 "all optional params",
                 (0..=1),
                 FunctionExpression {
+                    r#type: Default::default(),
                     start: 0,
                     end: 0,
                     params: vec![Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 0,
                             end: 0,
                             name: "foo".to_owned(),
@@ -3424,11 +3486,13 @@ const cylinder = startSketchOn('-XZ')
                 "mixed params",
                 (1..=2),
                 FunctionExpression {
+                    r#type: Default::default(),
                     start: 0,
                     end: 0,
                     params: vec![
                         Parameter {
                             identifier: Identifier {
+                                r#type: Default::default(),
                                 start: 0,
                                 end: 0,
                                 name: "foo".to_owned(),
@@ -3440,6 +3504,7 @@ const cylinder = startSketchOn('-XZ')
                         },
                         Parameter {
                             identifier: Identifier {
+                                r#type: Default::default(),
                                 start: 0,
                                 end: 0,
                                 name: "bar".to_owned(),
@@ -3577,5 +3642,40 @@ const cylinder = startSketchOn('-XZ')
         let prog3_digest = prog3_parser.ast().unwrap().compute_digest();
 
         assert_eq!(prog1_digest, prog3_digest);
+    }
+
+    #[test]
+    fn serde_roundtrip() {
+        let program = include_str!("../../../tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl");
+        let ast_in = crate::parser::parse(program).unwrap();
+        let ast_serialized = serde_json::to_string_pretty(&ast_in).unwrap();
+        let ast_out: Program = serde_json::from_str(&ast_serialized).unwrap();
+        assert_eq!(ast_in, ast_out);
+    }
+
+    #[test]
+    fn weird_untagged() {
+        let json_str = r#"
+        {
+              "type": "MemberExpression",
+              "start": 41,
+              "end": 45,
+              "object": {
+                "type": "Identifier",
+                "start": 41,
+                "end": 43,
+                "name": "yo"
+              },
+              "property": {
+                "type": "Identifier",
+                "start": 44,
+                "end": 45,
+                "name": "a"
+              },
+              "computed": false
+            }
+
+        "#;
+        let _: MemberExpression = serde_json::from_str(json_str).unwrap();
     }
 }

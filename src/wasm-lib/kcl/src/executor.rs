@@ -3401,6 +3401,7 @@ let w = f() + f()
         }
         fn ident(s: &'static str) -> Identifier {
             Identifier {
+                r#type: Default::default(),
                 start: 0,
                 end: 0,
                 name: s.to_owned(),
@@ -3498,6 +3499,7 @@ let w = f() + f()
         ] {
             // Run each test.
             let func_expr = &FunctionExpression {
+                r#type: Default::default(),
                 start: 0,
                 end: 0,
                 params,

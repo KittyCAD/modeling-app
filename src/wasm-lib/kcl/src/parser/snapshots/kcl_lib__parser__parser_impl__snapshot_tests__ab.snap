@@ -8,11 +8,9 @@ expression: actual
   "body": [
     {
       "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
       "start": 0,
       "end": 23,
       "expression": {
-        "type": "CallExpression",
         "type": "CallExpression",
         "start": 0,
         "end": 23,
@@ -24,7 +22,6 @@ expression: actual
         },
         "arguments": [
           {
-            "type": "ObjectExpression",
             "type": "ObjectExpression",
             "start": 7,
             "end": 22,
@@ -41,12 +38,10 @@ expression: actual
                 },
                 "value": {
                   "type": "ArrayExpression",
-                  "type": "ArrayExpression",
                   "start": 13,
                   "end": 20,
                   "elements": [
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 14,
                       "end": 15,
@@ -55,12 +50,10 @@ expression: actual
                     },
                     {
                       "type": "UnaryExpression",
-                      "type": "UnaryExpression",
                       "start": 17,
                       "end": 19,
                       "operator": "-",
                       "argument": {
-                        "type": "Literal",
                         "type": "Literal",
                         "start": 18,
                         "end": 19,

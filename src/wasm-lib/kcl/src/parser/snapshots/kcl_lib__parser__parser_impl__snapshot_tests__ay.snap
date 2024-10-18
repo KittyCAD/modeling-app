@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 80,
       "declarations": [
@@ -24,7 +23,6 @@ expression: actual
           },
           "init": {
             "type": "ObjectExpression",
-            "type": "ObjectExpression",
             "start": 12,
             "end": 80,
             "properties": [
@@ -39,7 +37,6 @@ expression: actual
                   "name": "a"
                 },
                 "value": {
-                  "type": "Literal",
                   "type": "Literal",
                   "start": 29,
                   "end": 30,
@@ -58,7 +55,6 @@ expression: actual
                   "name": "c"
                 },
                 "value": {
-                  "type": "Literal",
                   "type": "Literal",
                   "start": 68,
                   "end": 69,

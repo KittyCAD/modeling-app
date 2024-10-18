@@ -29,6 +29,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<BinaryExpression, KclErro
                     return Err(e);
                 };
                 BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    r#type: Default::default(),
                     start: left.start(),
                     end: right.end(),
                     operator,
@@ -126,6 +127,7 @@ mod tests {
         /// Make a literal
         fn lit(n: u8) -> BinaryPart {
             BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
                 start: 0,
                 end: 0,
                 value: n.into(),
@@ -143,6 +145,7 @@ mod tests {
                 lit(2).into(),
                 BinaryOperator::Div.into(),
                 BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    r#type: Default::default(),
                     start: 0,
                     end: 0,
                     operator: BinaryOperator::Sub,

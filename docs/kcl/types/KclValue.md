@@ -48,21 +48,13 @@ Any KCL value.
 
 ----
 
-**Type:** `object`
+[`TagDeclarator`](/docs/kcl/types#tag-declaration)
 
 
 
 
 
-## Properties
 
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `value` |`string`|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----

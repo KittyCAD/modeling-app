@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 36,
       "declarations": [
@@ -24,18 +23,15 @@ expression: actual
           },
           "init": {
             "type": "PipeExpression",
-            "type": "PipeExpression",
             "start": 14,
             "end": 36,
             "body": [
               {
                 "type": "BinaryExpression",
-                "type": "BinaryExpression",
                 "start": 14,
                 "end": 19,
                 "operator": "+",
                 "left": {
-                  "type": "Literal",
                   "type": "Literal",
                   "start": 14,
                   "end": 15,
@@ -44,7 +40,6 @@ expression: actual
                 },
                 "right": {
                   "type": "Literal",
-                  "type": "Literal",
                   "start": 18,
                   "end": 19,
                   "value": 6,
@@ -52,7 +47,6 @@ expression: actual
                 }
               },
               {
-                "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 23,
                 "end": 36,
@@ -65,14 +59,12 @@ expression: actual
                 "arguments": [
                   {
                     "type": "Literal",
-                    "type": "Literal",
                     "start": 30,
                     "end": 32,
                     "value": 45,
                     "raw": "45"
                   },
                   {
-                    "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 34,
                     "end": 35

@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 58,
       "declarations": [
@@ -24,7 +23,6 @@ expression: actual
           },
           "init": {
             "type": "FunctionExpression",
-            "type": "FunctionExpression",
             "start": 7,
             "end": 58,
             "params": [],
@@ -34,11 +32,9 @@ expression: actual
               "body": [
                 {
                   "type": "ReturnStatement",
-                  "type": "ReturnStatement",
                   "start": 23,
                   "end": 32,
                   "argument": {
-                    "type": "Identifier",
                     "type": "Identifier",
                     "start": 30,
                     "end": 32,
@@ -47,11 +43,9 @@ expression: actual
                 },
                 {
                   "type": "ReturnStatement",
-                  "type": "ReturnStatement",
                   "start": 41,
                   "end": 50,
                   "argument": {
-                    "type": "Identifier",
                     "type": "Identifier",
                     "start": 48,
                     "end": 50,

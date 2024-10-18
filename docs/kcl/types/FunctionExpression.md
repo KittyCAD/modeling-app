@@ -15,6 +15,7 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
+| `type` |[`FunctionExpressionTag`](/docs/kcl/types/FunctionExpressionTag)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `params` |`[` [`Parameter`](/docs/kcl/types/Parameter) `]`|  | No |

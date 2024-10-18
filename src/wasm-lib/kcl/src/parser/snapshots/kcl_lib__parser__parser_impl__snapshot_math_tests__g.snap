@@ -9,7 +9,6 @@ expression: actual
   "operator": "+",
   "left": {
     "type": "Literal",
-    "type": "Literal",
     "start": 0,
     "end": 1,
     "value": 1,
@@ -17,18 +16,15 @@ expression: actual
   },
   "right": {
     "type": "BinaryExpression",
-    "type": "BinaryExpression",
     "start": 6,
     "end": 17,
     "operator": "/",
     "left": {
       "type": "BinaryExpression",
-      "type": "BinaryExpression",
       "start": 6,
       "end": 11,
       "operator": "+",
       "left": {
-        "type": "Literal",
         "type": "Literal",
         "start": 6,
         "end": 7,
@@ -37,7 +33,6 @@ expression: actual
       },
       "right": {
         "type": "Literal",
-        "type": "Literal",
         "start": 10,
         "end": 11,
         "value": 3,
@@ -45,7 +40,6 @@ expression: actual
       }
     },
     "right": {
-      "type": "Literal",
       "type": "Literal",
       "start": 16,
       "end": 17,

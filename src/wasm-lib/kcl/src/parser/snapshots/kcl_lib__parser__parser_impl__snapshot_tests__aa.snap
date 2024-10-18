@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 17,
       "declarations": [
@@ -24,12 +23,10 @@ expression: actual
           },
           "init": {
             "type": "UnaryExpression",
-            "type": "UnaryExpression",
             "start": 11,
             "end": 17,
             "operator": "-",
             "argument": {
-              "type": "Identifier",
               "type": "Identifier",
               "start": 12,
               "end": 17,

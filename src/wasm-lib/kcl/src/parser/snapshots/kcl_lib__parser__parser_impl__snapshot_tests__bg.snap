@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 5,
       "declarations": [
@@ -23,7 +22,6 @@ expression: actual
             "name": "x"
           },
           "init": {
-            "type": "Literal",
             "type": "Literal",
             "start": 4,
             "end": 5,

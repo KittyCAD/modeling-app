@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 37,
       "declarations": [
@@ -24,7 +23,6 @@ expression: actual
           },
           "init": {
             "type": "CallExpression",
-            "type": "CallExpression",
             "start": 17,
             "end": 37,
             "callee": {
@@ -36,12 +34,10 @@ expression: actual
             "arguments": [
               {
                 "type": "ArrayExpression",
-                "type": "ArrayExpression",
                 "start": 31,
                 "end": 36,
                 "elements": [
                   {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 32,
                     "end": 33,
@@ -49,7 +45,6 @@ expression: actual
                     "raw": "0"
                   },
                   {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 34,
                     "end": 35,

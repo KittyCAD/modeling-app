@@ -17,8 +17,8 @@ const KCL_NONE_ID: &str = "KCL_NONE_ID";
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Default)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct KclNone {
+    pub r#type: super::KclNoneTag,
     // TODO: Convert this to be an Option<SourceRange>.
     pub start: usize,
     pub end: usize,
@@ -31,6 +31,7 @@ pub struct KclNone {
 impl KclNone {
     pub fn new(start: usize, end: usize) -> Self {
         Self {
+            r#type: Default::default(),
             start,
             end,
             __private: Private {},
