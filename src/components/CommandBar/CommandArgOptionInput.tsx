@@ -135,10 +135,12 @@ function CommandArgOptionInput({
           <Combobox.Input
             id="option-input"
             ref={inputRef}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) =>
+              !event.target.disabled && setQuery(event.target.value)
+            }
             className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
             onKeyDown={(event) => {
-              if (!currentOption?.disabled && event.metaKey && event.key === 'k')
+              if (event.metaKey && event.key === 'k')
                 commandBarSend({ type: 'Close' })
               if (event.key === 'Backspace' && !event.currentTarget.value) {
                 stepBack()
@@ -178,7 +180,13 @@ function CommandArgOptionInput({
               disabled={option.disabled}
               className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
-              <p className="flex-grow">{option.name} </p>
+              {/* TODO: change opacity hack to a real class */}
+              <p
+                className="flex-grow"
+                style={{ opacity: option.disabled ? 0.5 : 1.0 }}
+              >
+                {option.name}
+              </p>
               {option.value === currentOption?.value && (
                 <small className="text-chalkboard-70 dark:text-chalkboard-50">
                   current
