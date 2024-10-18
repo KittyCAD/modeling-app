@@ -195,6 +195,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
         }
     }
     Ok(PipeExpression {
+        r#type: Default::default(),
         start: values.first().unwrap().start(),
         end: values.last().unwrap().end().max(max_noncode_end),
         body: values,
@@ -216,6 +217,7 @@ fn bool_value(i: TokenSlice) -> PResult<Literal> {
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
     Ok(Literal {
+        r#type: Default::default(),
         start: token.start,
         end: token.end,
         value: LiteralValue::Bool(value),
@@ -246,6 +248,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
     Ok(Literal {
+        r#type: Default::default(),
         start: token.start,
         end: token.end,
         value,
@@ -280,6 +283,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
         .parse_next(i)?;
     Ok(Literal {
         start: token.start,
+        r#type: Default::default(),
         end: token.end,
         value,
         raw: token.value.clone(),
@@ -651,6 +655,7 @@ fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::Operator) && token.value == PIPE_SUBSTITUTION_OPERATOR {
             Ok(PipeSubstitution {
+                r#type: Default::default(),
                 start: token.start,
                 end: token.end,
                 digest: None,
@@ -801,6 +806,7 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
     Ok(FunctionExpression {
+        r#type: Default::default(),
         start,
         end,
         params,
@@ -1426,6 +1432,7 @@ impl TryFrom<Token> for Identifier {
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
             Ok(Identifier {
+                r#type: Default::default(),
                 start: token.start,
                 end: token.end,
                 name: token.value,
@@ -1454,6 +1461,7 @@ fn sketch_keyword(i: TokenSlice) -> PResult<Identifier> {
     any.try_map(|token: Token| {
         if token.token_type == TokenType::Type && token.value == "sketch" {
             Ok(Identifier {
+                r#type: Default::default(),
                 start: token.start,
                 end: token.end,
                 name: token.value,
@@ -1476,6 +1484,7 @@ impl TryFrom<Token> for TagDeclarator {
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
             Ok(TagDeclarator {
+                r#type: Default::default(),
                 // We subtract 1 from the start because the tag starts with a `$`.
                 start: token.start - 1,
                 end: token.end,
@@ -1927,6 +1936,7 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
     Ok(CallExpression {
+        r#type: Default::default(),
         start: fn_name.start,
         end,
         callee: fn_name,
@@ -2108,6 +2118,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         assert_eq!(
             expr,
             FunctionExpression {
+                r#type: Default::default(),
                 start: 0,
                 end: 47,
                 params: Default::default(),
@@ -2118,6 +2129,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         start: 25,
                         end: 33,
                         argument: Expr::Literal(Box::new(Literal {
+                            r#type: Default::default(),
                             start: 32,
                             end: 33,
                             value: 2u32.into(),
@@ -2284,6 +2296,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         assert_eq!(
             rhs.right,
             BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
                 start: 9,
                 end: 10,
                 value: 3u32.into(),
@@ -2650,10 +2663,12 @@ const mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(r#"5 + "a""#).unwrap();
         let actual = crate::parser::Parser::new(tokens).ast().unwrap().body;
         let expr = BinaryExpression {
+            r#type: Default::default(),
             start: 0,
             end: 7,
             operator: BinaryOperator::Add,
             left: BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
                 start: 0,
                 end: 1,
                 value: 5u32.into(),
@@ -2661,6 +2676,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 digest: None,
             })),
             right: BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
                 start: 4,
                 end: 7,
                 value: "a".into(),
@@ -2768,9 +2784,11 @@ const mySk1 = startSketchAt([0, 0])"#;
                 start: 0,
                 end: 4,
                 expression: Expr::BinaryExpression(Box::new(BinaryExpression {
+                    r#type: Default::default(),
                     start: 0,
                     end: 4,
                     left: BinaryPart::Literal(Box::new(Literal {
+                        r#type: Default::default(),
                         start: 0,
                         end: 1,
                         value: 5u32.into(),
@@ -2779,6 +2797,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     })),
                     operator: BinaryOperator::Add,
                     right: BinaryPart::Literal(Box::new(Literal {
+                        r#type: Default::default(),
                         start: 3,
                         end: 4,
                         value: 6u32.into(),
@@ -3071,6 +3090,7 @@ e
             (
                 vec![Parameter {
                     identifier: Identifier {
+                        r#type: Default::default(),
                         start: 0,
                         end: 0,
                         name: "a".to_owned(),
@@ -3085,6 +3105,7 @@ e
             (
                 vec![Parameter {
                     identifier: Identifier {
+                        r#type: Default::default(),
                         start: 0,
                         end: 0,
                         name: "a".to_owned(),
@@ -3100,6 +3121,7 @@ e
                 vec![
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 0,
                             end: 0,
                             name: "a".to_owned(),
@@ -3111,6 +3133,7 @@ e
                     },
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 0,
                             end: 0,
                             name: "b".to_owned(),
@@ -3127,6 +3150,7 @@ e
                 vec![
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 0,
                             end: 0,
                             name: "a".to_owned(),
@@ -3138,6 +3162,7 @@ e
                     },
                     Parameter {
                         identifier: Identifier {
+                            r#type: Default::default(),
                             start: 0,
                             end: 0,
                             name: "b".to_owned(),
