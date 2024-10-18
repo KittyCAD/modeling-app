@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 7,
             "end": 16,
-            "name": "sketch001",
-            "digest": null
+            "name": "sketch001"
           },
           "init": {
             "type": "PipeExpression",
@@ -38,8 +37,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 19,
                   "end": 32,
-                  "name": "startSketchOn",
-                  "digest": null
+                  "name": "startSketchOn"
                 },
                 "arguments": [
                   {
@@ -48,12 +46,10 @@ expression: actual
                     "start": 33,
                     "end": 37,
                     "value": "XY",
-                    "raw": "'XY'",
-                    "digest": null
+                    "raw": "'XY'"
                   }
                 ],
-                "optional": false,
-                "digest": null
+                "optional": false
               },
               {
                 "type": "CallExpression",
@@ -64,20 +60,17 @@ expression: actual
                   "type": "Identifier",
                   "start": 115,
                   "end": 129,
-                  "name": "startProfileAt",
-                  "digest": null
+                  "name": "startProfileAt"
                 },
                 "arguments": [
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 130,
-                    "end": 131,
-                    "digest": null
+                    "end": 131
                   }
                 ],
-                "optional": false,
-                "digest": null
+                "optional": false
               }
             ],
             "nonCodeMeta": {
@@ -91,8 +84,7 @@ expression: actual
                       "type": "blockComment",
                       "value": "|> arc({",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   },
                   {
                     "type": "NonCodeNode",
@@ -102,8 +94,7 @@ expression: actual
                       "type": "blockComment",
                       "value": "angleEnd: 270,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   },
                   {
                     "type": "NonCodeNode",
@@ -113,8 +104,7 @@ expression: actual
                       "type": "blockComment",
                       "value": "angleStart: 450,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   },
                   {
                     "type": "NonCodeNode",
@@ -124,27 +114,16 @@ expression: actual
                       "type": "blockComment",
                       "value": "}, %)",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ]
               },
-              "start": [],
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              "start": []
+            }
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 7,
-            "name": "x",
-            "digest": null
+            "name": "x"
           },
           "init": {
             "type": "BinaryExpression",
@@ -40,32 +39,20 @@ expression: actual
                 "type": "Identifier",
                 "start": 11,
                 "end": 15,
-                "name": "leg2",
-                "digest": null
-              },
-              "digest": null
+                "name": "leg2"
+              }
             },
             "right": {
               "type": "Identifier",
               "type": "Identifier",
               "start": 18,
               "end": 27,
-              "name": "thickness",
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              "name": "thickness"
+            }
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }
