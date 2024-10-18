@@ -57,6 +57,7 @@ pub struct Program {
     pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -840,6 +841,7 @@ pub struct NonCodeNode {
     pub value: NonCodeValue,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -985,6 +987,7 @@ pub struct NonCodeMeta {
     pub start: Vec<NonCodeNode>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1058,6 +1061,7 @@ pub struct ImportItem {
     pub end: usize,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1111,6 +1115,7 @@ pub struct ImportStatement {
     pub raw_path: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1153,6 +1158,7 @@ pub struct ExpressionStatement {
     pub expression: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1170,6 +1176,7 @@ pub struct CallExpression {
     pub optional: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1330,6 +1337,7 @@ pub struct VariableDeclaration {
     pub kind: VariableKind, // Change to enum if there are specific values
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1585,6 +1593,7 @@ pub struct VariableDeclarator {
     pub init: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1617,6 +1626,7 @@ pub struct Literal {
     pub raw: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1674,6 +1684,7 @@ pub struct Identifier {
     pub name: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1716,6 +1727,7 @@ pub struct TagDeclarator {
     pub name: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1835,6 +1847,7 @@ pub struct PipeSubstitution {
     pub end: usize,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1874,6 +1887,7 @@ pub struct ArrayExpression {
     pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1950,6 +1964,7 @@ pub struct ArrayRangeExpression {
     pub end_inclusive: bool,
     // TODO (maybe) comments on range components?
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2017,6 +2032,7 @@ pub struct ObjectExpression {
     pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2085,6 +2101,7 @@ pub struct ObjectProperty {
     pub value: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2216,6 +2233,7 @@ pub struct MemberExpression {
     pub computed: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2276,6 +2294,7 @@ pub struct BinaryExpression {
     pub right: BinaryPart,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2459,6 +2478,7 @@ pub struct UnaryExpression {
     pub argument: BinaryPart,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2538,6 +2558,7 @@ pub struct PipeExpression {
     pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2674,6 +2695,7 @@ pub struct Parameter {
     pub optional: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2690,6 +2712,7 @@ pub struct FunctionExpression {
     pub return_type: Option<FnArgType>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2777,6 +2800,7 @@ pub struct ReturnStatement {
     pub argument: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
