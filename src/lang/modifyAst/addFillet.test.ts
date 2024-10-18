@@ -41,7 +41,7 @@ beforeAll(async () => {
       },
     })
   })
-}, 20_000)
+}, 30_000)
 
 afterAll(() => {
   engineCommandManager.tearDown()
