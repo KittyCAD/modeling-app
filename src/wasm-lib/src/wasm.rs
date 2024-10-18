@@ -20,6 +20,7 @@ pub async fn execute_wasm(
     units: &str,
     engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
     fs_manager: kcl_lib::fs::wasm::FileSystemManager,
+    project_directory: Option<String>,
     is_mock: bool,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
@@ -62,7 +63,7 @@ pub async fn execute_wasm(
     };
 
     let exec_state = ctx
-        .run(&program, Some(memory), id_generator)
+        .run(&program, Some(memory), id_generator, project_directory)
         .await
         .map_err(String::from)?;
 

@@ -16,11 +16,12 @@ const startDeviceFlow = (host: string): Promise<string> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
+const onUpdateDownloaded = (
+  callback: (value: { version: string; releaseNotes: string }) => void
+) => ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
 const onUpdateDownloadStart = (
   callback: (value: { version: string }) => void
 ) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
-const onUpdateDownloaded = (callback: (value: string) => void) =>
-  ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
@@ -105,11 +106,12 @@ const kittycad = (access: string, args: any) =>
 
 // We could probably do this from the renderer side, but I fear CORS will
 // bite our butts.
-const listMachines = async (): Promise<MachinesListing> => {
-  const machineApi = await ipcRenderer.invoke('find_machine_api')
-  if (!machineApi) return []
-
-  return fetch(`http://${machineApi}/machines`).then((resp) => resp.json())
+const listMachines = async (
+  machineApiAddr: string
+): Promise<MachinesListing> => {
+  return fetch(`http://${machineApiAddr}/machines`).then((resp) => {
+    return resp.json()
+  })
 }
 
 const getMachineApiIp = async (): Promise<String | null> =>

@@ -11,6 +11,8 @@ export const NetworkMachineIndicator = ({
 }) => {
   const machineCount = machineManager.machineCount()
   const reason = machineManager.noMachinesReason()
+  const machines = machineManager.machines
+  console.log('react machines', machines)
 
   return isDesktop() ? (
     <Popover className="relative">
@@ -46,20 +48,29 @@ export const NetworkMachineIndicator = ({
         </div>
         {machineCount > 0 && (
           <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
-            {Object.entries(machineManager.machines).map(
-              ([hostname, machine]) => (
-                <li key={hostname} className={'px-2 py-4 gap-1 last:mb-0 '}>
-                  <p className="">
-                    {machine.make_model.model ||
-                      machine.make_model.manufacturer ||
-                      'Unknown Machine'}
+            {machines.map((machine) => {
+              return (
+                <li key={machine.id} className={'px-2 py-4 gap-1 last:mb-0 '}>
+                  <p className="">{machine.id.toUpperCase()}</p>
+                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                    {machine.make_model.model}
                   </p>
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                    Hostname {hostname}
+                    {machine.state.state.toUpperCase()}
+                    {machine.state.state === 'failed' && machine.state.message
+                      ? ': ' + machine.state.message
+                      : ''}
                   </p>
+                  {machine.extra &&
+                    machine.extra.type === 'bambu' &&
+                    machine.extra.nozzle_diameter && (
+                      <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                        Nozzle Diameter: {machine.extra.nozzle_diameter}
+                      </p>
+                    )}
                 </li>
               )
-            )}
+            })}
           </ul>
         )}
       </Popover.Panel>

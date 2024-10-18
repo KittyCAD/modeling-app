@@ -20,11 +20,9 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 11,
-            "name": "myBox",
-            "digest": null
+            "name": "myBox"
           },
           "init": {
-            "type": "CallExpression",
             "type": "CallExpression",
             "start": 14,
             "end": 30,
@@ -32,33 +30,21 @@ expression: actual
               "type": "Identifier",
               "start": 14,
               "end": 27,
-              "name": "startSketchAt",
-              "digest": null
+              "name": "startSketchAt"
             },
             "arguments": [
               {
                 "type": "Identifier",
-                "type": "Identifier",
                 "start": 28,
                 "end": 29,
-                "name": "p",
-                "digest": null
+                "name": "p"
               }
             ],
-            "optional": false,
-            "digest": null
-          },
-          "digest": null
+            "optional": false
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

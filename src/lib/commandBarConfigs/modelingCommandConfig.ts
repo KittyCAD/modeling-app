@@ -190,10 +190,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         options: () => {
           return Object.entries(machineManager.machines).map(
             ([_, machine]) => ({
-              name: `${machine.id} (${
-                machine.make_model.model || machine.make_model.manufacturer
-              }) via ${machineManager.machineApiIp || 'the local network'}`,
+              name:
+                `${machine.id} (${
+                  machine.make_model.model || machine.make_model.manufacturer
+                }) (${machine.state.state})` +
+                (machine.extra &&
+                machine.extra.type === 'bambu' &&
+                machine.extra.nozzle_diameter
+                  ? ` - Nozzle Diameter: ${machine.extra.nozzle_diameter}`
+                  : ''),
               isCurrent: false,
+              disabled: machine.state.state !== 'idle',
               value: machine as components['schemas']['MachineInfoResponse'],
             })
           )

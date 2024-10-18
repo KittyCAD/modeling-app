@@ -13,19 +13,16 @@ expression: actual
       "end": 23,
       "expression": {
         "type": "CallExpression",
-        "type": "CallExpression",
         "start": 0,
         "end": 23,
         "callee": {
           "type": "Identifier",
           "start": 0,
           "end": 6,
-          "name": "lineTo",
-          "digest": null
+          "name": "lineTo"
         },
         "arguments": [
           {
-            "type": "ObjectExpression",
             "type": "ObjectExpression",
             "start": 7,
             "end": 22,
@@ -38,26 +35,21 @@ expression: actual
                   "type": "Identifier",
                   "start": 9,
                   "end": 11,
-                  "name": "to",
-                  "digest": null
+                  "name": "to"
                 },
                 "value": {
-                  "type": "ArrayExpression",
                   "type": "ArrayExpression",
                   "start": 13,
                   "end": 20,
                   "elements": [
                     {
                       "type": "Literal",
-                      "type": "Literal",
                       "start": 14,
                       "end": 15,
                       "value": 0,
-                      "raw": "0",
-                      "digest": null
+                      "raw": "0"
                     },
                     {
-                      "type": "UnaryExpression",
                       "type": "UnaryExpression",
                       "start": 17,
                       "end": 19,
@@ -68,30 +60,17 @@ expression: actual
                         "start": 18,
                         "end": 19,
                         "value": 1,
-                        "raw": "1",
-                        "digest": null
-                      },
-                      "digest": null
+                        "raw": "1"
+                      }
                     }
-                  ],
-                  "digest": null
-                },
-                "digest": null
+                  ]
+                }
               }
-            ],
-            "digest": null
+            ]
           }
         ],
-        "optional": false,
-        "digest": null
-      },
-      "digest": null
+        "optional": false
+      }
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

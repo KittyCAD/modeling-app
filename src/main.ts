@@ -236,6 +236,7 @@ ipcMain.handle('find_machine_api', () => {
         const ip = service.addresses[0]
         const port = service.port
         // We want to return the ip address of the machine API.
+        console.log(`Machine API found at ${ip}:${port}`)
         resolve(`${ip}:${port}`)
       }
     )
@@ -285,7 +286,10 @@ app.on('ready', () => {
 
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
-    mainWindow?.webContents.send('update-downloaded', info.version)
+    mainWindow?.webContents.send('update-downloaded', {
+      version: info.version,
+      releaseNotes: info.releaseNotes,
+    })
   })
 
   ipcMain.handle('app.restart', () => {
