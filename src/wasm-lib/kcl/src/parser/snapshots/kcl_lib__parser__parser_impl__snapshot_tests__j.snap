@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 26,
       "declarations": [
@@ -71,7 +70,6 @@ expression: actual
     },
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 31,
       "end": 58,
       "declarations": [
@@ -92,18 +90,15 @@ expression: actual
             "operator": "-",
             "left": {
               "type": "MemberExpression",
-              "type": "MemberExpression",
               "start": 46,
               "end": 54,
               "object": {
-                "type": "Identifier",
                 "type": "Identifier",
                 "start": 46,
                 "end": 49,
                 "name": "obj"
               },
               "property": {
-                "type": "Literal",
                 "type": "Literal",
                 "start": 50,
                 "end": 53,
@@ -113,7 +108,6 @@ expression: actual
               "computed": false
             },
             "right": {
-              "type": "Literal",
               "type": "Literal",
               "start": 57,
               "end": 58,
