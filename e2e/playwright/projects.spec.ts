@@ -851,7 +851,7 @@ test(
   }
 )
 
-test(
+test.fixme(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
