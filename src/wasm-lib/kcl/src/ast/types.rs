@@ -3663,6 +3663,6 @@ const cylinder = startSketchOn('-XZ')
             }
 
         "#;
-        let ast: MemberExpression = serde_json::from_str(json_str).unwrap();
+        let _: MemberExpression = serde_json::from_str(json_str).unwrap();
     }
 }
