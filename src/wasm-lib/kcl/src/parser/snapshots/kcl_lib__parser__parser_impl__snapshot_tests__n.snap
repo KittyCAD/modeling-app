@@ -24,12 +24,10 @@ expression: actual
           },
           "init": {
             "type": "BinaryExpression",
-            "type": "BinaryExpression",
             "start": 15,
             "end": 24,
             "operator": "-",
             "left": {
-              "type": "Literal",
               "type": "Literal",
               "start": 15,
               "end": 16,
@@ -37,7 +35,6 @@ expression: actual
               "raw": "1"
             },
             "right": {
-              "type": "MemberExpression",
               "type": "MemberExpression",
               "start": 19,
               "end": 24,

@@ -13,7 +13,6 @@ expression: actual
       "end": 15,
       "expression": {
         "type": "CallExpression",
-        "type": "CallExpression",
         "start": 0,
         "end": 15,
         "callee": {
@@ -25,12 +24,10 @@ expression: actual
         "arguments": [
           {
             "type": "ArrayExpression",
-            "type": "ArrayExpression",
             "start": 5,
             "end": 11,
             "elements": [
               {
-                "type": "Literal",
                 "type": "Literal",
                 "start": 6,
                 "end": 7,
@@ -39,7 +36,6 @@ expression: actual
               },
               {
                 "type": "Identifier",
-                "type": "Identifier",
                 "start": 9,
                 "end": 10,
                 "name": "l"
@@ -47,7 +43,6 @@ expression: actual
             ]
           },
           {
-            "type": "PipeSubstitution",
             "type": "PipeSubstitution",
             "start": 13,
             "end": 14

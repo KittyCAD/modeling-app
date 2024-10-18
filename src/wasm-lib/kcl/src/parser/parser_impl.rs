@@ -486,6 +486,7 @@ fn array_empty(i: TokenSlice) -> PResult<ArrayExpression> {
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
     Ok(ArrayExpression {
+        r#type: Default::default(),
         start,
         end,
         elements: Default::default(),
@@ -541,6 +542,7 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<ArrayExpression> {
         digest: None,
     };
     Ok(ArrayExpression {
+        r#type: Default::default(),
         start,
         end,
         elements,
@@ -560,6 +562,7 @@ fn array_end_start(i: TokenSlice) -> PResult<ArrayRangeExpression> {
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
     Ok(ArrayRangeExpression {
+        r#type: Default::default(),
         start,
         end,
         start_element,
@@ -642,6 +645,7 @@ pub(crate) fn object(i: TokenSlice) -> PResult<ObjectExpression> {
         ..Default::default()
     };
     Ok(ObjectExpression {
+        r#type: Default::default(),
         start,
         end,
         properties,
@@ -861,6 +865,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
     let (property, end, computed) = members.remove(0);
     let start = id.start;
     let initial_member_expression = MemberExpression {
+        r#type: Default::default(),
         start,
         end,
         object: MemberObject::Identifier(Box::new(id)),
@@ -876,6 +881,7 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
         // and use it as the `object` of a new, bigger member expression.
         .fold(initial_member_expression, |accumulated, (property, end, computed)| {
             MemberExpression {
+                r#type: Default::default(),
                 start,
                 end,
                 object: MemberObject::MemberExpression(Box::new(accumulated)),
@@ -1552,6 +1558,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
         .parse_next(i)?;
     let argument = operand.parse_next(i)?;
     Ok(UnaryExpression {
+        r#type: Default::default(),
         start: op_token.start,
         end: argument.end(),
         operator,

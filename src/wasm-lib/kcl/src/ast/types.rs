@@ -713,7 +713,7 @@ impl From<&Expr> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BinaryPart {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
@@ -1050,6 +1050,7 @@ impl NonCodeMeta {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
+#[serde(tag = "type")]
 pub struct ImportItem {
     /// Name of the item to import.
     pub name: Identifier,
@@ -1105,6 +1106,7 @@ impl ImportItem {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
+#[serde(tag = "type")]
 pub struct ImportStatement {
     pub start: usize,
     pub end: usize,
@@ -1149,6 +1151,7 @@ impl ImportStatement {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
+#[serde(tag = "type")]
 pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
@@ -1325,6 +1328,7 @@ impl ItemVisibility {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
+#[serde(tag = "type")]
 pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
@@ -1580,6 +1584,7 @@ impl VariableKind {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
+#[serde(tag = "type")]
 pub struct VariableDeclarator {
     pub start: usize,
     pub end: usize,
@@ -1635,12 +1640,12 @@ gen_tag!(CallExpression, CallExpressionTag);
 gen_tag!(PipeExpression, PipeExpressionTag);
 gen_tag!(PipeSubstitution, PipeSubstitutionTag);
 gen_tag!(ArrayExpression, ArrayExpressionTag);
-gen_tag!(ArrayRange, ArrayRangeTag);
+gen_tag!(ArrayRangeExpression, ArrayRangeExpressionTag);
 gen_tag!(ObjectExpression, ObjectExpressionTag);
 gen_tag!(MemberExpression, MemberExpressionTag);
 gen_tag!(UnaryExpression, UnaryExpressionTag);
 gen_tag!(IfExpression, IfExpressionTag);
-gen_tag!(None, NoneTag);
+gen_tag!(KclNone, KclNoneTag);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -1872,7 +1877,7 @@ impl TagDeclarator {
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 pub struct PipeSubstitution {
-    pub r#type: TagDeclaratorTag,
+    pub r#type: PipeSubstitutionTag,
     pub start: usize,
     pub end: usize,
 
@@ -1911,6 +1916,7 @@ impl From<PipeSubstitution> for Expr {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ArrayExpression {
+    pub r#type: ArrayExpressionTag,
     pub start: usize,
     pub end: usize,
     pub elements: Vec<Expr>,
@@ -1933,6 +1939,7 @@ impl From<ArrayExpression> for Expr {
 impl ArrayExpression {
     pub fn new(elements: Vec<Expr>) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             elements,
@@ -1987,6 +1994,7 @@ impl ArrayExpression {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ArrayRangeExpression {
+    pub r#type: ArrayRangeExpressionTag,
     pub start: usize,
     pub end: usize,
     pub start_element: Box<Expr>,
@@ -2010,6 +2018,7 @@ impl From<ArrayRangeExpression> for Expr {
 impl ArrayRangeExpression {
     pub fn new(start_element: Box<Expr>, end_element: Box<Expr>) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             start_element,
@@ -2056,6 +2065,7 @@ impl ArrayRangeExpression {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectExpression {
+    pub r#type: ObjectExpressionTag,
     pub start: usize,
     pub end: usize,
     pub properties: Vec<ObjectProperty>,
@@ -2070,6 +2080,7 @@ pub struct ObjectExpression {
 impl ObjectExpression {
     pub fn new(properties: Vec<ObjectProperty>) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: 0,
             properties,
@@ -2123,6 +2134,7 @@ impl_value_meta!(ObjectExpression);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
+#[serde(tag = "type")]
 #[ts(export)]
 pub struct ObjectProperty {
     pub start: usize,
@@ -2255,6 +2267,7 @@ impl From<&LiteralIdentifier> for SourceRange {
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 pub struct MemberExpression {
+    pub r#type: MemberExpressionTag,
     pub start: usize,
     pub end: usize,
     pub object: MemberObject,
@@ -2314,7 +2327,6 @@ pub struct ObjectKeyInfo {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct BinaryExpression {
     pub r#type: BinaryExpressionTag,
     pub start: usize,
@@ -2501,8 +2513,8 @@ impl BinaryOperator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct UnaryExpression {
+    pub r#type: UnaryExpressionTag,
     pub start: usize,
     pub end: usize,
     pub operator: UnaryOperator,
@@ -2518,6 +2530,7 @@ impl_value_meta!(UnaryExpression);
 impl UnaryExpression {
     pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Self {
         Self {
+            r#type: Default::default(),
             start: 0,
             end: argument.end(),
             operator,
@@ -2578,7 +2591,7 @@ impl UnaryOperator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct PipeExpression {
     pub r#type: PipeExpressionTag,
     pub start: usize,
@@ -2735,7 +2748,6 @@ pub struct Parameter {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct FunctionExpression {
     pub r#type: FunctionExpressionTag,
     pub start: usize,
