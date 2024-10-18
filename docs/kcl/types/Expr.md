@@ -9,18 +9,18 @@ An expression can be evaluated to yield a single KCL value.
 
 
 
+**This schema accepts any of the following:**
 
-**This schema accepts exactly one of the following:**
+An expression can be evaluated to yield a single KCL value.
 
-
-**Type:** `object`
-
-
+[`Literal`](/docs/kcl/types/Literal)
 
 
 
-## Properties
 
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Literal`|  | No |
@@ -29,18 +29,30 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Literal`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `value` |[`LiteralValue`](/docs/kcl/types/LiteralValue)| An expression can be evaluated to yield a single KCL value. | No |
+| `raw` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`Identifier`](/docs/kcl/types/Identifier)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Identifier`](/docs/kcl/types/Identifier)|  | No |
@@ -48,18 +60,29 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: [`Identifier`](/docs/kcl/types/Identifier)|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `name` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`TagDeclarator`](/docs/kcl/types#tag-declaration)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
@@ -67,18 +90,29 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `value` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`BinaryExpression`](/docs/kcl/types/BinaryExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `BinaryExpression`|  | No |
@@ -88,18 +122,31 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `BinaryExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `operator` |[`BinaryOperator`](/docs/kcl/types/BinaryOperator)| An expression can be evaluated to yield a single KCL value. | No |
+| `left` |[`BinaryPart`](/docs/kcl/types/BinaryPart)| An expression can be evaluated to yield a single KCL value. | No |
+| `right` |[`BinaryPart`](/docs/kcl/types/BinaryPart)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`FunctionExpression`](/docs/kcl/types/FunctionExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`FunctionExpression`](/docs/kcl/types/FunctionExpression)|  | No |
@@ -108,18 +155,30 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: [`FunctionExpression`](/docs/kcl/types/FunctionExpression)|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `params` |`[` [`Parameter`](/docs/kcl/types/Parameter) `]`|  | No |
+| `body` |[`Program`](/docs/kcl/types/Program)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`CallExpression`](/docs/kcl/types/CallExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `CallExpression`|  | No |
@@ -129,18 +188,31 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `CallExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `callee` |[`Identifier`](/docs/kcl/types/Identifier)| An expression can be evaluated to yield a single KCL value. | No |
+| `arguments` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
+| `optional` |`boolean`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`PipeExpression`](/docs/kcl/types/PipeExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `PipeExpression`|  | No |
@@ -149,36 +221,58 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `PipeExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `body` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
+| `nonCodeMeta` |[`NonCodeMeta`](/docs/kcl/types/NonCodeMeta)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`PipeSubstitution`](/docs/kcl/types/PipeSubstitution)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `PipeSubstitution`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `PipeSubstitution`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`ArrayExpression`](/docs/kcl/types/ArrayExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ArrayExpression`|  | No |
@@ -187,18 +281,30 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `ArrayExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `elements` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
+| `nonCodeMeta` |[`NonCodeMeta`](/docs/kcl/types/NonCodeMeta)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`ArrayRangeExpression`](/docs/kcl/types/ArrayRangeExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ArrayRangeExpression`|  | No |
@@ -208,18 +314,31 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `ArrayRangeExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `startElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `endElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `endInclusive` |`boolean`| Is the `end_element` included in the range? | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`ObjectExpression`](/docs/kcl/types/ObjectExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ObjectExpression`|  | No |
@@ -228,18 +347,30 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `ObjectExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `properties` |`[` [`ObjectProperty`](/docs/kcl/types/ObjectProperty) `]`|  | No |
+| `nonCodeMeta` |[`NonCodeMeta`](/docs/kcl/types/NonCodeMeta)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`MemberExpression`](/docs/kcl/types/MemberExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `MemberExpression`|  | No |
@@ -249,18 +380,31 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `MemberExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `object` |[`MemberObject`](/docs/kcl/types/MemberObject)| An expression can be evaluated to yield a single KCL value. | No |
+| `property` |[`LiteralIdentifier`](/docs/kcl/types/LiteralIdentifier)| An expression can be evaluated to yield a single KCL value. | No |
+| `computed` |`boolean`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`UnaryExpression`](/docs/kcl/types/UnaryExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `UnaryExpression`|  | No |
@@ -269,18 +413,30 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `UnaryExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `operator` |[`UnaryOperator`](/docs/kcl/types/UnaryOperator)| An expression can be evaluated to yield a single KCL value. | No |
+| `argument` |[`BinaryPart`](/docs/kcl/types/BinaryPart)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
-
+[`IfExpression`](/docs/kcl/types/IfExpression)
 
 
-## Properties
 
+
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `IfExpression`|  | No |
@@ -291,27 +447,49 @@ An expression can be evaluated to yield a single KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `IfExpression`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `cond` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `then_val` |[`Program`](/docs/kcl/types/Program)| An expression can be evaluated to yield a single KCL value. | No |
+| `else_ifs` |`[` [`ElseIf`](/docs/kcl/types/ElseIf) `]`|  | No |
+| `final_else` |[`Program`](/docs/kcl/types/Program)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
-KCL value for an optional parameter which was not given an argument. (remember, parameters are in the function declaration, arguments are in the function call/application).
+An expression can be evaluated to yield a single KCL value.
 
-**Type:** `object`
-
-
+[`KclNone`](/docs/kcl/types/KclNone)
 
 
 
-## Properties
 
+
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `None`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `None`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+
 
 
 

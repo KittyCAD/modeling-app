@@ -3,66 +3,60 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
+  "start": 0,
+  "end": 30,
   "body": [
     {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 30,
       "declarations": [
         {
+          "type": "VariableDeclarator",
+          "start": 6,
           "end": 30,
           "id": {
-            "end": 12,
-            "name": "height",
+            "type": "Identifier",
             "start": 6,
-            "type": "Identifier"
+            "end": 12,
+            "name": "height"
           },
           "init": {
+            "type": "ArrayExpression",
+            "start": 15,
+            "end": 30,
             "elements": [
               {
-                "computed": false,
+                "type": "MemberExpression",
+                "start": 17,
                 "end": 25,
                 "object": {
-                  "end": 20,
-                  "name": "obj",
-                  "start": 17,
                   "type": "Identifier",
-                  "type": "Identifier"
+                  "start": 17,
+                  "end": 20,
+                  "name": "obj"
                 },
                 "property": {
-                  "end": 24,
-                  "raw": "\"a\"",
+                  "type": "Literal",
                   "start": 21,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": "a"
+                  "end": 24,
+                  "value": "a",
+                  "raw": "\"a\""
                 },
-                "start": 17,
-                "type": "MemberExpression",
-                "type": "MemberExpression"
+                "computed": false
               },
               {
-                "end": 28,
-                "raw": "0",
+                "type": "Literal",
                 "start": 27,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 0
+                "end": 28,
+                "value": 0,
+                "raw": "0"
               }
-            ],
-            "end": 30,
-            "start": 15,
-            "type": "ArrayExpression",
-            "type": "ArrayExpression"
-          },
-          "start": 6,
-          "type": "VariableDeclarator"
+            ]
+          }
         }
       ],
-      "end": 30,
-      "kind": "const",
-      "start": 0,
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration"
+      "kind": "const"
     }
-  ],
-  "end": 30,
-  "start": 0
+  ]
 }

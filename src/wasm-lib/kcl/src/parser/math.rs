@@ -28,6 +28,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, K
                 let Some(left) = operand_stack.pop() else {
                     return Err(e);
                 };
+<<<<<<< HEAD
                 let start = left.start();
                 let end = right.end();
 
@@ -41,6 +42,26 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, K
                     start,
                     end,
                 ))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    start: left.start(),
+                    end: right.end(),
+                    operator,
+                    left,
+                    right,
+                    digest: None,
+                }))
+=======
+                BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    r#type: Default::default(),
+                    start: left.start(),
+                    end: right.end(),
+                    operator,
+                    left,
+                    right,
+                    digest: None,
+                }))
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
             }
             BinaryExpressionToken::Operand(o) => o,
         };
@@ -130,6 +151,7 @@ mod tests {
     fn parse_and_evaluate() {
         /// Make a literal
         fn lit(n: u8) -> BinaryPart {
+<<<<<<< HEAD
             BinaryPart::Literal(Box::new(Node::new(
                 Literal {
                     value: n.into(),
@@ -139,6 +161,24 @@ mod tests {
                 0,
                 0,
             )))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            BinaryPart::Literal(Box::new(Literal {
+                start: 0,
+                end: 0,
+                value: n.into(),
+                raw: n.to_string(),
+                digest: None,
+            }))
+=======
+            BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
+                start: 0,
+                end: 0,
+                value: n.into(),
+                raw: n.to_string(),
+                digest: None,
+            }))
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         }
         let tests: Vec<Vec<BinaryExpressionToken>> = vec![
             // 3 + 4 × 2 ÷ ( 1 − 5 ) ^ 2 ^ 3
@@ -149,6 +189,7 @@ mod tests {
                 BinaryOperator::Mul.into(),
                 lit(2).into(),
                 BinaryOperator::Div.into(),
+<<<<<<< HEAD
                 BinaryPart::BinaryExpression(Node::boxed(
                     BinaryExpression {
                         operator: BinaryOperator::Sub,
@@ -159,6 +200,26 @@ mod tests {
                     0,
                     0,
                 ))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    start: 0,
+                    end: 0,
+                    operator: BinaryOperator::Sub,
+                    left: lit(1),
+                    right: lit(5),
+                    digest: None,
+                }))
+=======
+                BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    r#type: Default::default(),
+                    start: 0,
+                    end: 0,
+                    operator: BinaryOperator::Sub,
+                    left: lit(1),
+                    right: lit(5),
+                    digest: None,
+                }))
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                 .into(),
                 BinaryOperator::Pow.into(),
                 lit(2).into(),

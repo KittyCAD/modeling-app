@@ -3,44 +3,51 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
+  "start": 0,
+  "end": 91,
   "body": [
     {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 91,
       "declarations": [
         {
+          "type": "VariableDeclarator",
+          "start": 4,
           "end": 91,
           "id": {
-            "end": 11,
-            "name": "numbers",
+            "type": "Identifier",
             "start": 4,
-            "type": "Identifier"
+            "end": 11,
+            "name": "numbers"
           },
           "init": {
+            "type": "ArrayExpression",
+            "start": 14,
+            "end": 91,
             "elements": [
               {
-                "end": 29,
-                "raw": "1",
+                "type": "Literal",
                 "start": 28,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 1
+                "end": 29,
+                "value": 1,
+                "raw": "1"
               },
               {
-                "end": 80,
-                "raw": "3",
+                "type": "Literal",
                 "start": 79,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 3
+                "end": 80,
+                "value": 3,
+                "raw": "3"
               }
             ],
-            "end": 91,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 48,
-                    "start": 43,
                     "type": "NonCodeNode",
+                    "start": 43,
+                    "end": 48,
                     "value": {
                       "type": "blockComment",
                       "value": "A,",
@@ -50,9 +57,9 @@ expression: actual
                 ],
                 "2": [
                   {
-                    "end": 66,
-                    "start": 61,
                     "type": "NonCodeNode",
+                    "start": 61,
+                    "end": 66,
                     "value": {
                       "type": "blockComment",
                       "value": "B,",
@@ -61,23 +68,12 @@ expression: actual
                   }
                 ]
               },
-              "startNodes": []
-            },
-            "start": 14,
-            "type": "ArrayExpression",
-            "type": "ArrayExpression"
-          },
-          "start": 4,
-          "type": "VariableDeclarator"
+              "start": []
+            }
+          }
         }
       ],
-      "end": 91,
-      "kind": "const",
-      "start": 0,
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration"
+      "kind": "const"
     }
-  ],
-  "end": 91,
-  "start": 0
+  ]
 }

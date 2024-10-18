@@ -3,56 +3,51 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
+  "start": 0,
+  "end": 27,
   "body": [
     {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 27,
       "declarations": [
         {
+          "type": "VariableDeclarator",
+          "start": 6,
           "end": 27,
           "id": {
-            "end": 7,
-            "name": "x",
+            "type": "Identifier",
             "start": 6,
-            "type": "Identifier"
+            "end": 7,
+            "name": "x"
           },
           "init": {
+            "type": "BinaryExpression",
+            "start": 10,
             "end": 27,
+            "operator": "+",
             "left": {
-              "argument": {
-                "end": 15,
-                "name": "leg2",
-                "start": 11,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
+              "type": "UnaryExpression",
+              "start": 10,
               "end": 15,
               "operator": "-",
-              "start": 10,
-              "type": "UnaryExpression",
-              "type": "UnaryExpression"
+              "argument": {
+                "type": "Identifier",
+                "start": 11,
+                "end": 15,
+                "name": "leg2"
+              }
             },
-            "operator": "+",
             "right": {
-              "end": 27,
-              "name": "thickness",
-              "start": 18,
               "type": "Identifier",
-              "type": "Identifier"
-            },
-            "start": 10,
-            "type": "BinaryExpression",
-            "type": "BinaryExpression"
-          },
-          "start": 6,
-          "type": "VariableDeclarator"
+              "start": 18,
+              "end": 27,
+              "name": "thickness"
+            }
+          }
         }
       ],
-      "end": 27,
-      "kind": "const",
-      "start": 0,
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration"
+      "kind": "const"
     }
-  ],
-  "end": 27,
-  "start": 0
+  ]
 }

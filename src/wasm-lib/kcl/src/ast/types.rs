@@ -507,7 +507,7 @@ impl Program {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BodyItem {
     ImportStatement(BoxNode<ImportStatement>),
     ExpressionStatement(Node<ExpressionStatement>),
@@ -551,7 +551,7 @@ impl From<&BodyItem> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum Expr {
     Literal(BoxNode<Literal>),
     Identifier(BoxNode<Identifier>),
@@ -770,7 +770,7 @@ impl From<&Expr> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum BinaryPart {
     Literal(BoxNode<Literal>),
     Identifier(BoxNode<Identifier>),
@@ -1148,9 +1148,19 @@ impl ImportItem {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct ImportStatement {
+<<<<<<< HEAD
     pub items: NodeList<ImportItem>,
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+    pub items: Vec<ImportItem>,
+=======
+    pub r#type: ImportStatementTag,
+    pub start: usize,
+    pub end: usize,
+    pub items: Vec<ImportItem>,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub path: String,
     pub raw_path: String,
 
@@ -1203,9 +1213,19 @@ pub struct ExpressionStatement {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct CallExpression {
+<<<<<<< HEAD
     pub callee: Node<Identifier>,
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+    pub callee: Identifier,
+=======
+    pub r#type: CallExpressionTag,
+    pub start: usize,
+    pub end: usize,
+    pub callee: Identifier,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub arguments: Vec<Expr>,
     pub optional: bool,
 
@@ -1240,8 +1260,21 @@ impl Node<CallExpression> {
 }
 
 impl CallExpression {
+<<<<<<< HEAD
     pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Self, KclError> {
+        Ok(Self {
+            start: 0,
+            end: 0,
+=======
+    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Self, KclError> {
+        Ok(Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
             callee: Identifier::new(name),
             arguments,
             optional: false,
@@ -1355,9 +1388,19 @@ impl ItemVisibility {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct VariableDeclaration {
+<<<<<<< HEAD
     pub declarations: NodeList<VariableDeclarator>,
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+    pub declarations: Vec<VariableDeclarator>,
+=======
+    pub r#type: VariableDeclarationTag,
+    pub start: usize,
+    pub end: usize,
+    pub declarations: Vec<VariableDeclarator>,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
@@ -1399,7 +1442,38 @@ impl From<&Node<VariableDeclaration>> for Vec<CompletionItem> {
     }
 }
 
+<<<<<<< HEAD
 impl Node<VariableDeclaration> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl_value_meta!(VariableDeclaration);
+
+impl VariableDeclaration {
+    pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            declarations,
+            visibility,
+            kind,
+            digest: None,
+        }
+    }
+=======
+impl_value_meta!(VariableDeclaration);
+
+impl VariableDeclaration {
+    pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            declarations,
+            visibility,
+            kind,
+            digest: None,
+        }
+    }
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
         let recasted = self.recast(&FormatOptions::default(), 0);
         // If the recasted value only has one line, don't fold it.
@@ -1634,11 +1708,53 @@ impl VariableDeclarator {
     }
 }
 
+// This is a simple macro named `say_hello`.
+macro_rules! gen_tag {
+    ($name:ident, $name_tag:ident) => {
+        #[derive(
+            Debug, Default, serde::Serialize, serde::Deserialize, Clone, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq,
+        )]
+        #[databake(path = kcl_lib::ast::types)]
+        #[serde(rename_all = "PascalCase")]
+        pub enum $name_tag {
+            #[default]
+            $name,
+        }
+    };
+}
+
+gen_tag!(Literal, LiteralTag);
+gen_tag!(Identifier, IdentifierTag);
+gen_tag!(TagDeclarator, TagDeclaratorTag);
+gen_tag!(BinaryExpression, BinaryExpressionTag);
+gen_tag!(FunctionExpression, FunctionExpressionTag);
+gen_tag!(CallExpression, CallExpressionTag);
+gen_tag!(PipeExpression, PipeExpressionTag);
+gen_tag!(PipeSubstitution, PipeSubstitutionTag);
+gen_tag!(ArrayExpression, ArrayExpressionTag);
+gen_tag!(ArrayRangeExpression, ArrayRangeExpressionTag);
+gen_tag!(ObjectExpression, ObjectExpressionTag);
+gen_tag!(MemberExpression, MemberExpressionTag);
+gen_tag!(UnaryExpression, UnaryExpressionTag);
+gen_tag!(IfExpression, IfExpressionTag);
+gen_tag!(KclNone, KclNoneTag);
+gen_tag!(VariableDeclaration, VariableDeclarationTag);
+gen_tag!(ImportStatement, ImportStatementTag);
+gen_tag!(ReturnStatement, ReturnStatementTag);
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct Literal {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: LiteralTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub value: LiteralValue,
     pub raw: String,
 
@@ -1647,7 +1763,38 @@ pub struct Literal {
     pub digest: Option<Digest>,
 }
 
+<<<<<<< HEAD
 impl Node<Literal> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl_value_meta!(Literal);
+
+impl Literal {
+    pub fn new(value: LiteralValue) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            raw: JValue::from(value.clone()).to_string(),
+            value,
+            digest: None,
+        }
+    }
+
+=======
+impl_value_meta!(Literal);
+
+impl Literal {
+    pub fn new(value: LiteralValue) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            raw: JValue::from(value.clone()).to_string(),
+            value,
+            digest: None,
+        }
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1703,8 +1850,16 @@ impl From<&BoxNode<Literal>> for KclValue {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct Identifier {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: IdentifierTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub name: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1712,7 +1867,36 @@ pub struct Identifier {
     pub digest: Option<Digest>,
 }
 
+<<<<<<< HEAD
 impl Node<Identifier> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl_value_meta!(Identifier);
+
+impl Identifier {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+            digest: None,
+        }
+    }
+
+=======
+impl_value_meta!(Identifier);
+
+impl Identifier {
+    pub fn new(name: &str) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+            digest: None,
+        }
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1741,8 +1925,16 @@ impl Identifier {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct TagDeclarator {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: TagDeclaratorTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     #[serde(rename = "value")]
     pub name: String,
 
@@ -1802,7 +1994,32 @@ impl From<&Node<TagDeclarator>> for CompletionItem {
     }
 }
 
+<<<<<<< HEAD
 impl Node<TagDeclarator> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl TagDeclarator {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+            digest: None,
+        }
+    }
+
+=======
+impl TagDeclarator {
+    pub fn new(name: &str) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+            digest: None,
+        }
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     /// Get the constraint level for this identifier.
     /// TagDeclarator are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1849,16 +2066,43 @@ impl TagDeclarator {
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct PipeSubstitution {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+
+=======
+    pub r#type: PipeSubstitutionTag,
+    pub start: usize,
+    pub end: usize,
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
 impl PipeSubstitution {
+<<<<<<< HEAD
     pub fn new() -> Node<Self> {
         Node::no_src(Self { digest: None })
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub fn new() -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            digest: None,
+        }
+=======
+    pub fn new() -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            digest: None,
+        }
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     }
 }
 
@@ -1871,8 +2115,17 @@ impl From<Node<PipeSubstitution>> for Expr {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct ArrayExpression {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: ArrayExpressionTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub elements: Vec<Expr>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
@@ -1888,7 +2141,46 @@ impl From<Node<ArrayExpression>> for Expr {
     }
 }
 
+<<<<<<< HEAD
 impl Node<ArrayExpression> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl ArrayExpression {
+    pub fn new(elements: Vec<Expr>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            elements,
+            non_code_meta: Default::default(),
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for element in &mut self.elements {
+            element.replace_value(source_range, new_value.clone());
+        }
+    }
+
+=======
+impl ArrayExpression {
+    pub fn new(elements: Vec<Expr>) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            elements,
+            non_code_meta: Default::default(),
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for element in &mut self.elements {
+            element.replace_value(source_range, new_value.clone());
+        }
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.elements.is_empty() {
             return ConstraintLevel::Ignore {
@@ -1943,10 +2235,23 @@ impl ArrayExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct ArrayRangeExpression {
+<<<<<<< HEAD
     pub start_element: Expr,
     pub end_element: Expr,
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+    pub start_element: Box<Expr>,
+    pub end_element: Box<Expr>,
+=======
+    pub r#type: ArrayRangeExpressionTag,
+    pub start: usize,
+    pub end: usize,
+    pub start_element: Box<Expr>,
+    pub end_element: Box<Expr>,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     /// Is the `end_element` included in the range?
     pub end_inclusive: bool,
     // TODO (maybe) comments on range components?
@@ -1961,7 +2266,46 @@ impl From<Node<ArrayRangeExpression>> for Expr {
     }
 }
 
+<<<<<<< HEAD
 impl Node<ArrayRangeExpression> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl ArrayRangeExpression {
+    pub fn new(start_element: Box<Expr>, end_element: Box<Expr>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            start_element,
+            end_element,
+            end_inclusive: true,
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.start_element.replace_value(source_range, new_value.clone());
+        self.end_element.replace_value(source_range, new_value.clone());
+    }
+
+=======
+impl ArrayRangeExpression {
+    pub fn new(start_element: Box<Expr>, end_element: Box<Expr>) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            start_element,
+            end_element,
+            end_inclusive: true,
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.start_element.replace_value(source_range, new_value.clone());
+        self.end_element.replace_value(source_range, new_value.clone());
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         let mut constraint_levels = ConstraintLevels::new();
         constraint_levels.push(self.start_element.get_constraint_level());
@@ -2008,9 +2352,20 @@ impl ArrayRangeExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct ObjectExpression {
+<<<<<<< HEAD
     pub properties: NodeList<ObjectProperty>,
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+    pub properties: Vec<ObjectProperty>,
+=======
+    pub r#type: ObjectExpressionTag,
+    pub start: usize,
+    pub end: usize,
+    pub properties: Vec<ObjectProperty>,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
@@ -2019,7 +2374,46 @@ pub struct ObjectExpression {
     pub digest: Option<Digest>,
 }
 
+<<<<<<< HEAD
 impl Node<ObjectExpression> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl ObjectExpression {
+    pub fn new(properties: Vec<ObjectProperty>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            properties,
+            non_code_meta: Default::default(),
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for property in &mut self.properties {
+            property.value.replace_value(source_range, new_value.clone());
+        }
+    }
+
+=======
+impl ObjectExpression {
+    pub fn new(properties: Vec<ObjectProperty>) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            properties,
+            non_code_meta: Default::default(),
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for property in &mut self.properties {
+            property.value.replace_value(source_range, new_value.clone());
+        }
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.properties.is_empty() {
             return ConstraintLevel::Ignore {
@@ -2073,8 +2467,8 @@ impl ObjectExpression {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
-#[ts(export)]
 #[serde(tag = "type")]
+#[ts(export)]
 pub struct ObjectProperty {
     pub key: Node<Identifier>,
     pub value: Expr,
@@ -2119,7 +2513,7 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum MemberObject {
     MemberExpression(BoxNode<MemberExpression>),
     Identifier(BoxNode<Identifier>),
@@ -2166,7 +2560,7 @@ impl From<&MemberObject> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum LiteralIdentifier {
     Identifier(BoxNode<Identifier>),
     Literal(BoxNode<Literal>),
@@ -2203,8 +2597,16 @@ impl From<&LiteralIdentifier> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct MemberExpression {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: MemberExpressionTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub object: MemberObject,
     pub property: LiteralIdentifier,
     pub computed: bool,
@@ -2262,8 +2664,16 @@ pub struct ObjectKeyInfo {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct BinaryExpression {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: BinaryExpressionTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub operator: BinaryOperator,
     pub left: BinaryPart,
     pub right: BinaryPart,
@@ -2273,7 +2683,50 @@ pub struct BinaryExpression {
     pub digest: Option<Digest>,
 }
 
+<<<<<<< HEAD
 impl Node<BinaryExpression> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl_value_meta!(BinaryExpression);
+
+impl BinaryExpression {
+    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Self {
+        Self {
+            start: left.start(),
+            end: right.end(),
+            operator,
+            left,
+            right,
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.left.replace_value(source_range, new_value.clone());
+        self.right.replace_value(source_range, new_value);
+    }
+
+=======
+impl_value_meta!(BinaryExpression);
+
+impl BinaryExpression {
+    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: left.start(),
+            end: right.end(),
+            operator,
+            left,
+            right,
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.left.replace_value(source_range, new_value.clone());
+        self.right.replace_value(source_range, new_value);
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         let left_constraint_level = self.left.get_constraint_level();
         let right_constraint_level = self.right.get_constraint_level();
@@ -2443,8 +2896,16 @@ impl BinaryOperator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct UnaryExpression {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: UnaryExpressionTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub operator: UnaryOperator,
     pub argument: BinaryPart,
 
@@ -2454,8 +2915,21 @@ pub struct UnaryExpression {
 }
 
 impl UnaryExpression {
+<<<<<<< HEAD
     pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Node<Self> {
         Node::no_src(Self {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Self {
+        Self {
+            start: 0,
+            end: argument.end(),
+=======
+    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: argument.end(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
             operator,
             argument,
             digest: None,
@@ -2514,8 +2988,17 @@ impl UnaryOperator {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub struct PipeExpression {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: PipeExpressionTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     // TODO: Only the first body expression can be any Value.
     // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Expr>,
@@ -2533,7 +3016,46 @@ impl From<Node<PipeExpression>> for Expr {
     }
 }
 
+<<<<<<< HEAD
 impl Node<PipeExpression> {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+impl PipeExpression {
+    pub fn new(body: Vec<Expr>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            body,
+            non_code_meta: Default::default(),
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for value in &mut self.body {
+            value.replace_value(source_range, new_value.clone());
+        }
+    }
+
+=======
+impl PipeExpression {
+    pub fn new(body: Vec<Expr>) -> Self {
+        Self {
+            r#type: Default::default(),
+            start: 0,
+            end: 0,
+            body,
+            non_code_meta: Default::default(),
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for value in &mut self.body {
+            value.replace_value(source_range, new_value.clone());
+        }
+    }
+
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.body.is_empty() {
             return ConstraintLevel::Ignore {
@@ -2665,8 +3187,16 @@ pub struct Parameter {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct FunctionExpression {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: FunctionExpressionTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub params: Vec<Parameter>,
     pub body: Node<Program>,
     #[serde(skip)]
@@ -2700,6 +3230,15 @@ impl FunctionExpression {
         &self,
     ) -> Result<(&[Parameter], &[Parameter]), RequiredParamAfterOptionalParam> {
         let Self {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            start: _,
+            end: _,
+=======
+            start: _,
+            end: _,
+            r#type: _,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
             params,
             body: _,
             digest: _,
@@ -2752,8 +3291,16 @@ impl FunctionExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct ReturnStatement {
+<<<<<<< HEAD
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    pub start: usize,
+    pub end: usize,
+=======
+    pub r#type: ReturnStatementTag,
+    pub start: usize,
+    pub end: usize,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     pub argument: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -3199,6 +3746,7 @@ const cylinder = startSketchOn('-XZ')
             Some(FnArgType::Object {
                 properties: vec![
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::new(
                             Identifier {
                                 name: "thing".to_owned(),
@@ -3207,11 +3755,28 @@ const cylinder = startSketchOn('-XZ')
                             35,
                             40,
                         ),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 35,
+                            end: 40,
+                            name: "thing".to_owned(),
+                            digest: None,
+                        },
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 35,
+                            end: 40,
+                            name: "thing".to_owned(),
+                            digest: None,
+                        },
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::new(
                             Identifier {
                                 name: "things".to_owned(),
@@ -3220,11 +3785,28 @@ const cylinder = startSketchOn('-XZ')
                             50,
                             56,
                         ),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 50,
+                            end: 56,
+                            name: "things".to_owned(),
+                            digest: None,
+                        },
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 50,
+                            end: 56,
+                            name: "things".to_owned(),
+                            digest: None,
+                        },
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::new(
                             Identifier {
                                 name: "more".to_owned(),
@@ -3233,6 +3815,22 @@ const cylinder = startSketchOn('-XZ')
                             68,
                             72,
                         ),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 68,
+                            end: 72,
+                            name: "more".to_owned(),
+                            digest: None
+                        },
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 68,
+                            end: 72,
+                            name: "more".to_owned(),
+                            digest: None
+                        },
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
                         digest: None
@@ -3267,6 +3865,7 @@ const cylinder = startSketchOn('-XZ')
             Some(FnArgType::Object {
                 properties: vec![
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::new(
                             Identifier {
                                 name: "thing".to_owned(),
@@ -3275,11 +3874,28 @@ const cylinder = startSketchOn('-XZ')
                             18,
                             23,
                         ),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 18,
+                            end: 23,
+                            name: "thing".to_owned(),
+                            digest: None
+                        },
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 18,
+                            end: 23,
+                            name: "thing".to_owned(),
+                            digest: None
+                        },
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::new(
                             Identifier {
                                 name: "things".to_owned(),
@@ -3288,11 +3904,28 @@ const cylinder = startSketchOn('-XZ')
                             33,
                             39,
                         ),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 33,
+                            end: 39,
+                            name: "things".to_owned(),
+                            digest: None
+                        },
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 33,
+                            end: 39,
+                            name: "things".to_owned(),
+                            digest: None
+                        },
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::new(
                             Identifier {
                                 name: "more".to_owned(),
@@ -3301,6 +3934,22 @@ const cylinder = startSketchOn('-XZ')
                             51,
                             55,
                         ),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 51,
+                            end: 55,
+                            name: "more".to_owned(),
+                            digest: None
+                        },
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 51,
+                            end: 55,
+                            name: "more".to_owned(),
+                            digest: None
+                        },
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
                         digest: None
@@ -3316,7 +3965,18 @@ const cylinder = startSketchOn('-XZ')
             (
                 "no params",
                 (0..=0),
+<<<<<<< HEAD
                 Node::no_src(FunctionExpression {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+=======
+                FunctionExpression {
+                    r#type: Default::default(),
+                    start: 0,
+                    end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                     params: vec![],
                     body: Node::no_src(Program {
                         body: Vec::new(),
@@ -3330,9 +3990,31 @@ const cylinder = startSketchOn('-XZ')
             (
                 "all required params",
                 (1..=1),
+<<<<<<< HEAD
                 Node::no_src(FunctionExpression {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+=======
+                FunctionExpression {
+                    r#type: Default::default(),
+                    start: 0,
+                    end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                     params: vec![Parameter {
+<<<<<<< HEAD
                         identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 0,
+                            end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                             name: "foo".to_owned(),
                             digest: None,
                         }),
@@ -3356,9 +4038,31 @@ const cylinder = startSketchOn('-XZ')
             (
                 "all optional params",
                 (0..=1),
+<<<<<<< HEAD
                 Node::no_src(FunctionExpression {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+=======
+                FunctionExpression {
+                    r#type: Default::default(),
+                    start: 0,
+                    end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                     params: vec![Parameter {
+<<<<<<< HEAD
                         identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 0,
+                            end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                             name: "foo".to_owned(),
                             digest: None,
                         }),
@@ -3382,10 +4086,32 @@ const cylinder = startSketchOn('-XZ')
             (
                 "mixed params",
                 (1..=2),
+<<<<<<< HEAD
                 Node::no_src(FunctionExpression {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+=======
+                FunctionExpression {
+                    r#type: Default::default(),
+                    start: 0,
+                    end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                     params: vec![
                         Parameter {
+<<<<<<< HEAD
                             identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                            identifier: Identifier {
+                                start: 0,
+                                end: 0,
+=======
+                            identifier: Identifier {
+                                r#type: Default::default(),
+                                start: 0,
+                                end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                                 name: "foo".to_owned(),
                                 digest: None,
                             }),
@@ -3394,7 +4120,18 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         },
                         Parameter {
+<<<<<<< HEAD
                             identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                            identifier: Identifier {
+                                start: 0,
+                                end: 0,
+=======
+                            identifier: Identifier {
+                                r#type: Default::default(),
+                                start: 0,
+                                end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                                 name: "bar".to_owned(),
                                 digest: None,
                             }),
@@ -3535,5 +4272,40 @@ const cylinder = startSketchOn('-XZ')
         let prog3_digest = prog3_parser.ast().unwrap().compute_digest();
 
         assert_eq!(prog1_digest, prog3_digest);
+    }
+
+    #[test]
+    fn serde_roundtrip() {
+        let program = include_str!("../../../tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl");
+        let ast_in = crate::parser::parse(program).unwrap();
+        let ast_serialized = serde_json::to_string_pretty(&ast_in).unwrap();
+        let ast_out: Program = serde_json::from_str(&ast_serialized).unwrap();
+        assert_eq!(ast_in, ast_out);
+    }
+
+    #[test]
+    fn weird_untagged() {
+        let json_str = r#"
+        {
+              "type": "MemberExpression",
+              "start": 41,
+              "end": 45,
+              "object": {
+                "type": "Identifier",
+                "start": 41,
+                "end": 43,
+                "name": "yo"
+              },
+              "property": {
+                "type": "Identifier",
+                "start": 44,
+                "end": 45,
+                "name": "a"
+              },
+              "computed": false
+            }
+
+        "#;
+        let _: MemberExpression = serde_json::from_str(json_str).unwrap();
     }
 }

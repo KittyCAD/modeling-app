@@ -3,51 +3,47 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
+  "start": 0,
+  "end": 14,
   "body": [
     {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 14,
       "declarations": [
         {
+          "type": "VariableDeclarator",
+          "start": 4,
           "end": 14,
           "id": {
-            "end": 5,
-            "name": "x",
+            "type": "Identifier",
             "start": 4,
-            "type": "Identifier"
+            "end": 5,
+            "name": "x"
           },
           "init": {
-            "end": 14,
-            "left": {
-              "end": 9,
-              "raw": "3",
-              "start": 8,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 3
-            },
-            "operator": "==",
-            "right": {
-              "end": 14,
-              "raw": "3",
-              "start": 13,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 3
-            },
-            "start": 8,
             "type": "BinaryExpression",
-            "type": "BinaryExpression"
-          },
-          "start": 4,
-          "type": "VariableDeclarator"
+            "start": 8,
+            "end": 14,
+            "operator": "==",
+            "left": {
+              "type": "Literal",
+              "start": 8,
+              "end": 9,
+              "value": 3,
+              "raw": "3"
+            },
+            "right": {
+              "type": "Literal",
+              "start": 13,
+              "end": 14,
+              "value": 3,
+              "raw": "3"
+            }
+          }
         }
       ],
-      "end": 14,
-      "kind": "const",
-      "start": 0,
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration"
+      "kind": "const"
     }
-  ],
-  "end": 14,
-  "start": 0
+  ]
 }

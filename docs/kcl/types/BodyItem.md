@@ -8,18 +8,17 @@ layout: manual
 
 
 
+**This schema accepts any of the following:**
 
-**This schema accepts exactly one of the following:**
 
-
-**Type:** `object`
-
+[`ImportStatement`](/docs/kcl/types/ImportStatement)
 
 
 
 
-## Properties
 
+
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ImportStatement`|  | No |
@@ -29,18 +28,30 @@ layout: manual
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `ImportStatement`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `items` |`[` [`ImportItem`](/docs/kcl/types/ImportItem) `]`|  | No |
+| `path` |`string`|  | No |
+| `raw_path` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
 
-**Type:** `object`
+[`ExpressionStatement`](/docs/kcl/types/ExpressionStatement)
 
 
 
 
 
-## Properties
 
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ExpressionStatement`|  | No |
@@ -48,18 +59,28 @@ layout: manual
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `ExpressionStatement`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `expression` |[`Expr`](/docs/kcl/types/Expr)|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
 
-**Type:** `object`
+[`VariableDeclaration`](/docs/kcl/types/VariableDeclaration)
 
 
 
 
 
-## Properties
 
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `VariableDeclaration`|  | No |
@@ -69,18 +90,30 @@ layout: manual
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `VariableDeclaration`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `declarations` |`[` [`VariableDeclarator`](/docs/kcl/types/VariableDeclarator) `]`|  | No |
+| `visibility` |[`ItemVisibility`](/docs/kcl/types/ItemVisibility)|  | No |
+| `kind` |[`VariableKind`](/docs/kcl/types/VariableKind)|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
 
-**Type:** `object`
+[`ReturnStatement`](/docs/kcl/types/ReturnStatement)
 
 
 
 
 
-## Properties
 
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `ReturnStatement`|  | No |
@@ -88,9 +121,20 @@ layout: manual
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `ReturnStatement`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `argument` |[`Expr`](/docs/kcl/types/Expr)|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----
+
 
 
 

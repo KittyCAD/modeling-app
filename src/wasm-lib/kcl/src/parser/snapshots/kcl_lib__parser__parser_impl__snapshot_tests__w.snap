@@ -3,50 +3,46 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
+  "start": 0,
+  "end": 22,
   "body": [
     {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 22,
       "declarations": [
         {
+          "type": "VariableDeclarator",
+          "start": 6,
           "end": 22,
           "id": {
-            "end": 9,
-            "name": "pt1",
+            "type": "Identifier",
             "start": 6,
-            "type": "Identifier"
+            "end": 9,
+            "name": "pt1"
           },
           "init": {
-            "computed": false,
+            "type": "MemberExpression",
+            "start": 12,
             "end": 22,
             "object": {
-              "end": 14,
-              "name": "b1",
-              "start": 12,
               "type": "Identifier",
-              "type": "Identifier"
+              "start": 12,
+              "end": 14,
+              "name": "b1"
             },
             "property": {
-              "end": 21,
-              "raw": "'zero'",
+              "type": "Literal",
               "start": 15,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "zero"
+              "end": 21,
+              "value": "zero",
+              "raw": "'zero'"
             },
-            "start": 12,
-            "type": "MemberExpression",
-            "type": "MemberExpression"
-          },
-          "start": 6,
-          "type": "VariableDeclarator"
+            "computed": false
+          }
         }
       ],
-      "end": 22,
-      "kind": "const",
-      "start": 0,
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration"
+      "kind": "const"
     }
-  ],
-  "end": 22,
-  "start": 0
+  ]
 }

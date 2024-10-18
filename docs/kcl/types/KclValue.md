@@ -48,14 +48,14 @@ Any KCL value.
 
 ----
 
-**Type:** `object`
+[`TagDeclarator`](/docs/kcl/types#tag-declaration)
 
 
 
 
 
-## Properties
 
+<<<<<<< HEAD
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
@@ -63,6 +63,16 @@ Any KCL value.
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `value` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+=======
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 
 
 ----

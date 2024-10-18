@@ -3,26 +3,73 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
+  "start": 0,
+  "end": 79,
   "body": [
     {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 79,
       "declarations": [
         {
+          "type": "VariableDeclarator",
+          "start": 4,
           "end": 79,
           "id": {
-            "end": 9,
-            "name": "props",
+            "type": "Identifier",
             "start": 4,
-            "type": "Identifier"
+            "end": 9,
+            "name": "props"
           },
           "init": {
+            "type": "ObjectExpression",
+            "start": 12,
             "end": 79,
+            "properties": [
+              {
+                "type": "ObjectProperty",
+                "start": 26,
+                "end": 30,
+                "key": {
+                  "type": "Identifier",
+                  "start": 26,
+                  "end": 27,
+                  "name": "a"
+                },
+                "value": {
+                  "type": "Literal",
+                  "start": 29,
+                  "end": 30,
+                  "value": 1,
+                  "raw": "1"
+                }
+              },
+              {
+                "type": "ObjectProperty",
+                "start": 65,
+                "end": 69,
+                "key": {
+                  "type": "Identifier",
+                  "start": 65,
+                  "end": 66,
+                  "name": "c"
+                },
+                "value": {
+                  "type": "Literal",
+                  "start": 68,
+                  "end": 69,
+                  "value": 3,
+                  "raw": "3"
+                }
+              }
+            ],
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 52,
-                    "start": 44,
                     "type": "NonCodeNode",
+                    "start": 44,
+                    "end": 52,
                     "value": {
                       "type": "blockComment",
                       "value": "b: 2,",
@@ -31,63 +78,12 @@ expression: actual
                   }
                 ]
               },
-              "startNodes": []
-            },
-            "properties": [
-              {
-                "end": 30,
-                "key": {
-                  "end": 27,
-                  "name": "a",
-                  "start": 26,
-                  "type": "Identifier"
-                },
-                "start": 26,
-                "type": "ObjectProperty",
-                "value": {
-                  "end": 30,
-                  "raw": "1",
-                  "start": 29,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 1
-                }
-              },
-              {
-                "end": 69,
-                "key": {
-                  "end": 66,
-                  "name": "c",
-                  "start": 65,
-                  "type": "Identifier"
-                },
-                "start": 65,
-                "type": "ObjectProperty",
-                "value": {
-                  "end": 69,
-                  "raw": "3",
-                  "start": 68,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 3
-                }
-              }
-            ],
-            "start": 12,
-            "type": "ObjectExpression",
-            "type": "ObjectExpression"
-          },
-          "start": 4,
-          "type": "VariableDeclarator"
+              "start": []
+            }
+          }
         }
       ],
-      "end": 79,
-      "kind": "const",
-      "start": 0,
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration"
+      "kind": "const"
     }
-  ],
-  "end": 79,
-  "start": 0
+  ]
 }

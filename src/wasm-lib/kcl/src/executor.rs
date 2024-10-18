@@ -3555,8 +3555,21 @@ let w = f() + f()
                 meta: Default::default(),
             })
         }
+<<<<<<< HEAD
         fn ident(s: &'static str) -> Node<Identifier> {
             Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+        fn ident(s: &'static str) -> Identifier {
+            Identifier {
+                start: 0,
+                end: 0,
+=======
+        fn ident(s: &'static str) -> Identifier {
+            Identifier {
+                r#type: Default::default(),
+                start: 0,
+                end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                 name: s.to_owned(),
                 digest: None,
             })
@@ -3651,7 +3664,18 @@ let w = f() + f()
             ),
         ] {
             // Run each test.
+<<<<<<< HEAD
             let func_expr = &Node::no_src(FunctionExpression {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            let func_expr = &FunctionExpression {
+                start: 0,
+                end: 0,
+=======
+            let func_expr = &FunctionExpression {
+                r#type: Default::default(),
+                start: 0,
+                end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                 params,
                 body: Node {
                     inner: crate::ast::types::Program {

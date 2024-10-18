@@ -3,50 +3,47 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
+  "start": 0,
+  "end": 29,
   "body": [
     {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 29,
       "declarations": [
         {
+          "type": "VariableDeclarator",
+          "start": 6,
           "end": 29,
           "id": {
-            "end": 8,
-            "name": "sg",
+            "type": "Identifier",
             "start": 6,
-            "type": "Identifier"
+            "end": 8,
+            "name": "sg"
           },
           "init": {
+            "type": "CallExpression",
+            "start": 11,
+            "end": 29,
+            "callee": {
+              "type": "Identifier",
+              "start": 11,
+              "end": 24,
+              "name": "startSketchAt"
+            },
             "arguments": [
               {
-                "end": 28,
-                "name": "pos",
-                "start": 25,
                 "type": "Identifier",
-                "type": "Identifier"
+                "start": 25,
+                "end": 28,
+                "name": "pos"
               }
             ],
-            "callee": {
-              "end": 24,
-              "name": "startSketchAt",
-              "start": 11,
-              "type": "Identifier"
-            },
-            "end": 29,
-            "optional": false,
-            "start": 11,
-            "type": "CallExpression",
-            "type": "CallExpression"
-          },
-          "start": 6,
-          "type": "VariableDeclarator"
+            "optional": false
+          }
         }
       ],
-      "end": 29,
-      "kind": "const",
-      "start": 0,
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration"
+      "kind": "const"
     }
-  ],
-  "end": 29,
-  "start": 0
+  ]
 }

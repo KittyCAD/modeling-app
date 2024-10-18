@@ -191,7 +191,14 @@ fn pipe_expression(i: TokenSlice) -> PResult<Node<PipeExpression>> {
             non_code_meta.insert(code_count, nc);
         }
     }
+<<<<<<< HEAD
     Ok(Node {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(PipeExpression {
+=======
+    Ok(PipeExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start: values.first().unwrap().start(),
         end: values.last().unwrap().end().max(max_noncode_end),
         inner: PipeExpression {
@@ -214,6 +221,7 @@ fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
+<<<<<<< HEAD
     Ok(Box::new(Node::new(
         Literal {
             value: LiteralValue::Bool(value),
@@ -223,6 +231,24 @@ fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
         token.start,
         token.end,
     )))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(Literal {
+        start: token.start,
+        end: token.end,
+        value: LiteralValue::Bool(value),
+        raw: value.to_string(),
+        digest: None,
+    })
+=======
+    Ok(Literal {
+        r#type: Default::default(),
+        start: token.start,
+        end: token.end,
+        value: LiteralValue::Bool(value),
+        raw: value.to_string(),
+        digest: None,
+    })
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 }
 
 pub fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
@@ -247,6 +273,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Node<Literal>> {
         })
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
+<<<<<<< HEAD
     Ok(Node::new(
         Literal {
             value,
@@ -256,6 +283,24 @@ pub fn string_literal(i: TokenSlice) -> PResult<Node<Literal>> {
         token.start,
         token.end,
     ))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(Literal {
+        start: token.start,
+        end: token.end,
+        value,
+        raw: token.value.clone(),
+        digest: None,
+    })
+=======
+    Ok(Literal {
+        r#type: Default::default(),
+        start: token.start,
+        end: token.end,
+        value,
+        raw: token.value.clone(),
+        digest: None,
+    })
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 }
 
 /// Parse a KCL literal number, with no - sign.
@@ -282,6 +327,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
         })
         .context(expected("an unsigned number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
+<<<<<<< HEAD
     Ok(Node::new(
         Literal {
             value,
@@ -291,6 +337,24 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
         token.start,
         token.end,
     ))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(Literal {
+        start: token.start,
+        end: token.end,
+        value,
+        raw: token.value.clone(),
+        digest: None,
+    })
+=======
+    Ok(Literal {
+        start: token.start,
+        r#type: Default::default(),
+        end: token.end,
+        value,
+        raw: token.value.clone(),
+        digest: None,
+    })
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
 }
 
 /// Parse a KCL operator that takes a left- and right-hand side argument.
@@ -489,12 +553,19 @@ fn array_empty(i: TokenSlice) -> PResult<Node<ArrayExpression>> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
+<<<<<<< HEAD
     Ok(Node::new(
         ArrayExpression {
             elements: Default::default(),
             non_code_meta: Default::default(),
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(ArrayExpression {
+=======
+    Ok(ArrayExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     ))
@@ -546,12 +617,19 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<Node<ArrayExpression>
         start_nodes: Vec::new(),
         digest: None,
     };
+<<<<<<< HEAD
     Ok(Node::new(
         ArrayExpression {
             elements,
             non_code_meta,
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(ArrayExpression {
+=======
+    Ok(ArrayExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     ))
@@ -567,6 +645,7 @@ fn array_end_start(i: TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
     let end_element = expression.parse_next(i)?;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
+<<<<<<< HEAD
     Ok(Node::new(
         ArrayRangeExpression {
             start_element,
@@ -574,6 +653,12 @@ fn array_end_start(i: TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
             end_inclusive: true,
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(ArrayRangeExpression {
+=======
+    Ok(ArrayRangeExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     ))
@@ -653,12 +738,19 @@ pub(crate) fn object(i: TokenSlice) -> PResult<Node<ObjectExpression>> {
         non_code_nodes,
         ..Default::default()
     };
+<<<<<<< HEAD
     Ok(Node::new(
         ObjectExpression {
             properties,
             non_code_meta,
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(ObjectExpression {
+=======
+    Ok(ObjectExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     ))
@@ -668,7 +760,22 @@ pub(crate) fn object(i: TokenSlice) -> PResult<Node<ObjectExpression>> {
 fn pipe_sub(i: TokenSlice) -> PResult<Node<PipeSubstitution>> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::Operator) && token.value == PIPE_SUBSTITUTION_OPERATOR {
+<<<<<<< HEAD
             Ok(Node::new(PipeSubstitution { digest: None }, token.start, token.end))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            Ok(PipeSubstitution {
+                start: token.start,
+                end: token.end,
+                digest: None,
+            })
+=======
+            Ok(PipeSubstitution {
+                r#type: Default::default(),
+                start: token.start,
+                end: token.end,
+                digest: None,
+            })
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -818,6 +925,7 @@ fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
     open_brace(i)?;
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
+<<<<<<< HEAD
     Ok(Node::new(
         FunctionExpression {
             params,
@@ -825,6 +933,12 @@ fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
             return_type,
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(FunctionExpression {
+=======
+    Ok(FunctionExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     ))
@@ -874,6 +988,7 @@ fn member_expression(i: TokenSlice) -> PResult<Node<MemberExpression>> {
     // which is guaranteed to have >=1 elements.
     let (property, end, computed) = members.remove(0);
     let start = id.start;
+<<<<<<< HEAD
     let initial_member_expression = Node::new(
         MemberExpression {
             object: MemberObject::Identifier(Box::new(id)),
@@ -881,6 +996,12 @@ fn member_expression(i: TokenSlice) -> PResult<Node<MemberExpression>> {
             property,
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    let initial_member_expression = MemberExpression {
+=======
+    let initial_member_expression = MemberExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     );
@@ -891,6 +1012,7 @@ fn member_expression(i: TokenSlice) -> PResult<Node<MemberExpression>> {
         // Take the accumulated member expression from the previous iteration,
         // and use it as the `object` of a new, bigger member expression.
         .fold(initial_member_expression, |accumulated, (property, end, computed)| {
+<<<<<<< HEAD
             Node::new(
                 MemberExpression {
                     object: MemberObject::MemberExpression(Box::new(accumulated)),
@@ -898,6 +1020,12 @@ fn member_expression(i: TokenSlice) -> PResult<Node<MemberExpression>> {
                     property,
                     digest: None,
                 },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            MemberExpression {
+=======
+            MemberExpression {
+                r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                 start,
                 end,
             )
@@ -1206,6 +1334,7 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             .into(),
         ));
     }
+<<<<<<< HEAD
     Ok(Node::boxed(
         ImportStatement {
             items,
@@ -1213,6 +1342,18 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             raw_path: path.inner.raw,
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(Box::new(ImportStatement {
+        items,
+        path: path_string,
+        raw_path: path.raw,
+=======
+    Ok(Box::new(ImportStatement {
+        r#type: Default::default(),
+        items,
+        path: path_string,
+        raw_path: path.raw,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     ))
@@ -1276,7 +1417,14 @@ pub fn return_stmt(i: TokenSlice) -> PResult<Node<ReturnStatement>> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
+<<<<<<< HEAD
     Ok(Node {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(ReturnStatement {
+=======
+    Ok(ReturnStatement {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end: argument.end(),
         inner: ReturnStatement { argument, digest: None },
@@ -1431,6 +1579,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     .map_err(|e| e.cut())?;
 
     let end = val.end();
+<<<<<<< HEAD
     Ok(Box::new(Node {
         inner: VariableDeclaration {
             declarations: vec![Node {
@@ -1446,6 +1595,12 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             kind,
             digest: None,
         },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(VariableDeclaration {
+=======
+    Ok(VariableDeclaration {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start,
         end,
     }))
@@ -1456,6 +1611,7 @@ impl TryFrom<Token> for Node<Identifier> {
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
+<<<<<<< HEAD
             Ok(Node::new(
                 Identifier {
                     name: token.value,
@@ -1464,6 +1620,22 @@ impl TryFrom<Token> for Node<Identifier> {
                 token.start,
                 token.end,
             ))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            Ok(Identifier {
+                start: token.start,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+=======
+            Ok(Identifier {
+                r#type: Default::default(),
+                start: token.start,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -1486,6 +1658,7 @@ fn identifier(i: TokenSlice) -> PResult<Node<Identifier>> {
 fn sketch_keyword(i: TokenSlice) -> PResult<Node<Identifier>> {
     any.try_map(|token: Token| {
         if token.token_type == TokenType::Type && token.value == "sketch" {
+<<<<<<< HEAD
             Ok(Node::new(
                 Identifier {
                     name: token.value,
@@ -1494,6 +1667,22 @@ fn sketch_keyword(i: TokenSlice) -> PResult<Node<Identifier>> {
                 token.start,
                 token.end,
             ))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            Ok(Identifier {
+                start: token.start,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+=======
+            Ok(Identifier {
+                r#type: Default::default(),
+                start: token.start,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -1510,6 +1699,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
+<<<<<<< HEAD
             Ok(Node::new(
                 TagDeclarator {
                     // We subtract 1 from the start because the tag starts with a `$`.
@@ -1519,6 +1709,24 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                 token.start - 1,
                 token.end,
             ))
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            Ok(TagDeclarator {
+                // We subtract 1 from the start because the tag starts with a `$`.
+                start: token.start - 1,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+=======
+            Ok(TagDeclarator {
+                r#type: Default::default(),
+                // We subtract 1 from the start because the tag starts with a `$`.
+                start: token.start - 1,
+                end: token.end,
+                name: token.value,
+                digest: None,
+            })
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -1585,7 +1793,14 @@ fn unary_expression(i: TokenSlice) -> PResult<Node<UnaryExpression>> {
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
     let argument = operand.parse_next(i)?;
+<<<<<<< HEAD
     Ok(Node {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(UnaryExpression {
+=======
+    Ok(UnaryExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start: op_token.start,
         end: argument.end(),
         inner: UnaryExpression {
@@ -1975,7 +2190,14 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
         }
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
+<<<<<<< HEAD
     Ok(Node {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+    Ok(CallExpression {
+=======
+    Ok(CallExpression {
+        r#type: Default::default(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
         start: fn_name.start,
         end,
         inner: CallExpression {
@@ -2158,6 +2380,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let expr = function_expression.parse_next(&mut slice).unwrap();
         assert_eq!(
             expr,
+<<<<<<< HEAD
             Node::new(
                 FunctionExpression {
                     params: Default::default(),
@@ -2191,6 +2414,42 @@ const mySk1 = startSketchAt([0, 0])"#;
                                 )],
                                 digest: None,
                             },
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            FunctionExpression {
+                start: 0,
+                end: 47,
+                params: Default::default(),
+                body: Program {
+                    start: 7,
+                    end: 47,
+                    body: vec![BodyItem::ReturnStatement(ReturnStatement {
+                        start: 25,
+                        end: 33,
+                        argument: Expr::Literal(Box::new(Literal {
+                            start: 32,
+                            end: 33,
+                            value: 2u32.into(),
+                            raw: "2".to_owned(),
+=======
+            FunctionExpression {
+                r#type: Default::default(),
+                start: 0,
+                end: 47,
+                params: Default::default(),
+                body: Program {
+                    start: 7,
+                    end: 47,
+                    body: vec![BodyItem::ReturnStatement(ReturnStatement {
+                        r#type: Default::default(),
+                        start: 25,
+                        end: 33,
+                        argument: Expr::Literal(Box::new(Literal {
+                            r#type: Default::default(),
+                            start: 32,
+                            end: 33,
+                            value: 2u32.into(),
+                            raw: "2".to_owned(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                             digest: None,
                         },
                         7,
@@ -2355,6 +2614,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             panic!("Expected RHS to be another binary expression");
         };
         assert_eq!(rhs.operator, BinaryOperator::Sub);
+<<<<<<< HEAD
         match &rhs.right {
             BinaryPart::Literal(lit) => {
                 assert!(lit.start == 9 && lit.end == 10);
@@ -2362,6 +2622,30 @@ const mySk1 = startSketchAt([0, 0])"#;
             }
             _ => panic!(),
         }
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+        assert_eq!(
+            rhs.right,
+            BinaryPart::Literal(Box::new(Literal {
+                start: 9,
+                end: 10,
+                value: 3u32.into(),
+                raw: "3".to_owned(),
+                digest: None,
+            }))
+        );
+=======
+        assert_eq!(
+            rhs.right,
+            BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
+                start: 9,
+                end: 10,
+                value: 3u32.into(),
+                raw: "3".to_owned(),
+                digest: None,
+            }))
+        );
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
     }
 
     #[test]
@@ -2735,6 +3019,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_math_parse() {
         let tokens = crate::token::lexer(r#"5 + "a""#).unwrap();
+<<<<<<< HEAD
         let actual = crate::parser::Parser::new(tokens).ast().unwrap().inner.body;
         let expr = Node::boxed(
             BinaryExpression {
@@ -2757,7 +3042,33 @@ const mySk1 = startSketchAt([0, 0])"#;
                     4,
                     7,
                 ))),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+        let actual = crate::parser::Parser::new(tokens).ast().unwrap().body;
+        let expr = BinaryExpression {
+            start: 0,
+            end: 7,
+            operator: BinaryOperator::Add,
+            left: BinaryPart::Literal(Box::new(Literal {
+                start: 0,
+                end: 1,
+                value: 5u32.into(),
+                raw: "5".to_owned(),
+=======
+        let actual = crate::parser::Parser::new(tokens).ast().unwrap().body;
+        let expr = BinaryExpression {
+            r#type: Default::default(),
+            start: 0,
+            end: 7,
+            operator: BinaryOperator::Add,
+            left: BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
+                start: 0,
+                end: 1,
+                value: 5u32.into(),
+                raw: "5".to_owned(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                 digest: None,
+<<<<<<< HEAD
             },
             0,
             7,
@@ -2765,6 +3076,22 @@ const mySk1 = startSketchAt([0, 0])"#;
         let expected = vec![BodyItem::ExpressionStatement(Node::new(
             ExpressionStatement {
                 expression: Expr::BinaryExpression(expr),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+            })),
+            right: BinaryPart::Literal(Box::new(Literal {
+                start: 4,
+                end: 7,
+                value: "a".into(),
+                raw: r#""a""#.to_owned(),
+=======
+            })),
+            right: BinaryPart::Literal(Box::new(Literal {
+                r#type: Default::default(),
+                start: 4,
+                end: 7,
+                value: "a".into(),
+                raw: r#""a""#.to_owned(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                 digest: None,
             },
             0,
@@ -2856,6 +3183,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let code = "5 +6";
         let parser = crate::parser::Parser::new(crate::token::lexer(code).unwrap());
         let result = parser.ast().unwrap();
+<<<<<<< HEAD
         let expected_result = Node::new(
             Program {
                 body: vec![BodyItem::ExpressionStatement(Node::new(
@@ -2886,12 +3214,72 @@ const mySk1 = startSketchAt([0, 0])"#;
                             0,
                             4,
                         )),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+        let expected_result = Program {
+            start: 0,
+            end: 4,
+            body: vec![BodyItem::ExpressionStatement(ExpressionStatement {
+                start: 0,
+                end: 4,
+                expression: Expr::BinaryExpression(Box::new(BinaryExpression {
+                    start: 0,
+                    end: 4,
+                    left: BinaryPart::Literal(Box::new(Literal {
+                        start: 0,
+                        end: 1,
+                        value: 5u32.into(),
+                        raw: "5".to_string(),
+=======
+        let expected_result = Program {
+            start: 0,
+            end: 4,
+            body: vec![BodyItem::ExpressionStatement(ExpressionStatement {
+                start: 0,
+                end: 4,
+                expression: Expr::BinaryExpression(Box::new(BinaryExpression {
+                    r#type: Default::default(),
+                    start: 0,
+                    end: 4,
+                    left: BinaryPart::Literal(Box::new(Literal {
+                        r#type: Default::default(),
+                        start: 0,
+                        end: 1,
+                        value: 5u32.into(),
+                        raw: "5".to_string(),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         digest: None,
+<<<<<<< HEAD
                     },
                     0,
                     4,
                 ))],
                 non_code_meta: NonCodeMeta::default(),
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                    })),
+                    operator: BinaryOperator::Add,
+                    right: BinaryPart::Literal(Box::new(Literal {
+                        start: 3,
+                        end: 4,
+                        value: 6u32.into(),
+                        raw: "6".to_string(),
+                        digest: None,
+                    })),
+                    digest: None,
+                })),
+=======
+                    })),
+                    operator: BinaryOperator::Add,
+                    right: BinaryPart::Literal(Box::new(Literal {
+                        r#type: Default::default(),
+                        start: 3,
+                        end: 4,
+                        value: 6u32.into(),
+                        raw: "6".to_string(),
+                        digest: None,
+                    })),
+                    digest: None,
+                })),
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                 digest: None,
             },
             0,
@@ -3174,7 +3562,18 @@ e
         for (i, (params, expect_ok)) in [
             (
                 vec![Parameter {
+<<<<<<< HEAD
                     identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                    identifier: Identifier {
+                        start: 0,
+                        end: 0,
+=======
+                    identifier: Identifier {
+                        r#type: Default::default(),
+                        start: 0,
+                        end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         name: "a".to_owned(),
                         digest: None,
                     }),
@@ -3186,7 +3585,18 @@ e
             ),
             (
                 vec![Parameter {
+<<<<<<< HEAD
                     identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                    identifier: Identifier {
+                        start: 0,
+                        end: 0,
+=======
+                    identifier: Identifier {
+                        r#type: Default::default(),
+                        start: 0,
+                        end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                         name: "a".to_owned(),
                         digest: None,
                     }),
@@ -3199,7 +3609,18 @@ e
             (
                 vec![
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 0,
+                            end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                             name: "a".to_owned(),
                             digest: None,
                         }),
@@ -3208,7 +3629,18 @@ e
                         digest: None,
                     },
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 0,
+                            end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                             name: "b".to_owned(),
                             digest: None,
                         }),
@@ -3222,7 +3654,18 @@ e
             (
                 vec![
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 0,
+                            end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                             name: "a".to_owned(),
                             digest: None,
                         }),
@@ -3231,7 +3674,18 @@ e
                         digest: None,
                     },
                     Parameter {
+<<<<<<< HEAD
                         identifier: Node::no_src(Identifier {
+||||||| parent of 611085fe1 (Remove duplicate JSON "type" tags)
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+=======
+                        identifier: Identifier {
+                            r#type: Default::default(),
+                            start: 0,
+                            end: 0,
+>>>>>>> 611085fe1 (Remove duplicate JSON "type" tags)
                             name: "b".to_owned(),
                             digest: None,
                         }),
