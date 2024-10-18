@@ -155,6 +155,30 @@ Is left less than or equal to right
 
 
 ----
+Are both left and right true?
+
+**enum:** `&`
+
+
+
+
+
+
+
+
+----
+Are either left or right true?
+
+**enum:** `|`
+
+
+
+
+
+
+
+
+----
 
 
 

@@ -173,3 +173,6 @@ gen_test_parse_fail!(
 // );
 gen_test!(add_lots);
 gen_test!(double_map);
+gen_test!(boolean_logical_and);
+gen_test!(boolean_logical_or);
+gen_test!(boolean_logical_multiple);
