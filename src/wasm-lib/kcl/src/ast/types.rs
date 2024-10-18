@@ -2182,7 +2182,7 @@ impl ObjectProperty {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum MemberObject {
     MemberExpression(Box<MemberExpression>),
     Identifier(Box<Identifier>),
@@ -2229,7 +2229,7 @@ impl From<&MemberObject> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(untagged)]
 pub enum LiteralIdentifier {
     Identifier(Box<Identifier>),
     Literal(Box<Literal>),
@@ -3638,5 +3638,31 @@ const cylinder = startSketchOn('-XZ')
         let prog3_digest = prog3_parser.ast().unwrap().compute_digest();
 
         assert_eq!(prog1_digest, prog3_digest);
+    }
+
+    #[test]
+    fn weird_untagged() {
+        let json_str = r#"
+        {
+              "type": "MemberExpression",
+              "start": 41,
+              "end": 45,
+              "object": {
+                "type": "Identifier",
+                "start": 41,
+                "end": 43,
+                "name": "yo"
+              },
+              "property": {
+                "type": "Identifier",
+                "start": 44,
+                "end": 45,
+                "name": "a"
+              },
+              "computed": false
+            }
+
+        "#;
+        let ast: MemberExpression = serde_json::from_str(json_str).unwrap();
     }
 }
