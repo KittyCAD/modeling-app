@@ -2377,8 +2377,8 @@ pub enum BinaryOperator {
     #[display("/")]
     Div,
     /// Modulo two numbers.
-    #[serde(rename = "%")]
-    #[display("%")]
+    #[serde(rename = "mod")]
+    #[display("mod")]
     Mod,
     /// Raise a number to a power.
     #[serde(rename = "^")]

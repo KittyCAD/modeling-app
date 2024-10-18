@@ -1,6 +1,6 @@
 use winnow::{
     ascii::{digit1, multispace1},
-    combinator::{alt, opt, peek, preceded, repeat, terminated},
+    combinator::{alt, not, opt, peek, preceded, repeat, terminated},
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
@@ -179,13 +179,13 @@ fn unambiguous_keywords(i: &mut Located<&str>) -> PResult<Token> {
     // These are the keywords themselves.
     let keyword_candidates = alt((
         "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
-        "nil", "and", "or", "not", "var", "const", "export",
+        "nil", "and", "or", "not", "var", "const", "export", "mod",
     ));
     // Look ahead. If any of these characters follow the keyword, then it's not a keyword, it's just
     // the start of a normal word.
     let keyword = terminated(
         keyword_candidates,
-        peek(none_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9'))),
+        not(peek(one_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9')))),
     );
     let (value, range) = keyword.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Keyword, value.to_owned()))
