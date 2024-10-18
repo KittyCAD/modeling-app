@@ -12,7 +12,6 @@ export const NetworkMachineIndicator = ({
   const machineCount = machineManager.machineCount()
   const reason = machineManager.noMachinesReason()
   const machines = machineManager.machines
-  console.log('react machines', machines)
 
   return isDesktop() ? (
     <Popover className="relative">

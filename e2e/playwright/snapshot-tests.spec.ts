@@ -471,7 +471,7 @@ test(
 
     await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
 
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(1000)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
@@ -528,6 +528,7 @@ test(
     // Draw the rectangle
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
     await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
+    await page.waitForTimeout(800)
 
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
@@ -895,7 +896,7 @@ test(
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
     // rendering, because an execution-done message is not sufficient.
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(2000)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
@@ -939,7 +940,7 @@ test(
     // Wait for the second extrusion to appear
     // TODO: Find a way to truly know that the objects have finished
     // rendering, because an execution-done message is not sufficient.
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(2000)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
