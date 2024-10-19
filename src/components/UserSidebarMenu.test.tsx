@@ -45,11 +45,13 @@ describe('UserSidebarMenu tests', () => {
       )
     })
     await waitFor(() => {
-      expect(screen.getByTestId('email')).toHaveTextContent(userWellFormed.email)
+      expect(screen.getByTestId('email')).toHaveTextContent(
+        userWellFormed.email
+      )
     })
   })
 
-  test("Renders just the user's email if no name is available", async() => {
+  test("Renders just the user's email if no name is available", async () => {
     const userNoName: User = {
       id: '8675309',
       email: 'kittycad.sidebar.test@example.com',
