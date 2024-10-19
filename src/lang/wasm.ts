@@ -361,6 +361,7 @@ export function sketchFromKclValue(
   varName: string | null
 ): Sketch | Error {
   if (obj?.value?.type === 'Sketch') return obj.value
+  if (obj?.type === 'Sketch') return obj
   if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Solid') return obj.sketch
   if (!varName) {
@@ -368,7 +369,7 @@ export function sketchFromKclValue(
   }
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
-    console.log(obj)
+    console.log('THIS IS ERROR SG', obj)
     return new Error(
       `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
     )
