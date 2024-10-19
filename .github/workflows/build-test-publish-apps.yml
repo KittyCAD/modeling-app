@@ -126,9 +126,6 @@ jobs:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       WINDOWS_CERTIFICATE_THUMBPRINT: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
     steps:
-      - env:
-          NOTES: ${{ needs.prepare-files.outputs.notes }}
-        run: echo $NOTES
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
