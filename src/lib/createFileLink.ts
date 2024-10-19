@@ -1,6 +1,9 @@
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
+import { postUserShortlink } from 'lib/desktop'
 import { CREATE_FILE_URL_PARAM } from './constants'
 import { stringToBase64 } from './base64'
+import withBaseURL from 'lib/withBaseURL'
+import { isDesktop } from 'lib/isDesktop'
 
 export interface FileLinkParams {
   code: string
@@ -11,31 +14,34 @@ export interface FileLinkParams {
 /**
  * Given a file's code, name, and units, creates shareable link
  */
-export async function createFileLink({ code, name, units }: FileLinkParams) {
-  const token = await getAndSyncStoredToken(input)
-  const urlUserShortlinks = withBaseURL('/user/shortlinks')
+export async function createFileLink(token: string, { code, name, units }: FileLinkParams) {
+  let urlUserShortlinks = withBaseURL('/users/shortlinks')
 
-  const origin = globalThis.window.location.origin
+  // During development, the "handler" needs to first be the web app version,
+  // which exists on localhost:3000 typically.
+  let origin = 'http://localhost:3000'
 
-  if (!token && isDesktop()) return Promise.reject(new Error('No token found'))
-
-  let headers = {
-    'Content-Type': 'application/json',
-  }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-
-  const urlFileToShare = new URL(
+  let urlFileToShare = new URL(
     `/?${CREATE_FILE_URL_PARAM}&name=${encodeURIComponent(
       name
     )}&units=${units}&code=${encodeURIComponent(stringToBase64(code))}`,
-    origin
+    origin,
   ).toString()
 
-  const resp = await fetch(urlUserShortlinks, {
-    headers,
-    body: JSON.stringify({ url: urlFileToShare }),
-  })
-  const shortlink = await resp.json()
+  // Remove this monkey patching
+  function fixTheBrokenShitUntilItsFixedOnDev() {
+    urlUserShortlinks = urlUserShortlinks.replace('https://api.dev.zoo.dev', 'https://api.zoo.dev')
+    console.log(urlUserShortlinks)
+  }
 
-  return shortlink.url
+  fixTheBrokenShitUntilItsFixedOnDev()
+
+  return await fetch(urlUserShortlinks, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ url: urlFileToShare })
+  }).then((resp) => resp.json())
 }

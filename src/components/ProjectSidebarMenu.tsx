@@ -99,7 +99,7 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const { settings } = useSettingsAuthContext()
+  const { settings, auth } = useSettingsAuthContext()
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -188,11 +188,13 @@ function ProjectMenuPopover({
           Element: 'button',
           children: 'Share link to file',
           onClick: async () => {
-            const shareUrl = createFileLink({
+            const shareUrl = await createFileLink(auth.context.token, {
               code: codeManager.code,
               name: file?.name || '',
               units: settings.context.modeling.defaultUnit.current,
             })
+
+            console.log(shareUrl)
 
             await globalThis.navigator.clipboard.writeText(shareUrl)
             toast.success(

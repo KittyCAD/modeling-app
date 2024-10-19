@@ -3,6 +3,7 @@ import { ZOO_STUDIO_PROTOCOL } from 'lib/link'
 import { useState } from 'react'
 import { useCreateFileLinkQuery, CreateFileSchemaMethodOptional } from 'hooks/useCreateFileLinkQueryWatcher'
 import { isDesktop } from 'lib/isDesktop'
+import { Spinner } from './Spinner'
 
 export const ProtocolHandler = (props: { children: ReactNode } ) => {
   const [hasCustomProtocolScheme, setHasCustomProtocolScheme] = useState(false)
@@ -34,7 +35,12 @@ export const ProtocolHandler = (props: { children: ReactNode } ) => {
     ></div>
     <div className="flex items-center justify-center h-full" style={{ zIndex: 10 }}>
       <div className="p-4 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70">
-        <span>Loading model into Zoo Design Studio,&nbsp;</span><a className="cursor-pointer" onClick={continueToWebApp}>or continue to the web app</a>
+        <div className="gap-4 flex flex-col items-center">
+          <div>Launching</div>
+          <img src={pathLogomarkSvg} style={{ filter: `brightness(${getSystemTheme() === 'light' ? 10 : 0}%)`, }} />
+          <Spinner />
+          <button onClick={continueToWebApp}>Continue to web app</button>
+        </div>
       </div>
     </div>
   </div> : props.children

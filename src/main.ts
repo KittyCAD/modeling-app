@@ -9,6 +9,7 @@ import {
   dialog,
   shell,
   nativeTheme,
+  session,
 } from 'electron'
 import path, { join } from 'path'
 import fs from 'fs'
@@ -85,6 +86,22 @@ const createWindow = (filePath?: string): BrowserWindow => {
     frame: os.platform() !== 'darwin',
     titleBarStyle: 'hiddenInset',
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
+  })
+
+  const filter = {
+    urls: ['*://api.zoo.dev/*', '*://api.dev.zoo.dev/*']
+  }
+
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+    console.log(details)
+    details.requestHeaders['Origin'] = 'https://app.zoo.dev'
+    details.requestHeaders['Access-Control-Allow-Origin'] = ['*']
+    console.log(details)
+    callback({
+      requestHeaders: {
+        'Origin': 'https://app.zoo.dev'
+      }
+    })
   })
 
   // and load the index.html of the app.
