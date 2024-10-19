@@ -290,7 +290,7 @@ where
             walk_value(&xs.expression, f)
         }
         BodyItem::VariableDeclaration(vd) => {
-            if !f.walk(vd.into())? {
+            if !f.walk(vd.as_ref().into())? {
                 return Ok(false);
             }
             for dec in &vd.declarations {

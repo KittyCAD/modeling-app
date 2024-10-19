@@ -12,7 +12,7 @@ fn basic() {
     let expected = Program {
         start: 0,
         end: 11,
-        body: vec![BodyItem::VariableDeclaration(VariableDeclaration {
+        body: vec![BodyItem::VariableDeclaration(Box::new(VariableDeclaration {
             start: 0,
             end: 11,
             declarations: vec![VariableDeclarator {
@@ -36,7 +36,7 @@ fn basic() {
             visibility: ItemVisibility::Default,
             kind: VariableKind::Const,
             digest: None,
-        })],
+        }))],
         non_code_meta: NonCodeMeta::default(),
         digest: None,
     };
