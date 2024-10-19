@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import UserSidebarMenu from './UserSidebarMenu'
 import {
   Route,
@@ -13,7 +13,7 @@ import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 type User = Models['User_type']
 
 describe('UserSidebarMenu tests', () => {
-  test("Renders user's name and email if available", () => {
+  test("Renders user's name and email if available", async () => {
     const userWellFormed: User = {
       id: '8675309',
       name: 'Test User',
@@ -39,13 +39,19 @@ describe('UserSidebarMenu tests', () => {
 
     fireEvent.click(screen.getByTestId('user-sidebar-toggle'))
 
-    expect(screen.getByTestId('username')).toHaveTextContent(
-      userWellFormed.name || ''
+    await waitFor(() =>
+      expect(screen.getByTestId('username')).toHaveTextContent(
+        userWellFormed.name || ''
+      )
     )
-    expect(screen.getByTestId('email')).toHaveTextContent(userWellFormed.email)
+    await waitFor(() =>
+      expect(screen.getByTestId('email')).toHaveTextContent(
+        userWellFormed.email
+      )
+    )
   })
 
-  test("Renders just the user's email if no name is available", () => {
+  test("Renders just the user's email if no name is available", async () => {
     const userNoName: User = {
       id: '8675309',
       email: 'kittycad.sidebar.test@example.com',
@@ -71,10 +77,12 @@ describe('UserSidebarMenu tests', () => {
 
     fireEvent.click(screen.getByTestId('user-sidebar-toggle'))
 
-    expect(screen.getByTestId('username')).toHaveTextContent(userNoName.email)
+    await waitFor(() =>
+      expect(screen.getByTestId('username')).toHaveTextContent(userNoName.email)
+    )
   })
 
-  test('Renders a menu button if no user avatar is available', () => {
+  test('Renders a menu button if no user avatar is available', async () => {
     const userNoAvatar: User = {
       id: '8675309',
       name: 'Test User',
@@ -98,8 +106,10 @@ describe('UserSidebarMenu tests', () => {
       </TestWrap>
     )
 
-    expect(screen.getByTestId('user-sidebar-toggle')).toHaveTextContent(
-      'User menu'
+    await waitFor(() =>
+      expect(screen.getByTestId('user-sidebar-toggle')).toHaveTextContent(
+        'User menu'
+      )
     )
   })
 })
