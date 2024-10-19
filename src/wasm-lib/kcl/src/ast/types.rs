@@ -454,7 +454,7 @@ pub(crate) use impl_value_meta;
 pub enum BodyItem {
     ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
-    VariableDeclaration(VariableDeclaration),
+    VariableDeclaration(Box<VariableDeclaration>),
     ReturnStatement(ReturnStatement),
 }
 
