@@ -85,7 +85,7 @@ jobs:
             electron-builder.yml
 
       - id: export_notes
-        run: echo "notes=`cat release-notes.md'`" >> "$GITHUB_OUTPUT"
+        run: echo "notes=`cat release-notes.md`" >> "$GITHUB_OUTPUT"
 
       - name: Prepare electron-builder.yml file for updater test
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
@@ -126,6 +126,9 @@ jobs:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       WINDOWS_CERTIFICATE_THUMBPRINT: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
     steps:
+      - env:
+          NOTES: ${{ needs.prepare-files.outputs.notes }}
+        run: echo $NOTES
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
