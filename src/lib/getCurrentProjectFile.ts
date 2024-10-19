@@ -1,5 +1,6 @@
 import * as path from 'path'
 import * as fs from 'fs/promises'
+import { Stats } from 'fs'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { PROJECT_ENTRYPOINT } from './constants'
 
@@ -43,8 +44,16 @@ export default async function getCurrentProjectFile(
     ? sourcePath
     : path.join(process.cwd(), sourcePath)
 
+  let stats: Stats
+  try {
+    stats = await fs.stat(sourcePath)
+  } catch (error) {
+    return new Error(
+      `Unable to access the path: ${sourcePath}. Error: ${error}`
+    )
+  }
+
   // If the path is a directory, let's assume it is a project directory.
-  const stats = await fs.stat(sourcePath)
   if (stats.isDirectory()) {
     // Walk the directory and look for a kcl file.
     const files = await fs.readdir(sourcePath)
