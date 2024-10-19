@@ -22,9 +22,25 @@ import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
+import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  const { commandBarSend } = useCommandsContext()
+
+  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
+  useCreateFileLinkQuery((argDefaultValues) => {
+    commandBarSend({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Import file from URL',
+        argDefaultValues,
+      },
+    })
+  })
+
   useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()

@@ -9,8 +9,10 @@ import {
   dialog,
   shell,
   nativeTheme,
+  session,
 } from 'electron'
-import path from 'path'
+import path, { join } from 'path'
+import fs from 'fs'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
@@ -20,6 +22,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
+import { ZOO_STUDIO_PROTOCOL } from 'lib/link'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -51,9 +54,8 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
-const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
 
-/// Register our application to handle all "electron-fiddle://" protocols.
+/// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -86,10 +88,27 @@ const createWindow = (filePath?: string): BrowserWindow => {
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
   })
 
+  const filter = {
+    urls: ['*://api.zoo.dev/*', '*://api.dev.zoo.dev/*']
+  }
+
+  session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+    console.log(details)
+    details.requestHeaders['Origin'] = 'https://app.zoo.dev'
+    details.requestHeaders['Access-Control-Allow-Origin'] = ['*']
+    console.log(details)
+    callback({
+      requestHeaders: {
+        'Origin': 'https://app.zoo.dev'
+      }
+    })
+  })
+
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
   } else {
+    console.log('Loading from file', filePath)
     getProjectPathAtStartup(filePath)
       .then(async (projectPath) => {
         const startIndex = path.join(
@@ -323,6 +342,7 @@ const getProjectPathAtStartup = async (
     // macOS: open-url events that were received before the app is ready
     const getOpenUrls: string[] = (global as any).getOpenUrls
     if (getOpenUrls && getOpenUrls.length > 0) {
+      console.log('getOpenUrls', getOpenUrls)
       projectPath = getOpenUrls[0] // We only do one project at a
     }
     // Reset this so we don't accidentally use it again.
@@ -391,6 +411,12 @@ function registerStartupListeners() {
     url: string
   ) {
     event.preventDefault()
+
+    console.log('open-url', url)
+    fs.writeFileSync(
+      '/Users/frankjohnson/open-url.txt',
+      `at ${new Date().toLocaleTimeString()} opened url: ${url}`
+    )
 
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {

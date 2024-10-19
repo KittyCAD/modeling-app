@@ -3,11 +3,11 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { projectsMachine } from 'machines/projectsMachine'
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useEffect, useState } from 'react'
 import { Actor, AnyStateMachine, fromPromise, Prop, StateFrom } from 'xstate'
 import { useLspContext } from './LspProvider'
 import toast from 'react-hot-toast'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import {
   createNewProjectDirectory,
@@ -18,11 +18,27 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
+  getNextFileName,
 } from 'lib/desktopFS'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
+import {
+  CREATE_FILE_URL_PARAM,
+  FILE_EXT,
+  PROJECT_ENTRYPOINT,
+} from 'lib/constants'
+import { DeepPartial } from 'lib/types'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { codeManager } from 'lib/singletons'
+import {
+  loadAndValidateSettings,
+  projectConfigurationToSettingsPayload,
+  saveSettings,
+  setSettingsAtLevel,
+} from 'lib/settings/settingsUtils'
+import { Project } from 'lib/project'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -45,45 +61,23 @@ export const ProjectsContextProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  return isDesktop() ? (
-    <ProjectsContextDesktop>{children}</ProjectsContextDesktop>
-  ) : (
-    <ProjectsContextWeb>{children}</ProjectsContextWeb>
-  )
-}
-
-const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ProjectsMachineContext.Provider
-      value={{
-        state: undefined,
-        send: () => {},
-      }}
-    >
-      {children}
-    </ProjectsMachineContext.Provider>
-  )
-}
-
-const ProjectsContextDesktop = ({
-  children,
-}: {
-  children: React.ReactNode
-}) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const clearImportSearchParams = useCallback(() => {
+    // Clear the search parameters related to the "Import file from URL" command
+    // or we'll never be able cancel or submit it.
+    searchParams.delete(CREATE_FILE_URL_PARAM)
+    searchParams.delete('code')
+    searchParams.delete('name')
+    searchParams.delete('units')
+    setSearchParams(searchParams)
+  }, [searchParams, setSearchParams])
   const { commandBarSend } = useCommandsContext()
   const { onProjectOpen } = useLspContext()
   const {
-    settings: { context: settings },
+    settings: { context: settings, send: settingsSend },
   } = useSettingsAuthContext()
-
-  useEffect(() => {
-    console.log(
-      'project directory changed',
-      settings.app.projectDirectory.current
-    )
-  }, [settings.app.projectDirectory.current])
 
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([
@@ -163,6 +157,31 @@ const ProjectsContextDesktop = ({
             }
           }
         },
+        navigateToFile: ({ context, event }) => {
+          if (event.type !== 'xstate.done.actor.create-file') return
+          // For now, the browser version of create-file doesn't need to navigate
+          // since it just overwrites the current file.
+          if (!isDesktop()) return
+          let projectPath = window.electron.join(
+            context.defaultDirectory,
+            event.output.projectName
+          )
+          let filePath = window.electron.join(
+            projectPath,
+            event.output.fileName
+          )
+          onProjectOpen(
+            {
+              name: event.output.projectName,
+              path: projectPath,
+            },
+            null
+          )
+          const pathToNavigateTo = `${PATHS.FILE}/${encodeURIComponent(
+            filePath
+          )}`
+          navigate(pathToNavigateTo)
+        },
         toastSuccess: ({ event }) =>
           toast.success(
             ('data' in event && typeof event.data === 'string' && event.data) ||
@@ -182,7 +201,10 @@ const ProjectsContextDesktop = ({
           ),
       },
       actors: {
-        readProjects: fromPromise(() => listProjects()),
+        readProjects: fromPromise(async () => {
+          if (!isDesktop()) return [] as Project[]
+          return listProjects()
+        }),
         createProject: fromPromise(async ({ input }) => {
           let name = (
             input && 'name' in input && input.name
@@ -238,6 +260,101 @@ const ProjectsContextDesktop = ({
             name: input.name,
           }
         }),
+        createFile: fromPromise(async ({ input }) => {
+          let projectName =
+            (input.method === 'newProject' ? input.name : input.projectName) ||
+            settings.projects.defaultProjectName.current
+          let fileName =
+            input.method === 'newProject'
+              ? PROJECT_ENTRYPOINT
+              : input.name.endsWith(FILE_EXT)
+              ? input.name
+              : input.name + FILE_EXT
+          let message = 'File created successfully'
+          const unitsConfiguration: DeepPartial<Configuration> = {
+            settings: {
+              project: {
+                directory: settings.app.projectDirectory.current,
+              },
+              modeling: {
+                base_unit: input.units,
+              },
+            },
+          }
+
+          if (isDesktop()) {
+            const needsInterpolated =
+              doesProjectNameNeedInterpolated(projectName)
+            console.log(
+              `The project name "${projectName}" needs interpolated: ${needsInterpolated}`
+            )
+            if (needsInterpolated) {
+              const nextIndex = getNextProjectIndex(projectName, input.projects)
+              projectName = interpolateProjectNameWithIndex(
+                projectName,
+                nextIndex
+              )
+            }
+
+            // Create the project around the file if newProject
+            if (input.method === 'newProject') {
+              await createNewProjectDirectory(
+                projectName,
+                input.code,
+                unitsConfiguration
+              )
+              message = `Project "${projectName}" created successfully with link contents`
+            } else {
+              let projectPath = window.electron.join(
+                settings.app.projectDirectory.current,
+                projectName
+              )
+
+              message = `File "${fileName}" created successfully`
+              const existingConfiguration = await loadAndValidateSettings(
+                projectPath
+              )
+              const settingsToSave = setSettingsAtLevel(
+                existingConfiguration.settings,
+                'project',
+                projectConfigurationToSettingsPayload(unitsConfiguration)
+              )
+              await saveSettings(settingsToSave, projectPath)
+            }
+
+            // Create the file
+            let baseDir = window.electron.join(
+              settings.app.projectDirectory.current,
+              projectName
+            )
+            const { name, path } = getNextFileName({
+              entryName: fileName,
+              baseDir,
+            })
+            fileName = name
+
+            await window.electron.writeFile(path, input.code || '')
+          } else {
+            // Browser version doesn't navigate, just overwrites the current file
+            clearImportSearchParams()
+            codeManager.updateCodeStateEditor(input.code || '')
+            await codeManager.writeToFile()
+            message = 'File successfully overwritten with link contents'
+            settingsSend({
+              type: 'set.modeling.defaultUnit',
+              data: {
+                level: 'project',
+                value: input.units,
+              },
+            })
+          }
+
+          return {
+            message,
+            fileName,
+            projectName,
+          }
+        }),
       },
       guards: {
         'Has at least 1 project': ({ event }) => {
@@ -267,6 +384,7 @@ const ProjectsContextDesktop = ({
     state,
     commandBarConfig: projectsCommandBarConfig,
     actor,
+    onCancel: clearImportSearchParams,
   })
 
   return (

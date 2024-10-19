@@ -43,6 +43,7 @@ import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
+import { ProtocolHandler } from 'components/ProtocolHandler'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -53,29 +54,34 @@ const router = createRouter([
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
-      <CommandBarProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
-            <ProjectsContextProvider>
-              <KclContextProvider>
-                <AppStateProvider>
-                  <Outlet />
-                </AppStateProvider>
-              </KclContextProvider>
-            </ProjectsContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
-      </CommandBarProvider>
+      <ProtocolHandler>
+        <CommandBarProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <ProjectsContextProvider>
+                <KclContextProvider>
+                  <AppStateProvider>
+                    <Outlet />
+                  </AppStateProvider>
+                </KclContextProvider>
+              </ProjectsContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </CommandBarProvider>
+      </ProtocolHandler>
     ),
     errorElement: <ErrorPage />,
     children: [
       {
         path: PATHS.INDEX,
-        loader: async () => {
+        loader: async ({ request }) => {
           const onDesktop = isDesktop()
+          const url = new URL(request.url)
           return onDesktop
-            ? redirect(PATHS.HOME)
-            : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+            ? redirect(PATHS.HOME + (url.search || ''))
+            : redirect(
+                PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+              )
         },
       },
       {
