@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
-      notes: ${{ steps.export_version.outputs.notes }}
+      notes: ${{ steps.export_notes.outputs.notes }}
     steps:
       - uses: actions/checkout@v4
 
