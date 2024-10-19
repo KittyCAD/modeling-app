@@ -1,5 +1,5 @@
 import { PerformanceMark, getMarks } from 'lib/performance'
-import { writeTelemetryFile } from 'lib/desktop'
+import { writeTelemetryFile, writeRawTelemetryFile } from 'lib/desktop'
 let args: any = null
 
 // Get the longest width of values or column name
@@ -160,6 +160,9 @@ export async function maybeWriteToDisk() {
       const marks = getMarks()
       const deltaTotalTable = printDeltaTotal(marks)
       writeTelemetryFile(deltaTotalTable.join('\n'))
+        .then(() => {})
+        .catch(() => {})
+      writeRawTelemetryFile(JSON.stringify(marks))
         .then(() => {})
         .catch(() => {})
     }, 5000)
