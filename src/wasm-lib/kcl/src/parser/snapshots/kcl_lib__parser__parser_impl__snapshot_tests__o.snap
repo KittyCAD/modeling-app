@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 21,
       "declarations": [
@@ -24,18 +23,15 @@ expression: actual
           },
           "init": {
             "type": "BinaryExpression",
-            "type": "BinaryExpression",
             "start": 12,
             "end": 21,
             "operator": "+",
             "left": {
               "type": "BinaryExpression",
-              "type": "BinaryExpression",
               "start": 12,
               "end": 17,
               "operator": "+",
               "left": {
-                "type": "Literal",
                 "type": "Literal",
                 "start": 12,
                 "end": 13,
@@ -44,7 +40,6 @@ expression: actual
               },
               "right": {
                 "type": "Literal",
-                "type": "Literal",
                 "start": 16,
                 "end": 17,
                 "value": 2,
@@ -52,7 +47,6 @@ expression: actual
               }
             },
             "right": {
-              "type": "Literal",
               "type": "Literal",
               "start": 20,
               "end": 21,

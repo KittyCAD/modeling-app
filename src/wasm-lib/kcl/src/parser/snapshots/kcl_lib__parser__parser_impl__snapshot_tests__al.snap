@@ -8,11 +8,9 @@ expression: actual
   "body": [
     {
       "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
       "start": 0,
       "end": 36,
       "expression": {
-        "type": "CallExpression",
         "type": "CallExpression",
         "start": 0,
         "end": 36,
@@ -24,7 +22,6 @@ expression: actual
         },
         "arguments": [
           {
-            "type": "ObjectExpression",
             "type": "ObjectExpression",
             "start": 7,
             "end": 35,
@@ -41,12 +38,10 @@ expression: actual
                 },
                 "value": {
                   "type": "ArrayExpression",
-                  "type": "ArrayExpression",
                   "start": 13,
                   "end": 19,
                   "elements": [
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 14,
                       "end": 15,
@@ -54,7 +49,6 @@ expression: actual
                       "raw": "0"
                     },
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 17,
                       "end": 18,
@@ -76,12 +70,10 @@ expression: actual
                 },
                 "value": {
                   "type": "ArrayExpression",
-                  "type": "ArrayExpression",
                   "start": 27,
                   "end": 33,
                   "elements": [
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 28,
                       "end": 29,
@@ -89,7 +81,6 @@ expression: actual
                       "raw": "3"
                     },
                     {
-                      "type": "Literal",
                       "type": "Literal",
                       "start": 31,
                       "end": 32,

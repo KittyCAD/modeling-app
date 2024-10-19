@@ -13,18 +13,21 @@ fn basic() {
         start: 0,
         end: 11,
         body: vec![BodyItem::VariableDeclaration(VariableDeclaration {
+            r#type: Default::default(),
             start: 0,
             end: 11,
             declarations: vec![VariableDeclarator {
                 start: 6,
                 end: 11,
                 id: Identifier {
+                    r#type: Default::default(),
                     start: 6,
                     end: 7,
                     name: "y".to_owned(),
                     digest: None,
                 },
                 init: Expr::Literal(Box::new(Literal {
+                    r#type: Default::default(),
                     start: 10,
                     end: 11,
                     value: LiteralValue::IInteger(4),

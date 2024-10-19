@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 26,
       "declarations": [
@@ -24,7 +23,6 @@ expression: actual
           },
           "init": {
             "type": "ObjectExpression",
-            "type": "ObjectExpression",
             "start": 12,
             "end": 26,
             "properties": [
@@ -39,7 +37,6 @@ expression: actual
                   "name": "a"
                 },
                 "value": {
-                  "type": "Literal",
                   "type": "Literal",
                   "start": 17,
                   "end": 18,
@@ -59,7 +56,6 @@ expression: actual
                 },
                 "value": {
                   "type": "Literal",
-                  "type": "Literal",
                   "start": 23,
                   "end": 24,
                   "value": 2,
@@ -73,7 +69,6 @@ expression: actual
       "kind": "const"
     },
     {
-      "type": "VariableDeclaration",
       "type": "VariableDeclaration",
       "start": 31,
       "end": 62,
@@ -90,30 +85,25 @@ expression: actual
           },
           "init": {
             "type": "ArrayExpression",
-            "type": "ArrayExpression",
             "start": 46,
             "end": 62,
             "elements": [
               {
-                "type": "BinaryExpression",
                 "type": "BinaryExpression",
                 "start": 47,
                 "end": 58,
                 "operator": "-",
                 "left": {
                   "type": "MemberExpression",
-                  "type": "MemberExpression",
                   "start": 47,
                   "end": 55,
                   "object": {
-                    "type": "Identifier",
                     "type": "Identifier",
                     "start": 47,
                     "end": 50,
                     "name": "obj"
                   },
                   "property": {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 51,
                     "end": 54,
@@ -124,7 +114,6 @@ expression: actual
                 },
                 "right": {
                   "type": "Literal",
-                  "type": "Literal",
                   "start": 57,
                   "end": 58,
                   "value": 1,
@@ -132,7 +121,6 @@ expression: actual
                 }
               },
               {
-                "type": "Literal",
                 "type": "Literal",
                 "start": 60,
                 "end": 61,

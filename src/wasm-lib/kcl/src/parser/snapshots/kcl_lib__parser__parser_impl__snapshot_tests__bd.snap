@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 121,
       "declarations": [
@@ -24,11 +23,9 @@ expression: actual
           },
           "init": {
             "type": "IfExpression",
-            "type": "IfExpression",
             "start": 10,
             "end": 121,
             "cond": {
-              "type": "Literal",
               "type": "Literal",
               "start": 13,
               "end": 17,
@@ -41,11 +38,9 @@ expression: actual
               "body": [
                 {
                   "type": "ExpressionStatement",
-                  "type": "ExpressionStatement",
                   "start": 32,
                   "end": 33,
                   "expression": {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 32,
                     "end": 33,
@@ -62,7 +57,6 @@ expression: actual
                 "end": 90,
                 "cond": {
                   "type": "CallExpression",
-                  "type": "CallExpression",
                   "start": 52,
                   "end": 64,
                   "callee": {
@@ -73,7 +67,6 @@ expression: actual
                   },
                   "arguments": [
                     {
-                      "type": "Identifier",
                       "type": "Identifier",
                       "start": 57,
                       "end": 63,
@@ -88,11 +81,9 @@ expression: actual
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "type": "ExpressionStatement",
                       "start": 79,
                       "end": 80,
                       "expression": {
-                        "type": "Literal",
                         "type": "Literal",
                         "start": 79,
                         "end": 80,
@@ -111,11 +102,9 @@ expression: actual
               "body": [
                 {
                   "type": "ExpressionStatement",
-                  "type": "ExpressionStatement",
                   "start": 110,
                   "end": 111,
                   "expression": {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 110,
                     "end": 111,

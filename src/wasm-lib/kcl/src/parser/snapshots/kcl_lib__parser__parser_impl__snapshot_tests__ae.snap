@@ -8,7 +8,6 @@ expression: actual
   "body": [
     {
       "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
       "start": 0,
       "end": 49,
       "declarations": [
@@ -23,7 +22,6 @@ expression: actual
             "name": "thing"
           },
           "init": {
-            "type": "FunctionExpression",
             "type": "FunctionExpression",
             "start": 11,
             "end": 49,
@@ -45,11 +43,9 @@ expression: actual
               "body": [
                 {
                   "type": "ReturnStatement",
-                  "type": "ReturnStatement",
                   "start": 32,
                   "end": 43,
                   "argument": {
-                    "type": "Literal",
                     "type": "Literal",
                     "start": 39,
                     "end": 43,
@@ -66,11 +62,9 @@ expression: actual
     },
     {
       "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
       "start": 54,
       "end": 66,
       "expression": {
-        "type": "CallExpression",
         "type": "CallExpression",
         "start": 54,
         "end": 66,
@@ -82,7 +76,6 @@ expression: actual
         },
         "arguments": [
           {
-            "type": "Literal",
             "type": "Literal",
             "start": 60,
             "end": 65,
