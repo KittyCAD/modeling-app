@@ -480,7 +480,7 @@ where
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected an argument at index {i}"),
+                message: format!("Expected an argument of type {} at index {i}", type_name::<T>()),
                 source_ranges: vec![args.source_range],
             }));
         };
