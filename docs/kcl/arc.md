@@ -11,7 +11,7 @@ The arc is constructed such that the current position of the sketch is placed al
 Unless this makes a lot of sense and feels like what you're looking for to construct your shape, you're likely looking for tangentialArc.
 
 ```js
-arc(data: ArcData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+arc(data: ArcData, sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -21,7 +21,7 @@ arc(data: ArcData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 |----------|------|-------------|----------|
 | `data` | [`ArcData`](/docs/kcl/types/ArcData) | Data to draw an arc. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

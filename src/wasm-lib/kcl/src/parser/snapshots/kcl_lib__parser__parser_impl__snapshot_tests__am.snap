@@ -1,74 +1,105 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3711
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 19,
-  "body": [
-    {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 0,
-      "end": 19,
-      "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 0,
-        "end": 19,
-        "callee": {
-          "type": "Identifier",
-          "start": 0,
-          "end": 6,
-          "name": "lineTo"
-        },
-        "arguments": [
-          {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 7,
-            "end": 18,
-            "properties": [
-              {
-                "type": "ObjectProperty",
-                "start": 8,
-                "end": 17,
-                "key": {
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "ExpressionStatement",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "ExpressionStatement",
+          "expression": {
+            "type": "CallExpression",
+            "type": "UnboxedNode",
+            "kind": {
+              "type": "CallExpression",
+              "callee": {
+                "type": "UnboxedNode",
+                "kind": {
                   "type": "Identifier",
-                  "start": 8,
-                  "end": 10,
-                  "name": "to"
+                  "name": "lineTo"
                 },
-                "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 11,
-                  "end": 17,
-                  "elements": [
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 12,
-                      "end": 13,
-                      "value": 0,
-                      "raw": "0"
-                    },
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 15,
-                      "end": 16,
-                      "value": 1,
-                      "raw": "1"
-                    }
-                  ]
+                "start": 0,
+                "end": 6
+              },
+              "arguments": [
+                {
+                  "type": "ObjectExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "ObjectExpression",
+                    "properties": [
+                      {
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "ObjectProperty",
+                          "key": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "to"
+                            },
+                            "start": 8,
+                            "end": 10
+                          },
+                          "value": {
+                            "type": "ArrayExpression",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "ArrayExpression",
+                              "elements": [
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 0,
+                                    "raw": "0"
+                                  },
+                                  "start": 12,
+                                  "end": 13
+                                },
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 1,
+                                    "raw": "1"
+                                  },
+                                  "start": 15,
+                                  "end": 16
+                                }
+                              ]
+                            },
+                            "start": 11,
+                            "end": 17
+                          }
+                        },
+                        "start": 8,
+                        "end": 17
+                      }
+                    ]
+                  },
+                  "start": 7,
+                  "end": 18
                 }
-              }
-            ]
+              ],
+              "optional": false
+            },
+            "start": 0,
+            "end": 19
           }
-        ],
-        "optional": false
+        },
+        "start": 0,
+        "end": 19
       }
-    }
-  ]
+    ]
+  },
+  "start": 0,
+  "end": 19
 }

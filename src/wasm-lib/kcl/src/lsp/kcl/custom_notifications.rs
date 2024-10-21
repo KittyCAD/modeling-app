@@ -3,14 +3,14 @@
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::notification::Notification;
 
-use crate::settings::types::UnitLength;
+use crate::{ast::types::UnboxedNode, settings::types::UnitLength};
 
 /// A notification that the AST has changed.
 #[derive(Debug)]
 pub enum AstUpdated {}
 
 impl Notification for AstUpdated {
-    type Params = crate::ast::types::Program;
+    type Params = UnboxedNode<crate::ast::types::Program>;
     const METHOD: &'static str = "kcl/astUpdated";
 }
 

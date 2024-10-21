@@ -16,6 +16,8 @@ use crate::{
     executor::{Point2d, SourceRange},
 };
 
+use super::types::UnboxedNode;
+
 type Point3d = kcmc::shared::Point3d<f64>;
 
 #[derive(Debug)]
@@ -35,7 +37,7 @@ const EPSILON: f64 = 0.015625; // or 2^-6
 /// a move or a new line.
 pub async fn modify_ast_for_sketch(
     engine: &Arc<Box<dyn EngineManager>>,
-    program: &mut Program,
+    program: &mut UnboxedNode<Program>,
     // The name of the sketch.
     sketch_name: &str,
     // The type of plane the sketch is on. `XY` or `XZ`, etc
@@ -195,7 +197,7 @@ fn create_start_sketch_on(
     end: [f64; 2],
     plane: crate::executor::PlaneType,
     additional_lines: Vec<[f64; 2]>,
-) -> Result<VariableDeclarator, KclError> {
+) -> Result<UnboxedNode<VariableDeclarator>, KclError> {
     let start_sketch_on = CallExpression::new("startSketchOn", vec![Literal::new(plane.to_string().into()).into()])?;
     let start_profile_at = CallExpression::new(
         "startProfileAt",

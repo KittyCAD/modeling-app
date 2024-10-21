@@ -1,13 +1,16 @@
 use anyhow::Result;
 use kcl_lib::{
-    ast::{modify::modify_ast_for_sketch, types::Program},
+    ast::{
+        modify::modify_ast_for_sketch,
+        types::{Program, UnboxedNode},
+    },
     executor::{ExecutorContext, IdGenerator, KclValue, PlaneType, Sketch, SourceRange},
 };
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
-async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid::Uuid)> {
+async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, UnboxedNode<Program>, uuid::Uuid)> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)

@@ -9,7 +9,7 @@ Create a line segment from the current 2-dimensional sketch origin
 along some angle (in degrees) for some length, ending at the provided value in the 'y' dimension.
 
 ```js
-angledLineToY(data: AngledLineToData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+angledLineToY(data: AngledLineToData, sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ angledLineToY(data: AngledLineToData, sketch: Sketch, tag?: TagDeclarator) -> Sk
 |----------|------|-------------|----------|
 | `data` | [`AngledLineToData`](/docs/kcl/types/AngledLineToData) | Data to draw an angled line to a point. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

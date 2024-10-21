@@ -9,7 +9,7 @@ Start a new profile at a given point.
 
 
 ```js
-startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator) -> Sketch
+startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagDeclarator)
 |----------|------|-------------|----------|
 | `to` | `[number]` |  | Yes |
 | `sketch_surface` | [`SketchSurface`](/docs/kcl/types/SketchSurface) | A sketch type. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

@@ -1,90 +1,127 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3707
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 29,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 29,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 29,
-          "id": {
-            "type": "Identifier",
-            "start": 6,
-            "end": 11,
-            "name": "myBox"
-          },
-          "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 14,
-            "end": 29,
-            "body": [
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 14,
-                "end": 18,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 14,
-                  "end": 15,
-                  "name": "f"
-                },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 16,
-                    "end": 17,
-                    "value": 1,
-                    "raw": "1"
-                  }
-                ],
-                "optional": false
-              },
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 22,
-                "end": 29,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 22,
-                  "end": 23,
-                  "name": "g"
-                },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 24,
-                    "end": 25,
-                    "value": 2,
-                    "raw": "2"
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "myBox"
                   },
-                  {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 27,
-                    "end": 28
-                  }
-                ],
-                "optional": false
-              }
-            ]
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+                  "start": 6,
+                  "end": 11
+                },
+                "init": {
+                  "type": "PipeExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "PipeExpression",
+                    "body": [
+                      {
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "f"
+                            },
+                            "start": 14,
+                            "end": 15
+                          },
+                          "arguments": [
+                            {
+                              "type": "Literal",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "Literal",
+                                "value": 1,
+                                "raw": "1"
+                              },
+                              "start": 16,
+                              "end": 17
+                            }
+                          ],
+                          "optional": false
+                        },
+                        "start": 14,
+                        "end": 18
+                      },
+                      {
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "g"
+                            },
+                            "start": 22,
+                            "end": 23
+                          },
+                          "arguments": [
+                            {
+                              "type": "Literal",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "Literal",
+                                "value": 2,
+                                "raw": "2"
+                              },
+                              "start": 24,
+                              "end": 25
+                            },
+                            {
+                              "type": "PipeSubstitution",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "PipeSubstitution"
+                              },
+                              "start": 27,
+                              "end": 28
+                            }
+                          ],
+                          "optional": false
+                        },
+                        "start": 22,
+                        "end": 29
+                      }
+                    ]
+                  },
+                  "start": 14,
+                  "end": 29
+                }
+              },
+              "start": 6,
+              "end": 29
+            }
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 29
+      }
+    ]
+  },
+  "start": 0,
+  "end": 29
 }

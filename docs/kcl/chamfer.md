@@ -9,7 +9,7 @@ Cut a straight transitional edge along a tagged path.
 Chamfer is similar in function and use to a fillet, except a fillet will blend the transition along an edge, rather than cut a sharp, straight transitional edge.
 
 ```js
-chamfer(data: ChamferData, solid: Solid, tag?: TagDeclarator) -> Solid
+chamfer(data: ChamferData, solid: Solid, tag?: TagNode) -> Solid
 ```
 
 
@@ -19,7 +19,7 @@ chamfer(data: ChamferData, solid: Solid, tag?: TagDeclarator) -> Solid
 |----------|------|-------------|----------|
 | `data` | [`ChamferData`](/docs/kcl/types/ChamferData) | Data for chamfers. | Yes |
 | `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

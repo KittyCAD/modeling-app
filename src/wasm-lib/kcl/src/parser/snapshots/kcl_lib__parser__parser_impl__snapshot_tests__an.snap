@@ -1,109 +1,155 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3712
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 35,
-  "body": [
-    {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 0,
-      "end": 35,
-      "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 0,
-        "end": 35,
-        "callee": {
-          "type": "Identifier",
-          "start": 0,
-          "end": 6,
-          "name": "lineTo"
-        },
-        "arguments": [
-          {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 7,
-            "end": 34,
-            "properties": [
-              {
-                "type": "ObjectProperty",
-                "start": 9,
-                "end": 19,
-                "key": {
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "ExpressionStatement",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "ExpressionStatement",
+          "expression": {
+            "type": "CallExpression",
+            "type": "UnboxedNode",
+            "kind": {
+              "type": "CallExpression",
+              "callee": {
+                "type": "UnboxedNode",
+                "kind": {
                   "type": "Identifier",
-                  "start": 9,
-                  "end": 11,
-                  "name": "to"
+                  "name": "lineTo"
                 },
-                "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 13,
-                  "end": 19,
-                  "elements": [
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 14,
-                      "end": 15,
-                      "value": 0,
-                      "raw": "0"
-                    },
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 17,
-                      "end": 18,
-                      "value": 1,
-                      "raw": "1"
-                    }
-                  ]
-                }
+                "start": 0,
+                "end": 6
               },
-              {
-                "type": "ObjectProperty",
-                "start": 21,
-                "end": 33,
-                "key": {
-                  "type": "Identifier",
-                  "start": 21,
-                  "end": 25,
-                  "name": "from"
-                },
-                "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 27,
-                  "end": 33,
-                  "elements": [
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 28,
-                      "end": 29,
-                      "value": 3,
-                      "raw": "3"
-                    },
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 31,
-                      "end": 32,
-                      "value": 3,
-                      "raw": "3"
-                    }
-                  ]
+              "arguments": [
+                {
+                  "type": "ObjectExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "ObjectExpression",
+                    "properties": [
+                      {
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "ObjectProperty",
+                          "key": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "to"
+                            },
+                            "start": 9,
+                            "end": 11
+                          },
+                          "value": {
+                            "type": "ArrayExpression",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "ArrayExpression",
+                              "elements": [
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 0,
+                                    "raw": "0"
+                                  },
+                                  "start": 14,
+                                  "end": 15
+                                },
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 1,
+                                    "raw": "1"
+                                  },
+                                  "start": 17,
+                                  "end": 18
+                                }
+                              ]
+                            },
+                            "start": 13,
+                            "end": 19
+                          }
+                        },
+                        "start": 9,
+                        "end": 19
+                      },
+                      {
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "ObjectProperty",
+                          "key": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "from"
+                            },
+                            "start": 21,
+                            "end": 25
+                          },
+                          "value": {
+                            "type": "ArrayExpression",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "ArrayExpression",
+                              "elements": [
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 3,
+                                    "raw": "3"
+                                  },
+                                  "start": 28,
+                                  "end": 29
+                                },
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 3,
+                                    "raw": "3"
+                                  },
+                                  "start": 31,
+                                  "end": 32
+                                }
+                              ]
+                            },
+                            "start": 27,
+                            "end": 33
+                          }
+                        },
+                        "start": 21,
+                        "end": 33
+                      }
+                    ]
+                  },
+                  "start": 7,
+                  "end": 34
                 }
-              }
-            ]
+              ],
+              "optional": false
+            },
+            "start": 0,
+            "end": 35
           }
-        ],
-        "optional": false
+        },
+        "start": 0,
+        "end": 35
       }
-    }
-  ]
+    ]
+  },
+  "start": 0,
+  "end": 35
 }

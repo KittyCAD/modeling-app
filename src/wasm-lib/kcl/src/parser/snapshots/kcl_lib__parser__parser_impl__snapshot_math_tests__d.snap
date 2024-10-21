@@ -1,41 +1,57 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3570
 expression: actual
 ---
 {
-  "type": "BinaryExpression",
-  "start": 0,
-  "end": 9,
-  "operator": "+",
-  "left": {
-    "type": "Literal",
-    "type": "Literal",
-    "start": 0,
-    "end": 1,
-    "value": 1,
-    "raw": "1"
-  },
-  "right": {
+  "type": "UnboxedNode",
+  "kind": {
     "type": "BinaryExpression",
-    "type": "BinaryExpression",
-    "start": 4,
-    "end": 9,
-    "operator": "*",
+    "operator": "+",
     "left": {
       "type": "Literal",
-      "type": "Literal",
-      "start": 4,
-      "end": 5,
-      "value": 2,
-      "raw": "2"
+      "type": "UnboxedNode",
+      "kind": {
+        "type": "Literal",
+        "value": 1,
+        "raw": "1"
+      },
+      "start": 0,
+      "end": 1
     },
     "right": {
-      "type": "Literal",
-      "type": "Literal",
-      "start": 8,
-      "end": 9,
-      "value": 3,
-      "raw": "3"
+      "type": "BinaryExpression",
+      "type": "UnboxedNode",
+      "kind": {
+        "type": "BinaryExpression",
+        "operator": "*",
+        "left": {
+          "type": "Literal",
+          "type": "UnboxedNode",
+          "kind": {
+            "type": "Literal",
+            "value": 2,
+            "raw": "2"
+          },
+          "start": 4,
+          "end": 5
+        },
+        "right": {
+          "type": "Literal",
+          "type": "UnboxedNode",
+          "kind": {
+            "type": "Literal",
+            "value": 3,
+            "raw": "3"
+          },
+          "start": 8,
+          "end": 9
+        }
+      },
+      "start": 4,
+      "end": 9
     }
-  }
+  },
+  "start": 0,
+  "end": 9
 }

@@ -9,7 +9,7 @@ Draw a line relative to the current origin to a specified (x, y) away
 from the current position.
 
 ```js
-line(delta: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
+line(delta: [number], sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ line(delta: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 |----------|------|-------------|----------|
 | `delta` | `[number]` |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

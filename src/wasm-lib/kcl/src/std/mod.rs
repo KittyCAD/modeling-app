@@ -312,6 +312,6 @@ pub enum Primitive {
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
     pub func: Option<&'a crate::executor::MemoryFunction>,
-    pub expr: Box<FunctionExpression>,
+    pub expr: crate::ast::types::Node<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }

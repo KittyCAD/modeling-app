@@ -1,58 +1,83 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3628
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 27,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 27,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 27,
-          "id": {
-            "type": "Identifier",
-            "start": 6,
-            "end": 7,
-            "name": "x"
-          },
-          "init": {
-            "type": "BinaryExpression",
-            "type": "BinaryExpression",
-            "start": 10,
-            "end": 27,
-            "operator": "+",
-            "left": {
-              "type": "UnaryExpression",
-              "type": "UnaryExpression",
-              "start": 10,
-              "end": 15,
-              "operator": "-",
-              "argument": {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 11,
-                "end": 15,
-                "name": "leg2"
-              }
-            },
-            "right": {
-              "type": "Identifier",
-              "type": "Identifier",
-              "start": 18,
-              "end": 27,
-              "name": "thickness"
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "x"
+                  },
+                  "start": 6,
+                  "end": 7
+                },
+                "init": {
+                  "type": "BinaryExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "BinaryExpression",
+                    "operator": "+",
+                    "left": {
+                      "type": "UnaryExpression",
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "type": "UnaryExpression",
+                        "operator": "-",
+                        "argument": {
+                          "type": "Identifier",
+                          "type": "UnboxedNode",
+                          "kind": {
+                            "type": "Identifier",
+                            "name": "leg2"
+                          },
+                          "start": 11,
+                          "end": 15
+                        }
+                      },
+                      "start": 10,
+                      "end": 15
+                    },
+                    "right": {
+                      "type": "Identifier",
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "type": "Identifier",
+                        "name": "thickness"
+                      },
+                      "start": 18,
+                      "end": 27
+                    }
+                  },
+                  "start": 10,
+                  "end": 27
+                }
+              },
+              "start": 6,
+              "end": 27
             }
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 27
+      }
+    ]
+  },
+  "start": 0,
+  "end": 27
 }
