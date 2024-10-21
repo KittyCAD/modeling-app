@@ -488,6 +488,12 @@ export const FileTreeInner = ({
   // Refresh the file tree when there are changes.
   useFileSystemWatcher(
     async (eventType, path) => {
+      // Our other watcher races with this watcher on the current file changes,
+      // so we need to stop this one from reacting at all, otherwise Bad Things
+      // Happen™.
+      const isCurrentFile = loaderData.file?.path === path
+      const hasChanged = eventType === 'change'
+      if (isCurrentFile && hasChanged) return
       fileSend({ type: 'Refresh' })
     },
     [loaderData?.project?.path, fileContext.selectedDirectory.path].filter(
