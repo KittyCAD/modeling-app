@@ -68,10 +68,13 @@ class CameraRateLimiter {
   lastSend?: Date = undefined
   rateLimitMs: number = 16 //60 FPS
 
-  send = ( f: () => void ) => {
+  send = (f: () => void) => {
     let now = new Date()
 
-    if (this.lastSend === undefined || now.getTime() - this.lastSend.getTime() > this.rateLimitMs) {
+    if (
+      this.lastSend === undefined ||
+      now.getTime() - this.lastSend.getTime() > this.rateLimitMs
+    ) {
       f()
       this.lastSend = now
     }
@@ -211,8 +214,7 @@ export class CameraControls {
       type: 'modeling_cmd_req',
       cmd: {
         type: 'default_camera_zoom',
-        magnitude:
-          (-1 * zoom) / window.devicePixelRatio,
+        magnitude: (-1 * zoom) / window.devicePixelRatio,
       },
       cmd_id: uuidv4(),
     })
