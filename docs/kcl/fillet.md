@@ -9,7 +9,7 @@ Blend a transitional edge along a tagged path, smoothing the sharp edge.
 Fillet is similar in function and use to a chamfer, except a chamfer will cut a sharp transition along an edge while fillet will smoothly blend the transition.
 
 ```js
-fillet(data: FilletData, solid: Solid, tag?: TagDeclarator) -> Solid
+fillet(data: FilletData, solid: Solid, tag?: TagNode) -> Solid
 ```
 
 
@@ -19,7 +19,7 @@ fillet(data: FilletData, solid: Solid, tag?: TagDeclarator) -> Solid
 |----------|------|-------------|----------|
 | `data` | [`FilletData`](/docs/kcl/types/FilletData) | Data for fillets. | Yes |
 | `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

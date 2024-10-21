@@ -9,7 +9,7 @@ Draw an angled line from the current origin, constructing a line segment
 such that the newly created line intersects the desired target line segment.
 
 ```js
-angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag
 |----------|------|-------------|----------|
 | `data` | [`AngledLineThatIntersectsData`](/docs/kcl/types/AngledLineThatIntersectsData) | Data for drawing an angled line that intersects with a given line. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

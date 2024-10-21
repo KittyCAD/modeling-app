@@ -1,81 +1,115 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3677
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 23,
-  "body": [
-    {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 0,
-      "end": 23,
-      "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 0,
-        "end": 23,
-        "callee": {
-          "type": "Identifier",
-          "start": 0,
-          "end": 6,
-          "name": "lineTo"
-        },
-        "arguments": [
-          {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 7,
-            "end": 22,
-            "properties": [
-              {
-                "type": "ObjectProperty",
-                "start": 9,
-                "end": 20,
-                "key": {
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "ExpressionStatement",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "ExpressionStatement",
+          "expression": {
+            "type": "CallExpression",
+            "type": "UnboxedNode",
+            "kind": {
+              "type": "CallExpression",
+              "callee": {
+                "type": "UnboxedNode",
+                "kind": {
                   "type": "Identifier",
-                  "start": 9,
-                  "end": 11,
-                  "name": "to"
+                  "name": "lineTo"
                 },
-                "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 13,
-                  "end": 20,
-                  "elements": [
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 14,
-                      "end": 15,
-                      "value": 0,
-                      "raw": "0"
-                    },
-                    {
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression",
-                      "start": 17,
-                      "end": 19,
-                      "operator": "-",
-                      "argument": {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 18,
-                        "end": 19,
-                        "value": 1,
-                        "raw": "1"
+                "start": 0,
+                "end": 6
+              },
+              "arguments": [
+                {
+                  "type": "ObjectExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "ObjectExpression",
+                    "properties": [
+                      {
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "ObjectProperty",
+                          "key": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "to"
+                            },
+                            "start": 9,
+                            "end": 11
+                          },
+                          "value": {
+                            "type": "ArrayExpression",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "ArrayExpression",
+                              "elements": [
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 0,
+                                    "raw": "0"
+                                  },
+                                  "start": 14,
+                                  "end": 15
+                                },
+                                {
+                                  "type": "UnaryExpression",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "UnaryExpression",
+                                    "operator": "-",
+                                    "argument": {
+                                      "type": "Literal",
+                                      "type": "UnboxedNode",
+                                      "kind": {
+                                        "type": "Literal",
+                                        "value": 1,
+                                        "raw": "1"
+                                      },
+                                      "start": 18,
+                                      "end": 19
+                                    }
+                                  },
+                                  "start": 17,
+                                  "end": 19
+                                }
+                              ]
+                            },
+                            "start": 13,
+                            "end": 20
+                          }
+                        },
+                        "start": 9,
+                        "end": 20
                       }
-                    }
-                  ]
+                    ]
+                  },
+                  "start": 7,
+                  "end": 22
                 }
-              }
-            ]
+              ],
+              "optional": false
+            },
+            "start": 0,
+            "end": 23
           }
-        ],
-        "optional": false
+        },
+        "start": 0,
+        "end": 23
       }
-    }
-  ]
+    ]
+  },
+  "start": 0,
+  "end": 23
 }

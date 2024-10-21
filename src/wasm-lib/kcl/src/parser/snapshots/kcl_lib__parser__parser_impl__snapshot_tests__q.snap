@@ -1,68 +1,96 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3662
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 30,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 30,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 30,
-          "id": {
-            "type": "Identifier",
-            "start": 6,
-            "end": 12,
-            "name": "height"
-          },
-          "init": {
-            "type": "ArrayExpression",
-            "type": "ArrayExpression",
-            "start": 15,
-            "end": 30,
-            "elements": [
-              {
-                "type": "MemberExpression",
-                "type": "MemberExpression",
-                "start": 17,
-                "end": 25,
-                "object": {
-                  "type": "Identifier",
-                  "type": "Identifier",
-                  "start": 17,
-                  "end": 20,
-                  "name": "obj"
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "height"
+                  },
+                  "start": 6,
+                  "end": 12
                 },
-                "property": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 21,
-                  "end": 24,
-                  "value": "a",
-                  "raw": "\"a\""
-                },
-                "computed": false
+                "init": {
+                  "type": "ArrayExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "ArrayExpression",
+                    "elements": [
+                      {
+                        "type": "MemberExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "obj"
+                            },
+                            "start": 17,
+                            "end": 20
+                          },
+                          "property": {
+                            "type": "Literal",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Literal",
+                              "value": "a",
+                              "raw": "\"a\""
+                            },
+                            "start": 21,
+                            "end": 24
+                          },
+                          "computed": false
+                        },
+                        "start": 17,
+                        "end": 25
+                      },
+                      {
+                        "type": "Literal",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "Literal",
+                          "value": 0,
+                          "raw": "0"
+                        },
+                        "start": 27,
+                        "end": 28
+                      }
+                    ]
+                  },
+                  "start": 15,
+                  "end": 30
+                }
               },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 27,
-                "end": 28,
-                "value": 0,
-                "raw": "0"
-              }
-            ]
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+              "start": 6,
+              "end": 30
+            }
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 30
+      }
+    ]
+  },
+  "start": 0,
+  "end": 30
 }

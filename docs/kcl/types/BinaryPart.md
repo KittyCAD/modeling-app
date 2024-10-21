@@ -22,12 +22,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Literal`|  | No |
+| `type` |enum: [`Literal`](/docs/kcl/types/Literal)|  | No |
+| `kind` |[`Literal`](/docs/kcl/types/Literal)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `value` |[`LiteralValue`](/docs/kcl/types/LiteralValue)|  | No |
-| `raw` |`string`|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -43,10 +41,9 @@ layout: manual
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Identifier`](/docs/kcl/types/Identifier)|  | No |
+| `kind` |[`Identifier`](/docs/kcl/types/Identifier)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `name` |`string`|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -61,13 +58,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `BinaryExpression`|  | No |
+| `type` |enum: [`BinaryExpression`](/docs/kcl/types/BinaryExpression)|  | No |
+| `kind` |[`BinaryExpression`](/docs/kcl/types/BinaryExpression)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `operator` |[`BinaryOperator`](/docs/kcl/types/BinaryOperator)|  | No |
-| `left` |[`BinaryPart`](/docs/kcl/types/BinaryPart)|  | No |
-| `right` |[`BinaryPart`](/docs/kcl/types/BinaryPart)|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -82,13 +76,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `CallExpression`|  | No |
+| `type` |enum: [`CallExpression`](/docs/kcl/types/CallExpression)|  | No |
+| `kind` |[`CallExpression`](/docs/kcl/types/CallExpression)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `callee` |[`Identifier`](/docs/kcl/types/Identifier)|  | No |
-| `arguments` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
-| `optional` |`boolean`|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -103,12 +94,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `UnaryExpression`|  | No |
+| `type` |enum: [`UnaryExpression`](/docs/kcl/types/UnaryExpression)|  | No |
+| `kind` |[`UnaryExpression`](/docs/kcl/types/UnaryExpression)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `operator` |[`UnaryOperator`](/docs/kcl/types/UnaryOperator)|  | No |
-| `argument` |[`BinaryPart`](/docs/kcl/types/BinaryPart)|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -123,13 +112,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `MemberExpression`|  | No |
+| `type` |enum: [`MemberExpression`](/docs/kcl/types/MemberExpression)|  | No |
+| `kind` |[`MemberExpression`](/docs/kcl/types/MemberExpression)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `object` |[`MemberObject`](/docs/kcl/types/MemberObject)|  | No |
-| `property` |[`LiteralIdentifier`](/docs/kcl/types/LiteralIdentifier)|  | No |
-| `computed` |`boolean`|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -144,14 +130,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `IfExpression`|  | No |
+| `type` |enum: [`IfExpression`](/docs/kcl/types/IfExpression)|  | No |
+| `kind` |[`IfExpression`](/docs/kcl/types/IfExpression)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `cond` |[`Expr`](/docs/kcl/types/Expr)|  | No |
-| `then_val` |[`Program`](/docs/kcl/types/Program)|  | No |
-| `else_ifs` |`[` [`ElseIf`](/docs/kcl/types/ElseIf) `]`|  | No |
-| `final_else` |[`Program`](/docs/kcl/types/Program)|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----

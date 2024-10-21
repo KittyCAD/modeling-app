@@ -9,7 +9,7 @@ Draw a line parallel to the X axis, that ends at the given X.
 E.g. if the previous line ended at (1, 1), then xLineTo(4) draws a line from (1, 1) to (4, 1)
 
 ```js
-xLineTo(to: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+xLineTo(to: number, sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ xLineTo(to: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 |----------|------|-------------|----------|
 | `to` | `number` |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

@@ -1,91 +1,128 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3617
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 35,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 35,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 35,
-          "id": {
-            "type": "Identifier",
-            "start": 6,
-            "end": 11,
-            "name": "myVar"
-          },
-          "init": {
-            "type": "CallExpression",
-            "type": "CallExpression",
-            "start": 14,
-            "end": 35,
-            "callee": {
-              "type": "Identifier",
-              "start": 14,
-              "end": 17,
-              "name": "min"
-            },
-            "arguments": [
-              {
-                "type": "UnaryExpression",
-                "type": "UnaryExpression",
-                "start": 18,
-                "end": 31,
-                "operator": "-",
-                "argument": {
-                  "type": "CallExpression",
-                  "type": "CallExpression",
-                  "start": 19,
-                  "end": 31,
-                  "callee": {
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
                     "type": "Identifier",
-                    "start": 19,
-                    "end": 25,
-                    "name": "legLen"
+                    "name": "myVar"
                   },
-                  "arguments": [
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 26,
-                      "end": 27,
-                      "value": 5,
-                      "raw": "5"
+                  "start": 6,
+                  "end": 11
+                },
+                "init": {
+                  "type": "CallExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "CallExpression",
+                    "callee": {
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "type": "Identifier",
+                        "name": "min"
+                      },
+                      "start": 14,
+                      "end": 17
                     },
-                    {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 29,
-                      "end": 30,
-                      "value": 4,
-                      "raw": "4"
-                    }
-                  ],
-                  "optional": false
+                    "arguments": [
+                      {
+                        "type": "UnaryExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "UnaryExpression",
+                          "operator": "-",
+                          "argument": {
+                            "type": "CallExpression",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "CallExpression",
+                              "callee": {
+                                "type": "UnboxedNode",
+                                "kind": {
+                                  "type": "Identifier",
+                                  "name": "legLen"
+                                },
+                                "start": 19,
+                                "end": 25
+                              },
+                              "arguments": [
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 5,
+                                    "raw": "5"
+                                  },
+                                  "start": 26,
+                                  "end": 27
+                                },
+                                {
+                                  "type": "Literal",
+                                  "type": "UnboxedNode",
+                                  "kind": {
+                                    "type": "Literal",
+                                    "value": 4,
+                                    "raw": "4"
+                                  },
+                                  "start": 29,
+                                  "end": 30
+                                }
+                              ],
+                              "optional": false
+                            },
+                            "start": 19,
+                            "end": 31
+                          }
+                        },
+                        "start": 18,
+                        "end": 31
+                      },
+                      {
+                        "type": "Literal",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "Literal",
+                          "value": 5,
+                          "raw": "5"
+                        },
+                        "start": 33,
+                        "end": 34
+                      }
+                    ],
+                    "optional": false
+                  },
+                  "start": 14,
+                  "end": 35
                 }
               },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 33,
-                "end": 34,
-                "value": 5,
-                "raw": "5"
-              }
-            ],
-            "optional": false
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+              "start": 6,
+              "end": 35
+            }
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 35
+      }
+    ]
+  },
+  "start": 0,
+  "end": 35
 }

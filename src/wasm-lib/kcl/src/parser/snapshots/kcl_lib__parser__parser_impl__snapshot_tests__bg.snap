@@ -1,38 +1,54 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3791
 expression: actual
 ---
 {
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "x"
+                  },
+                  "start": 0,
+                  "end": 1
+                },
+                "init": {
+                  "type": "Literal",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Literal",
+                    "value": 4,
+                    "raw": "4"
+                  },
+                  "start": 4,
+                  "end": 5
+                }
+              },
+              "start": 0,
+              "end": 5
+            }
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 5
+      }
+    ]
+  },
   "start": 0,
-  "end": 5,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 5,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 0,
-          "end": 5,
-          "id": {
-            "type": "Identifier",
-            "start": 0,
-            "end": 1,
-            "name": "x"
-          },
-          "init": {
-            "type": "Literal",
-            "type": "Literal",
-            "start": 4,
-            "end": 5,
-            "value": 4,
-            "raw": "4"
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+  "end": 5
 }

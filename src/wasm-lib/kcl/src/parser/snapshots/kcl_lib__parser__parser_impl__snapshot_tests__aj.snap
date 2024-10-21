@@ -1,104 +1,147 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3708
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 49,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 49,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 49,
-          "id": {
-            "type": "Identifier",
-            "start": 6,
-            "end": 11,
-            "name": "myBox"
-          },
-          "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 14,
-            "end": 49,
-            "body": [
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 14,
-                "end": 30,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 14,
-                  "end": 27,
-                  "name": "startSketchAt"
-                },
-                "arguments": [
-                  {
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
                     "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 28,
-                    "end": 29,
-                    "name": "p"
-                  }
-                ],
-                "optional": false
-              },
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 34,
-                "end": 49,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 34,
-                  "end": 38,
-                  "name": "line"
+                    "name": "myBox"
+                  },
+                  "start": 6,
+                  "end": 11
                 },
-                "arguments": [
-                  {
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression",
-                    "start": 39,
-                    "end": 45,
-                    "elements": [
+                "init": {
+                  "type": "PipeExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "PipeExpression",
+                    "body": [
                       {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 40,
-                        "end": 41,
-                        "value": 0,
-                        "raw": "0"
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "startSketchAt"
+                            },
+                            "start": 14,
+                            "end": 27
+                          },
+                          "arguments": [
+                            {
+                              "type": "Identifier",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "Identifier",
+                                "name": "p"
+                              },
+                              "start": 28,
+                              "end": 29
+                            }
+                          ],
+                          "optional": false
+                        },
+                        "start": 14,
+                        "end": 30
                       },
                       {
-                        "type": "Identifier",
-                        "type": "Identifier",
-                        "start": 43,
-                        "end": 44,
-                        "name": "l"
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "line"
+                            },
+                            "start": 34,
+                            "end": 38
+                          },
+                          "arguments": [
+                            {
+                              "type": "ArrayExpression",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "ArrayExpression",
+                                "elements": [
+                                  {
+                                    "type": "Literal",
+                                    "type": "UnboxedNode",
+                                    "kind": {
+                                      "type": "Literal",
+                                      "value": 0,
+                                      "raw": "0"
+                                    },
+                                    "start": 40,
+                                    "end": 41
+                                  },
+                                  {
+                                    "type": "Identifier",
+                                    "type": "UnboxedNode",
+                                    "kind": {
+                                      "type": "Identifier",
+                                      "name": "l"
+                                    },
+                                    "start": 43,
+                                    "end": 44
+                                  }
+                                ]
+                              },
+                              "start": 39,
+                              "end": 45
+                            },
+                            {
+                              "type": "PipeSubstitution",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "PipeSubstitution"
+                              },
+                              "start": 47,
+                              "end": 48
+                            }
+                          ],
+                          "optional": false
+                        },
+                        "start": 34,
+                        "end": 49
                       }
                     ]
                   },
-                  {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 47,
-                    "end": 48
-                  }
-                ],
-                "optional": false
-              }
-            ]
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+                  "start": 14,
+                  "end": 49
+                }
+              },
+              "start": 6,
+              "end": 49
+            }
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 49
+      }
+    ]
+  },
+  "start": 0,
+  "end": 49
 }

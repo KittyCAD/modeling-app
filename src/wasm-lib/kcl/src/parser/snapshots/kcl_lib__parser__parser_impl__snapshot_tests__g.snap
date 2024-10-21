@@ -1,69 +1,100 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3621
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 58,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 58,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 3,
-          "end": 58,
-          "id": {
-            "type": "Identifier",
-            "start": 3,
-            "end": 4,
-            "name": "x"
-          },
-          "init": {
-            "type": "FunctionExpression",
-            "type": "FunctionExpression",
-            "start": 7,
-            "end": 58,
-            "params": [],
-            "body": {
-              "start": 13,
-              "end": 58,
-              "body": [
-                {
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement",
-                  "start": 23,
-                  "end": 32,
-                  "argument": {
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
                     "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 30,
-                    "end": 32,
-                    "name": "sg"
-                  }
+                    "name": "x"
+                  },
+                  "start": 3,
+                  "end": 4
                 },
-                {
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement",
-                  "start": 41,
-                  "end": 50,
-                  "argument": {
-                    "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 48,
-                    "end": 50,
-                    "name": "sg"
-                  }
+                "init": {
+                  "type": "FunctionExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "FunctionExpression",
+                    "params": [],
+                    "body": {
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "body": [
+                          {
+                            "type": "ReturnStatement",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "ReturnStatement",
+                              "argument": {
+                                "type": "Identifier",
+                                "type": "UnboxedNode",
+                                "kind": {
+                                  "type": "Identifier",
+                                  "name": "sg"
+                                },
+                                "start": 30,
+                                "end": 32
+                              }
+                            },
+                            "start": 23,
+                            "end": 32
+                          },
+                          {
+                            "type": "ReturnStatement",
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "ReturnStatement",
+                              "argument": {
+                                "type": "Identifier",
+                                "type": "UnboxedNode",
+                                "kind": {
+                                  "type": "Identifier",
+                                  "name": "sg"
+                                },
+                                "start": 48,
+                                "end": 50
+                              }
+                            },
+                            "start": 41,
+                            "end": 50
+                          }
+                        ]
+                      },
+                      "start": 13,
+                      "end": 58
+                    }
+                  },
+                  "start": 7,
+                  "end": 58
                 }
-              ]
+              },
+              "start": 3,
+              "end": 58
             }
-          }
-        }
-      ],
-      "kind": "fn"
-    }
-  ]
+          ],
+          "kind": "fn"
+        },
+        "start": 0,
+        "end": 58
+      }
+    ]
+  },
+  "start": 0,
+  "end": 58
 }

@@ -9,7 +9,7 @@ Draw a line parallel to the Y axis, that ends at the given Y.
 E.g. if the previous line ended at (1, 1), then yLineTo(4) draws a line from (1, 1) to (1, 4)
 
 ```js
-yLineTo(to: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+yLineTo(to: number, sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ yLineTo(to: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 |----------|------|-------------|----------|
 | `to` | `number` |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

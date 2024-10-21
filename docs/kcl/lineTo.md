@@ -9,7 +9,7 @@ Draw a line from the current origin to some absolute (x, y) point.
 
 
 ```js
-lineTo(to: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
+lineTo(to: [number], sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ lineTo(to: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 |----------|------|-------------|----------|
 | `to` | `[number]` |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

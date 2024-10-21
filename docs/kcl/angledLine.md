@@ -9,7 +9,7 @@ Draw a line segment relative to the current origin using the polar
 measure of some angle and distance.
 
 ```js
-angledLine(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+angledLine(data: AngledLineData, sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ angledLine(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 |----------|------|-------------|----------|
 | `data` | [`AngledLineData`](/docs/kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

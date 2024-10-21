@@ -1,7 +1,7 @@
 extern crate alloc;
 use kcl_lib::ast::types::{
-    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, NonCodeMeta, Program, VariableDeclaration,
-    VariableDeclarator, VariableKind,
+    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, Program, UnboxedNode,
+    VariableDeclaration, VariableDeclarator, VariableKind,
 };
 use kcl_macros::parse;
 use pretty_assertions::assert_eq;
@@ -9,36 +9,46 @@ use pretty_assertions::assert_eq;
 #[test]
 fn basic() {
     let actual = parse!("const y = 4");
-    let expected = Program {
-        start: 0,
-        end: 11,
-        body: vec![BodyItem::VariableDeclaration(Box::new(VariableDeclaration {
-            start: 0,
-            end: 11,
-            declarations: vec![VariableDeclarator {
-                start: 6,
-                end: 11,
-                id: Identifier {
-                    start: 6,
-                    end: 7,
-                    name: "y".to_owned(),
+    let expected = UnboxedNode {
+        kind: Program {
+            body: vec![BodyItem::VariableDeclaration(Box::new(UnboxedNode::new(
+                VariableDeclaration {
+                    declarations: vec![UnboxedNode::new(
+                        VariableDeclarator {
+                            id: UnboxedNode::new(
+                                Identifier {
+                                    name: "y".to_owned(),
+                                    digest: None,
+                                },
+                                6,
+                                7,
+                            ),
+                            init: Expr::Literal(UnboxedNode::new(
+                                Literal {
+                                    value: LiteralValue::IInteger(4),
+                                    raw: "4".to_owned(),
+                                    digest: None,
+                                },
+                                10,
+                                11,
+                        )),
+                            digest: None,
+                        },
+                        6,
+                        11,
+                    )],
+                    visibility: ItemVisibility::Default,
+                    kind: VariableKind::Const,
                     digest: None,
                 },
-                init: Expr::Literal(Box::new(Literal {
-                    start: 10,
-                    end: 11,
-                    value: LiteralValue::IInteger(4),
-                    raw: "4".to_owned(),
-                    digest: None,
-                })),
-                digest: None,
-            }],
-            visibility: ItemVisibility::Default,
-            kind: VariableKind::Const,
+                0,
+                11,
+            )))],
+            non_code_meta: Default::default(),
             digest: None,
-        }))],
-        non_code_meta: NonCodeMeta::default(),
-        digest: None,
+        },
+        start: 0,
+        end: 11,
     };
     assert_eq!(expected, actual);
 }

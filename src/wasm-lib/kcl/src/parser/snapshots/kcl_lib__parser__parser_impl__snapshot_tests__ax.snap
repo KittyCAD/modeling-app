@@ -1,83 +1,116 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3729
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 91,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 91,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 4,
-          "end": 91,
-          "id": {
-            "type": "Identifier",
-            "start": 4,
-            "end": 11,
-            "name": "numbers"
-          },
-          "init": {
-            "type": "ArrayExpression",
-            "type": "ArrayExpression",
-            "start": 14,
-            "end": 91,
-            "elements": [
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 28,
-                "end": 29,
-                "value": 1,
-                "raw": "1"
-              },
-              {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 43,
-                "end": 44,
-                "value": 2,
-                "raw": "2"
-              }
-            ],
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "2": [
-                  {
-                    "type": "NonCodeNode",
-                    "start": 58,
-                    "end": 63,
-                    "value": {
-                      "type": "blockComment",
-                      "value": "A,",
-                      "style": "line"
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "numbers"
+                  },
+                  "start": 4,
+                  "end": 11
+                },
+                "init": {
+                  "type": "ArrayExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "ArrayExpression",
+                    "elements": [
+                      {
+                        "type": "Literal",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "Literal",
+                          "value": 1,
+                          "raw": "1"
+                        },
+                        "start": 28,
+                        "end": 29
+                      },
+                      {
+                        "type": "Literal",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "Literal",
+                          "value": 2,
+                          "raw": "2"
+                        },
+                        "start": 43,
+                        "end": 44
+                      }
+                    ],
+                    "nonCodeMeta": {
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "nonCodeNodes": {
+                          "2": [
+                            {
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "blockComment",
+                                  "value": "A,",
+                                  "style": "line"
+                                }
+                              },
+                              "start": 58,
+                              "end": 63
+                            }
+                          ],
+                          "3": [
+                            {
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "blockComment",
+                                  "value": "B,",
+                                  "style": "line"
+                                }
+                              },
+                              "start": 76,
+                              "end": 81
+                            }
+                          ]
+                        },
+                        "start": []
+                      },
+                      "start": 0,
+                      "end": 0
                     }
-                  }
-                ],
-                "3": [
-                  {
-                    "type": "NonCodeNode",
-                    "start": 76,
-                    "end": 81,
-                    "value": {
-                      "type": "blockComment",
-                      "value": "B,",
-                      "style": "line"
-                    }
-                  }
-                ]
+                  },
+                  "start": 14,
+                  "end": 91
+                }
               },
-              "start": []
+              "start": 4,
+              "end": 91
             }
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 91
+      }
+    ]
+  },
+  "start": 0,
+  "end": 91
 }

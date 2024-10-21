@@ -1,173 +1,246 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3718
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 108,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 107,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 107,
-          "id": {
-            "type": "Identifier",
-            "start": 6,
-            "end": 14,
-            "name": "cylinder"
-          },
-          "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 17,
-            "end": 107,
-            "body": [
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 17,
-                "end": 36,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 17,
-                  "end": 30,
-                  "name": "startSketchOn"
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "cylinder"
+                  },
+                  "start": 6,
+                  "end": 14
                 },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 31,
-                    "end": 35,
-                    "value": "XY",
-                    "raw": "'XY'"
-                  }
-                ],
-                "optional": false
-              },
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 44,
-                "end": 85,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 44,
-                  "end": 50,
-                  "name": "circle"
-                },
-                "arguments": [
-                  {
-                    "type": "ObjectExpression",
-                    "type": "ObjectExpression",
-                    "start": 51,
-                    "end": 81,
-                    "properties": [
+                "init": {
+                  "type": "PipeExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "PipeExpression",
+                    "body": [
                       {
-                        "type": "ObjectProperty",
-                        "start": 53,
-                        "end": 67,
-                        "key": {
-                          "type": "Identifier",
-                          "start": 53,
-                          "end": 59,
-                          "name": "center"
-                        },
-                        "value": {
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression",
-                          "start": 61,
-                          "end": 67,
-                          "elements": [
-                            {
-                              "type": "Literal",
-                              "type": "Literal",
-                              "start": 62,
-                              "end": 63,
-                              "value": 0,
-                              "raw": "0"
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "startSketchOn"
                             },
+                            "start": 17,
+                            "end": 30
+                          },
+                          "arguments": [
                             {
                               "type": "Literal",
-                              "type": "Literal",
-                              "start": 65,
-                              "end": 66,
-                              "value": 0,
-                              "raw": "0"
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "Literal",
+                                "value": "XY",
+                                "raw": "'XY'"
+                              },
+                              "start": 31,
+                              "end": 35
                             }
-                          ]
-                        }
+                          ],
+                          "optional": false
+                        },
+                        "start": 17,
+                        "end": 36
                       },
                       {
-                        "type": "ObjectProperty",
-                        "start": 69,
-                        "end": 79,
-                        "key": {
-                          "type": "Identifier",
-                          "start": 69,
-                          "end": 75,
-                          "name": "radius"
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "circle"
+                            },
+                            "start": 44,
+                            "end": 50
+                          },
+                          "arguments": [
+                            {
+                              "type": "ObjectExpression",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "ObjectExpression",
+                                "properties": [
+                                  {
+                                    "type": "UnboxedNode",
+                                    "kind": {
+                                      "type": "ObjectProperty",
+                                      "key": {
+                                        "type": "UnboxedNode",
+                                        "kind": {
+                                          "type": "Identifier",
+                                          "name": "center"
+                                        },
+                                        "start": 53,
+                                        "end": 59
+                                      },
+                                      "value": {
+                                        "type": "ArrayExpression",
+                                        "type": "UnboxedNode",
+                                        "kind": {
+                                          "type": "ArrayExpression",
+                                          "elements": [
+                                            {
+                                              "type": "Literal",
+                                              "type": "UnboxedNode",
+                                              "kind": {
+                                                "type": "Literal",
+                                                "value": 0,
+                                                "raw": "0"
+                                              },
+                                              "start": 62,
+                                              "end": 63
+                                            },
+                                            {
+                                              "type": "Literal",
+                                              "type": "UnboxedNode",
+                                              "kind": {
+                                                "type": "Literal",
+                                                "value": 0,
+                                                "raw": "0"
+                                              },
+                                              "start": 65,
+                                              "end": 66
+                                            }
+                                          ]
+                                        },
+                                        "start": 61,
+                                        "end": 67
+                                      }
+                                    },
+                                    "start": 53,
+                                    "end": 67
+                                  },
+                                  {
+                                    "type": "UnboxedNode",
+                                    "kind": {
+                                      "type": "ObjectProperty",
+                                      "key": {
+                                        "type": "UnboxedNode",
+                                        "kind": {
+                                          "type": "Identifier",
+                                          "name": "radius"
+                                        },
+                                        "start": 69,
+                                        "end": 75
+                                      },
+                                      "value": {
+                                        "type": "Literal",
+                                        "type": "UnboxedNode",
+                                        "kind": {
+                                          "type": "Literal",
+                                          "value": 22,
+                                          "raw": "22"
+                                        },
+                                        "start": 77,
+                                        "end": 79
+                                      }
+                                    },
+                                    "start": 69,
+                                    "end": 79
+                                  }
+                                ]
+                              },
+                              "start": 51,
+                              "end": 81
+                            },
+                            {
+                              "type": "PipeSubstitution",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "PipeSubstitution"
+                              },
+                              "start": 83,
+                              "end": 84
+                            }
+                          ],
+                          "optional": false
                         },
-                        "value": {
-                          "type": "Literal",
-                          "type": "Literal",
-                          "start": 77,
-                          "end": 79,
-                          "value": 22,
-                          "raw": "22"
-                        }
+                        "start": 44,
+                        "end": 85
+                      },
+                      {
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "extrude"
+                            },
+                            "start": 93,
+                            "end": 100
+                          },
+                          "arguments": [
+                            {
+                              "type": "Literal",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "Literal",
+                                "value": 14,
+                                "raw": "14"
+                              },
+                              "start": 101,
+                              "end": 103
+                            },
+                            {
+                              "type": "PipeSubstitution",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "PipeSubstitution"
+                              },
+                              "start": 105,
+                              "end": 106
+                            }
+                          ],
+                          "optional": false
+                        },
+                        "start": 93,
+                        "end": 107
                       }
                     ]
                   },
-                  {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 83,
-                    "end": 84
-                  }
-                ],
-                "optional": false
+                  "start": 17,
+                  "end": 107
+                }
               },
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 93,
-                "end": 107,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 93,
-                  "end": 100,
-                  "name": "extrude"
-                },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 101,
-                    "end": 103,
-                    "value": 14,
-                    "raw": "14"
-                  },
-                  {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 105,
-                    "end": 106
-                  }
-                ],
-                "optional": false
-              }
-            ]
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+              "start": 6,
+              "end": 107
+            }
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 107
+      }
+    ]
+  },
+  "start": 0,
+  "end": 108
 }

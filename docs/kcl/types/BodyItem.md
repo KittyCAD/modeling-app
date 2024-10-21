@@ -22,13 +22,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `ImportStatement`|  | No |
+| `type` |enum: [`ImportStatement`](/docs/kcl/types/ImportStatement)|  | No |
+| `kind` |[`ImportStatement`](/docs/kcl/types/ImportStatement)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `items` |`[` [`ImportItem`](/docs/kcl/types/ImportItem) `]`|  | No |
-| `path` |`string`|  | No |
-| `raw_path` |`string`|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -43,11 +40,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `ExpressionStatement`|  | No |
+| `type` |enum: [`ExpressionStatement`](/docs/kcl/types/ExpressionStatement)|  | No |
+| `kind` |[`ExpressionStatement`](/docs/kcl/types/ExpressionStatement)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `expression` |[`Expr`](/docs/kcl/types/Expr)|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -62,13 +58,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `VariableDeclaration`|  | No |
+| `type` |enum: [`VariableDeclaration`](/docs/kcl/types/VariableDeclaration)|  | No |
+| `kind` |[`VariableDeclaration`](/docs/kcl/types/VariableDeclaration)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `declarations` |`[` [`VariableDeclarator`](/docs/kcl/types/VariableDeclarator) `]`|  | No |
-| `visibility` |[`ItemVisibility`](/docs/kcl/types/ItemVisibility)|  | No |
-| `kind` |[`VariableKind`](/docs/kcl/types/VariableKind)|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -83,11 +76,10 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `ReturnStatement`|  | No |
+| `type` |enum: [`ReturnStatement`](/docs/kcl/types/ReturnStatement)|  | No |
+| `kind` |[`ReturnStatement`](/docs/kcl/types/ReturnStatement)|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `argument` |[`Expr`](/docs/kcl/types/Expr)|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----

@@ -1,129 +1,180 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3754
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 133,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 1,
-      "end": 132,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 7,
-          "end": 132,
-          "id": {
-            "type": "Identifier",
-            "start": 7,
-            "end": 16,
-            "name": "sketch001"
-          },
-          "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 19,
-            "end": 132,
-            "body": [
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 19,
-                "end": 38,
-                "callee": {
-                  "type": "Identifier",
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "sketch001"
+                  },
+                  "start": 7,
+                  "end": 16
+                },
+                "init": {
+                  "type": "PipeExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "PipeExpression",
+                    "body": [
+                      {
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "startSketchOn"
+                            },
+                            "start": 19,
+                            "end": 32
+                          },
+                          "arguments": [
+                            {
+                              "type": "Literal",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "Literal",
+                                "value": "XY",
+                                "raw": "'XY'"
+                              },
+                              "start": 33,
+                              "end": 37
+                            }
+                          ],
+                          "optional": false
+                        },
+                        "start": 19,
+                        "end": 38
+                      },
+                      {
+                        "type": "CallExpression",
+                        "type": "UnboxedNode",
+                        "kind": {
+                          "type": "CallExpression",
+                          "callee": {
+                            "type": "UnboxedNode",
+                            "kind": {
+                              "type": "Identifier",
+                              "name": "startProfileAt"
+                            },
+                            "start": 115,
+                            "end": 129
+                          },
+                          "arguments": [
+                            {
+                              "type": "PipeSubstitution",
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "PipeSubstitution"
+                              },
+                              "start": 130,
+                              "end": 131
+                            }
+                          ],
+                          "optional": false
+                        },
+                        "start": 115,
+                        "end": 132
+                      }
+                    ],
+                    "nonCodeMeta": {
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "nonCodeNodes": {
+                          "0": [
+                            {
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "blockComment",
+                                  "value": "|> arc({",
+                                  "style": "line"
+                                }
+                              },
+                              "start": 41,
+                              "end": 52
+                            },
+                            {
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "blockComment",
+                                  "value": "angleEnd: 270,",
+                                  "style": "line"
+                                }
+                              },
+                              "start": 55,
+                              "end": 74
+                            },
+                            {
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "blockComment",
+                                  "value": "angleStart: 450,",
+                                  "style": "line"
+                                }
+                              },
+                              "start": 77,
+                              "end": 98
+                            },
+                            {
+                              "type": "UnboxedNode",
+                              "kind": {
+                                "type": "NonCodeNode",
+                                "value": {
+                                  "type": "blockComment",
+                                  "value": "}, %)",
+                                  "style": "line"
+                                }
+                              },
+                              "start": 101,
+                              "end": 109
+                            }
+                          ]
+                        },
+                        "start": []
+                      },
+                      "start": 0,
+                      "end": 0
+                    }
+                  },
                   "start": 19,
-                  "end": 32,
-                  "name": "startSketchOn"
-                },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 33,
-                    "end": 37,
-                    "value": "XY",
-                    "raw": "'XY'"
-                  }
-                ],
-                "optional": false
+                  "end": 132
+                }
               },
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 115,
-                "end": 132,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 115,
-                  "end": 129,
-                  "name": "startProfileAt"
-                },
-                "arguments": [
-                  {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 130,
-                    "end": 131
-                  }
-                ],
-                "optional": false
-              }
-            ],
-            "nonCodeMeta": {
-              "nonCodeNodes": {
-                "0": [
-                  {
-                    "type": "NonCodeNode",
-                    "start": 41,
-                    "end": 52,
-                    "value": {
-                      "type": "blockComment",
-                      "value": "|> arc({",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "type": "NonCodeNode",
-                    "start": 55,
-                    "end": 74,
-                    "value": {
-                      "type": "blockComment",
-                      "value": "angleEnd: 270,",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "type": "NonCodeNode",
-                    "start": 77,
-                    "end": 98,
-                    "value": {
-                      "type": "blockComment",
-                      "value": "angleStart: 450,",
-                      "style": "line"
-                    }
-                  },
-                  {
-                    "type": "NonCodeNode",
-                    "start": 101,
-                    "end": 109,
-                    "value": {
-                      "type": "blockComment",
-                      "value": "}, %)",
-                      "style": "line"
-                    }
-                  }
-                ]
-              },
-              "start": []
+              "start": 7,
+              "end": 132
             }
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+          ],
+          "kind": "const"
+        },
+        "start": 1,
+        "end": 132
+      }
+    ]
+  },
+  "start": 0,
+  "end": 133
 }

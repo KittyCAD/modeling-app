@@ -1,68 +1,96 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3660
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 21,
-  "body": [
-    {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 21,
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "start": 6,
-          "end": 21,
-          "id": {
-            "type": "Identifier",
-            "start": 6,
-            "end": 9,
-            "name": "six"
-          },
-          "init": {
-            "type": "BinaryExpression",
-            "type": "BinaryExpression",
-            "start": 12,
-            "end": 21,
-            "operator": "+",
-            "left": {
-              "type": "BinaryExpression",
-              "type": "BinaryExpression",
-              "start": 12,
-              "end": 17,
-              "operator": "+",
-              "left": {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 12,
-                "end": 13,
-                "value": 1,
-                "raw": "1"
+  "type": "UnboxedNode",
+  "kind": {
+    "body": [
+      {
+        "type": "VariableDeclaration",
+        "type": "UnboxedNode",
+        "kind": {
+          "type": "VariableDeclaration",
+          "declarations": [
+            {
+              "type": "UnboxedNode",
+              "kind": {
+                "type": "VariableDeclarator",
+                "id": {
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "Identifier",
+                    "name": "six"
+                  },
+                  "start": 6,
+                  "end": 9
+                },
+                "init": {
+                  "type": "BinaryExpression",
+                  "type": "UnboxedNode",
+                  "kind": {
+                    "type": "BinaryExpression",
+                    "operator": "+",
+                    "left": {
+                      "type": "BinaryExpression",
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "type": "BinaryExpression",
+                        "operator": "+",
+                        "left": {
+                          "type": "Literal",
+                          "type": "UnboxedNode",
+                          "kind": {
+                            "type": "Literal",
+                            "value": 1,
+                            "raw": "1"
+                          },
+                          "start": 12,
+                          "end": 13
+                        },
+                        "right": {
+                          "type": "Literal",
+                          "type": "UnboxedNode",
+                          "kind": {
+                            "type": "Literal",
+                            "value": 2,
+                            "raw": "2"
+                          },
+                          "start": 16,
+                          "end": 17
+                        }
+                      },
+                      "start": 12,
+                      "end": 17
+                    },
+                    "right": {
+                      "type": "Literal",
+                      "type": "UnboxedNode",
+                      "kind": {
+                        "type": "Literal",
+                        "value": 3,
+                        "raw": "3"
+                      },
+                      "start": 20,
+                      "end": 21
+                    }
+                  },
+                  "start": 12,
+                  "end": 21
+                }
               },
-              "right": {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 16,
-                "end": 17,
-                "value": 2,
-                "raw": "2"
-              }
-            },
-            "right": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 20,
-              "end": 21,
-              "value": 3,
-              "raw": "3"
+              "start": 6,
+              "end": 21
             }
-          }
-        }
-      ],
-      "kind": "const"
-    }
-  ]
+          ],
+          "kind": "const"
+        },
+        "start": 0,
+        "end": 21
+      }
+    ]
+  },
+  "start": 0,
+  "end": 21
 }

@@ -13,9 +13,9 @@ use crate::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier,
         IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier, LiteralValue,
-        MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+        MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
         Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression,
-        UnaryOperator, ValueMeta, VariableDeclaration, VariableDeclarator, VariableKind,
+        UnaryOperator, UnboxedNode, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -31,7 +31,7 @@ type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
 
 type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
 
-pub fn run_parser(i: TokenSlice) -> Result<Program, KclError> {
+pub fn run_parser(i: TokenSlice) -> Result<UnboxedNode<Program>, KclError> {
     program.parse(i).map_err(KclError::from)
 }
 
@@ -39,13 +39,13 @@ fn expected(what: &'static str) -> StrContext {
     StrContext::Expected(StrContextValue::Description(what))
 }
 
-fn program(i: TokenSlice) -> PResult<Program> {
+fn program(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
     let mut out = function_body.parse_next(i)?;
 
     // Add the shebang to the non-code meta.
     if let Some(shebang) = shebang {
-        out.non_code_meta.start.insert(0, shebang);
+        out.non_code_meta.kind.start.insert(0, shebang);
     }
     // Match original parser behaviour, for now.
     // Once this is merged and stable, consider changing this as I think it's more accurate
@@ -70,26 +70,28 @@ fn count_in(target: char, s: &str) -> usize {
 }
 
 /// Matches all four cases of NonCodeValue
-fn non_code_node(i: TokenSlice) -> PResult<NonCodeNode> {
+fn non_code_node(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
     /// Matches one case of NonCodeValue
     /// See docstring on [NonCodeValue::NewLineBlockComment] for why that case is different to the others.
-    fn non_code_node_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
+    fn non_code_node_leading_whitespace(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
         let leading_whitespace = one_of(TokenType::Whitespace)
             .context(expected("whitespace, with a newline"))
             .parse_next(i)?;
         let has_empty_line = count_in('\n', &leading_whitespace.value) >= 2;
         non_code_node_no_leading_whitespace
-            .verify_map(|node: NonCodeNode| match node.value {
-                NonCodeValue::BlockComment { value, style } => Some(NonCodeNode {
-                    start: leading_whitespace.start,
-                    end: node.end + 1,
-                    value: if has_empty_line {
-                        NonCodeValue::NewLineBlockComment { value, style }
-                    } else {
-                        NonCodeValue::BlockComment { value, style }
+            .verify_map(|node: UnboxedNode<NonCodeNode>| match node.kind.value {
+                NonCodeValue::BlockComment { value, style } => Some(UnboxedNode::new(
+                    NonCodeNode {
+                        value: if has_empty_line {
+                            NonCodeValue::NewLineBlockComment { value, style }
+                        } else {
+                            NonCodeValue::BlockComment { value, style }
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                }),
+                    leading_whitespace.start,
+                    node.end + 1,
+                )),
                 _ => None,
             })
             .context(expected("a comment or whitespace"))
@@ -100,7 +102,7 @@ fn non_code_node(i: TokenSlice) -> PResult<NonCodeNode> {
 }
 
 // Matches remaining three cases of NonCodeValue
-fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
+fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
     any.verify_map(|token: Token| {
         if token.is_code_token() {
             None
@@ -122,20 +124,19 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
                 },
                 _ => return None,
             };
-            Some(NonCodeNode {
-                start: token.start,
-                end: token.end,
-                value,
-                digest: None,
-            })
+            Some(UnboxedNode::new(
+                NonCodeNode { value, digest: None },
+                token.start,
+                token.end,
+            ))
         }
     })
     .context(expected("Non-code token (comments or whitespace)"))
     .parse_next(i)
 }
 
-fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
-    let mut non_code_meta = NonCodeMeta::default();
+fn pipe_expression(i: TokenSlice) -> PResult<UnboxedNode<PipeExpression>> {
+    let mut non_code_meta = UnboxedNode::<NonCodeMeta>::default();
     let (head, noncode): (_, Vec<_>) = terminated(
         (
             expression_but_not_pipe,
@@ -194,16 +195,18 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
             non_code_meta.insert(code_count, nc);
         }
     }
-    Ok(PipeExpression {
+    Ok(UnboxedNode {
         start: values.first().unwrap().start(),
         end: values.last().unwrap().end().max(max_noncode_end),
-        body: values,
-        non_code_meta,
-        digest: None,
+        kind: PipeExpression {
+            body: values,
+            non_code_meta,
+            digest: None,
+        },
     })
 }
 
-fn bool_value(i: TokenSlice) -> PResult<Literal> {
+fn bool_value(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
@@ -215,23 +218,25 @@ fn bool_value(i: TokenSlice) -> PResult<Literal> {
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
-    Ok(Literal {
-        start: token.start,
-        end: token.end,
-        value: LiteralValue::Bool(value),
-        raw: value.to_string(),
-        digest: None,
-    })
+    Ok(UnboxedNode::new(
+        Literal {
+            value: LiteralValue::Bool(value),
+            raw: value.to_string(),
+            digest: None,
+        },
+        token.start,
+        token.end,
+    ))
 }
 
-pub fn literal(i: TokenSlice) -> PResult<Literal> {
+pub fn literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
     alt((string_literal, unsigned_number_literal))
         .context(expected("a KCL literal, like 'myPart' or 3"))
         .parse_next(i)
 }
 
 /// Parse a KCL string literal
-pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
+pub fn string_literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::String => {
@@ -245,17 +250,19 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
         })
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
-    Ok(Literal {
-        start: token.start,
-        end: token.end,
-        value,
-        raw: token.value.clone(),
-        digest: None,
-    })
+    Ok(UnboxedNode::new(
+        Literal {
+            value,
+            raw: token.value.clone(),
+            digest: None,
+        },
+        token.start,
+        token.end,
+    ))
 }
 
 /// Parse a KCL literal number, with no - sign.
-pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
+pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -278,13 +285,15 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
         })
         .context(expected("an unsigned number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
-    Ok(Literal {
-        start: token.start,
-        end: token.end,
-        value,
-        raw: token.value.clone(),
-        digest: None,
-    })
+    Ok(UnboxedNode::new(
+        Literal {
+            value,
+            raw: token.value.clone(),
+            digest: None,
+        },
+        token.start,
+        token.end,
+    ))
 }
 
 /// Parse a KCL operator that takes a left- and right-hand side argument.
@@ -421,7 +430,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 
 /// A shebang is a line at the start of a file that starts with `#!`.
 /// If the shebang is present it takes up the whole line.
-fn shebang(i: TokenSlice) -> PResult<NonCodeNode> {
+fn shebang(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
     // Parse the hash and the bang.
     hash.parse_next(i)?;
     bang.parse_next(i)?;
@@ -443,14 +452,16 @@ fn shebang(i: TokenSlice) -> PResult<NonCodeNode> {
     // Strip all the whitespace after the shebang.
     opt(whitespace).parse_next(i)?;
 
-    Ok(NonCodeNode {
-        start: 0,
-        end: tokens.last().unwrap().end,
-        value: NonCodeValue::Shebang {
-            value: format!("#!{}", value),
+    Ok(UnboxedNode::new(
+        NonCodeNode {
+            value: NonCodeValue::Shebang {
+                value: format!("#!{}", value),
+            },
+            digest: None,
         },
-        digest: None,
-    })
+        0,
+        tokens.last().unwrap().end,
+    ))
 }
 
 /// Parse the = operator.
@@ -462,7 +473,7 @@ fn equals(i: TokenSlice) -> PResult<Token> {
 
 #[allow(clippy::large_enum_variant)]
 pub enum NonCodeOr<T> {
-    NonCode(NonCodeNode),
+    NonCode(UnboxedNode<NonCodeNode>),
     Code(T),
 }
 
@@ -477,17 +488,19 @@ fn array(i: TokenSlice) -> PResult<Expr> {
 }
 
 /// Match an empty array.
-fn array_empty(i: TokenSlice) -> PResult<ArrayExpression> {
+fn array_empty(i: TokenSlice) -> PResult<UnboxedNode<ArrayExpression>> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(ArrayExpression {
+    Ok(UnboxedNode::new(
+        ArrayExpression {
+            elements: Default::default(),
+            non_code_meta: Default::default(),
+            digest: None,
+        },
         start,
         end,
-        elements: Default::default(),
-        non_code_meta: Default::default(),
-        digest: None,
-    })
+    ))
 }
 
 /// Match something that separates elements of an array.
@@ -501,7 +514,7 @@ fn array_separator(i: TokenSlice) -> PResult<()> {
     .parse_next(i)
 }
 
-pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<ArrayExpression> {
+pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<UnboxedNode<ArrayExpression>> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
     let elements: Vec<_> = repeat(
@@ -531,41 +544,45 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<ArrayExpression> {
             (elements, non_code_nodes)
         },
     );
-    let non_code_meta = NonCodeMeta {
+    let non_code_meta = UnboxedNode::no_src(NonCodeMeta {
         non_code_nodes,
         start: Vec::new(),
         digest: None,
-    };
-    Ok(ArrayExpression {
+    });
+    Ok(UnboxedNode::new(
+        ArrayExpression {
+            elements,
+            non_code_meta,
+            digest: None,
+        },
         start,
         end,
-        elements,
-        non_code_meta,
-        digest: None,
-    })
+    ))
 }
 
-fn array_end_start(i: TokenSlice) -> PResult<ArrayRangeExpression> {
+fn array_end_start(i: TokenSlice) -> PResult<UnboxedNode<ArrayRangeExpression>> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
-    let start_element = Box::new(expression.parse_next(i)?);
+    let start_element = expression.parse_next(i)?;
     ignore_whitespace(i);
     double_period.parse_next(i)?;
     ignore_whitespace(i);
-    let end_element = Box::new(expression.parse_next(i)?);
+    let end_element = expression.parse_next(i)?;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(ArrayRangeExpression {
+    Ok(UnboxedNode::new(
+        ArrayRangeExpression {
+            start_element,
+            end_element,
+            end_inclusive: true,
+            digest: None,
+        },
         start,
         end,
-        start_element,
-        end_element,
-        end_inclusive: true,
-        digest: None,
-    })
+    ))
 }
 
-fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
+fn object_property(i: TokenSlice) -> PResult<UnboxedNode<ObjectProperty>> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     colon
@@ -579,12 +596,14 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
         .parse_next(i)?;
-    Ok(ObjectProperty {
+    Ok(UnboxedNode {
         start: key.start,
         end: expr.end(),
-        key,
-        value: expr,
-        digest: None,
+        kind: ObjectProperty {
+            key,
+            value: expr,
+            digest: None,
+        },
     })
 }
 
@@ -600,7 +619,7 @@ fn property_separator(i: TokenSlice) -> PResult<()> {
 }
 
 /// Parse a KCL object value.
-pub(crate) fn object(i: TokenSlice) -> PResult<ObjectExpression> {
+pub(crate) fn object(i: TokenSlice) -> PResult<UnboxedNode<ObjectExpression>> {
     let start = open_brace(i)?.start;
     ignore_whitespace(i);
     let properties: Vec<_> = repeat(
@@ -633,28 +652,30 @@ pub(crate) fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
-    let non_code_meta = NonCodeMeta {
+    let non_code_meta = UnboxedNode::no_src(NonCodeMeta {
         non_code_nodes,
         ..Default::default()
-    };
-    Ok(ObjectExpression {
+    });
+    Ok(UnboxedNode::new(
+        ObjectExpression {
+            properties,
+            non_code_meta,
+            digest: None,
+        },
         start,
         end,
-        properties,
-        non_code_meta,
-        digest: None,
-    })
+    ))
 }
 
 /// Parse the % symbol, used to substitute a curried argument from a |> (pipe).
-fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
+fn pipe_sub(i: TokenSlice) -> PResult<UnboxedNode<PipeSubstitution>> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::Operator) && token.value == PIPE_SUBSTITUTION_OPERATOR {
-            Ok(PipeSubstitution {
-                start: token.start,
-                end: token.end,
-                digest: None,
-            })
+            Ok(UnboxedNode::new(
+                PipeSubstitution { digest: None },
+                token.start,
+                token.end,
+            ))
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -669,7 +690,7 @@ fn pipe_sub(i: TokenSlice) -> PResult<PipeSubstitution> {
     .parse_next(i)
 }
 
-fn else_if(i: TokenSlice) -> PResult<ElseIf> {
+fn else_if(i: TokenSlice) -> PResult<UnboxedNode<ElseIf>> {
     let start = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
@@ -708,16 +729,18 @@ fn else_if(i: TokenSlice) -> PResult<ElseIf> {
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
     ignore_whitespace(i);
-    Ok(ElseIf {
+    Ok(UnboxedNode::new(
+        ElseIf {
+            cond,
+            then_val,
+            digest: Default::default(),
+        },
         start,
         end,
-        cond,
-        then_val,
-        digest: Default::default(),
-    })
+    ))
 }
 
-fn if_expr(i: TokenSlice) -> PResult<IfExpression> {
+fn if_expr(i: TokenSlice) -> PResult<Node<IfExpression>> {
     let start = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
@@ -771,15 +794,17 @@ fn if_expr(i: TokenSlice) -> PResult<IfExpression> {
         .map(Box::new)?;
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
-    Ok(IfExpression {
+    Ok(UnboxedNode::boxed(
+        IfExpression {
+            cond,
+            then_val,
+            else_ifs,
+            final_else,
+            digest: Default::default(),
+        },
         start,
         end,
-        cond,
-        then_val,
-        else_ifs,
-        final_else,
-        digest: Default::default(),
-    })
+    ))
 }
 
 // Looks like
@@ -787,7 +812,7 @@ fn if_expr(i: TokenSlice) -> PResult<IfExpression> {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
+fn function_expression(i: TokenSlice) -> PResult<UnboxedNode<FunctionExpression>> {
     let start = open_paren(i)?.start;
     let params = parameters(i)?;
     close_paren(i)?;
@@ -800,14 +825,16 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
     open_brace(i)?;
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
-    Ok(FunctionExpression {
+    Ok(UnboxedNode::new(
+        FunctionExpression {
+            params,
+            body,
+            return_type,
+            digest: None,
+        },
         start,
         end,
-        params,
-        body,
-        return_type,
-        digest: None,
-    })
+    ))
 }
 
 /// E.g. `person.name`
@@ -839,7 +866,7 @@ fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usi
 
 /// Get a property of an object, or an index of an array, or a member of a collection.
 /// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
-fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
+fn member_expression(i: TokenSlice) -> PResult<UnboxedNode<MemberExpression>> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
     let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
@@ -854,14 +881,16 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
     // which is guaranteed to have >=1 elements.
     let (property, end, computed) = members.remove(0);
     let start = id.start;
-    let initial_member_expression = MemberExpression {
+    let initial_member_expression = UnboxedNode::new(
+        MemberExpression {
+            object: MemberObject::Identifier(Box::new(id)),
+            computed,
+            property,
+            digest: None,
+        },
         start,
         end,
-        object: MemberObject::Identifier(Box::new(id)),
-        computed,
-        property,
-        digest: None,
-    };
+    );
 
     // Each remaining member wraps the current member expression inside another member expression.
     Ok(members
@@ -869,20 +898,22 @@ fn member_expression(i: TokenSlice) -> PResult<MemberExpression> {
         // Take the accumulated member expression from the previous iteration,
         // and use it as the `object` of a new, bigger member expression.
         .fold(initial_member_expression, |accumulated, (property, end, computed)| {
-            MemberExpression {
+            UnboxedNode::new(
+                MemberExpression {
+                    object: MemberObject::MemberExpression(Box::new(accumulated)),
+                    computed,
+                    property,
+                    digest: None,
+                },
                 start,
                 end,
-                object: MemberObject::MemberExpression(Box::new(accumulated)),
-                computed,
-                property,
-                digest: None,
-            }
+            )
         }))
 }
 
 /// Find a noncode node which occurs just after a body item,
 /// such that if the noncode item is a comment, it might be an inline comment.
-fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
+fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
     let ws = opt(whitespace).parse_next(i)?;
 
     // What is the preceding whitespace like?
@@ -901,7 +932,7 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
             if has_empty_line {
                 // There's an empty line between the body item and the comment,
                 // This means the comment is a NewLineBlockComment!
-                let value = match nc.value {
+                let value = match nc.kind.value {
                     NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
@@ -910,18 +941,14 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
-                NonCodeNode {
-                    value,
-                    start: nc.start.saturating_sub(1),
-                    ..nc
-                }
+                UnboxedNode::new(NonCodeNode { value, ..nc.kind }, nc.start.saturating_sub(1), nc.end)
             } else if has_newline {
                 // Nothing has to change, a single newline does not need preserving.
                 nc
             } else {
                 // There's no newline between the body item and comment,
                 // so if this is a comment, it must be inline with code.
-                let value = match nc.value {
+                let value = match nc.kind.value {
                     NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
@@ -930,13 +957,10 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
-                NonCodeNode { value, ..nc }
+                UnboxedNode::new(NonCodeNode { value, ..nc.kind }, nc.start, nc.end)
             }
         })
-        .map(|nc| NonCodeNode {
-            start: nc.start.saturating_sub(1),
-            ..nc
-        })
+        .map(|nc| UnboxedNode::new(nc.kind, nc.start.saturating_sub(1), nc.end))
         .parse_next(i)?;
     Ok(nc)
 }
@@ -948,8 +972,17 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
 #[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 enum WithinFunction {
-    BodyItem((BodyItem, Option<NonCodeNode>)),
-    NonCode(NonCodeNode),
+    BodyItem((BodyItem, Option<UnboxedNode<NonCodeNode>>)),
+    NonCode(UnboxedNode<NonCodeNode>),
+}
+
+impl WithinFunction {
+    fn is_newline(&self) -> bool {
+        match self {
+            WithinFunction::NonCode(nc) => nc.value == NonCodeValue::NewLine,
+            _ => false,
+        }
+    }
 }
 
 fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
@@ -983,7 +1016,7 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
 }
 
 /// Parse the body of a user-defined function.
-pub fn function_body(i: TokenSlice) -> PResult<Program> {
+pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
     let leading_whitespace_start = alt((
         peek(non_code_node).map(|_| None),
         // Subtract 1 from `t.start` to match behaviour of the old parser.
@@ -1014,13 +1047,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
     // The solution is that this parser should check if the last matched body item was an empty line,
     // and if so, then ignore the separator parser for the current iteration.
     loop {
-        let last_match_was_empty_line = matches!(
-            things_within_body.last(),
-            Some(WithinFunction::NonCode(NonCodeNode {
-                value: NonCodeValue::NewLine,
-                ..
-            }))
-        );
+        let last_match_was_empty_line = things_within_body.last().map(|wf| wf.is_newline()).unwrap_or(false);
 
         use winnow::stream::Stream;
 
@@ -1034,12 +1061,14 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
         // deliberately put an empty line there. We should track this and preserve it.
         if let Ok(ref ws_token) = found_ws {
             if ws_token.value.contains("\n\n") {
-                things_within_body.push(WithinFunction::NonCode(NonCodeNode {
-                    start: ws_token.start,
-                    end: ws_token.end,
-                    value: NonCodeValue::NewLine,
-                    digest: None,
-                }));
+                things_within_body.push(WithinFunction::NonCode(UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::NewLine,
+                        digest: None,
+                    },
+                    ws_token.start,
+                    ws_token.end,
+                )));
             }
         }
 
@@ -1074,7 +1103,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
     }
 
     let mut body = Vec::new();
-    let mut non_code_meta = NonCodeMeta::default();
+    let mut non_code_meta = UnboxedNode::<NonCodeMeta>::default();
     let mut end = 0;
     let mut start = leading_whitespace_start;
     for thing_in_body in things_within_body {
@@ -1096,7 +1125,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
                 }
                 end = nc.end;
                 if body.is_empty() {
-                    non_code_meta.start.push(nc);
+                    non_code_meta.kind.start.push(nc);
                 } else {
                     non_code_meta.insert(body.len() - 1, nc);
                 }
@@ -1115,16 +1144,18 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
         end = end.max(end_ws);
     }
     end += 1;
-    Ok(Program {
+    Ok(UnboxedNode::new(
+        Program {
+            body,
+            non_code_meta,
+            digest: None,
+        },
         start,
         end,
-        body,
-        non_code_meta,
-        digest: None,
-    })
+    ))
 }
 
-fn import_stmt(i: TokenSlice) -> PResult<Box<ImportStatement>> {
+fn import_stmt(i: TokenSlice) -> PResult<Node<ImportStatement>> {
     let import_token = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
@@ -1165,8 +1196,8 @@ fn import_stmt(i: TokenSlice) -> PResult<Box<ImportStatement>> {
     require_whitespace(i)?;
 
     let path = string_literal(i)?;
-    let end = path.end();
-    let path_string = match path.value {
+    let end = path.end;
+    let path_string = match path.kind.value {
         LiteralValue::String(s) => s,
         _ => unreachable!(),
     };
@@ -1182,17 +1213,19 @@ fn import_stmt(i: TokenSlice) -> PResult<Box<ImportStatement>> {
             .into(),
         ));
     }
-    Ok(Box::new(ImportStatement {
-        items,
-        path: path_string,
-        raw_path: path.raw,
+    Ok(UnboxedNode::boxed(
+        ImportStatement {
+            items,
+            path: path_string,
+            raw_path: path.kind.raw,
+            digest: None,
+        },
         start,
         end,
-        digest: None,
-    }))
+    ))
 }
 
-fn import_item(i: TokenSlice) -> PResult<ImportItem> {
+fn import_item(i: TokenSlice) -> PResult<UnboxedNode<ImportItem>> {
     let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
     let start = name.start;
     let alias = opt(preceded(
@@ -1201,17 +1234,19 @@ fn import_item(i: TokenSlice) -> PResult<ImportItem> {
     ))
     .parse_next(i)?;
     let end = if let Some(ref alias) = alias {
-        alias.end()
+        alias.end
     } else {
-        name.end()
+        name.end
     };
-    Ok(ImportItem {
-        name,
-        alias,
+    Ok(UnboxedNode::new(
+        ImportItem {
+            name,
+            alias,
+            digest: None,
+        },
         start,
         end,
-        digest: None,
-    })
+    ))
 }
 
 fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
@@ -1230,7 +1265,7 @@ fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
 }
 
 /// Parse a return statement of a user-defined function, e.g. `return x`.
-pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
+pub fn return_stmt(i: TokenSlice) -> PResult<UnboxedNode<ReturnStatement>> {
     let start = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "return" {
@@ -1248,11 +1283,10 @@ pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
-    Ok(ReturnStatement {
+    Ok(UnboxedNode {
         start,
         end: argument.end(),
-        argument,
-        digest: None,
+        kind: ReturnStatement { argument, digest: None },
     })
 }
 
@@ -1288,16 +1322,16 @@ fn unnecessarily_bracketed(i: TokenSlice) -> PResult<Expr> {
 fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
     alt((
         member_expression.map(Box::new).map(Expr::MemberExpression),
-        bool_value.map(Box::new).map(Expr::Literal),
+        bool_value.map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
-        literal.map(Box::new).map(Expr::Literal),
+        literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
         identifier.map(Box::new).map(Expr::Identifier),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
         function_expression.map(Box::new).map(Expr::FunctionExpression),
-        if_expr.map(Box::new).map(Expr::IfExpression),
+        if_expr.map(Expr::IfExpression),
         unnecessarily_bracketed,
     ))
     .context(expected("a KCL expression (but not a pipe expression)"))
@@ -1307,9 +1341,9 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
 fn possible_operands(i: TokenSlice) -> PResult<Expr> {
     alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
-        bool_value.map(Box::new).map(Expr::Literal),
+        bool_value.map(Expr::Literal),
         member_expression.map(Box::new).map(Expr::MemberExpression),
-        literal.map(Box::new).map(Expr::Literal),
+        literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
         identifier.map(Box::new).map(Expr::Identifier),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
@@ -1342,7 +1376,7 @@ fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
 }
 
 /// Parse a variable/constant declaration.
-fn declaration(i: TokenSlice) -> PResult<Box<VariableDeclaration>> {
+fn declaration(i: TokenSlice) -> PResult<Node<VariableDeclaration>> {
     let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
         .parse_next(i)?
         .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
@@ -1361,7 +1395,7 @@ fn declaration(i: TokenSlice) -> PResult<Box<VariableDeclaration>> {
     let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
         (*kind, token.start, token.end)
     } else {
-        (VariableKind::Const, id.start(), id.end())
+        (VariableKind::Const, id.start, id.end)
     };
     if let Some(token) = visibility_token {
         start = token.start;
@@ -1404,33 +1438,39 @@ fn declaration(i: TokenSlice) -> PResult<Box<VariableDeclaration>> {
     .map_err(|e| e.cut())?;
 
     let end = val.end();
-    Ok(Box::new(VariableDeclaration {
+    Ok(Box::new(UnboxedNode {
+        kind: VariableDeclaration {
+            declarations: vec![UnboxedNode {
+                start: id.start,
+                end,
+                kind: VariableDeclarator {
+                    id,
+                    init: val,
+                    digest: None,
+                },
+            }],
+            visibility,
+            kind,
+            digest: None,
+        },
         start,
         end,
-        declarations: vec![VariableDeclarator {
-            start: id.start,
-            end,
-            id,
-            init: val,
-            digest: None,
-        }],
-        visibility,
-        kind,
-        digest: None,
     }))
 }
 
-impl TryFrom<Token> for Identifier {
+impl TryFrom<Token> for UnboxedNode<Identifier> {
     type Error = KclError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
-            Ok(Identifier {
-                start: token.start,
-                end: token.end,
-                name: token.value,
-                digest: None,
-            })
+            Ok(UnboxedNode::new(
+                Identifier {
+                    name: token.value,
+                    digest: None,
+                },
+                token.start,
+                token.end,
+            ))
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -1444,21 +1484,23 @@ impl TryFrom<Token> for Identifier {
 }
 
 /// Parse a KCL identifier (name of a constant/variable/function)
-fn identifier(i: TokenSlice) -> PResult<Identifier> {
-    any.try_map(Identifier::try_from)
+fn identifier(i: TokenSlice) -> PResult<UnboxedNode<Identifier>> {
+    any.try_map(UnboxedNode::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
         .parse_next(i)
 }
 
-fn sketch_keyword(i: TokenSlice) -> PResult<Identifier> {
+fn sketch_keyword(i: TokenSlice) -> PResult<UnboxedNode<Identifier>> {
     any.try_map(|token: Token| {
         if token.token_type == TokenType::Type && token.value == "sketch" {
-            Ok(Identifier {
-                start: token.start,
-                end: token.end,
-                name: token.value,
-                digest: None,
-            })
+            Ok(UnboxedNode::new(
+                Identifier {
+                    name: token.value,
+                    digest: None,
+                },
+                token.start,
+                token.end,
+            ))
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -1470,18 +1512,20 @@ fn sketch_keyword(i: TokenSlice) -> PResult<Identifier> {
     .parse_next(i)
 }
 
-impl TryFrom<Token> for TagDeclarator {
+impl TryFrom<Token> for UnboxedNode<TagDeclarator> {
     type Error = KclError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
-            Ok(TagDeclarator {
-                // We subtract 1 from the start because the tag starts with a `$`.
-                start: token.start - 1,
-                end: token.end,
-                name: token.value,
-                digest: None,
-            })
+            Ok(UnboxedNode::new(
+                TagDeclarator {
+                    // We subtract 1 from the start because the tag starts with a `$`.
+                    name: token.value,
+                    digest: None,
+                },
+                token.start - 1,
+                token.end,
+            ))
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -1491,7 +1535,7 @@ impl TryFrom<Token> for TagDeclarator {
     }
 }
 
-impl TagDeclarator {
+impl UnboxedNode<TagDeclarator> {
     fn into_valid_binding_name(self) -> Result<Self, KclError> {
         // Make sure they are not assigning a variable to a stdlib function.
         if crate::std::name_in_stdlib(&self.name) {
@@ -1505,9 +1549,9 @@ impl TagDeclarator {
 }
 
 /// Parse a Kcl tag that starts with a `$`.
-fn tag(i: TokenSlice) -> PResult<TagDeclarator> {
+fn tag(i: TokenSlice) -> PResult<UnboxedNode<TagDeclarator>> {
     dollar.parse_next(i)?;
-    any.try_map(TagDeclarator::try_from)
+    any.try_map(UnboxedNode::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
 }
@@ -1527,7 +1571,7 @@ fn require_whitespace(i: TokenSlice) -> PResult<()> {
     repeat(1.., whitespace).parse_next(i)
 }
 
-fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
+fn unary_expression(i: TokenSlice) -> PResult<UnboxedNode<UnaryExpression>> {
     const EXPECTED: &str = "expected a unary operator (like '-', the negative-numeric operator),";
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
@@ -1542,12 +1586,14 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
     let argument = operand.parse_next(i)?;
-    Ok(UnaryExpression {
+    Ok(UnboxedNode {
         start: op_token.start,
         end: argument.end(),
-        operator,
-        argument,
-        digest: None,
+        kind: UnaryExpression {
+            operator,
+            argument,
+            digest: None,
+        },
     })
 }
 
@@ -1574,7 +1620,7 @@ fn binary_expression_tokens(i: TokenSlice) -> PResult<Vec<BinaryExpressionToken>
 }
 
 /// Parse an infix binary expression.
-fn binary_expression(i: TokenSlice) -> PResult<BinaryExpression> {
+fn binary_expression(i: TokenSlice) -> PResult<UnboxedNode<BinaryExpression>> {
     // Find the slice of tokens which makes up the binary expression
     let tokens = binary_expression_tokens.parse_next(i)?;
 
@@ -1584,7 +1630,7 @@ fn binary_expression(i: TokenSlice) -> PResult<BinaryExpression> {
     Ok(expr)
 }
 
-fn binary_expr_in_parens(i: TokenSlice) -> PResult<BinaryExpression> {
+fn binary_expr_in_parens(i: TokenSlice) -> PResult<UnboxedNode<BinaryExpression>> {
     let span_with_brackets = bracketed_section.take().parse_next(i)?;
     let n = span_with_brackets.len();
     let mut span_no_brackets = &span_with_brackets[1..n - 1];
@@ -1615,17 +1661,19 @@ fn bracketed_section(i: TokenSlice) -> PResult<usize> {
 }
 
 /// Parse a KCL expression statement.
-fn expression_stmt(i: TokenSlice) -> PResult<ExpressionStatement> {
+fn expression_stmt(i: TokenSlice) -> PResult<UnboxedNode<ExpressionStatement>> {
     let val = expression
         .context(expected(
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
-    Ok(ExpressionStatement {
+    Ok(UnboxedNode {
         start: val.start(),
         end: val.end(),
-        expression: val,
-        digest: None,
+        kind: ExpressionStatement {
+            expression: val,
+            digest: None,
+        },
     })
 }
 
@@ -1818,7 +1866,8 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     let params: Vec<Parameter> = candidates
         .into_iter()
         .map(|(arg_name, type_, optional)| {
-            let identifier = Identifier::try_from(arg_name).and_then(Identifier::into_valid_binding_name)?;
+            let identifier = UnboxedNode::<Identifier>::try_from(arg_name)
+                .and_then(UnboxedNode::<Identifier>::into_valid_binding_name)?;
 
             Ok(Parameter {
                 identifier,
@@ -1854,8 +1903,8 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), KclError> {
     Ok(())
 }
 
-impl Identifier {
-    fn into_valid_binding_name(self) -> Result<Identifier, KclError> {
+impl UnboxedNode<Identifier> {
+    fn into_valid_binding_name(self) -> Result<UnboxedNode<Identifier>, KclError> {
         // Make sure they are not assigning a variable to a stdlib function.
         if crate::std::name_in_stdlib(&self.name) {
             return Err(KclError::Syntax(KclErrorDetails {
@@ -1868,15 +1917,15 @@ impl Identifier {
 }
 
 /// Introduce a new name, which binds some value.
-fn binding_name(i: TokenSlice) -> PResult<Identifier> {
+fn binding_name(i: TokenSlice) -> PResult<UnboxedNode<Identifier>> {
     identifier
         .context(expected("an identifier, which will be the name of some value"))
-        .try_map(Identifier::into_valid_binding_name)
+        .try_map(UnboxedNode::<Identifier>::into_valid_binding_name)
         .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)
 }
 
-fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
+fn fn_call(i: TokenSlice) -> PResult<UnboxedNode<CallExpression>> {
     let fn_name = identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
@@ -1926,13 +1975,15 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
         }
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
-    Ok(CallExpression {
+    Ok(UnboxedNode {
         start: fn_name.start,
         end,
-        callee: fn_name,
-        arguments: args,
-        optional: false,
-        digest: None,
+        kind: CallExpression {
+            callee: fn_name,
+            arguments: args,
+            optional: false,
+            digest: None,
+        },
     })
 }
 
@@ -1990,7 +2041,7 @@ mod tests {
     fn test_vardec_no_keyword() {
         let tokens = crate::token::lexer("x = 4").unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
-        assert_eq!(vardec.kind, VariableKind::Const);
+        assert_eq!(vardec.kind.kind, VariableKind::Const);
         let vardec = vardec.declarations.first().unwrap();
         assert_eq!(vardec.id.name, "x");
         let Expr::Literal(init_val) = &vardec.init else {
@@ -2019,7 +2070,7 @@ mod tests {
         let mut slice = tokens.as_slice();
         let expr = function_expression.parse_next(&mut slice).unwrap();
         assert_eq!(expr.params, vec![]);
-        let comment_start = expr.body.non_code_meta.start.first().unwrap();
+        let comment_start = expr.body.non_code_meta.kind.start.first().unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         let comment1 = &expr.body.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
         assert_eq!(comment_start.value(), "comment 0");
@@ -2048,7 +2099,7 @@ comment */
 const mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(test_program).unwrap();
         let program = program.parse(&tokens).unwrap();
-        let mut starting_comments = program.non_code_meta.start;
+        let mut starting_comments = program.kind.non_code_meta.kind.start;
         assert_eq!(starting_comments.len(), 2);
         let start0 = starting_comments.remove(0);
         let start1 = starting_comments.remove(0);
@@ -2065,15 +2116,15 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_comment_in_pipe() {
         let tokens = crate::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#).unwrap();
-        let mut body = program.parse(&tokens).unwrap().body;
+        let mut body = program.parse(&tokens).unwrap().kind.body;
         let BodyItem::VariableDeclaration(mut item) = body.remove(0) else {
             panic!("expected vardec");
         };
-        let val = item.declarations.remove(0).init;
+        let val = item.declarations.remove(0).kind.init;
         let Expr::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
-        let mut noncode = pipe.non_code_meta;
+        let mut noncode = pipe.kind.non_code_meta;
         assert_eq!(noncode.non_code_nodes.len(), 1);
         let comment = noncode.non_code_nodes.remove(&0).unwrap().pop().unwrap();
         assert_eq!(
@@ -2107,40 +2158,50 @@ const mySk1 = startSketchAt([0, 0])"#;
         let expr = function_expression.parse_next(&mut slice).unwrap();
         assert_eq!(
             expr,
-            FunctionExpression {
-                start: 0,
-                end: 47,
-                params: Default::default(),
-                body: Program {
-                    start: 7,
-                    end: 47,
-                    body: vec![BodyItem::ReturnStatement(ReturnStatement {
-                        start: 25,
-                        end: 33,
-                        argument: Expr::Literal(Box::new(Literal {
-                            start: 32,
-                            end: 33,
-                            value: 2u32.into(),
-                            raw: "2".to_owned(),
+            UnboxedNode::new(
+                FunctionExpression {
+                    params: Default::default(),
+                    body: UnboxedNode::new(
+                        Program {
+                            body: vec![BodyItem::ReturnStatement(UnboxedNode::new(
+                                ReturnStatement {
+                                    argument: Expr::Literal(UnboxedNode::new(
+                                        Literal {
+                                            value: 2u32.into(),
+                                            raw: "2".to_owned(),
+                                            digest: None,
+                                        },
+                                        32,
+                                        33,
+                                    )),
+                                    digest: None,
+                                },
+                                25,
+                                33,
+                            ))],
+                            non_code_meta: UnboxedNode::no_src(NonCodeMeta {
+                                non_code_nodes: Default::default(),
+                                start: vec![UnboxedNode::new(
+                                    NonCodeNode {
+                                        value: NonCodeValue::NewLine,
+                                        digest: None
+                                    },
+                                    7,
+                                    25,
+                                )],
+                                digest: None,
+                            }),
                             digest: None,
-                        })),
-                        digest: None,
-                    })],
-                    non_code_meta: NonCodeMeta {
-                        non_code_nodes: Default::default(),
-                        start: vec![NonCodeNode {
-                            start: 7,
-                            end: 25,
-                            value: NonCodeValue::NewLine,
-                            digest: None
-                        }],
-                        digest: None,
-                    },
+                        },
+                        7,
+                        47,
+                    ),
+                    return_type: None,
                     digest: None,
                 },
-                return_type: None,
-                digest: None,
-            }
+                0,
+                47,
+            )
         );
     }
 
@@ -2153,8 +2214,11 @@ const mySk1 = startSketchAt([0, 0])"#;
 
         let tokens = crate::token::lexer(test_input).unwrap();
         let mut slice = tokens.as_slice();
-        let PipeExpression {
-            body, non_code_meta, ..
+        let UnboxedNode {
+            kind: PipeExpression {
+                body, non_code_meta, ..
+            },
+            ..
         } = pipe_expression.parse_next(&mut slice).unwrap();
         assert_eq!(non_code_meta.non_code_nodes.len(), 1);
         assert_eq!(
@@ -2179,49 +2243,59 @@ const mySk1 = startSketchAt([0, 0])"#;
 "#;
 
         let tokens = crate::token::lexer(test_program).unwrap();
-        let Program { non_code_meta, .. } = function_body.parse(&tokens).unwrap();
+        let Program { non_code_meta, .. } = function_body.parse(&tokens).unwrap().kind;
         assert_eq!(
-            vec![NonCodeNode {
-                start: 0,
-                end: 20,
-                value: NonCodeValue::BlockComment {
-                    value: "this is a comment".to_owned(),
-                    style: CommentStyle::Line
-                },
-                digest: None,
-            }],
-            non_code_meta.start,
-        );
-        assert_eq!(
-            Some(&vec![
+            vec![UnboxedNode::new(
                 NonCodeNode {
-                    start: 60,
-                    end: 82,
-                    value: NonCodeValue::InlineComment {
-                        value: "block\n  comment".to_owned(),
-                        style: CommentStyle::Block
+                    value: NonCodeValue::BlockComment {
+                        value: "this is a comment".to_owned(),
+                        style: CommentStyle::Line
                     },
                     digest: None,
                 },
-                NonCodeNode {
-                    start: 82,
-                    end: 86,
-                    value: NonCodeValue::NewLine,
-                    digest: None,
-                },
+                0,
+                20,
+            )],
+            non_code_meta.kind.start,
+        );
+
+        assert_eq!(
+            Some(&vec![
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::InlineComment {
+                            value: "block\n  comment".to_owned(),
+                            style: CommentStyle::Block
+                        },
+                        digest: None,
+                    },
+                    60,
+                    82,
+                ),
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::NewLine,
+                        digest: None,
+                    },
+                    82,
+                    86,
+                )
             ]),
             non_code_meta.non_code_nodes.get(&0),
         );
+
         assert_eq!(
-            Some(&vec![NonCodeNode {
-                start: 103,
-                end: 129,
-                value: NonCodeValue::BlockComment {
-                    value: "this is also a comment".to_owned(),
-                    style: CommentStyle::Line
+            Some(&vec![UnboxedNode::new(
+                NonCodeNode {
+                    value: NonCodeValue::BlockComment {
+                        value: "this is also a comment".to_owned(),
+                        style: CommentStyle::Line
+                    },
+                    digest: None,
                 },
-                digest: None,
-            }]),
+                103,
+                129,
+            )]),
             non_code_meta.non_code_nodes.get(&1),
         );
     }
@@ -2277,20 +2351,17 @@ const mySk1 = startSketchAt([0, 0])"#;
         // The RHS should be a binary expression.
         let actual = binary_expression.parse(&tokens).unwrap();
         assert_eq!(actual.operator, BinaryOperator::Mul);
-        let BinaryPart::BinaryExpression(rhs) = actual.right else {
+        let BinaryPart::BinaryExpression(rhs) = actual.kind.right else {
             panic!("Expected RHS to be another binary expression");
         };
         assert_eq!(rhs.operator, BinaryOperator::Sub);
-        assert_eq!(
-            rhs.right,
-            BinaryPart::Literal(Box::new(Literal {
-                start: 9,
-                end: 10,
-                value: 3u32.into(),
-                raw: "3".to_owned(),
-                digest: None,
-            }))
-        );
+        match &rhs.right {
+            BinaryPart::Literal(lit) => {
+                assert!(lit.start == 9 && lit.end == 10);
+                assert!(lit.value == 3u32.into() && &lit.raw == "3" && lit.digest.is_none());
+            }
+            _ => panic!(),
+        }
     }
 
     #[test]
@@ -2309,7 +2380,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
-            let Expr::BinaryExpression(_expr) = actual.declarations.remove(0).init else {
+            let Expr::BinaryExpression(_expr) = actual.declarations.remove(0).kind.init else {
                 panic!(
                     "Expected test {i} to be a binary expression but it wasn't, it was {:?}",
                     actual.declarations[0]
@@ -2337,12 +2408,12 @@ const mySk1 = startSketchAt([0, 0])"#;
         // The RHS should be a binary expression.
         let outer = binary_expression.parse(&tokens).unwrap();
         assert_eq!(outer.operator, BinaryOperator::Mul);
-        let BinaryPart::BinaryExpression(middle) = outer.right else {
+        let BinaryPart::BinaryExpression(middle) = outer.kind.right else {
             panic!("Expected RHS to be another binary expression");
         };
 
         assert_eq!(middle.operator, BinaryOperator::Div);
-        let BinaryPart::BinaryExpression(inner) = middle.left else {
+        let BinaryPart::BinaryExpression(inner) = middle.kind.left else {
             panic!("expected nested binary expression");
         };
         assert_eq!(inner.operator, BinaryOperator::Sub);
@@ -2355,11 +2426,11 @@ const mySk1 = startSketchAt([0, 0])"#;
             let tokens = crate::token::lexer(test).unwrap();
             let actual = binary_expression.parse(&tokens).unwrap();
             assert_eq!(actual.operator, BinaryOperator::Sub);
-            let BinaryPart::Literal(left) = actual.left else {
+            let BinaryPart::Literal(left) = actual.kind.left else {
                 panic!("should be expression");
             };
             assert_eq!(left.value, 1u32.into());
-            let BinaryPart::Literal(right) = actual.right else {
+            let BinaryPart::Literal(right) = actual.kind.right else {
                 panic!("should be expression");
             };
             assert_eq!(right.value, 2u32.into());
@@ -2415,107 +2486,123 @@ const mySk1 = startSketchAt([0, 0])"#;
         for (i, (test_program, expected)) in [
             (
                 "//hi",
-                NonCodeNode {
-                    start: 0,
-                    end: 4,
-                    value: NonCodeValue::BlockComment {
-                        value: "hi".to_owned(),
-                        style: CommentStyle::Line,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::BlockComment {
+                            value: "hi".to_owned(),
+                            style: CommentStyle::Line,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    4,
+                ),
             ),
             (
                 "/*hello*/",
-                NonCodeNode {
-                    start: 0,
-                    end: 9,
-                    value: NonCodeValue::BlockComment {
-                        value: "hello".to_owned(),
-                        style: CommentStyle::Block,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::BlockComment {
+                            value: "hello".to_owned(),
+                            style: CommentStyle::Block,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    9,
+                ),
             ),
             (
                 "/* hello */",
-                NonCodeNode {
-                    start: 0,
-                    end: 11,
-                    value: NonCodeValue::BlockComment {
-                        value: "hello".to_owned(),
-                        style: CommentStyle::Block,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::BlockComment {
+                            value: "hello".to_owned(),
+                            style: CommentStyle::Block,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    11,
+                ),
             ),
             (
                 "/* \nhello */",
-                NonCodeNode {
-                    start: 0,
-                    end: 12,
-                    value: NonCodeValue::BlockComment {
-                        value: "hello".to_owned(),
-                        style: CommentStyle::Block,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::BlockComment {
+                            value: "hello".to_owned(),
+                            style: CommentStyle::Block,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    12,
+                ),
             ),
             (
                 "
                 /* hello */",
-                NonCodeNode {
-                    start: 0,
-                    end: 29,
-                    value: NonCodeValue::BlockComment {
-                        value: "hello".to_owned(),
-                        style: CommentStyle::Block,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::BlockComment {
+                            value: "hello".to_owned(),
+                            style: CommentStyle::Block,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    29,
+                ),
             ),
             (
                 // Empty line with trailing whitespace
                 "
   
                 /* hello */",
-                NonCodeNode {
-                    start: 0,
-                    end: 32,
-                    value: NonCodeValue::NewLineBlockComment {
-                        value: "hello".to_owned(),
-                        style: CommentStyle::Block,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::NewLineBlockComment {
+                            value: "hello".to_owned(),
+                            style: CommentStyle::Block,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    32,
+                ),
             ),
             (
                 // Empty line, no trailing whitespace
                 "
 
                 /* hello */",
-                NonCodeNode {
-                    start: 0,
-                    end: 30,
-                    value: NonCodeValue::NewLineBlockComment {
-                        value: "hello".to_owned(),
-                        style: CommentStyle::Block,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::NewLineBlockComment {
+                            value: "hello".to_owned(),
+                            style: CommentStyle::Block,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    30,
+                ),
             ),
             (
                 r#"/* block
                     comment */"#,
-                NonCodeNode {
-                    start: 0,
-                    end: 39,
-                    value: NonCodeValue::BlockComment {
-                        value: "block\n                    comment".to_owned(),
-                        style: CommentStyle::Block,
+                UnboxedNode::new(
+                    NonCodeNode {
+                        value: NonCodeValue::BlockComment {
+                            value: "block\n                    comment".to_owned(),
+                            style: CommentStyle::Block,
+                        },
+                        digest: None,
                     },
-                    digest: None,
-                },
+                    0,
+                    39,
+                ),
             ),
         ]
         .into_iter()
@@ -2599,7 +2686,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             let tokens = crate::token::lexer(input).unwrap();
             let actual = parameters.parse(&tokens);
             assert!(actual.is_ok(), "could not parse test {i}");
-            let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.name).collect();
+            let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.kind.name).collect();
             assert_eq!(actual_ids, expected);
         }
     }
@@ -2621,7 +2708,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         for test in tests {
             // Run the original parser
             let tokens = crate::token::lexer(test).unwrap();
-            let mut expected_body = crate::parser::Parser::new(tokens.clone()).ast().unwrap().body;
+            let mut expected_body = crate::parser::Parser::new(tokens.clone()).ast().unwrap().kind.body;
             assert_eq!(expected_body.len(), 1);
             let BodyItem::VariableDeclaration(expected) = expected_body.pop().unwrap() else {
                 panic!("Expected variable declaration");
@@ -2632,12 +2719,12 @@ const mySk1 = startSketchAt([0, 0])"#;
             assert_eq!(expected, actual);
 
             // Inspect its output in more detail.
-            assert_eq!(actual.kind, VariableKind::Const);
+            assert_eq!(actual.kind.kind, VariableKind::Const);
             assert_eq!(actual.start, 0);
             assert_eq!(actual.declarations.len(), 1);
             let decl = actual.declarations.pop().unwrap();
             assert_eq!(decl.id.name, "myVar");
-            let Expr::Literal(value) = decl.init else {
+            let Expr::Literal(value) = decl.kind.init else {
                 panic!("value should be a literal")
             };
             assert_eq!(value.end, test.len());
@@ -2648,33 +2735,41 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_math_parse() {
         let tokens = crate::token::lexer(r#"5 + "a""#).unwrap();
-        let actual = crate::parser::Parser::new(tokens).ast().unwrap().body;
-        let expr = BinaryExpression {
-            start: 0,
-            end: 7,
-            operator: BinaryOperator::Add,
-            left: BinaryPart::Literal(Box::new(Literal {
-                start: 0,
-                end: 1,
-                value: 5u32.into(),
-                raw: "5".to_owned(),
+        let actual = crate::parser::Parser::new(tokens).ast().unwrap().kind.body;
+        let expr = UnboxedNode::boxed(
+            BinaryExpression {
+                operator: BinaryOperator::Add,
+                left: BinaryPart::Literal(UnboxedNode::new(
+                    Literal {
+                        value: 5u32.into(),
+                        raw: "5".to_owned(),
+                        digest: None,
+                    },
+                    0,
+                    1,
+                )),
+                right: BinaryPart::Literal(UnboxedNode::new(
+                    Literal {
+                        value: "a".into(),
+                        raw: r#""a""#.to_owned(),
+                        digest: None,
+                    },
+                    4,
+                    7,
+                )),
                 digest: None,
-            })),
-            right: BinaryPart::Literal(Box::new(Literal {
-                start: 4,
-                end: 7,
-                value: "a".into(),
-                raw: r#""a""#.to_owned(),
+            },
+            0,
+            7,
+        );
+        let expected = vec![BodyItem::ExpressionStatement(UnboxedNode::new(
+            ExpressionStatement {
+                expression: Expr::BinaryExpression(expr),
                 digest: None,
-            })),
-            digest: None,
-        };
-        let expected = vec![BodyItem::ExpressionStatement(ExpressionStatement {
-            start: 0,
-            end: 7,
-            expression: Expr::BinaryExpression(Box::new(expr)),
-            digest: None,
-        })];
+            },
+            0,
+            7,
+        ))];
         assert_eq!(expected, actual);
     }
 
@@ -2761,37 +2856,47 @@ const mySk1 = startSketchAt([0, 0])"#;
         let code = "5 +6";
         let parser = crate::parser::Parser::new(crate::token::lexer(code).unwrap());
         let result = parser.ast().unwrap();
-        let expected_result = Program {
-            start: 0,
-            end: 4,
-            body: vec![BodyItem::ExpressionStatement(ExpressionStatement {
-                start: 0,
-                end: 4,
-                expression: Expr::BinaryExpression(Box::new(BinaryExpression {
-                    start: 0,
-                    end: 4,
-                    left: BinaryPart::Literal(Box::new(Literal {
-                        start: 0,
-                        end: 1,
-                        value: 5u32.into(),
-                        raw: "5".to_string(),
+        let expected_result = UnboxedNode::new(
+            Program {
+                body: vec![BodyItem::ExpressionStatement(UnboxedNode::new(
+                    ExpressionStatement {
+                        expression: Expr::BinaryExpression(UnboxedNode::boxed(
+                            BinaryExpression {
+                                left: BinaryPart::Literal(UnboxedNode::new(
+                                    Literal {
+                                        value: 5u32.into(),
+                                        raw: "5".to_string(),
+                                        digest: None,
+                                    },
+                                    0,
+                                    1,
+                                )),
+                                operator: BinaryOperator::Add,
+                                right: BinaryPart::Literal(UnboxedNode::new(
+                                    Literal {
+                                        value: 6u32.into(),
+                                        raw: "6".to_string(),
+                                        digest: None,
+                                    },
+                                    3,
+                                    4,
+                                )),
+                                digest: None,
+                            },
+                            0,
+                            4,
+                        )),
                         digest: None,
-                    })),
-                    operator: BinaryOperator::Add,
-                    right: BinaryPart::Literal(Box::new(Literal {
-                        start: 3,
-                        end: 4,
-                        value: 6u32.into(),
-                        raw: "6".to_string(),
-                        digest: None,
-                    })),
-                    digest: None,
-                })),
+                    },
+                    0,
+                    4,
+                ))],
+                non_code_meta: UnboxedNode::<NonCodeMeta>::default(),
                 digest: None,
-            })],
-            non_code_meta: NonCodeMeta::default(),
-            digest: None,
-        };
+            },
+            0,
+            4,
+        );
 
         assert_eq!(result, expected_result);
     }
@@ -3070,12 +3175,10 @@ e
         for (i, (params, expect_ok)) in [
             (
                 vec![Parameter {
-                    identifier: Identifier {
-                        start: 0,
-                        end: 0,
+                    identifier: UnboxedNode::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
-                    },
+                    }),
                     type_: None,
                     optional: true,
                     digest: None,
@@ -3084,12 +3187,10 @@ e
             ),
             (
                 vec![Parameter {
-                    identifier: Identifier {
-                        start: 0,
-                        end: 0,
+                    identifier: UnboxedNode::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
-                    },
+                    }),
                     type_: None,
                     optional: false,
                     digest: None,
@@ -3099,23 +3200,19 @@ e
             (
                 vec![
                     Parameter {
-                        identifier: Identifier {
-                            start: 0,
-                            end: 0,
+                        identifier: UnboxedNode::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
-                        },
+                        }),
                         type_: None,
                         optional: false,
                         digest: None,
                     },
                     Parameter {
-                        identifier: Identifier {
-                            start: 0,
-                            end: 0,
+                        identifier: UnboxedNode::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
-                        },
+                        }),
                         type_: None,
                         optional: true,
                         digest: None,
@@ -3126,23 +3223,19 @@ e
             (
                 vec![
                     Parameter {
-                        identifier: Identifier {
-                            start: 0,
-                            end: 0,
+                        identifier: UnboxedNode::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
-                        },
+                        }),
                         type_: None,
                         optional: true,
                         digest: None,
                     },
                     Parameter {
-                        identifier: Identifier {
-                            start: 0,
-                            end: 0,
+                        identifier: UnboxedNode::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
-                        },
+                        }),
                         type_: None,
                         optional: false,
                         digest: None,

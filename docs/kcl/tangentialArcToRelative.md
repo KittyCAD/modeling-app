@@ -9,7 +9,7 @@ Starting at the current sketch's origin, draw a curved line segment along
 some part of an imaginary circle until it reaches a point the given (x, y) distance away.
 
 ```js
-tangentialArcToRelative(delta: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
+tangentialArcToRelative(delta: [number], sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ tangentialArcToRelative(delta: [number], sketch: Sketch, tag?: TagDeclarator) ->
 |----------|------|-------------|----------|
 | `delta` | `[number]` |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

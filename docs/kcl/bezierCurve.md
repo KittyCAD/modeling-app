@@ -9,7 +9,7 @@ Draw a smooth, continuous, curved line segment from the current origin to
 the desired (x, y), using a number of control points to shape the curve's shape.
 
 ```js
-bezierCurve(data: BezierData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
+bezierCurve(data: BezierData, sketch: Sketch, tag?: TagNode) -> Sketch
 ```
 
 
@@ -19,7 +19,7 @@ bezierCurve(data: BezierData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 |----------|------|-------------|----------|
 | `data` | [`BezierData`](/docs/kcl/types/BezierData) | Data to draw a bezier curve. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
 
 ### Returns
 

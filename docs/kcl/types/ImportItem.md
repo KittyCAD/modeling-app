@@ -15,10 +15,8 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `name` |[`Identifier`](/docs/kcl/types/Identifier)| Name of the item to import. | No |
-| `alias` |[`Identifier`](/docs/kcl/types/Identifier)| Rename the item using an identifier after "as". | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `name` |[`UnboxedNode_for_Identifier`](/docs/kcl/types/UnboxedNode_for_Identifier)| Name of the item to import. | No |
+| `alias` |[`UnboxedNode_for_Identifier`](/docs/kcl/types/UnboxedNode_for_Identifier)| Rename the item using an identifier after "as". | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 

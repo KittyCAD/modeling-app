@@ -1,7 +1,7 @@
 use super::{
     human_friendly_type, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart,
     CallExpression, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
-    ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+    ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator, UnboxedNode,
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -32,7 +32,7 @@ impl BinaryPart {
     }
 }
 
-impl MemberExpression {
+impl UnboxedNode<MemberExpression> {
     pub fn get_result_array(&self, exec_state: &mut ExecState, index: usize) -> Result<KclValue, KclError> {
         let array = match &self.object {
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
@@ -137,7 +137,7 @@ impl MemberExpression {
     }
 }
 
-impl BinaryExpression {
+impl UnboxedNode<BinaryExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let left_json_value = self.left.get_result(exec_state, ctx).await?.get_json_value()?;
@@ -186,7 +186,7 @@ impl BinaryExpression {
     }
 }
 
-impl UnaryExpression {
+impl UnboxedNode<UnaryExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.operator == UnaryOperator::Not {
             let value = self.argument.get_result(exec_state, ctx).await?.get_json_value()?;
@@ -297,7 +297,7 @@ async fn inner_execute_pipe_body(
     Ok(final_output)
 }
 
-impl CallExpression {
+impl UnboxedNode<CallExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee.name;
@@ -502,7 +502,7 @@ impl CallExpression {
     }
 }
 
-impl TagDeclarator {
+impl UnboxedNode<TagDeclarator> {
     pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
@@ -518,7 +518,7 @@ impl TagDeclarator {
     }
 }
 
-impl ArrayExpression {
+impl UnboxedNode<ArrayExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
@@ -543,21 +543,21 @@ impl ArrayExpression {
     }
 }
 
-impl ArrayRangeExpression {
+impl UnboxedNode<ArrayRangeExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let metadata = Metadata::from(&*self.start_element);
+        let metadata = Metadata::from(&self.start_element);
         let start = ctx
             .execute_expr(&self.start_element, exec_state, &metadata, StatementKind::Expression)
             .await?
             .get_json_value()?;
-        let start = parse_json_number_as_i64(&start, (&*self.start_element).into())?;
-        let metadata = Metadata::from(&*self.end_element);
+        let start = parse_json_number_as_i64(&start, (&self.start_element).into())?;
+        let metadata = Metadata::from(&self.end_element);
         let end = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, StatementKind::Expression)
             .await?
             .get_json_value()?;
-        let end = parse_json_number_as_i64(&end, (&*self.end_element).into())?;
+        let end = parse_json_number_as_i64(&end, (&self.end_element).into())?;
 
         if end < start {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -581,7 +581,7 @@ impl ArrayRangeExpression {
     }
 }
 
-impl ObjectExpression {
+impl UnboxedNode<ObjectExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let mut object = serde_json::Map::new();
@@ -655,7 +655,7 @@ pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
     }
 }
 
-impl IfExpression {
+impl UnboxedNode<IfExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         // Check the `if` branch.
@@ -717,7 +717,7 @@ impl Property {
         let property_src: SourceRange = value.clone().into();
         match value {
             LiteralIdentifier::Identifier(identifier) => {
-                let name = identifier.name;
+                let name = &identifier.name;
                 if !computed {
                     // Treat the property as a literal
                     Ok(Property::String(name.to_string()))
