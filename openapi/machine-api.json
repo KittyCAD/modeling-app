@@ -36,38 +36,297 @@
         "description": "Extra machine-specific information regarding a connected machine.",
         "oneOf": [
           {
-            "additionalProperties": false,
             "properties": {
-              "Moonraker": {
-                "type": "object"
+              "type": {
+                "enum": [
+                  "moonraker"
+                ],
+                "type": "string"
               }
             },
             "required": [
-              "Moonraker"
+              "type"
             ],
             "type": "object"
           },
           {
-            "additionalProperties": false,
             "properties": {
-              "Usb": {
-                "type": "object"
+              "type": {
+                "enum": [
+                  "usb"
+                ],
+                "type": "string"
               }
             },
             "required": [
-              "Usb"
+              "type"
             ],
             "type": "object"
           },
           {
-            "additionalProperties": false,
             "properties": {
-              "Bambu": {
-                "type": "object"
+              "current_stage": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Stage"
+                  }
+                ],
+                "description": "The current stage of the machine as defined by Bambu which can include errors, etc.",
+                "nullable": true
+              },
+              "nozzle_diameter": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/NozzleDiameter"
+                  }
+                ],
+                "description": "The nozzle diameter of the machine."
+              },
+              "type": {
+                "enum": [
+                  "bambu"
+                ],
+                "type": "string"
               }
             },
             "required": [
-              "Bambu"
+              "nozzle_diameter",
+              "type"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "FdmHardwareConfiguration": {
+        "description": "Configuration for a FDM-based printer.",
+        "properties": {
+          "filaments": {
+            "description": "The filaments the printer has access to.",
+            "items": {
+              "$ref": "#/components/schemas/Filament"
+            },
+            "type": "array"
+          },
+          "nozzle_diameter": {
+            "description": "Diameter of the extrusion nozzle, in mm.",
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "filaments",
+          "nozzle_diameter"
+        ],
+        "type": "object"
+      },
+      "Filament": {
+        "description": "Information about the filament being used in a FDM printer.",
+        "properties": {
+          "color": {
+            "description": "The color (as hex without the `#`) of the filament, this is likely specific to the manufacturer.",
+            "maxLength": 6,
+            "minLength": 6,
+            "nullable": true,
+            "type": "string"
+          },
+          "material": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FilamentMaterial"
+              }
+            ],
+            "description": "The material that the filament is made of."
+          },
+          "name": {
+            "description": "The name of the filament, this is likely specfic to the manufacturer.",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "material"
+        ],
+        "type": "object"
+      },
+      "FilamentMaterial": {
+        "description": "The material that the filament is made of.",
+        "oneOf": [
+          {
+            "description": "Polylactic acid based plastics",
+            "properties": {
+              "type": {
+                "enum": [
+                  "pla"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Pla support",
+            "properties": {
+              "type": {
+                "enum": [
+                  "pla_support"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "acrylonitrile butadiene styrene based plastics",
+            "properties": {
+              "type": {
+                "enum": [
+                  "abs"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "polyethylene terephthalate glycol based plastics",
+            "properties": {
+              "type": {
+                "enum": [
+                  "petg"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "unsuprisingly, nylon based",
+            "properties": {
+              "type": {
+                "enum": [
+                  "nylon"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "thermoplastic polyurethane based urethane material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "tpu"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "polyvinyl alcohol based material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "pva"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "high impact polystyrene based material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "hips"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "composite material with stuff in other stuff, something like PLA mixed with carbon fiber, kevlar, or fiberglass",
+            "properties": {
+              "type": {
+                "enum": [
+                  "composite"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "HardwareConfiguration": {
+        "description": "The hardware configuration of a machine.",
+        "oneOf": [
+          {
+            "description": "No configuration is possible. This isn't the same conceptually as an `Option<HardwareConfiguration>`, because this indicates we positively know there is no possible configuration changes that are possible with this method of manufcture.",
+            "properties": {
+              "type": {
+                "enum": [
+                  "none"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Hardware configuration specific to FDM based printers",
+            "properties": {
+              "config": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/FdmHardwareConfiguration"
+                  }
+                ],
+                "description": "The configuration for the FDM printer."
+              },
+              "type": {
+                "enum": [
+                  "fdm"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "config",
+              "type"
             ],
             "type": "object"
           }
@@ -84,6 +343,14 @@
             ],
             "description": "Additional, per-machine information which is specific to the underlying machine type.",
             "nullable": true
+          },
+          "hardware_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HardwareConfiguration"
+              }
+            ],
+            "description": "Information about how the Machine is currently configured."
           },
           "id": {
             "description": "Machine Identifier (ID) for the specific Machine.",
@@ -113,12 +380,28 @@
             ],
             "description": "Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.\n\nThis may be `None` if the maximum size is not knowable by the Machine API.\n\nWhat \"close\" means is up to you!",
             "nullable": true
+          },
+          "progress": {
+            "description": "Progress of the current print, if printing.",
+            "format": "double",
+            "nullable": true,
+            "type": "number"
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MachineState"
+              }
+            ],
+            "description": "Status of the printer -- be it printing, idle, or unreachable. This may dictate if a machine is capable of taking a new job."
           }
         },
         "required": [
+          "hardware_configuration",
           "id",
           "machine_type",
-          "make_model"
+          "make_model",
+          "state"
         ],
         "type": "object"
       },
@@ -143,27 +426,175 @@
         },
         "type": "object"
       },
+      "MachineState": {
+        "description": "Current state of the machine -- be it printing, idle or offline. This can be used to determine if a printer is in the correct state to take a new job.",
+        "oneOf": [
+          {
+            "description": "If a print state can not be resolved at this time, an Unknown may be returned.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "unknown"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Idle, and ready for another job.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "idle"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Running a job -- 3D printing or CNC-ing a part.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "running"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Machine is currently offline or unreachable.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "offline"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Job is underway but halted, waiting for some action to take place.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "paused"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Job is finished, but waiting manual action to move back to Idle.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "complete"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "The printer has failed and is in an unknown state that may require manual attention to resolve. The inner value is a human readable description of what specifically has failed.",
+            "properties": {
+              "message": {
+                "description": "A human-readable message describing the failure.",
+                "nullable": true,
+                "type": "string"
+              },
+              "state": {
+                "enum": [
+                  "failed"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          }
+        ]
+      },
       "MachineType": {
         "description": "Specific technique by which this Machine takes a design, and produces a real-world 3D object.",
         "oneOf": [
           {
             "description": "Use light to cure a resin to build up layers.",
             "enum": [
-              "Stereolithography"
+              "stereolithography"
             ],
             "type": "string"
           },
           {
             "description": "Fused Deposition Modeling, layers of melted plastic.",
             "enum": [
-              "FusedDeposition"
+              "fused_deposition"
             ],
             "type": "string"
           },
           {
             "description": "\"Computer numerical control\" - machine that grinds away material from a hunk of material to construct a part.",
             "enum": [
-              "Cnc"
+              "cnc"
+            ],
+            "type": "string"
+          }
+        ]
+      },
+      "NozzleDiameter": {
+        "description": "A nozzle diameter.",
+        "oneOf": [
+          {
+            "description": "0.2mm.",
+            "enum": [
+              "0.2"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "0.4mm.",
+            "enum": [
+              "0.4"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "0.6mm.",
+            "enum": [
+              "0.6"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "0.8mm.",
+            "enum": [
+              "0.8"
             ],
             "type": "string"
           }
@@ -214,6 +645,15 @@
           "machine_id": {
             "description": "The machine id to print to.",
             "type": "string"
+          },
+          "slicer_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SlicerConfiguration"
+              }
+            ],
+            "description": "Requested design-specific slicer configurations.",
+            "nullable": true
           }
         },
         "required": [
@@ -221,6 +661,283 @@
           "machine_id"
         ],
         "type": "object"
+      },
+      "SlicerConfiguration": {
+        "description": "The slicer configuration is a set of parameters that are passed to the slicer to control how the gcode is generated.",
+        "properties": {
+          "filament_idx": {
+            "description": "The filament to use for the print.",
+            "format": "uint",
+            "minimum": 0,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Stage": {
+        "description": "The print stage. These come from: https://github.com/SoftFever/OrcaSlicer/blob/431978baf17961df90f0d01871b0ad1d839d7f5d/src/slic3r/GUI/DeviceManager.cpp#L78",
+        "oneOf": [
+          {
+            "description": "Nothing.",
+            "enum": [
+              "nothing"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Empty.",
+            "enum": [
+              "empty"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Auto bed leveling.",
+            "enum": [
+              "auto_bed_leveling"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Heatbed preheating.",
+            "enum": [
+              "heatbed_preheating"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Sweeping XY mech mode.",
+            "enum": [
+              "sweeping_xy_mech_mode"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Changing filament.",
+            "enum": [
+              "changing_filament"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "M400 pause.",
+            "enum": [
+              "m400_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to filament runout.",
+            "enum": [
+              "paused_due_to_filament_runout"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Heating hotend.",
+            "enum": [
+              "heating_hotend"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating extrusion.",
+            "enum": [
+              "calibrating_extrusion"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Scanning bed surface.",
+            "enum": [
+              "scanning_bed_surface"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Inspecting first layer.",
+            "enum": [
+              "inspecting_first_layer"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Identifying build plate type.",
+            "enum": [
+              "identifying_build_plate_type"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating micro lidar.",
+            "enum": [
+              "calibrating_micro_lidar"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Homing toolhead.",
+            "enum": [
+              "homing_toolhead"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Cleaning nozzle tip.",
+            "enum": [
+              "cleaning_nozzle_tip"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Checking extruder temperature.",
+            "enum": [
+              "checking_extruder_temperature"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Printing was paused by the user.",
+            "enum": [
+              "printing_was_paused_by_the_user"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Pause of front cover falling.",
+            "enum": [
+              "pause_of_front_cover_falling"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating micro lidar.",
+            "enum": [
+              "calibrating_micro_lidar2"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating extrusion flow.",
+            "enum": [
+              "calibrating_extrusion_flow"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to nozzle temperature malfunction.",
+            "enum": [
+              "paused_due_to_nozzle_temperature_malfunction"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to heat bed temperature malfunction.",
+            "enum": [
+              "paused_due_to_heat_bed_temperature_malfunction"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Filament unloading.",
+            "enum": [
+              "filament_unloading"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Skip step pause.",
+            "enum": [
+              "skip_step_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Filament loading.",
+            "enum": [
+              "filament_loading"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Motor noise calibration.",
+            "enum": [
+              "motor_noise_calibration"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to AMS lost.",
+            "enum": [
+              "paused_due_to_ams_lost"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to low speed of the heat break fan.",
+            "enum": [
+              "paused_due_to_low_speed_of_the_heat_break_fan"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to chamber temperature control error.",
+            "enum": [
+              "paused_due_to_chamber_temperature_control_error"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Cooling chamber.",
+            "enum": [
+              "cooling_chamber"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused by the Gcode inserted by the user.",
+            "enum": [
+              "paused_by_the_gcode_inserted_by_the_user"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Motor noise showoff.",
+            "enum": [
+              "motor_noise_showoff"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Nozzle filament covered detected pause.",
+            "enum": [
+              "nozzle_filament_covered_detected_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Cutter error pause.",
+            "enum": [
+              "cutter_error_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "First layer error pause.",
+            "enum": [
+              "first_layer_error_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Nozzle clog pause.",
+            "enum": [
+              "nozzle_clog_pause"
+            ],
+            "type": "string"
+          }
+        ]
       },
       "Volume": {
         "description": "Set of three values to represent the extent of a 3-D Volume. This contains the width, depth, and height values, generally used to represent some maximum or minimum.\n\nAll measurements are in millimeters.",
@@ -355,6 +1072,34 @@
         ]
       }
     },
+    "/metrics": {
+      "get": {
+        "operationId": "get_metrics",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "String",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "List available machines and their statuses",
+        "tags": [
+          "hidden"
+        ]
+      }
+    },
     "/ping": {
       "get": {
         "operationId": "ping",
@@ -422,6 +1167,13 @@
     }
   },
   "tags": [
+    {
+      "description": "Hidden API endpoints that should not show up in the docs.",
+      "externalDocs": {
+        "url": "https://docs.zoo.dev/api/machines"
+      },
+      "name": "hidden"
+    },
     {
       "description": "Utilities for making parts and discovering machines.",
       "externalDocs": {

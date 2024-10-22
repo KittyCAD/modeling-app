@@ -379,7 +379,7 @@ const getAppFolderName = () => {
   return window.electron.packageJson.name
 }
 
-const getAppSettingsFilePath = async () => {
+export const getAppSettingsFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
   const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY
   const appConfig = await window.electron.getPath('appData')
@@ -448,7 +448,9 @@ export const readProjectSettingsFile = async (
     }
   }
 
-  const configToml = await window.electron.readFile(settingsPath)
+  const configToml = await window.electron.readFile(settingsPath, {
+    encoding: 'utf-8',
+  })
   const configObj = parseProjectSettings(configToml)
   if (err(configObj)) {
     return Promise.reject(configObj)
@@ -467,7 +469,9 @@ export const readAppSettingsFile = async () => {
 
   // The file exists, read it and parse it.
   if (window.electron.exists(settingsPath)) {
-    const configToml = await window.electron.readFile(settingsPath)
+    const configToml = await window.electron.readFile(settingsPath, {
+      encoding: 'utf-8',
+    })
     const parsedAppConfig = parseAppSettings(configToml)
     if (err(parsedAppConfig)) {
       return Promise.reject(parsedAppConfig)
@@ -527,7 +531,9 @@ export const readTokenFile = async () => {
   let settingsPath = await getTokenFilePath()
 
   if (window.electron.exists(settingsPath)) {
-    const token: string = await window.electron.readFile(settingsPath)
+    const token: string = await window.electron.readFile(settingsPath, {
+      encoding: 'utf-8',
+    })
     if (!token) return ''
 
     return token

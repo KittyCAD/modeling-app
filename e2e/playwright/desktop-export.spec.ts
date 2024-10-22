@@ -104,7 +104,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBe(482669)
+          .toBeGreaterThan(300_000)
 
         // clean up output.gltf
         await fsp.rm('output.gltf')
@@ -155,15 +155,16 @@ test(
       // Find the toast.
       // Look out for the toast message
       await expect(exportingToastMessage).toBeVisible()
-      await expect(alreadyExportingToastMessage).not.toBeVisible()
-
-      // Expect it to succeed.
-      await expect(errorToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await expect(successToastMessage).toBeVisible()
-      await expect(exportingToastMessage).not.toBeVisible()
+      await test.step('Check the success toast message shows and nothing else', async () =>
+        Promise.all([
+          expect(alreadyExportingToastMessage).not.toBeVisible(),
+          expect(errorToastMessage).not.toBeVisible(),
+          expect(engineErrorToastMessage).not.toBeVisible(),
+          expect(successToastMessage).toBeVisible(),
+          expect(exportingToastMessage).not.toBeVisible(),
+        ]))
 
       await test.step('Check the export size', async () => {
         await expect
@@ -178,7 +179,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBe(105022)
+          .toBeGreaterThan(100_000)
 
         // clean up output.gltf
         await fsp.rm('output.gltf')

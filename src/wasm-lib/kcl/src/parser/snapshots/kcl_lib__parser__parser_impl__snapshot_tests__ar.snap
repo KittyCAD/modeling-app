@@ -23,8 +23,7 @@ expression: actual
           "start": 0,
           "end": 1,
           "value": 5,
-          "raw": "5",
-          "digest": null
+          "raw": "5"
         },
         "right": {
           "type": "Literal",
@@ -32,18 +31,9 @@ expression: actual
           "start": 4,
           "end": 7,
           "value": "a",
-          "raw": "\"a\"",
-          "digest": null
-        },
-        "digest": null
-      },
-      "digest": null
+          "raw": "\"a\""
+        }
+      }
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

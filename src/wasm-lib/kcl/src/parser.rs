@@ -12,6 +12,13 @@ pub(crate) mod parser_impl;
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
 pub const PIPE_OPERATOR: &str = "|>";
 
+/// Parse the given KCL code into an AST.
+pub fn parse(code: &str) -> Result<Program, KclError> {
+    let tokens = crate::token::lexer(code)?;
+    let parser = Parser::new(tokens);
+    parser.ast()
+}
+
 pub struct Parser {
     pub tokens: Vec<Token>,
     pub unknown_tokens: Vec<Token>,

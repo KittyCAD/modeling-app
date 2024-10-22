@@ -4,19 +4,20 @@ import {
   ArrayExpression,
   BinaryExpression,
   CallExpression,
+  Expr,
   ExpressionStatement,
+  ObjectExpression,
+  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ProgramMemory,
   ReturnStatement,
+  sketchFromKclValue,
   SourceRange,
   SyntaxType,
-  Expr,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
-  ObjectExpression,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -27,6 +28,7 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err } from 'lib/trap'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -119,7 +121,12 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node: Expr | ExpressionStatement | VariableDeclaration | ReturnStatement,
+  node:
+    | Expr
+    | ImportStatement
+    | ExpressionStatement
+    | VariableDeclaration
+    | ReturnStatement,
   sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
@@ -662,7 +669,7 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const sg = sketchGroupFromKclValue(programMemory?.get(varName), varName)
+    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
@@ -756,7 +763,7 @@ export function doesPipeHaveCallExp({
   )
 }
 
-export function hasExtrudeSketchGroup({
+export function hasExtrudeSketch({
   ast,
   selection,
   programMemory,
@@ -780,8 +787,7 @@ export function hasExtrudeSketchGroup({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'ExtrudeGroup' ||
-    !err(sketchGroupFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
   )
 }
 
@@ -947,7 +953,7 @@ export function doesSceneHaveSweepableSketch(ast: Program) {
 export function getObjExprProperty(
   node: ObjectExpression,
   propName: string
-): { expr: Expr; index: number } | null {
+): { expr: ObjectProperty['value']; index: number } | null {
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }

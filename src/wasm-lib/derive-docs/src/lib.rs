@@ -116,6 +116,7 @@ fn do_stdlib_inner(
 
     // Fail if the name is not camel case.
     let whitelist = [
+        "mirror2d",
         "patternLinear3d",
         "patternLinear2d",
         "patternCircular3d",
@@ -270,17 +271,8 @@ fn do_stdlib_inner(
         let required = !ty_ident.to_string().starts_with("Option <");
 
         if ty_string != "ExecState" && ty_string != "Args" {
-            let schema = if ty_ident.to_string().starts_with("Vec < ")
-                || ty_ident.to_string().starts_with("Option <")
-                || ty_ident.to_string().starts_with('[')
-            {
-                quote! {
-                   <#ty_ident>::json_schema(&mut generator)
-                }
-            } else {
-                quote! {
-                    #ty_ident::json_schema(&mut generator)
-                }
+            let schema = quote! {
+               generator.root_schema_for::<#ty_ident>()
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
@@ -342,10 +334,11 @@ fn do_stdlib_inner(
     let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
+            let schema = generator.root_schema_for::<#return_type_inner>();
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
                 type_: #ret_ty_string.to_string(),
-                schema: <#return_type_inner>::json_schema(&mut generator),
+                schema,
                 required: true,
             })
         }
@@ -413,17 +406,19 @@ fn do_stdlib_inner(
                 vec![#(#tags),*]
             }
 
-            fn args(&self) -> Vec<#docs_crate::StdLibFnArg> {
+            fn args(&self, inline_subschemas: bool) -> Vec<#docs_crate::StdLibFnArg> {
                 let mut settings = schemars::gen::SchemaSettings::openapi3();
-                settings.inline_subschemas = true;
+                // We set this to false so we can recurse them later.
+                settings.inline_subschemas = inline_subschemas;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);
 
                 vec![#(#arg_types),*]
             }
 
-            fn return_value(&self) -> Option<#docs_crate::StdLibFnArg> {
+            fn return_value(&self, inline_subschemas: bool) -> Option<#docs_crate::StdLibFnArg> {
                 let mut settings = schemars::gen::SchemaSettings::openapi3();
-                settings.inline_subschemas = true;
+                // We set this to false so we can recurse them later.
+                settings.inline_subschemas = inline_subschemas;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);
 
                 #return_type
@@ -583,6 +578,7 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
                         }
                     })
                     .trim_end()
+                    .replace('\n', "\n\n")
                     .to_string(),
             ),
         ),
@@ -757,15 +753,16 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let tokens = crate::token::lexer(#code_block).unwrap();
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
+            let id_generator = crate::executor::IdGenerator::default();
             let ctx = crate::executor::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),
                 stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                is_mock: true,
+                context_type: crate::executor::ContextType::Mock,
             };
 
-            ctx.run(&program, None).await.unwrap();
+            ctx.run(&program, None, id_generator, None).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

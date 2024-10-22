@@ -20,8 +20,7 @@ expression: actual
           "type": "Identifier",
           "start": 0,
           "end": 4,
-          "name": "line",
-          "digest": null
+          "name": "line"
         },
         "arguments": [
           {
@@ -36,38 +35,26 @@ expression: actual
                 "start": 6,
                 "end": 7,
                 "value": 0,
-                "raw": "0",
-                "digest": null
+                "raw": "0"
               },
               {
                 "type": "Identifier",
                 "type": "Identifier",
                 "start": 9,
                 "end": 10,
-                "name": "l",
-                "digest": null
+                "name": "l"
               }
-            ],
-            "digest": null
+            ]
           },
           {
             "type": "PipeSubstitution",
             "type": "PipeSubstitution",
             "start": 13,
-            "end": 14,
-            "digest": null
+            "end": 14
           }
         ],
-        "optional": false,
-        "digest": null
-      },
-      "digest": null
+        "optional": false
+      }
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

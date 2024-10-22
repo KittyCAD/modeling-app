@@ -15,7 +15,6 @@ use kcmc::{
     ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -127,10 +126,10 @@ impl From<ImportFormat> for InputFormat {
 ///
 /// Import paths are relative to the current project directory. This only works in the desktop app
 /// not in browser.
-pub async fn import(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (file_path, options): (String, Option<ImportFormat>) = args.get_import_data()?;
 
-    let imported_geometry = inner_import(file_path, options, args).await?;
+    let imported_geometry = inner_import(file_path, options, exec_state, args).await?;
     Ok(KclValue::ImportedGeometry(imported_geometry))
 }
 
@@ -171,6 +170,7 @@ pub async fn import(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 async fn inner_import(
     file_path: String,
     options: Option<ImportFormat>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<ImportedGeometry, KclError> {
     if file_path.is_empty() {
@@ -285,15 +285,15 @@ async fn inner_import(
         }
     }
 
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(ImportedGeometry {
-            id: uuid::Uuid::new_v4(),
+            id: exec_state.id_generator.next_uuid(),
             value: import_files.iter().map(|f| f.path.to_string()).collect(),
             meta: vec![args.source_range.into()],
         });
     }
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     let resp = args
         .send_modeling_cmd(
             id,

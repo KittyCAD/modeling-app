@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, ExtrudeGroup, KclValue},
+    executor::{ExecState, KclValue, Solid},
     std::Args,
 };
 
@@ -27,16 +27,16 @@ pub struct HelixData {
     #[serde(default)]
     pub ccw: bool,
     /// Length of the helix. If this argument is not provided, the height of
-    /// the extrude group is used.
+    /// the solid is used.
     pub length: Option<f64>,
 }
 
 /// Create a helix on a cylinder.
-pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group): (HelixData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (data, solid): (HelixData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let extrude_group = inner_helix(data, extrude_group, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_helix(data, solid, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Create a helix on a cylinder.
@@ -56,21 +56,22 @@ pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 async fn inner_helix(
     data: HelixData,
-    extrude_group: Box<ExtrudeGroup>,
+    solid: Box<Solid>,
+    exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
-    let id = uuid::Uuid::new_v4();
+) -> Result<Box<Solid>, KclError> {
+    let id = exec_state.id_generator.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EntityMakeHelix {
-            cylinder_id: extrude_group.id,
+            cylinder_id: solid.id,
             is_clockwise: !data.ccw,
-            length: LengthUnit(data.length.unwrap_or(extrude_group.height)),
+            length: LengthUnit(data.length.unwrap_or(solid.height)),
             revolutions: data.revolutions,
             start_angle: Angle::from_degrees(data.angle_start),
         }),
     )
     .await?;
 
-    Ok(extrude_group)
+    Ok(solid)
 }

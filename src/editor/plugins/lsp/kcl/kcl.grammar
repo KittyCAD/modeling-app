@@ -15,8 +15,9 @@
 }
 
 statement[@isGroup=Statement] {
-  FunctionDeclaration { kw<"fn"> VariableDefinition Equals ParamList Arrow Body } |
-  VariableDeclaration { (kw<"var"> | kw<"let"> | kw<"const">) VariableDefinition Equals expression } |
+  ImportStatement { kw<"import"> ImportItems ImportFrom String } |
+  FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition Equals ParamList Arrow Body } |
+  VariableDeclaration { kw<"export">? (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression }
 }
@@ -24,6 +25,9 @@ statement[@isGroup=Statement] {
 ParamList { "(" commaSep<Parameter { VariableDefinition "?"? (":" type)? }> ")" }
 
 Body { "{" statement* "}" }
+
+ImportItems { commaSep1NoTrailingComma<ImportItem> }
+ImportItem { identifier (ImportItemAs identifier)? }
 
 expression[@isGroup=Expression] {
   String |
@@ -40,6 +44,7 @@ expression[@isGroup=Expression] {
   } |
   UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
+  IfExpression { kw<"if"> expression Body kw<"else"> Body } |
   CallExpression { expression !call ArgumentList } |
   ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
   ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
@@ -57,7 +62,7 @@ ArgumentList { "(" commaSep<expression> ")" }
 type[@isGroup=Type] {
   @specialize[@name=PrimitiveType]<
     identifier,
-    "string" | "number" | "bool" | "sketch_group" | "sketch_surface" | "extrude_group"
+    "string" | "number" | "bool" | "sketch" | "sketch_surface" | "solid"
   > |
   ArrayType { type !member "[" "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
@@ -73,6 +78,8 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
 
 commaSep<term> { (term ("," term)*)? ","? }
 
+commaSep1NoTrailingComma<term> { term ("," term)* }
+
 @tokens {
   String[isolate] { "'" ("\\" _ | !['\\])* "'" | '"' ("\\" _ | !["\\])* '"' }
 
@@ -83,7 +90,7 @@ commaSep<term> { (term ("," term)*)? ","? }
   MultOp { "/" | "*" | "\\" }
   ExpOp { "^" }
   BangOp { "!" }
-  CompOp { $[<>] "="? | "!=" | "==" }
+  CompOp { "==" | "!=" | "<=" | ">=" | "<" | ">" }
   Equals { "=" }
   Arrow { "=>" }
   PipeOperator { "|>" }
@@ -104,6 +111,9 @@ commaSep<term> { (term ("," term)*)? ","? }
   @precedence { LineComment, BlockComment, MultOp }
 
   Shebang { "#!" ![\n]* }
+
+  ImportItemAs { "as" }
+  ImportFrom { "from" }
 
   "(" ")"
   "{" "}"

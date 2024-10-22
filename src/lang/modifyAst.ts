@@ -17,7 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -41,6 +41,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { SimplifiedArgDetails } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
+import { ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function startSketchOnDefault(
   node: Program,
@@ -240,7 +241,6 @@ export function mutateObjExpProp(
         value: updateWith,
         start: 0,
         end: 0,
-        digest: null,
       })
     }
   }
@@ -442,7 +442,7 @@ export function sketchOnExtrudedFace(
   node: Program,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
-  cap: 'none' | 'start' | 'end' = 'none'
+  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   let _node = { ...node }
   const newSketchName = findUniqueName(
@@ -476,21 +476,22 @@ export function sketchOnExtrudedFace(
   const { node: extrudeVarDec } = _node3
   const extrudeName = extrudeVarDec.id?.name
 
-  let _tag = null
-  if (cap === 'none') {
+  let _tag
+  if (info.type !== 'cap') {
     const __tag = addTagForSketchOnFace(
       {
         pathToNode: sketchPathToNode,
         node: _node,
       },
-      expression.callee.name
+      expression.callee.name,
+      info.type === 'edgeCut' ? info : null
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
     _tag = createIdentifier(tag)
     _node = modifiedAst
   } else {
-    _tag = createLiteral(cap.toUpperCase())
+    _tag = createLiteral(info.subType.toUpperCase())
   }
 
   const newSketch = createVariableDeclaration(
@@ -499,6 +500,7 @@ export function sketchOnExtrudedFace(
       createIdentifier(extrudeName ? extrudeName : oldSketchName),
       _tag,
     ]),
+    undefined,
     'const'
   )
 
@@ -576,7 +578,6 @@ export function createLiteral(value: string | number): Literal {
     end: 0,
     value,
     raw: `${value}`,
-    digest: null,
   }
 }
 
@@ -585,7 +586,7 @@ export function createTagDeclarator(value: string): TagDeclarator {
     type: 'TagDeclarator',
     start: 0,
     end: 0,
-    digest: null,
+
     value,
   }
 }
@@ -595,7 +596,7 @@ export function createIdentifier(name: string): Identifier {
     type: 'Identifier',
     start: 0,
     end: 0,
-    digest: null,
+
     name,
   }
 }
@@ -605,7 +606,6 @@ export function createPipeSubstitution(): PipeSubstitution {
     type: 'PipeSubstitution',
     start: 0,
     end: 0,
-    digest: null,
   }
 }
 
@@ -621,12 +621,11 @@ export function createCallExpressionStdLib(
       type: 'Identifier',
       start: 0,
       end: 0,
-      digest: null,
+
       name,
     },
     optional: false,
     arguments: args,
-    digest: null,
   }
 }
 
@@ -642,12 +641,11 @@ export function createCallExpression(
       type: 'Identifier',
       start: 0,
       end: 0,
-      digest: null,
+
       name,
     },
     optional: false,
     arguments: args,
-    digest: null,
   }
 }
 
@@ -658,7 +656,7 @@ export function createArrayExpression(
     type: 'ArrayExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
   }
@@ -671,7 +669,7 @@ export function createPipeExpression(
     type: 'PipeExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
   }
@@ -680,23 +678,25 @@ export function createPipeExpression(
 export function createVariableDeclaration(
   varName: string,
   init: VariableDeclarator['init'],
+  visibility: VariableDeclaration['visibility'] = 'default',
   kind: VariableDeclaration['kind'] = 'const'
 ): VariableDeclaration {
   return {
     type: 'VariableDeclaration',
     start: 0,
     end: 0,
-    digest: null,
+
     declarations: [
       {
         type: 'VariableDeclarator',
         start: 0,
         end: 0,
-        digest: null,
+
         id: createIdentifier(varName),
         init,
       },
     ],
+    visibility,
     kind,
   }
 }
@@ -708,14 +708,14 @@ export function createObjectExpression(properties: {
     type: 'ObjectExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
       end: 0,
       key: createIdentifier(key),
-      digest: null,
+
       value,
     })),
   }
@@ -729,7 +729,7 @@ export function createUnaryExpression(
     type: 'UnaryExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     operator,
     argument,
   }
@@ -744,7 +744,7 @@ export function createBinaryExpression([left, operator, right]: [
     type: 'BinaryExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     operator,
     left,
     right,
@@ -1047,7 +1047,7 @@ export async function deleteFromSelection(
             if (err(parent)) {
               return
             }
-            const sketchToPreserve = sketchGroupFromKclValue(
+            const sketchToPreserve = sketchFromKclValue(
               programMemory.get(sketchName),
               sketchName
             )
@@ -1134,5 +1134,5 @@ export async function deleteFromSelection(
 }
 
 const nonCodeMetaEmpty = () => {
-  return { nonCodeNodes: {}, start: [], digest: null }
+  return { nonCodeNodes: {}, start: [] }
 }

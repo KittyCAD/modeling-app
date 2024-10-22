@@ -69,7 +69,7 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
@@ -83,6 +83,8 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
+import { uuidv4 } from 'lib/utils'
+import { IndexLoaderData } from 'lib/types'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -104,12 +106,18 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: {
+          defaultUnit,
+          cameraProjection,
+          highlightEdges,
+          showScaleGrid,
+        },
       },
     },
   } = useSettingsAuthContext()
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
+  const { file } = useLoaderData() as IndexLoaderData
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -143,9 +151,18 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ context: { store } }) => {
           ;(async () => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
+            })
+
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
@@ -236,6 +253,17 @@ export const ModelingMachineProvider = ({
             return {}
           },
         }),
+        'Center camera on selection': () => {
+          engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_center_to_selection',
+              },
+            })
+            .catch(reportRejection)
+        },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
           if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
@@ -383,12 +411,15 @@ export const ModelingMachineProvider = ({
         Make: ({ event }) => {
           if (event.type !== 'Make') return
           // Check if we already have an export intent.
-          if (engineCommandManager.exportIntent) {
+          if (engineCommandManager.exportInfo) {
             toast.error('Already exporting')
             return
           }
           // Set the export intent.
-          engineCommandManager.exportIntent = ExportIntent.Make
+          engineCommandManager.exportInfo = {
+            intent: ExportIntent.Make,
+            name: file?.name || '',
+          }
 
           // Set the current machine.
           machineManager.currentMachine = event.data.machine
@@ -417,12 +448,16 @@ export const ModelingMachineProvider = ({
         },
         'Engine export': ({ event }) => {
           if (event.type !== 'Export') return
-          if (engineCommandManager.exportIntent) {
+          if (engineCommandManager.exportInfo) {
             toast.error('Already exporting')
             return
           }
           // Set the export intent.
-          engineCommandManager.exportIntent = ExportIntent.Save
+          engineCommandManager.exportInfo = {
+            intent: ExportIntent.Save,
+            // This never gets used its only for make.
+            name: '',
+          }
 
           const format = {
             ...event.data,
@@ -579,9 +614,15 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               input.sketchPathToNode,
               input.extrudePathToNode,
-              input.cap
+              input.faceInfo
             )
-            if (trap(sketched)) return Promise.reject(sketched)
+            if (err(sketched)) {
+              const sketchedError = new Error(
+                'Incompatible face, please try another'
+              )
+              trap(sketchedError)
+              return Promise.reject(sketchedError)
+            }
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
             await kclManager.executeAstMock(modifiedAst)
@@ -968,6 +1009,7 @@ export const ModelingMachineProvider = ({
       highlightEdges: highlightEdges.current,
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
+      cameraProjection: cameraProjection.current,
     },
     token
   )
@@ -1021,6 +1063,11 @@ export const ModelingMachineProvider = ({
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {
     modelingSend({ type: 'Delete selection' })
+  })
+
+  // Allow ctrl+alt+c to center to selection
+  useHotkeys(['mod + alt + c'], () => {
+    modelingSend({ type: 'Center camera on selection' })
   })
 
   useStateMachineCommands({

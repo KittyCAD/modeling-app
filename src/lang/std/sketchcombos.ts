@@ -17,7 +17,7 @@ import {
   VariableDeclarator,
   PathToNode,
   ProgramMemory,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
   Literal,
 } from '../wasm'
 import {
@@ -1559,7 +1559,15 @@ export function transformSecondarySketchLinesTagFirst({
     }
   | Error {
   // let node = structuredClone(ast)
-  const primarySelection = selectionRanges.codeBasedSelections[0].range
+
+  // We need to sort the selections by their start position
+  // so that we can process them in dependency order and not write invalid KCL.
+  const sortedCodeBasedSelections =
+    selectionRanges.codeBasedSelections.toSorted(
+      (a, b) => a.range[0] - b.range[0]
+    )
+  const primarySelection = sortedCodeBasedSelections[0].range
+  const secondarySelections = sortedCodeBasedSelections.slice(1)
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
   if (err(_tag)) return _tag
@@ -1569,7 +1577,7 @@ export function transformSecondarySketchLinesTagFirst({
     ast: modifiedAst,
     selectionRanges: {
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+      codeBasedSelections: secondarySelections,
     },
     referencedSegmentRange: primarySelection,
     transformInfos,
@@ -1702,33 +1710,29 @@ export function transformAstSketchLines({
 
     const varName = varDec.node.id.name
     let kclVal = programMemory.get(varName)
-    let sketchGroup
-    if (kclVal?.type === 'ExtrudeGroup') {
-      sketchGroup = kclVal.sketchGroup
+    let sketch
+    if (kclVal?.type === 'Solid') {
+      sketch = kclVal.sketch
     } else {
-      sketchGroup = sketchGroupFromKclValue(kclVal, varName)
-      if (err(sketchGroup)) {
+      sketch = sketchFromKclValue(kclVal, varName)
+      if (err(sketch)) {
         return
       }
     }
-    const segMeta = getSketchSegmentFromPathToNode(
-      sketchGroup,
-      ast,
-      _pathToNode
-    )
+    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode)
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
     let referencedSegment
     if (referencedSegmentRange) {
       const _segment = getSketchSegmentFromSourceRange(
-        sketchGroup,
+        sketch,
         referencedSegmentRange
       )
       if (err(_segment)) return _segment
       referencedSegment = _segment.segment
     } else {
-      referencedSegment = sketchGroup.value.find(
+      referencedSegment = sketch.value.find(
         (path) => path.tag?.value === _referencedSegmentName
       )
     }

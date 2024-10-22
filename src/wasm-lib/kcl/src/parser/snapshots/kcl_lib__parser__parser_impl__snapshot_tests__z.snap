@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 8,
-            "name": "sg",
-            "digest": null
+            "name": "sg"
           },
           "init": {
             "type": "PipeExpression",
@@ -38,8 +37,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 11,
                   "end": 24,
-                  "name": "startSketchAt",
-                  "digest": null
+                  "name": "startSketchAt"
                 },
                 "arguments": [
                   {
@@ -47,12 +45,10 @@ expression: actual
                     "type": "Identifier",
                     "start": 25,
                     "end": 28,
-                    "name": "pos",
-                    "digest": null
+                    "name": "pos"
                   }
                 ],
-                "optional": false,
-                "digest": null
+                "optional": false
               },
               {
                 "type": "CallExpression",
@@ -63,8 +59,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 33,
                   "end": 37,
-                  "name": "line",
-                  "digest": null
+                  "name": "line"
                 },
                 "arguments": [
                   {
@@ -79,8 +74,7 @@ expression: actual
                         "start": 39,
                         "end": 40,
                         "value": 0,
-                        "raw": "0",
-                        "digest": null
+                        "raw": "0"
                       },
                       {
                         "type": "UnaryExpression",
@@ -93,44 +87,25 @@ expression: actual
                           "type": "Identifier",
                           "start": 43,
                           "end": 48,
-                          "name": "scale",
-                          "digest": null
-                        },
-                        "digest": null
+                          "name": "scale"
+                        }
                       }
-                    ],
-                    "digest": null
+                    ]
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 51,
-                    "end": 52,
-                    "digest": null
+                    "end": 52
                   }
                 ],
-                "optional": false,
-                "digest": null
+                "optional": false
               }
-            ],
-            "nonCodeMeta": {
-              "nonCodeNodes": {},
-              "start": [],
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+            ]
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }
