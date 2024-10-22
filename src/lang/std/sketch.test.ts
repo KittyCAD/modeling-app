@@ -117,11 +117,11 @@ describe('testing changeSketchArguments', () => {
     const ast = parse(code)
     if (err(ast)) return ast
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
-      programMemory,
+      execState.memory,
       {
         type: 'sourceRange',
         sourceRange: [sourceStart, sourceStart + lineToChange.length],
@@ -150,12 +150,12 @@ mySketch001 = startSketchOn('XY')
     const ast = parse(code)
     if (err(ast)) return ast
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     expect(sourceStart).toBe(89)
     const newSketchLnRetVal = addNewSketchLn({
       node: ast,
-      programMemory,
+      programMemory: execState.memory,
       input: {
         type: 'straight-segment',
         from: [0, 0],
@@ -186,7 +186,7 @@ mySketch001 = startSketchOn('XY')
 
     const modifiedAst2 = addCloseToPipe({
       node: ast,
-      programMemory,
+      programMemory: execState.memory,
       pathToNode: [
         ['body', ''],
         [0, 'index'],
@@ -230,7 +230,7 @@ describe('testing addTagForSketchOnFace', () => {
     const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
     const sketchOnFaceRetVal = addTagForSketchOnFace(
       {
-        // previousProgramMemory: programMemory, // redundant?
+        // previousProgramMemory: execState.memory, // redundant?
         pathToNode,
         node: ast,
       },

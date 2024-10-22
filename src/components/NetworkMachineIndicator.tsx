@@ -11,6 +11,7 @@ export const NetworkMachineIndicator = ({
 }) => {
   const machineCount = machineManager.machineCount()
   const reason = machineManager.noMachinesReason()
+  const machines = machineManager.machines
 
   return isDesktop() ? (
     <Popover className="relative">
@@ -46,20 +47,34 @@ export const NetworkMachineIndicator = ({
         </div>
         {machineCount > 0 && (
           <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
-            {Object.entries(machineManager.machines).map(
-              ([hostname, machine]) => (
-                <li key={hostname} className={'px-2 py-4 gap-1 last:mb-0 '}>
-                  <p className="">
-                    {machine.make_model.model ||
-                      machine.make_model.manufacturer ||
-                      'Unknown Machine'}
-                  </p>
+            {machines.map((machine) => {
+              return (
+                <li key={machine.id} className={'px-2 py-4 gap-1 last:mb-0 '}>
+                  <p className="">{machine.id.toUpperCase()}</p>
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                    Hostname {hostname}
+                    {machine.make_model.model}
+                  </p>
+                  {machine.extra &&
+                    machine.extra.type === 'bambu' &&
+                    machine.extra.nozzle_diameter && (
+                      <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                        Nozzle Diameter: {machine.extra.nozzle_diameter}
+                      </p>
+                    )}
+                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                    {`Status: ${machine.state.state
+                      .charAt(0)
+                      .toUpperCase()}${machine.state.state.slice(1)}`}
+                    {machine.state.state === 'failed' && machine.state.message
+                      ? ` (${machine.state.message})`
+                      : ''}
+                    {machine.state.state === 'running' && machine.progress
+                      ? ` (${Math.round(machine.progress)}%)`
+                      : ''}
                   </p>
                 </li>
               )
-            )}
+            })}
           </ul>
         )}
       </Popover.Panel>

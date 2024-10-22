@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 8,
             "end": 24,
-            "name": "firstPrimeNumber",
-            "digest": null
+            "name": "firstPrimeNumber"
           },
           "init": {
             "type": "FunctionExpression",
@@ -44,26 +43,15 @@ expression: actual
                     "start": 50,
                     "end": 51,
                     "value": 2,
-                    "raw": "2",
-                    "digest": null
-                  },
-                  "digest": null
+                    "raw": "2"
+                  }
                 }
-              ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              ]
+            }
+          }
         }
       ],
-      "kind": "fn",
-      "digest": null
+      "kind": "fn"
     },
     {
       "type": "ExpressionStatement",
@@ -79,20 +67,11 @@ expression: actual
           "type": "Identifier",
           "start": 62,
           "end": 78,
-          "name": "firstPrimeNumber",
-          "digest": null
+          "name": "firstPrimeNumber"
         },
         "arguments": [],
-        "optional": false,
-        "digest": null
-      },
-      "digest": null
+        "optional": false
+      }
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

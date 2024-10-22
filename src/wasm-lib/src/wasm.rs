@@ -16,9 +16,11 @@ use wasm_bindgen::prelude::*;
 pub async fn execute_wasm(
     program_str: &str,
     memory_str: &str,
+    id_generator_str: &str,
     units: &str,
     engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
     fs_manager: kcl_lib::fs::wasm::FileSystemManager,
+    project_directory: Option<String>,
     is_mock: bool,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
@@ -26,6 +28,8 @@ pub async fn execute_wasm(
 
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let memory: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
+    let id_generator: kcl_lib::executor::IdGenerator =
+        serde_json::from_str(id_generator_str).map_err(|e| e.to_string())?;
     let units = kcl_lib::settings::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
 
     let engine: std::sync::Arc<Box<dyn kcl_lib::engine::EngineManager>> = if is_mock {
@@ -58,13 +62,16 @@ pub async fn execute_wasm(
         context_type,
     };
 
-    let exec_state = ctx.run(&program, Some(memory)).await.map_err(String::from)?;
+    let exec_state = ctx
+        .run(&program, Some(memory), id_generator, project_directory)
+        .await
+        .map_err(String::from)?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
-    // DO NOT USE serde_wasm_bindgen::to_value(&memory).map_err(|e| e.to_string())
+    // DO NOT USE serde_wasm_bindgen::to_value(&exec_state).map_err(|e| e.to_string())
     // it will break the frontend.
-    JsValue::from_serde(&exec_state.memory).map_err(|e| e.to_string())
+    JsValue::from_serde(&exec_state).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
@@ -93,7 +100,7 @@ pub async fn make_default_planes(
         .await
         .map_err(|e| format!("{:?}", e))?;
     let default_planes = engine
-        .new_default_planes(Default::default())
+        .new_default_planes(&mut kcl_lib::executor::IdGenerator::default(), Default::default())
         .await
         .map_err(String::from)?;
 

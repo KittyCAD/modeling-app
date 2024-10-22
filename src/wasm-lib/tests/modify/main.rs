@@ -1,7 +1,7 @@
 use anyhow::Result;
 use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
-    executor::{ExecutorContext, KclValue, PlaneType, Sketch, SourceRange},
+    executor::{ExecutorContext, IdGenerator, KclValue, PlaneType, Sketch, SourceRange},
 };
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
@@ -35,7 +35,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
-    let exec_state = ctx.run(&program, None).await?;
+    let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.

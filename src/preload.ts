@@ -5,6 +5,7 @@ import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'lib/machineManager'
+import chokidar from 'chokidar'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
@@ -15,8 +16,14 @@ const startDeviceFlow = (host: string): Promise<string> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
-const onUpdateDownloaded = (callback: (value: string) => void) =>
-  ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+const onUpdateDownloaded = (
+  callback: (value: { version: string; releaseNotes: string }) => void
+) => ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+const onUpdateDownloadStart = (
+  callback: (value: { version: string }) => void
+) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
+const onUpdateError = (callback: (value: Error) => void) =>
+  ipcRenderer.on('update-error', (_event, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
 
 const isMac = os.platform() === 'darwin'
@@ -25,35 +32,49 @@ const isLinux = os.platform() === 'linux'
 
 let fsWatchListeners = new Map<
   string,
-  {
-    watcher: fsSync.FSWatcher
-    callback: (eventType: string, path: string) => void
-  }
+  Map<
+    string,
+    {
+      watcher: ReturnType<typeof chokidar.watch>
+      callback: (eventType: string, path: string) => void
+    }
+  >
 >()
 
 const watchFileOn = (
   path: string,
+  key: string,
   callback: (eventType: string, path: string) => void
 ) => {
-  const watcher = fsSync.watch(path)
-  watcher.on('change', callback)
-  fsWatchListeners.set(path, { watcher, callback })
-}
-const watchFileOff = (path: string) => {
-  const entry = fsWatchListeners.get(path)
-  if (!entry) return
-  const { watcher, callback } = entry
-  watcher.off('change', callback)
-  watcher.close()
-  fsWatchListeners.delete(path)
-}
-const watchFileObliterate = () => {
-  for (let [pathAsKey] of fsWatchListeners) {
-    watchFileOff(pathAsKey)
+  let watchers = fsWatchListeners.get(path)
+  if (!watchers) {
+    watchers = new Map()
   }
-  fsWatchListeners = new Map()
+  const watcher = chokidar.watch(path, { depth: 1 })
+  watcher.on('all', callback)
+  watchers.set(key, { watcher, callback })
+  fsWatchListeners.set(path, watchers)
 }
-const readFile = (path: string) => fs.readFile(path, 'utf-8')
+const watchFileOff = (path: string, key: string) => {
+  const watchers = fsWatchListeners.get(path)
+  if (!watchers) return
+  const data = watchers.get(key)
+  if (!data) {
+    console.warn(
+      "Trying to remove a watcher, callback that doesn't exist anymore. Suspicious."
+    )
+    return
+  }
+  const { watcher, callback } = data
+  watcher.off('all', callback)
+  watchers.delete(key)
+  if (watchers.size === 0) {
+    fsWatchListeners.delete(path)
+  } else {
+    fsWatchListeners.set(path, watchers)
+  }
+}
+const readFile = fs.readFile
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
 const exists = (path: string) => fsSync.existsSync(path)
@@ -85,11 +106,12 @@ const kittycad = (access: string, args: any) =>
 
 // We could probably do this from the renderer side, but I fear CORS will
 // bite our butts.
-const listMachines = async (): Promise<MachinesListing> => {
-  const machineApi = await ipcRenderer.invoke('find_machine_api')
-  if (!machineApi) return []
-
-  return fetch(`http://${machineApi}/machines`).then((resp) => resp.json())
+const listMachines = async (
+  machineApiAddr: string
+): Promise<MachinesListing> => {
+  return fetch(`http://${machineApiAddr}/machines`).then((resp) => {
+    return resp.json()
+  })
 }
 
 const getMachineApiIp = async (): Promise<String | null> =>
@@ -103,7 +125,6 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
-  watchFileObliterate,
   readFile,
   writeFile,
   exists,
@@ -159,6 +180,8 @@ contextBridge.exposeInMainWorld('electron', {
   kittycad,
   listMachines,
   getMachineApiIp,
+  onUpdateDownloadStart,
   onUpdateDownloaded,
+  onUpdateError,
   appRestart,
 })

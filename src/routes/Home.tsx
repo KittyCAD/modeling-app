@@ -176,7 +176,7 @@ const Home = () => {
 
   // Re-read projects listing if the projectDir has any updates.
   useFileSystemWatcher(
-    () => {
+    async () => {
       setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
     },
     projectsDir ? [projectsDir] : []

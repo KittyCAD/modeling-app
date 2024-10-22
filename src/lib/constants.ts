@@ -92,6 +92,7 @@ export const MAKE_TOAST_MESSAGES = {
   NO_MACHINE_API_IP: 'No machine api ip available',
   NO_CURRENT_MACHINE: 'No current machine available',
   NO_MACHINE_ID: 'No machine id available',
+  NO_NAME: 'No name provided',
   ERROR_STARTING_PRINT: 'Error while starting print',
   SUCCESS: 'Started print successfully',
 }
@@ -102,3 +103,6 @@ export const KCL_SAMPLES_MANIFEST_URLS = {
     'https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifest.json',
   localFallback: '/kcl-samples-manifest-fallback.json',
 } as const
+
+/** Toast id for the app auto-updater toast */
+export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'

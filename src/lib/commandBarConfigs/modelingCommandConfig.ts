@@ -190,10 +190,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         options: () => {
           return Object.entries(machineManager.machines).map(
             ([_, machine]) => ({
-              name: `${machine.id} (${
-                machine.make_model.model || machine.make_model.manufacturer
-              }) via ${machineManager.machineApiIp || 'the local network'}`,
+              name:
+                `${machine.id} (${
+                  machine.make_model.model || machine.make_model.manufacturer
+                }) (${machine.state.state})` +
+                (machine.hardware_configuration &&
+                machine.hardware_configuration.type !== 'none' &&
+                machine.hardware_configuration.config.nozzle_diameter
+                  ? ` - Nozzle Diameter: ${machine.hardware_configuration.config.nozzle_diameter}`
+                  : '') +
+                (machine.hardware_configuration &&
+                machine.hardware_configuration.type !== 'none' &&
+                machine.hardware_configuration.config.filaments &&
+                machine.hardware_configuration.config.filaments[0]
+                  ? ` - ${
+                      machine.hardware_configuration.config.filaments[0].name
+                    } #${
+                      machine.hardware_configuration.config &&
+                      machine.hardware_configuration.config.filaments[0].color?.slice(
+                        0,
+                        6
+                      )
+                    }`
+                  : ''),
               isCurrent: false,
+              disabled: machine.state.state !== 'idle',
               value: machine as components['schemas']['MachineInfoResponse'],
             })
           )
@@ -281,6 +302,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
+        warningMessage:
+          'Fillets cannot touch other fillets yet. This is under development.',
       },
       radius: {
         inputType: 'kcl',

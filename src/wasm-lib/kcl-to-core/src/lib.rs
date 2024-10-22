@@ -1,5 +1,5 @@
 use anyhow::Result;
-use kcl_lib::executor::ExecutorContext;
+use kcl_lib::executor::{ExecutorContext, IdGenerator};
 use std::sync::{Arc, Mutex};
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -23,7 +23,7 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
         settings: Default::default(),
         context_type: kcl_lib::executor::ContextType::MockCustomForwarded,
     };
-    let _memory = ctx.run(&program, None).await?;
+    let _memory = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
     let result = result.lock().expect("mutex lock").clone();
     Ok(result)

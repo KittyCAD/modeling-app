@@ -21,8 +21,10 @@ use tokio_tungstenite::tungstenite::Message as WsMsg;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::DefaultPlanes,
+    executor::{DefaultPlanes, IdGenerator},
 };
+
+use super::ExecutionKind;
 
 #[derive(Debug, PartialEq)]
 enum SocketHealth {
@@ -46,6 +48,8 @@ pub struct EngineConnection {
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<Mutex<Option<ModelingSessionData>>>,
+
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 pub struct TcpRead {
@@ -300,6 +304,7 @@ impl EngineConnection {
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
             default_planes: Default::default(),
             session_data,
+            execution_kind: Default::default(),
         })
     }
 }
@@ -314,7 +319,23 @@ impl EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
+    }
+
+    async fn default_planes(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         {
             let opt = self.default_planes.read().await.as_ref().cloned();
             if let Some(planes) = opt {
@@ -322,15 +343,19 @@ impl EngineManager for EngineConnection {
             }
         } // drop the read lock
 
-        let new_planes = self.new_default_planes(source_range).await?;
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
         *self.default_planes.write().await = Some(new_planes.clone());
 
         Ok(new_planes)
     }
 
-    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
-        let new_planes = self.new_default_planes(source_range).await?;
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
         *self.default_planes.write().await = Some(new_planes);
 
         Ok(())

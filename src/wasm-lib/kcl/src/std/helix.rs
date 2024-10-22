@@ -32,10 +32,10 @@ pub struct HelixData {
 }
 
 /// Create a helix on a cylinder.
-pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (HelixData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let solid = inner_helix(data, solid, args).await?;
+    let solid = inner_helix(data, solid, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
 }
 
@@ -54,8 +54,13 @@ pub async fn helix(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 #[stdlib {
     name = "helix",
 }]
-async fn inner_helix(data: HelixData, solid: Box<Solid>, args: Args) -> Result<Box<Solid>, KclError> {
-    let id = uuid::Uuid::new_v4();
+async fn inner_helix(
+    data: HelixData,
+    solid: Box<Solid>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
+    let id = exec_state.id_generator.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EntityMakeHelix {

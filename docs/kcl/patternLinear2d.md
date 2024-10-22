@@ -32,7 +32,7 @@ exampleSketch = startSketchOn('XZ')
   |> circle({ center: [0, 0], radius: 1 }, %)
   |> patternLinear2d({
        axis: [1, 0],
-       repetitions: 6,
+       instances: 7,
        distance: 4
      }, %)
 

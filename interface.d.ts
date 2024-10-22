@@ -20,11 +20,11 @@ export interface IElectronAPI {
   version: typeof process.env.version
   watchFileOn: (
     path: string,
+    key: string,
     callback: (eventType: string, path: string) => void
   ) => void
-  watchFileOff: (path: string) => void
-  watchFileObliterate: () => void
-  readFile: (path: string) => ReturnType<fs.readFile>
+  readFile: typeof fs.readFile
+  watchFileOff: (path: string, key: string) => void
   writeFile: (
     path: string,
     data: string | Uint8Array
@@ -68,11 +68,15 @@ export interface IElectronAPI {
     }
   }
   kittycad: (access: string, args: any) => any
-  listMachines: () => Promise<MachinesListing>
+  listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
-  onUpdateDownloaded: (
-    callback: (value: string) => void
+  onUpdateDownloadStart: (
+    callback: (value: { version: string }) => void
   ) => Electron.IpcRenderer
+  onUpdateDownloaded: (
+    callback: (value: { version: string; releaseNotes: string }) => void
+  ) => Electron.IpcRenderer
+  onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
 }
 

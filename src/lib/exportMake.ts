@@ -8,8 +8,15 @@ import { MAKE_TOAST_MESSAGES } from './constants'
 // Make files locally from an export call.
 export async function exportMake(
   data: ArrayBuffer,
+  name: string,
   toastId: string
 ): Promise<Response | null> {
+  if (name === '') {
+    console.error(MAKE_TOAST_MESSAGES.NO_NAME)
+    toast.error(MAKE_TOAST_MESSAGES.NO_NAME, { id: toastId })
+    return null
+  }
+
   if (machineManager.machineCount() === 0) {
     console.error(MAKE_TOAST_MESSAGES.NO_MACHINES)
     toast.error(MAKE_TOAST_MESSAGES.NO_MACHINES, { id: toastId })
@@ -39,7 +46,7 @@ export async function exportMake(
 
   const params: components['schemas']['PrintParameters'] = {
     machine_id: machineId,
-    job_name: 'Exported Job', // TODO: make this the project name.
+    job_name: name,
   }
   try {
     console.log('params', params)

@@ -35,7 +35,7 @@ example = extrude(-5, exampleSketch)
   |> patternCircular3d({
        axis: [1, -1, 0],
        center: [10, -20, 0],
-       repetitions: 10,
+       instances: 11,
        arcDegrees: 360,
        rotateDuplicates: true
      }, %)

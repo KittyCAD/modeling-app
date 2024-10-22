@@ -4,7 +4,7 @@ use serde_json::Value as JValue;
 use super::{args::FromArgs, Args, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, Sketch, SourceRange, UserVal},
+    executor::{ExecState, KclValue, SourceRange, UserVal},
     function_param::FunctionParam,
 };
 
@@ -28,6 +28,18 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         memory: *f.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
+    let unwrapped = new_array
+        .clone()
+        .into_iter()
+        .map(|k| match k {
+            KclValue::UserVal(user_val) => Ok(user_val.value),
+            _ => Err(()),
+        })
+        .collect::<Result<Vec<_>, _>>();
+    if let Ok(unwrapped) = unwrapped {
+        let uv = UserVal::new(vec![args.source_range.into()], unwrapped);
+        return Ok(KclValue::UserVal(uv));
+    }
     let uv = UserVal::new(vec![args.source_range.into()], new_array);
     Ok(KclValue::UserVal(uv))
 }
@@ -98,7 +110,16 @@ async fn call_map_closure<'a>(
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<u64>, Sketch, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let (array, start, f): (Vec<JValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let array: Vec<KclValue> = array
+        .into_iter()
+        .map(|jval| {
+            KclValue::UserVal(UserVal {
+                value: jval,
+                meta: vec![args.source_range.into()],
+            })
+        })
+        .collect();
     let reduce_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
@@ -106,9 +127,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ctx: args.ctx.clone(),
         memory: *f.memory,
     };
-    inner_reduce(array, start, reduce_fn, exec_state, &args)
-        .await
-        .map(|sg| KclValue::UserVal(UserVal::new(sg.meta.clone(), sg)))
+    inner_reduce(array, start, reduce_fn, exec_state, &args).await
 }
 
 /// Take a starting value. Then, for each element of an array, calculate the next value,
@@ -125,60 +144,52 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// }
 /// decagon(5.0) |> close(%)
 /// ```
+/// ```no_run
+/// array = [1, 2, 3]
+/// sum = reduce(array, 0, (i, result_so_far) => { return i + result_so_far })
+/// assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
+/// ```
+/// ```no_run
+/// fn add = (a, b) => { return a + b }
+/// fn sum = (array) => { return reduce(array, 0, add) }
+/// assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
+/// ```
 #[stdlib {
     name = "reduce",
 }]
 async fn inner_reduce<'a>(
-    array: Vec<u64>,
-    start: Sketch,
+    array: Vec<KclValue>,
+    start: KclValue,
     reduce_fn: FunctionParam<'a>,
     exec_state: &mut ExecState,
     args: &'a Args,
-) -> Result<Sketch, KclError> {
+) -> Result<KclValue, KclError> {
     let mut reduced = start;
-    for i in array {
-        reduced = call_reduce_closure(i, reduced, &reduce_fn, args.source_range, exec_state).await?;
+    for elem in array {
+        reduced = call_reduce_closure(elem, reduced, &reduce_fn, args.source_range, exec_state).await?;
     }
 
     Ok(reduced)
 }
 
 async fn call_reduce_closure<'a>(
-    i: u64,
-    start: Sketch,
+    elem: KclValue,
+    start: KclValue,
     reduce_fn: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
-) -> Result<Sketch, KclError> {
+) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
-    let reduce_fn_args = vec![
-        KclValue::UserVal(UserVal {
-            value: serde_json::Value::Number(i.into()),
-            meta: vec![source_range.into()],
-        }),
-        KclValue::new_user_val(start.meta.clone(), start),
-    ];
+    let reduce_fn_args = vec![elem, start];
     let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
-    let closure_retval = transform_fn_return.ok_or_else(|| {
+    let out = transform_fn_return.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
             message: "Reducer function must return a value".to_string(),
             source_ranges: source_ranges.clone(),
         })
     })?;
-    let Some(out) = closure_retval.as_user_val() else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Reducer function must return a UserValue".to_string(),
-            source_ranges: source_ranges.clone(),
-        }));
-    };
-    let Some((out, _meta)) = out.get() else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Reducer function must return a Sketch".to_string(),
-            source_ranges: source_ranges.clone(),
-        }));
-    };
     Ok(out)
 }

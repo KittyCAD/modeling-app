@@ -295,15 +295,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'line',
-        onClick: ({ modelingState, modelingSend }) =>
-          modelingSend({
-            type: 'change tool',
-            data: {
-              tool: !modelingState.matches({ Sketch: 'Line tool' })
-                ? 'line'
-                : 'none',
-            },
-          }),
+        onClick: ({ modelingState, modelingSend }) => {
+          if (modelingState.matches({ Sketch: { 'Line tool': 'No Points' } })) {
+            // Exit the sketch state if there are no points and they press ESC
+            modelingSend({
+              type: 'Cancel',
+            })
+          } else {
+            // Exit the tool if there are points and they press ESC
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Line tool' })
+                  ? 'line'
+                  : 'none',
+              },
+            })
+          }
+        },
         icon: 'line',
         status: 'available',
         disabled: (state) =>
