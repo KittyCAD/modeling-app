@@ -92,6 +92,7 @@ export class CameraControls {
   target: Vector3
   domElement: HTMLCanvasElement
   isDragging: boolean
+  wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   rotationSpeed = 0.3
@@ -233,12 +234,14 @@ export class CameraControls {
     this.target = new Vector3()
     this.domElement = domElement
     this.isDragging = false
+    this.wasDragging = false
     this.mouseDownPosition = new Vector2()
     this.mouseNewPosition = new Vector2()
 
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
+    this.domElement.addEventListener('click', this.onClick)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
 
     window.addEventListener('resize', this.onWindowResize)
@@ -363,6 +366,7 @@ export class CameraControls {
   onMouseDown = (event: PointerEvent) => {
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
+    this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
@@ -393,6 +397,8 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
+        this.wasDragging = true
+
         this.moveSender.send(() => {
           this.doMove(interaction, [event.clientX, event.clientY])
         })
@@ -402,15 +408,18 @@ export class CameraControls {
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
       if (interaction === 'rotate') {
+        this.wasDragging = true
         this.pendingRotation = this.pendingRotation
           ? this.pendingRotation
           : new Vector2()
         this.pendingRotation.x += deltaMove.x
         this.pendingRotation.y += deltaMove.y
       } else if (interaction === 'zoom') {
+        this.wasDragging = true
         this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
         this.pendingZoom *= 1 + deltaMove.y * 0.01
       } else if (interaction === 'pan') {
+        this.wasDragging = true
         this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
         let distance = this.camera.position.distanceTo(this.target)
         if (this.camera instanceof OrthographicCamera) {
@@ -427,6 +436,8 @@ export class CameraControls {
        * under the cursor. This recently moved from being handled in App.tsx.
        * This might not be the right spot, but it is more consolidated.
        */
+
+      this.wasDragging = false
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
@@ -458,6 +469,13 @@ export class CameraControls {
         },
         cmd_id: uuidv4(),
       })
+    }
+  }
+
+  onClick = (event: PointerEvent) => {
+    if (this.wasDragging) {
+      event.stopPropagation()
+      this.wasDragging = false
     }
   }
 
