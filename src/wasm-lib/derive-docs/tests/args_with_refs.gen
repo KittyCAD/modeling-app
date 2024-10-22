@@ -5,6 +5,7 @@ mod test_examples_someFn {
         let tokens = crate::token::lexer("someFn()").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
+        let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -16,7 +17,7 @@ mod test_examples_someFn {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

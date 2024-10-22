@@ -183,6 +183,18 @@ where
             }
             Ok(true)
         }
+        Expr::ArrayRangeExpression(are) => {
+            if !f.walk(are.as_ref().into())? {
+                return Ok(false);
+            }
+            if !walk_value::<WalkT>(&are.start_element, f)? {
+                return Ok(false);
+            }
+            if !walk_value::<WalkT>(&are.end_element, f)? {
+                return Ok(false);
+            }
+            Ok(true)
+        }
         Expr::ObjectExpression(oe) => walk_object_expression(oe, f),
         Expr::MemberExpression(me) => walk_member_expression(me, f),
         Expr::UnaryExpression(ue) => walk_unary_expression(ue, f),
@@ -265,6 +277,12 @@ where
     // We don't walk a BodyItem since it's an enum itself.
 
     match node {
+        BodyItem::ImportStatement(xs) => {
+            if !f.walk(xs.as_ref().into())? {
+                return Ok(false);
+            }
+            Ok(true)
+        }
         BodyItem::ExpressionStatement(xs) => {
             if !f.walk(xs.into())? {
                 return Ok(false);
@@ -272,7 +290,7 @@ where
             walk_value(&xs.expression, f)
         }
         BodyItem::VariableDeclaration(vd) => {
-            if !f.walk(vd.into())? {
+            if !f.walk(vd.as_ref().into())? {
                 return Ok(false);
             }
             for dec in &vd.declarations {

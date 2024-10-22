@@ -9,6 +9,7 @@ use crate::{
 pub enum Node<'a> {
     Program(&'a types::Program),
 
+    ImportStatement(&'a types::ImportStatement),
     ExpressionStatement(&'a types::ExpressionStatement),
     VariableDeclaration(&'a types::VariableDeclaration),
     ReturnStatement(&'a types::ReturnStatement),
@@ -24,6 +25,7 @@ pub enum Node<'a> {
     PipeExpression(&'a types::PipeExpression),
     PipeSubstitution(&'a types::PipeSubstitution),
     ArrayExpression(&'a types::ArrayExpression),
+    ArrayRangeExpression(&'a types::ArrayRangeExpression),
     ObjectExpression(&'a types::ObjectExpression),
     MemberExpression(&'a types::MemberExpression),
     UnaryExpression(&'a types::UnaryExpression),
@@ -41,6 +43,7 @@ impl From<&Node<'_>> for SourceRange {
     fn from(node: &Node) -> Self {
         match node {
             Node::Program(p) => SourceRange([p.start, p.end]),
+            Node::ImportStatement(e) => SourceRange([e.start(), e.end()]),
             Node::ExpressionStatement(e) => SourceRange([e.start(), e.end()]),
             Node::VariableDeclaration(v) => SourceRange([v.start(), v.end()]),
             Node::ReturnStatement(r) => SourceRange([r.start(), r.end()]),
@@ -54,6 +57,7 @@ impl From<&Node<'_>> for SourceRange {
             Node::PipeExpression(p) => SourceRange([p.start(), p.end()]),
             Node::PipeSubstitution(p) => SourceRange([p.start(), p.end()]),
             Node::ArrayExpression(a) => SourceRange([a.start(), a.end()]),
+            Node::ArrayRangeExpression(a) => SourceRange([a.start(), a.end()]),
             Node::ObjectExpression(o) => SourceRange([o.start(), o.end()]),
             Node::MemberExpression(m) => SourceRange([m.start(), m.end()]),
             Node::UnaryExpression(u) => SourceRange([u.start(), u.end()]),
@@ -77,6 +81,7 @@ macro_rules! impl_from {
 }
 
 impl_from!(Node, Program);
+impl_from!(Node, ImportStatement);
 impl_from!(Node, ExpressionStatement);
 impl_from!(Node, VariableDeclaration);
 impl_from!(Node, ReturnStatement);
@@ -90,6 +95,7 @@ impl_from!(Node, CallExpression);
 impl_from!(Node, PipeExpression);
 impl_from!(Node, PipeSubstitution);
 impl_from!(Node, ArrayExpression);
+impl_from!(Node, ArrayRangeExpression);
 impl_from!(Node, ObjectExpression);
 impl_from!(Node, MemberExpression);
 impl_from!(Node, UnaryExpression);

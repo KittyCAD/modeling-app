@@ -9,8 +9,9 @@ use kittycad_modeling_cmds as kcmc;
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
-    executor::DefaultPlanes,
+    executor::{DefaultPlanes, IdGenerator},
 };
 
 #[wasm_bindgen(module = "/../../lang/std/engineConnection.ts")]
@@ -42,6 +43,7 @@ pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
     batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -54,6 +56,7 @@ impl EngineConnection {
             manager: Arc::new(manager),
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            execution_kind: Default::default(),
         })
     }
 }
@@ -68,7 +71,23 @@ impl crate::engine::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
+    }
+
+    async fn default_planes(
+        &self,
+        _id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         // Get the default planes.
         let promise = self.manager.get_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -106,7 +125,11 @@ impl crate::engine::EngineManager for EngineConnection {
         Ok(default_planes)
     }
 
-    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        _id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<(), KclError> {
         self.manager.clear_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: e.to_string().into(),

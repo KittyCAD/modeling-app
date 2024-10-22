@@ -313,3 +313,45 @@ test(
     await electronApp.close()
   }
 )
+
+test(
+  'external change of file contents are reflected in editor',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const PROJECT_DIR_NAME = 'lee-was-here'
+    const {
+      electronApp,
+      page,
+      dir: projectsDir,
+    } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const aProjectDir = join(dir, PROJECT_DIR_NAME)
+        await fsp.mkdir(aProjectDir, { recursive: true })
+      },
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await test.step('Open the project', async () => {
+      await expect(page.getByText(PROJECT_DIR_NAME)).toBeVisible()
+      await page.getByText(PROJECT_DIR_NAME).click()
+      await u.waitForPageLoad()
+    })
+
+    await u.openFilePanel()
+    await u.openKclCodePanel()
+
+    await test.step('Write to file externally and check for changed content', async () => {
+      const content = 'ha he ho ho ha blap scap be dap'
+      await fsp.writeFile(
+        join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
+        content
+      )
+      await u.editorTextMatches(content)
+    })
+
+    await electronApp.close()
+  }
+)

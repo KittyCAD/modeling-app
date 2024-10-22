@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 10,
-            "name": "prop",
-            "digest": null
+            "name": "prop"
           },
           "init": {
             "type": "MemberExpression",
@@ -38,8 +37,7 @@ expression: actual
                 "type": "Identifier",
                 "start": 13,
                 "end": 15,
-                "name": "yo",
-                "digest": null
+                "name": "yo"
               },
               "property": {
                 "type": "Literal",
@@ -47,34 +45,22 @@ expression: actual
                 "start": 16,
                 "end": 21,
                 "value": "one",
-                "raw": "\"one\"",
-                "digest": null
+                "raw": "\"one\""
               },
-              "computed": false,
-              "digest": null
+              "computed": false
             },
             "property": {
               "type": "Identifier",
               "type": "Identifier",
               "start": 23,
               "end": 26,
-              "name": "two",
-              "digest": null
+              "name": "two"
             },
-            "computed": true,
-            "digest": null
-          },
-          "digest": null
+            "computed": true
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

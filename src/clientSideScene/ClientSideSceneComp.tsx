@@ -408,6 +408,7 @@ export async function deleteSegment({
 
   const testExecute = await executeAst({
     ast: modifiedAst,
+    idGenerator: kclManager.execState.idGenerator,
     useFakeExecutor: true,
     engineCommandManager: engineCommandManager,
   })

@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 14,
-            "name": "mySketch",
-            "digest": null
+            "name": "mySketch"
           },
           "init": {
             "type": "PipeExpression",
@@ -38,8 +37,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 17,
                   "end": 30,
-                  "name": "startSketchAt",
-                  "digest": null
+                  "name": "startSketchAt"
                 },
                 "arguments": [
                   {
@@ -54,8 +52,7 @@ expression: actual
                         "start": 32,
                         "end": 33,
                         "value": 0,
-                        "raw": "0",
-                        "digest": null
+                        "raw": "0"
                       },
                       {
                         "type": "Literal",
@@ -63,15 +60,12 @@ expression: actual
                         "start": 34,
                         "end": 35,
                         "value": 0,
-                        "raw": "0",
-                        "digest": null
+                        "raw": "0"
                       }
-                    ],
-                    "digest": null
+                    ]
                   }
                 ],
-                "optional": false,
-                "digest": null
+                "optional": false
               },
               {
                 "type": "CallExpression",
@@ -82,8 +76,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 41,
                   "end": 47,
-                  "name": "lineTo",
-                  "digest": null
+                  "name": "lineTo"
                 },
                 "arguments": [
                   {
@@ -98,8 +91,7 @@ expression: actual
                         "start": 49,
                         "end": 50,
                         "value": 1,
-                        "raw": "1",
-                        "digest": null
+                        "raw": "1"
                       },
                       {
                         "type": "Literal",
@@ -107,22 +99,18 @@ expression: actual
                         "start": 52,
                         "end": 53,
                         "value": 1,
-                        "raw": "1",
-                        "digest": null
+                        "raw": "1"
                       }
-                    ],
-                    "digest": null
+                    ]
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 56,
-                    "end": 57,
-                    "digest": null
+                    "end": 57
                   }
                 ],
-                "optional": false,
-                "digest": null
+                "optional": false
               },
               {
                 "type": "CallExpression",
@@ -133,40 +121,23 @@ expression: actual
                   "type": "Identifier",
                   "start": 62,
                   "end": 67,
-                  "name": "close",
-                  "digest": null
+                  "name": "close"
                 },
                 "arguments": [
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 68,
-                    "end": 69,
-                    "digest": null
+                    "end": 69
                   }
                 ],
-                "optional": false,
-                "digest": null
+                "optional": false
               }
-            ],
-            "nonCodeMeta": {
-              "nonCodeNodes": {},
-              "start": [],
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+            ]
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

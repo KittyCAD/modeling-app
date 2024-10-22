@@ -20,8 +20,7 @@ expression: actual
           "type": "Identifier",
           "start": 0,
           "end": 6,
-          "name": "lineTo",
-          "digest": null
+          "name": "lineTo"
         },
         "arguments": [
           {
@@ -38,8 +37,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 8,
                   "end": 10,
-                  "name": "to",
-                  "digest": null
+                  "name": "to"
                 },
                 "value": {
                   "type": "ArrayExpression",
@@ -53,8 +51,7 @@ expression: actual
                       "start": 12,
                       "end": 13,
                       "value": 0,
-                      "raw": "0",
-                      "digest": null
+                      "raw": "0"
                     },
                     {
                       "type": "Literal",
@@ -62,28 +59,16 @@ expression: actual
                       "start": 15,
                       "end": 16,
                       "value": 1,
-                      "raw": "1",
-                      "digest": null
+                      "raw": "1"
                     }
-                  ],
-                  "digest": null
-                },
-                "digest": null
+                  ]
+                }
               }
-            ],
-            "digest": null
+            ]
           }
         ],
-        "optional": false,
-        "digest": null
-      },
-      "digest": null
+        "optional": false
+      }
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

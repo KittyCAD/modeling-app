@@ -83,6 +83,78 @@ Raise a number to a power.
 
 
 ----
+Are two numbers equal?
+
+**enum:** `==`
+
+
+
+
+
+
+
+
+----
+Are two numbers not equal?
+
+**enum:** `!=`
+
+
+
+
+
+
+
+
+----
+Is left greater than right
+
+**enum:** `>`
+
+
+
+
+
+
+
+
+----
+Is left greater than or equal to right
+
+**enum:** `>=`
+
+
+
+
+
+
+
+
+----
+Is left less than right
+
+**enum:** `<`
+
+
+
+
+
+
+
+
+----
+Is left less than or equal to right
+
+**enum:** `<=`
+
+
+
+
+
+
+
+
+----
 
 
 

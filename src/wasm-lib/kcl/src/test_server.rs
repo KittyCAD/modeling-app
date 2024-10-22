@@ -1,7 +1,7 @@
 //! Types used to send data to the test server.
 
 use crate::{
-    executor::{ExecutorContext, ExecutorSettings},
+    executor::{ExecutorContext, ExecutorSettings, IdGenerator},
     settings::types::UnitLength,
 };
 
@@ -29,7 +29,9 @@ async fn do_execute_and_snapshot(ctx: &ExecutorContext, code: &str) -> anyhow::R
     let parser = crate::parser::Parser::new(tokens);
     let program = parser.ast()?;
 
-    let snapshot = ctx.execute_and_prepare_snapshot(&program).await?;
+    let snapshot = ctx
+        .execute_and_prepare_snapshot(&program, IdGenerator::default(), None)
+        .await?;
 
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));

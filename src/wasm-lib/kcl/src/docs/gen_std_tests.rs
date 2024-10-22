@@ -784,6 +784,9 @@ fn test_generate_stdlib_markdown_docs() {
 
 #[test]
 fn test_generate_stdlib_json_schema() {
+    // If this test fails and you've modified the AST or something else which affects the json repr
+    // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
+    // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 

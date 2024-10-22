@@ -1,3 +1,4 @@
+import { DebugFeatureTree } from 'components/DebugFeatureTree'
 import { AstExplorer } from '../../AstExplorer'
 import { EngineCommands } from '../../EngineCommands'
 import { CamDebugSettings } from 'clientSideScene/ClientSideSceneComp'
@@ -12,6 +13,7 @@ export const DebugPane = () => {
         <EngineCommands />
         <CamDebugSettings />
         <AstExplorer />
+        <DebugFeatureTree />
       </div>
     </section>
   )

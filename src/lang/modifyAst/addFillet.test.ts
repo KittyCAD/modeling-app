@@ -41,7 +41,7 @@ beforeAll(async () => {
       },
     })
   })
-}, 20_000)
+}, 30_000)
 
 afterAll(() => {
   engineCommandManager.tearDown()
@@ -620,7 +620,7 @@ describe('Testing button states', () => {
   it('should return true when body exists and segment is selected', async () => {
     await runButtonStateTest(codeWithBody, `line([10, 0], %)`, true)
   })
-  it('hould return false when body exists and not a segment is selected', async () => {
+  it('should return false when body exists and not a segment is selected', async () => {
     await runButtonStateTest(codeWithBody, `close(%)`, false)
   })
 })

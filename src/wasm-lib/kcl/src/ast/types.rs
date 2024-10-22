@@ -12,12 +12,12 @@ use databake::*;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value as JValue};
-use sha2::{Digest as DigestTrait, Sha256};
+use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
 
+use self::execute::execute_pipe_body;
 pub use crate::ast::types::{
     condition::{ElseIf, IfExpression},
     literal_value::LiteralValue,
@@ -25,21 +25,24 @@ pub use crate::ast::types::{
 };
 use crate::{
     docs::StdLibFn,
-    errors::{KclError, KclErrorDetails},
-    executor::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, Sketch, SourceRange, StatementKind, TagEngineInfo,
-        TagIdentifier, UserVal,
-    },
+    errors::KclError,
+    executor::{ExecState, ExecutorContext, KclValue, Metadata, SourceRange, TagIdentifier, UserVal},
     parser::PIPE_OPERATOR,
-    std::{kcl_stdlib::KclStdLibFn, FunctionKind},
+    std::kcl_stdlib::KclStdLibFn,
 };
 
 mod condition;
+pub(crate) mod digest;
+pub(crate) mod execute;
 mod literal_value;
 mod none;
 
-/// Position-independent digest of the AST node.
-pub type Digest = [u8; 32];
+use digest::Digest;
+
+pub enum Definition<'a> {
+    Variable(&'a VariableDeclarator),
+    Import(&'a ImportStatement),
+}
 
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -50,45 +53,15 @@ pub struct Program {
     pub start: usize,
     pub end: usize,
     pub body: Vec<BodyItem>,
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
-macro_rules! compute_digest {
-    (|$slf:ident, $hasher:ident| $body:block) => {
-        /// Compute a digest over the AST node.
-        pub fn compute_digest(&mut self) -> Digest {
-            if let Some(node_digest) = self.digest {
-                return node_digest;
-            }
-
-            let mut $hasher = Sha256::new();
-
-            #[allow(unused_mut)]
-            let mut $slf = self;
-
-            $hasher.update(std::any::type_name::<Self>());
-
-            $body
-
-            let node_digest: Digest = $hasher.finalize().into();
-            $slf.digest = Some(node_digest);
-            node_digest
-        }
-    };
-}
-pub(crate) use compute_digest;
-
 impl Program {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.body.len().to_ne_bytes());
-        for body_item in slf.body.iter_mut() {
-            hasher.update(body_item.compute_digest());
-        }
-        hasher.update(slf.non_code_meta.compute_digest());
-    });
-
     /// Is the last body item an expression?
     pub fn ends_with_expr(&self) -> bool {
         let Some(ref last) = self.body.last() else {
@@ -114,7 +87,7 @@ impl Program {
             }
         }
 
-        let value = self.get_value_for_position(pos)?;
+        let value = self.get_expr_for_position(pos)?;
 
         value.get_hover_value_for_position(pos, code)
     }
@@ -192,15 +165,16 @@ impl Program {
         None
     }
 
-    /// Returns a value that includes the given character position.
+    /// Returns an Expr that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
         match item {
+            BodyItem::ImportStatement(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         }
     }
@@ -214,15 +188,16 @@ impl Program {
         let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
-        let value = match item {
+        let expr = match item {
+            BodyItem::ImportStatement(_) => None,
             BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         };
 
-        // Check if the value's non code meta contains the position.
-        if let Some(value) = value {
-            if let Some(non_code_meta) = value.get_non_code_meta() {
+        // Check if the expr's non code meta contains the position.
+        if let Some(expr) = expr {
+            if let Some(non_code_meta) = expr.get_non_code_meta() {
                 if non_code_meta.contains(pos) {
                     return Some(non_code_meta);
                 }
@@ -258,6 +233,7 @@ impl Program {
         // We only care about the top level things in the program.
         for item in &self.body {
             match item {
+                BodyItem::ImportStatement(_) => continue,
                 BodyItem::ExpressionStatement(expression_statement) => {
                     if let Some(folding_range) = expression_statement.expression.get_lsp_folding_range() {
                         ranges.push(folding_range)
@@ -281,6 +257,12 @@ impl Program {
         let mut old_name = None;
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(stmt) => {
+                    if let Some(var_old_name) = stmt.rename_symbol(new_name, pos) {
+                        old_name = Some(var_old_name);
+                        break;
+                    }
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
@@ -307,11 +289,12 @@ impl Program {
 
             // Recurse over the item.
             let mut value = match item {
+                BodyItem::ImportStatement(_) => None, // TODO
                 BodyItem::ExpressionStatement(ref mut expression_statement) => {
                     Some(&mut expression_statement.expression)
                 }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
-                    variable_declaration.get_mut_value_for_position(pos)
+                    variable_declaration.get_mut_expr_for_position(pos)
                 }
                 BodyItem::ReturnStatement(ref mut return_statement) => Some(&mut return_statement.argument),
             };
@@ -338,6 +321,9 @@ impl Program {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(ref mut stmt) => {
+                    stmt.rename_identifiers(old_name, new_name);
+                }
                 BodyItem::ExpressionStatement(ref mut expression_statement) => {
                     expression_statement.expression.rename_identifiers(old_name, new_name);
                 }
@@ -355,6 +341,9 @@ impl Program {
     pub fn replace_variable(&mut self, name: &str, declarator: VariableDeclarator) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(_) => {
+                    continue;
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
@@ -375,6 +364,7 @@ impl Program {
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.body {
             match item {
+                BodyItem::ImportStatement(_) => {} // TODO
                 BodyItem::ExpressionStatement(ref mut expression_statement) => expression_statement
                     .expression
                     .replace_value(source_range, new_value.clone()),
@@ -389,16 +379,23 @@ impl Program {
     }
 
     /// Get the variable declaration with the given name.
-    pub fn get_variable(&self, name: &str) -> Option<&VariableDeclarator> {
+    pub fn get_variable(&self, name: &str) -> Option<Definition<'_>> {
         for item in &self.body {
             match item {
+                BodyItem::ImportStatement(stmt) => {
+                    for import_item in &stmt.items {
+                        if import_item.identifier() == name {
+                            return Some(Definition::Import(stmt.as_ref()));
+                        }
+                    }
+                }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         if declaration.id.name == name {
-                            return Some(declaration);
+                            return Some(Definition::Variable(declaration));
                         }
                     }
                 }
@@ -455,22 +452,16 @@ pub(crate) use impl_value_meta;
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
+    ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
-    VariableDeclaration(VariableDeclaration),
+    VariableDeclaration(Box<VariableDeclaration>),
     ReturnStatement(ReturnStatement),
 }
 
 impl BodyItem {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            BodyItem::ExpressionStatement(es) => es.compute_digest(),
-            BodyItem::VariableDeclaration(vs) => vs.compute_digest(),
-            BodyItem::ReturnStatement(rs) => rs.compute_digest(),
-        }
-    }
-
     pub fn start(&self) -> usize {
         match self {
+            BodyItem::ImportStatement(stmt) => stmt.start(),
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.start(),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.start(),
             BodyItem::ReturnStatement(return_statement) => return_statement.start(),
@@ -479,6 +470,7 @@ impl BodyItem {
 
     pub fn end(&self) -> usize {
         match self {
+            BodyItem::ImportStatement(stmt) => stmt.end(),
             BodyItem::ExpressionStatement(expression_statement) => expression_statement.end(),
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end(),
             BodyItem::ReturnStatement(return_statement) => return_statement.end(),
@@ -513,6 +505,7 @@ pub enum Expr {
     PipeExpression(Box<PipeExpression>),
     PipeSubstitution(Box<PipeSubstitution>),
     ArrayExpression(Box<ArrayExpression>),
+    ArrayRangeExpression(Box<ArrayRangeExpression>),
     ObjectExpression(Box<ObjectExpression>),
     MemberExpression(Box<MemberExpression>),
     UnaryExpression(Box<UnaryExpression>),
@@ -521,29 +514,6 @@ pub enum Expr {
 }
 
 impl Expr {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            Expr::Literal(lit) => lit.compute_digest(),
-            Expr::Identifier(id) => id.compute_digest(),
-            Expr::TagDeclarator(tag) => tag.compute_digest(),
-            Expr::BinaryExpression(be) => be.compute_digest(),
-            Expr::FunctionExpression(fe) => fe.compute_digest(),
-            Expr::CallExpression(ce) => ce.compute_digest(),
-            Expr::PipeExpression(pe) => pe.compute_digest(),
-            Expr::PipeSubstitution(ps) => ps.compute_digest(),
-            Expr::ArrayExpression(ae) => ae.compute_digest(),
-            Expr::ObjectExpression(oe) => oe.compute_digest(),
-            Expr::MemberExpression(me) => me.compute_digest(),
-            Expr::UnaryExpression(ue) => ue.compute_digest(),
-            Expr::IfExpression(e) => e.compute_digest(),
-            Expr::None(_) => {
-                let mut hasher = Sha256::new();
-                hasher.update(b"Value::None");
-                hasher.finalize().into()
-            }
-        }
-    }
-
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
         let recasted = self.recast(&FormatOptions::default(), 0, false);
         // If the code only has one line then we don't need to fold it.
@@ -569,6 +539,7 @@ impl Expr {
         match self {
             Expr::BinaryExpression(_bin_exp) => None,
             Expr::ArrayExpression(_array_exp) => None,
+            Expr::ArrayRangeExpression(_array_exp) => None,
             Expr::ObjectExpression(_obj_exp) => None,
             Expr::MemberExpression(_mem_exp) => None,
             Expr::Literal(_literal) => None,
@@ -593,6 +564,7 @@ impl Expr {
         match self {
             Expr::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
             Expr::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
+            Expr::ArrayRangeExpression(ref mut array_range) => array_range.replace_value(source_range, new_value),
             Expr::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
             Expr::MemberExpression(_) => {}
             Expr::Literal(_) => {}
@@ -619,6 +591,7 @@ impl Expr {
             Expr::PipeExpression(pipe_expression) => pipe_expression.start(),
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start(),
             Expr::ArrayExpression(array_expression) => array_expression.start(),
+            Expr::ArrayRangeExpression(array_range) => array_range.start(),
             Expr::ObjectExpression(object_expression) => object_expression.start(),
             Expr::MemberExpression(member_expression) => member_expression.start(),
             Expr::UnaryExpression(unary_expression) => unary_expression.start(),
@@ -638,6 +611,7 @@ impl Expr {
             Expr::PipeExpression(pipe_expression) => pipe_expression.end(),
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end(),
             Expr::ArrayExpression(array_expression) => array_expression.end(),
+            Expr::ArrayRangeExpression(array_range) => array_range.end(),
             Expr::ObjectExpression(object_expression) => object_expression.end(),
             Expr::MemberExpression(member_expression) => member_expression.end(),
             Expr::UnaryExpression(unary_expression) => unary_expression.end(),
@@ -657,6 +631,7 @@ impl Expr {
             Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
             Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
+            Expr::ArrayRangeExpression(array_range) => array_range.get_hover_value_for_position(pos, code),
             Expr::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
             Expr::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
@@ -685,6 +660,7 @@ impl Expr {
             Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
             Expr::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
+            Expr::ArrayRangeExpression(ref mut array_range) => array_range.rename_identifiers(old_name, new_name),
             Expr::ObjectExpression(ref mut object_expression) => {
                 object_expression.rename_identifiers(old_name, new_name)
             }
@@ -712,6 +688,7 @@ impl Expr {
                 source_ranges: vec![pipe_substitution.into()],
             },
             Expr::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
+            Expr::ArrayRangeExpression(array_range) => array_range.get_constraint_level(),
             Expr::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
             Expr::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
@@ -760,18 +737,6 @@ impl From<&BinaryPart> for SourceRange {
 }
 
 impl BinaryPart {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            BinaryPart::Literal(lit) => lit.compute_digest(),
-            BinaryPart::Identifier(id) => id.compute_digest(),
-            BinaryPart::BinaryExpression(be) => be.compute_digest(),
-            BinaryPart::CallExpression(ce) => ce.compute_digest(),
-            BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
-            BinaryPart::MemberExpression(me) => me.compute_digest(),
-            BinaryPart::IfExpression(e) => e.compute_digest(),
-        }
-    }
-
     /// Get the constraint level.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         match self {
@@ -827,22 +792,6 @@ impl BinaryPart {
         }
     }
 
-    #[async_recursion::async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        match self {
-            BinaryPart::Literal(literal) => Ok(literal.into()),
-            BinaryPart::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
-                Ok(value.clone())
-            }
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, ctx).await,
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
-            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
-            BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
-        }
-    }
-
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
@@ -891,6 +840,8 @@ pub struct NonCodeNode {
     pub end: usize,
     pub value: NonCodeValue,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -907,29 +858,6 @@ impl From<&NonCodeNode> for SourceRange {
 }
 
 impl NonCodeNode {
-    compute_digest!(|slf, hasher| {
-        match &slf.value {
-            NonCodeValue::Shebang { value } => {
-                hasher.update(value);
-            }
-            NonCodeValue::InlineComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::BlockComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::NewLine => {
-                hasher.update(b"\r\n");
-            }
-        }
-    });
-
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
     }
@@ -1058,6 +986,8 @@ pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
     pub start: Vec<NonCodeNode>,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1102,20 +1032,6 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
 }
 
 impl NonCodeMeta {
-    compute_digest!(|slf, hasher| {
-        let mut keys = slf.non_code_nodes.keys().copied().collect::<Vec<_>>();
-        keys.sort();
-
-        for key in keys.into_iter() {
-            hasher.update(key.to_ne_bytes());
-            let nodes = slf.non_code_nodes.get_mut(&key).unwrap();
-            hasher.update(nodes.len().to_ne_bytes());
-            for node in nodes.iter_mut() {
-                hasher.update(node.compute_digest());
-            }
-        }
-    });
-
     pub fn insert(&mut self, i: usize, new: NonCodeNode) {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
@@ -1135,21 +1051,118 @@ impl NonCodeMeta {
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
+pub struct ImportItem {
+    /// Name of the item to import.
+    pub name: Identifier,
+    /// Rename the item using an identifier after "as".
+    pub alias: Option<Identifier>,
+
+    pub start: usize,
+    pub end: usize,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ImportItem);
+
+impl ImportItem {
+    pub fn identifier(&self) -> &str {
+        match &self.alias {
+            Some(alias) => &alias.name,
+            None => &self.name.name,
+        }
+    }
+
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        match &mut self.alias {
+            Some(alias) => {
+                let alias_source_range = SourceRange::from(&*alias);
+                if !alias_source_range.contains(pos) {
+                    return None;
+                }
+                let old_name = std::mem::replace(&mut alias.name, new_name.to_owned());
+                Some(old_name)
+            }
+            None => {
+                let use_source_range = SourceRange::from(&*self);
+                if use_source_range.contains(pos) {
+                    self.alias = Some(Identifier::new(new_name));
+                }
+                // Return implicit name.
+                return Some(self.identifier().to_owned());
+            }
+        }
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        if let Some(alias) = &mut self.alias {
+            alias.rename(old_name, new_name);
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct ImportStatement {
+    pub start: usize,
+    pub end: usize,
+    pub items: Vec<ImportItem>,
+    pub path: String,
+    pub raw_path: String,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ImportStatement);
+
+impl ImportStatement {
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        for item in &mut self.items {
+            let source_range = SourceRange::from(&*item);
+            if source_range.contains(pos) {
+                let old_name = item.rename_symbol(new_name, pos);
+                if old_name.is_some() {
+                    return old_name;
+                }
+            }
+        }
+        None
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_identifiers(old_name, new_name);
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
     pub expression: Expr,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ExpressionStatement);
-
-impl ExpressionStatement {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.expression.compute_digest());
-    });
-}
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -1162,6 +1175,8 @@ pub struct CallExpression {
     pub arguments: Vec<Expr>,
     pub optional: bool,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1185,15 +1200,6 @@ impl CallExpression {
         })
     }
 
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.callee.compute_digest());
-        hasher.update(slf.arguments.len().to_ne_bytes());
-        for argument in slf.arguments.iter_mut() {
-            hasher.update(argument.compute_digest());
-        }
-        hasher.update(if slf.optional { [1] } else { [0] });
-    });
-
     /// Is at least one argument the '%' i.e. the substitution operator?
     pub fn has_substitution_arg(&self) -> bool {
         self.arguments
@@ -1208,209 +1214,6 @@ impl CallExpression {
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for arg in &mut self.arguments {
             arg.replace_value(source_range, new_value.clone());
-        }
-    }
-
-    #[async_recursion::async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let fn_name = &self.callee.name;
-
-        let mut fn_args: Vec<KclValue> = Vec::with_capacity(self.arguments.len());
-
-        for arg in &self.arguments {
-            let metadata = Metadata {
-                source_range: SourceRange::from(arg),
-            };
-            let result = ctx
-                .execute_expr(arg, exec_state, &metadata, StatementKind::Expression)
-                .await?;
-            fn_args.push(result);
-        }
-
-        match ctx.stdlib.get_either(&self.callee.name) {
-            FunctionKind::Core(func) => {
-                // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
-                let mut result = func.std_lib_fn()(exec_state, args).await?;
-
-                // If the return result is a sketch or solid, we want to update the
-                // memory for the tags of the group.
-                // TODO: This could probably be done in a better way, but as of now this was my only idea
-                // and it works.
-                match result {
-                    KclValue::UserVal(ref mut uval) => {
-                        uval.mutate(|sketch: &mut Sketch| {
-                            for (_, tag) in sketch.tags.iter() {
-                                exec_state.memory.update_tag(&tag.value, tag.clone())?;
-                            }
-                            Ok::<_, KclError>(())
-                        })?;
-                    }
-                    KclValue::Solid(ref mut solid) => {
-                        for value in &solid.value {
-                            if let Some(tag) = value.get_tag() {
-                                // Get the past tag and update it.
-                                let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
-                                    t.clone()
-                                } else {
-                                    // It's probably a fillet or a chamfer.
-                                    // Initialize it.
-                                    TagIdentifier {
-                                        value: tag.name.clone(),
-                                        info: Some(TagEngineInfo {
-                                            id: value.get_id(),
-                                            surface: Some(value.clone()),
-                                            path: None,
-                                            sketch: solid.id,
-                                        }),
-                                        meta: vec![Metadata {
-                                            source_range: tag.clone().into(),
-                                        }],
-                                    }
-                                };
-
-                                let Some(ref info) = t.info else {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: format!("Tag {} does not have path info", tag.name),
-                                        source_ranges: vec![tag.into()],
-                                    }));
-                                };
-
-                                let mut info = info.clone();
-                                info.surface = Some(value.clone());
-                                info.sketch = solid.id;
-                                t.info = Some(info);
-
-                                exec_state.memory.update_tag(&tag.name, t.clone())?;
-
-                                // update the sketch tags.
-                                solid.sketch.tags.insert(tag.name.clone(), t);
-                            }
-                        }
-
-                        // Find the stale sketch in memory and update it.
-                        if let Some(current_env) = exec_state
-                            .memory
-                            .environments
-                            .get_mut(exec_state.memory.current_env.index())
-                        {
-                            current_env.update_sketch_tags(&solid.sketch);
-                        }
-                    }
-                    _ => {}
-                }
-
-                Ok(result)
-            }
-            FunctionKind::Std(func) => {
-                let function_expression = func.function();
-                let (required_params, optional_params) =
-                    function_expression.required_and_optional_params().map_err(|e| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("Error getting parts of function: {}", e),
-                            source_ranges: vec![self.into()],
-                        })
-                    })?;
-                if fn_args.len() < required_params.len() || fn_args.len() > function_expression.params.len() {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "this function expected {} arguments, got {}",
-                            required_params.len(),
-                            fn_args.len(),
-                        ),
-                        source_ranges: vec![self.into()],
-                    }));
-                }
-
-                // Add the arguments to the memory.
-                let mut fn_memory = exec_state.memory.clone();
-                for (index, param) in required_params.iter().enumerate() {
-                    fn_memory.add(
-                        &param.identifier.name,
-                        fn_args.get(index).unwrap().clone(),
-                        param.identifier.clone().into(),
-                    )?;
-                }
-                // Add the optional arguments to the memory.
-                for (index, param) in optional_params.iter().enumerate() {
-                    if let Some(arg) = fn_args.get(index + required_params.len()) {
-                        fn_memory.add(&param.identifier.name, arg.clone(), param.identifier.clone().into())?;
-                    } else {
-                        fn_memory.add(
-                            &param.identifier.name,
-                            KclValue::UserVal(UserVal {
-                                value: serde_json::value::Value::Null,
-                                meta: Default::default(),
-                            }),
-                            param.identifier.clone().into(),
-                        )?;
-                    }
-                }
-
-                let fn_dynamic_state = exec_state.dynamic_state.clone();
-                // TODO: Shouldn't we merge program memory into fn_dynamic_state
-                // here?
-
-                // Call the stdlib function
-                let p = &func.function().body;
-
-                let (exec_result, fn_memory) = {
-                    let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
-                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
-                    let result = ctx.inner_execute(p, exec_state, BodyType::Block).await;
-                    exec_state.dynamic_state = previous_dynamic_state;
-                    let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
-                    (result, fn_memory)
-                };
-
-                match exec_result {
-                    Ok(_) => {}
-                    Err(err) => {
-                        // We need to override the source ranges so we don't get the embedded kcl
-                        // function from the stdlib.
-                        return Err(err.override_source_ranges(vec![self.into()]));
-                    }
-                };
-                let out = fn_memory.return_;
-                let result = out.ok_or_else(|| {
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of stdlib function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
-                    })
-                })?;
-                Ok(result)
-            }
-            FunctionKind::UserDefined => {
-                let source_range = SourceRange::from(self);
-                // Clone the function so that we can use a mutable reference to
-                // exec_state.
-                let func = exec_state.memory.get(fn_name, source_range)?.clone();
-                let fn_dynamic_state = exec_state.dynamic_state.merge(&exec_state.memory);
-
-                let return_value = {
-                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
-                    let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        e.add_source_ranges(vec![source_range])
-                    });
-                    exec_state.dynamic_state = previous_dynamic_state;
-                    result?
-                };
-
-                let result = return_value.ok_or_else(move || {
-                    let mut source_ranges: Vec<SourceRange> = vec![source_range];
-                    // We want to send the source range of the original function.
-                    if let KclValue::Function { meta, .. } = func {
-                        source_ranges = meta.iter().map(|m| m.source_range).collect();
-                    };
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of user-defined function {} is undefined", fn_name),
-                        source_ranges,
-                    })
-                })?;
-
-                Ok(result)
-            }
         }
     }
 
@@ -1495,6 +1298,32 @@ impl PartialEq for Function {
     }
 }
 
+#[derive(
+    Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake,
+)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum ItemVisibility {
+    #[default]
+    Default,
+    Export,
+}
+
+impl ItemVisibility {
+    fn digestable_id(&self) -> [u8; 1] {
+        match self {
+            ItemVisibility::Default => [0],
+            ItemVisibility::Export => [1],
+        }
+    }
+
+    fn is_default(&self) -> bool {
+        matches!(self, Self::Default)
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -1503,8 +1332,12 @@ pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
+    pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1543,19 +1376,12 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.declarations.len().to_ne_bytes());
-        for declarator in &mut slf.declarations {
-            hasher.update(declarator.compute_digest());
-        }
-        hasher.update(slf.kind.digestable_id());
-    });
-
-    pub fn new(declarations: Vec<VariableDeclarator>, kind: VariableKind) -> Self {
+    pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
             start: 0,
             end: 0,
             declarations,
+            visibility,
             kind,
             digest: None,
         }
@@ -1586,8 +1412,8 @@ impl VariableDeclaration {
         }
     }
 
-    /// Returns a value that includes the given character position.
-    pub fn get_value_for_position(&self, pos: usize) -> Option<&Expr> {
+    /// Returns an Expr that includes the given character position.
+    pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
         for declaration in &self.declarations {
             let source_range: SourceRange = declaration.into();
             if source_range.contains(pos) {
@@ -1598,8 +1424,8 @@ impl VariableDeclaration {
         None
     }
 
-    /// Returns a value that includes the given character position.
-    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
+    /// Returns an Expr that includes the given character position.
+    pub fn get_mut_expr_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
         for declaration in &mut self.declarations {
             let source_range: SourceRange = declaration.clone().into();
             if source_range.contains(pos) {
@@ -1766,6 +1592,8 @@ pub struct VariableDeclarator {
     /// The value of the variable.
     pub init: Expr,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1782,11 +1610,6 @@ impl VariableDeclarator {
         }
     }
 
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.id.compute_digest());
-        hasher.update(slf.init.compute_digest());
-    });
-
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         self.init.get_constraint_level()
     }
@@ -1802,6 +1625,8 @@ pub struct Literal {
     pub value: LiteralValue,
     pub raw: String,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1817,10 +1642,6 @@ impl Literal {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.value.digestable_id());
-    });
 
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
@@ -1862,6 +1683,8 @@ pub struct Identifier {
     pub end: usize,
     pub name: String,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1876,12 +1699,6 @@ impl Identifier {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        let name = slf.name.as_bytes();
-        hasher.update(name.len().to_ne_bytes());
-        hasher.update(name);
-    });
 
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
@@ -1909,6 +1726,8 @@ pub struct TagDeclarator {
     #[serde(rename = "value")]
     pub name: String,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -1985,12 +1804,6 @@ impl TagDeclarator {
         }
     }
 
-    compute_digest!(|slf, hasher| {
-        let name = slf.name.as_bytes();
-        hasher.update(name.len().to_ne_bytes());
-        hasher.update(name);
-    });
-
     /// Get the constraint level for this identifier.
     /// TagDeclarator are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2004,20 +1817,6 @@ impl TagDeclarator {
         if self.name == old_name {
             self.name = new_name.to_string();
         }
-    }
-
-    pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
-        let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
-            value: self.name.clone(),
-            info: None,
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }));
-
-        exec_state.memory.add(&self.name, memory_item.clone(), self.into())?;
-
-        Ok(self.into())
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
@@ -2047,6 +1846,8 @@ pub struct PipeSubstitution {
     pub start: usize,
     pub end: usize,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2060,10 +1861,6 @@ impl PipeSubstitution {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(b"PipeSubstitution");
-    });
 }
 
 impl Default for PipeSubstitution {
@@ -2089,6 +1886,8 @@ pub struct ArrayExpression {
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2110,13 +1909,6 @@ impl ArrayExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.elements.len().to_ne_bytes());
-        for value in slf.elements.iter_mut() {
-            hasher.update(value.compute_digest());
-        }
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for element in &mut self.elements {
@@ -2151,34 +1943,80 @@ impl ArrayExpression {
         None
     }
 
-    #[async_recursion::async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let mut results = Vec::with_capacity(self.elements.len());
-
-        for element in &self.elements {
-            let metadata = Metadata::from(element);
-            // TODO: Carry statement kind here so that we know if we're
-            // inside a variable declaration.
-            let value = ctx
-                .execute_expr(element, exec_state, &metadata, StatementKind::Expression)
-                .await?;
-
-            results.push(value.get_json_value()?);
-        }
-
-        Ok(KclValue::UserVal(UserVal {
-            value: results.into(),
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for element in &mut self.elements {
             element.rename_identifiers(old_name, new_name);
         }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", tag = "type")]
+pub struct ArrayRangeExpression {
+    pub start: usize,
+    pub end: usize,
+    pub start_element: Box<Expr>,
+    pub end_element: Box<Expr>,
+    /// Is the `end_element` included in the range?
+    pub end_inclusive: bool,
+    // TODO (maybe) comments on range components?
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl_value_meta!(ArrayRangeExpression);
+
+impl From<ArrayRangeExpression> for Expr {
+    fn from(array_expression: ArrayRangeExpression) -> Self {
+        Expr::ArrayRangeExpression(Box::new(array_expression))
+    }
+}
+
+impl ArrayRangeExpression {
+    pub fn new(start_element: Box<Expr>, end_element: Box<Expr>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            start_element,
+            end_element,
+            end_inclusive: true,
+            digest: None,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.start_element.replace_value(source_range, new_value.clone());
+        self.end_element.replace_value(source_range, new_value.clone());
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        let mut constraint_levels = ConstraintLevels::new();
+        constraint_levels.push(self.start_element.get_constraint_level());
+        constraint_levels.push(self.end_element.get_constraint_level());
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+
+    /// Returns a hover value that includes the given character position.
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        for element in [&*self.start_element, &*self.end_element] {
+            let element_source_range: SourceRange = element.into();
+            if element_source_range.contains(pos) {
+                return element.get_hover_value_for_position(pos, code);
+            }
+        }
+
+        None
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.start_element.rename_identifiers(old_name, new_name);
+        self.end_element.rename_identifiers(old_name, new_name);
     }
 }
 
@@ -2193,6 +2031,8 @@ pub struct ObjectExpression {
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2206,13 +2046,6 @@ impl ObjectExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.properties.len().to_ne_bytes());
-        for prop in slf.properties.iter_mut() {
-            hasher.update(prop.compute_digest());
-        }
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for property in &mut self.properties {
@@ -2247,26 +2080,6 @@ impl ObjectExpression {
         None
     }
 
-    #[async_recursion::async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let mut object = Map::new();
-        for property in &self.properties {
-            let metadata = Metadata::from(&property.value);
-            let result = ctx
-                .execute_expr(&property.value, exec_state, &metadata, StatementKind::Expression)
-                .await?;
-
-            object.insert(property.key.name.clone(), result.get_json_value()?);
-        }
-
-        Ok(KclValue::UserVal(UserVal {
-            value: object.into(),
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for property in &mut self.properties {
@@ -2287,17 +2100,14 @@ pub struct ObjectProperty {
     pub key: Identifier,
     pub value: Expr,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ObjectProperty);
 
 impl ObjectProperty {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.key.compute_digest());
-        hasher.update(slf.value.compute_digest());
-    });
-
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
         let source_range: SourceRange = self.clone().into();
         let inner_source_range: SourceRange = self.key.clone().into();
@@ -2337,13 +2147,6 @@ pub enum MemberObject {
 }
 
 impl MemberObject {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            MemberObject::MemberExpression(me) => me.compute_digest(),
-            MemberObject::Identifier(id) => id.compute_digest(),
-        }
-    }
-
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
@@ -2391,13 +2194,6 @@ pub enum LiteralIdentifier {
 }
 
 impl LiteralIdentifier {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            LiteralIdentifier::Identifier(id) => id.compute_digest(),
-            LiteralIdentifier::Literal(lit) => lit.compute_digest(),
-        }
-    }
-
     pub fn start(&self) -> usize {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.start,
@@ -2436,18 +2232,14 @@ pub struct MemberExpression {
     pub property: LiteralIdentifier,
     pub computed: bool,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
 impl_value_meta!(MemberExpression);
 
 impl MemberExpression {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.object.compute_digest());
-        hasher.update(slf.property.compute_digest());
-        hasher.update(if slf.computed { [1] } else { [0] });
-    });
-
     /// Get the constraint level for a member expression.
     /// This is always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2464,194 +2256,6 @@ impl MemberExpression {
         }
 
         None
-    }
-
-    pub fn get_result_array(&self, exec_state: &mut ExecState, index: usize) -> Result<KclValue, KclError> {
-        let array = match &self.object {
-            MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
-            MemberObject::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
-                value.clone()
-            }
-        };
-
-        let array_json = array.get_json_value()?;
-
-        if let serde_json::Value::Array(array) = array_json {
-            if let Some(value) = array.get(index) {
-                Ok(KclValue::UserVal(UserVal {
-                    value: value.clone(),
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }))
-            } else {
-                Err(KclError::UndefinedValue(KclErrorDetails {
-                    message: format!("index {} not found in array", index),
-                    source_ranges: vec![self.clone().into()],
-                }))
-            }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("MemberExpression array is not an array: {:?}", array),
-                source_ranges: vec![self.clone().into()],
-            }))
-        }
-    }
-
-    pub fn get_result(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
-        #[derive(Debug)]
-        enum Property {
-            Number(usize),
-            String(String),
-        }
-
-        impl Property {
-            fn type_name(&self) -> &'static str {
-                match self {
-                    Property::Number(_) => "number",
-                    Property::String(_) => "string",
-                }
-            }
-        }
-
-        let property_src: SourceRange = self.property.clone().into();
-        let property_sr = vec![property_src];
-
-        let property: Property = match self.property.clone() {
-            LiteralIdentifier::Identifier(identifier) => {
-                let name = identifier.name;
-                if !self.computed {
-                    // Treat the property as a literal
-                    Property::String(name.to_string())
-                } else {
-                    // Actually evaluate memory to compute the property.
-                    let prop = exec_state.memory.get(&name, property_src)?;
-                    let KclValue::UserVal(prop) = prop else {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            source_ranges: property_sr,
-                            message: format!(
-                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
-                            ),
-                        }));
-                    };
-                    match prop.value {
-                        JValue::Number(ref num) => {
-                            num
-                                .as_u64()
-                                .and_then(|x| usize::try_from(x).ok())
-                                .map(Property::Number)
-                                .ok_or_else(|| {
-                                    KclError::Semantic(KclErrorDetails {
-                                        source_ranges: property_sr,
-                                        message: format!(
-                                            "{name}'s value is not a valid property/index, you can only use a string or int (>= 0) here",
-                                        ),
-                                    })
-                                })?
-                        }
-                        JValue::String(ref x) => Property::String(x.to_owned()),
-                        _ => {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                source_ranges: property_sr,
-                                message: format!(
-                                    "{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array",
-                                ),
-                            }));
-                        }
-                    }
-                }
-            }
-            LiteralIdentifier::Literal(literal) => {
-                let value = literal.value.clone();
-                match value {
-                    LiteralValue::IInteger(x) => {
-                        if let Ok(x) = u64::try_from(x) {
-                            Property::Number(x.try_into().unwrap())
-                        } else {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                source_ranges: property_sr,
-                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
-                            }));
-                        }
-                    }
-                    LiteralValue::String(s) => Property::String(s),
-                    _ => {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            source_ranges: vec![self.into()],
-                            message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
-                        }));
-                    }
-                }
-            }
-        };
-
-        let object = match &self.object {
-            // TODO: Don't use recursion here, use a loop.
-            MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
-            MemberObject::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
-                value.clone()
-            }
-        };
-
-        let object_json = object.get_json_value()?;
-
-        // Check the property and object match -- e.g. ints for arrays, strs for objects.
-        match (object_json, property) {
-            (JValue::Object(map), Property::String(property)) => {
-                if let Some(value) = map.get(&property) {
-                    Ok(KclValue::UserVal(UserVal {
-                        value: value.clone(),
-                        meta: vec![Metadata {
-                            source_range: self.into(),
-                        }],
-                    }))
-                } else {
-                    Err(KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Property '{property}' not found in object"),
-                        source_ranges: vec![self.clone().into()],
-                    }))
-                }
-            }
-            (JValue::Object(_), p) => Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
-                    "Only strings can be used as the property of an object, but you're using a {}",
-                    p.type_name()
-                ),
-                source_ranges: vec![self.clone().into()],
-            })),
-            (JValue::Array(arr), Property::Number(index)) => {
-                let value_of_arr: Option<&JValue> = arr.get(index);
-                if let Some(value) = value_of_arr {
-                    Ok(KclValue::UserVal(UserVal {
-                        value: value.clone(),
-                        meta: vec![Metadata {
-                            source_range: self.into(),
-                        }],
-                    }))
-                } else {
-                    Err(KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("The array doesn't have any item at index {index}"),
-                        source_ranges: vec![self.clone().into()],
-                    }))
-                }
-            }
-            (JValue::Array(_), p) => Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
-                    "Only integers >= 0 can be used as the index of an array, but you're using a {}",
-                    p.type_name()
-                ),
-                source_ranges: vec![self.clone().into()],
-            })),
-            (being_indexed, _) => {
-                let t = human_friendly_type(&being_indexed);
-                Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
-                    source_ranges: vec![self.clone().into()],
-                }))
-            }
-        }
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2689,6 +2293,8 @@ pub struct BinaryExpression {
     pub left: BinaryPart,
     pub right: BinaryPart,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2705,12 +2311,6 @@ impl BinaryExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.operator.digestable_id());
-        hasher.update(slf.left.compute_digest());
-        hasher.update(slf.right.compute_digest());
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.left.replace_value(source_range, new_value.clone());
@@ -2747,87 +2347,10 @@ impl BinaryExpression {
         None
     }
 
-    #[async_recursion::async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let left_json_value = self.left.get_result(exec_state, ctx).await?.get_json_value()?;
-        let right_json_value = self.right.get_result(exec_state, ctx).await?.get_json_value()?;
-
-        // First check if we are doing string concatenation.
-        if self.operator == BinaryOperator::Add {
-            if let (Some(left), Some(right)) = (
-                parse_json_value_as_string(&left_json_value),
-                parse_json_value_as_string(&right_json_value),
-            ) {
-                let value = serde_json::Value::String(format!("{}{}", left, right));
-                return Ok(KclValue::UserVal(UserVal {
-                    value,
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }));
-            }
-        }
-
-        let left = parse_json_number_as_f64(&left_json_value, self.left.clone().into())?;
-        let right = parse_json_number_as_f64(&right_json_value, self.right.clone().into())?;
-
-        let value: serde_json::Value = match self.operator {
-            BinaryOperator::Add => (left + right).into(),
-            BinaryOperator::Sub => (left - right).into(),
-            BinaryOperator::Mul => (left * right).into(),
-            BinaryOperator::Div => (left / right).into(),
-            BinaryOperator::Mod => (left % right).into(),
-            BinaryOperator::Pow => (left.powf(right)).into(),
-        };
-
-        Ok(KclValue::UserVal(UserVal {
-            value,
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
-    }
-
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.left.rename_identifiers(old_name, new_name);
         self.right.rename_identifiers(old_name, new_name);
-    }
-}
-
-pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange) -> Result<f64, KclError> {
-    if let serde_json::Value::Number(n) = &j {
-        n.as_f64().ok_or_else(|| {
-            KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![source_range],
-                message: format!("Invalid number: {}", j),
-            })
-        })
-    } else {
-        Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: vec![source_range],
-            message: format!("Invalid number: {}", j),
-        }))
-    }
-}
-
-pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
-    if let serde_json::Value::String(n) = &j {
-        Some(n.clone())
-    } else {
-        None
-    }
-}
-
-/// JSON value as bool.  If it isn't a bool, returns None.
-pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
-    match j {
-        JValue::Null => None,
-        JValue::Bool(b) => Some(*b),
-        JValue::Number(_) => None,
-        JValue::String(_) => None,
-        JValue::Array(_) => None,
-        JValue::Object(_) => None,
     }
 }
 
@@ -2861,6 +2384,30 @@ pub enum BinaryOperator {
     #[serde(rename = "^")]
     #[display("^")]
     Pow,
+    /// Are two numbers equal?
+    #[serde(rename = "==")]
+    #[display("==")]
+    Eq,
+    /// Are two numbers not equal?
+    #[serde(rename = "!=")]
+    #[display("!=")]
+    Neq,
+    /// Is left greater than right
+    #[serde(rename = ">")]
+    #[display(">")]
+    Gt,
+    /// Is left greater than or equal to right
+    #[serde(rename = ">=")]
+    #[display(">=")]
+    Gte,
+    /// Is left less than right
+    #[serde(rename = "<")]
+    #[display("<")]
+    Lt,
+    /// Is left less than or equal to right
+    #[serde(rename = "<=")]
+    #[display("<=")]
+    Lte,
 }
 
 /// Mathematical associativity.
@@ -2889,6 +2436,12 @@ impl BinaryOperator {
             BinaryOperator::Div => *b"div",
             BinaryOperator::Mod => *b"mod",
             BinaryOperator::Pow => *b"pow",
+            BinaryOperator::Eq => *b"eqq",
+            BinaryOperator::Neq => *b"neq",
+            BinaryOperator::Gt => *b"gtr",
+            BinaryOperator::Gte => *b"gte",
+            BinaryOperator::Lt => *b"ltr",
+            BinaryOperator::Lte => *b"lte",
         }
     }
 
@@ -2899,6 +2452,8 @@ impl BinaryOperator {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
             BinaryOperator::Mul | BinaryOperator::Div | BinaryOperator::Mod => 12,
             BinaryOperator::Pow => 13,
+            Self::Gt | Self::Gte | Self::Lt | Self::Lte => 9,
+            Self::Eq | Self::Neq => 8,
         }
     }
 
@@ -2908,6 +2463,7 @@ impl BinaryOperator {
         match self {
             Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
             Self::Pow => Associativity::Right,
+            Self::Gt | Self::Gte | Self::Lt | Self::Lte | Self::Eq | Self::Neq => Associativity::Left, // I don't know if this is correct
         }
     }
 }
@@ -2921,6 +2477,8 @@ pub struct UnaryExpression {
     pub operator: UnaryOperator,
     pub argument: BinaryPart,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -2937,47 +2495,12 @@ impl UnaryExpression {
         }
     }
 
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.operator.digestable_id());
-        hasher.update(slf.argument.compute_digest());
-    });
-
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.argument.replace_value(source_range, new_value);
     }
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         self.argument.get_constraint_level()
-    }
-
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        if self.operator == UnaryOperator::Not {
-            let value = self.argument.get_result(exec_state, ctx).await?.get_json_value()?;
-            let Some(bool_value) = json_as_bool(&value) else {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Cannot apply unary operator ! to non-boolean value: {}", value),
-                    source_ranges: vec![self.into()],
-                }));
-            };
-            let negated = !bool_value;
-            return Ok(KclValue::UserVal(UserVal {
-                value: serde_json::Value::Bool(negated),
-                meta: vec![Metadata {
-                    source_range: self.into(),
-                }],
-            }));
-        }
-
-        let num = parse_json_number_as_f64(
-            &self.argument.get_result(exec_state, ctx).await?.get_json_value()?,
-            self.into(),
-        )?;
-        Ok(KclValue::UserVal(UserVal {
-            value: (-(num)).into(),
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
     }
 
     /// Returns a hover value that includes the given character position.
@@ -3031,8 +2554,11 @@ pub struct PipeExpression {
     // TODO: Only the first body expression can be any Value.
     // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Expr>,
+    #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -3054,14 +2580,6 @@ impl PipeExpression {
             digest: None,
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.body.len().to_ne_bytes());
-        for value in slf.body.iter_mut() {
-            hasher.update(value.compute_digest());
-        }
-        hasher.update(slf.non_code_meta.compute_digest());
-    });
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for value in &mut self.body {
@@ -3108,84 +2626,6 @@ impl PipeExpression {
             statement.rename_identifiers(old_name, new_name);
         }
     }
-}
-
-async fn execute_pipe_body(
-    exec_state: &mut ExecState,
-    body: &[Expr],
-    source_range: SourceRange,
-    ctx: &ExecutorContext,
-) -> Result<KclValue, KclError> {
-    let Some((first, body)) = body.split_first() else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Pipe expressions cannot be empty".to_owned(),
-            source_ranges: vec![source_range],
-        }));
-    };
-    // Evaluate the first element in the pipeline.
-    // They use the pipe_value from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
-    // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
-    // of its own.
-    let meta = Metadata {
-        source_range: SourceRange([first.start(), first.end()]),
-    };
-    let output = ctx
-        .execute_expr(first, exec_state, &meta, StatementKind::Expression)
-        .await?;
-
-    // Now that we've evaluated the first child expression in the pipeline, following child expressions
-    // should use the previous child expression for %.
-    // This means there's no more need for the previous pipe_value from the parent AST node above this one.
-    let previous_pipe_value = std::mem::replace(&mut exec_state.pipe_value, Some(output));
-    // Evaluate remaining elements.
-    let result = inner_execute_pipe_body(exec_state, body, ctx).await;
-    // Restore the previous pipe value.
-    exec_state.pipe_value = previous_pipe_value;
-
-    result
-}
-
-/// Execute the tail of a pipe expression.  exec_state.pipe_value must be set by
-/// the caller.
-#[async_recursion]
-async fn inner_execute_pipe_body(
-    exec_state: &mut ExecState,
-    body: &[Expr],
-    ctx: &ExecutorContext,
-) -> Result<KclValue, KclError> {
-    for expression in body {
-        match expression {
-            Expr::TagDeclarator(_) => {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("This cannot be in a PipeExpression: {:?}", expression),
-                    source_ranges: vec![expression.into()],
-                }));
-            }
-            Expr::Literal(_)
-            | Expr::Identifier(_)
-            | Expr::BinaryExpression(_)
-            | Expr::FunctionExpression(_)
-            | Expr::CallExpression(_)
-            | Expr::PipeExpression(_)
-            | Expr::PipeSubstitution(_)
-            | Expr::ArrayExpression(_)
-            | Expr::ObjectExpression(_)
-            | Expr::MemberExpression(_)
-            | Expr::UnaryExpression(_)
-            | Expr::IfExpression(_)
-            | Expr::None(_) => {}
-        };
-        let metadata = Metadata {
-            source_range: SourceRange([expression.start(), expression.end()]),
-        };
-        let output = ctx
-            .execute_expr(expression, exec_state, &metadata, StatementKind::Expression)
-            .await?;
-        exec_state.pipe_value = Some(output);
-    }
-    // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
-    let final_output = exec_state.pipe_value.take().unwrap();
-    Ok(final_output)
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake, FromStr, Display)]
@@ -3239,32 +2679,6 @@ pub enum FnArgType {
     },
 }
 
-impl FnArgType {
-    pub fn compute_digest(&mut self) -> Digest {
-        let mut hasher = Sha256::new();
-
-        match self {
-            FnArgType::Primitive(prim) => {
-                hasher.update(b"FnArgType::Primitive");
-                hasher.update(prim.digestable_id())
-            }
-            FnArgType::Array(prim) => {
-                hasher.update(b"FnArgType::Array");
-                hasher.update(prim.digestable_id())
-            }
-            FnArgType::Object { properties } => {
-                hasher.update(b"FnArgType::Object");
-                hasher.update(properties.len().to_ne_bytes());
-                for prop in properties.iter_mut() {
-                    hasher.update(prop.compute_digest());
-                }
-            }
-        }
-
-        hasher.finalize().into()
-    }
-}
-
 /// Parameter of a KCL function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -3280,23 +2694,9 @@ pub struct Parameter {
     /// Is the parameter optional?
     pub optional: bool,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
-}
-
-impl Parameter {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.identifier.compute_digest());
-        match &mut slf.type_ {
-            Some(arg) => {
-                hasher.update(b"Parameter::type_::Some");
-                hasher.update(arg.compute_digest())
-            }
-            None => {
-                hasher.update(b"Parameter::type_::None");
-            }
-        }
-        hasher.update(if slf.optional { [1] } else { [0] })
-    });
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -3311,13 +2711,15 @@ pub struct FunctionExpression {
     #[serde(skip)]
     pub return_type: Option<FnArgType>,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
 impl_value_meta!(FunctionExpression);
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RequiredParamAfterOptionalParam(pub Parameter);
+pub struct RequiredParamAfterOptionalParam(pub Box<Parameter>);
 
 impl std::fmt::Display for RequiredParamAfterOptionalParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -3332,23 +2734,6 @@ impl FunctionExpression {
             source_ranges: vec![self.into()],
         }
     }
-
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.params.len().to_ne_bytes());
-        for param in slf.params.iter_mut() {
-            hasher.update(param.compute_digest());
-        }
-        hasher.update(slf.body.compute_digest());
-        match &mut slf.return_type {
-            Some(rt) => {
-                hasher.update(b"FunctionExpression::return_type::Some");
-                hasher.update(rt.compute_digest());
-            }
-            None => {
-                hasher.update(b"FunctionExpression::return_type::None");
-            }
-        }
-    });
 
     pub fn required_and_optional_params(
         &self,
@@ -3366,7 +2751,7 @@ impl FunctionExpression {
             if param.optional {
                 found_optional = true;
             } else if found_optional {
-                return Err(RequiredParamAfterOptionalParam(param.clone()));
+                return Err(RequiredParamAfterOptionalParam(Box::new(param.clone())));
             }
         }
         let boundary = self.params.partition_point(|param| !param.optional);
@@ -3397,7 +2782,7 @@ impl FunctionExpression {
 
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        if let Some(value) = self.body.get_value_for_position(pos) {
+        if let Some(value) = self.body.get_expr_for_position(pos) {
             return value.get_hover_value_for_position(pos, code);
         }
 
@@ -3414,16 +2799,12 @@ pub struct ReturnStatement {
     pub end: usize,
     pub argument: Expr,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
 impl_value_meta!(ReturnStatement);
-
-impl ReturnStatement {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.argument.compute_digest());
-    });
-}
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]

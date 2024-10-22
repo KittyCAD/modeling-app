@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 7,
-            "name": "x",
-            "digest": null
+            "name": "x"
           },
           "init": {
             "type": "IfExpression",
@@ -34,8 +33,7 @@ expression: actual
               "start": 13,
               "end": 17,
               "value": true,
-              "raw": "true",
-              "digest": null
+              "raw": "true"
             },
             "then_val": {
               "start": 32,
@@ -52,18 +50,10 @@ expression: actual
                     "start": 32,
                     "end": 33,
                     "value": 3,
-                    "raw": "3",
-                    "digest": null
-                  },
-                  "digest": null
+                    "raw": "3"
+                  }
                 }
-              ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
+              ]
             },
             "else_ifs": [
               {
@@ -79,8 +69,7 @@ expression: actual
                     "type": "Identifier",
                     "start": 52,
                     "end": 56,
-                    "name": "func",
-                    "digest": null
+                    "name": "func"
                   },
                   "arguments": [
                     {
@@ -88,12 +77,10 @@ expression: actual
                       "type": "Identifier",
                       "start": 57,
                       "end": 63,
-                      "name": "radius",
-                      "digest": null
+                      "name": "radius"
                     }
                   ],
-                  "optional": false,
-                  "digest": null
+                  "optional": false
                 },
                 "then_val": {
                   "start": 65,
@@ -110,18 +97,10 @@ expression: actual
                         "start": 79,
                         "end": 80,
                         "value": 4,
-                        "raw": "4",
-                        "digest": null
-                      },
-                      "digest": null
+                        "raw": "4"
+                      }
                     }
-                  ],
-                  "nonCodeMeta": {
-                    "nonCodeNodes": {},
-                    "start": [],
-                    "digest": null
-                  },
-                  "digest": null
+                  ]
                 },
                 "digest": null
               }
@@ -141,32 +120,16 @@ expression: actual
                     "start": 110,
                     "end": 111,
                     "value": 5,
-                    "raw": "5",
-                    "digest": null
-                  },
-                  "digest": null
+                    "raw": "5"
+                  }
                 }
-              ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
+              ]
             },
             "digest": null
-          },
-          "digest": null
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

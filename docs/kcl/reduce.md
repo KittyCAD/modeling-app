@@ -32,7 +32,7 @@ reduce(array: [KclValue], start: KclValue, reduce_fn: FunctionParam) -> KclValue
 fn decagon = (radius) => {
   step = 1 / 10 * tau()
   sketch001 = startSketchAt([cos(0) * radius, sin(0) * radius])
-  return reduce([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], sketch001, (i, sg) => {
+  return reduce([1..10], sketch001, (i, sg) => {
   x = cos(step * i) * radius
   y = sin(step * i) * radius
   return lineTo([x, y], sg)

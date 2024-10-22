@@ -36,7 +36,7 @@ exampleSketch = startSketchOn('XZ')
   |> close(%)
   |> patternCircular2d({
        center: [0, 0],
-       repetitions: 12,
+       instances: 13,
        arcDegrees: 360,
        rotateDuplicates: true
      }, %)

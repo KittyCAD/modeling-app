@@ -1,5 +1,7 @@
 //! Standard library patterns.
 
+use std::cmp::Ordering;
+
 use anyhow::Result;
 use derive_docs::stdlib;
 use kcmc::{
@@ -23,15 +25,18 @@ use crate::{
     std::{types::Uint, Args},
 };
 
+const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
+
 /// Data for a linear pattern on a 2D sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct LinearPattern2dData {
-    /// The number of repetitions. Must be greater than 0.
-    /// This excludes the original entity. For example, if `repetitions` is 1,
-    /// the original entity will be copied once.
-    pub repetitions: Uint,
+    /// The number of total instances. Must be greater than or equal to 1.
+    /// This includes the original entity. For example, if instances is 2,
+    /// there will be two copies -- the original, and one new copy.
+    /// If instances is 1, this has no effect.
+    pub instances: Uint,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern. This is a 2D vector.
@@ -43,10 +48,11 @@ pub struct LinearPattern2dData {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct LinearPattern3dData {
-    /// The number of repetitions. Must be greater than 0.
-    /// This excludes the original entity. For example, if `repetitions` is 1,
-    /// the original entity will be copied once.
-    pub repetitions: Uint,
+    /// The number of total instances. Must be greater than or equal to 1.
+    /// This includes the original entity. For example, if instances is 2,
+    /// there will be two copies -- the original, and one new copy.
+    /// If instances is 1, this has no effect.
+    pub instances: Uint,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern.
@@ -66,11 +72,12 @@ impl LinearPattern {
         }
     }
 
-    pub fn repetitions(&self) -> u32 {
-        match self {
-            LinearPattern::TwoD(lp) => lp.repetitions.u32(),
-            LinearPattern::ThreeD(lp) => lp.repetitions.u32(),
-        }
+    fn repetitions(&self) -> RepetitionsNeeded {
+        let n = match self {
+            LinearPattern::TwoD(lp) => lp.instances.u32(),
+            LinearPattern::ThreeD(lp) => lp.instances.u32(),
+        };
+        RepetitionsNeeded::from(n)
     }
 
     pub fn distance(&self) -> f64 {
@@ -278,6 +285,12 @@ async fn inner_pattern_transform<'a>(
 ) -> Result<Vec<Box<Solid>>, KclError> {
     // Build the vec of transforms, one for each repetition.
     let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
+    if total_instances < 1 {
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: MUST_HAVE_ONE_INSTANCE.to_owned(),
+        }));
+    }
     for i in 1..total_instances {
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
@@ -296,7 +309,7 @@ async fn inner_pattern_transform<'a>(
 
     let mut solids = Vec::new();
     for e in starting_solids {
-        let new_solids = send_pattern_transform(transform.clone(), &e, args).await?;
+        let new_solids = send_pattern_transform(transform.clone(), &e, exec_state, args).await?;
         solids.extend(new_solids);
     }
     Ok(solids)
@@ -307,9 +320,10 @@ async fn send_pattern_transform(
     // https://github.com/KittyCAD/modeling-app/issues/2821
     transform: Vec<Transform>,
     solid: &Solid,
+    exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     let resp = args
         .send_modeling_cmd(
@@ -473,7 +487,7 @@ mod tests {
 }
 
 /// A linear pattern on a 2D sketch.
-pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_set): (LinearPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
 
     if data.axis == [0.0, 0.0] {
@@ -485,7 +499,7 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
         }));
     }
 
-    let sketches = inner_pattern_linear_2d(data, sketch_set, args).await?;
+    let sketches = inner_pattern_linear_2d(data, sketch_set, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -497,7 +511,7 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
 ///   |> circle({ center: [0, 0], radius: 1 }, %)
 ///   |> patternLinear2d({
 ///        axis: [1, 0],
-///        repetitions: 6,
+///        instances: 7,
 ///        distance: 4
 ///      }, %)
 ///
@@ -509,6 +523,7 @@ pub async fn pattern_linear_2d(_exec_state: &mut ExecState, args: Args) -> Resul
 async fn inner_pattern_linear_2d(
     data: LinearPattern2dData,
     sketch_set: SketchSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
@@ -522,6 +537,7 @@ async fn inner_pattern_linear_2d(
         let geometries = pattern_linear(
             LinearPattern::TwoD(data.clone()),
             Geometry::Sketch(sketch.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -570,7 +586,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// const example = extrude(1, exampleSketch)
 ///   |> patternLinear3d({
 ///        axis: [1, 0, 1],
-///        repetitions: 6,
+///        instances: 7,
 ///       distance: 6
 ///     }, %)
 /// ```
@@ -600,6 +616,7 @@ async fn inner_pattern_linear_3d(
         let geometries = pattern_linear(
             LinearPattern::ThreeD(data.clone()),
             Geometry::Solid(solid.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -617,8 +634,26 @@ async fn inner_pattern_linear_3d(
     Ok(solids)
 }
 
-async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
-    let id = uuid::Uuid::new_v4();
+async fn pattern_linear(
+    data: LinearPattern,
+    geometry: Geometry,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Geometries, KclError> {
+    let id = exec_state.id_generator.next_uuid();
+
+    let num_repetitions = match data.repetitions() {
+        RepetitionsNeeded::More(n) => n,
+        RepetitionsNeeded::None => {
+            return Ok(Geometries::from(geometry));
+        }
+        RepetitionsNeeded::Invalid => {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: MUST_HAVE_ONE_INSTANCE.to_owned(),
+            }));
+        }
+    };
 
     let resp = args
         .send_modeling_cmd(
@@ -626,7 +661,7 @@ async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> 
             ModelingCmd::from(mcmd::EntityLinearPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: geometry.id(),
-                num_repetitions: data.repetitions(),
+                num_repetitions,
                 spacing: LengthUnit(data.distance()),
             }),
         )
@@ -671,10 +706,11 @@ async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> 
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct CircularPattern2dData {
-    /// The number of repetitions. Must be greater than 0.
-    /// This excludes the original entity. For example, if `repetitions` is 1,
-    /// the original entity will be copied once.
-    pub repetitions: Uint,
+    /// The number of total instances. Must be greater than or equal to 1.
+    /// This includes the original entity. For example, if instances is 2,
+    /// there will be two copies -- the original, and one new copy.
+    /// If instances is 1, this has no effect.
+    pub instances: Uint,
     /// The center about which to make the pattern. This is a 2D vector.
     pub center: [f64; 2],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
@@ -688,10 +724,11 @@ pub struct CircularPattern2dData {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct CircularPattern3dData {
-    /// The number of repetitions. Must be greater than 0.
-    /// This excludes the original entity. For example, if `repetitions` is 1,
-    /// the original entity will be copied once.
-    pub repetitions: Uint,
+    /// The number of total instances. Must be greater than or equal to 1.
+    /// This includes the original entity. For example, if instances is 2,
+    /// there will be two copies -- the original, and one new copy.
+    /// If instances is 1, this has no effect.
+    pub instances: Uint,
     /// The axis around which to make the pattern. This is a 3D vector.
     pub axis: [f64; 3],
     /// The center about which to make the pattern. This is a 3D vector.
@@ -705,6 +742,25 @@ pub struct CircularPattern3dData {
 pub enum CircularPattern {
     ThreeD(CircularPattern3dData),
     TwoD(CircularPattern2dData),
+}
+
+enum RepetitionsNeeded {
+    /// Add this number of repetitions
+    More(u32),
+    /// No repetitions needed
+    None,
+    /// Invalid number of total instances.
+    Invalid,
+}
+
+impl From<u32> for RepetitionsNeeded {
+    fn from(n: u32) -> Self {
+        match n.cmp(&1) {
+            Ordering::Less => Self::Invalid,
+            Ordering::Equal => Self::None,
+            Ordering::Greater => Self::More(n - 1),
+        }
+    }
 }
 
 impl CircularPattern {
@@ -722,11 +778,12 @@ impl CircularPattern {
         }
     }
 
-    pub fn repetitions(&self) -> u32 {
-        match self {
-            CircularPattern::TwoD(lp) => lp.repetitions.u32(),
-            CircularPattern::ThreeD(lp) => lp.repetitions.u32(),
-        }
+    fn repetitions(&self) -> RepetitionsNeeded {
+        let n = match self {
+            CircularPattern::TwoD(lp) => lp.instances.u32(),
+            CircularPattern::ThreeD(lp) => lp.instances.u32(),
+        };
+        RepetitionsNeeded::from(n)
     }
 
     pub fn arc_degrees(&self) -> f64 {
@@ -745,10 +802,10 @@ impl CircularPattern {
 }
 
 /// A circular pattern on a 2D sketch.
-pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch_set): (CircularPattern2dData, SketchSet) = args.get_data_and_sketch_set()?;
 
-    let sketches = inner_pattern_circular_2d(data, sketch_set, args).await?;
+    let sketches = inner_pattern_circular_2d(data, sketch_set, exec_state, args).await?;
     Ok(sketches.into())
 }
 
@@ -766,7 +823,7 @@ pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Res
 ///   |> close(%)
 ///   |> patternCircular2d({
 ///        center: [0, 0],
-///        repetitions: 12,
+///        instances: 13,
 ///        arcDegrees: 360,
 ///        rotateDuplicates: true
 ///      }, %)
@@ -779,6 +836,7 @@ pub async fn pattern_circular_2d(_exec_state: &mut ExecState, args: Args) -> Res
 async fn inner_pattern_circular_2d(
     data: CircularPattern2dData,
     sketch_set: SketchSet,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
@@ -792,6 +850,7 @@ async fn inner_pattern_circular_2d(
         let geometries = pattern_circular(
             CircularPattern::TwoD(data.clone()),
             Geometry::Sketch(sketch.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -830,7 +889,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> patternCircular3d({
 ///        axis: [1, -1, 0],
 ///        center: [10, -20, 0],
-///        repetitions: 10,
+///        instances: 11,
 ///        arcDegrees: 360,
 ///        rotateDuplicates: true
 ///      }, %)
@@ -861,6 +920,7 @@ async fn inner_pattern_circular_3d(
         let geometries = pattern_circular(
             CircularPattern::ThreeD(data.clone()),
             Geometry::Solid(solid.clone()),
+            exec_state,
             args.clone(),
         )
         .await?;
@@ -878,8 +938,25 @@ async fn inner_pattern_circular_3d(
     Ok(solids)
 }
 
-async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
-    let id = uuid::Uuid::new_v4();
+async fn pattern_circular(
+    data: CircularPattern,
+    geometry: Geometry,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Geometries, KclError> {
+    let id = exec_state.id_generator.next_uuid();
+    let num_repetitions = match data.repetitions() {
+        RepetitionsNeeded::More(n) => n,
+        RepetitionsNeeded::None => {
+            return Ok(Geometries::from(geometry));
+        }
+        RepetitionsNeeded::Invalid => {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: MUST_HAVE_ONE_INSTANCE.to_owned(),
+            }));
+        }
+    };
 
     let center = data.center();
     let resp = args
@@ -893,7 +970,7 @@ async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args)
                     y: LengthUnit(center[1]),
                     z: LengthUnit(center[2]),
                 },
-                num_repetitions: data.repetitions(),
+                num_repetitions,
                 arc_degrees: data.arc_degrees(),
                 rotate_duplicates: data.rotate_duplicates(),
             }),

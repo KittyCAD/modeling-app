@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 3,
             "end": 4,
-            "name": "x",
-            "digest": null
+            "name": "x"
           },
           "init": {
             "type": "FunctionExpression",
@@ -43,10 +42,8 @@ expression: actual
                     "type": "Identifier",
                     "start": 30,
                     "end": 32,
-                    "name": "sg",
-                    "digest": null
-                  },
-                  "digest": null
+                    "name": "sg"
+                  }
                 },
                 {
                   "type": "ReturnStatement",
@@ -58,32 +55,15 @@ expression: actual
                     "type": "Identifier",
                     "start": 48,
                     "end": 50,
-                    "name": "sg",
-                    "digest": null
-                  },
-                  "digest": null
+                    "name": "sg"
+                  }
                 }
-              ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              ]
+            }
+          }
         }
       ],
-      "kind": "fn",
-      "digest": null
+      "kind": "fn"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

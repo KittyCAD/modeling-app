@@ -166,15 +166,19 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
     eprintln!("Executing {test_name}");
+    let mut id_generator = kcl_lib::executor::IdGenerator::default();
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
-    if let Err(e) = state.reset_scene(kcl_lib::executor::SourceRange::default()).await {
+    if let Err(e) = state
+        .reset_scene(&mut id_generator, kcl_lib::executor::SourceRange::default())
+        .await
+    {
         return kcl_err(e);
     }
     // Let users know if the test is taking a long time.
     let (done_tx, done_rx) = oneshot::channel::<()>();
     let timer = time_until(done_rx);
-    let snapshot = match state.execute_and_prepare_snapshot(&program).await {
+    let snapshot = match state.execute_and_prepare_snapshot(&program, id_generator, None).await {
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };

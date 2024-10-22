@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 14,
-            "name": "mySketch",
-            "digest": null
+            "name": "mySketch"
           },
           "init": {
             "type": "CallExpression",
@@ -32,8 +31,7 @@ expression: actual
               "type": "Identifier",
               "start": 17,
               "end": 30,
-              "name": "startSketchAt",
-              "digest": null
+              "name": "startSketchAt"
             },
             "arguments": [
               {
@@ -48,8 +46,7 @@ expression: actual
                     "start": 32,
                     "end": 33,
                     "value": 0,
-                    "raw": "0",
-                    "digest": null
+                    "raw": "0"
                   },
                   {
                     "type": "Literal",
@@ -57,27 +54,16 @@ expression: actual
                     "start": 34,
                     "end": 35,
                     "value": 0,
-                    "raw": "0",
-                    "digest": null
+                    "raw": "0"
                   }
-                ],
-                "digest": null
+                ]
               }
             ],
-            "optional": false,
-            "digest": null
-          },
-          "digest": null
+            "optional": false
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

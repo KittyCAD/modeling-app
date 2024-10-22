@@ -221,6 +221,19 @@ export const SettingsAuthProviderBase = ({
 
   useFileSystemWatcher(
     async () => {
+      // If there is a projectPath but it no longer exists it means
+      // it was exterally removed. If we let the code past this condition
+      // execute it will recreate the directory due to code in
+      // loadAndValidateSettings trying to recreate files. I do not
+      // wish to change the behavior in case anything else uses it.
+      // Go home.
+      if (loadedProject?.project?.path) {
+        if (!window.electron.exists(loadedProject?.project?.path)) {
+          navigate(PATHS.HOME)
+          return
+        }
+      }
+
       const data = await loadAndValidateSettings(loadedProject?.project?.path)
       settingsSend({
         type: 'Set all settings',
@@ -228,7 +241,9 @@ export const SettingsAuthProviderBase = ({
         doNotPersist: true,
       })
     },
-    settingsPath ? [settingsPath] : []
+    [settingsPath, loadedProject?.project?.path].filter(
+      (x: string | undefined) => x !== undefined
+    )
   )
 
   // Add settings commands to the command bar

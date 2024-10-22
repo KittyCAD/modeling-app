@@ -1,6 +1,10 @@
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcl_lib::{errors::KclError, executor::DefaultPlanes};
+use kcl_lib::{
+    engine::ExecutionKind,
+    errors::KclError,
+    executor::{DefaultPlanes, IdGenerator},
+};
 use kittycad_modeling_cmds::{
     self as kcmc,
     id::ModelingCmdId,
@@ -23,6 +27,7 @@ pub struct EngineConnection {
     batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
     core_test: Arc<Mutex<String>>,
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 impl EngineConnection {
@@ -36,6 +41,7 @@ impl EngineConnection {
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
+            execution_kind: Default::default(),
         })
     }
 
@@ -357,7 +363,23 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: kcl_lib::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
+    }
+
+    async fn default_planes(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: kcl_lib::executor::SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         if NEED_PLANES {
             {
                 let opt = self.default_planes.read().await.as_ref().cloned();
@@ -366,7 +388,7 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
                 }
             } // drop the read lock
 
-            let new_planes = self.new_default_planes(source_range).await?;
+            let new_planes = self.new_default_planes(id_generator, source_range).await?;
             *self.default_planes.write().await = Some(new_planes.clone());
 
             Ok(new_planes)
@@ -375,7 +397,11 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
         }
     }
 
-    async fn clear_scene_post_hook(&self, _source_range: kcl_lib::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        _id_generator: &mut IdGenerator,
+        _source_range: kcl_lib::executor::SourceRange,
+    ) -> Result<(), KclError> {
         Ok(())
     }
 

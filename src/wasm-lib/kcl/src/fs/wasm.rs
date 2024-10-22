@@ -78,6 +78,22 @@ impl FileSystem for FileManager {
         Ok(bytes)
     }
 
+    async fn read_to_string<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
+        &self,
+        path: P,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<String, KclError> {
+        let bytes = self.read(path, source_range).await?;
+        let string = String::from_utf8(bytes).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to convert bytes to string: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        Ok(string)
+    }
+
     async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,

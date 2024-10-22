@@ -263,7 +263,7 @@ async fn inner_revolve(
 
     let angle = Angle::from_degrees(data.angle.unwrap_or(360.0));
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     match data.axis {
         AxisOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
@@ -295,7 +295,7 @@ async fn inner_revolve(
         }
     }
 
-    do_post_extrude(sketch, 0.0, args).await
+    do_post_extrude(sketch, 0.0, exec_state, args).await
 }
 
 #[cfg(test)]

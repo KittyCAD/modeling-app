@@ -14,9 +14,9 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)`
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.get('mySketch001')
+    const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
       type: 'UserVal',
       __meta: [{ sourceRange: [46, 71] }],
@@ -68,9 +68,9 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
   |> extrude(2, %)`
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.get('mySketch001')
+    const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
       type: 'Solid',
       id: expect.any(String),
@@ -148,9 +148,10 @@ const sk2 = startSketchOn('XY')
   |> extrude(2, %)
 
 `
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(parse(code))
+    const programMemory = execState.memory
     // @ts-ignore
-    const geos = [programMemory?.get('theExtrude'), programMemory?.get('sk2')]
+    const geos = [programMemory.get('theExtrude'), programMemory.get('sk2')]
     expect(geos).toEqual([
       {
         type: 'Solid',
@@ -171,7 +172,6 @@ const sk2 = startSketchOn('XY')
               start: 114,
               type: 'TagDeclarator',
               value: 'p',
-              digest: null,
             },
             id: expect.any(String),
             sourceRange: [95, 117],
@@ -222,7 +222,6 @@ const sk2 = startSketchOn('XY')
                 start: 114,
                 type: 'TagDeclarator',
                 value: 'p',
-                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),
@@ -265,7 +264,6 @@ const sk2 = startSketchOn('XY')
               start: 417,
               type: 'TagDeclarator',
               value: 'o',
-              digest: null,
             },
             id: expect.any(String),
             sourceRange: [399, 420],
@@ -316,7 +314,6 @@ const sk2 = startSketchOn('XY')
                 start: 417,
                 type: 'TagDeclarator',
                 value: 'o',
-                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),

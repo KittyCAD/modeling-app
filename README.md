@@ -57,7 +57,7 @@ yarn install
 followed by:
 
 ```
-yarn build:wasm-dev
+yarn build:wasm
 ```
 
 or if you have the gh cli installed
@@ -66,15 +66,15 @@ or if you have the gh cli installed
 ./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
 ```
 
-That will build the WASM binary and put in the `public` dir (though gitignored)
+That will build the WASM binary and put in the `public` dir (though gitignored).
 
-finally, to run the web app only, run:
+Finally, to run the web app only, run:
 
 ```
 yarn start
 ```
 
-If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens ofcourse, then navigate to localhost:3000 again. Note that navigating to localhost:3000/signin removes your token so you will need to set the token again.
+If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
 
 ### Development environment variables
 
@@ -91,13 +91,13 @@ Third-Party Cookies".
 
 ## Desktop
 
-To spin up the desktop app, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
+To spin up the desktop app, `yarn install` and `yarn build:wasm` need to have been done before hand then
 
 ```
-yarn electron:start
+yarn tron:start
 ```
 
-This will start the application and hot-reload on changed.
+This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Cmd/Ctrl-Shift-I.
 
@@ -158,11 +158,29 @@ The PR may then serve as a place to discuss the human-readable changelog and ext
 
 #### 3. Manually test artifacts from the Cut Release PR
 
-The release builds can be find under the `artifact` zip, at the very bottom of the `ci` action page for each commit on this branch.
+##### Release builds
+
+The release builds can be found under the `out-{platform}` zip, at the very bottom of the `build-publish-apps` summary page for each commit on this branch.
 
 Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the Cut Release PR.
 
-The other `ci` output in Cut Release PRs is `updater-test`, because we don't have a way to test this fully automated, we have a semi-automated process. Download updater-test zip file, install the app, run it, expect an updater prompt to a dummy v0.99.99, install it and check that the app comes back at that version (on both macOS and Windows).
+##### Updater-test builds
+
+The other `build-publish-apps` output in Cut Release PRs is `updater-test-{platform}`. As we don't have a way to test this fully automatically, we have a semi-automated process. For macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
+
+The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
+
+If the prompt doesn't show up, start the app in command line to grab the electron-updater logs. This is likely an issue with the current build that needs addressing (or the updater-test location in the storage bucket).
+```
+# Windows (PowerShell)
+& 'C:\Program Files\Zoo Modeling App\Zoo Modeling App.exe'
+
+# macOS
+/Applications/Zoo\ Modeling\ App.app/Contents/MacOS/Zoo\ Modeling\ App
+
+# Linux
+./Zoo Modeling App-{version}-{arch}-linux.AppImage
+```
 
 #### 4. Merge the Cut Release PR
 
@@ -334,7 +352,16 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 ```bash
 cd src/wasm-lib
-cargo test
+KITTYCAD_API_TOKEN=XXX cargo test -- --test-threads=1
+```
+
+Where `XXX` is an API token from the production engine (NOT the dev environment).
+
+We recommend using [nextest](https://nexte.st/) to run the Rust tests (its faster and is used in CI). Once installed, run the tests using
+
+```
+cd src/wasm-lib
+KITTYCAD_API_TOKEN=XXX cargo run nextest
 ```
 
 ### Mapping CI CD jobs to local commands

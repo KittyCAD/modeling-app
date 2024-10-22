@@ -753,6 +753,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let tokens = crate::token::lexer(#code_block).unwrap();
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
+            let id_generator = crate::executor::IdGenerator::default();
             let ctx = crate::executor::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),
@@ -761,7 +762,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::executor::ContextType::Mock,
             };
 
-            ctx.run(&program, None).await.unwrap();
+            ctx.run(&program, None, id_generator, None).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

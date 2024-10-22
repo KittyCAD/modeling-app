@@ -10,12 +10,12 @@ use winnow::{
 
 use crate::{
     ast::types::{
-        ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle, ElseIf,
-        Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, Literal,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue,
-        ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
-        TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration, VariableDeclarator,
-        VariableKind,
+        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
+        CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier,
+        IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+        Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression,
+        UnaryOperator, ValueMeta, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -303,6 +303,12 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             "*" => BinaryOperator::Mul,
             "%" => BinaryOperator::Mod,
             "^" => BinaryOperator::Pow,
+            "==" => BinaryOperator::Eq,
+            "!=" => BinaryOperator::Neq,
+            ">" => BinaryOperator::Gt,
+            ">=" => BinaryOperator::Gte,
+            "<" => BinaryOperator::Lt,
+            "<=" => BinaryOperator::Lte,
             _ => {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: token.as_source_ranges(),
@@ -330,6 +336,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                 | Expr::PipeExpression(_)
                 | Expr::PipeSubstitution(_)
                 | Expr::ArrayExpression(_)
+                | Expr::ArrayRangeExpression(_)
                 | Expr::ObjectExpression(_) => {
                     return Err(KclError::Syntax(KclErrorDetails {
                         source_ranges,
@@ -460,8 +467,13 @@ pub enum NonCodeOr<T> {
 }
 
 /// Parse a KCL array of elements.
-fn array(i: TokenSlice) -> PResult<ArrayExpression> {
-    alt((array_empty, array_elem_by_elem, array_end_start)).parse_next(i)
+fn array(i: TokenSlice) -> PResult<Expr> {
+    alt((
+        array_empty.map(Box::new).map(Expr::ArrayExpression),
+        array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
+        array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
+    ))
+    .parse_next(i)
 }
 
 /// Match an empty array.
@@ -533,44 +545,29 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<ArrayExpression> {
     })
 }
 
-fn array_end_start(i: TokenSlice) -> PResult<ArrayExpression> {
+fn array_end_start(i: TokenSlice) -> PResult<ArrayRangeExpression> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
-    let elements = integer_range
-        .context(expected("array contents, a numeric range (like 0..10)"))
-        .parse_next(i)?;
+    let start_element = Box::new(expression.parse_next(i)?);
+    ignore_whitespace(i);
+    double_period.parse_next(i)?;
+    ignore_whitespace(i);
+    let end_element = Box::new(expression.parse_next(i)?);
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(ArrayExpression {
+    Ok(ArrayRangeExpression {
         start,
         end,
-        elements,
-        non_code_meta: Default::default(),
+        start_element,
+        end_element,
+        end_inclusive: true,
         digest: None,
     })
 }
 
-/// Parse n..m into a vec of numbers [n, n+1, ..., m-1]
-fn integer_range(i: TokenSlice) -> PResult<Vec<Expr>> {
-    let (token0, floor) = integer.parse_next(i)?;
-    double_period.parse_next(i)?;
-    let (_token1, ceiling) = integer.parse_next(i)?;
-    Ok((floor..=ceiling)
-        .map(|num| {
-            let num = num as i64;
-            Expr::Literal(Box::new(Literal {
-                start: token0.start,
-                end: token0.end,
-                value: num.into(),
-                raw: num.to_string(),
-                digest: None,
-            }))
-        })
-        .collect())
-}
-
 fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    ignore_whitespace(i);
     colon
         .context(expected(
             "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
@@ -959,8 +956,10 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
-        token if token.declaration_keyword().is_some() =>
+        token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        token if token.value == "import" && matches!(token.token_type, TokenType::Keyword) =>
+            (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if !token.is_code_token() => {
@@ -1125,6 +1124,111 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
     })
 }
 
+fn import_stmt(i: TokenSlice) -> PResult<Box<ImportStatement>> {
+    let import_token = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
+                Ok(token)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not the 'import' keyword", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'import' keyword"))
+        .parse_next(i)?;
+    let start = import_token.start;
+
+    require_whitespace(i)?;
+
+    let items = separated(1.., import_item, comma_sep)
+        .parse_next(i)
+        .map_err(|e| e.cut())?;
+
+    require_whitespace(i)?;
+
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
+            Ok(())
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("{} is not the 'from' keyword", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'from' keyword"))
+    .parse_next(i)
+    .map_err(|e| e.cut())?;
+
+    require_whitespace(i)?;
+
+    let path = string_literal(i)?;
+    let end = path.end();
+    let path_string = match path.value {
+        LiteralValue::String(s) => s,
+        _ => unreachable!(),
+    };
+    if path_string
+        .chars()
+        .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+    {
+        return Err(ErrMode::Cut(
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![SourceRange::new(path.start, path.end)],
+                message: "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.".to_owned(),
+            })
+            .into(),
+        ));
+    }
+    Ok(Box::new(ImportStatement {
+        items,
+        path: path_string,
+        raw_path: path.raw,
+        start,
+        end,
+        digest: None,
+    }))
+}
+
+fn import_item(i: TokenSlice) -> PResult<ImportItem> {
+    let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
+    let start = name.start;
+    let alias = opt(preceded(
+        (whitespace, import_as_keyword, whitespace),
+        identifier.context(expected("an identifier to alias the import")),
+    ))
+    .parse_next(i)?;
+    let end = if let Some(ref alias) = alias {
+        alias.end()
+    } else {
+        name.end()
+    };
+    Ok(ImportItem {
+        name,
+        alias,
+        start,
+        end,
+        digest: None,
+    })
+}
+
+fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "as" {
+            Ok(token)
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("{} is not the 'as' keyword", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'as' keyword"))
+    .parse_next(i)
+}
+
 /// Parse a return statement of a user-defined function, e.g. `return x`.
 pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
     let start = any
@@ -1189,7 +1293,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
         literal.map(Box::new).map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
         identifier.map(Box::new).map(Expr::Identifier),
-        array.map(Box::new).map(Expr::ArrayExpression),
+        array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
         function_expression.map(Box::new).map(Expr::FunctionExpression),
@@ -1217,6 +1321,19 @@ fn possible_operands(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
+/// Parse an item visibility specifier, e.g. export.
+fn item_visibility(i: TokenSlice) -> PResult<(ItemVisibility, Token)> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Keyword && token.value == "export" {
+            Some((ItemVisibility::Export, token))
+        } else {
+            None
+        }
+    })
+    .context(expected("item visibility, e.g. 'export'"))
+    .parse_next(i)
+}
+
 fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
     let res = any
         .verify_map(|token: Token| token.declaration_keyword().map(|kw| (kw, token)))
@@ -1225,7 +1342,10 @@ fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
 }
 
 /// Parse a variable/constant declaration.
-fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
+fn declaration(i: TokenSlice) -> PResult<Box<VariableDeclaration>> {
+    let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
+        .parse_next(i)?
+        .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
     let decl_token = opt(declaration_keyword).parse_next(i)?;
     if decl_token.is_some() {
         // If there was a declaration keyword like `fn`, then it must be followed by some spaces.
@@ -1238,11 +1358,14 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             "an identifier, which becomes name you're binding the value to",
         ))
         .parse_next(i)?;
-    let (kind, start, dec_end) = if let Some((kind, token)) = &decl_token {
+    let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
         (*kind, token.start, token.end)
     } else {
         (VariableKind::Const, id.start(), id.end())
     };
+    if let Some(token) = visibility_token {
+        start = token.start;
+    }
 
     ignore_whitespace(i);
     equals(i)?;
@@ -1281,7 +1404,7 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
     .map_err(|e| e.cut())?;
 
     let end = val.end();
-    Ok(VariableDeclaration {
+    Ok(Box::new(VariableDeclaration {
         start,
         end,
         declarations: vec![VariableDeclarator {
@@ -1291,9 +1414,10 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             init: val,
             digest: None,
         }],
+        visibility,
         kind,
         digest: None,
-    })
+    }))
 }
 
 impl TryFrom<Token> for Identifier {
@@ -1503,25 +1627,6 @@ fn expression_stmt(i: TokenSlice) -> PResult<ExpressionStatement> {
         expression: val,
         digest: None,
     })
-}
-
-/// Parse a KCL integer, and the token that held it.
-fn integer(i: TokenSlice) -> PResult<(Token, u64)> {
-    let num = one_of(TokenType::Number)
-        .context(expected("a number token e.g. 3"))
-        .try_map(|token: Token| {
-            let source_ranges = token.as_source_ranges();
-            let value = token.value.clone();
-            token.value.parse().map(|num| (token, num)).map_err(|e| {
-                KclError::Syntax(KclErrorDetails {
-                    source_ranges,
-                    message: format!("invalid integer {value}: {e}"),
-                })
-            })
-        })
-        .context(expected("an integer e.g. 3 (but not 3.1)"))
-        .parse_next(i)?;
-    Ok(num)
 }
 
 /// Parse the given brace symbol.
@@ -3055,123 +3160,6 @@ e
     }
 
     #[test]
-    fn test_parse_expand_array() {
-        let code = "const myArray = [0..10]";
-        let parser = crate::parser::Parser::new(crate::token::lexer(code).unwrap());
-        let result = parser.ast().unwrap();
-        let expected_result = Program {
-            start: 0,
-            end: 23,
-            body: vec![BodyItem::VariableDeclaration(VariableDeclaration {
-                start: 0,
-                end: 23,
-                declarations: vec![VariableDeclarator {
-                    start: 6,
-                    end: 23,
-                    id: Identifier {
-                        start: 6,
-                        end: 13,
-                        name: "myArray".to_string(),
-                        digest: None,
-                    },
-                    init: Expr::ArrayExpression(Box::new(ArrayExpression {
-                        start: 16,
-                        end: 23,
-                        non_code_meta: Default::default(),
-                        elements: vec![
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 0u32.into(),
-                                raw: "0".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 1u32.into(),
-                                raw: "1".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 2u32.into(),
-                                raw: "2".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 3u32.into(),
-                                raw: "3".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 4u32.into(),
-                                raw: "4".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 5u32.into(),
-                                raw: "5".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 6u32.into(),
-                                raw: "6".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 7u32.into(),
-                                raw: "7".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 8u32.into(),
-                                raw: "8".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 9u32.into(),
-                                raw: "9".to_string(),
-                                digest: None,
-                            })),
-                            Expr::Literal(Box::new(Literal {
-                                start: 17,
-                                end: 18,
-                                value: 10u32.into(),
-                                raw: "10".to_string(),
-                                digest: None,
-                            })),
-                        ],
-                        digest: None,
-                    })),
-                    digest: None,
-                }],
-                kind: VariableKind::Const,
-                digest: None,
-            })],
-            non_code_meta: NonCodeMeta::default(),
-            digest: None,
-        };
-
-        assert_eq!(result, expected_result);
-    }
-
-    #[test]
     fn test_error_keyword_in_variable() {
         let some_program_string = r#"const let = "thing""#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -3705,7 +3693,10 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
             5
         }"#
     );
+    snapshot_test!(be, "let x = 3 == 3");
+    snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
+    snapshot_test!(bh, "const obj = {center : [10, 10], radius: 5}");
 }
 
 #[allow(unused)]
