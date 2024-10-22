@@ -37,13 +37,30 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{DefaultPlanes, Point3d},
+    executor::{DefaultPlanes, IdGenerator, Point3d},
 };
 
 lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
 
     pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
+}
+
+/// The mode of execution.  When isolated, like during an import, attempting to
+/// send a command results in an error.
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum ExecutionKind {
+    #[default]
+    Normal,
+    Isolated,
+}
+
+impl ExecutionKind {
+    pub fn is_isolated(&self) -> bool {
+        matches!(self, ExecutionKind::Isolated)
+    }
 }
 
 #[async_trait::async_trait]
@@ -54,9 +71,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>;
 
+    /// Get the current execution kind.
+    fn execution_kind(&self) -> ExecutionKind;
+
+    /// Replace the current execution kind with a new value and return the
+    /// existing value.
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
+
     /// Get the default planes.
     async fn default_planes(
         &self,
+        id_generator: &mut IdGenerator,
         _source_range: crate::executor::SourceRange,
     ) -> Result<DefaultPlanes, crate::errors::KclError>;
 
@@ -64,6 +89,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// (These really only apply to wasm for now).
     async fn clear_scene_post_hook(
         &self,
+        id_generator: &mut IdGenerator,
         source_range: crate::executor::SourceRange,
     ) -> Result<(), crate::errors::KclError>;
 
@@ -76,7 +102,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_to_source_range: HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<kcmc::websocket::WebSocketResponse, crate::errors::KclError>;
 
-    async fn clear_scene(&self, source_range: crate::executor::SourceRange) -> Result<(), crate::errors::KclError> {
+    async fn clear_scene(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
@@ -89,7 +119,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.flush_batch(false, source_range).await?;
 
         // Do the after clear scene hook.
-        self.clear_scene_post_hook(source_range).await?;
+        self.clear_scene_post_hook(id_generator, source_range).await?;
 
         Ok(())
     }
@@ -101,6 +131,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: crate::executor::SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        let execution_kind = self.execution_kind();
+        if execution_kind.is_isolated() {
+            return Err(KclError::Semantic(KclErrorDetails { message: "Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file.".to_owned(), source_ranges: vec![source_range] }));
+        }
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -270,6 +304,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn make_default_plane(
         &self,
+        plane_id: uuid::Uuid,
         x_axis: Point3d,
         y_axis: Point3d,
         color: Option<Color>,
@@ -279,7 +314,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let default_size = 100.0;
         let default_origin = Point3d { x: 0.0, y: 0.0, z: 0.0 }.into();
 
-        let plane_id = uuid::Uuid::new_v4();
         self.batch_modeling_cmd(
             plane_id,
             source_range,
@@ -307,11 +341,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(plane_id)
     }
 
-    async fn new_default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
-        let plane_settings: HashMap<PlaneName, (Point3d, Point3d, Option<Color>)> = HashMap::from([
+    async fn new_default_planes(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
+        let plane_settings: HashMap<PlaneName, (Uuid, Point3d, Point3d, Option<Color>)> = HashMap::from([
             (
                 PlaneName::Xy,
                 (
+                    id_generator.next_uuid(),
                     Point3d { x: 1.0, y: 0.0, z: 0.0 },
                     Point3d { x: 0.0, y: 1.0, z: 0.0 },
                     Some(Color {
@@ -325,6 +364,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 (
+                    id_generator.next_uuid(),
                     Point3d { x: 0.0, y: 1.0, z: 0.0 },
                     Point3d { x: 0.0, y: 0.0, z: 1.0 },
                     Some(Color {
@@ -338,6 +378,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 (
+                    id_generator.next_uuid(),
                     Point3d { x: 1.0, y: 0.0, z: 0.0 },
                     Point3d { x: 0.0, y: 0.0, z: 1.0 },
                     Some(Color {
@@ -351,6 +392,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::NegXy,
                 (
+                    id_generator.next_uuid(),
                     Point3d {
                         x: -1.0,
                         y: 0.0,
@@ -363,6 +405,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::NegYz,
                 (
+                    id_generator.next_uuid(),
                     Point3d {
                         x: 0.0,
                         y: -1.0,
@@ -375,6 +418,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::NegXz,
                 (
+                    id_generator.next_uuid(),
                     Point3d {
                         x: -1.0,
                         y: 0.0,
@@ -387,10 +431,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         ]);
 
         let mut planes = HashMap::new();
-        for (name, (x_axis, y_axis, color)) in plane_settings {
+        for (name, (plane_id, x_axis, y_axis, color)) in plane_settings {
             planes.insert(
                 name,
-                self.make_default_plane(x_axis, y_axis, color, source_range).await?,
+                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range)
+                    .await?,
             );
         }
 

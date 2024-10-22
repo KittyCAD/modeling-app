@@ -10,6 +10,7 @@ export const homeMachine = setup({
       defaultDirectory: string
     },
     events: {} as
+      | { type: 'Read projects'; data: {} }
       | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
       | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
       | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
@@ -81,6 +82,9 @@ export const homeMachine = setup({
   states: {
     'Has no projects': {
       on: {
+        'Read projects': {
+          target: 'Reading projects',
+        },
         'Create project': {
           target: 'Creating project',
         },
@@ -89,6 +93,10 @@ export const homeMachine = setup({
 
     'Has projects': {
       on: {
+        'Read projects': {
+          target: 'Reading projects',
+        },
+
         'Rename project': {
           target: 'Renaming project',
         },

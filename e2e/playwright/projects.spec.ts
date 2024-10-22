@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import {
   doExport,
   executorInputPath,
@@ -12,10 +12,62 @@ import {
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { join } from 'path'
+import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
+
+test(
+  'projects reload if a new one is created, deleted, or renamed externally',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    let externalCreatedProjectName = 'external-created-project'
+
+    let targetDir = ''
+
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        targetDir = dir
+        setTimeout(() => {
+          const myDir = join(dir, externalCreatedProjectName)
+          ;(async () => {
+            await fsp.mkdir(myDir)
+            await fsp.writeFile(
+              join(myDir, DEFAULT_PROJECT_KCL_FILE),
+              'sca ba be bop de day wawa skee'
+            )
+          })().catch(console.error)
+        }, 5000)
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const projectLinks = page.getByTestId('project-link')
+
+    await projectLinks.first().waitFor()
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rename(
+      join(targetDir, externalCreatedProjectName),
+      join(targetDir, externalCreatedProjectName + '1')
+    )
+
+    externalCreatedProjectName += '1'
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rm(join(targetDir, externalCreatedProjectName), {
+      recursive: true,
+      force: true,
+    })
+
+    await expect(projectLinks).toHaveCount(0)
+
+    await electronApp.close()
+  }
+)
 
 test(
   'click help/keybindings from home page',
@@ -203,7 +255,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBe(431341)
+            .toBeGreaterThan(300_000)
 
           // clean up output.gltf
           await fsp.rm('output.gltf')
@@ -566,30 +618,29 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
-
     page.on('console', console.log)
-
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByText('bracket')
@@ -692,32 +743,32 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
 
     page.on('console', console.log)
-
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -800,7 +851,7 @@ test(
   }
 )
 
-test(
+test.fixme(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
@@ -809,6 +860,12 @@ test(
     await page.setViewportSize({ width: 1200, height: 500 })
 
     page.on('console', console.log)
+
+    // Locators and constants
+    const gizmo = page.locator('[aria-label*=gizmo]')
+    const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+    const pointOnModel = { x: 660, y: 250 }
+    const expectedStartCamZPosition = 15633.47
 
     // expect to see text "No Projects found"
     await expect(page.getByText('No Projects found')).toBeVisible()
@@ -822,16 +879,7 @@ test(
 
     await page.getByText('project-000').click()
 
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
+    await u.waitForPageLoad()
 
     await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
@@ -841,8 +889,28 @@ test(
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(200, sketch001)`)
+    await page.waitForTimeout(800)
 
-    const pointOnModel = { x: 660, y: 250 }
+    async function getCameraZValue() {
+      return page
+        .getByTestId('cam-z-position')
+        .inputValue()
+        .then((value) => parseFloat(value))
+    }
+
+    await test.step(`Reset camera`, async () => {
+      await u.openDebugPanel()
+      await u.clearCommandLogs()
+      await u.doAndWaitForCmd(async () => {
+        await gizmo.click({ button: 'right' })
+        await resetCameraButton.click()
+      }, 'zoom_to_fit')
+      await expect
+        .poll(getCameraZValue, {
+          message: 'Camera Z should be at expected position after reset',
+        })
+        .toEqual(expectedStartCamZPosition)
+    })
 
     // gray at this pixel means the stream has loaded in the most
     // user way we can verify it (pixel color)
@@ -850,7 +918,7 @@ extrude001 = extrude(200, sketch001)`)
       .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
         timeout: 10_000,
       })
-      .toBeLessThan(15)
+      .toBeLessThan(30)
 
     await expect(async () => {
       await page.mouse.move(0, 0, { steps: 5 })

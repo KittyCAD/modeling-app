@@ -83,6 +83,8 @@ impl StdLibFnArg {
             return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
         } else if self.type_ == "[KclValue]" && self.required {
             return Ok(Some((index, format!("${{{}:{}}}", index, "[0..9]"))));
+        } else if self.type_ == "KclValue" && self.required {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "3"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
     }
@@ -857,7 +859,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternCircular3d({
-	repetitions: ${0:10},
+	instances: ${0:10},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
 	arcDegrees: ${7:3.14},
@@ -919,7 +921,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternLinear2d({
-	repetitions: ${0:10},
+	instances: ${0:10},
 	distance: ${1:3.14},
 	axis: [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#

@@ -37,6 +37,11 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
+import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
+import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
+import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
+import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
+import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -137,27 +142,44 @@ export const parse = (code: string | Error): Program | Error => {
 
 export type PathToNode = [string | number, string][]
 
-interface Memory {
-  [key: string]: KclValue
+export interface ExecState {
+  memory: ProgramMemory
+  idGenerator: IdGenerator
 }
 
-type EnvironmentRef = number
+/**
+ * Create an empty ExecState.  This is useful on init to prevent needing an
+ * Option.
+ */
+export function emptyExecState(): ExecState {
+  return {
+    memory: ProgramMemory.empty(),
+    idGenerator: defaultIdGenerator(),
+  }
+}
+
+function execStateFromRaw(raw: RawExecState): ExecState {
+  return {
+    memory: ProgramMemory.fromRaw(raw.memory),
+    idGenerator: raw.idGenerator,
+  }
+}
+
+export function defaultIdGenerator(): IdGenerator {
+  return {
+    nextId: 0,
+    ids: [],
+  }
+}
+
+interface Memory {
+  [key: string]: KclValue | undefined
+}
 
 const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
 
-interface Environment {
-  bindings: Memory
-  parent: EnvironmentRef | null
-}
-
 function emptyEnvironment(): Environment {
   return { bindings: {}, parent: null }
-}
-
-interface RawProgramMemory {
-  environments: Environment[]
-  currentEnv: EnvironmentRef
-  return: KclValue | null
 }
 
 /**
@@ -218,7 +240,7 @@ export class ProgramMemory {
     while (true) {
       const env = this.environments[envRef]
       if (env.bindings.hasOwnProperty(name)) {
-        return env.bindings[name]
+        return env.bindings[name] ?? null
       }
       if (!env.parent) {
         break
@@ -261,6 +283,7 @@ export class ProgramMemory {
       }
 
       for (const [name, value] of Object.entries(env.bindings)) {
+        if (value === undefined) continue
         // Check the predicate.
         if (!predicate(value)) {
           continue
@@ -294,6 +317,7 @@ export class ProgramMemory {
     while (true) {
       const env = this.environments[envRef]
       for (const [name, value] of Object.entries(env.bindings)) {
+        if (value === undefined) continue
         // Don't include shadowed variables.
         if (!map.has(name)) {
           map.set(name, value)
@@ -357,9 +381,10 @@ export function sketchFromKclValue(
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
+  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean = false
-): Promise<ProgramMemory> => {
+): Promise<ExecState> => {
   if (err(programMemory)) return Promise.reject(programMemory)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -367,6 +392,7 @@ export const executor = async (
   const _programMemory = await _executor(
     node,
     programMemory,
+    idGenerator,
     engineCommandManager,
     isMock
   )
@@ -379,9 +405,10 @@ export const executor = async (
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
+  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
   isMock: boolean
-): Promise<ProgramMemory> => {
+): Promise<ExecState> => {
   if (err(programMemory)) return Promise.reject(programMemory)
 
   try {
@@ -393,15 +420,17 @@ export const _executor = async (
       baseUnit =
         (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     }
-    const memory: RawProgramMemory = await execute_wasm(
+    const execState: RawExecState = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory.toRaw()),
+      JSON.stringify(idGenerator),
       baseUnit,
       engineCommandManager,
       fileSystemManager,
+      undefined,
       isMock
     )
-    return ProgramMemory.fromRaw(memory)
+    return execStateFromRaw(execState)
   } catch (e: any) {
     console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())

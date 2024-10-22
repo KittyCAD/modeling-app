@@ -1,7 +1,7 @@
 extern crate alloc;
 use kcl_lib::ast::types::{
-    BodyItem, Expr, Identifier, Literal, LiteralValue, NonCodeMeta, Program, VariableDeclaration, VariableDeclarator,
-    VariableKind,
+    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, NonCodeMeta, Program, VariableDeclaration,
+    VariableDeclarator, VariableKind,
 };
 use kcl_macros::parse;
 use pretty_assertions::assert_eq;
@@ -12,7 +12,7 @@ fn basic() {
     let expected = Program {
         start: 0,
         end: 11,
-        body: vec![BodyItem::VariableDeclaration(VariableDeclaration {
+        body: vec![BodyItem::VariableDeclaration(Box::new(VariableDeclaration {
             start: 0,
             end: 11,
             declarations: vec![VariableDeclarator {
@@ -33,9 +33,10 @@ fn basic() {
                 })),
                 digest: None,
             }],
+            visibility: ItemVisibility::Default,
             kind: VariableKind::Const,
             digest: None,
-        })],
+        }))],
         non_code_meta: NonCodeMeta::default(),
         digest: None,
     };

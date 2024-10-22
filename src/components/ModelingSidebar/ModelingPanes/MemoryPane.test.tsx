@@ -29,8 +29,8 @@ describe('processMemory', () => {
     |> lineTo([2.15, 4.32], %)
     // |> rx(90, %)`
     const ast = parse(code)
-    const programMemory = await enginelessExecutor(ast, ProgramMemory.empty())
-    const output = processMemory(programMemory)
+    const execState = await enginelessExecutor(ast, ProgramMemory.empty())
+    const output = processMemory(execState.memory)
     expect(output.myVar).toEqual(5)
     expect(output.otherVar).toEqual(3)
     expect(output).toEqual({

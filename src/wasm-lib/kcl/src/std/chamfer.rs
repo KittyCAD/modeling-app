@@ -133,7 +133,7 @@ async fn inner_chamfer(
             EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
-        let id = uuid::Uuid::new_v4();
+        let id = exec_state.id_generator.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {

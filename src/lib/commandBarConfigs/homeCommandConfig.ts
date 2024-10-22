@@ -2,6 +2,7 @@ import { StateMachineCommandSetConfig } from 'lib/commandTypes'
 import { homeMachine } from 'machines/homeMachine'
 
 export type HomeCommandSchema = {
+  'Read projects': {}
   'Create project': {
     name: string
   }

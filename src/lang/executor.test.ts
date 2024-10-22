@@ -73,7 +73,6 @@ const newVar = myVar + 1`
           start: 89,
           type: 'TagDeclarator',
           value: 'myPath',
-          digest: null,
         },
       },
       {
@@ -99,7 +98,6 @@ const newVar = myVar + 1`
           start: 143,
           type: 'TagDeclarator',
           value: 'rightPath',
-          digest: null,
         },
       },
     ])
@@ -201,7 +199,6 @@ const newVar = myVar + 1`
               start: 109,
               type: 'TagDeclarator',
               value: 'myPath',
-              digest: null,
             },
           },
           {
@@ -443,6 +440,6 @@ async function exe(
 ) {
   const ast = parse(code)
 
-  const result = await enginelessExecutor(ast, programMemory)
-  return result
+  const execState = await enginelessExecutor(ast, programMemory)
+  return execState.memory
 }

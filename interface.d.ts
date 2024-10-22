@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import fsSync from 'node:fs'
 import path from 'path'
 import { dialog, shell } from 'electron'
 import { MachinesListing } from 'lib/machineManager'
@@ -17,7 +18,13 @@ export interface IElectronAPI {
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version
-  readFile: (path: string) => ReturnType<fs.readFile>
+  watchFileOn: (
+    path: string,
+    key: string,
+    callback: (eventType: string, path: string) => void
+  ) => void
+  readFile: typeof fs.readFile
+  watchFileOff: (path: string, key: string) => void
   writeFile: (
     path: string,
     data: string | Uint8Array
@@ -61,11 +68,15 @@ export interface IElectronAPI {
     }
   }
   kittycad: (access: string, args: any) => any
-  listMachines: () => Promise<MachinesListing>
+  listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
-  onUpdateDownloaded: (
-    callback: (value: string) => void
+  onUpdateDownloadStart: (
+    callback: (value: { version: string }) => void
   ) => Electron.IpcRenderer
+  onUpdateDownloaded: (
+    callback: (value: { version: string; releaseNotes: string }) => void
+  ) => Electron.IpcRenderer
+  onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
 }
 

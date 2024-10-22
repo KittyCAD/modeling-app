@@ -177,14 +177,14 @@ export async function loadAndValidateSettings(
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
-  const settings = createSettings()
+  let settingsNext = createSettings()
   // Because getting the default directory is async, we need to set it after
   if (onDesktop) {
     settings.app.projectDirectory.default = await getInitialDefaultDir()
   }
 
-  setSettingsAtLevel(
-    settings,
+  settingsNext = setSettingsAtLevel(
+    settingsNext,
     'user',
     configurationToSettingsPayload(appSettingsPayload)
   )
@@ -199,8 +199,8 @@ export async function loadAndValidateSettings(
       return Promise.reject(new Error('Invalid project settings'))
 
     const projectSettingsPayload = projectSettings
-    setSettingsAtLevel(
-      settings,
+    settingsNext = setSettingsAtLevel(
+      settingsNext,
       'project',
       projectConfigurationToSettingsPayload(projectSettingsPayload)
     )
@@ -208,7 +208,7 @@ export async function loadAndValidateSettings(
 
   // Return the settings object
   return {
-    settings,
+    settings: settingsNext,
     configuration: appSettingsPayload,
   }
 }

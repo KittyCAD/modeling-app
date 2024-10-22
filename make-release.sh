@@ -70,7 +70,7 @@ echo ""
 echo "Suggested changelog:"
 echo "\`\`\`"
 echo "## What's Changed"
-git log $(git describe --tags --abbrev=0)..HEAD --oneline --pretty=format:%s | grep -v Bump | grep -v 'Cut release v' | awk '{print "* "toupper(substr($0,0,1))substr($0,2)}'
+git log $(git describe --tags --match="v[0-9]*" --abbrev=0)..HEAD --oneline --pretty=format:%s | grep -v Bump | grep -v 'Cut release v' | awk '{print "* "toupper(substr($0,0,1))substr($0,2)}'
 echo ""
 echo "**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/${latest_tag}...${new_version}"
 echo "\`\`\`"

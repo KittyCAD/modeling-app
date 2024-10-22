@@ -784,15 +784,20 @@ fn test_generate_stdlib_markdown_docs() {
 
 #[test]
 fn test_generate_stdlib_json_schema() {
+    // If this test fails and you've modified the AST or something else which affects the json repr
+    // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
+    // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 
-    let mut json_data = vec![];
-
-    for key in combined.keys().sorted() {
-        let internal_fn = combined.get(key).unwrap();
-        json_data.push(internal_fn.to_json().unwrap());
-    }
+    let json_data: Vec<_> = combined
+        .keys()
+        .sorted()
+        .map(|key| {
+            let internal_fn = combined.get(key).unwrap();
+            internal_fn.to_json().unwrap()
+        })
+        .collect();
     expectorate::assert_contents(
         "../../../docs/kcl/std.json",
         &serde_json::to_string_pretty(&json_data).unwrap(),

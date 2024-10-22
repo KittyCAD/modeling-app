@@ -41,7 +41,7 @@ use tower_lsp::{
 
 use crate::{
     ast::types::{Expr, VariableKind},
-    executor::SourceRange,
+    executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
@@ -588,10 +588,15 @@ impl Backend {
             return Ok(());
         }
 
-        // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx.engine.clear_scene(SourceRange::default()).await?;
+        let mut id_generator = IdGenerator::default();
 
-        let exec_state = match executor_ctx.run(ast, None).await {
+        // Clear the scene, before we execute so it's not fugly as shit.
+        executor_ctx
+            .engine
+            .clear_scene(&mut id_generator, SourceRange::default())
+            .await?;
+
+        let exec_state = match executor_ctx.run(ast, None, id_generator, None).await {
             Ok(exec_state) => exec_state,
             Err(err) => {
                 self.memory_map.remove(params.uri.as_str());
@@ -1118,7 +1123,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(value) = ast.get_value_for_position(pos) else {
+        let Some(value) = ast.get_expr_for_position(pos) else {
             return Ok(None);
         };
 

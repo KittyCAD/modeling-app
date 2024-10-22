@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 7,
-            "name": "x",
-            "digest": null
+            "name": "x"
           },
           "init": {
             "type": "Literal",
@@ -29,14 +28,11 @@ expression: actual
             "start": 10,
             "end": 11,
             "value": 1,
-            "raw": "1",
-            "digest": null
-          },
-          "digest": null
+            "raw": "1"
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
   ],
   "nonCodeMeta": {
@@ -50,13 +46,10 @@ expression: actual
             "type": "inlineComment",
             "value": "this is an inline comment",
             "style": "line"
-          },
-          "digest": null
+          }
         }
       ]
     },
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+    "start": []
+  }
 }

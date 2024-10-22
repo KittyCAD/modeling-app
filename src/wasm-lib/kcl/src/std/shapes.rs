@@ -97,7 +97,7 @@ async fn inner_circle(
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
 
     args.batch_modeling_cmd(
         id,

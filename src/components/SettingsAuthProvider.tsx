@@ -1,9 +1,10 @@
+import { trap } from 'lib/trap'
 import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
-import React, { createContext, useEffect } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
@@ -15,7 +16,6 @@ import {
 } from 'lib/theme'
 import decamelize from 'decamelize'
 import { Actor, AnyStateMachine, ContextFrom, Prop, StateFrom } from 'xstate'
-import { isDesktop } from 'lib/isDesktop'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import {
   kclManager,
@@ -33,8 +33,14 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
-import { saveSettings } from 'lib/settings/settingsUtils'
+import {
+  saveSettings,
+  loadAndValidateSettings,
+} from 'lib/settings/settingsUtils'
 import { reportRejection } from 'lib/trap'
+import { getAppSettingsFilePath } from 'lib/desktop'
+import { isDesktop } from 'lib/isDesktop'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -99,6 +105,9 @@ export const SettingsAuthProviderBase = ({
   const location = useLocation()
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
+  const [settingsPath, setSettingsPath] = useState<string | undefined>(
+    undefined
+  )
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine.provide({
@@ -191,7 +200,11 @@ export const SettingsAuthProviderBase = ({
             console.error('Error executing AST after settings change', e)
           }
         },
-        persistSettings: ({ context }) => {
+        persistSettings: ({ context, event }) => {
+          // Without this, when a user changes the file, it'd
+          // create a detection loop with the file-system watcher.
+          if (event.doNotPersist) return
+
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           saveSettings(context, loadedProject?.project?.path)
         },
@@ -200,6 +213,38 @@ export const SettingsAuthProviderBase = ({
     { input: loadedSettings }
   )
   settingsStateRef = settingsState.context
+
+  useEffect(() => {
+    if (!isDesktop()) return
+    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
+  }, [])
+
+  useFileSystemWatcher(
+    async () => {
+      // If there is a projectPath but it no longer exists it means
+      // it was exterally removed. If we let the code past this condition
+      // execute it will recreate the directory due to code in
+      // loadAndValidateSettings trying to recreate files. I do not
+      // wish to change the behavior in case anything else uses it.
+      // Go home.
+      if (loadedProject?.project?.path) {
+        if (!window.electron.exists(loadedProject?.project?.path)) {
+          navigate(PATHS.HOME)
+          return
+        }
+      }
+
+      const data = await loadAndValidateSettings(loadedProject?.project?.path)
+      settingsSend({
+        type: 'Set all settings',
+        settings: data.settings,
+        doNotPersist: true,
+      })
+    },
+    [settingsPath, loadedProject?.project?.path].filter(
+      (x: string | undefined) => x !== undefined
+    )
+  )
 
   // Add settings commands to the command bar
   // They're treated slightly differently than other commands

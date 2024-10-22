@@ -2,7 +2,7 @@
 
 ## Zoo Modeling App
 
-live at [app.zoo.dev](https://app.zoo.dev/)
+download at [zoo.dev/modeling-app/download](https://zoo.dev/modeling-app/download)
 
 A CAD application from the future, brought to you by the [Zoo team](https://zoo.dev).
 
@@ -57,7 +57,7 @@ yarn install
 followed by:
 
 ```
-yarn build:wasm-dev
+yarn build:wasm
 ```
 
 or if you have the gh cli installed
@@ -66,15 +66,15 @@ or if you have the gh cli installed
 ./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
 ```
 
-That will build the WASM binary and put in the `public` dir (though gitignored)
+That will build the WASM binary and put in the `public` dir (though gitignored).
 
-finally, to run the web app only, run:
+Finally, to run the web app only, run:
 
 ```
 yarn start
 ```
 
-If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens ofcourse, then navigate to localhost:3000 again. Note that navigating to localhost:3000/signin removes your token so you will need to set the token again.
+If you're not an KittyCAD employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to localhost:3000 again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
 
 ### Development environment variables
 
@@ -91,13 +91,13 @@ Third-Party Cookies".
 
 ## Desktop
 
-To spin up the desktop app, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
+To spin up the desktop app, `yarn install` and `yarn build:wasm` need to have been done before hand then
 
 ```
-yarn electron:start
+yarn tron:start
 ```
 
-This will start the application and hot-reload on changed.
+This will start the application and hot-reload on changes.
 
 Devtools can be opened with the usual Cmd/Ctrl-Shift-I.
 
@@ -128,7 +128,18 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-#### 1. Bump the versions by running `./make-release.sh` and create a Cut Release PR
+#### 1. Bump the versions by running `./make-release.sh`
+
+The `./make-release.sh` script has git commands to pull main but to be sure you can run the following git commands to have a fresh `main` locally.
+
+```
+git branch -D main
+git checkout main
+git pull origin
+./make-release.sh
+# Copy within the back ticks and paste the stdout of the change log
+git push --set-upstream origin <branch name created from ./make-release.sh>
+```
 
 That will create the branch with the updated json files for you:
 - run `./make-release.sh` or `./make-release.sh patch` for a patch update;
@@ -137,28 +148,50 @@ That will create the branch with the updated json files for you:
 
 After it runs you should just need the push the branch and open a PR.
 
-**Important:** It needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
+#### 2. Create a Cut Release PR
+
+When you open the PR copy the change log from the output of the `./make-release.sh` script into the description of the PR.
+
+**Important:** Pull request title needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
 
 The PR may then serve as a place to discuss the human-readable changelog and extra QA. The `make-release.sh` tool suggests a changelog for you too to be used as PR description, just make sure to delete lines that are not user facing.
 
-#### 2. Smoke test artifacts from the Cut Release PR
+#### 3. Manually test artifacts from the Cut Release PR
 
-The release builds can be find under the `artifact` zip, at the very bottom of the `ci` action page for each commit on this branch.
+##### Release builds
 
-We don't have a strict process, but click around and check for anything obvious, posting results as comments in the Cut Release PR.
+The release builds can be found under the `out-{platform}` zip, at the very bottom of the `build-publish-apps` summary page for each commit on this branch.
 
-The other `ci` output in Cut Release PRs is `updater-test`, because we don't have a way to test this fully automated, we have a semi-automated process. Download updater-test zip file, install the app, run it, expect an updater prompt to a dummy v0.99.99, install it and check that the app comes back at that version (on both macOS and Windows).
+Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the Cut Release PR.
 
-#### 3. Merge the Cut Release PR
+##### Updater-test builds
+
+The other `build-publish-apps` output in Cut Release PRs is `updater-test-{platform}`. As we don't have a way to test this fully automatically, we have a semi-automated process. For macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
+
+The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
+
+If the prompt doesn't show up, start the app in command line to grab the electron-updater logs. This is likely an issue with the current build that needs addressing (or the updater-test location in the storage bucket).
+```
+# Windows (PowerShell)
+& 'C:\Program Files\Zoo Modeling App\Zoo Modeling App.exe'
+
+# macOS
+/Applications/Zoo\ Modeling\ App.app/Contents/MacOS/Zoo\ Modeling\ App
+
+# Linux
+./Zoo Modeling App-{version}-{arch}-linux.AppImage
+```
+
+#### 4. Merge the Cut Release PR
 
 This will kick the `create-release` action, that creates a _Draft_ release out of this Cut Release PR merge after less than a minute, with the new version as title and Cut Release PR as description.
 
 
-#### 4. Publish the release
+#### 5. Publish the release
 
 Head over to https://github.com/KittyCAD/modeling-app/releases, the draft release corresponding to the merged Cut Release PR should show up at the top as _Draft_. Click on it, verify the content, and hit _Publish_.
 
-#### 5. Profit
+#### 6. Profit
 
 A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter.
 
@@ -304,7 +337,7 @@ yarn start
 and finally:
 
 ```
-yarn test:nowatch
+yarn test:unit
 ```
 
 For individual testing:
@@ -319,7 +352,16 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 ```bash
 cd src/wasm-lib
-cargo test
+KITTYCAD_API_TOKEN=XXX cargo test -- --test-threads=1
+```
+
+Where `XXX` is an API token from the production engine (NOT the dev environment).
+
+We recommend using [nextest](https://nexte.st/) to run the Rust tests (its faster and is used in CI). Once installed, run the tests using
+
+```
+cd src/wasm-lib
+KITTYCAD_API_TOKEN=XXX cargo run nextest
 ```
 
 ### Mapping CI CD jobs to local commands
@@ -348,7 +390,6 @@ yarn test-setup
 yarn tsc
 yarn fmt-check
 yarn lint
-yarn xstate:typegen
 yarn test:unit:local
 ```
 
