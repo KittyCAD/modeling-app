@@ -472,7 +472,7 @@ export class CameraControls {
     }
   }
 
-  onClick = (event: PointerEvent) => {
+  onClick = (event: MouseEvent) => {
     if (this.wasDragging) {
       event.stopPropagation()
       this.wasDragging = false
