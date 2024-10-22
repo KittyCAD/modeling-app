@@ -66,3 +66,7 @@ venv
 
 # electron
 out/
+
+# engine wasm utils
+src/lib/engine-utils/engine.wasm
+src/lib/engine-utils/engine.js

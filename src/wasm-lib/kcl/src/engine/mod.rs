@@ -9,9 +9,15 @@ pub mod conn_mock;
 pub mod conn_wasm;
 
 #[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "native-engine-utils")]
 pub mod engine_utils;
 #[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm-engine-utils")]
 pub mod engine_utils_wasm;
+
+#[cfg(feature = "engine")]
+#[cfg(any(not(target_arch = "wasm32"), all(not(feature = "native-engine-utils"), not(feature = "wasm-engine-utils"))))]
+pub mod engine_utils_api;
 
 use std::{
     collections::HashMap,

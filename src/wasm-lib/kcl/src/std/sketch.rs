@@ -6,7 +6,7 @@ use anyhow::Result;
 use derive_docs::stdlib;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, units};
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -30,10 +30,16 @@ use crate::{
 };
 
 #[cfg(not(target_arch = "wasm32"))]
+#[cfg(feature = "native-engine-utils")]
 use crate::engine::engine_utils;
 
 #[cfg(target_arch = "wasm32")]
+#[cfg(feature = "wasm-engine-utils")]
 use crate::engine::engine_utils_wasm as engine_utils;
+
+#[cfg(feature = "engine")]
+#[cfg(any(not(target_arch = "wasm32"), all(not(feature = "native-engine-utils"), not(feature = "wasm-engine-utils"))))]
+use crate::engine::engine_utils_api as engine_utils;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1503,7 +1509,7 @@ pub(crate) async fn inner_arc(
             let a_start = Angle::from_degrees(*angle_start);
             let a_end = Angle::from_degrees(*angle_end);
 
-            let (start, center, mut end) = arc_start_center_and_end(from, a_start, a_end, *radius);
+            let (_, center, mut end) = arc_start_center_and_end(from, a_start, a_end, *radius);
 
             if engine_utils::is_available() {
                 let mut path_plus_arc = sketch.clone();
@@ -1532,15 +1538,13 @@ pub(crate) async fn inner_arc(
                     })
                 })?;
 
-                let result_str = engine_utils::get_true_path_end_pos(sketch_json_value, &args).await?;
-                let result_end: Point2d = serde_json::from_str(&result_str).map_err(|e| {
-                    KclError::Type(KclErrorDetails {
-                        message: format!("Failed to convert arc center from json: {}", e),
-                        source_ranges: vec![args.source_range],
-                    })
-                })?;
-
-                end = result_end;
+                //???? someone double check me on this unit conversion - mike
+                let units = units::UnitLength::Millimeters;
+                let result_end = engine_utils::get_true_path_end_pos(sketch_json_value, &args).await?;
+                end = Point2d { 
+                    x: result_end.x.to_millimeters(units),
+                    y: result_end.y.to_millimeters(units),
+                };
             }
 
             (center, a_start, a_end, *radius, end)
