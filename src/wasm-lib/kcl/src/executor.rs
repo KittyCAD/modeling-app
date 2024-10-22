@@ -1,6 +1,9 @@
 //! The executor for the AST.
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -23,12 +26,12 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program,
-        ReturnStatement, TagDeclarator,
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, ItemVisibility,
+        KclNone, Program, ReturnStatement, TagDeclarator,
     },
-    engine::EngineManager,
+    engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
-    fs::FileManager,
+    fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{FnAsArg, StdLib},
 };
@@ -47,6 +50,14 @@ pub struct ExecState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
+    /// Identifiers that have been exported from the current module.
+    pub module_exports: HashSet<String>,
+    /// The stack of import statements for detecting circular module imports.
+    /// If this is empty, we're not currently executing an import statement.
+    pub import_stack: Vec<std::path::PathBuf>,
+    /// The directory of the current project.  This is used for resolving import
+    /// paths.  If None is given, the current working directory is used.
+    pub project_directory: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -391,6 +402,20 @@ impl KclValue {
             KclValue::Face(_) => "Face",
         }
     }
+
+    pub(crate) fn is_function(&self) -> bool {
+        match self {
+            KclValue::UserVal(..)
+            | KclValue::TagIdentifier(..)
+            | KclValue::TagDeclarator(..)
+            | KclValue::Plane(..)
+            | KclValue::Face(..)
+            | KclValue::Solid(..)
+            | KclValue::Solids { .. }
+            | KclValue::ImportedGeometry(..) => false,
+            KclValue::Function { .. } => true,
+        }
+    }
 }
 
 impl From<SketchSet> for KclValue {
@@ -450,6 +475,15 @@ impl Geometry {
 pub enum Geometries {
     Sketches(Vec<Box<Sketch>>),
     Solids(Vec<Box<Solid>>),
+}
+
+impl From<Geometry> for Geometries {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketches(vec![x]),
+            Geometry::Solid(x) => Self::Solids(vec![x]),
+        }
+    }
 }
 
 /// A sketch or a group of sketches.
@@ -1495,6 +1529,14 @@ impl From<SourceRange> for Metadata {
     }
 }
 
+impl From<&ImportStatement> for Metadata {
+    fn from(stmt: &ImportStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(stmt.start, stmt.end),
+        }
+    }
+}
+
 impl From<&ExpressionStatement> for Metadata {
     fn from(exp_statement: &ExpressionStatement) -> Self {
         Self {
@@ -1958,8 +2000,9 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory, id_generator)
+        self.run_with_session_data(program, memory, id_generator, project_directory)
             .await
             .map(|x| x.0)
     }
@@ -1971,6 +2014,7 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
         let memory = if let Some(memory) = memory {
             memory.clone()
@@ -1980,6 +2024,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState {
             memory,
             id_generator,
+            project_directory,
             ..Default::default()
         };
         // Before we even start executing the program, set the units.
@@ -2018,6 +2063,91 @@ impl ExecutorContext {
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
+                BodyItem::ImportStatement(import_stmt) => {
+                    let source_range = SourceRange::from(import_stmt);
+                    let path = import_stmt.path.clone();
+                    let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
+                        std::path::PathBuf::from(project_dir).join(&path)
+                    } else {
+                        std::path::PathBuf::from(&path)
+                    };
+                    if exec_state.import_stack.contains(&resolved_path) {
+                        return Err(KclError::ImportCycle(KclErrorDetails {
+                            message: format!(
+                                "circular import of modules is not allowed: {} -> {}",
+                                exec_state
+                                    .import_stack
+                                    .iter()
+                                    .map(|p| p.as_path().to_string_lossy())
+                                    .collect::<Vec<_>>()
+                                    .join(" -> "),
+                                resolved_path.to_string_lossy()
+                            ),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
+                    }
+                    let source = self.fs.read_to_string(&resolved_path, source_range).await?;
+                    let program = crate::parser::parse(&source)?;
+                    let (module_memory, module_exports) = {
+                        exec_state.import_stack.push(resolved_path.clone());
+                        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
+                        let original_memory = std::mem::take(&mut exec_state.memory);
+                        let original_exports = std::mem::take(&mut exec_state.module_exports);
+                        let result = self
+                            .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
+                            .await;
+                        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
+                        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
+                        self.engine.replace_execution_kind(original_execution);
+                        exec_state.import_stack.pop();
+
+                        result.map_err(|err| {
+                            if let KclError::ImportCycle(_) = err {
+                                // It was an import cycle.  Keep the original message.
+                                err.override_source_ranges(vec![source_range])
+                            } else {
+                                KclError::Semantic(KclErrorDetails {
+                                    message: format!(
+                                        "Error loading imported file. Open it to view more details. {path}: {}",
+                                        err.message()
+                                    ),
+                                    source_ranges: vec![source_range],
+                                })
+                            }
+                        })?;
+
+                        (module_memory, module_exports)
+                    };
+                    for import_item in &import_stmt.items {
+                        // Extract the item from the module.
+                        let item = module_memory
+                            .get(&import_item.name.name, import_item.into())
+                            .map_err(|_err| {
+                                KclError::UndefinedValue(KclErrorDetails {
+                                    message: format!("{} is not defined in module", import_item.name.name),
+                                    source_ranges: vec![SourceRange::from(&import_item.name)],
+                                })
+                            })?;
+                        // Check that the item is allowed to be imported.
+                        if !module_exports.contains(&import_item.name.name) {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: format!(
+                                    "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                    import_item.name.name
+                                ),
+                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                            }));
+                        }
+
+                        // Add the item to the current module.
+                        exec_state.memory.add(
+                            import_item.identifier(),
+                            item.clone(),
+                            SourceRange::from(&import_item.name),
+                        )?;
+                    }
+                    last_expr = None;
+                }
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
                     last_expr = Some(
@@ -2044,7 +2174,21 @@ impl ExecutorContext {
                                 StatementKind::Declaration { name: &var_name },
                             )
                             .await?;
+                        let is_function = memory_item.is_function();
                         exec_state.memory.add(&var_name, memory_item, source_range)?;
+                        // Track exports.
+                        match variable_declaration.visibility {
+                            ItemVisibility::Export => {
+                                if !is_function {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "Only functions can be exported".to_owned(),
+                                        source_ranges: vec![source_range],
+                                    }));
+                                }
+                                exec_state.module_exports.insert(var_name);
+                            }
+                            ItemVisibility::Default => {}
+                        }
                     }
                     last_expr = None;
                 }
@@ -2130,6 +2274,7 @@ impl ExecutorContext {
                 },
             },
             Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
+            Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
@@ -2148,8 +2293,9 @@ impl ExecutorContext {
         &self,
         program: &Program,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None, id_generator).await?;
+        let _ = self.run(program, None, id_generator, project_directory).await?;
 
         // Zoom to fit.
         self.engine
@@ -2294,7 +2440,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None, IdGenerator::default()).await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
         Ok(exec_state.memory)
     }

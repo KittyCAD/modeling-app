@@ -426,6 +426,7 @@ export const _executor = async (
       baseUnit,
       engineCommandManager,
       fileSystemManager,
+      undefined,
       isMock
     )
     return execStateFromRaw(execState)

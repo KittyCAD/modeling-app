@@ -45,12 +45,12 @@ const peg = startSketchOn(s, "end")
      ], radius: bumpDiam / 2 }, %)
   |> patternLinear2d({
        axis: [1, 0],
-       repetitions: 5,
+       instances: 6,
        distance: 7
      }, %)
   |> patternLinear2d({
        axis: [0, 1],
-       repetitions: 9,
+       instances: 10,
        distance: 7
      }, %)
   |> extrude(bumpHeight, %)

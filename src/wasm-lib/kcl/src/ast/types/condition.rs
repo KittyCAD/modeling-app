@@ -1,13 +1,6 @@
-use crate::errors::KclError;
-use crate::executor::BodyType;
-use crate::executor::ExecState;
-use crate::executor::ExecutorContext;
-use crate::executor::KclValue;
 use crate::executor::Metadata;
 use crate::executor::SourceRange;
-use crate::executor::StatementKind;
 
-use super::compute_digest;
 use super::impl_value_meta;
 use super::ConstraintLevel;
 use super::Hover;
@@ -15,7 +8,6 @@ use super::{Digest, Expr};
 use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use sha2::{Digest as DigestTrait, Sha256};
 
 // TODO: This should be its own type, similar to Program,
 // but guaranteed to have an Expression as its final item.
@@ -56,14 +48,6 @@ impl_value_meta!(IfExpression);
 impl_value_meta!(ElseIf);
 
 impl IfExpression {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.cond.compute_digest());
-        hasher.update(slf.then_val.compute_digest());
-        for else_if in &mut slf.else_ifs {
-            hasher.update(else_if.compute_digest());
-        }
-        hasher.update(slf.final_else.compute_digest());
-    });
     fn source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange::from(self)]
     }
@@ -101,60 +85,9 @@ impl From<&ElseIf> for Metadata {
 }
 
 impl ElseIf {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.cond.compute_digest());
-        hasher.update(slf.then_val.compute_digest());
-    });
     #[allow(dead_code)]
     fn source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange([self.start, self.end])]
-    }
-}
-
-// Execution
-
-impl IfExpression {
-    #[async_recursion::async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        // Check the `if` branch.
-        let cond = ctx
-            .execute_expr(&self.cond, exec_state, &Metadata::from(self), StatementKind::Expression)
-            .await?
-            .get_bool()?;
-        if cond {
-            let block_result = ctx.inner_execute(&self.then_val, exec_state, BodyType::Block).await?;
-            // Block must end in an expression, so this has to be Some.
-            // Enforced by the parser.
-            // See https://github.com/KittyCAD/modeling-app/issues/4015
-            return Ok(block_result.unwrap());
-        }
-
-        // Check any `else if` branches.
-        for else_if in &self.else_ifs {
-            let cond = ctx
-                .execute_expr(
-                    &else_if.cond,
-                    exec_state,
-                    &Metadata::from(self),
-                    StatementKind::Expression,
-                )
-                .await?
-                .get_bool()?;
-            if cond {
-                let block_result = ctx
-                    .inner_execute(&else_if.then_val, exec_state, BodyType::Block)
-                    .await?;
-                // Block must end in an expression, so this has to be Some.
-                // Enforced by the parser.
-                // See https://github.com/KittyCAD/modeling-app/issues/4015
-                return Ok(block_result.unwrap());
-            }
-        }
-
-        // Run the final `else` branch.
-        ctx.inner_execute(&self.final_else, exec_state, BodyType::Block)
-            .await
-            .map(|expr| expr.unwrap())
     }
 }
 
@@ -208,8 +141,3 @@ impl ElseIf {
         self.then_val.rename_identifiers(old_name, new_name);
     }
 }
-
-// Linting
-
-impl IfExpression {}
-impl ElseIf {}

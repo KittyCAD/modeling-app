@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 9,
-            "name": "six",
-            "digest": null
+            "name": "six"
           },
           "init": {
             "type": "BinaryExpression",
@@ -41,8 +40,7 @@ expression: actual
                 "start": 12,
                 "end": 13,
                 "value": 1,
-                "raw": "1",
-                "digest": null
+                "raw": "1"
               },
               "right": {
                 "type": "Literal",
@@ -50,10 +48,8 @@ expression: actual
                 "start": 16,
                 "end": 17,
                 "value": 2,
-                "raw": "2",
-                "digest": null
-              },
-              "digest": null
+                "raw": "2"
+              }
             },
             "right": {
               "type": "Literal",
@@ -61,22 +57,12 @@ expression: actual
               "start": 20,
               "end": 21,
               "value": 3,
-              "raw": "3",
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              "raw": "3"
+            }
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

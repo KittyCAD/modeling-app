@@ -35,7 +35,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
-    let exec_state = ctx.run(&program, None, IdGenerator::default()).await?;
+    let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.

@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 0,
             "end": 1,
-            "name": "x",
-            "digest": null
+            "name": "x"
           },
           "init": {
             "type": "Literal",
@@ -29,20 +28,11 @@ expression: actual
             "start": 4,
             "end": 5,
             "value": 4,
-            "raw": "4",
-            "digest": null
-          },
-          "digest": null
+            "raw": "4"
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

@@ -7,7 +7,7 @@ use serde::de::DeserializeOwned;
 use serde_json::Value as JValue;
 
 use crate::{
-    ast::types::{parse_json_number_as_f64, TagDeclarator},
+    ast::types::{execute::parse_json_number_as_f64, TagDeclarator},
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,

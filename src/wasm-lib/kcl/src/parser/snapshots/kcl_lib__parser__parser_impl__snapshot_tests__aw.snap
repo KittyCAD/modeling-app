@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 4,
             "end": 11,
-            "name": "numbers",
-            "digest": null
+            "name": "numbers"
           },
           "init": {
             "type": "ArrayExpression",
@@ -35,8 +34,7 @@ expression: actual
                 "start": 28,
                 "end": 29,
                 "value": 1,
-                "raw": "1",
-                "digest": null
+                "raw": "1"
               },
               {
                 "type": "Literal",
@@ -44,8 +42,7 @@ expression: actual
                 "start": 79,
                 "end": 80,
                 "value": 3,
-                "raw": "3",
-                "digest": null
+                "raw": "3"
               }
             ],
             "nonCodeMeta": {
@@ -59,8 +56,7 @@ expression: actual
                       "type": "blockComment",
                       "value": "A,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ],
                 "2": [
@@ -72,27 +68,16 @@ expression: actual
                       "type": "blockComment",
                       "value": "B,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ]
               },
-              "start": [],
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              "start": []
+            }
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

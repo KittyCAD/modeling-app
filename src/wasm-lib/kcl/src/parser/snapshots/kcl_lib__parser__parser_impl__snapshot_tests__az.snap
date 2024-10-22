@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 4,
             "end": 9,
-            "name": "props",
-            "digest": null
+            "name": "props"
           },
           "init": {
             "type": "ObjectExpression",
@@ -37,8 +36,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 26,
                   "end": 27,
-                  "name": "a",
-                  "digest": null
+                  "name": "a"
                 },
                 "value": {
                   "type": "Literal",
@@ -46,10 +44,8 @@ expression: actual
                   "start": 29,
                   "end": 30,
                   "value": 1,
-                  "raw": "1",
-                  "digest": null
-                },
-                "digest": null
+                  "raw": "1"
+                }
               },
               {
                 "type": "ObjectProperty",
@@ -59,8 +55,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 65,
                   "end": 66,
-                  "name": "c",
-                  "digest": null
+                  "name": "c"
                 },
                 "value": {
                   "type": "Literal",
@@ -68,10 +63,8 @@ expression: actual
                   "start": 68,
                   "end": 69,
                   "value": 3,
-                  "raw": "3",
-                  "digest": null
-                },
-                "digest": null
+                  "raw": "3"
+                }
               }
             ],
             "nonCodeMeta": {
@@ -85,27 +78,16 @@ expression: actual
                       "type": "blockComment",
                       "value": "b: 2,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ]
               },
-              "start": [],
-              "digest": null
-            },
-            "digest": null
-          },
-          "digest": null
+              "start": []
+            }
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

@@ -18,7 +18,7 @@ mod test_examples_line_to {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -52,7 +52,7 @@ mod test_examples_line_to {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

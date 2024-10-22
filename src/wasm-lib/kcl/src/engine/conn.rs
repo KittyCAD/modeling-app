@@ -24,6 +24,8 @@ use crate::{
     executor::{DefaultPlanes, IdGenerator},
 };
 
+use super::ExecutionKind;
+
 #[derive(Debug, PartialEq)]
 enum SocketHealth {
     Active,
@@ -46,6 +48,8 @@ pub struct EngineConnection {
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<Mutex<Option<ModelingSessionData>>>,
+
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 pub struct TcpRead {
@@ -300,6 +304,7 @@ impl EngineConnection {
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
             default_planes: Default::default(),
             session_data,
+            execution_kind: Default::default(),
         })
     }
 }
@@ -312,6 +317,18 @@ impl EngineManager for EngineConnection {
 
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
     }
 
     async fn default_planes(
