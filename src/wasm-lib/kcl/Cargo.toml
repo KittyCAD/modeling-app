@@ -37,7 +37,7 @@ parse-display = "0.9.1"
 pyo3 = { version = "0.22.6", optional = true }
 reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
-schemars = { version = "0.8.17", features = ["impl_json_schema", "url", "uuid1", "preserve_order"] }
+schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
 serde = { version = "1.0.214", features = ["derive"] }
 serde_json = "1.0.128"
 sha2 = "0.10.8"
