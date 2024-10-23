@@ -338,6 +338,11 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onClick: async (args) => {
         if (!args) return
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         if (args.mouseEvent.which !== 1) return
         const { intersectionPoint } = args
         if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode) return
@@ -645,7 +650,13 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onClick: async (args) => {
         if (!args) return
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         if (args.mouseEvent.which !== 1) return
+
         const { intersectionPoint } = args
         let intersection2d = intersectionPoint?.twoD
         const profileStart = args.intersects
@@ -826,6 +837,11 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
         if (!cornerPoint || args.mouseEvent.button !== 0) return
@@ -994,6 +1010,11 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
         if (!cornerPoint || args.mouseEvent.button !== 0) return
@@ -1157,6 +1178,11 @@ export class SceneEntities {
       },
       onMove: () => {},
       onClick: (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         if (args?.mouseEvent.which !== 1) return
         if (!args || !args.selected) {
           sceneInfra.modelingSend({
