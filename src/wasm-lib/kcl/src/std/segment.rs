@@ -109,7 +109,7 @@ pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<K
 }]
 fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<f64, KclError> {
     let last_line = sketch
-        .value
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -149,7 +149,7 @@ pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<K
 }]
 fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<f64, KclError> {
     let last_line = sketch
-        .value
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -289,7 +289,7 @@ fn inner_angle_to_match_length_x(
     let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
 
     let last_line = sketch
-        .value
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -353,7 +353,7 @@ fn inner_angle_to_match_length_y(
     let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
 
     let last_line = sketch
-        .value
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {

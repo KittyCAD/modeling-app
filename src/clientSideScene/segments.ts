@@ -58,7 +58,7 @@ import { err } from 'lib/trap'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
-  prevSegment: Sketch['value'][number]
+  prevSegment: Sketch['paths'][number]
   id: string
   pathToNode: PathToNode
   isDraftSegment?: boolean
@@ -72,7 +72,7 @@ interface CreateSegmentArgs {
 
 interface UpdateSegmentArgs {
   input: SegmentInputs
-  prevSegment: Sketch['value'][number]
+  prevSegment: Sketch['paths'][number]
   group: Group
   sceneInfra: SceneInfra
   scale?: number
