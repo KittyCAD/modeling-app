@@ -141,14 +141,14 @@ pub(crate) async fn do_post_extrude(
     )
     .await?;
 
-    if sketch.value.is_empty() {
+    if sketch.paths.is_empty() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Expected a non-empty sketch".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
-    let edge_id = sketch.value.iter().find_map(|segment| match segment {
+    let edge_id = sketch.paths.iter().find_map(|segment| match segment {
         Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
         _ => None,
     });
@@ -229,7 +229,7 @@ pub(crate) async fn do_post_extrude(
     } = analyze_faces(exec_state, &args, face_infos);
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let new_value = sketch
-        .value
+        .paths
         .iter()
         .flat_map(|path| {
             if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
