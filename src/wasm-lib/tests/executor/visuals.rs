@@ -62,3 +62,4 @@ kcl_test!(
     "sketch-on-chamfer-two-times-different-order",
     kcl_test_sketch_on_chamfer_two_times_different_order
 );
+kcl_test!("repeat_bumps_only", repeat_bumps_only);

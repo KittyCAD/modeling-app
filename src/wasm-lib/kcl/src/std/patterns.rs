@@ -329,7 +329,7 @@ async fn send_pattern_transform(
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: solid.id,
+                entity_id: solid.sketch.original_id,
                 transform,
             }),
         )
@@ -660,7 +660,7 @@ async fn pattern_linear(
             id,
             ModelingCmd::from(mcmd::EntityLinearPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
+                entity_id: dbg!(geometry.original_id()),
                 num_repetitions,
                 spacing: LengthUnit(data.distance()),
             }),
@@ -964,7 +964,7 @@ async fn pattern_circular(
             id,
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
+                entity_id: geometry.original_id(),
                 center: kcmc::shared::Point3d {
                     x: LengthUnit(center[0]),
                     y: LengthUnit(center[1]),
