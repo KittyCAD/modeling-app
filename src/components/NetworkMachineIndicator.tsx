@@ -12,7 +12,6 @@ export const NetworkMachineIndicator = ({
   const machineCount = machineManager.machineCount()
   const reason = machineManager.noMachinesReason()
   const machines = machineManager.machines
-  console.log('react machines', machines)
 
   return isDesktop() ? (
     <Popover className="relative">
@@ -55,12 +54,6 @@ export const NetworkMachineIndicator = ({
                   <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
                     {machine.make_model.model}
                   </p>
-                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                    {machine.state.state.toUpperCase()}
-                    {machine.state.state === 'failed' && machine.state.message
-                      ? ': ' + machine.state.message
-                      : ''}
-                  </p>
                   {machine.extra &&
                     machine.extra.type === 'bambu' &&
                     machine.extra.nozzle_diameter && (
@@ -68,6 +61,17 @@ export const NetworkMachineIndicator = ({
                         Nozzle Diameter: {machine.extra.nozzle_diameter}
                       </p>
                     )}
+                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                    {`Status: ${machine.state.state
+                      .charAt(0)
+                      .toUpperCase()}${machine.state.state.slice(1)}`}
+                    {machine.state.state === 'failed' && machine.state.message
+                      ? ` (${machine.state.message})`
+                      : ''}
+                    {machine.state.state === 'running' && machine.progress
+                      ? ` (${Math.round(machine.progress)}%)`
+                      : ''}
+                  </p>
                 </li>
               )
             })}

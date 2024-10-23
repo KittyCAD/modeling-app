@@ -30,22 +30,51 @@ const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
 const isLinux = os.platform() === 'linux'
 
-let fsWatchListeners = new Map<string, ReturnType<typeof chokidar.watch>>()
+let fsWatchListeners = new Map<
+  string,
+  Map<
+    string,
+    {
+      watcher: ReturnType<typeof chokidar.watch>
+      callback: (eventType: string, path: string) => void
+    }
+  >
+>()
 
-const watchFileOn = (path: string, callback: (path: string) => void) => {
-  const watcherMaybe = fsWatchListeners.get(path)
-  if (watcherMaybe) return
-  const watcher = chokidar.watch(path)
+const watchFileOn = (
+  path: string,
+  key: string,
+  callback: (eventType: string, path: string) => void
+) => {
+  let watchers = fsWatchListeners.get(path)
+  if (!watchers) {
+    watchers = new Map()
+  }
+  const watcher = chokidar.watch(path, { depth: 1 })
   watcher.on('all', callback)
-  fsWatchListeners.set(path, watcher)
+  watchers.set(key, { watcher, callback })
+  fsWatchListeners.set(path, watchers)
 }
-const watchFileOff = (path: string) => {
-  const watcher = fsWatchListeners.get(path)
-  if (!watcher) return
-  watcher.unwatch(path)
-  fsWatchListeners.delete(path)
+const watchFileOff = (path: string, key: string) => {
+  const watchers = fsWatchListeners.get(path)
+  if (!watchers) return
+  const data = watchers.get(key)
+  if (!data) {
+    console.warn(
+      "Trying to remove a watcher, callback that doesn't exist anymore. Suspicious."
+    )
+    return
+  }
+  const { watcher, callback } = data
+  watcher.off('all', callback)
+  watchers.delete(key)
+  if (watchers.size === 0) {
+    fsWatchListeners.delete(path)
+  } else {
+    fsWatchListeners.set(path, watchers)
+  }
 }
-const readFile = (path: string) => fs.readFile(path, 'utf-8')
+const readFile = fs.readFile
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
 const exists = (path: string) => fsSync.existsSync(path)

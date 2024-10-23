@@ -258,5 +258,6 @@ export type CommandArgumentWithName<
 export type CommandArgumentOption<A> = {
   name: string
   isCurrent?: boolean
+  disabled?: boolean
   value: A
 }

@@ -37,8 +37,6 @@ if (!process.env.NODE_ENV)
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
-console.log(process.env)
-
 process.env.VITE_KC_API_WS_MODELING_URL ??=
   'wss://api.zoo.dev/ws/modeling/commands'
 process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'

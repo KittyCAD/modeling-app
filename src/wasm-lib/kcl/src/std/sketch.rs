@@ -154,7 +154,7 @@ async fn inner_line_to(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -323,7 +323,7 @@ async fn inner_line(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -506,7 +506,7 @@ async fn inner_angled_line(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
     Ok(new_sketch)
 }
 
@@ -1237,7 +1237,7 @@ pub(crate) async fn inner_start_profile_at(
         id: path_id,
         original_id: path_id,
         on: sketch_surface.clone(),
-        value: vec![],
+        paths: vec![],
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
@@ -1411,7 +1411,7 @@ pub(crate) async fn inner_close(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1545,7 +1545,7 @@ pub(crate) async fn inner_arc(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1677,7 +1677,7 @@ async fn inner_tangential_arc(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1773,7 +1773,7 @@ async fn inner_tangential_arc_to(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1858,7 +1858,7 @@ async fn inner_tangential_arc_to_relative(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1951,7 +1951,7 @@ async fn inner_bezier_curve(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }

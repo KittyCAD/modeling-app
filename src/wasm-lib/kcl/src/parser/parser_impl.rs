@@ -1344,7 +1344,7 @@ fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
 }
 
 /// Parse a variable/constant declaration.
-fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
+fn declaration(i: TokenSlice) -> PResult<Box<VariableDeclaration>> {
     let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
         .parse_next(i)?
         .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
@@ -1406,7 +1406,7 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
     .map_err(|e| e.cut())?;
 
     let end = val.end();
-    Ok(VariableDeclaration {
+    Ok(Box::new(VariableDeclaration {
         start,
         end,
         declarations: vec![VariableDeclarator {
@@ -1419,7 +1419,7 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
         visibility,
         kind,
         digest: None,
-    })
+    }))
 }
 
 impl TryFrom<Token> for Identifier {
