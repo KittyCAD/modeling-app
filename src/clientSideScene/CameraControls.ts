@@ -241,7 +241,6 @@ export class CameraControls {
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
-    this.domElement.addEventListener('click', this.onClick)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
 
     window.addEventListener('resize', this.onWindowResize)
@@ -366,6 +365,7 @@ export class CameraControls {
   onMouseDown = (event: PointerEvent) => {
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
+    // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
     let interaction = this.getInteractionType(event)
@@ -396,30 +396,30 @@ export class CameraControls {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
 
-      if (this.syncDirection === 'engineToClient') {
-        this.wasDragging = true
+      // If theres a valid interaction and the mouse is moving,
+      // our past (and current) interaction was a drag.
+      this.wasDragging = true
 
+      if (this.syncDirection === 'engineToClient') {
         this.moveSender.send(() => {
           this.doMove(interaction, [event.clientX, event.clientY])
         })
         return
       }
 
+      // else "clientToEngine" (Sketch Mode) or forceUpdate
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
       if (interaction === 'rotate') {
-        this.wasDragging = true
         this.pendingRotation = this.pendingRotation
           ? this.pendingRotation
           : new Vector2()
         this.pendingRotation.x += deltaMove.x
         this.pendingRotation.y += deltaMove.y
       } else if (interaction === 'zoom') {
-        this.wasDragging = true
         this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
         this.pendingZoom *= 1 + deltaMove.y * 0.01
       } else if (interaction === 'pan') {
-        this.wasDragging = true
         this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
         let distance = this.camera.position.distanceTo(this.target)
         if (this.camera instanceof OrthographicCamera) {
@@ -437,6 +437,7 @@ export class CameraControls {
        * This might not be the right spot, but it is more consolidated.
        */
 
+      // Clear any previous drag state
       this.wasDragging = false
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
@@ -469,13 +470,6 @@ export class CameraControls {
         },
         cmd_id: uuidv4(),
       })
-    }
-  }
-
-  onClick = (event: MouseEvent) => {
-    if (this.wasDragging) {
-      event.stopPropagation()
-      this.wasDragging = false
     }
   }
 
