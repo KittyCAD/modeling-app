@@ -396,7 +396,7 @@ export class CameraControls {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
 
-      // If theres a valid interaction and the mouse is moving,
+      // If there's a valid interaction and the mouse is moving,
       // our past (and current) interaction was a drag.
       this.wasDragging = true
 
