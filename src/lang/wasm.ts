@@ -110,6 +110,7 @@ const initialise = async () => {
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
+
     return await init(buffer)
   } catch (e) {
     console.log('Error initialising WASM', e)

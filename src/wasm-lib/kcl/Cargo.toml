@@ -68,7 +68,7 @@ tokio-tungstenite = { version = "0.24.0", features = ["rustls-tls-native-roots"]
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
 [features]
-default = ["engine"]
+default = ["engine"]  # add wasm-engine-utils here when we're ready
 cli = ["dep:clap"]
 # For the lsp server, when run with stdout for rpc we want to disable println.
 # This is used for editor extensions that use the lsp server.
@@ -77,6 +77,10 @@ engine = []
 pyo3 = ["dep:pyo3"]
 # Helper functions also used in benchmarks.
 lsp-test-util = []
+#if enabled, kcl will link directly against a wasm build of the engine utils lib to save latency
+wasm-engine-utils = []
+#if enabled, kcl will link directly against a native build of the engine utils lib to save latency (not yet functional)
+native-engine-utils = []
 
 tabled = ["dep:tabled"]
 
