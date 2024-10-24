@@ -411,7 +411,7 @@ export class SceneInfra {
         // console.log('onDragStart', this.selected)
       }
       if (
-        hasBeenDragged &&
+        this.selected.hasBeenDragged &&
         planeIntersectPoint &&
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
