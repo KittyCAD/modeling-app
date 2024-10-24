@@ -166,7 +166,7 @@ Manually test against this [list](https://github.com/KittyCAD/modeling-app/issue
 
 ##### Updater-test builds
 
-The other `build-publish-apps` output in Cut Release PRs is `updater-test-{platform}`. As we don't have a way to test this fully automatically, we have a semi-automated process. For macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
+The other `build-publish-apps` output in Cut Release PRs is `updater-test-{platform}`. As we don't have a way to test this fully automatically, we have a semi-automated process. For macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version.
 
 The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
 
@@ -346,12 +346,47 @@ For individual testing:
 yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
 ```
 
-Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/** tests, in interactive mode by default.
 
 ### Rust tests
 
-```bash
+**Dependencies**
+
+- `KITTYCAD_API_TOKEN`
+- `cargo-nextest`
+- `just`
+
+#### Setting KITTYCAD_API_TOKEN
+Use the production zoo.dev token, set this environment variable before running the tests
+
+#### Installing cargonextest
+
+```
 cd src/wasm-lib
+cargo search cargo-nextest
+cargo install cargo-nextest
+```
+
+#### just
+install [`just`](https://github.com/casey/just?tab=readme-ov-file#pre-built-binaries)
+
+#### Running the tests
+
+```bash
+# With just
+# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
+# Make sure you installed cargo-nextest
+# Make sure you installed just
+cd src/wasm-lib
+just test
+```
+
+```bash
+# Without just
+# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
+# Make sure you installed cargo-nextest
+cd src/wasm-lib
+export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
 KITTYCAD_API_TOKEN=XXX cargo test -- --test-threads=1
 ```
 
