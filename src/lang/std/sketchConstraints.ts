@@ -18,7 +18,7 @@ export function getSketchSegmentFromPathToNode(
   pathToNode: PathToNode
 ):
   | {
-      segment: Sketch['value'][number]
+      segment: Sketch['paths'][number]
       index: number
     }
   | Error {
@@ -39,15 +39,15 @@ export function getSketchSegmentFromSourceRange(
   [rangeStart, rangeEnd]: SourceRange
 ):
   | {
-      segment: Sketch['value'][number]
+      segment: Sketch['paths'][number]
       index: number
     }
   | Error {
-  const lineIndex = sketch.value.findIndex(
+  const lineIndex = sketch.paths.findIndex(
     ({ __geoMeta: { sourceRange } }: Path) =>
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
   )
-  const line = sketch.value[lineIndex]
+  const line = sketch.paths[lineIndex]
   if (line) {
     return {
       segment: line,

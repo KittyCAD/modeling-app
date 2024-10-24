@@ -55,6 +55,53 @@ test.describe('Onboarding tests', () => {
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
   })
 
+  test(
+    'Desktop: fresh onboarding executes and loads',
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        appSettings: {
+          app: {
+            onboardingStatus: 'incomplete',
+          },
+        },
+        cleanProjectDir: true,
+      })
+
+      const u = await getUtils(page)
+
+      const viewportSize = { width: 1200, height: 500 }
+      await page.setViewportSize(viewportSize)
+
+      // Locators and constants
+      const newProjectButton = page.getByRole('button', { name: 'New project' })
+      const projectLink = page.getByTestId('project-link')
+
+      await test.step(`Create a project and open to the onboarding`, async () => {
+        await newProjectButton.click()
+        await projectLink.click()
+        await test.step(`Ensure the engine connection works by testing the sketch button`, async () => {
+          await u.waitForPageLoad()
+        })
+      })
+
+      await test.step(`Ensure we see the onboarding stuff`, async () => {
+        // Test that the onboarding pane loaded
+        await expect(
+          page.getByText('Welcome to Modeling App! This')
+        ).toBeVisible()
+
+        // *and* that the code is shown in the editor
+        await expect(page.locator('.cm-content')).toContainText(
+          '// Shelf Bracket'
+        )
+      })
+
+      await electronApp.close()
+    }
+  )
+
   test('Code resets after confirmation', async ({ page }) => {
     const initialCode = `sketch001 = startSketchOn('XZ')`
 
