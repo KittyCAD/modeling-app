@@ -92,6 +92,7 @@ export class CameraControls {
   target: Vector3
   domElement: HTMLCanvasElement
   isDragging: boolean
+  wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   rotationSpeed = 0.3
@@ -233,6 +234,7 @@ export class CameraControls {
     this.target = new Vector3()
     this.domElement = domElement
     this.isDragging = false
+    this.wasDragging = false
     this.mouseDownPosition = new Vector2()
     this.mouseNewPosition = new Vector2()
 
@@ -363,6 +365,8 @@ export class CameraControls {
   onMouseDown = (event: PointerEvent) => {
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
+    // Reset the wasDragging flag to false when starting a new drag
+    this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
@@ -392,6 +396,10 @@ export class CameraControls {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
 
+      // If there's a valid interaction and the mouse is moving,
+      // our past (and current) interaction was a drag.
+      this.wasDragging = true
+
       if (this.syncDirection === 'engineToClient') {
         this.moveSender.send(() => {
           this.doMove(interaction, [event.clientX, event.clientY])
@@ -399,6 +407,7 @@ export class CameraControls {
         return
       }
 
+      // else "clientToEngine" (Sketch Mode) or forceUpdate
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
       if (interaction === 'rotate') {
@@ -427,6 +436,9 @@ export class CameraControls {
        * under the cursor. This recently moved from being handled in App.tsx.
        * This might not be the right spot, but it is more consolidated.
        */
+
+      // Clear any previous drag state
+      this.wasDragging = false
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
