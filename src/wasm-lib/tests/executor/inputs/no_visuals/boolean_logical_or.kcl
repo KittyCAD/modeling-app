@@ -1,0 +1,32 @@
+aa = true | false
+a = if aa {
+  1
+} else {
+  2
+}
+assertEqual(a, 1, 0.001, "true | false is true")
+
+
+bb = false | true
+b = if bb {
+  1
+} else {
+  2
+}
+assertEqual(b, 1, 0.001, "false | true is true")
+
+cc = true | true
+c = if cc {
+  1
+} else {
+  2
+}
+assertEqual(c, 1, 0.001, "true | true is true")
+
+dd = false | false
+d = if dd {
+  1
+} else {
+  2
+}
+assertEqual(d, 2, 0.001, "false | false is false")
