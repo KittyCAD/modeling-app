@@ -5,9 +5,6 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -31,13 +28,14 @@ jobs:
       - id: filter
         name: Check for Rust changes
         uses: dorny/paths-filter@v3
+        if: ${{ env.CUT_RELEASE_PR == 'false' }}
         with:
           filters: |
             rust:
               - 'src/wasm-lib/**'
 
   browser:
-    if: ${{ env.CUT_RELEASE_PR == 'false' }}
+    if: ${{ !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v'))) }}
     timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
     name: playwright:browser:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
     strategy:
@@ -227,7 +225,7 @@ jobs:
 
 
   electron:
-    if: ${{ env.CUT_RELEASE_PR == 'false' }}
+    if: ${{ !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v'))) }}
     name: playwright:electron:${{matrix.os}}
     strategy:
       fail-fast: false
