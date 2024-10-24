@@ -43,10 +43,12 @@ test.describe('Testing constraints', () => {
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
     await page.waitForTimeout(500) // wait for animation
 
-    const startXPx = 500
+    const center = await u.getCenterOfModelViewArea()
+
+    const startXPx = center.x - 100
     await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
     await page.keyboard.down('Shift')
-    await page.mouse.click(834, 244)
+    await page.mouse.click(center.x + 234, 244)
     await page.keyboard.up('Shift')
 
     await page

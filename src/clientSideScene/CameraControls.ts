@@ -1,3 +1,5 @@
+import { Models } from '@kittycad/lib'
+import { MutableRefObject } from 'react'
 import { cameraMouseDragGuards, MouseGuard } from 'lib/cameraControls'
 import {
   Euler,
@@ -87,6 +89,9 @@ class CameraRateLimiter {
 
 export class CameraControls {
   engineCommandManager: EngineCommandManager
+  modelingSidebarRef: MutableRefObject<HTMLUListElement | null> = {
+    current: null,
+  }
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -95,6 +100,13 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
+  cameraDragStartXY = new Vector2()
+  old:
+    | {
+        camera: PerspectiveCamera | OrthographicCamera
+        target: Vector3
+      }
+    | undefined
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -461,6 +473,7 @@ export class CameraControls {
     if (this.syncDirection === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
+
       void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -909,16 +922,121 @@ export class CameraControls {
         up: { x: 0, y: 0, z: 1 },
       },
     })
-    await this.engineCommandManager.sendSceneCommand({
+
+    await this.centerModelRelativeToPanes({
+      zoomToFit: true,
+      resetLastPaneWidth: true,
+    })
+
+    this.cameraDragStartXY = new Vector2()
+    this.cameraDragStartXY.x = 0
+    this.cameraDragStartXY.y = 0
+  }
+
+  async restoreCameraPosition(): Promise<void> {
+    if (!this.old) return
+
+    this.camera = this.old.camera.clone()
+    this.target = this.old.target.clone()
+
+    void this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
-        type: 'zoom_to_fit',
-        object_ids: [], // leave empty to zoom to all objects
-        padding: 0.2, // padding around the objects
-        animated: false, // don't animate the zoom for now
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam({
+          isPerspective: true,
+          position: this.camera.position,
+          quaternion: this.camera.quaternion,
+          zoom: this.camera.zoom,
+          target: this.target,
+        }),
       },
     })
+  }
+
+  private lastFramePaneWidth: number = 0
+
+  async centerModelRelativeToPanes(args?: {
+    zoomObjectId?: string
+    zoomToFit?: boolean
+    resetLastPaneWidth?: boolean
+  }): Promise<void> {
+    const panes = this.modelingSidebarRef?.current
+    if (!panes) return
+
+    const panesWidth = panes.offsetWidth + panes.offsetLeft
+
+    if (args?.resetLastPaneWidth) {
+      this.lastFramePaneWidth = 0
+    }
+
+    const goPx =
+      (panesWidth - this.lastFramePaneWidth) / 2 / window.devicePixelRatio
+    this.lastFramePaneWidth = panesWidth
+
+    // Originally I had tried to use the default_camera_look_at endpoint and
+    // some quaternion math to move the camera right, but it ended up being
+    // overly complicated, and I think the threejs scene also doesn't have the
+    // camera coordinates after a zoom-to-fit... So this is much easier, and
+    // maps better to screen coordinates.
+
+    const requests: Models['ModelingCmdReq_type'][] = [
+      {
+        cmd: {
+          type: 'camera_drag_start',
+          interaction: 'pan',
+          window: { x: goPx < 0 ? -goPx : 0, y: 0 },
+        },
+        cmd_id: uuidv4(),
+      },
+      {
+        cmd: {
+          type: 'camera_drag_move',
+          interaction: 'pan',
+          window: {
+            x: goPx < 0 ? 0 : goPx,
+            y: 0,
+          },
+        },
+        cmd_id: uuidv4(),
+      },
+    ]
+
+    if (args?.zoomToFit) {
+      requests.unshift({
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: args?.zoomObjectId ? [args?.zoomObjectId] : [], // leave empty to zoom to all objects
+          padding: 0.2, // padding around the objects
+        },
+        cmd_id: uuidv4(),
+      })
+    }
+
+    await this.engineCommandManager
+      .sendSceneCommand({
+        type: 'modeling_cmd_batch_req',
+        batch_id: uuidv4(),
+        responses: true,
+        requests,
+      })
+      // engineCommandManager can't subscribe to batch responses so we'll send
+      // this one off by its lonesome after.
+      .then(() =>
+        this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'camera_drag_end',
+            interaction: 'pan',
+            window: {
+              x: goPx < 0 ? 0 : goPx,
+              y: 0,
+            },
+          },
+          cmd_id: uuidv4(),
+        })
+      )
   }
 
   async tweenCameraToQuaternion(

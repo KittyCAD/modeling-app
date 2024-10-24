@@ -2,7 +2,7 @@ import { executeAst, lintAst } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
-import { EngineCommandManager } from './std/engineConnection'
+import { EngineCommandManager, CommandLogType } from './std/engineConnection'
 import { err } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
@@ -285,15 +285,9 @@ export class KclManager {
           )
         }
 
-        await this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
+        await sceneInfra.camControls.centerModelRelativeToPanes({
+          zoomToFit: true,
+          zoomObjectId,
         })
       }
     }
@@ -323,7 +317,7 @@ export class KclManager {
     this.ast = { ...ast }
     this._executeCallback()
     this.engineCommandManager.addCommandLog({
-      type: 'execution-done',
+      type: CommandLogType.ExecutionDone,
       data: null,
     })
 

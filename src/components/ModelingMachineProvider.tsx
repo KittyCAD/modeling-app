@@ -14,7 +14,6 @@ import {
   modelingMachine,
   modelingMachineDefaultContext,
 } from 'machines/modelingMachine'
-import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   isCursorInSketchCommandRange,
@@ -105,13 +104,8 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
-        modeling: {
-          defaultUnit,
-          cameraProjection,
-          highlightEdges,
-          showScaleGrid,
-        },
+        app: { theme },
+        modeling: { defaultUnit, highlightEdges, cameraProjection },
       },
     },
   } = useSettingsAuthContext()
@@ -121,9 +115,6 @@ export const ModelingMachineProvider = ({
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
-
-  let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
 
   const { commandBarState, commandBarSend } = useCommandsContext()
 
@@ -631,6 +622,9 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               input.faceId
             )
+            await sceneInfra.camControls.centerModelRelativeToPanes({
+              resetLastPaneWidth: true,
+            })
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,
@@ -651,6 +645,9 @@ export const ModelingMachineProvider = ({
             engineCommandManager,
             input.planeId
           )
+          await sceneInfra.camControls.centerModelRelativeToPanes({
+            resetLastPaneWidth: true,
+          })
 
           return {
             sketchPathToNode: pathToNode,
@@ -673,6 +670,9 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
             )
+            await sceneInfra.camControls.centerModelRelativeToPanes({
+              resetLastPaneWidth: true,
+            })
             return {
               sketchPathToNode: sketchPathToNode || [],
               zAxis: info.sketchDetails.zAxis || null,
@@ -998,21 +998,6 @@ export const ModelingMachineProvider = ({
       },
       // devTools: true,
     }
-  )
-
-  useSetupEngineManager(
-    streamRef,
-    modelingSend,
-    modelingState.context,
-    {
-      pool: pool,
-      theme: theme.current,
-      highlightEdges: highlightEdges.current,
-      enableSSAO: enableSSAO.current,
-      showScaleGrid: showScaleGrid.current,
-      cameraProjection: cameraProjection.current,
-    },
-    token
   )
 
   useEffect(() => {
