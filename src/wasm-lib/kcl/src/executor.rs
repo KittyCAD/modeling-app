@@ -7,6 +7,7 @@ use std::{
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use indexmap::IndexMap;
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -55,9 +56,26 @@ pub struct ExecState {
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<std::path::PathBuf>,
+    /// Map from source file absolute path to module ID.
+    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
+    /// Map from module ID to source info.
+    pub source_infos: IndexMap<ModuleId, ModuleInfo>,
     /// The directory of the current project.  This is used for resolving import
     /// paths.  If None is given, the current working directory is used.
     pub project_directory: Option<String>,
+}
+
+impl ExecState {
+    pub fn add_new_module(&mut self, path: std::path::PathBuf) -> ModuleId {
+        let id = ModuleId::from_usize(self.path_to_source_id.len());
+        let source_info = ModuleInfo {
+            id,
+            path: path.clone(),
+        };
+        self.path_to_source_id.insert(path, id);
+        self.source_infos.insert(id, source_info);
+        id
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1373,6 +1391,34 @@ pub enum BodyType {
     Block,
 }
 
+/// Info about a module.  Right now, this is pretty minimal.  We hope to cache
+/// modules here in the future.
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[ts(export)]
+pub struct ModuleInfo {
+    /// The ID of the module.
+    id: ModuleId,
+    /// Absolute path of the module's source file.
+    path: std::path::PathBuf,
+}
+
+/// Identifier of a source file.  Uses a u32 to keep the size small.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[ts(export)]
+pub struct ModuleId(pub u32);
+
+impl ModuleId {
+    pub fn from_usize(id: usize) -> Self {
+        Self(u32::try_from(id).expect("module ID should fit in a u32"))
+    }
+
+    pub fn as_usize(&self) -> usize {
+        usize::try_from(self.0).expect("module ID should fit in a usize")
+    }
+}
+
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
@@ -2230,6 +2276,7 @@ impl ExecutorContext {
                             source_ranges: vec![import_stmt.into()],
                         }));
                     }
+                    exec_state.add_new_module(resolved_path.clone());
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
                     let program = crate::parser::parse(&source)?;
                     let (module_memory, module_exports) = {
