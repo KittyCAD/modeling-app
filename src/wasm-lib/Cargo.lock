@@ -1684,9 +1684,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.68"
+version = "0.2.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e3aedfcc1d8ea9995ec3eb78a6743c585c9380475c48701797f107489b696aa"
+checksum = "b135696d07a4fab928e5abace4dd05f4976eafab5d73e5747a85dc5a684b936c"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3005,9 +3005,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.128"
+version = "1.0.132"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ff5456707a1de34e7e37f2a6fd3d3f808c318259cbd01ab6377795054b483d8"
+checksum = "d726bfaff4b320266d395898905d0eba0345aae23b54aee3a737e260fd46db03"
 dependencies = [
  "indexmap 2.6.0",
  "itoa",
