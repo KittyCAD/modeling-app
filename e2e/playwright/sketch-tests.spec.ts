@@ -650,7 +650,6 @@ test.describe('Sketch tests', () => {
     |> revolve({ axis: "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page }) => {
-    test.skip(process.platform === 'darwin', 'Can add multiple sketches')
     const u = await getUtils(page)
 
     const viewportSize = { width: 1200, height: 500 }
@@ -675,7 +674,7 @@ test.describe('Sketch tests', () => {
 
     const center = await u.getCenterOfModelViewArea()
 
-    let codeStr = "const sketch001 = startSketchOn('XY')"
+    let codeStr = "sketch001 = startSketchOn('XY')"
 
     await page.mouse.click(center.x - 50, viewportSize.height * 0.55)
     await expect(u.codeLocator).toHaveText(codeStr)
@@ -713,6 +712,7 @@ test.describe('Sketch tests', () => {
 
     // when exiting the sketch above the camera is still looking down at XY,
     // so selecting the plane again is a bit easier.
+    await page.mouse.move(center.x - 100, center.y + 50, { steps: 5 })
     await page.mouse.click(center.x - 100, center.y + 50)
     await page.waitForTimeout(600) // TODO detect animation ending, or disable animation
     codeStr += "sketch002 = startSketchOn('XY')"
