@@ -28,6 +28,7 @@ import {
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
+import { markOnce } from 'lib/performance'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -329,6 +330,7 @@ class EngineConnection extends EventTarget {
     token?: string
     callbackOnEngineLiteConnect?: () => void
   }) {
+    markOnce('code/startInitialEngineConnect')
     super()
 
     this.engineCommandManager = engineCommandManager
@@ -784,6 +786,7 @@ class EngineConnection extends EventTarget {
             this.dispatchEvent(
               new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
             )
+            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
