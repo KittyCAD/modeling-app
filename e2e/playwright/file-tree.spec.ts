@@ -136,6 +136,9 @@ test.describe('when using the file tree to', () => {
       )
       await pasteCodeInEditor(kclCube)
 
+      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
+      await tronApp.page.waitForTimeout(2000)
+
       await renameFile(fromFile, toFile)
       await tronApp.page.reload()
 
@@ -222,15 +225,20 @@ test.describe('when using the file tree to', () => {
       )
       await pasteCodeInEditor(kclCube)
 
+      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
+      await tronApp.page.waitForTimeout(2000)
+
       const kcl1 = 'main.kcl'
       const kcl2 = '2.kcl'
-
       await createNewFileAndSelect(kcl2)
       const kclCylinder = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCylinder)
+
+      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
+      await tronApp.page.waitForTimeout(2000)
 
       await renameFile(kcl2, kcl1)
 

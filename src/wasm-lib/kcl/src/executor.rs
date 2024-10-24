@@ -1137,10 +1137,10 @@ pub struct TagEngineInfo {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Sketch {
-    /// The id of the sketch (this will change when the engine's reference to it changes.
+    /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
     /// The paths in the sketch.
-    pub value: Vec<Path>,
+    pub paths: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
@@ -1215,7 +1215,7 @@ impl Sketch {
 
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
-        self.value.last()
+        self.paths.last()
     }
 
     /// The "pen" is an imaginary pen drawing the path.
