@@ -134,7 +134,7 @@ async fn inner_circle(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
         .await?;

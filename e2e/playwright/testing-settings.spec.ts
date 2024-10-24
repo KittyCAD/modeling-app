@@ -430,7 +430,6 @@ test.describe('Testing settings', () => {
 
       await test.step('Check color of logo changed when in modeling view', async () => {
         await createProject({ name: 'project-000', page })
-        await page.getByRole('button', { name: 'Dismiss' }).click()
         await changeColor('58')
         await expect(logoLink).toHaveCSS('--primary-hue', '58')
       })

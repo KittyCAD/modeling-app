@@ -338,6 +338,11 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onClick: async (args) => {
         if (!args) return
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         if (args.mouseEvent.which !== 1) return
         const { intersectionPoint } = args
         if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode) return
@@ -407,7 +412,7 @@ export class SceneEntities {
     if (err(sketch)) return Promise.reject(sketch)
     if (!sketch) return Promise.reject('sketch not found')
 
-    if (!isArray(sketch?.value))
+    if (!isArray(sketch?.paths))
       return {
         truncatedAst,
         programMemoryOverride,
@@ -435,7 +440,7 @@ export class SceneEntities {
       maybeModdedAst,
       sketch.start.__geoMeta.sourceRange
     )
-    if (sketch?.value?.[0]?.type !== 'Circle') {
+    if (sketch?.paths?.[0]?.type !== 'Circle') {
       const _profileStart = createProfileStartHandle({
         from: sketch.start.from,
         id: sketch.start.__geoMeta.id,
@@ -451,16 +456,16 @@ export class SceneEntities {
       this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
     }
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
-    sketch.value.forEach((segment, index) => {
+    sketch.paths.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         maybeModdedAst,
         segment.__geoMeta.sourceRange
       )
       if (
         draftExpressionsIndices &&
-        (sketch.value[index - 1] || sketch.start)
+        (sketch.paths[index - 1] || sketch.start)
       ) {
-        const previousSegment = sketch.value[index - 1] || sketch.start
+        const previousSegment = sketch.paths[index - 1] || sketch.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
           maybeModdedAst,
           previousSegment.__geoMeta.sourceRange
@@ -511,7 +516,7 @@ export class SceneEntities {
               to: segment.to,
             }
       const result = initSegment({
-        prevSegment: sketch.value[index - 1],
+        prevSegment: sketch.paths[index - 1],
         callExpName,
         input,
         id: segment.__geoMeta.id,
@@ -610,9 +615,9 @@ export class SceneEntities {
       variableDeclarationName
     )
     if (err(sg)) return Promise.reject(sg)
-    const lastSeg = sg?.value?.slice(-1)[0] || sg.start
+    const lastSeg = sg?.paths?.slice(-1)[0] || sg.start
 
-    const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
+    const index = sg.paths.length // because we've added a new segment that's not in the memory yet, no need for `-1`
     const mod = addNewSketchLn({
       node: _ast,
       programMemory: kclManager.programMemory,
@@ -645,7 +650,13 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onClick: async (args) => {
         if (!args) return
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         if (args.mouseEvent.which !== 1) return
+
         const { intersectionPoint } = args
         let intersection2d = intersectionPoint?.twoD
         const profileStart = args.intersects
@@ -654,7 +665,7 @@ export class SceneEntities {
 
         let modifiedAst
         if (profileStart) {
-          const lastSegment = sketch.value.slice(-1)[0]
+          const lastSegment = sketch.paths.slice(-1)[0]
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
@@ -686,7 +697,7 @@ export class SceneEntities {
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else if (intersection2d) {
-          const lastSegment = sketch.value.slice(-1)[0]
+          const lastSegment = sketch.paths.slice(-1)[0]
           const tmp = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
@@ -817,7 +828,7 @@ export class SceneEntities {
           variableDeclarationName
         )
         if (err(sketch)) return Promise.reject(sketch)
-        const sgPaths = sketch.value
+        const sgPaths = sketch.paths
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
         this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
@@ -826,6 +837,11 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
         if (!cornerPoint || args.mouseEvent.button !== 0) return
@@ -868,7 +884,7 @@ export class SceneEntities {
             variableDeclarationName
           )
           if (err(sketch)) return
-          const sgPaths = sketch.value
+          const sgPaths = sketch.paths
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
           // Update the starting segment of the THREEjs scene
@@ -985,7 +1001,7 @@ export class SceneEntities {
           variableDeclarationName
         )
         if (err(sketch)) return
-        const sgPaths = sketch.value
+        const sgPaths = sketch.paths
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
         this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
@@ -994,6 +1010,11 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const cornerPoint = args.intersectionPoint?.twoD
         if (!cornerPoint || args.mouseEvent.button !== 0) return
@@ -1105,7 +1126,7 @@ export class SceneEntities {
 
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
-            const prevSegment = sketch.value[pipeIndex - 2]
+            const prevSegment = sketch.paths[pipeIndex - 2]
             const mod = addNewSketchLn({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
@@ -1157,6 +1178,11 @@ export class SceneEntities {
       },
       onMove: () => {},
       onClick: (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
         if (args?.mouseEvent.which !== 1) return
         if (!args || !args.selected) {
           sceneInfra.modelingSend({
@@ -1345,7 +1371,7 @@ export class SceneEntities {
       }
       if (!sketch) return
 
-      const sgPaths = sketch.value
+      const sgPaths = sketch.paths
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
       this.updateSegment(
@@ -1393,7 +1419,7 @@ export class SceneEntities {
       modifiedAst,
       segment.__geoMeta.sourceRange
     )
-    const sgPaths = sketch.value
+    const sgPaths = sketch.paths
     const originalPathToNodeStr = JSON.stringify(segPathToNode)
     segPathToNode[1][0] = varDecIndex
     const pathToNodeStr = JSON.stringify(segPathToNode)
@@ -1701,7 +1727,7 @@ function prepareTruncatedMemoryAndAst(
     variableDeclarationName
   )
   if (err(sg)) return sg
-  const lastSeg = sg?.value.slice(-1)[0]
+  const lastSeg = sg?.paths.slice(-1)[0]
   if (draftSegment) {
     // truncatedAst needs to setup with another segment at the end
     let newSegment

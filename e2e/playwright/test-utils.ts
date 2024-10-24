@@ -874,7 +874,17 @@ export async function setupElectron({
     const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
     const settingsOverrides = TOML.stringify(
       appSettings
-        ? { settings: appSettings }
+        ? {
+            settings: {
+              ...TEST_SETTINGS,
+              ...appSettings,
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+                ...appSettings.app,
+              },
+            },
+          }
         : {
             settings: {
               ...TEST_SETTINGS,
