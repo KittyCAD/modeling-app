@@ -1656,6 +1656,15 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A circular arc, not necessarily tangential to the current point.
+    Arc {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Center of the circle that this arc is drawn on.
+        center: [f64; 2],
+        /// Radius of the circle that this arc is drawn on.
+        radius: f64,
+    },
 }
 
 /// What kind of path is this?
@@ -1668,10 +1677,11 @@ enum PathType {
     Circle,
     Horizontal,
     AngledLineTo,
+    Arc,
 }
 
-impl From<Path> for PathType {
-    fn from(value: Path) -> Self {
+impl From<&Path> for PathType {
+    fn from(value: &Path) -> Self {
         match value {
             Path::ToPoint { .. } => Self::ToPoint,
             Path::TangentialArcTo { .. } => Self::TangentialArcTo,
@@ -1680,6 +1690,7 @@ impl From<Path> for PathType {
             Path::Horizontal { .. } => Self::Horizontal,
             Path::AngledLineTo { .. } => Self::AngledLineTo,
             Path::Base { .. } => Self::Base,
+            Path::Arc { .. } => Self::Arc,
         }
     }
 }
@@ -1694,6 +1705,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1706,6 +1718,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::Arc { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1718,6 +1731,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::Arc { base, .. } => base,
         }
     }
 
@@ -1732,8 +1746,33 @@ impl Path {
 
     /// Length of this path segment, in cartesian plane.
     pub fn length(&self) -> f64 {
-        // TODO 4297: check what type of line this path is, don't assume linear.
-        ((self.get_from()[1] - self.get_to()[1]).powi(2) + (self.get_from()[0] - self.get_to()[0]).powi(2)).sqrt()
+        match self {
+            Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::TangentialArc {
+                base: _,
+                center,
+                ccw: _,
+            }
+            | Self::TangentialArcTo {
+                base: _,
+                center,
+                ccw: _,
+            } => {
+                // The radius can be calculated as the linear distance between `to` and `center`,
+                // or between `from` and `center`. They should be the same.
+                let radius = linear_distance(self.get_from(), center);
+                debug_assert_eq!(radius, linear_distance(self.get_to(), center));
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Arc { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
+        }
     }
 
     pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
@@ -1745,8 +1784,20 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::Arc { base, .. } => Some(base),
         }
     }
+}
+
+/// Compute the straight-line distance between a pair of (2D) points.
+#[rustfmt::skip]
+fn linear_distance(
+    [x0, y0]: &[f64; 2],
+    [x1, y1]: &[f64; 2]
+) -> f64 {
+    let y_sq = (y1 - y0).powi(2);
+    let x_sq = (x1 - x0).powi(2);
+    (y_sq + x_sq).sqrt()
 }
 
 /// An extrude surface.

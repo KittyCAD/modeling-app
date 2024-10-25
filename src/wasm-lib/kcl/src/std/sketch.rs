@@ -1530,7 +1530,7 @@ pub(crate) async fn inner_arc(
     )
     .await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::Arc {
         base: BasePath {
             from: from.into(),
             to: end.into(),
@@ -1540,6 +1540,8 @@ pub(crate) async fn inner_arc(
                 metadata: args.source_range.into(),
             },
         },
+        center: center.into(),
+        radius,
     };
 
     let mut new_sketch = sketch.clone();
