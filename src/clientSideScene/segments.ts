@@ -147,6 +147,7 @@ class StraightSegment implements SegmentUtils {
     segmentGroup.name = STRAIGHT_SEGMENT
     segmentGroup.userData = {
       type: STRAIGHT_SEGMENT,
+      draft: isDraftSegment,
       id,
       from,
       to,
@@ -347,6 +348,7 @@ class TangentialArcToSegment implements SegmentUtils {
     mesh.name = meshName
     group.userData = {
       type: TANGENTIAL_ARC_TO_SEGMENT,
+      draft: isDraftSegment,
       id,
       from,
       to,
@@ -520,6 +522,7 @@ class CircleSegment implements SegmentUtils {
     arcMesh.name = meshType
     group.userData = {
       type: CIRCLE_SEGMENT,
+      draft: isDraftSegment,
       id,
       from,
       radius,
