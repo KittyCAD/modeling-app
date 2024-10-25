@@ -189,7 +189,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           CSC_FOR_PULL_REQUEST: true
-          WINDOWS_CERTIFICATE_THUMBPRINT: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
         run: yarn electron-builder --config --publish always
 
       - name: List artifacts in out/
@@ -234,7 +234,17 @@ jobs:
 
       - name: Build the app (updater-test)
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
-        run: yarn electron-builder --config ${{ env.BUILD_RELEASE && '--publish always' || '' }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          CSC_FOR_PULL_REQUEST: true
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
+        run: yarn electron-builder --config --publish always
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
