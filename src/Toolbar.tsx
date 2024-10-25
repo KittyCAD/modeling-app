@@ -279,6 +279,8 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig: ToolbarItemResolved
   configCallbackProps: ToolbarItemCallbackProps
 }) {
+  const { state } = useModelingContext()
+
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
@@ -347,7 +349,9 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
         <>
           <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
           <p className="px-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
-            {itemConfig.disabledReason}
+            {typeof itemConfig.disabledReason === 'function'
+              ? itemConfig.disabledReason(state)
+              : itemConfig.disabledReason}
           </p>
         </>
       )}
