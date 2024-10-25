@@ -83,6 +83,6 @@ name = "modify"
 path = "tests/modify/main.rs"
 
 # Example: how to point modeling-api at a different repo (e.g. a branch or a local clone)
-#[patch."https://github.com/KittyCAD/modeling-api"]
+#[patch.crates-io]
 #kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
 #kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
