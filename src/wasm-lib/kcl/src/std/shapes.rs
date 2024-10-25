@@ -144,18 +144,13 @@ async fn inner_circle(
 }
 
 /// Type of the polygon
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum PolygonType {
+    #[default]
     Inscribed,
     Circumscribed,
-}
-
-impl Default for PolygonType {
-    fn default() -> Self {
-        PolygonType::Inscribed
-    }
 }
 
 /// Data for drawing a polygon
