@@ -163,7 +163,7 @@ impl Default for PolygonType {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PolygonData {
-    /// The radius of the polygon (distance from center to vertices or sides)
+    /// The radius of the polygon
     pub radius: f64,
     /// The number of sides in the polygon
     pub num_sides: u64,
@@ -172,7 +172,7 @@ pub struct PolygonData {
     /// The type of the polygon (inscribed or circumscribed)
     #[serde(skip)]
     polygon_type: PolygonType,
-    /// For exposing the boolean as a field for auto-completion
+    /// Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius
     #[serde(default = "default_inscribed")]
     pub inscribed: bool,
 }
@@ -300,7 +300,7 @@ async fn inner_polygon(
             sketch.add_tag(tag, &current_path);
         }
 
-        sketch.value.push(current_path);
+        sketch.paths.push(current_path);
     }
 
     // Close the polygon by connecting back to the first vertex with a new ID
@@ -335,7 +335,7 @@ async fn inner_polygon(
         sketch.add_tag(tag, &current_path);
     }
 
-    sketch.value.push(current_path);
+    sketch.paths.push(current_path);
 
     args.batch_modeling_cmd(
         exec_state.id_generator.next_uuid(),
