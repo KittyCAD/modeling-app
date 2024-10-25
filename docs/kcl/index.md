@@ -74,6 +74,7 @@ layout: manual
 * [`patternTransform`](kcl/patternTransform)
 * [`pi`](kcl/pi)
 * [`polar`](kcl/polar)
+* [`polygon`](kcl/polygon)
 * [`pow`](kcl/pow)
 * [`profileStart`](kcl/profileStart)
 * [`profileStartX`](kcl/profileStartX)
