@@ -121,24 +121,24 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     name = "fillet",
 }]
 async fn inner_fillet(
-    data: FilletData,
-    solid: Box<Solid>,
+    mut data: FilletData,
+    mut solid: Box<Solid>,
     tag: Option<TagDeclarator>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
-    let mut tags = data.tags.clone();
-    tags.sort();
-    tags.dedup();
-    if tags.len() != data.tags.len() {
+    let num_tags = data.tags.len();
+    data.tags.sort();
+    data.tags.dedup();
+    if num_tags != data.tags.len() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Duplicate tags are not allowed.".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
+    let data = data; // remove mutability
 
-    let mut solid = solid.clone();
     for edge_tag in data.tags {
         let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
