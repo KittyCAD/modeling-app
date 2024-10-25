@@ -31,7 +31,7 @@ pub struct ServerArgs {
     /// Where to find the engine.
     /// If none, uses the prod engine.
     /// This is useful for testing a local engine instance.
-    /// Overridden by the $LOCAL_ENGINE_ADDR environment variable.
+    /// Overridden by the $ZOO_HOST environment variable.
     pub engine_address: Option<String>,
 }
 
@@ -44,8 +44,8 @@ impl ServerArgs {
             num_engine_conns: pargs.opt_value_from_str("--num-engine-conns")?.unwrap_or(1),
             engine_address: pargs.opt_value_from_str("--engine-address")?,
         };
-        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-            println!("Overriding engine address via $LOCAL_ENGINE_ADDR");
+        if let Ok(addr) = std::env::var("ZOO_HOST") {
+            println!("Overriding engine address via $ZOO_HOST");
             args.engine_address = Some(addr);
         }
         println!("Config is {args:?}");
@@ -69,9 +69,19 @@ fn start_worker(i: u8, engine_addr: Option<String>) -> mpsc::Sender<WorkerReq> {
     // Make a work queue for this worker.
     let (tx, mut rx) = mpsc::channel(1);
     tokio::task::spawn(async move {
-        let state = ExecutorContext::new_for_unit_test(UnitLength::Mm, engine_addr)
-            .await
-            .unwrap();
+        let state = ExecutorContext::new_with_client(
+            kcl_lib::executor::ExecutorSettings {
+                units: UnitLength::Mm,
+                highlight_edges: true,
+                enable_ssao: false,
+                show_grid: false,
+                replay: None,
+            },
+            None,
+            engine_addr,
+        )
+        .await
+        .unwrap();
         println!("Worker {i} ready");
         while let Some(req) = rx.recv().await {
             let req: WorkerReq = req;
