@@ -16,9 +16,9 @@ Data for drawing a polygon
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `radius` |`number`| The radius of the polygon (distance from center to vertices or sides) | No |
+| `radius` |`number`| The radius of the polygon | No |
 | `numSides` |`integer`| The number of sides in the polygon | No |
 | `center` |`[number, number]`| The center point of the polygon | No |
-| `inscribed` |`boolean`| For exposing the boolean as a field for auto-completion | No |
+| `inscribed` |`boolean`| Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius | No |
 
 
