@@ -746,7 +746,6 @@ export class SceneEntities {
           },
         })
       },
-      ...this.mouseEnterLeaveCallbacks(),
     })
   }
   setupDraftRectangle = async (
