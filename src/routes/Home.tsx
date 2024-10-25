@@ -221,6 +221,11 @@ const Home = () => {
       new FormData(e.target as HTMLFormElement)
     )
 
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
+
     if (newProjectName !== project.name) {
       send({
         type: 'Rename project',
