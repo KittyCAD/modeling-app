@@ -100,6 +100,11 @@ export function Toolbar({
     function resolveItemConfig(
       maybeIconConfig: ToolbarItem
     ): ToolbarItemResolved {
+      const isDisabled =
+        disableAllButtons ||
+        maybeIconConfig.status !== 'available' ||
+        maybeIconConfig.disabled?.(state) === true
+
       return {
         ...maybeIconConfig,
         title:
@@ -113,10 +118,11 @@ export function Toolbar({
           typeof maybeIconConfig.hotkey === 'string'
             ? maybeIconConfig.hotkey
             : maybeIconConfig.hotkey?.(state),
-        disabled:
-          disableAllButtons ||
-          maybeIconConfig.status !== 'available' ||
-          maybeIconConfig.disabled?.(state) === true,
+        disabled: isDisabled,
+        disabledReason:
+          typeof maybeIconConfig.disabledReason === 'function'
+            ? maybeIconConfig.disabledReason(state)
+            : maybeIconConfig.disabledReason,
         disableHotkey: maybeIconConfig.disableHotkey?.(state),
         status: maybeIconConfig.status,
       }
@@ -336,6 +342,15 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
         )}
       </div>
       <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
+      {/* Add disabled reason if item is disabled */}
+      {itemConfig.disabled && itemConfig.disabledReason && (
+        <>
+          <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+          <p className="px-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
+            {itemConfig.disabledReason}
+          </p>
+        </>
+      )}
       {itemConfig.links.length > 0 && (
         <>
           <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
