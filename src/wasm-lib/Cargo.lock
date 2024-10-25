@@ -1684,9 +1684,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.70"
+version = "0.2.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b135696d07a4fab928e5abace4dd05f4976eafab5d73e5747a85dc5a684b936c"
+checksum = "c6d2160dcb0e5373b1242a760dbf17fb9c12de523c410c11b145381c852b377b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2586,9 +2586,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.11.0"
+version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38200e5ee88914975b69f657f0801b6f6dccafd44fd9326302a4aaeecfacb1d8"
+checksum = "b544ef1b4eac5dc2db33ea63606ae9ffcfac26c1416a2806ae0bf5f56b201191"
 dependencies = [
  "aho-corasick",
  "memchr",
