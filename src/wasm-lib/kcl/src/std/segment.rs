@@ -42,7 +42,7 @@ fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.to[0])
+    Ok(path.get_base().to[0])
 }
 
 /// Returns the segment end of y.
@@ -79,7 +79,7 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.to[1])
+    Ok(path.get_to()[1])
 }
 
 /// Returns the last segment of x.
@@ -202,7 +202,7 @@ fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: A
         })
     })?;
 
-    let result = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let result = path.length();
 
     Ok(result)
 }
@@ -242,7 +242,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    let result = between(path.from.into(), path.to.into());
+    let result = between(path.get_from().into(), path.get_to().into());
 
     Ok(result.to_degrees())
 }
@@ -286,7 +286,7 @@ fn inner_angle_to_match_length_x(
         })
     })?;
 
-    let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let length = path.length();
 
     let last_line = sketch
         .paths
@@ -350,7 +350,7 @@ fn inner_angle_to_match_length_y(
         })
     })?;
 
-    let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let length = path.length();
 
     let last_line = sketch
         .paths
