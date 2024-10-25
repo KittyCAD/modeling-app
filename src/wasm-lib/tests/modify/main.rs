@@ -27,7 +27,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     // Create the client.
     let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
     // Set a local engine address if it's set.
-    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+    if let Ok(addr) = std::env::var("ZOO_HOST") {
         client.set_base_url(addr);
     }
 
