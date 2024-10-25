@@ -1127,7 +1127,7 @@ pub struct TagEngineInfo {
     /// The sketch the tag is on.
     pub sketch: uuid::Uuid,
     /// The path the tag is on.
-    pub path: Option<BasePath>,
+    pub path: Option<Path>,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
 }
@@ -1206,7 +1206,7 @@ impl Sketch {
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
             sketch: self.id,
-            path: Some(base.clone()),
+            path: Some(current_path.clone()),
             surface: None,
         });
 
@@ -1658,6 +1658,32 @@ pub enum Path {
     },
 }
 
+/// What kind of path is this?
+#[derive(Display)]
+enum PathType {
+    ToPoint,
+    Base,
+    TangentialArc,
+    TangentialArcTo,
+    Circle,
+    Horizontal,
+    AngledLineTo,
+}
+
+impl From<Path> for PathType {
+    fn from(value: Path) -> Self {
+        match value {
+            Path::ToPoint { .. } => Self::ToPoint,
+            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
+            Path::TangentialArc { .. } => Self::TangentialArc,
+            Path::Circle { .. } => Self::Circle,
+            Path::Horizontal { .. } => Self::Horizontal,
+            Path::AngledLineTo { .. } => Self::AngledLineTo,
+            Path::Base { .. } => Self::Base,
+        }
+    }
+}
+
 impl Path {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {
@@ -1693,6 +1719,21 @@ impl Path {
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
         }
+    }
+
+    /// Where does this path segment start?
+    pub fn get_from(&self) -> &[f64; 2] {
+        &self.get_base().from
+    }
+    /// Where does this path segment end?
+    pub fn get_to(&self) -> &[f64; 2] {
+        &self.get_base().to
+    }
+
+    /// Length of this path segment, in cartesian plane.
+    pub fn length(&self) -> f64 {
+        // TODO 4297: check what type of line this path is, don't assume linear.
+        ((self.get_from()[1] - self.get_to()[1]).powi(2) + (self.get_from()[0] - self.get_to()[0]).powi(2)).sqrt()
     }
 
     pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
