@@ -14,6 +14,7 @@ import {
 import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 export function setEqualLengthInfo({
   selectionRanges,
@@ -86,7 +87,7 @@ export function applyConstraintEqualLength({
   selectionRanges: Selections
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {

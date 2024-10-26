@@ -42,12 +42,13 @@ import { SimplifiedArgDetails } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 export function startSketchOnDefault(
-  node: Program,
+  node: UnboxedNode<Program>,
   axis: DefaultPlaneStr,
   name = ''
-): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
+): { modifiedAst: UnboxedNode<Program>; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
   const _name =
     name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH)
@@ -76,10 +77,10 @@ export function startSketchOnDefault(
 }
 
 export function addStartProfileAt(
-  node: Program,
+  node: UnboxedNode<Program>,
   pathToNode: PathToNode,
   at: [number, number]
-): { modifiedAst: Program; pathToNode: PathToNode } | Error {
+): { modifiedAst: UnboxedNode<Program>; pathToNode: PathToNode } | Error {
   const _node1 = getNodeFromPath<VariableDeclaration>(
     node,
     pathToNode,
@@ -114,7 +115,7 @@ export function addStartProfileAt(
 }
 
 export function addSketchTo(
-  node: Program,
+  node: UnboxedNode<Program>,
   axis: 'xy' | 'xz' | 'yz',
   name = ''
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
@@ -210,7 +211,7 @@ export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
 
 export function mutateObjExpProp(
   node: Expr,
-  updateWith: Literal | ArrayExpression,
+  updateWith: UnboxedNode<Literal> | UnboxedNode<ArrayExpression>,
   key: string
 ): boolean {
   if (node.type === 'ObjectExpression') {
@@ -248,13 +249,13 @@ export function mutateObjExpProp(
 }
 
 export function extrudeSketch(
-  node: Program,
+  node: UnboxedNode<Program>,
   pathToNode: PathToNode,
   shouldPipe = false,
   distance: Expr = createLiteral(4)
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       pathToNode: PathToNode
       pathToExtrudeArg: PathToNode
     }
@@ -343,13 +344,13 @@ export function extrudeSketch(
 }
 
 export function revolveSketch(
-  node: Program,
+  node: UnboxedNode<Program>,
   pathToNode: PathToNode,
   shouldPipe = false,
   angle: Expr = createLiteral(4)
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       pathToNode: PathToNode
       pathToRevolveArg: PathToNode
     }
@@ -439,7 +440,7 @@ export function revolveSketch(
 }
 
 export function sketchOnExtrudedFace(
-  node: Program,
+  node: UnboxedNode<Program>,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
@@ -571,7 +572,7 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
-export function createLiteral(value: string | number): Literal {
+export function createLiteral(value: string | number): UnboxedNode<Literal> {
   return {
     type: 'Literal',
     start: 0,
@@ -581,7 +582,7 @@ export function createLiteral(value: string | number): Literal {
   }
 }
 
-export function createTagDeclarator(value: string): TagDeclarator {
+export function createTagDeclarator(value: string): UnboxedNode<TagDeclarator> {
   return {
     type: 'TagDeclarator',
     start: 0,
@@ -591,7 +592,7 @@ export function createTagDeclarator(value: string): TagDeclarator {
   }
 }
 
-export function createIdentifier(name: string): Identifier {
+export function createIdentifier(name: string): UnboxedNode<Identifier> {
   return {
     type: 'Identifier',
     start: 0,
@@ -601,7 +602,7 @@ export function createIdentifier(name: string): Identifier {
   }
 }
 
-export function createPipeSubstitution(): PipeSubstitution {
+export function createPipeSubstitution(): UnboxedNode<PipeSubstitution> {
   return {
     type: 'PipeSubstitution',
     start: 0,
@@ -612,7 +613,7 @@ export function createPipeSubstitution(): PipeSubstitution {
 export function createCallExpressionStdLib(
   name: string,
   args: CallExpression['arguments']
-): CallExpression {
+): UnboxedNode<CallExpression> {
   return {
     type: 'CallExpression',
     start: 0,
@@ -632,7 +633,7 @@ export function createCallExpressionStdLib(
 export function createCallExpression(
   name: string,
   args: CallExpression['arguments']
-): CallExpression {
+): UnboxedNode<CallExpression> {
   return {
     type: 'CallExpression',
     start: 0,
@@ -651,7 +652,7 @@ export function createCallExpression(
 
 export function createArrayExpression(
   elements: ArrayExpression['elements']
-): ArrayExpression {
+): UnboxedNode<ArrayExpression> {
   return {
     type: 'ArrayExpression',
     start: 0,
@@ -664,7 +665,7 @@ export function createArrayExpression(
 
 export function createPipeExpression(
   body: PipeExpression['body']
-): PipeExpression {
+): UnboxedNode<PipeExpression> {
   return {
     type: 'PipeExpression',
     start: 0,
@@ -680,7 +681,7 @@ export function createVariableDeclaration(
   init: VariableDeclarator['init'],
   visibility: VariableDeclaration['visibility'] = 'default',
   kind: VariableDeclaration['kind'] = 'const'
-): VariableDeclaration {
+): UnboxedNode<VariableDeclaration> {
   return {
     type: 'VariableDeclaration',
     start: 0,
@@ -703,7 +704,7 @@ export function createVariableDeclaration(
 
 export function createObjectExpression(properties: {
   [key: string]: Expr
-}): ObjectExpression {
+}): UnboxedNode<ObjectExpression> {
   return {
     type: 'ObjectExpression',
     start: 0,
@@ -724,7 +725,7 @@ export function createObjectExpression(properties: {
 export function createUnaryExpression(
   argument: UnaryExpression['argument'],
   operator: UnaryExpression['operator'] = '-'
-): UnaryExpression {
+): UnboxedNode<UnaryExpression> {
   return {
     type: 'UnaryExpression',
     start: 0,
@@ -739,7 +740,7 @@ export function createBinaryExpression([left, operator, right]: [
   BinaryExpression['left'],
   BinaryExpression['operator'],
   BinaryExpression['right']
-]): BinaryExpression {
+]): UnboxedNode<BinaryExpression> {
   return {
     type: 'BinaryExpression',
     start: 0,
@@ -754,19 +755,19 @@ export function createBinaryExpression([left, operator, right]: [
 export function createBinaryExpressionWithUnary([left, right]: [
   BinaryExpression['left'],
   BinaryExpression['right']
-]): BinaryExpression {
+]): UnboxedNode<BinaryExpression> {
   if (right.type === 'UnaryExpression' && right.operator === '-')
     return createBinaryExpression([left, '-', right.argument])
   return createBinaryExpression([left, '+', right])
 }
 
 export function giveSketchFnCallTag(
-  ast: Program,
+  ast: UnboxedNode<Program>,
   range: Selection['range'],
   tag?: string
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       tag: string
       isTagExisting: boolean
       pathToNode: PathToNode
@@ -801,7 +802,7 @@ export function giveSketchFnCallTag(
 }
 
 export function moveValueIntoNewVariablePath(
-  ast: Program,
+  ast: UnboxedNode<Program>,
   programMemory: ProgramMemory,
   pathToNode: PathToNode,
   variableName: string
@@ -834,12 +835,12 @@ export function moveValueIntoNewVariablePath(
 }
 
 export function moveValueIntoNewVariable(
-  ast: Program,
+  ast: UnboxedNode<Program>,
   programMemory: ProgramMemory,
   sourceRange: Selection['range'],
   variableName: string
 ): {
-  modifiedAst: Program
+  modifiedAst: UnboxedNode<Program>
   pathToReplacedNode?: PathToNode
 } {
   const meta = isNodeSafeToReplace(ast, sourceRange)
@@ -872,17 +873,17 @@ export function moveValueIntoNewVariable(
  */
 export function deleteSegmentFromPipeExpression(
   dependentRanges: SourceRange[],
-  modifiedAst: Program,
+  modifiedAst: UnboxedNode<Program>,
   programMemory: ProgramMemory,
   code: string,
   pathToNode: PathToNode
-): Program | Error {
+): UnboxedNode<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
 
-    const callExp = getNodeFromPath<CallExpression>(
+    const callExp = getNodeFromPath<UnboxedNode<CallExpression>>(
       _modifiedAst,
       path,
       'CallExpression',
@@ -928,11 +929,11 @@ export function deleteSegmentFromPipeExpression(
 export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
   argDetails: SimplifiedArgDetails,
-  ast: Program,
+  ast: UnboxedNode<Program>,
   programMemory: ProgramMemory
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       pathToNodeMap: PathToNodeMap
     }
   | false {
@@ -954,12 +955,12 @@ export function removeSingleConstraintInfo(
 }
 
 export async function deleteFromSelection(
-  ast: Program,
+  ast: UnboxedNode<Program>,
   selection: Selection,
   programMemory: ProgramMemory,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
-): Promise<Program | Error> {
+): Promise<UnboxedNode<Program> | Error> {
   const astClone = structuredClone(ast)
   const range = selection.range
   const path = getNodePathFromSourceRange(ast, range)
@@ -1134,5 +1135,5 @@ export async function deleteFromSelection(
 }
 
 const nonCodeMetaEmpty = () => {
-  return { nonCodeNodes: {}, start: [] }
+  return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
 }

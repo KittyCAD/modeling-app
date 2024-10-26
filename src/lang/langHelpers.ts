@@ -12,6 +12,7 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
 import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 export type ToolTip =
   | 'lineTo'
@@ -52,7 +53,7 @@ export async function executeAst({
   programMemoryOverride,
   idGenerator,
 }: {
-  ast: Program
+  ast: UnboxedNode<Program>
   engineCommandManager: EngineCommandManager
   useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
