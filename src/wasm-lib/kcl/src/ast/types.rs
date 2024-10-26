@@ -48,8 +48,8 @@ pub enum Definition<'a> {
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct UnboxedNode<T> {
+    #[serde(flatten)]
     pub kind: T,
     pub start: usize,
     pub end: usize,
@@ -213,7 +213,7 @@ impl Program {
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         // Check if we are in the non code meta.
         if let Some(meta) = self.get_non_code_meta_for_position(pos) {
-            for node in &meta.start {
+            for node in &meta.start_nodes {
                 if node.contains(pos) {
                     // We only care about the shebang.
                     if let NonCodeValue::Shebang { value: _ } = &node.value {
@@ -1003,7 +1003,7 @@ pub enum NonCodeValue {
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, NodeList<NonCodeNode>>,
-    pub start: NodeList<NonCodeNode>,
+    pub start_nodes: NodeList<NonCodeNode>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1013,7 +1013,7 @@ pub struct NonCodeMeta {
 impl NonCodeMeta {
     /// Does this contain anything?
     pub fn is_empty(&self) -> bool {
-        self.non_code_nodes.is_empty() && self.start.is_empty()
+        self.non_code_nodes.is_empty() && self.start_nodes.is_empty()
     }
 
     /// How many non-code values does this have?
@@ -1044,7 +1044,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             .collect::<Result<HashMap<_, _>, _>>()?;
         Ok(NonCodeMeta {
             non_code_nodes,
-            start: helper.start,
+            start_nodes: helper.start,
             digest: None,
         })
     }
@@ -1056,7 +1056,7 @@ impl NonCodeMeta {
     }
 
     pub fn contains(&self, pos: usize) -> bool {
-        if self.start.iter().any(|node| node.contains(pos)) {
+        if self.start_nodes.iter().any(|node| node.contains(pos)) {
             return true;
         }
 
