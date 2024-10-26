@@ -7,7 +7,12 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings};
+use kcl_lib::{
+    ast::types::{Program, UnboxedNode},
+    coredump::CoreDump,
+    engine::EngineManager,
+    executor::ExecutorSettings,
+};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -26,7 +31,7 @@ pub async fn execute_wasm(
     console_error_panic_hook::set_once();
     // deserialize the ast from a stringified json
 
-    let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: UnboxedNode<Program> = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let memory: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
     let id_generator: kcl_lib::executor::IdGenerator =
         serde_json::from_str(id_generator_str).map_err(|e| e.to_string())?;
@@ -79,7 +84,7 @@ pub async fn execute_wasm(
 pub async fn kcl_lint(program_str: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
-    let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: UnboxedNode<Program> = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let mut findings = vec![];
     for discovered_finding in program.lint_all().into_iter().flatten() {
         findings.push(discovered_finding);
@@ -138,7 +143,7 @@ pub async fn modify_ast_for_sketch_wasm(
     console_error_panic_hook::set_once();
 
     // deserialize the ast from a stringified json
-    let mut program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let mut program: UnboxedNode<Program> = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
 
     let plane: kcl_lib::executor::PlaneType = serde_json::from_str(plane_type).map_err(|e| e.to_string())?;
 
