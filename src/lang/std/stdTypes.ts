@@ -11,16 +11,17 @@ import {
   BinaryPart,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 export interface ModifyAstBase {
-  node: Program
+  node: UnboxedNode<Program>
   // TODO #896: Remove ProgramMemory from this interface
   previousProgramMemory: ProgramMemory
   pathToNode: PathToNode
 }
 
 export interface AddTagInfo {
-  node: Program
+  node: UnboxedNode<Program>
   pathToNode: PathToNode
 }
 
@@ -134,7 +135,7 @@ type _InputArg<T> =
  * Which is why a union type is used that can be type narrowed using the {@link RawArg.type} property
  * {@link RawArg.expr} is common to all of these types
  */
-export type InputArg = _InputArg<Expr>
+export type InputArg = _InputArg<UnboxedNode<Expr>>
 
 /**
  * {@link RawArg.expr} is the literal equivalent of whatever current expression is
@@ -142,7 +143,7 @@ export type InputArg = _InputArg<Expr>
  * but of course works for expressions like myVar + someFn() etc too
  * This is useful in cases where we want to "un-constrain" inputs to segments
  */
-type RawArg = _InputArg<Literal>
+type RawArg = _InputArg<UnboxedNode<Literal>>
 
 export type InputArgs = Array<InputArg>
 
@@ -186,7 +187,7 @@ export type CreateStdLibSketchCallExpr = (args: {
   inputs: InputArgs
   rawArgs: RawArgs
   referenceSegName: string
-  tag?: Expr
+  tag?: UnboxedNode<Expr>
   forceValueUsedInTransform?: BinaryPart
   referencedSegment?: Path
 }) => CreatedSketchExprResult | Error
@@ -215,26 +216,26 @@ export interface ConstrainInfo {
 export interface SketchLineHelper {
   add: (a: addCall) =>
     | {
-        modifiedAst: Program
+        modifiedAst: UnboxedNode<Program>
         pathToNode: PathToNode
         valueUsedInTransform?: number
       }
     | Error
   updateArgs: (a: updateArgs) =>
     | {
-        modifiedAst: Program
+        modifiedAst: UnboxedNode<Program>
         pathToNode: PathToNode
       }
     | Error
   getTag: (a: CallExpression) => string | Error
   addTag: (a: AddTagInfo) =>
     | {
-        modifiedAst: Program
+        modifiedAst: UnboxedNode<Program>
         tag: string
       }
     | Error
   getConstraintInfo: (
-    callExp: CallExpression,
+    callExp: UnboxedNode<CallExpression>,
     code: string,
     pathToNode: PathToNode
   ) => ConstrainInfo[]

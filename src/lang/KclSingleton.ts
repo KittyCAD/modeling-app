@@ -21,9 +21,10 @@ import {
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 interface ExecuteArgs {
-  ast?: Program
+  ast?: UnboxedNode<Program>
   zoomToFit?: boolean
   executionId?: number
   zoomOnRangeAndType?: {
@@ -33,13 +34,15 @@ interface ExecuteArgs {
 }
 
 export class KclManager {
-  private _ast: Program = {
+  private _ast: UnboxedNode<Program> = {
     body: [],
     start: 0,
     end: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
-      start: [],
+      startNodes: [],
+      start: 0,
+      end: 0,
     },
   }
   private _execState: ExecState = emptyExecState()
@@ -55,7 +58,7 @@ export class KclManager {
   engineCommandManager: EngineCommandManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
-  private _astCallBack: (arg: Program) => void = () => {}
+  private _astCallBack: (arg: UnboxedNode<Program>) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
@@ -181,7 +184,7 @@ export class KclManager {
     setWasmInitFailed,
   }: {
     setProgramMemory: (arg: ProgramMemory) => void
-    setAst: (arg: Program) => void
+    setAst: (arg: UnboxedNode<Program>) => void
     setLogs: (arg: string[]) => void
     setKclErrors: (arg: KCLError[]) => void
     setIsExecuting: (arg: boolean) => void
@@ -205,12 +208,14 @@ export class KclManager {
       end: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
-        start: [],
+        startNodes: [],
+        start: 0,
+        end: 0,
       },
     }
   }
 
-  safeParse(code: string): Program | null {
+  safeParse(code: string): UnboxedNode<Program> | null {
     const ast = parse(code)
     this.lints = []
     this.kclErrors = []
@@ -377,7 +382,7 @@ export class KclManager {
     Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
         if (!('codeRef' in artifact)) return
-        const _node1 = getNodeFromPath<CallExpression>(
+        const _node1 = getNodeFromPath<UnboxedNode<CallExpression>>(
           this.ast,
           artifact.codeRef.pathToNode,
           'CallExpression'
@@ -441,7 +446,7 @@ export class KclManager {
   // but should probably have think about which of the function to keep
   // This always updates the code state and editor and writes to the file system.
   async updateAst(
-    ast: Program,
+    ast: UnboxedNode<Program>,
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
@@ -452,7 +457,7 @@ export class KclManager {
       }
     }
   ): Promise<{
-    newAst: Program
+    newAst: UnboxedNode<Program>
     selections?: Selections
   }> {
     const newCode = recast(ast)
@@ -588,7 +593,7 @@ export class KclManager {
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
-  _isAstEmpty(ast: Program) {
+  _isAstEmpty(ast: UnboxedNode<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
 }

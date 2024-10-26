@@ -18,6 +18,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -185,7 +186,7 @@ export function applyConstraintHorzVertAlign({
   constraint: 'setHorzDistance' | 'setVertDistance'
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {

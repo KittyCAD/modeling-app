@@ -36,11 +36,12 @@ import {
   getSweepFromSuspectedPath,
 } from 'lang/std/artifactGraph'
 import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 // Apply Fillet To Selection
 
 export function applyFilletToSelection(
-  ast: Program,
+  ast: UnboxedNode<Program>,
   selection: Selections,
   radius: KclCommandValue
 ): void | Error {
@@ -55,10 +56,12 @@ export function applyFilletToSelection(
 }
 
 export function modifyAstCloneWithFilletAndTag(
-  ast: Program,
+  ast: UnboxedNode<Program>,
   selection: Selections,
   radius: KclCommandValue
-): { modifiedAst: Program; pathToFilletNode: Array<PathToNode> } | Error {
+):
+  | { modifiedAst: UnboxedNode<Program>; pathToFilletNode: Array<PathToNode> }
+  | Error {
   let clonedAst = structuredClone(ast)
   const clonedAstForGetExtrude = structuredClone(ast)
 
@@ -246,7 +249,7 @@ export function getPathToExtrudeForSegmentSelection(
 }
 
 async function updateAstAndFocus(
-  modifiedAst: Program,
+  modifiedAst: UnboxedNode<Program>,
   pathToFilletNode: Array<PathToNode>
 ) {
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
@@ -258,7 +261,7 @@ async function updateAstAndFocus(
 }
 
 function mutateAstWithTagForSketchSegment(
-  astClone: Program,
+  astClone: UnboxedNode<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {
   const segmentNode = getNodeFromPath<CallExpression>(
@@ -292,7 +295,7 @@ function mutateAstWithTagForSketchSegment(
 function getEdgeTagCall(
   tag: string,
   selectionType: string
-): Identifier | CallExpression {
+): UnboxedNode<Identifier | CallExpression> {
   let tagCall: Expr = createIdentifier(tag)
 
   // Modify the tag based on selectionType
@@ -426,7 +429,7 @@ export const hasValidFilletSelection = ({
   code,
 }: {
   selectionRanges: Selections
-  ast: Program
+  ast: UnboxedNode<Program>
   code: string
 }) => {
   // check if there is anything filletable in the scene
@@ -454,7 +457,7 @@ export const hasValidFilletSelection = ({
   for (const selection of selectionRanges.codeBasedSelections) {
     // check if all selections are in sketchLineHelperMap
     const path = getNodePathFromSourceRange(ast, selection.range)
-    const segmentNode = getNodeFromPath<CallExpression>(
+    const segmentNode = getNodeFromPath<UnboxedNode<CallExpression>>(
       ast,
       path,
       'CallExpression'
@@ -534,7 +537,7 @@ export const isTagUsedInFillet = ({
   ast,
   callExp,
 }: {
-  ast: Program
+  ast: UnboxedNode<Program>
   callExp: CallExpression
 }): Array<EdgeTypes> => {
   const tag = getTagFromCallExpression(callExp)

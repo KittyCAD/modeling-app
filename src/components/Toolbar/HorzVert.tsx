@@ -13,6 +13,7 @@ import {
 import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 export function horzVertInfo(
   selectionRanges: Selections,
@@ -55,11 +56,11 @@ export function horzVertInfo(
 export function applyConstraintHorzVert(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal',
-  ast: Program,
+  ast: UnboxedNode<Program>,
   programMemory: ProgramMemory
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {

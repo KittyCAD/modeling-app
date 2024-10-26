@@ -23,6 +23,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -161,7 +162,7 @@ export function applyConstraintAxisAlign({
   constraint: 'snapToYAxis' | 'snapToXAxis'
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: UnboxedNode<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {
