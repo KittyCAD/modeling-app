@@ -69,19 +69,9 @@ fn start_worker(i: u8, engine_addr: Option<String>) -> mpsc::Sender<WorkerReq> {
     // Make a work queue for this worker.
     let (tx, mut rx) = mpsc::channel(1);
     tokio::task::spawn(async move {
-        let state = ExecutorContext::new_with_client(
-            kcl_lib::executor::ExecutorSettings {
-                units: UnitLength::Mm,
-                highlight_edges: true,
-                enable_ssao: false,
-                show_grid: false,
-                replay: None,
-            },
-            None,
-            engine_addr,
-        )
-        .await
-        .unwrap();
+        let state = ExecutorContext::new_for_unit_test(UnitLength::Mm, engine_addr)
+            .await
+            .unwrap();
         println!("Worker {i} ready");
         while let Some(req) = rx.recv().await {
             let req: WorkerReq = req;
