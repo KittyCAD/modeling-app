@@ -1998,11 +1998,22 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Res
         .tcp_keepalive(std::time::Duration::from_secs(600))
         .http1_only();
 
+    let zoo_token_env = std::env::var("ZOO_API_TOKEN");
+
     let token = if let Some(token) = token {
         token
     } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
+        if let Ok(zoo_token) = zoo_token_env {
+            if zoo_token != token {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                    token,
+                    zoo_token
+                ));
+            }
+        }
         token
-    } else if let Ok(token) = std::env::var("ZOO_API_TOKEN") {
+    } else if let Ok(token) = zoo_token_env {
         token
     } else {
         return Err(anyhow::anyhow!(
@@ -2013,11 +2024,21 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Res
     // Create the client.
     let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
     // Set an engine address if it's set.
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
     if let Some(addr) = engine_addr {
         client.set_base_url(addr);
     } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if let Ok(kittycad_host) = kittycad_host_env {
+            if kittycad_host != addr {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                    kittycad_host,
+                    addr
+                ));
+            }
+        }
         client.set_base_url(addr);
-    } else if let Ok(addr) = std::env::var("KITTYCAD_HOST") {
+    } else if let Ok(addr) = kittycad_host_env {
         client.set_base_url(addr);
     }
 
