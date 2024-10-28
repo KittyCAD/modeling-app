@@ -94,7 +94,7 @@ expectorate = "1.1.0"
 handlebars = "6.1.0"
 iai = "0.1"
 image = { version = "0.25.3", default-features = false, features = ["png"] }
-insta = { version = "1.40.0", features = ["json"] }
+insta = { version = "1.41.0", features = ["json"] }
 itertools = "0.13.0"
 pretty_assertions = "1.4.1"
 tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros", "time"] }
