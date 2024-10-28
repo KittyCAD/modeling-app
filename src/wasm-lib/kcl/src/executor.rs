@@ -1126,10 +1126,49 @@ pub struct TagEngineInfo {
     pub id: uuid::Uuid,
     /// The sketch the tag is on.
     pub sketch: uuid::Uuid,
+    /// The thing which was tagged.
+    #[serde(flatten)]
+    pub tagged: Tagged,
+}
+
+impl TagEngineInfo {
+    /// If this is tagging a path, get it.
+    pub fn path(&self) -> Option<&Path> {
+        self.tagged.path()
+    }
+
+    /// If this is tagging a surface, get it.
+    pub fn surface(&self) -> Option<&ExtrudeSurface> {
+        self.tagged.surface()
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum Tagged {
     /// The path the tag is on.
-    pub path: Option<Path>,
+    Path(Path),
     /// The surface information for the tag.
-    pub surface: Option<ExtrudeSurface>,
+    Surface(ExtrudeSurface),
+}
+
+impl Tagged {
+    /// If this is a path, get it.
+    fn path(&self) -> Option<&Path> {
+        let Self::Path(x) = &self else {
+            return None;
+        };
+        Some(x)
+    }
+
+    /// If this is a path, get it.
+    fn surface(&self) -> Option<&ExtrudeSurface> {
+        let Self::Surface(x) = &self else {
+            return None;
+        };
+        Some(x)
+    }
 }
 
 /// A sketch is a collection of paths.
@@ -1206,8 +1245,7 @@ impl Sketch {
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
             sketch: self.id,
-            path: Some(current_path.clone()),
-            surface: None,
+            tagged: Tagged::Path(current_path.clone()),
         });
 
         self.tags.insert(tag.name.to_string(), tag_identifier);
@@ -1980,9 +2018,73 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     }
 }
 
+/// Create a new zoo api client.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let zoo_token_env = std::env::var("ZOO_API_TOKEN");
+
+    let token = if let Some(token) = token {
+        token
+    } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
+        if let Ok(zoo_token) = zoo_token_env {
+            if zoo_token != token {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                    token,
+                    zoo_token
+                ));
+            }
+        }
+        token
+    } else if let Ok(token) = zoo_token_env {
+        token
+    } else {
+        return Err(anyhow::anyhow!(
+            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+        ));
+    };
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set an engine address if it's set.
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
+    if let Some(addr) = engine_addr {
+        client.set_base_url(addr);
+    } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if let Ok(kittycad_host) = kittycad_host_env {
+            if kittycad_host != addr {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                    kittycad_host,
+                    addr
+                ));
+            }
+        }
+        client.set_base_url(addr);
+    } else if let Ok(addr) = kittycad_host_env {
+        client.set_base_url(addr);
+    }
+
+    Ok(client)
+}
+
 impl ExecutorContext {
     /// Create a new default executor context.
-    /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
@@ -2027,6 +2129,35 @@ impl ExecutorContext {
         })
     }
 
+    /// Create a new default executor context.
+    /// With a kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+    ) -> Result<Self> {
+        // Create the client.
+        let client = new_zoo_client(token, engine_addr)?;
+
+        let ctx = Self::new(&client, settings).await?;
+        Ok(ctx)
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_default_client(settings: ExecutorSettings) -> Result<Self> {
+        // Create the client.
+        let ctx = Self::new_with_client(settings, None, None).await?;
+        Ok(ctx)
+    }
+
     pub fn is_mock(&self) -> bool {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
@@ -2034,35 +2165,7 @@ impl ExecutorContext {
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
-        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"));
-        let http_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60));
-        let ws_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60))
-            .connection_verbose(true)
-            .tcp_keepalive(std::time::Duration::from_secs(600))
-            .http1_only();
-
-        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-        // Create the client.
-        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-        // Set a local engine address if it's set.
-        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-            client.set_base_url(addr);
-        }
-        if let Some(addr) = engine_addr {
-            client.set_base_url(addr);
-        }
-
-        let ctx = ExecutorContext::new(
-            &client,
+        let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 units,
                 highlight_edges: true,
@@ -2070,6 +2173,8 @@ impl ExecutorContext {
                 show_grid: false,
                 replay: None,
             },
+            None,
+            engine_addr,
         )
         .await?;
         Ok(ctx)
