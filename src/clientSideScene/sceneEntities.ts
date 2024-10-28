@@ -20,6 +20,7 @@ import {
   ARROWHEAD,
   AXIS_GROUP,
   DRAFT_POINT,
+  DRAFT_POINT_GROUP,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
   OnClickCallbackArgs,
@@ -319,12 +320,10 @@ export class SceneEntities {
   }
   createDraftPoint({
     point,
-    up,
-    forward,
+    group,
   }: {
     point: Vector2
-    up: Vec3Array
-    forward: Vec3Array
+    group: Group
   }) {
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
@@ -336,19 +335,13 @@ export class SceneEntities {
       scale,
       theme: sceneInfra._theme,
     })
-    if (!this.currentSketchQuaternion) {
-      this.currentSketchQuaternion = quaternionFromUpNForward(
-        new Vector3(...up),
-        new Vector3(...forward)
-      )
-    }
-    draftPoint.setRotationFromQuaternion(this.currentSketchQuaternion)
     draftPoint.name = DRAFT_POINT
     draftPoint.layers.set(SKETCH_LAYER)
-    sceneInfra.scene.add(draftPoint)
+    group.add(draftPoint)
   }
   removeDraftPoint() {
     const draftPoint = this.getDraftPoint()
+    console.log('from within removeDraftPoint', draftPoint)
     if (draftPoint) this.scene.remove(draftPoint)
   }
 
@@ -359,8 +352,25 @@ export class SceneEntities {
     sketchDetails: SketchDetails
     afterClick: (args: OnClickCallbackArgs) => void
   }) {
-    // Create a THREEjs plane to raycast clicks onto
+    // TODO: Consolidate shared logic between this and setupSketch
+    // Which should just fire when the sketch mode is entered,
+    // instead of in these two separate XState states.
     this.createIntersectionPlane()
+    const draftPointGroup = new Group()
+    draftPointGroup.name = DRAFT_POINT_GROUP
+    sketchDetails.origin && draftPointGroup.position.set(...sketchDetails.origin)
+    if (!this.currentSketchQuaternion && !(sketchDetails.yAxis && sketchDetails)) {
+      console.error('No sketch quaternion or sketch details found')
+      return
+    } else if (!this.currentSketchQuaternion) {
+      this.currentSketchQuaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
+    }
+    draftPointGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
+    this.scene.add(draftPointGroup)
+
     const quaternion = quaternionFromUpNForward(
       new Vector3(...sketchDetails.yAxis),
       new Vector3(...sketchDetails.zAxis)
@@ -385,7 +395,6 @@ export class SceneEntities {
         const { intersectionPoint } = args
         // We're hovering over an axis, so we should show a draft point
         const snappedPoint = intersectionPoint.twoD.clone()
-        console.log('axisIntersection name', axisIntersection.object.name)
         if (axisIntersection.object.name === X_AXIS) {
           snappedPoint.setComponent(1, 0)
         } else {
@@ -393,18 +402,21 @@ export class SceneEntities {
         }
         // Either create a new one or update the existing one
         const draftPoint = this.getDraftPoint()
-        console.log('snappedPoint', snappedPoint)
+        console.log('add a snapped point', {
+          snappedPoint,
+          draftPoint,
+        })
         if (!draftPoint) {
           this.createDraftPoint({
             point: snappedPoint,
-            up: sketchDetails.yAxis,
-            forward: sketchDetails.zAxis,
+            group: draftPointGroup,
           })
         } else {
           draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
         }
       },
       onMouseLeave: () => {
+        console.log('remove draft point')
         this.removeDraftPoint()
       },
       onClick: async (args) => {
@@ -429,6 +441,7 @@ export class SceneEntities {
 
         await kclManager.updateAst(modifiedAst, false)
         this.removeIntersectionPlane()
+        this.scene.remove(draftPointGroup)
 
         // Now perform the caller-specified action
         afterClick(args)

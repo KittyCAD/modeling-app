@@ -50,6 +50,8 @@ export const RAYCASTABLE_PLANE = 'raycastable-plane'
 
 export const X_AXIS = 'xAxis'
 export const Y_AXIS = 'yAxis'
+/** the THREEjs representation of the group surrounding a "snapped" point that is not yet placed */
+export const DRAFT_POINT_GROUP = 'draft-point-group'
 /** the THREEjs representation of a "snapped" point that is not yet placed */
 export const DRAFT_POINT = 'draft-point'
 export const AXIS_GROUP = 'axisGroup'
