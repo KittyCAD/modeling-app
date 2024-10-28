@@ -1126,10 +1126,49 @@ pub struct TagEngineInfo {
     pub id: uuid::Uuid,
     /// The sketch the tag is on.
     pub sketch: uuid::Uuid,
+    /// The thing which was tagged.
+    #[serde(flatten)]
+    pub tagged: Tagged,
+}
+
+impl TagEngineInfo {
+    /// If this is tagging a path, get it.
+    pub fn path(&self) -> Option<&Path> {
+        self.tagged.path()
+    }
+
+    /// If this is tagging a surface, get it.
+    pub fn surface(&self) -> Option<&ExtrudeSurface> {
+        self.tagged.surface()
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum Tagged {
     /// The path the tag is on.
-    pub path: Option<Path>,
+    Path(Path),
     /// The surface information for the tag.
-    pub surface: Option<ExtrudeSurface>,
+    Surface(ExtrudeSurface),
+}
+
+impl Tagged {
+    /// If this is a path, get it.
+    fn path(&self) -> Option<&Path> {
+        let Self::Path(x) = &self else {
+            return None;
+        };
+        Some(x)
+    }
+
+    /// If this is a path, get it.
+    fn surface(&self) -> Option<&ExtrudeSurface> {
+        let Self::Surface(x) = &self else {
+            return None;
+        };
+        Some(x)
+    }
 }
 
 /// A sketch is a collection of paths.
@@ -1206,8 +1245,7 @@ impl Sketch {
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
             sketch: self.id,
-            path: Some(current_path.clone()),
-            surface: None,
+            tagged: Tagged::Path(current_path.clone()),
         });
 
         self.tags.insert(tag.name.to_string(), tag_identifier);
