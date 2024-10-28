@@ -507,17 +507,18 @@ test(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectName = 'router-template-slate'
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-          `${dir}/router-template-slate/main.kcl`
+          `${dir}/${projectName}/main.kcl`
         )
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/router-template-slate/otherThingToClickOn.kcl`
+          `${dir}/${projectName}/otherThingToClickOn.kcl`
         )
       },
     })
@@ -526,7 +527,7 @@ test(
 
     page.on('console', console.log)
 
-    await page.getByText('router-template-slate').click()
+    await page.getByText(projectName).click()
     await expect(page.getByTestId('loading')).toBeAttached()
     await expect(page.getByTestId('loading')).not.toBeAttached({
       timeout: 20_000,

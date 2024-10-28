@@ -425,7 +425,9 @@ test(
     const restartConfirmationButton = page.getByRole('button', {
       name: 'Make a new project',
     })
-    const tutorialProjectIndicator = page.getByText('Tutorial Project 00')
+    const tutorialProjectIndicator = page
+      .getByTestId('project-sidebar-toggle')
+      .filter({ hasText: 'Tutorial Project 00' })
     const tutorialModalText = page.getByText('Welcome to Modeling App!')
     const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
     const userMenuButton = page.getByTestId('user-sidebar-toggle')
