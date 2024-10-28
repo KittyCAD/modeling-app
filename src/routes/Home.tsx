@@ -105,11 +105,11 @@ const Home = () => {
           toast.error(
             ('data' in event && typeof event.data === 'string' && event.data) ||
               ('error' in event &&
-                typeof event.error === 'object' && event.error &&
-                'message' in event.error && 
+                typeof event.error === 'object' &&
+                event.error &&
+                'message' in event.error &&
                 typeof event.error.message === 'string' &&
-                event.error.message
-               ) ||
+                event.error.message) ||
               ''
           ),
       },
