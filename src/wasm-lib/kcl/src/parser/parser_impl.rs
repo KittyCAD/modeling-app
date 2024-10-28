@@ -45,7 +45,7 @@ fn program(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
 
     // Add the shebang to the non-code meta.
     if let Some(shebang) = shebang {
-        out.non_code_meta.kind.start_nodes.insert(0, shebang);
+        out.non_code_meta.inner.start_nodes.insert(0, shebang);
     }
     // Match original parser behaviour, for now.
     // Once this is merged and stable, consider changing this as I think it's more accurate
@@ -79,7 +79,7 @@ fn non_code_node(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
             .parse_next(i)?;
         let has_empty_line = count_in('\n', &leading_whitespace.value) >= 2;
         non_code_node_no_leading_whitespace
-            .verify_map(|node: UnboxedNode<NonCodeNode>| match node.kind.value {
+            .verify_map(|node: UnboxedNode<NonCodeNode>| match node.inner.value {
                 NonCodeValue::BlockComment { value, style } => Some(UnboxedNode::new(
                     NonCodeNode {
                         value: if has_empty_line {
@@ -198,7 +198,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<UnboxedNode<PipeExpression>> {
     Ok(UnboxedNode {
         start: values.first().unwrap().start(),
         end: values.last().unwrap().end().max(max_noncode_end),
-        kind: PipeExpression {
+        inner: PipeExpression {
             body: values,
             non_code_meta,
             digest: None,
@@ -599,7 +599,7 @@ fn object_property(i: TokenSlice) -> PResult<UnboxedNode<ObjectProperty>> {
     Ok(UnboxedNode {
         start: key.start,
         end: expr.end(),
-        kind: ObjectProperty {
+        inner: ObjectProperty {
             key,
             value: expr,
             digest: None,
@@ -932,7 +932,7 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
             if has_empty_line {
                 // There's an empty line between the body item and the comment,
                 // This means the comment is a NewLineBlockComment!
-                let value = match nc.kind.value {
+                let value = match nc.inner.value {
                     NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
@@ -941,14 +941,14 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
-                UnboxedNode::new(NonCodeNode { value, ..nc.kind }, nc.start.saturating_sub(1), nc.end)
+                UnboxedNode::new(NonCodeNode { value, ..nc.inner }, nc.start.saturating_sub(1), nc.end)
             } else if has_newline {
                 // Nothing has to change, a single newline does not need preserving.
                 nc
             } else {
                 // There's no newline between the body item and comment,
                 // so if this is a comment, it must be inline with code.
-                let value = match nc.kind.value {
+                let value = match nc.inner.value {
                     NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
@@ -957,10 +957,10 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
-                UnboxedNode::new(NonCodeNode { value, ..nc.kind }, nc.start, nc.end)
+                UnboxedNode::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end)
             }
         })
-        .map(|nc| UnboxedNode::new(nc.kind, nc.start.saturating_sub(1), nc.end))
+        .map(|nc| UnboxedNode::new(nc.inner, nc.start.saturating_sub(1), nc.end))
         .parse_next(i)?;
     Ok(nc)
 }
@@ -1125,7 +1125,7 @@ pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
                 }
                 end = nc.end;
                 if body.is_empty() {
-                    non_code_meta.kind.start_nodes.push(nc);
+                    non_code_meta.inner.start_nodes.push(nc);
                 } else {
                     non_code_meta.insert(body.len() - 1, nc);
                 }
@@ -1197,7 +1197,7 @@ fn import_stmt(i: TokenSlice) -> PResult<Node<ImportStatement>> {
 
     let path = string_literal(i)?;
     let end = path.end;
-    let path_string = match path.kind.value {
+    let path_string = match path.inner.value {
         LiteralValue::String(s) => s,
         _ => unreachable!(),
     };
@@ -1217,7 +1217,7 @@ fn import_stmt(i: TokenSlice) -> PResult<Node<ImportStatement>> {
         ImportStatement {
             items,
             path: path_string,
-            raw_path: path.kind.raw,
+            raw_path: path.inner.raw,
             digest: None,
         },
         start,
@@ -1286,7 +1286,7 @@ pub fn return_stmt(i: TokenSlice) -> PResult<UnboxedNode<ReturnStatement>> {
     Ok(UnboxedNode {
         start,
         end: argument.end(),
-        kind: ReturnStatement { argument, digest: None },
+        inner: ReturnStatement { argument, digest: None },
     })
 }
 
@@ -1443,7 +1443,7 @@ fn declaration(i: TokenSlice) -> PResult<UnboxedNode<VariableDeclaration>> {
             declarations: vec![UnboxedNode {
                 start: id.start,
                 end,
-                kind: VariableDeclarator {
+                inner: VariableDeclarator {
                     id,
                     init: val,
                     digest: None,
@@ -1589,7 +1589,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnboxedNode<UnaryExpression>> {
     Ok(UnboxedNode {
         start: op_token.start,
         end: argument.end(),
-        kind: UnaryExpression {
+        inner: UnaryExpression {
             operator,
             argument,
             digest: None,
@@ -1670,7 +1670,7 @@ fn expression_stmt(i: TokenSlice) -> PResult<UnboxedNode<ExpressionStatement>> {
     Ok(UnboxedNode {
         start: val.start(),
         end: val.end(),
-        kind: ExpressionStatement {
+        inner: ExpressionStatement {
             expression: val,
             digest: None,
         },
@@ -1978,7 +1978,7 @@ fn fn_call(i: TokenSlice) -> PResult<UnboxedNode<CallExpression>> {
     Ok(UnboxedNode {
         start: fn_name.start,
         end,
-        kind: CallExpression {
+        inner: CallExpression {
             callee: fn_name,
             arguments: args,
             optional: false,
@@ -2041,7 +2041,7 @@ mod tests {
     fn test_vardec_no_keyword() {
         let tokens = crate::token::lexer("x = 4").unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
-        assert_eq!(vardec.kind.kind, VariableKind::Const);
+        assert_eq!(vardec.inner.kind, VariableKind::Const);
         let vardec = vardec.declarations.first().unwrap();
         assert_eq!(vardec.id.name, "x");
         let Expr::Literal(init_val) = &vardec.init else {
@@ -2070,7 +2070,7 @@ mod tests {
         let mut slice = tokens.as_slice();
         let expr = function_expression.parse_next(&mut slice).unwrap();
         assert_eq!(expr.params, vec![]);
-        let comment_start = expr.body.non_code_meta.kind.start_nodes.first().unwrap();
+        let comment_start = expr.body.non_code_meta.inner.start_nodes.first().unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         let comment1 = &expr.body.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
         assert_eq!(comment_start.value(), "comment 0");
@@ -2099,7 +2099,7 @@ comment */
 const mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(test_program).unwrap();
         let program = program.parse(&tokens).unwrap();
-        let mut starting_comments = program.kind.non_code_meta.kind.start_nodes;
+        let mut starting_comments = program.inner.non_code_meta.inner.start_nodes;
         assert_eq!(starting_comments.len(), 2);
         let start0 = starting_comments.remove(0);
         let start1 = starting_comments.remove(0);
@@ -2116,15 +2116,15 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_comment_in_pipe() {
         let tokens = crate::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#).unwrap();
-        let mut body = program.parse(&tokens).unwrap().kind.body;
+        let mut body = program.parse(&tokens).unwrap().inner.body;
         let BodyItem::VariableDeclaration(mut item) = body.remove(0) else {
             panic!("expected vardec");
         };
-        let val = item.declarations.remove(0).kind.init;
+        let val = item.declarations.remove(0).inner.init;
         let Expr::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
-        let mut noncode = pipe.kind.non_code_meta;
+        let mut noncode = pipe.inner.non_code_meta;
         assert_eq!(noncode.non_code_nodes.len(), 1);
         let comment = noncode.non_code_nodes.remove(&0).unwrap().pop().unwrap();
         assert_eq!(
@@ -2215,7 +2215,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(test_input).unwrap();
         let mut slice = tokens.as_slice();
         let UnboxedNode {
-            kind: PipeExpression {
+            inner: PipeExpression {
                 body, non_code_meta, ..
             },
             ..
@@ -2243,7 +2243,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 "#;
 
         let tokens = crate::token::lexer(test_program).unwrap();
-        let Program { non_code_meta, .. } = function_body.parse(&tokens).unwrap().kind;
+        let Program { non_code_meta, .. } = function_body.parse(&tokens).unwrap().inner;
         assert_eq!(
             vec![UnboxedNode::new(
                 NonCodeNode {
@@ -2256,7 +2256,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 0,
                 20,
             )],
-            non_code_meta.kind.start_nodes,
+            non_code_meta.inner.start_nodes,
         );
 
         assert_eq!(
@@ -2351,7 +2351,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         // The RHS should be a binary expression.
         let actual = binary_expression.parse(&tokens).unwrap();
         assert_eq!(actual.operator, BinaryOperator::Mul);
-        let BinaryPart::BinaryExpression(rhs) = actual.kind.right else {
+        let BinaryPart::BinaryExpression(rhs) = actual.inner.right else {
             panic!("Expected RHS to be another binary expression");
         };
         assert_eq!(rhs.operator, BinaryOperator::Sub);
@@ -2380,7 +2380,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
-            let Expr::BinaryExpression(_expr) = actual.declarations.remove(0).kind.init else {
+            let Expr::BinaryExpression(_expr) = actual.declarations.remove(0).inner.init else {
                 panic!(
                     "Expected test {i} to be a binary expression but it wasn't, it was {:?}",
                     actual.declarations[0]
@@ -2408,12 +2408,12 @@ const mySk1 = startSketchAt([0, 0])"#;
         // The RHS should be a binary expression.
         let outer = binary_expression.parse(&tokens).unwrap();
         assert_eq!(outer.operator, BinaryOperator::Mul);
-        let BinaryPart::BinaryExpression(middle) = outer.kind.right else {
+        let BinaryPart::BinaryExpression(middle) = outer.inner.right else {
             panic!("Expected RHS to be another binary expression");
         };
 
         assert_eq!(middle.operator, BinaryOperator::Div);
-        let BinaryPart::BinaryExpression(inner) = middle.kind.left else {
+        let BinaryPart::BinaryExpression(inner) = middle.inner.left else {
             panic!("expected nested binary expression");
         };
         assert_eq!(inner.operator, BinaryOperator::Sub);
@@ -2426,11 +2426,11 @@ const mySk1 = startSketchAt([0, 0])"#;
             let tokens = crate::token::lexer(test).unwrap();
             let actual = binary_expression.parse(&tokens).unwrap();
             assert_eq!(actual.operator, BinaryOperator::Sub);
-            let BinaryPart::Literal(left) = actual.kind.left else {
+            let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
             };
             assert_eq!(left.value, 1u32.into());
-            let BinaryPart::Literal(right) = actual.kind.right else {
+            let BinaryPart::Literal(right) = actual.inner.right else {
                 panic!("should be expression");
             };
             assert_eq!(right.value, 2u32.into());
@@ -2686,7 +2686,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             let tokens = crate::token::lexer(input).unwrap();
             let actual = parameters.parse(&tokens);
             assert!(actual.is_ok(), "could not parse test {i}");
-            let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.kind.name).collect();
+            let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.inner.name).collect();
             assert_eq!(actual_ids, expected);
         }
     }
@@ -2708,7 +2708,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         for test in tests {
             // Run the original parser
             let tokens = crate::token::lexer(test).unwrap();
-            let mut expected_body = crate::parser::Parser::new(tokens.clone()).ast().unwrap().kind.body;
+            let mut expected_body = crate::parser::Parser::new(tokens.clone()).ast().unwrap().inner.body;
             assert_eq!(expected_body.len(), 1);
             let BodyItem::VariableDeclaration(expected) = expected_body.pop().unwrap() else {
                 panic!("Expected variable declaration");
@@ -2719,12 +2719,12 @@ const mySk1 = startSketchAt([0, 0])"#;
             assert_eq!(expected, actual);
 
             // Inspect its output in more detail.
-            assert_eq!(actual.kind.kind, VariableKind::Const);
+            assert_eq!(actual.inner.kind, VariableKind::Const);
             assert_eq!(actual.start, 0);
             assert_eq!(actual.declarations.len(), 1);
             let decl = actual.declarations.pop().unwrap();
             assert_eq!(decl.id.name, "myVar");
-            let Expr::Literal(value) = decl.kind.init else {
+            let Expr::Literal(value) = decl.inner.init else {
                 panic!("value should be a literal")
             };
             assert_eq!(value.end, test.len());
@@ -2735,7 +2735,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_math_parse() {
         let tokens = crate::token::lexer(r#"5 + "a""#).unwrap();
-        let actual = crate::parser::Parser::new(tokens).ast().unwrap().kind.body;
+        let actual = crate::parser::Parser::new(tokens).ast().unwrap().inner.body;
         let expr = UnboxedNode::boxed(
             BinaryExpression {
                 operator: BinaryOperator::Add,

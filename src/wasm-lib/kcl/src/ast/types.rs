@@ -50,22 +50,26 @@ pub enum Definition<'a> {
 #[ts(export)]
 pub struct UnboxedNode<T> {
     #[serde(flatten)]
-    pub kind: T,
+    pub inner: T,
     pub start: usize,
     pub end: usize,
 }
 
 impl<T> UnboxedNode<T> {
-    pub fn new(kind: T, start: usize, end: usize) -> Self {
-        Self { kind, start, end }
+    pub fn new(inner: T, start: usize, end: usize) -> Self {
+        Self { inner, start, end }
     }
 
-    pub fn no_src(kind: T) -> Self {
-        Self { kind, start: 0, end: 0 }
+    pub fn no_src(inner: T) -> Self {
+        Self {
+            inner,
+            start: 0,
+            end: 0,
+        }
     }
 
-    pub fn boxed(kind: T, start: usize, end: usize) -> Node<T> {
-        Box::new(UnboxedNode { kind, start, end })
+    pub fn boxed(inner: T, start: usize, end: usize) -> Node<T> {
+        Box::new(UnboxedNode { inner, start, end })
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
@@ -77,19 +81,19 @@ impl<T> Deref for UnboxedNode<T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
-        &self.kind
+        &self.inner
     }
 }
 
 impl<T> DerefMut for UnboxedNode<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.kind
+        &mut self.inner
     }
 }
 
 impl<T: fmt::Display> fmt::Display for UnboxedNode<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.kind.fmt(f)
+        self.inner.fmt(f)
     }
 }
 
@@ -1348,11 +1352,11 @@ impl From<&UnboxedNode<VariableDeclaration>> for Vec<CompletionItem> {
             completions.push(CompletionItem {
                 label: variable.id.name.to_string(),
                 label_details: None,
-                kind: Some(match declaration.kind.kind {
+                kind: Some(match declaration.inner.kind {
                     VariableKind::Const => CompletionItemKind::CONSTANT,
                     VariableKind::Fn => CompletionItemKind::FUNCTION,
                 }),
-                detail: Some(declaration.kind.kind.to_string()),
+                detail: Some(declaration.inner.kind.to_string()),
                 documentation: None,
                 deprecated: None,
                 preselect: None,
@@ -3309,7 +3313,7 @@ const cylinder = startSketchOn('-XZ')
                         digest: None,
                     }],
                     body: UnboxedNode {
-                        kind: Program {
+                        inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
                             digest: None,
@@ -3335,7 +3339,7 @@ const cylinder = startSketchOn('-XZ')
                         digest: None,
                     }],
                     body: UnboxedNode {
-                        kind: Program {
+                        inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
                             digest: None,
@@ -3372,7 +3376,7 @@ const cylinder = startSketchOn('-XZ')
                         },
                     ],
                     body: UnboxedNode {
-                        kind: Program {
+                        inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
                             digest: None,
@@ -3403,7 +3407,7 @@ const cylinder = startSketchOn('-XZ')
         // We want to get the bool and verify it is a bool.
 
         let BodyItem::ExpressionStatement(UnboxedNode {
-            kind:
+            inner:
                 ExpressionStatement {
                     expression,
                     digest: None,
