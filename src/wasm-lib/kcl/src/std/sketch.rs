@@ -12,6 +12,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::executor::Tagged;
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
@@ -804,7 +805,7 @@ async fn inner_angled_line_that_intersects(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let intersect_path = args.get_tag_engine_info(exec_state, &data.intersect_tag)?;
-    let path = intersect_path.path.clone().ok_or_else(|| {
+    let path = intersect_path.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
             source_ranges: vec![args.source_range],
@@ -1244,10 +1245,9 @@ pub(crate) async fn inner_start_profile_at(
             tag_identifier.info = Some(TagEngineInfo {
                 id: current_path.geo_meta.id,
                 sketch: path_id,
-                path: Some(Path::Base {
+                tagged: Tagged::Path(Path::Base {
                     base: current_path.clone(),
                 }),
-                surface: None,
             });
             HashMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
