@@ -1,8 +1,9 @@
 import { assign, fromPromise, setup } from 'xstate'
-import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
+import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { Project } from 'lib/project'
+import { isArray } from 'lib/utils'
 
-export const homeMachine = setup({
+export const projectsMachine = setup({
   types: {
     context: {} as {
       projects: Project[]
@@ -11,14 +12,35 @@ export const homeMachine = setup({
     },
     events: {} as
       | { type: 'Read projects'; data: {} }
-      | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
-      | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
-      | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
-      | { type: 'Delete project'; data: HomeCommandSchema['Delete project'] }
+      | { type: 'Open project'; data: ProjectsCommandSchema['Open project'] }
+      | {
+          type: 'Rename project'
+          data: ProjectsCommandSchema['Rename project']
+        }
+      | {
+          type: 'Create project'
+          data: ProjectsCommandSchema['Create project']
+        }
+      | {
+          type: 'Delete project'
+          data: ProjectsCommandSchema['Delete project']
+        }
       | { type: 'navigate'; data: { name: string } }
       | {
           type: 'xstate.done.actor.read-projects'
           output: Project[]
+        }
+      | {
+          type: 'xstate.done.actor.delete-project'
+          output: { message: string; name: string }
+        }
+      | {
+          type: 'xstate.done.actor.create-project'
+          output: { message: string; name: string }
+        }
+      | {
+          type: 'xstate.done.actor.rename-project'
+          output: { message: string; oldName: string; newName: string }
         }
       | { type: 'assign'; data: { [key: string]: any } },
     input: {} as {
@@ -30,16 +52,20 @@ export const homeMachine = setup({
   actions: {
     setProjects: assign({
       projects: ({ context, event }) =>
-        'output' in event ? event.output : context.projects,
+        'output' in event && isArray(event.output)
+          ? event.output
+          : context.projects,
     }),
     toastSuccess: () => {},
     toastError: () => {},
     navigateToProject: () => {},
+    navigateToProjectIfNeeded: () => {},
   },
   actors: {
     readProjects: fromPromise(() => Promise.resolve([] as Project[])),
-    createProject: fromPromise((_: { input: { name: string } }) =>
-      Promise.resolve('')
+    createProject: fromPromise(
+      (_: { input: { name: string; projects: Project[] } }) =>
+        Promise.resolve({ message: '' })
     ),
     renameProject: fromPromise(
       (_: {
@@ -48,28 +74,35 @@ export const homeMachine = setup({
           newName: string
           defaultProjectName: string
           defaultDirectory: string
+          projects: Project[]
         }
-      }) => Promise.resolve('')
+      }) =>
+        Promise.resolve({
+          message: '',
+          oldName: '',
+          newName: '',
+        })
     ),
     deleteProject: fromPromise(
       (_: { input: { defaultDirectory: string; name: string } }) =>
-        Promise.resolve('')
+        Promise.resolve({
+          message: '',
+          name: '',
+        })
     ),
   },
   guards: {
     'Has at least 1 project': () => false,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAHTK6xampYAOATqgFZj4AusAxAMLMwuLthbtOXANoAGALqJQjVLGJdiqUopAAPRAHYAbPooAWABwBGUwE5zAJgeGArM-MAaEAE9EN0wGYKGX97GX1nGVNDS0MbfwBfeM80TBwCEnIqGiZWDm4+ACUwUlxU8TzpeW1lVXVNbT0EcJNg02d-fzt7fU77Tx8EQ0iKCPtnfUsjGRtLGXtE5IxsPCIySmpacsk+QWFRHIluWQUkEBq1DS1TxqN7ChjzOxtXf0t7a37EcwsRibH-ZzRezA8wLEApZbpNZZTa5ba8AAiYAANmB9lsjlVTuc6ldQDdDOYKP5bm0os5TDJDJ8mlEzPpzIZHA4bO9umCIWlVpkNgcKnwAPKMYp8yTHaoqC71a6IEmBUz6BkWZzWDq2Uw0qzOIJAwz+PXWfSmeZJcFLLkZSi7ERkKCi7i8CCaShkABuqAA1pR8EIRGAALQYyonJSS3ENRDA2wUeyvd6dPVhGw0-RhGOp8IA8xGFkc80rS0Ua3qUh2oO8MDMVjMCiMZEiABmqGY6AoPr2AaD4uxYcuEYQoQpQWNNjsMnMgLGKbT3TC7TcOfsNjzqQL0KKJXQtvtXEdzoobs9lCEm87cMxIbOvel+MQqtMQRmS5ks31sZpAUsZkcIX+cQZJIrpC3KUBupTbuWlbVrW9ZcE2LYUCepRnocwYSrUfYyggbzvBQ+jMq49imLYwTUt4iCft+5i-u0-7UfoQEWtCSKoiWZbnruTqZIeXoUBAKJoihFTdqGGE3rod7UdqsQTI8hiGAqrIauRA7RvYeoqhO1jtAqjFrpkLFohBHEVlWzYwY2zatvxrFCWKWKiVKeISdh4yBJE-jGs4fhhA4zg0kRNgxhplhaW0nn4XpUKZEUuAQMZqF8FxLqkO6vG+hAgYcbAIlXmJzmNERdy0RYNiKgpthxDSEU6q8MSTJYjWGFFIEULF8WljuSX7jxx7CJlQY5ZYl44pht4IP61gyPc8njt0lIuH51UKrVVITEyMy2C1hbtQl-KmdBdaWQhGVZYluWjeJjSTf402shMEyuEyljPAFL0UNmMiuN86lWHMiSmvQ-HwKcnL6WA6FOf2k3mESMRDA4RpUm4U4qf6gSEt0QIvvqfjOCaiyrtF6zZPQXWQ+GWFlUEsbmNMf1TV9NLeXDcqRIySnNaaYPEzC5M9vl-b+IyFCjupryPF9jKWP5Kks-cbMWLERHRNt0LFntkgU2NLk4dqsz43YsTK++Kk2C+MbTOOcxzOMrhqzFxTgZ1Qba1dd6BUE1jGsLMxxK9KlDNqm3tMLUQvqYlgO5QhlsTubsFXesTTUuPTfHExshDS0RftRftGgEnTZtHbX9Zr+QJ-2S4Y3qnmTC+4tMyp1EfeOnmeQqdOhyXQrFOXXCV1hCkmLDOnBJYvRRDSsyRzGjiKj0lKdAkANAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IAjBIkA2AHQAOCUw0qNkjQE4xYjQF8zMtJhwES5NcmpZSqLBwBOqAFZh8PWAoAJTBcCHcvX39YZjYkEC5efkF40QQFFQBmAHY1Qwz9QwBWU0NMrRl5BGyxBTUVJlVM01rtBXNLEGtsPCIyMEdnVwifPwCKAGEPUJ5sT1H-WKFE4j4BITSMzMzNIsyJDSZMhSYmFWzKxAkTNSYxIuU9zOKT7IsrDB67fsHYEajxiEwv8xjFWMtuKtkhsrpJboZsioincFMdTIjLggVGJ1GImMVMg0JISjEV3l1PrY+g4nH95gDAiFSLgbPSxkt4is1ilQGlrhJ4YjkbU0RoMXJEIYkWoikV8hJinjdOdyd0qfYBrSQdFJtNcLNtTwOZxIdyYQh+YKkSjReKqqYBQoEQpsgiSi9MqrKb0Nb9DYEACJgAA2YANbMW4M5puhqVhAvxQptCnRKkxCleuw0Gm2+2aRVRXpsPp+Woj4wA8hwwKRDcaEjH1nGLXDE9aRSmxWmJVipWocmdsbL8kxC501SWHFMZmQoIaKBABAMyAA3VAAawG+D1swAtOX61zY7zENlEWoMkoatcdPoipjCWIZRIirozsPiYYi19qQNp-rZ3nMAPC8Dw1A4YN9QAM1QDx0DUbcZjAfdInZKMTSSJsT2qc9Lwka8lTvTFTB2WUMiyQwc3yPRv3VH4mRZQDywXJc1FXDcBmmZlMBQhYjXQhtMJ5ERT1wlQr0kQj7kxKiZTxM5s2zbQEVoycBgY9AmNQ-wKGA0DwMgngYLgtQuJZZCDwEo8sJEnD1Dwgjb2kntig0GUkWVfZDEMfFVO+Bwg1DPhSDnZjFwcdjNzUCAQzDCztP4uIMKhGy0jPezxPwySnPvHsTjlPIhyOHRsnwlM-N-NRArDLS+N0kDYIM6DYPgmKgvivjD0bYS+VbBF21RTs7UUUcimfRpXyYRF8LFCrfSBCBaoZFiItINcor1CBeIZLqhPNdKL0yxzs2cqoNDqdpSo0EoSoLOb6NCRaQv9FblzWjjTMe7bQQYBQksElKesUMRjFubRMllCHsm2a5MVldRDBfFpmj0IpxPuhwFqW0F6v0iDmpMzbvuiXbAfNFNQcaI5IaKaH9jETFsUMNRVDxOU5TxBULE6VwYvgeIJ38sAIT25td27KpdzG7yZeho5slHVmMc1IY3HLfnkrNZt2hOW5smRCQM2uhQHkZ6VtkRBFnmu0qFGVv11ZFsnm0kdN8QFJVjlUPZ9co+3-2C0KEqdrXsJMJ8ryc86iUyYiCvxFNzldb3jHtjTsf8EPj1ssQchZlR8jR5EmDRrIGZcuF7maF1aZtslx29IWqtiwPDSz1LxDxepnlOfYDghp03eyOpngzXuYdHNPHozgJ26B9IXR2cTvP0BVkSRXKqgLtyq8OfQcXOwlubMIA */
   id: 'Home machine',
 
   initial: 'Reading projects',
 
-  context: {
-    projects: [],
-    defaultProjectName: '',
-    defaultDirectory: '',
-  },
+  context: ({ input }) => ({
+    ...input,
+  }),
 
   on: {
     assign: {
@@ -110,7 +143,9 @@ export const homeMachine = setup({
         },
 
         'Open project': {
-          target: 'Opening project',
+          target: 'Reading projects',
+          actions: 'navigateToProject',
+          reenter: true,
         },
       },
     },
@@ -119,20 +154,22 @@ export const homeMachine = setup({
       invoke: {
         id: 'create-project',
         src: 'createProject',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Create project') {
             return {
               name: '',
+              projects: context.projects,
             }
           }
           return {
             name: event.data.name,
+            projects: context.projects,
           }
         },
         onDone: [
           {
             target: 'Reading projects',
-            actions: ['toastSuccess'],
+            actions: ['toastSuccess', 'navigateToProject'],
           },
         ],
         onError: [
@@ -156,6 +193,7 @@ export const homeMachine = setup({
               defaultDirectory: context.defaultDirectory,
               oldName: '',
               newName: '',
+              projects: context.projects,
             }
           }
           return {
@@ -163,12 +201,13 @@ export const homeMachine = setup({
             defaultDirectory: context.defaultDirectory,
             oldName: event.data.oldName,
             newName: event.data.newName,
+            projects: context.projects,
           }
         },
         onDone: [
           {
             target: '#Home machine.Reading projects',
-            actions: ['toastSuccess'],
+            actions: ['toastSuccess', 'navigateToProjectIfNeeded'],
           },
         ],
         onError: [
@@ -199,7 +238,7 @@ export const homeMachine = setup({
         },
         onDone: [
           {
-            actions: ['toastSuccess'],
+            actions: ['toastSuccess', 'navigateToProjectIfNeeded'],
             target: '#Home machine.Reading projects',
           },
         ],
@@ -232,10 +271,6 @@ export const homeMachine = setup({
           },
         ],
       },
-    },
-
-    'Opening project': {
-      entry: ['navigateToProject'],
     },
   },
 })
