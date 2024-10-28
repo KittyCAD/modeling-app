@@ -69,8 +69,9 @@ type ResolveKeymapEvent = {
   asString: string
 }
 
+export type InteractionEvent = MouseEvent | KeyboardEvent
 export function resolveInteractionEvent(
-  event: MouseEvent | KeyboardEvent
+  event: InteractionEvent
 ): ResolveKeymapEvent {
   // First, determine if this is a key or mouse event
   const action =

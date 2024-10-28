@@ -1,6 +1,11 @@
 import { InteractionMapMachineContext } from 'components/InteractionMapMachineProvider'
-import { useContext } from 'react'
 
 export const useInteractionMapContext = () => {
-  return useContext(InteractionMapMachineContext)
+  const interactionMapActor = InteractionMapMachineContext.useActorRef()
+  const interactionMapState = InteractionMapMachineContext.useSelector((state) => state)
+  return {
+    actor: interactionMapActor,
+    send: interactionMapActor.send,
+    state: interactionMapState,
+  }
 }
