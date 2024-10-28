@@ -45,7 +45,7 @@ fn program(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
 
     // Add the shebang to the non-code meta.
     if let Some(shebang) = shebang {
-        out.non_code_meta.inner.start_nodes.insert(0, shebang);
+        out.non_code_meta.start_nodes.insert(0, shebang);
     }
     // Match original parser behaviour, for now.
     // Once this is merged and stable, consider changing this as I think it's more accurate
@@ -136,7 +136,7 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<UnboxedNode<Non
 }
 
 fn pipe_expression(i: TokenSlice) -> PResult<UnboxedNode<PipeExpression>> {
-    let mut non_code_meta = UnboxedNode::<NonCodeMeta>::default();
+    let mut non_code_meta = NonCodeMeta::default();
     let (head, noncode): (_, Vec<_>) = terminated(
         (
             expression_but_not_pipe,
@@ -544,11 +544,11 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<UnboxedNode<ArrayExpr
             (elements, non_code_nodes)
         },
     );
-    let non_code_meta = UnboxedNode::no_src(NonCodeMeta {
+    let non_code_meta = NonCodeMeta {
         non_code_nodes,
         start_nodes: Vec::new(),
         digest: None,
-    });
+    };
     Ok(UnboxedNode::new(
         ArrayExpression {
             elements,
@@ -652,10 +652,10 @@ pub(crate) fn object(i: TokenSlice) -> PResult<UnboxedNode<ObjectExpression>> {
     ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
-    let non_code_meta = UnboxedNode::no_src(NonCodeMeta {
+    let non_code_meta = NonCodeMeta {
         non_code_nodes,
         ..Default::default()
-    });
+    };
     Ok(UnboxedNode::new(
         ObjectExpression {
             properties,
@@ -1103,7 +1103,7 @@ pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
     }
 
     let mut body = Vec::new();
-    let mut non_code_meta = UnboxedNode::<NonCodeMeta>::default();
+    let mut non_code_meta = NonCodeMeta::default();
     let mut end = 0;
     let mut start = leading_whitespace_start;
     for thing_in_body in things_within_body {
@@ -1125,7 +1125,7 @@ pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
                 }
                 end = nc.end;
                 if body.is_empty() {
-                    non_code_meta.inner.start_nodes.push(nc);
+                    non_code_meta.start_nodes.push(nc);
                 } else {
                     non_code_meta.insert(body.len() - 1, nc);
                 }
@@ -2070,7 +2070,7 @@ mod tests {
         let mut slice = tokens.as_slice();
         let expr = function_expression.parse_next(&mut slice).unwrap();
         assert_eq!(expr.params, vec![]);
-        let comment_start = expr.body.non_code_meta.inner.start_nodes.first().unwrap();
+        let comment_start = expr.body.non_code_meta.start_nodes.first().unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         let comment1 = &expr.body.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
         assert_eq!(comment_start.value(), "comment 0");
@@ -2099,7 +2099,7 @@ comment */
 const mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(test_program).unwrap();
         let program = program.parse(&tokens).unwrap();
-        let mut starting_comments = program.inner.non_code_meta.inner.start_nodes;
+        let mut starting_comments = program.inner.non_code_meta.start_nodes;
         assert_eq!(starting_comments.len(), 2);
         let start0 = starting_comments.remove(0);
         let start1 = starting_comments.remove(0);
@@ -2179,7 +2179,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                                 25,
                                 33,
                             ))],
-                            non_code_meta: UnboxedNode::no_src(NonCodeMeta {
+                            non_code_meta: NonCodeMeta {
                                 non_code_nodes: Default::default(),
                                 start_nodes: vec![UnboxedNode::new(
                                     NonCodeNode {
@@ -2190,7 +2190,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                                     25,
                                 )],
                                 digest: None,
-                            }),
+                            },
                             digest: None,
                         },
                         7,
@@ -2256,7 +2256,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 0,
                 20,
             )],
-            non_code_meta.inner.start_nodes,
+            non_code_meta.start_nodes,
         );
 
         assert_eq!(
@@ -2891,7 +2891,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     0,
                     4,
                 ))],
-                non_code_meta: UnboxedNode::<NonCodeMeta>::default(),
+                non_code_meta: NonCodeMeta::default(),
                 digest: None,
             },
             0,

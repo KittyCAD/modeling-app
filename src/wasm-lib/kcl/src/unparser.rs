@@ -38,11 +38,10 @@ impl Program {
             .fold(String::new(), |mut output, (index, recast_str)| {
                 let start_string = if index == 0 {
                     // We need to indent.
-                    if self.non_code_meta.inner.start_nodes.is_empty() {
+                    if self.non_code_meta.start_nodes.is_empty() {
                         indentation.to_string()
                     } else {
                         self.non_code_meta
-                            .inner
                             .start_nodes
                             .iter()
                             .map(|start| start.format(&indentation))
