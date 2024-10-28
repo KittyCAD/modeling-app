@@ -55,7 +55,7 @@ import {
   editorManager,
 } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { executeAst } from 'lang/langHelpers'
+import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
   SegmentUtils,
@@ -409,8 +409,9 @@ export class SceneEntities {
           // Ignore if there are huge jumps in the mouse position,
           // that is likely a strange behavior
           if (
-            draftPoint.position.distanceTo(new Vector3(snappedPoint.x, snappedPoint.y, 0)) >
-            100
+            draftPoint.position.distanceTo(
+              new Vector3(snappedPoint.x, snappedPoint.y, 0)
+            ) > 100
           ) {
             return
           }
@@ -441,7 +442,7 @@ export class SceneEntities {
         const xAxisIntersection = args.intersects.find(
           (sceneObject) => sceneObject.object.name === X_AXIS
         )
-        
+
         const snappedClickPoint = {
           x: yAxisIntersection ? 0 : intersectionPoint.twoD.x,
           y: xAxisIntersection ? 0 : intersectionPoint.twoD.y,
@@ -756,14 +757,14 @@ export class SceneEntities {
 
         const { intersectionPoint } = args
         let intersection2d = intersectionPoint?.twoD
-        const profileStart = args.intersects
+        const intersectsProfileStart = args.intersects
           .map(({ object }) => getParentGroup(object, [PROFILE_START]))
           .find((a) => a?.name === PROFILE_START)
 
         let modifiedAst
-        
+
         // Snapping logic for the profile start handle
-        if (profileStart) {
+        if (intersectsProfileStart) {
           const lastSegment = sketch.paths.slice(-1)[0]
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
@@ -796,19 +797,36 @@ export class SceneEntities {
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else if (intersection2d) {
+          const intersectsYAxis = args.intersects.find(
+            (sceneObject) => sceneObject.object.name === Y_AXIS
+          )
+          const intersectsXAxis = args.intersects.find(
+            (sceneObject) => sceneObject.object.name === X_AXIS
+          )
+
           const lastSegment = sketch.paths.slice(-1)[0]
+          const snappedPoint = {
+            x: intersectsYAxis ? 0 : intersection2d.x,
+            y: intersectsXAxis ? 0 : intersection2d.y,
+          }
+
+          let resolvedFunctionName: ToolTip = 'line'
+
+          // This might need to become its own function if we want more
+          // case-based logic for different segment types
+          if (lastSegment.type === 'TangentialArcTo') {
+            resolvedFunctionName = 'tangentialArcTo'
+          }
+
           const tmp = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             input: {
               type: 'straight-segment',
               from: [lastSegment.to[0], lastSegment.to[1]],
-              to: [intersection2d.x, intersection2d.y],
+              to: [snappedPoint.x, snappedPoint.y],
             },
-            fnName:
-              lastSegment.type === 'TangentialArcTo'
-                ? 'tangentialArcTo'
-                : 'line',
+            fnName: resolvedFunctionName,
             pathToNode: sketchPathToNode,
           })
           if (trap(tmp)) return Promise.reject(tmp)
@@ -820,7 +838,7 @@ export class SceneEntities {
         }
 
         await kclManager.executeAstMock(modifiedAst)
-        if (profileStart) {
+        if (intersectsProfileStart) {
           sceneInfra.modelingSend({ type: 'CancelSketch' })
         } else {
           await this.setUpDraftSegment(
@@ -1327,14 +1345,29 @@ export class SceneEntities {
       variableDeclarationName: string
     }
   }) {
-    const profileStart =
+    const intersectsProfileStart =
       draftInfo &&
       intersects
         .map(({ object }) => getParentGroup(object, [PROFILE_START]))
         .find((a) => a?.name === PROFILE_START)
-    const intersection2d = profileStart
-      ? new Vector2(profileStart.position.x, profileStart.position.y)
+    const intersection2d = intersectsProfileStart
+      ? new Vector2(
+          intersectsProfileStart.position.x,
+          intersectsProfileStart.position.y
+        )
       : _intersection2d
+
+    const intersectsYAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === Y_AXIS
+    )
+    const intersectsXAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === X_AXIS
+    )
+
+    const snappedPoint = new Vector2(
+      intersectsYAxis ? 0 : intersection2d.x,
+      intersectsXAxis ? 0 : intersection2d.y
+    )
 
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [ARROWHEAD, CIRCLE_CENTER_HANDLE])
@@ -1355,7 +1388,7 @@ export class SceneEntities {
       group.userData.from[0],
       group.userData.from[1],
     ]
-    const dragTo: [number, number] = [intersection2d.x, intersection2d.y]
+    const dragTo: [number, number] = [snappedPoint.x, snappedPoint.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
     const _node = getNodeFromPath<CallExpression>(
