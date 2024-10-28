@@ -447,7 +447,7 @@ test.describe('Testing settings', () => {
   test(
     'project settings reload on external change',
     { tag: '@electron' },
-    async ({ browserName }, testInfo) => {
+    async ({ browserName: _ }, testInfo) => {
       const {
         electronApp,
         page,
@@ -465,11 +465,7 @@ test.describe('Testing settings', () => {
         await expect(projectDirLink).toBeVisible()
       })
 
-      const projectLinks = page.getByTestId('project-link')
-      const oldCount = await projectLinks.count()
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(projectLinks).toHaveCount(oldCount + 1)
-      await projectLinks.filter({ hasText: 'project-000' }).first().click()
+      await createProject({ name: 'project-000', page })
 
       const changeColorFs = async (color: string) => {
         const tempSettingsFilePath = join(

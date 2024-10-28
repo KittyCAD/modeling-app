@@ -153,12 +153,17 @@ const ProjectsContextDesktop = ({
               decodeURIComponent(location.pathname).includes(
                 event.output.oldName
               )
+
             if (isInRenamedProject) {
-              const newPathName = location.pathname.replace(
-                encodeURIComponent(event.output.oldName),
-                encodeURIComponent(event.output.newName)
-              )
-              navigate(newPathName)
+              // TODO: In future, we can navigate to the new project path
+              // directly, but we need to coordinate with
+              // @lf94's useFileSystemWatcher in SettingsAuthProvider.tsx:224
+              // Because it's beating us to the punch and updating the route
+              // const newPathName = location.pathname.replace(
+              //   encodeURIComponent(event.output.oldName),
+              //   encodeURIComponent(event.output.newName)
+              // )
+              // navigate(newPathName)
               return
             }
           }
@@ -215,6 +220,8 @@ const ProjectsContextDesktop = ({
             const nextIndex = getNextProjectIndex(name, projects)
             name = interpolateProjectNameWithIndex(name, nextIndex)
           }
+
+          console.log('from Project')
 
           await renameProjectDirectory(
             window.electron.path.join(defaultDirectory, oldName),

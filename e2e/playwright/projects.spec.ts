@@ -527,7 +527,7 @@ test.describe(`Project management commands`, () => {
       const commandOption = page.getByRole('option', { name: 'rename project' })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const projectRenamedName = `project-000`
-      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const commandContinueButton = page.getByRole('button', {
         name: 'Continue',
       })
@@ -558,11 +558,12 @@ test.describe(`Project management commands`, () => {
         await expect(toastMessage).toBeVisible()
       })
 
-      await test.step(`Check the project was renamed and we navigated`, async () => {
-        await expect(projectMenuButton).toContainText(projectRenamedName)
-        await expect(projectMenuButton).not.toContainText(projectName)
-        expect(page.url()).toContain(projectRenamedName)
-        expect(page.url()).not.toContain(projectName)
+      // TODO: in future I'd like the behavior to be to
+      // navigate to the new project's page directly,
+      // see ProjectContextProvider.tsx:158
+      await test.step(`Check the project was renamed and we navigated home`, async () => {
+        await expect(projectHomeLink.first()).toBeVisible()
+        await expect(projectHomeLink.first()).toContainText(projectRenamedName)
       })
 
       await electronApp.close()
