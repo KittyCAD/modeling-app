@@ -43,38 +43,7 @@ async fn do_execute_and_snapshot(ctx: &ExecutorContext, code: &str) -> anyhow::R
 }
 
 async fn new_context(units: UnitLength, with_auth: bool) -> anyhow::Result<ExecutorContext> {
-    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-    let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60));
-    let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60))
-        .connection_verbose(true)
-        .tcp_keepalive(std::time::Duration::from_secs(600))
-        .http1_only();
-
-    let token = if with_auth {
-        std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set")
-    } else {
-        "bad_token".to_string()
-    };
-
-    // Create the client.
-    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    // Set a local engine address if it's set.
-    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-        if with_auth {
-            client.set_base_url(addr);
-        }
-    }
-
-    let ctx = ExecutorContext::new(
-        &client,
+    let ctx = ExecutorContext::new_with_client(
         ExecutorSettings {
             units,
             highlight_edges: true,
@@ -82,6 +51,8 @@ async fn new_context(units: UnitLength, with_auth: bool) -> anyhow::Result<Execu
             show_grid: false,
             replay: None,
         },
+        if with_auth { None } else { Some("bad_token".to_string()) },
+        None,
     )
     .await?;
     Ok(ctx)

@@ -162,6 +162,28 @@ A base path.
 
 
 ----
+A circular arc, not necessarily tangential to the current point.
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Arc`|  | No |
+| `center` |`[number, number]`| Center of the circle that this arc is drawn on. | No |
+| `radius` |`number`| Radius of the circle that this arc is drawn on. | No |
+| `from` |`[number, number]`| The from point. | No |
+| `to` |`[number, number]`| The to point. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
+
+
+----
 
 
 
