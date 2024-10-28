@@ -11,65 +11,60 @@ const DownloadAppBanner = () => {
 
   return (
     <Dialog
-      className="fixed inset-0 z-50"
+      className="fixed inset-0 z-50 grid place-items-center"
       open={!isBannerDismissed}
       onClose={() => ({})}
     >
-      <Dialog.Overlay className="fixed inset-0 bg-chalkboard-100/50" />
-      <Dialog.Panel className="absolute inset-0 top-auto bg-warn-20 text-warn-80 px-8 py-4">
+      <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/70" />
+      <Dialog.Panel className="relative max-w-xl bg-warn-20 text-warn-80 px-8 py-4 rounded-md">
         <div className="max-w-3xl mx-auto">
-          <div className="flex gap-2 justify-between items-start">
-            <h2 className="text-xl font-bold mb-4">
-              Modeling App is better as a desktop app!
-            </h2>
+          <h2 className="text-2xl font-bold mb-4">Be warned!</h2>
+          <p>
+            Zoo Modeling App Desktop is more reliable! The web app is not
+            officially supported.
+          </p>
+          {!navigator?.userAgent.includes('Chrome') && (
+            <p className="mt-6">
+              If you want to stay here on the web-app, we currently only support
+              Chrome. Please use{' '}
+              <a
+                href="https://www.google.com/chrome/"
+                rel="noopener noreferrer"
+                target="_blank"
+                className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
+              >
+                this link
+              </a>{' '}
+              to download it.
+            </p>
+          )}
+          <div className="flex flex-row-reverse gap-4 justify-between mt-6">
+            <ActionButton
+              Element="externalLink"
+              to="https://zoo.dev/modeling-app/download"
+              className="group text-warn-10 dark:!text-warn-10 pr-1 border-warn-70 hover:border-warn-80 dark:!border-warn-70 dark:hover:!border-warn-80 bg-warn-70 group-hover:bg-warn-80 dark:bg-warn-70 dark:group-hover:bg-warn-80"
+              iconEnd={{
+                icon: 'arrowRight',
+                iconClassName: 'text-warn-10 dark:text-warn-10',
+                bgClassName: '!bg-transparent',
+              }}
+            >
+              Download Desktop App
+            </ActionButton>
             <ActionButton
               Element="button"
               onClick={() => setIsBannerDismissed(true)}
+              className="group text-warn-80 bg-warn-10 border-warn-50 hover:border-warn-80 hover:bg-warn-10 dark:bg-warn-10 dark:!border-warn-50 dark:hover:!border-warn-80 dark:text-warn-80 dark:hover:bg-warn-10"
               iconStart={{
-                icon: 'close',
-                className: 'p-1',
+                icon: 'checkmark',
+                iconClassName: 'text-warn-10 dark:text-warn-10',
                 bgClassName:
-                  'bg-warn-70 hover:bg-warn-80 dark:bg-warn-70 dark:hover:bg-warn-80',
-                iconClassName:
-                  'text-warn-10 group-hover:text-warn-10 dark:text-warn-10 dark:group-hover:text-warn-10',
+                  'bg-warn-50 group-hover:bg-warn-80 dark:bg-warn-50 dark:group-hover:bg-warn-80',
               }}
-              className="!p-0 !bg-transparent !border-transparent"
-            />
+            >
+              Proceed at my own risk
+            </ActionButton>
           </div>
-          <p>
-            The browser version of the app only saves your data temporarily in{' '}
-            <code className="text-base inline-block px-0.5 bg-warn-30/50 rounded">
-              localStorage
-            </code>
-            , and isn't backed up anywhere! Visit{' '}
-            <a
-              href="https://zoo.dev/modeling-app/download"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
-            >
-              our website
-            </a>{' '}
-            to download the app for the best experience.
-          </p>
-          <p className="mt-6">
-            If you're on Linux and the browser is your only way to use the app,
-            you can permanently dismiss this banner by{' '}
-            <a
-              onClick={() => {
-                setIsBannerDismissed(true)
-                settings.send({
-                  type: 'set.app.dismissWebBanner',
-                  data: { level: 'user', value: true },
-                })
-              }}
-              href="/"
-              className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
-            >
-              toggling the App &gt; Dismiss Web Banner setting
-            </a>
-            .
-          </p>
         </div>
       </Dialog.Panel>
     </Dialog>

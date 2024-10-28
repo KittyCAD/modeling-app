@@ -10,6 +10,8 @@ import { KEYBINDING_CATEGORIES } from 'lib/constants'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 
+export const COMMAND_PALETTE_HOTKEY = 'mod+k'
+
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const { commandBarState, commandBarSend } = useCommandsContext()

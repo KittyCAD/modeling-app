@@ -1,12 +1,12 @@
 import { Selection } from 'lib/selections'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import {
   Program,
   CallExpression,
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
-  Value,
+  Expr,
   Literal,
   PipeSubstitution,
   Identifier,
@@ -17,7 +17,7 @@ import {
   PathToNode,
   ProgramMemory,
   SourceRange,
-  SketchGroup,
+  sketchFromKclValue,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -38,9 +38,10 @@ import {
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
-import { ConstrainInfo } from './std/stdTypes'
+import { SimplifiedArgDetails } from './std/stdTypes'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
+import { ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function startSketchOnDefault(
   node: Program,
@@ -195,10 +196,7 @@ export function findUniqueName(
   return findUniqueName(searchStr, name, pad, index + 1)
 }
 
-export function mutateArrExp(
-  node: Value,
-  updateWith: ArrayExpression
-): boolean {
+export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {
       if (isLiteralArrayOrStatic(element)) {
@@ -211,7 +209,7 @@ export function mutateArrExp(
 }
 
 export function mutateObjExpProp(
-  node: Value,
+  node: Expr,
   updateWith: Literal | ArrayExpression,
   key: string
 ): boolean {
@@ -243,7 +241,6 @@ export function mutateObjExpProp(
         value: updateWith,
         start: 0,
         end: 0,
-        digest: null,
       })
     }
   }
@@ -254,7 +251,7 @@ export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
   shouldPipe = false,
-  distance = createLiteral(4) as Value
+  distance: Expr = createLiteral(4)
 ):
   | {
       modifiedAst: Program
@@ -262,7 +259,7 @@ export function extrudeSketch(
       pathToExtrudeArg: PathToNode
     }
   | Error {
-  const _node = { ...node }
+  const _node = structuredClone(node)
   const _node1 = getNodeFromPath(_node, pathToNode)
   if (err(_node1)) return _node1
   const { node: sketchExpression } = _node1
@@ -345,11 +342,107 @@ export function extrudeSketch(
   }
 }
 
+export function revolveSketch(
+  node: Program,
+  pathToNode: PathToNode,
+  shouldPipe = false,
+  angle: Expr = createLiteral(4)
+):
+  | {
+      modifiedAst: Program
+      pathToNode: PathToNode
+      pathToRevolveArg: PathToNode
+    }
+  | Error {
+  const _node = structuredClone(node)
+  const _node1 = getNodeFromPath(_node, pathToNode)
+  if (err(_node1)) return _node1
+  const { node: sketchExpression } = _node1
+
+  // determine if sketchExpression is in a pipeExpression or not
+  const _node2 = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  )
+  if (err(_node2)) return _node2
+  const { node: pipeExpression } = _node2
+
+  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
+
+  const _node3 = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  if (err(_node3)) return _node3
+  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
+
+  const revolveCall = createCallExpressionStdLib('revolve', [
+    createObjectExpression({
+      angle: angle,
+      // TODO: hard coded 'X' axis for revolve MVP, should be changed.
+      axis: createLiteral('X'),
+    }),
+    createIdentifier(variableDeclarator.id.name),
+  ])
+
+  if (shouldPipe) {
+    const pipeChain = createPipeExpression(
+      isInPipeExpression
+        ? [...pipeExpression.body, revolveCall]
+        : [sketchExpression as any, revolveCall]
+    )
+
+    variableDeclarator.init = pipeChain
+    const pathToRevolveArg: PathToNode = [
+      ...pathToDecleration,
+      ['init', 'VariableDeclarator'],
+      ['body', ''],
+      [pipeChain.body.length - 1, 'index'],
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+    ]
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+      pathToRevolveArg,
+    }
+  }
+
+  // We're not creating a pipe expression,
+  // but rather a separate constant for the extrusion
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
+  const VariableDeclaration = createVariableDeclaration(name, revolveCall)
+  const sketchIndexInPathToNode =
+    pathToDecleration.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = pathToDecleration[sketchIndexInPathToNode][0]
+  if (typeof sketchIndexInBody !== 'number')
+    return new Error('expected sketchIndexInBody to be a number')
+  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
+
+  const pathToRevolveArg: PathToNode = [
+    ['body', ''],
+    [sketchIndexInBody + 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    [0, 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst: _node,
+    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
+    pathToRevolveArg,
+  }
+}
+
 export function sketchOnExtrudedFace(
   node: Program,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
-  cap: 'none' | 'start' | 'end' = 'none'
+  info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Program; pathToNode: PathToNode } | Error {
   let _node = { ...node }
   const newSketchName = findUniqueName(
@@ -383,21 +476,22 @@ export function sketchOnExtrudedFace(
   const { node: extrudeVarDec } = _node3
   const extrudeName = extrudeVarDec.id?.name
 
-  let _tag = null
-  if (cap === 'none') {
+  let _tag
+  if (info.type !== 'cap') {
     const __tag = addTagForSketchOnFace(
       {
         pathToNode: sketchPathToNode,
         node: _node,
       },
-      expression.callee.name
+      expression.callee.name,
+      info.type === 'edgeCut' ? info : null
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
     _tag = createIdentifier(tag)
     _node = modifiedAst
   } else {
-    _tag = createLiteral(cap.toUpperCase())
+    _tag = createLiteral(info.subType.toUpperCase())
   }
 
   const newSketch = createVariableDeclaration(
@@ -406,6 +500,7 @@ export function sketchOnExtrudedFace(
       createIdentifier(extrudeName ? extrudeName : oldSketchName),
       _tag,
     ]),
+    undefined,
     'const'
   )
 
@@ -483,7 +578,6 @@ export function createLiteral(value: string | number): Literal {
     end: 0,
     value,
     raw: `${value}`,
-    digest: null,
   }
 }
 
@@ -492,7 +586,7 @@ export function createTagDeclarator(value: string): TagDeclarator {
     type: 'TagDeclarator',
     start: 0,
     end: 0,
-    digest: null,
+
     value,
   }
 }
@@ -502,7 +596,7 @@ export function createIdentifier(name: string): Identifier {
     type: 'Identifier',
     start: 0,
     end: 0,
-    digest: null,
+
     name,
   }
 }
@@ -512,7 +606,6 @@ export function createPipeSubstitution(): PipeSubstitution {
     type: 'PipeSubstitution',
     start: 0,
     end: 0,
-    digest: null,
   }
 }
 
@@ -528,12 +621,11 @@ export function createCallExpressionStdLib(
       type: 'Identifier',
       start: 0,
       end: 0,
-      digest: null,
+
       name,
     },
     optional: false,
     arguments: args,
-    digest: null,
   }
 }
 
@@ -549,12 +641,11 @@ export function createCallExpression(
       type: 'Identifier',
       start: 0,
       end: 0,
-      digest: null,
+
       name,
     },
     optional: false,
     arguments: args,
-    digest: null,
   }
 }
 
@@ -565,7 +656,8 @@ export function createArrayExpression(
     type: 'ArrayExpression',
     start: 0,
     end: 0,
-    digest: null,
+
+    nonCodeMeta: nonCodeMetaEmpty(),
     elements,
   }
 }
@@ -577,50 +669,53 @@ export function createPipeExpression(
     type: 'PipeExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     body,
-    nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
+    nonCodeMeta: nonCodeMetaEmpty(),
   }
 }
 
 export function createVariableDeclaration(
   varName: string,
   init: VariableDeclarator['init'],
+  visibility: VariableDeclaration['visibility'] = 'default',
   kind: VariableDeclaration['kind'] = 'const'
 ): VariableDeclaration {
   return {
     type: 'VariableDeclaration',
     start: 0,
     end: 0,
-    digest: null,
+
     declarations: [
       {
         type: 'VariableDeclarator',
         start: 0,
         end: 0,
-        digest: null,
+
         id: createIdentifier(varName),
         init,
       },
     ],
+    visibility,
     kind,
   }
 }
 
 export function createObjectExpression(properties: {
-  [key: string]: Value
+  [key: string]: Expr
 }): ObjectExpression {
   return {
     type: 'ObjectExpression',
     start: 0,
     end: 0,
-    digest: null,
+
+    nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
       end: 0,
       key: createIdentifier(key),
-      digest: null,
+
       value,
     })),
   }
@@ -634,7 +729,7 @@ export function createUnaryExpression(
     type: 'UnaryExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     operator,
     argument,
   }
@@ -649,7 +744,7 @@ export function createBinaryExpression([left, operator, right]: [
     type: 'BinaryExpression',
     start: 0,
     end: 0,
-    digest: null,
+
     operator,
     left,
     right,
@@ -800,15 +895,10 @@ export function deleteSegmentFromPipeExpression(
     )
     if (!constraintInfo) return
 
-    const input = makeRemoveSingleConstraintInput(
-      constraintInfo.argPosition,
-      callExp.shallowPath
-    )
-    if (!input) return
+    if (!constraintInfo.argPosition) return
     const transform = removeSingleConstraintInfo(
-      {
-        ...input,
-      },
+      callExp.shallowPath,
+      constraintInfo.argPosition,
       _modifiedAst,
       programMemory
     )
@@ -835,37 +925,9 @@ export function deleteSegmentFromPipeExpression(
   return _modifiedAst
 }
 
-export function makeRemoveSingleConstraintInput(
-  argPosition: ConstrainInfo['argPosition'],
-  pathToNode: PathToNode
-): Parameters<typeof removeSingleConstraintInfo>[0] | false {
-  return argPosition?.type === 'singleValue'
-    ? {
-        pathToCallExp: pathToNode,
-      }
-    : argPosition?.type === 'arrayItem'
-    ? {
-        pathToCallExp: pathToNode,
-        arrayIndex: argPosition.index,
-      }
-    : argPosition?.type === 'objectProperty'
-    ? {
-        pathToCallExp: pathToNode,
-        objectProperty: argPosition.key,
-      }
-    : false
-}
-
 export function removeSingleConstraintInfo(
-  {
-    pathToCallExp,
-    arrayIndex,
-    objectProperty,
-  }: {
-    pathToCallExp: PathToNode
-    arrayIndex?: number
-    objectProperty?: string
-  },
+  pathToCallExp: PathToNode,
+  argDetails: SimplifiedArgDetails,
   ast: Program,
   programMemory: ProgramMemory
 ):
@@ -876,8 +938,7 @@ export function removeSingleConstraintInfo(
   | false {
   const transform = removeSingleConstraint({
     pathToCallExp,
-    arrayIndex,
-    objectProperty,
+    inputDetails: argDetails,
     ast,
   })
   if (!transform) return false
@@ -939,111 +1000,119 @@ export async function deleteFromSelection(
     const expressionIndex = pathToNode[1][0] as number
     astClone.body.splice(expressionIndex, 1)
     if (extrudeNameToDelete) {
-      await new Promise(async (resolve) => {
-        let currentVariableName = ''
-        const pathsDependingOnExtrude: Array<{
-          path: PathToNode
-          sketchName: string
-        }> = []
-        traverse(astClone, {
-          leave: (node) => {
-            if (node.type === 'VariableDeclaration') {
-              currentVariableName = ''
-            }
-          },
-          enter: async (node, path) => {
-            if (node.type === 'VariableDeclaration') {
-              currentVariableName = node.declarations[0].id.name
-            }
-            if (
-              // match startSketchOn(${extrudeNameToDelete})
-              node.type === 'CallExpression' &&
-              node.callee.name === 'startSketchOn' &&
-              node.arguments[0].type === 'Identifier' &&
-              node.arguments[0].name === extrudeNameToDelete
-            ) {
-              pathsDependingOnExtrude.push({
-                path,
-                sketchName: currentVariableName,
-              })
-            }
-          },
-        })
-        const roundLiteral = (x: number) => createLiteral(roundOff(x))
-        const modificationDetails: {
-          parent: PipeExpression['body']
-          faceDetails: Models['FaceIsPlanar_type']
-          lastKey: number
-        }[] = []
-        for (const { path, sketchName } of pathsDependingOnExtrude) {
-          const parent = getNodeFromPath<PipeExpression['body']>(
-            astClone,
-            path.slice(0, -1)
-          )
-          if (err(parent)) {
-            return
-          }
-          const sketchToPreserve = programMemory.get(sketchName) as SketchGroup
-          console.log('sketchName', sketchName)
-          // Can't kick off multiple requests at once as getFaceDetails
-          // is three engine calls in one and they conflict
-          const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
-          if (
-            !(
-              faceDetails.origin &&
-              faceDetails.x_axis &&
-              faceDetails.y_axis &&
-              faceDetails.z_axis
-            )
-          ) {
-            return
-          }
-          const lastKey = Number(path.slice(-1)[0][0])
-          modificationDetails.push({
-            parent: parent.node,
-            faceDetails,
-            lastKey,
+      await new Promise((resolve) => {
+        ;(async () => {
+          let currentVariableName = ''
+          const pathsDependingOnExtrude: Array<{
+            path: PathToNode
+            sketchName: string
+          }> = []
+          traverse(astClone, {
+            leave: (node) => {
+              if (node.type === 'VariableDeclaration') {
+                currentVariableName = ''
+              }
+            },
+            enter: (node, path) => {
+              ;(async () => {
+                if (node.type === 'VariableDeclaration') {
+                  currentVariableName = node.declarations[0].id.name
+                }
+                if (
+                  // match startSketchOn(${extrudeNameToDelete})
+                  node.type === 'CallExpression' &&
+                  node.callee.name === 'startSketchOn' &&
+                  node.arguments[0].type === 'Identifier' &&
+                  node.arguments[0].name === extrudeNameToDelete
+                ) {
+                  pathsDependingOnExtrude.push({
+                    path,
+                    sketchName: currentVariableName,
+                  })
+                }
+              })().catch(reportRejection)
+            },
           })
-        }
-        for (const { parent, faceDetails, lastKey } of modificationDetails) {
-          if (
-            !(
-              faceDetails.origin &&
-              faceDetails.x_axis &&
-              faceDetails.y_axis &&
-              faceDetails.z_axis
+          const roundLiteral = (x: number) => createLiteral(roundOff(x))
+          const modificationDetails: {
+            parent: PipeExpression['body']
+            faceDetails: Models['FaceIsPlanar_type']
+            lastKey: number
+          }[] = []
+          for (const { path, sketchName } of pathsDependingOnExtrude) {
+            const parent = getNodeFromPath<PipeExpression['body']>(
+              astClone,
+              path.slice(0, -1)
             )
-          ) {
-            continue
+            if (err(parent)) {
+              return
+            }
+            const sketchToPreserve = sketchFromKclValue(
+              programMemory.get(sketchName),
+              sketchName
+            )
+            if (err(sketchToPreserve)) return sketchToPreserve
+            console.log('sketchName', sketchName)
+            // Can't kick off multiple requests at once as getFaceDetails
+            // is three engine calls in one and they conflict
+            const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
+            if (
+              !(
+                faceDetails.origin &&
+                faceDetails.x_axis &&
+                faceDetails.y_axis &&
+                faceDetails.z_axis
+              )
+            ) {
+              return
+            }
+            const lastKey = Number(path.slice(-1)[0][0])
+            modificationDetails.push({
+              parent: parent.node,
+              faceDetails,
+              lastKey,
+            })
           }
-          parent[lastKey] = createCallExpressionStdLib('startSketchOn', [
-            createObjectExpression({
-              plane: createObjectExpression({
-                origin: createObjectExpression({
-                  x: roundLiteral(faceDetails.origin.x),
-                  y: roundLiteral(faceDetails.origin.y),
-                  z: roundLiteral(faceDetails.origin.z),
-                }),
-                x_axis: createObjectExpression({
-                  x: roundLiteral(faceDetails.x_axis.x),
-                  y: roundLiteral(faceDetails.x_axis.y),
-                  z: roundLiteral(faceDetails.x_axis.z),
-                }),
-                y_axis: createObjectExpression({
-                  x: roundLiteral(faceDetails.y_axis.x),
-                  y: roundLiteral(faceDetails.y_axis.y),
-                  z: roundLiteral(faceDetails.y_axis.z),
-                }),
-                z_axis: createObjectExpression({
-                  x: roundLiteral(faceDetails.z_axis.x),
-                  y: roundLiteral(faceDetails.z_axis.y),
-                  z: roundLiteral(faceDetails.z_axis.z),
+          for (const { parent, faceDetails, lastKey } of modificationDetails) {
+            if (
+              !(
+                faceDetails.origin &&
+                faceDetails.x_axis &&
+                faceDetails.y_axis &&
+                faceDetails.z_axis
+              )
+            ) {
+              continue
+            }
+            parent[lastKey] = createCallExpressionStdLib('startSketchOn', [
+              createObjectExpression({
+                plane: createObjectExpression({
+                  origin: createObjectExpression({
+                    x: roundLiteral(faceDetails.origin.x),
+                    y: roundLiteral(faceDetails.origin.y),
+                    z: roundLiteral(faceDetails.origin.z),
+                  }),
+                  x_axis: createObjectExpression({
+                    x: roundLiteral(faceDetails.x_axis.x),
+                    y: roundLiteral(faceDetails.x_axis.y),
+                    z: roundLiteral(faceDetails.x_axis.z),
+                  }),
+                  y_axis: createObjectExpression({
+                    x: roundLiteral(faceDetails.y_axis.x),
+                    y: roundLiteral(faceDetails.y_axis.y),
+                    z: roundLiteral(faceDetails.y_axis.z),
+                  }),
+                  z_axis: createObjectExpression({
+                    x: roundLiteral(faceDetails.z_axis.x),
+                    y: roundLiteral(faceDetails.z_axis.y),
+                    z: roundLiteral(faceDetails.z_axis.z),
+                  }),
                 }),
               }),
-            }),
-          ])
-        }
-        resolve(true)
+            ])
+          }
+          resolve(true)
+        })().catch(reportRejection)
       })
     }
     // await prom
@@ -1062,4 +1131,8 @@ export async function deleteFromSelection(
   }
 
   return new Error('Selection not recognised, could not delete')
+}
+
+const nonCodeMetaEmpty = () => {
+  return { nonCodeNodes: {}, start: [] }
 }

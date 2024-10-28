@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value } from '../../lang/wasm'
+import { Program, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -9,8 +9,9 @@ import {
   getTransformInfos,
   transformAstSketchLines,
   PathToNodeMap,
-  TransformInfo,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
@@ -49,7 +50,7 @@ export function absDistanceInfo({
     getNodePathFromSourceRange(kclManager.ast, range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(
+    const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
       pathToNode,
       'CallExpression'
@@ -59,7 +60,7 @@ export function absDistanceInfo({
   })
   const _err1 = _nodes.find(err)
   if (err(_err1)) return _err1
-  const nodes = _nodes as Value[]
+  const nodes = _nodes as Expr[]
 
   const isAllTooltips = nodes.every(
     (node) =>
@@ -121,11 +122,9 @@ export async function applyConstraintAbsDistance({
       value: forceVal,
       valueName: constraint === 'yAbs' ? 'yDis' : 'xDis',
     })
-  let finalValue = removeDoubleNegatives(
-    valueNode as BinaryPart,
-    sign,
-    variableName
-  )
+  if (!isExprBinaryPart(valueNode))
+    return Promise.reject('Invalid valueNode, is not a BinaryPart')
+  let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
 
   const transform2 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),

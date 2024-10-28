@@ -3,10 +3,12 @@ import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { createAndOpenNewProject } from 'lib/tauriFS'
 import { PATHS } from 'lib/paths'
+import { createAndOpenNewProject } from 'lib/desktopFS'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { reportRejection } from 'lib/trap'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -22,7 +24,10 @@ export function HelpMenu(props: React.PropsWithChildren) {
 
   return (
     <Popover className="relative">
-      <Popover.Button className="grid p-0 m-0 border-none rounded-full place-content-center">
+      <Popover.Button
+        className="grid p-0 m-0 border-none rounded-full place-content-center"
+        data-testid="help-button"
+      >
         <CustomIcon
           name="questionMark"
           className="rounded-full w-7 h-7 bg-chalkboard-110 dark:bg-chalkboard-80 text-chalkboard-10"
@@ -94,6 +99,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
               : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
             navigate(targetPath)
           }}
+          data-testid="keybindings-button"
         >
           Keyboard shortcuts
         </HelpMenuItem>
@@ -110,7 +116,9 @@ export function HelpMenu(props: React.PropsWithChildren) {
             if (isInProject) {
               navigate(filePath + PATHS.ONBOARDING.INDEX)
             } else {
-              createAndOpenNewProject({ onProjectOpen, navigate })
+              createAndOpenNewProject({ onProjectOpen, navigate }).catch(
+                reportRejection
+              )
             }
           }}
         >
@@ -141,6 +149,9 @@ function HelpMenuItem({
       {as === 'a' ? (
         <a
           {...(props as React.ComponentProps<'a'>)}
+          onClick={openExternalBrowserIfDesktop(
+            (props as React.ComponentProps<'a'>).href
+          )}
           className={`no-underline text-inherit ${baseClassName} ${className}`}
         >
           {children}

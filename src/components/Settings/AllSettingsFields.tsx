@@ -9,18 +9,18 @@ import {
 import { Fragment } from 'react/jsx-runtime'
 import { SettingsSection } from './SettingsSection'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
-import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
-import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { PATHS } from 'lib/paths'
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { sep } from '@tauri-apps/api/path'
 import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -41,16 +41,21 @@ export const AllSettingsFields = forwardRef(
     } = useSettingsAuthContext()
 
     const projectPath =
-      isFileSettings && isTauri()
+      isFileSettings && isDesktop()
         ? decodeURI(
             location.pathname
               .replace(PATHS.FILE + '/', '')
               .replace(PATHS.SETTINGS, '')
-              .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
+              .slice(
+                0,
+                decodeURI(location.pathname).lastIndexOf(
+                  window.electron.path.sep
+                )
+              )
           )
         : undefined
 
-    async function restartOnboarding() {
+    function restartOnboarding() {
       send({
         type: `set.app.onboardingStatus`,
         data: { level: 'user', value: '' },
@@ -78,6 +83,7 @@ export const AllSettingsFields = forwardRef(
           }
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigateToOnboardingStart()
     }, [isFileSettings, navigate, state])
 
@@ -176,22 +182,26 @@ export const AllSettingsFields = forwardRef(
             title="Reset settings"
             description={`Restore settings to their default values. Your settings are saved in
                     ${
-                      isTauri()
+                      isDesktop()
                         ? ' a file in the app data folder for your OS.'
                         : " your browser's local storage."
                     }
                   `}
           >
             <div className="flex flex-col items-start gap-4">
-              {isTauri() && (
+              {isDesktop() && (
                 <ActionButton
                   Element="button"
-                  onClick={async () => {
+                  onClick={toSync(async () => {
                     const paths = await getSettingsFolderPaths(
                       projectPath ? decodeURIComponent(projectPath) : undefined
                     )
-                    showInFolder(paths[searchParamTab])
-                  }}
+                    const finalPath = paths[searchParamTab]
+                    if (!finalPath) {
+                      return new Error('finalPath undefined')
+                    }
+                    window.electron.showInFolder(finalPath)
+                  }, reportRejection)}
                   iconStart={{
                     icon: 'folder',
                     size: 'sm',
@@ -203,13 +213,14 @@ export const AllSettingsFields = forwardRef(
               )}
               <ActionButton
                 Element="button"
-                onClick={async () => {
-                  const defaultDirectory = await getInitialDefaultDir()
+                onClick={() => {
                   send({
                     type: 'Reset settings',
-                    defaultDirectory,
+                    level: searchParamTab,
                   })
-                  toast.success('Settings restored to default')
+                  toast.success(
+                    `Your ${searchParamTab}-level settings were reset`
+                  )
                 }}
                 iconStart={{
                   icon: 'refresh',
@@ -218,7 +229,7 @@ export const AllSettingsFields = forwardRef(
                   bgClassName: 'bg-destroy-70',
                 }}
               >
-                Restore default settings
+                Reset {searchParamTab}-level settings
               </ActionButton>
             </div>
           </SettingsSection>

@@ -1,4 +1,7 @@
-import { getNextProjectIndex, interpolateProjectNameWithIndex } from './tauriFS'
+import {
+  getNextProjectIndex,
+  interpolateProjectNameWithIndex,
+} from './desktopFS'
 import { MAX_PADDING } from './constants'
 
 describe('Test project name utility functions', () => {

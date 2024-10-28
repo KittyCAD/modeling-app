@@ -6,12 +6,14 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
 import { RefreshButton } from 'components/RefreshButton'
 import { CommandBarOpenButton } from './CommandBarOpenButton'
+import { isDesktop } from 'lib/isDesktop'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
   project?: Omit<IndexLoaderData, 'code'>
   className?: string
   enableMenu?: boolean
+  style?: React.CSSProperties
 }
 
 export const AppHeader = ({
@@ -19,6 +21,7 @@ export const AppHeader = ({
   project,
   children,
   className = '',
+  style,
   enableMenu = false,
 }: AppHeaderProps) => {
   const { auth } = useSettingsAuthContext()
@@ -30,9 +33,12 @@ export const AppHeader = ({
       className={
         'w-full grid ' +
         styles.header +
-        ' overlaid-panes sticky top-0 z-20 px-2 items-start ' +
+        ` ${
+          isDesktop() ? styles.desktopApp + ' ' : ''
+        }overlaid-panes sticky top-0 z-20 px-2 items-start ` +
         className
       }
+      style={style}
     >
       <ProjectSidebarMenu
         enableMenu={enableMenu}

@@ -1,12 +1,11 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { buttonName } from 'lib/cameraControls'
+import { btnName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 import { kclManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 import { useAppStream } from 'AppState'
@@ -15,6 +14,9 @@ import {
   EngineConnectionStateType,
   DisconnectingType,
 } from 'lang/std/engineConnection'
+import { useRouteLoaderData } from 'react-router-dom'
+import { PATHS } from 'lib/paths'
+import { IndexLoaderData } from 'lib/types'
 
 enum StreamState {
   Playing = 'playing',
@@ -25,19 +27,51 @@ enum StreamState {
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
-  const { state, send, context } = useModelingContext()
+  const { state, send } = useModelingContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
+  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   const IDLE = settings.context.app.streamIdleMode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
+
+  /**
+   * Execute code and show a "building scene message"
+   * in Stream.tsx in the meantime.
+   *
+   * I would like for this to live somewhere more central,
+   * but it seems to me that we need the video element ref
+   * to be able to play the video after the code has been
+   * executed. If we can find a way to do this from a more
+   * central place, we can move this code there.
+   */
+  function executeCodeAndPlayStream() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    kclManager.executeCode(true).then(async () => {
+      await videoRef.current?.play().catch((e) => {
+        console.warn('Video playing was prevented', e, videoRef.current)
+      })
+      setStreamState(StreamState.Playing)
+    })
+  }
+
+  /**
+   * Subscribe to execute code when the file changes
+   * but only if the scene is already ready.
+   * See onSceneReady for the initial scene setup.
+   */
+  useEffect(() => {
+    if (engineCommandManager.engineConnection?.isReady() && file?.path) {
+      console.log('execute on file change')
+      executeCodeAndPlayStream()
+    }
+  }, [file?.path, engineCommandManager.engineConnection])
 
   useEffect(() => {
     if (
@@ -135,26 +169,19 @@ export const Stream = () => {
       timeoutIdIdleB = setTimeout(teardown, IDLE_TIME_MS)
     }
 
-    const onSceneReady = () => {
-      kclManager.isFirstRender = true
-      setStreamState(StreamState.Playing)
-      kclManager.executeCode(true).then(() => {
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-        kclManager.isFirstRender = false
-      })
-    }
-
+    /**
+     * Add a listener to execute code and play the stream
+     * on initial stream setup.
+     */
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
-      onSceneReady
+      executeCodeAndPlayStream
     )
 
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
-        onSceneReady
+        executeCodeAndPlayStream
       )
       globalThis?.window?.document?.removeEventListener('paste', handlePaste, {
         capture: true,
@@ -185,17 +212,19 @@ export const Stream = () => {
     }
   }, [IDLE, streamState])
 
-  // HOT FIX: for https://github.com/KittyCAD/modeling-app/pull/3250
-  // TODO review if there's a better way to play the stream again.
+  /**
+   * Play the vid
+   */
   useEffect(() => {
-    if (!kclManager.isFirstRender)
-      setTimeout(() =>
+    if (!kclManager.isExecuting) {
+      setTimeout(() => {
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
-      )
-  }, [kclManager.isFirstRender])
+      })
+    }
+  }, [kclManager.isExecuting])
 
   useEffect(() => {
     if (
@@ -206,6 +235,7 @@ export const Stream = () => {
     if (!videoRef.current) return
     if (!mediaStream) return
 
+    // The browser complains if we try to load a new stream without pausing first.
     // Do not immediately play the stream!
     try {
       videoRef.current.srcObject = mediaStream
@@ -224,74 +254,19 @@ export const Stream = () => {
     setIsLoading(false)
   }, [mediaStream])
 
-  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (!videoRef.current) return
-    if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
-
-    const { x, y } = getNormalisedCoordinates({
-      clientX: e.clientX,
-      clientY: e.clientY,
-      el: videoRef.current,
-      ...context.store?.streamDimensions,
-    })
-
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: e.button,
-      },
-    })
-    setClickCoords({ x, y })
-  }
-
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
+    // If we've got no stream or connection, don't do anything
     if (!isNetworkOkay) return
     if (!videoRef.current) return
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: undefined,
-      },
-    })
+    // If we're in sketch mode, don't send a engine-side select event
     if (state.matches('Sketch')) return
-    if (state.matches('idle.showPlanes')) return
+    if (state.matches({ idle: 'showPlanes' })) return
+    // If we're mousing up from a camera drag, don't send a select event
+    if (sceneInfra.camControls.wasDragging === true) return
 
-    if (!context.store?.didDragInStream && buttonName(e).left) {
-      sendSelectEventToEngine(
-        e,
-        videoRef.current,
-        context.store?.streamDimensions
-      )
-    }
-
-    send({
-      type: 'Set context',
-      data: {
-        didDragInStream: false,
-      },
-    })
-    setClickCoords(undefined)
-  }
-
-  const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
-    if (!clickCoords) return
-
-    const delta =
-      ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
-      0.5
-
-    if (delta > 5 && !context.store?.didDragInStream) {
-      send({
-        type: 'Set context',
-        data: {
-          didDragInStream: true,
-        },
-      })
+    if (btnName(e).left) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sendSelectEventToEngine(e, videoRef.current)
     }
   }
 
@@ -300,8 +275,7 @@ export const Stream = () => {
       className="absolute inset-0 z-0"
       id="stream"
       data-testid="stream"
-      onMouseUp={handleMouseUp}
-      onMouseDown={handleMouseDown}
+      onClick={handleMouseUp}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -311,7 +285,6 @@ export const Stream = () => {
         autoPlay
         controls={false}
         onPlay={() => setIsLoading(false)}
-        onMouseMoveCapture={handleMouseMove}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
         id="video-stream"
@@ -349,15 +322,15 @@ export const Stream = () => {
           </div>
         </div>
       )}
-      {(!isNetworkOkay || isLoading || kclManager.isFirstRender) && (
+      {(!isNetworkOkay || isLoading) && (
         <div className="text-center absolute inset-0">
           <Loading>
-            {!isNetworkOkay && !isLoading && !kclManager.isFirstRender ? (
+            {!isNetworkOkay && !isLoading ? (
               <span data-testid="loading-stream">Stream disconnected...</span>
-            ) : !isLoading && kclManager.isFirstRender ? (
-              <span data-testid="loading-stream">Building scene...</span>
             ) : (
-              <span data-testid="loading-stream">Loading stream...</span>
+              !isLoading && (
+                <span data-testid="loading-stream">Loading stream...</span>
+              )
             )}
           </Loading>
         </div>

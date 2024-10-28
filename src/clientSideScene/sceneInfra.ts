@@ -92,6 +92,8 @@ interface OnMoveCallbackArgs {
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
+
+type Voidish = void | Promise<void>
 export class SceneInfra {
   static instance: SceneInfra
   scene: Scene
@@ -105,27 +107,23 @@ export class SceneInfra {
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
-  _streamDimensions: { streamWidth: number; streamHeight: number } = {
-    streamWidth: 1280,
-    streamHeight: 720,
-  }
   extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
-  onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
-  onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
-  onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
-  onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
-  onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
-  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
-  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
+  onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
+  onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
+  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
+  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   setCallbacks = (callbacks: {
-    onDragStart?: (arg: OnDragCallbackArgs) => void
-    onDragEnd?: (arg: OnDragCallbackArgs) => void
-    onDrag?: (arg: OnDragCallbackArgs) => void
-    onMove?: (arg: OnMoveCallbackArgs) => void
-    onClick?: (arg: OnClickCallbackArgs) => void
-    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
-    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
+    onDragStart?: (arg: OnDragCallbackArgs) => Voidish
+    onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
+    onDrag?: (arg: OnDragCallbackArgs) => Voidish
+    onMove?: (arg: OnMoveCallbackArgs) => Voidish
+    onClick?: (arg: OnClickCallbackArgs) => Voidish
+    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish
+    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish
   }) => {
     this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
     this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
@@ -215,7 +213,7 @@ export class SceneInfra {
     to: Coords2d
     angle?: number
   }): SegmentOverlayPayload | null {
-    if (group.userData.pathToNode && arrowGroup) {
+    if (!group.userData.draft && group.userData.pathToNode && arrowGroup) {
       const vector = new Vector3(0, 0, 0)
 
       // Get the position of the object3D in world space
@@ -309,7 +307,7 @@ export class SceneInfra {
 
     const textureLoader = new TextureLoader()
     this.extraSegmentTexture = textureLoader.load(
-      '/clientSideSceneAssets/extra-segment-texture.png'
+      './clientSideSceneAssets/extra-segment-texture.png'
     )
     this.extraSegmentTexture.anisotropy =
       this.renderer?.capabilities?.getMaxAnisotropy?.()
@@ -393,7 +391,7 @@ export class SceneInfra {
       intersection: planeIntersects[0],
     }
   }
-  onMouseMove = (mouseEvent: MouseEvent) => {
+  onMouseMove = async (mouseEvent: MouseEvent) => {
     this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y =
       -(mouseEvent.clientY / window.innerHeight) * 2 + 1
@@ -418,7 +416,7 @@ export class SceneInfra {
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
       ) {
-        this.onDragCallback({
+        await this.onDragCallback({
           mouseEvent,
           intersectionPoint: {
             twoD: planeIntersectPoint.twoD,
@@ -437,7 +435,7 @@ export class SceneInfra {
       planeIntersectPoint.twoD &&
       planeIntersectPoint.threeD
     ) {
-      this.onMoveCallback({
+      await this.onMoveCallback({
         mouseEvent,
         intersectionPoint: {
           twoD: planeIntersectPoint.twoD,
@@ -452,12 +450,12 @@ export class SceneInfra {
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
-        this.onMouseLeave({
+        await this.onMouseLeave({
           selected: hoveredObj,
           mouseEvent: mouseEvent,
         })
         this.hoveredObject = firstIntersectObject
-        this.onMouseEnter({
+        await this.onMouseEnter({
           selected: this.hoveredObject,
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
@@ -472,7 +470,7 @@ export class SceneInfra {
       if (this.hoveredObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
-        this.onMouseLeave({
+        await this.onMouseLeave({
           selected: hoveredObj,
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
@@ -559,7 +557,7 @@ export class SceneInfra {
     }
   }
 
-  onMouseUp = (mouseEvent: MouseEvent) => {
+  onMouseUp = async (mouseEvent: MouseEvent) => {
     this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y =
       -(mouseEvent.clientY / window.innerHeight) * 2 + 1
@@ -569,7 +567,7 @@ export class SceneInfra {
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
         // TODO do the types properly here
-        this.onDragEndCallback({
+        await this.onDragEndCallback({
           intersectionPoint: {
             twoD: planeIntersectPoint?.twoD as any,
             threeD: planeIntersectPoint?.threeD as any,
@@ -590,7 +588,7 @@ export class SceneInfra {
         }
       } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
         // fire onClick event as there was no drags
-        this.onClickCallback({
+        await this.onClickCallback({
           mouseEvent,
           intersectionPoint: {
             twoD: planeIntersectPoint.twoD,
@@ -600,17 +598,17 @@ export class SceneInfra {
           selected: this.selected.object,
         })
       } else if (planeIntersectPoint) {
-        this.onClickCallback({
+        await this.onClickCallback({
           mouseEvent,
           intersects,
         })
       } else {
-        this.onClickCallback({ mouseEvent, intersects })
+        await this.onClickCallback({ mouseEvent, intersects })
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
     } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
-      this.onClickCallback({
+      await this.onClickCallback({
         mouseEvent,
         intersectionPoint: {
           twoD: planeIntersectPoint.twoD,
@@ -619,7 +617,7 @@ export class SceneInfra {
         intersects,
       })
     } else {
-      this.onClickCallback({ mouseEvent, intersects })
+      await this.onClickCallback({ mouseEvent, intersects })
     }
   }
   updateOtherSelectionColors = (otherSelections: Axis[]) => {

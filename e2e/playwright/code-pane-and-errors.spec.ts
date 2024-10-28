@@ -1,11 +1,19 @@
 import { test, expect } from '@playwright/test'
 
-import { getUtils, setup, tearDown } from './test-utils'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
+import { join } from 'path'
 import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import fsp from 'fs/promises'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -19,9 +27,19 @@ test.describe('Code pane and errors', () => {
     const u = await getUtils(page)
 
     // Load the app with the working starter code
-    await page.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, bracket)
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `// Extruded Triangle
+sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 0], %)
+  |> line([-5, 10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(5, sketch001)`
+      )
+    })
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
@@ -47,6 +65,8 @@ test.describe('Code pane and errors', () => {
   test('Opening and closing the code pane will consistently show error diagnostics', async ({
     page,
   }) => {
+    await page.goto('http://localhost:3000')
+
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -72,7 +92,7 @@ test.describe('Code pane and errors', () => {
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
-    await page.getByText('extrude(').click()
+    await page.getByText('thickness, bracketLeg1Sketch)').click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
@@ -83,7 +103,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.locator('.cm-tooltip').first()).toBeVisible()
 
     // Close the code pane
     await codePaneButton.click()
@@ -106,7 +126,7 @@ test.describe('Code pane and errors', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.locator('.cm-tooltip').first()).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({
@@ -191,7 +211,7 @@ test.describe('Code pane and errors', () => {
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('ArrowUp')
     await page.keyboard.press('Home')
-    await page.keyboard.type('const foo_bar = 1')
+    await page.keyboard.type('foo_bar = 1')
     await page.waitForTimeout(500)
     await page.keyboard.press('Enter')
 
@@ -217,3 +237,121 @@ test.describe('Code pane and errors', () => {
     ).toBeVisible()
   })
 })
+
+test(
+  'Opening multiple panes persists when switching projects',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    // Setup multiple projects.
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        const bracketDir = join(dir, 'bracket')
+        await Promise.all([
+          fsp.mkdir(routerTemplateDir, { recursive: true }),
+          fsp.mkdir(bracketDir, { recursive: true }),
+        ])
+        await Promise.all([
+          fsp.copyFile(
+            executorInputPath('router-template-slate.kcl'),
+            join(routerTemplateDir, 'main.kcl')
+          ),
+          fsp.copyFile(
+            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+            join(bracketDir, 'main.kcl')
+          ),
+        ])
+      },
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await test.step('Opening the bracket project should load', async () => {
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await u.waitForPageLoad()
+    })
+
+    // If they're open by default, we're not actually testing anything.
+    await test.step('Pre-condition: panes are not already visible', async () => {
+      await expect(page.locator('#variables-pane')).not.toBeVisible()
+      await expect(page.locator('#logs-pane')).not.toBeVisible()
+    })
+
+    await test.step('Open multiple panes', async () => {
+      await u.openKclCodePanel()
+      await u.openVariablesPane()
+      await u.openLogsPane()
+    })
+
+    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
+      await page.getByTestId('app-logo').click()
+
+      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
+    })
+
+    await test.step('Opening the router-template project should load', async () => {
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+
+      await page.getByText('router-template-slate').click()
+
+      await u.waitForPageLoad()
+    })
+
+    await test.step('All panes opened before should be visible', async () => {
+      await expect(page.locator('#code-pane')).toBeVisible()
+      await expect(page.locator('#variables-pane')).toBeVisible()
+      await expect(page.locator('#logs-pane')).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'external change of file contents are reflected in editor',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const PROJECT_DIR_NAME = 'lee-was-here'
+    const {
+      electronApp,
+      page,
+      dir: projectsDir,
+    } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const aProjectDir = join(dir, PROJECT_DIR_NAME)
+        await fsp.mkdir(aProjectDir, { recursive: true })
+      },
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await test.step('Open the project', async () => {
+      await expect(page.getByText(PROJECT_DIR_NAME)).toBeVisible()
+      await page.getByText(PROJECT_DIR_NAME).click()
+      await u.waitForPageLoad()
+    })
+
+    await u.openFilePanel()
+    await u.openKclCodePanel()
+
+    await test.step('Write to file externally and check for changed content', async () => {
+      const content = 'ha he ho ho ha blap scap be dap'
+      await fsp.writeFile(
+        join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
+        content
+      )
+      await u.editorTextMatches(content)
+    })
+
+    await electronApp.close()
+  }
+)

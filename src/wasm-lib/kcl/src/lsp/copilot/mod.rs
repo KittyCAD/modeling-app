@@ -156,7 +156,7 @@ impl Backend {
 
         let resp = self
             .zoo_client
-            .ai()
+            .ml()
             .create_kcl_code_completions(&body)
             .await
             .map_err(|err| Error {

@@ -1,200 +1,425 @@
-import { assign, createMachine } from 'xstate'
-import type { FileEntry } from 'lib/types'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { assign, fromPromise, setup } from 'xstate'
+import { Project, FileEntry } from 'lib/project'
 
-export const fileMachine = createMachine(
-  {
-    /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiAKwBGcQDoALACYAHAE4AzGoUA2JXK1yANCACeiabOmSlGpkqsqAvg6NpMuQiXIUASmABmAE5wRMxsSCDcfAJC4WIIWgpMMtpqkgrKalJa0kamCJIA7AUySgX6mkwK4gXVckpOLhjY+MRkYDIAEtRYpFxYfk2wFADCQXi82AOYocKRqPyCwnGSmbJa4ulKquJqcnriuYiaKsm2BSpVTAVyTOJyDSCuzR5tnd1TcD5gpHg4k00zcJzBYxUBxFRKWRKLS3XRqFSSHTVQ4IXRJAppRJWSr6erOR5NdytchvWD9QYjMYTcnTVizHjzaJLMyrGTrTbbXb7FF3E6SOSaNRMJhaLQFeEKB5PImedpdMkfIYAETAmGpH0BnAZIOZ+VZ7OUnL26xRui0MnE2WkpQxq0l+OlLVlpJpnwA8hxvq7NRFtUzYizxGsNoaVDtjQcTIh1JISsLMiLUlIrlLCU7XvLXUMAMpgXhYWCqsAECYQLAQVBBEtcALGH3A-1gsxpYoIla6BQqcUqbIo65JGF3LRCjSSJj3B1pl4k0ZgcZkKCuigQQTtMgANy4AGt2gQqWAALQaulAv2LAP5ZQnaoQuR3K5KJg5KMIeFJJSJfQFeM7NSQ1NuOmM5UguS5gAEAQ1jIHDoOMfg1jgMh7nOExHgCJ5alE55NnqloyBCWjqIo0iVJGeR2DImidgociIukOiEQBzzEu0vg-DgoEfMuq4yBu27tEE7GHseYSYYy2GiEcTBqPIVQ1FcEL8toKIJOaaQXPY2TWOIeKNIB06sd8vycU0FDgZBATQbBvDwQEiGCb8wnoaJvpYaCkmvp28gqD5kJ-lc-LQiif7mqKFwXNk8aVExMqvCqaomZg3EknxO4yBARaoSJ9JubqKx4SsNyWmkGgfkoPIQvhOg1AoRQ+TpkgxUB7TxXmiWUOZUEwXBCHpZlTm0i5DYScsmTFHopRPn+cg9oifZ3MkNp-to4iJloTUGTIvh4BWpCLoqyVrqQm5pWMEBoZgsD1me7lxHYMljpUNGJOKahin2dTyH+BR2J2w6WmoG0sVtc67ftFIrilx38TIZ0XXADCSENN26vdMiPekihXBo70vkmyQ2D5Qrik+BRA8621g1mZkQV11m2fZoPw1dGGueJt2IGjGPPdjb0FCi6QKPh4g9gK1G-qKTj4r0GXwOEjoGTl7O6gomgWtcVR3kVH6GC+B5QuUlphtJKhaxOenMc6ma9FmSs6hekiFLGyjfnUdwzQokjBV5ahlGUqSVPCYbmwS+nA5mip242HmOz9bKFEU7t3rVaimjcJSPoU1jSAUnviOTryzvOe2ulHI1mHcraclsOyiyoPLCnGthpDcGLrGTk5hxTRkcSXHxlxzCDKEktSa-eOk0aajslLstyu9J1j2hbsUkq1-B900A95ZX+HV35demtJBMTRCwqdpoBckpT7Vy2J9s4RsSgzyLiQRqTKJ7CcOtYtcqSFetndLavA9N8dqW8HY7whGGP8+99D1xfCoWwFodiijGrcT2eInBAA */
-    id: 'File machine',
+type FileMachineContext = {
+  project: Project
+  selectedDirectory: FileEntry
+  itemsBeingRenamed: (FileEntry | string)[]
+}
 
-    initial: 'Reading files',
+type FileMachineEvents =
+  | { type: 'Open file'; data: { name: string } }
+  | {
+      type: 'Rename file'
+      data: { oldName: string; newName: string; isDir: boolean }
+    }
+  | {
+      type: 'Create file'
+      data: {
+        name: string
+        makeDir: boolean
+        content?: string
+        silent?: boolean
+        shouldSetToRename?: boolean
+      }
+    }
+  | { type: 'Delete file'; data: FileEntry }
+  | { type: 'Set selected directory'; directory: FileEntry }
+  | { type: 'navigate'; data: { name: string } }
+  | {
+      type: 'xstate.done.actor.read-files'
+      output: Project
+    }
+  | {
+      type: 'xstate.done.actor.rename-file'
+      output: {
+        message: string
+        oldPath: string
+        newPath: string
+      }
+    }
+  | {
+      type: 'xstate.done.actor.create-and-open-file'
+      output: {
+        message: string
+        path: string
+        shouldSetToRename: boolean
+      }
+    }
+  | {
+      type: 'xstate.done.actor.create-file'
+      output: {
+        path: string
+      }
+    }
+  | {
+      type: 'xstate.done.actor.delete-file'
+      output: {
+        message: string
+      }
+    }
+  | { type: 'assign'; data: { [key: string]: any } }
+  | { type: 'Refresh' }
 
-    context: {
-      project: {} as Project,
-      selectedDirectory: {} as FileEntry,
-      itemsBeingRenamed: [] as string[],
-    },
-
-    on: {
-      assign: {
-        actions: assign((_, event) => ({
-          ...event.data,
-        })),
-        target: '.Reading files',
-      },
-
-      Refresh: '.Reading files',
-    },
-    states: {
-      'Has no files': {
-        on: {
-          'Create file': {
-            target: 'Creating file',
-          },
-        },
-      },
-
-      'Has files': {
-        on: {
-          'Rename file': {
-            target: 'Renaming file',
-          },
-
-          'Create file': {
-            target: 'Creating file',
-          },
-
-          'Delete file': {
-            target: 'Deleting file',
-          },
-
-          'Open file': {
-            target: 'Opening file',
-          },
-
-          'Set selected directory': {
-            target: 'Has files',
-            actions: ['setSelectedDirectory'],
-          },
-        },
-      },
-
-      'Creating file': {
-        invoke: {
-          id: 'create-file',
-          src: 'createFile',
-          onDone: [
-            {
-              target: 'Reading files',
-              actions: [
-                'createToastSuccess',
-                'addFileToRenamingQueue',
-                'navigateToFile',
-              ],
-            },
-          ],
-          onError: [
-            {
-              target: 'Reading files',
-              actions: ['toastError'],
-            },
-          ],
-        },
-      },
-
-      'Renaming file': {
-        invoke: {
-          id: 'rename-file',
-          src: 'renameFile',
-          onDone: [
-            {
-              target: '#File machine.Reading files',
-              actions: ['renameToastSuccess'],
-            },
-          ],
-          onError: [
-            {
-              target: '#File machine.Reading files',
-              actions: ['toastError'],
-            },
-          ],
-        },
-
-        exit: 'removeFileFromRenamingQueue',
-      },
-
-      'Deleting file': {
-        invoke: {
-          id: 'delete-file',
-          src: 'deleteFile',
-          onDone: [
-            {
-              actions: ['toastSuccess'],
-              target: '#File machine.Reading files',
-            },
-          ],
-          onError: {
-            actions: ['toastError'],
-            target: '#File machine.Has files',
-          },
-        },
-      },
-
-      'Reading files': {
-        invoke: {
-          id: 'read-files',
-          src: 'readFiles',
-          onDone: [
-            {
-              cond: 'Has at least 1 file',
-              target: 'Has files',
-              actions: ['setFiles'],
-            },
-            {
-              target: 'Has no files',
-              actions: ['setFiles'],
-            },
-          ],
-          onError: [
-            {
-              target: 'Has no files',
-              actions: ['toastError'],
-            },
-          ],
-        },
-      },
-
-      'Opening file': {
-        entry: ['navigateToFile'],
-      },
-    },
-
-    schema: {
-      events: {} as
-        | { type: 'Open file'; data: { name: string } }
-        | {
-            type: 'Rename file'
-            data: { oldName: string; newName: string; isDir: boolean }
-          }
-        | { type: 'Create file'; data: { name: string; makeDir: boolean } }
-        | { type: 'Delete file'; data: FileEntry }
-        | { type: 'Set selected directory'; data: FileEntry }
-        | { type: 'navigate'; data: { name: string } }
-        | {
-            type: 'done.invoke.read-files'
-            data: Project
-          }
-        | {
-            type: 'done.invoke.rename-file'
-            data: {
-              message: string
-              oldPath: string
-              newPath: string
-            }
-          }
-        | {
-            type: 'done.invoke.create-file'
-            data: {
-              message: string
-              path: string
-            }
-          }
-        | { type: 'assign'; data: { [key: string]: any } }
-        | { type: 'Refresh' },
-    },
-
-    predictableActionArguments: true,
-    preserveActionOrder: true,
-    tsTypes: {} as import('./fileMachine.typegen').Typegen0,
+export const fileMachine = setup({
+  types: {} as {
+    context: FileMachineContext
+    events: FileMachineEvents
+    input: Partial<Pick<FileMachineContext, 'project' | 'selectedDirectory'>>
   },
-  {
-    actions: {
-      setFiles: assign((_, event) => {
-        return { project: event.data }
-      }),
-      setSelectedDirectory: assign((_, event) => {
-        return { selectedDirectory: event.data }
-      }),
+  actions: {
+    setFiles: assign(({ event }) => {
+      if (event.type !== 'xstate.done.actor.read-files') return {}
+      return { project: event.output }
+    }),
+    setSelectedDirectory: assign(({ event }) => {
+      if (event.type !== 'Set selected directory') return {}
+      return { selectedDirectory: event.directory }
+    }),
+    addFileToRenamingQueue: assign({
+      itemsBeingRenamed: ({ context, event }) => {
+        if (event.type !== 'xstate.done.actor.create-and-open-file')
+          return context.itemsBeingRenamed
+        return [...context.itemsBeingRenamed, event.output.path]
+      },
+    }),
+    removeFileFromRenamingQueue: assign({
+      itemsBeingRenamed: ({ context, event }) => {
+        if (event.type !== 'xstate.done.actor.rename-file')
+          return context.itemsBeingRenamed
+        return context.itemsBeingRenamed.filter(
+          (path) => path !== event.output.oldPath
+        )
+      },
+    }),
+    navigateToFile: () => {},
+    renameToastSuccess: () => {},
+    createToastSuccess: () => {},
+    toastSuccess: () => {},
+    toastError: () => {},
+  },
+  guards: {
+    'Name has been changed': ({ event }) => {
+      if (event.type !== 'xstate.done.actor.rename-file') return false
+      return event.output.newPath !== event.output.oldPath
     },
-  }
-)
+    'Has at least 1 file': ({ event }) => {
+      if (event.type !== 'xstate.done.actor.read-files') return false
+      return !!event?.output?.children && event.output.children.length > 0
+    },
+    'Is not silent': ({ event }) =>
+      event.type === 'Create file' ? !event.data.silent : false,
+    'Should set to rename': ({ event }) =>
+      (event.type === 'xstate.done.actor.create-and-open-file' &&
+        event.output.shouldSetToRename) ||
+      false,
+  },
+  actors: {
+    readFiles: fromPromise(({ input }: { input: Project }) =>
+      Promise.resolve(input)
+    ),
+    createAndOpenFile: fromPromise(
+      (_: {
+        input: {
+          name: string
+          makeDir: boolean
+          selectedDirectory: FileEntry
+          content: string
+          shouldSetToRename: boolean
+        }
+      }) => Promise.resolve({ message: '', path: '' })
+    ),
+    renameFile: fromPromise(
+      (_: {
+        input: {
+          oldName: string
+          newName: string
+          isDir: boolean
+          selectedDirectory: FileEntry
+        }
+      }) => Promise.resolve({ message: '', newPath: '', oldPath: '' })
+    ),
+    deleteFile: fromPromise(
+      (_: {
+        input: { path: string; children: FileEntry[] | null; name: string }
+      }) => Promise.resolve({ message: '' } as { message: string } | undefined)
+    ),
+    createFile: fromPromise(
+      (_: {
+        input: {
+          name: string
+          makeDir: boolean
+          selectedDirectory: FileEntry
+          content: string
+        }
+      }) => Promise.resolve({ path: '' })
+    ),
+  },
+}).createMachine({
+  /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiACwAmADQgAnogAcANgCsAOnHiAjOICcAZh3K9TRQHYAvpdlpMuQiXIUASmABmAJzhFmbJCDcfAJCAWIIUrIKCHpq6nraipJJKorahqrWthjY+MRkYOoAEtRYpFxY7jmwFADC3ni82FWYfsJBqPyCwuG6hurKTAYG5mlSyeJRiHqS2prKg6Mj2pKz4lkgdrmOBcWlLXCuYKR4OM05bQEdXaGgvdpD6qPiioqqieJM2gaqUxELT3MQz0eleBlMhmUGy2Dny5D2sEq1TqDSaSNarHaPE6IR6iF0ij08SGklUpikym0qkm8gkJie1KYklB70UBkkTChNk2OVhTkKJURBxq9TAjXOrW0-k42JueIQfQMAyGIzGq0UNOiqg5mi+5nMlM+gxm0N5eX5CPRhwAImBMGiDpcZcFumF8dptMp1GZRpT9YZOXo-ml1IlzMkHuZVOyDGpTfZzbtBVaagB5DjHK1OwKy3FuhX6JWDYajXTqzUSRKh8FMPTa1TmBJDePbOEC-bIgDKYF4WFgdrABCaECwEFQ3iHXE8cmz1zzd3xkmUSveP0UJJWyT+sfE3o94PSbK0KxbfN2osaZCgWDwpBHXAzpCvVooEEEhTIADcuABrQoEVEwAAWlvCAgIfY4gMdTErlzV0FwVH5dx3ZdtUSA9lD+B4qW9EkmE5ZkEnMAxT0TeEL34Uhr1ArAIKfKiXzfeEv1-f9AJAu9wMfKCLilLEXVuURpmUcw91JakDAsLQRiwplFHUIxlDeUxZlGRRSJ2cjUWfGi6OfA4KDATxPCndQOHQRp3CnHB1AAsUmg4sC6J4jFpRzAT5SpHDPRGalRlUJJxF+WkEAbJgFOUZJCQ+NJvg0tt1DcE4cH0nJX3fdQWL-dRvGS4DoLcud4KEhBY1EhJ3iCqkdGGRQ-jJDQmCCwlYyYUYlnii0ktOVLMHS5jSG-bLctOfLeMKuDBPCMr4i8qrqW+SS-nDDRJK0VYXmZcRwU63ZupShiDKMkzPDMizeCszwbJGs4XLAWdJvlEZRMkcQDXDVDY20cxltWdRXjZXQzDUSQdu5GEyMKW17V6ygmI-QbWPUCABwcgr+JxYrpv1dRXvepcfi+n6QoMfDQ2ZALzH3d6rHBs1NKh1HYcM4zTPMyzrOR1GxtcjG5XzZ7cbekSCejP0-g5SR-skprVD9Kkvl2+E3DwMdDuReHMsR4axTA4UHo8-MZnCn5iNjOXXjrbRlpWb12U9Hzo1mdS6YTBnEt12Gak1rLCgaPXqgYPjYMNhDjYUhthjUJTCXeP5TC9SlowsS260JJXChVtXr2FFmTrOjmrpy3W7tgA3Mam6YdVNqOLdj62QvXIkY31YWl0+dZXdbC0KOZn3tbY+yefumDnQrzyGyJNQ3teJTYxMAwsNmIkNpeIKpC+TIu7PLT7OZ462fOy6bLs8U7vL-mEKpdd4j0F52WjUw2ob6IPXDXHUPEYspAMKlrG5coKN4ABAhgzPm84SpAUwiFKBuF8L7iZGoEEPwM6WnKCmcBWN8Skynl-CErx9CqGpPHWYAw2TKRmBySSkhUHJmFJgyuiFvqaAmItN45gdB1RCngzQrxEi6CMB9VBvcGK6UfLDBhnlRhSzLBYVYSktoyBCg8UGTwlJ6HDCkB4RDUH7QkSHce+ZIghUWLjYYeFf4qCCqg6GPZ9Fj0viVQkAxPR+RqloIhxNX6glxuGfCkgOGCKTroz26tMDAIcRA8IkU5hIXXhqDRjYvHTFrOoakd98JlQjNoVB6Zjj2PcoYq+0jQxSDkUuJId8lHRHBCuUYTU-T6mpMI7SYSwCSPzN9JIpTkjhgqYorC30pZtSIdqWMbwAr-0sEAA */
+  id: 'File machine',
+
+  initial: 'Reading files',
+
+  context: ({ input }) => {
+    return {
+      project: input.project ?? ({} as Project), // TODO: Either make this a flexible type or type this property to allow empty object
+      selectedDirectory: input.selectedDirectory ?? ({} as FileEntry), // TODO: Either make this a flexible type or type this property to allow empty object
+      itemsBeingRenamed: [],
+    }
+  },
+
+  on: {
+    assign: {
+      actions: assign(({ event }) => ({
+        ...event.data,
+      })),
+      target: '.Reading files',
+    },
+
+    Refresh: '.Reading files',
+  },
+  states: {
+    'Has no files': {
+      on: {
+        'Create file': {
+          target: 'Creating and opening file',
+        },
+      },
+    },
+
+    'Has files': {
+      on: {
+        'Rename file': {
+          target: 'Renaming file',
+        },
+
+        'Create file': [
+          {
+            target: 'Creating and opening file',
+            guard: 'Is not silent',
+          },
+          'Creating file',
+        ],
+
+        'Delete file': {
+          target: 'Deleting file',
+        },
+
+        'Open file': {
+          target: 'Opening file',
+        },
+
+        'Set selected directory': {
+          target: 'Has files',
+          actions: ['setSelectedDirectory'],
+        },
+      },
+    },
+
+    'Creating and opening file': {
+      invoke: {
+        id: 'create-and-open-file',
+        src: 'createAndOpenFile',
+        input: ({ event, context }) => {
+          if (event.type !== 'Create file')
+            // This is just to make TS happy
+            return {
+              name: '',
+              makeDir: false,
+              selectedDirectory: context.selectedDirectory,
+              content: '',
+              shouldSetToRename: false,
+            }
+          return {
+            name: event.data.name,
+            makeDir: event.data.makeDir,
+            selectedDirectory: context.selectedDirectory,
+            content: event.data.content ?? '',
+            shouldSetToRename: event.data.shouldSetToRename ?? false,
+          }
+        },
+        onDone: [
+          {
+            target: 'Reading files',
+
+            actions: [
+              {
+                type: 'createToastSuccess',
+                params: ({
+                  event,
+                }: {
+                  // TODO: rely on type inference
+                  event: Extract<
+                    FileMachineEvents,
+                    { type: 'xstate.done.actor.create-and-open-file' }
+                  >
+                }) => {
+                  return { message: event.output.message }
+                },
+              },
+              'addFileToRenamingQueue',
+              'navigateToFile',
+            ],
+
+            guard: 'Should set to rename',
+          },
+          {
+            target: 'Reading files',
+            actions: [
+              {
+                type: 'createToastSuccess',
+                params: ({
+                  event,
+                }: {
+                  // TODO: rely on type inference
+                  event: Extract<
+                    FileMachineEvents,
+                    { type: 'xstate.done.actor.create-and-open-file' }
+                  >
+                }) => {
+                  return { message: event.output.message }
+                },
+              },
+              'navigateToFile',
+            ],
+          },
+        ],
+        onError: [
+          {
+            target: 'Reading files',
+            actions: ['toastError'],
+          },
+        ],
+      },
+    },
+
+    'Renaming file': {
+      invoke: {
+        id: 'rename-file',
+        src: 'renameFile',
+        input: ({ event, context }) => {
+          if (event.type !== 'Rename file') {
+            // This is just to make TS happy
+            return {
+              oldName: '',
+              newName: '',
+              isDir: false,
+              selectedDirectory: {} as FileEntry,
+            }
+          }
+          return {
+            oldName: event.data.oldName,
+            newName: event.data.newName,
+            isDir: event.data.isDir,
+            selectedDirectory: context.selectedDirectory,
+          }
+        },
+
+        onDone: [
+          {
+            target: '#File machine.Reading files',
+            actions: ['renameToastSuccess'],
+            guard: 'Name has been changed',
+          },
+          'Reading files',
+        ],
+        onError: [
+          {
+            target: '#File machine.Reading files',
+            actions: ['toastError'],
+          },
+        ],
+      },
+
+      exit: 'removeFileFromRenamingQueue',
+    },
+
+    'Deleting file': {
+      invoke: {
+        id: 'delete-file',
+        src: 'deleteFile',
+        input: ({ event }) => {
+          if (event.type !== 'Delete file') {
+            // This is just to make TS happy
+            return {
+              path: '',
+              children: [],
+              name: '',
+            }
+          }
+          return {
+            path: event.data.path,
+            children: event.data.children,
+            name: event.data.name,
+          }
+        },
+        onDone: [
+          {
+            actions: ['toastSuccess'],
+            target: '#File machine.Reading files',
+          },
+        ],
+        onError: {
+          actions: ['toastError'],
+          target: '#File machine.Has files',
+        },
+      },
+    },
+
+    'Reading files': {
+      invoke: {
+        id: 'read-files',
+        src: 'readFiles',
+        input: ({ context }) => context.project,
+        onDone: [
+          {
+            guard: 'Has at least 1 file',
+            target: 'Has files',
+            actions: ['setFiles'],
+          },
+          {
+            target: 'Has no files',
+            actions: ['setFiles'],
+          },
+        ],
+        onError: [
+          {
+            target: 'Has no files',
+            actions: ['toastError'],
+          },
+        ],
+      },
+    },
+
+    'Opening file': {
+      entry: ['navigateToFile'],
+    },
+
+    'Creating file': {
+      invoke: {
+        src: 'createFile',
+        id: 'create-file',
+        input: ({ event, context }) => {
+          if (event.type !== 'Create file') {
+            // This is just to make TS happy
+            return {
+              name: '',
+              makeDir: false,
+              selectedDirectory: {} as FileEntry,
+              content: '',
+            }
+          }
+          return {
+            name: event.data.name,
+            makeDir: event.data.makeDir,
+            selectedDirectory: context.selectedDirectory,
+            content: event.data.content ?? '',
+          }
+        },
+        onDone: 'Reading files',
+        onError: 'Reading files',
+      },
+    },
+  },
+})

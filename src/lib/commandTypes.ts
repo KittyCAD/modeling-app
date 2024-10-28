@@ -1,26 +1,24 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
-import {
-  AnyStateMachine,
-  ContextFrom,
-  EventFrom,
-  InterpreterFrom,
-} from 'xstate'
+import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
 import { Selection } from './selections'
-import { Identifier, Value, VariableDeclaration } from 'lang/wasm'
+import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
+import { ReactNode } from 'react'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = [
   'options',
   'string',
+  'text',
   'kcl',
   'selection',
   'boolean',
 ] as const
 export interface KclExpression {
-  valueAst: Value
+  valueAst: Expr
   valueText: string
   valueCalculated: string
 }
@@ -71,6 +69,12 @@ export type Command<
   name: CommandName
   groupId: T['id']
   needsReview: boolean
+  reviewMessage?:
+    | string
+    | ReactNode
+    | ((
+        commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+      ) => string | ReactNode)
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
   args?: {
@@ -110,6 +114,7 @@ export type CommandArgumentConfig<
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
         machineContext?: C
       ) => boolean)
+  warningMessage?: string
   skip?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
@@ -123,6 +128,7 @@ export type CommandArgumentConfig<
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
+              machineManager?: MachineManager
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
           ) => CommandArgumentOption<OutputType>[])
@@ -143,6 +149,16 @@ export type CommandArgumentConfig<
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
   | {
       inputType: 'string'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => OutputType)
+      defaultValueFromContext?: (context: C) => OutputType
+    }
+  | {
+      inputType: 'text'
       defaultValue?:
         | OutputType
         | ((
@@ -175,7 +191,8 @@ export type CommandArgument<
         machineContext?: ContextFrom<T>
       ) => boolean)
   skip?: boolean
-  machineActor: InterpreterFrom<T>
+  machineActor?: Actor<T>
+  warningMessage?: string
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
@@ -214,6 +231,15 @@ export type CommandArgument<
           ) => OutputType)
     }
   | {
+      inputType: 'text'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+    }
+  | {
       inputType: 'boolean'
       defaultValue?:
         | OutputType
@@ -234,5 +260,6 @@ export type CommandArgumentWithName<
 export type CommandArgumentOption<A> = {
   name: string
   isCurrent?: boolean
+  disabled?: boolean
   value: A
 }

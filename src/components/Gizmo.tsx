@@ -27,6 +27,8 @@ import {
 } from './ContextMenu'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from './CustomIcon'
+import { reportRejection } from 'lib/trap'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
@@ -61,24 +63,35 @@ export default function Gizmo() {
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const raycasterPassiveUpdateTimer = useRef(0)
+  const { send: modelingSend } = useModelingContext()
   const menuItems = useMemo(
     () => [
       ...Object.entries(axisNamesSemantic).map(([axisName, axisSemantic]) => (
         <ContextMenuItem
           key={axisName}
           onClick={() => {
-            sceneInfra.camControls.updateCameraToAxis(axisName as AxisNames)
+            sceneInfra.camControls
+              .updateCameraToAxis(axisName as AxisNames)
+              .catch(reportRejection)
           }}
         >
           {axisSemantic} view
         </ContextMenuItem>
       )),
+      <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          sceneInfra.camControls.resetCameraPosition()
+          sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
         }}
       >
         Reset view
+      </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
+          modelingSend({ type: 'Center camera on selection' })
+        }}
+      >
+        Center view on selection
       </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItemRefresh />,
@@ -299,7 +312,7 @@ const initializeMouseEvents = (
   const handleClick = () => {
     if (raycasterIntersect.current) {
       const axisName = raycasterIntersect.current.object.name as AxisNames
-      sceneInfra.camControls.updateCameraToAxis(axisName)
+      sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
     }
   }
 

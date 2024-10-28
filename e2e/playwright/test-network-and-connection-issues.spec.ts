@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test'
 
 import { commonPoints, getUtils, setup, tearDown } from './test-utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -122,7 +122,7 @@ test.describe('Test network and connection issues', () => {
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn('XZ')`
     )
     await u.closeDebugPanel()
 
@@ -131,7 +131,7 @@ test.describe('Test network and connection issues', () => {
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)`)
     await page.waitForTimeout(100)
 
@@ -139,7 +139,7 @@ test.describe('Test network and connection issues', () => {
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)`)
 
@@ -198,25 +198,30 @@ test.describe('Test network and connection issues', () => {
     await page.waitForTimeout(150)
 
     // Click the line tool
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await page.waitForTimeout(150)
 
     // Ensure we can continue sketching
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([-8.84, 8.75], %)`)
+    await expect.poll(u.normalisedEditorCode)
+      .toBe(`sketch001 = startSketchOn('XZ')
+  |> startProfileAt([12.34, -12.34], %)
+  |> line([12.34, 0], %)
+  |> line([-12.34, 12.34], %)
+
+`)
     await page.waitForTimeout(100)
     await page.mouse.click(startXPx, 500 - PUR * 20)
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([-8.84, 8.75], %)
-    |> line([-5.6, 0], %)`)
+
+    await expect.poll(u.normalisedEditorCode)
+      .toBe(`sketch001 = startSketchOn('XZ')
+  |> startProfileAt([12.34, -12.34], %)
+  |> line([12.34, 0], %)
+  |> line([-12.34, 12.34], %)
+  |> line([-12.34, 0], %)
+
+`)
 
     // Unequip line tool
     await page.keyboard.press('Escape')
@@ -225,7 +230,7 @@ test.describe('Test network and connection issues', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     await expect(
-      page.getByRole('button', { name: 'Line', exact: true })
+      page.getByRole('button', { name: 'line Line', exact: true })
     ).not.toHaveAttribute('aria-pressed', 'true')
 
     // Exit sketch

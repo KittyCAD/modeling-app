@@ -5,6 +5,7 @@ import { CommandArgument } from 'lib/commandTypes'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarHeader from './CommandBarHeader'
 import CommandBarKclInput from './CommandBarKclInput'
+import CommandBarTextareaInput from './CommandBarTextareaInput'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commandBarState, commandBarSend } = useCommandsContext()
@@ -86,6 +87,14 @@ function ArgumentInput({
     case 'kcl':
       return (
         <CommandBarKclInput arg={arg} stepBack={stepBack} onSubmit={onSubmit} />
+      )
+    case 'text':
+      return (
+        <CommandBarTextareaInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
       )
     default:
       return (

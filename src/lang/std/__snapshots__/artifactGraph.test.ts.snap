@@ -11,8 +11,8 @@ Map {
         ],
       ],
       "range": [
-        43,
-        70,
+        37,
+        64,
       ],
     },
     "pathIds": [
@@ -29,11 +29,10 @@ Map {
         ],
       ],
       "range": [
-        43,
-        70,
+        37,
+        64,
       ],
     },
-    "extrusionId": "UUID",
     "planeId": "UUID",
     "segIds": [
       "UUID",
@@ -43,6 +42,7 @@ Map {
       "UUID",
     ],
     "solid2dId": "UUID",
+    "sweepId": "UUID",
     "type": "path",
   },
   "UUID-2" => {
@@ -54,11 +54,14 @@ Map {
         ],
       ],
       "range": [
-        76,
-        92,
+        70,
+        86,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -72,12 +75,15 @@ Map {
         ],
       ],
       "range": [
-        98,
-        125,
+        92,
+        119,
       ],
     },
     "edgeCutId": "UUID",
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -91,11 +97,14 @@ Map {
         ],
       ],
       "range": [
-        131,
-        156,
+        125,
+        150,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -109,11 +118,14 @@ Map {
         ],
       ],
       "range": [
-        162,
-        209,
+        156,
+        203,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
@@ -127,8 +139,8 @@ Map {
         ],
       ],
       "range": [
-        215,
-        223,
+        209,
+        217,
       ],
     },
     "edgeIds": [],
@@ -148,12 +160,22 @@ Map {
         ],
       ],
       "range": [
-        243,
-        266,
+        231,
+        254,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
+    "subType": "extrusion",
     "surfaceIds": [
       "UUID",
       "UUID",
@@ -162,53 +184,101 @@ Map {
       "UUID",
       "UUID",
     ],
-    "type": "extrusion",
+    "type": "sweep",
   },
   "UUID-9" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
+    "sweepId": "UUID",
     "type": "wall",
   },
   "UUID-10" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [
       "UUID",
     ],
     "segId": "UUID",
+    "sweepId": "UUID",
     "type": "wall",
   },
   "UUID-11" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
+    "sweepId": "UUID",
     "type": "wall",
   },
   "UUID-12" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
+    "sweepId": "UUID",
     "type": "wall",
   },
   "UUID-13" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "start",
+    "sweepId": "UUID",
     "type": "cap",
   },
   "UUID-14" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "end",
+    "sweepId": "UUID",
     "type": "cap",
   },
   "UUID-15" => {
+    "segId": "UUID",
+    "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-16" => {
+    "segId": "UUID",
+    "subType": "adjacent",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-17" => {
+    "segId": "UUID",
+    "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-18" => {
+    "segId": "UUID",
+    "subType": "adjacent",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-19" => {
+    "segId": "UUID",
+    "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-20" => {
+    "segId": "UUID",
+    "subType": "adjacent",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-21" => {
+    "segId": "UUID",
+    "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-22" => {
+    "segId": "UUID",
+    "subType": "adjacent",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-23" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -217,8 +287,8 @@ Map {
         ],
       ],
       "range": [
-        272,
-        311,
+        260,
+        299,
       ],
     },
     "consumedEdgeId": "UUID",
@@ -226,7 +296,7 @@ Map {
     "subType": "fillet",
     "type": "edgeCut",
   },
-  "UUID-16" => {
+  "UUID-24" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -235,11 +305,10 @@ Map {
         ],
       ],
       "range": [
-        368,
-        395,
+        350,
+        377,
       ],
     },
-    "extrusionId": "UUID",
     "planeId": "UUID",
     "segIds": [
       "UUID",
@@ -248,9 +317,10 @@ Map {
       "UUID",
     ],
     "solid2dId": "UUID",
+    "sweepId": "UUID",
     "type": "path",
   },
-  "UUID-17" => {
+  "UUID-25" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -259,16 +329,19 @@ Map {
         ],
       ],
       "range": [
-        401,
-        416,
+        383,
+        398,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
   },
-  "UUID-18" => {
+  "UUID-26" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -277,16 +350,19 @@ Map {
         ],
       ],
       "range": [
-        422,
-        438,
+        404,
+        420,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
   },
-  "UUID-19" => {
+  "UUID-27" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -295,16 +371,19 @@ Map {
         ],
       ],
       "range": [
-        444,
-        491,
+        426,
+        473,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
     "surfaceId": "UUID",
     "type": "segment",
   },
-  "UUID-20" => {
+  "UUID-28" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -313,19 +392,19 @@ Map {
         ],
       ],
       "range": [
-        497,
-        505,
+        479,
+        487,
       ],
     },
     "edgeIds": [],
     "pathId": "UUID",
     "type": "segment",
   },
-  "UUID-21" => {
+  "UUID-29" => {
     "pathId": "UUID",
     "type": "solid2D",
   },
-  "UUID-22" => {
+  "UUID-30" => {
     "codeRef": {
       "pathToNode": [
         [
@@ -334,12 +413,20 @@ Map {
         ],
       ],
       "range": [
-        525,
-        546,
+        501,
+        522,
       ],
     },
-    "edgeIds": [],
+    "edgeIds": [
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+      "UUID",
+    ],
     "pathId": "UUID",
+    "subType": "extrusion",
     "surfaceIds": [
       "UUID",
       "UUID",
@@ -347,42 +434,78 @@ Map {
       "UUID",
       "UUID",
     ],
-    "type": "extrusion",
+    "type": "sweep",
   },
-  "UUID-23" => {
+  "UUID-31" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
+    "sweepId": "UUID",
     "type": "wall",
   },
-  "UUID-24" => {
+  "UUID-32" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
+    "sweepId": "UUID",
     "type": "wall",
   },
-  "UUID-25" => {
+  "UUID-33" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "segId": "UUID",
+    "sweepId": "UUID",
     "type": "wall",
   },
-  "UUID-26" => {
+  "UUID-34" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "start",
+    "sweepId": "UUID",
     "type": "cap",
   },
-  "UUID-27" => {
+  "UUID-35" => {
     "edgeCutEdgeIds": [],
-    "extrusionId": "UUID",
     "pathIds": [],
     "subType": "end",
+    "sweepId": "UUID",
     "type": "cap",
+  },
+  "UUID-36" => {
+    "segId": "UUID",
+    "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-37" => {
+    "segId": "UUID",
+    "subType": "adjacent",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-38" => {
+    "segId": "UUID",
+    "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-39" => {
+    "segId": "UUID",
+    "subType": "adjacent",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-40" => {
+    "segId": "UUID",
+    "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-41" => {
+    "segId": "UUID",
+    "subType": "adjacent",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
   },
 }
 `;

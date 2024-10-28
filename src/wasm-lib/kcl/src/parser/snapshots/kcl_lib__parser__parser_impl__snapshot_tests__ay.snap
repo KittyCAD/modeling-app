@@ -1,0 +1,93 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 80,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 80,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 4,
+          "end": 80,
+          "id": {
+            "type": "Identifier",
+            "start": 4,
+            "end": 9,
+            "name": "props"
+          },
+          "init": {
+            "type": "ObjectExpression",
+            "type": "ObjectExpression",
+            "start": 12,
+            "end": 80,
+            "properties": [
+              {
+                "type": "ObjectProperty",
+                "start": 26,
+                "end": 30,
+                "key": {
+                  "type": "Identifier",
+                  "start": 26,
+                  "end": 27,
+                  "name": "a"
+                },
+                "value": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 29,
+                  "end": 30,
+                  "value": 1,
+                  "raw": "1"
+                }
+              },
+              {
+                "type": "ObjectProperty",
+                "start": 65,
+                "end": 69,
+                "key": {
+                  "type": "Identifier",
+                  "start": 65,
+                  "end": 66,
+                  "name": "c"
+                },
+                "value": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 68,
+                  "end": 69,
+                  "value": 3,
+                  "raw": "3"
+                }
+              }
+            ],
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "type": "NonCodeNode",
+                    "start": 44,
+                    "end": 52,
+                    "value": {
+                      "type": "blockComment",
+                      "value": "b: 2,",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "start": []
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ]
+}

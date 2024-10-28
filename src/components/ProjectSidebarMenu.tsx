@@ -2,17 +2,16 @@ import { Popover, Transition } from '@headlessui/react'
 import { ActionButton, ActionButtonProps } from './ActionButton'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
-import { isTauri } from '../lib/isTauri'
+import { isDesktop } from '../lib/isDesktop'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useMemo } from 'react'
-import { sep } from '@tauri-apps/api/path'
+import { Fragment, useMemo, useContext } from 'react'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
 import { engineCommandManager } from 'lib/singletons'
-import { machineManager } from 'lib/machineManager'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
@@ -26,8 +25,17 @@ const ProjectSidebarMenu = ({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) => {
+  // Make room for traffic lights on desktop left side.
+  // TODO: make sure this doesn't look like shit on Linux or Windows
+  const trafficLightsOffset =
+    isDesktop() && window.electron.os.isMac ? 'ml-20' : ''
   return (
-    <div className="!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2">
+    <div
+      className={
+        '!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2 ' +
+        trafficLightsOffset
+      }
+    >
       <AppLogoLink project={project} file={file} />
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
@@ -55,7 +63,7 @@ function AppLogoLink({
     "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  return isTauri() ? (
+  return isDesktop() ? (
     <Link
       data-testid="app-logo"
       onClick={() => {
@@ -88,6 +96,8 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const machineManager = useContext(MachineManagerContext)
+
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -98,7 +108,7 @@ function ProjectMenuPopover({
         (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
-  const machineCount = machineManager.machineCount()
+  const machineCount = machineManager.machines.length
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -111,7 +121,7 @@ function ProjectMenuPopover({
             <>
               <span className="flex-1">Project settings</span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isTauri() ? '' : '⬆'
+                isDesktop() ? '' : '⬆'
               },`}</kbd>
             </>
           ),
@@ -150,7 +160,7 @@ function ProjectMenuPopover({
         {
           id: 'make',
           Element: 'button',
-          className: !isTauri() ? 'hidden' : '',
+          className: !isDesktop() ? 'hidden' : '',
           children: (
             <>
               <span>Make current part</span>
@@ -177,7 +187,7 @@ function ProjectMenuPopover({
           id: 'go-home',
           Element: 'button',
           children: 'Go to Home',
-          className: !isTauri() ? 'hidden' : '',
+          className: !isDesktop() ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
             // Clear the scene and end the session.
@@ -195,7 +205,7 @@ function ProjectMenuPopover({
       commandBarSend,
       engineCommandManager,
       onProjectClose,
-      isTauri,
+      isDesktop,
     ]
   )
 
@@ -207,11 +217,13 @@ function ProjectMenuPopover({
       >
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
-            {isTauri() && file?.name
-              ? file.name.slice(file.name.lastIndexOf(sep()) + 1)
+            {isDesktop() && file?.name
+              ? file.name.slice(
+                  file.name.lastIndexOf(window.electron.path.sep) + 1
+                )
               : APP_NAME}
           </span>
-          {isTauri() && project?.name && (
+          {isDesktop() && project?.name && (
             <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
               {project.name}
             </span>

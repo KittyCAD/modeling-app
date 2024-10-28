@@ -27,7 +27,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         '.' => alt((number, double_period, period)),
         '#' => hash,
         '$' => dollar,
-        '!' => bang,
+        '!' => alt((operator, bang)),
         ' ' | '\t' | '\n' => whitespace,
         _ => alt((operator, keyword,type_, word))
     }
@@ -50,13 +50,13 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
 }
 
 fn block_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = ("/*", take_until(0.., "*/"), "*/").recognize();
+    let inner = ("/*", take_until(0.., "*/"), "*/").take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::BlockComment, value.to_string()))
 }
 
 fn line_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).recognize();
+    let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).take();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::LineComment, value.to_string()))
 }
@@ -68,7 +68,7 @@ fn number(i: &mut Located<&str>) -> PResult<Token> {
         // No digits before the decimal point.
         ('.', digit1).map(|_| ()),
     ));
-    let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
+    let (value, range) = number_parser.take().with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Number, value.to_string()))
 }
 
@@ -79,18 +79,18 @@ fn whitespace(i: &mut Located<&str>) -> PResult<Token> {
 
 fn inner_word(i: &mut Located<&str>) -> PResult<()> {
     one_of(('a'..='z', 'A'..='Z', '_')).parse_next(i)?;
-    repeat(0.., one_of(('a'..='z', 'A'..='Z', '0'..='9', '_'))).parse_next(i)?;
+    repeat::<_, _, (), _, _>(0.., one_of(('a'..='z', 'A'..='Z', '0'..='9', '_'))).parse_next(i)?;
     Ok(())
 }
 
 fn word(i: &mut Located<&str>) -> PResult<Token> {
-    let (value, range) = inner_word.recognize().with_span().parse_next(i)?;
+    let (value, range) = inner_word.take().with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Word, value.to_string()))
 }
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!= ", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
     ))
     .with_span()
     .parse_next(i)?;
@@ -162,18 +162,24 @@ fn inner_single_quote(i: &mut Located<&str>) -> PResult<()> {
 }
 
 fn string(i: &mut Located<&str>) -> PResult<Token> {
-    let single_quoted_string = ('\'', inner_single_quote.recognize(), '\'');
-    let double_quoted_string = ('"', inner_double_quote.recognize(), '"');
-    let either_quoted_string = alt((single_quoted_string.recognize(), double_quoted_string.recognize()));
+    let single_quoted_string = ('\'', inner_single_quote.take(), '\'');
+    let double_quoted_string = ('"', inner_double_quote.take(), '"');
+    let either_quoted_string = alt((single_quoted_string.take(), double_quoted_string.take()));
     let (value, range): (&str, _) = either_quoted_string.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::String, value.to_string()))
 }
 
-fn keyword(i: &mut Located<&str>) -> PResult<Token> {
+fn import_keyword(i: &mut Located<&str>) -> PResult<Token> {
+    let (value, range) = "import".with_span().parse_next(i)?;
+    let token_type = peek(alt((' '.map(|_| TokenType::Keyword), '('.map(|_| TokenType::Word)))).parse_next(i)?;
+    Ok(Token::from_range(range, token_type, value.to_owned()))
+}
+
+fn unambiguous_keywords(i: &mut Located<&str>) -> PResult<Token> {
     // These are the keywords themselves.
     let keyword_candidates = alt((
         "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
-        "nil", "and", "or", "not", "var", "const",
+        "nil", "and", "or", "not", "var", "const", "export",
     ));
     // Look ahead. If any of these characters follow the keyword, then it's not a keyword, it's just
     // the start of a normal word.
@@ -185,16 +191,13 @@ fn keyword(i: &mut Located<&str>) -> PResult<Token> {
     Ok(Token::from_range(range, TokenType::Keyword, value.to_owned()))
 }
 
+fn keyword(i: &mut Located<&str>) -> PResult<Token> {
+    alt((import_keyword, unambiguous_keywords)).parse_next(i)
+}
+
 fn type_(i: &mut Located<&str>) -> PResult<Token> {
     // These are the types themselves.
-    let type_candidates = alt((
-        "string",
-        "number",
-        "bool",
-        "sketch_group",
-        "sketch_surface",
-        "extrude_group",
-    ));
+    let type_candidates = alt(("string", "number", "bool", "sketch", "sketch_surface", "solid"));
     // Look ahead. If any of these characters follow the type, then it's not a type, it's just
     // the start of a normal word.
     let type_ = terminated(
@@ -1530,6 +1533,18 @@ const things = "things"
     }
 
     #[test]
+    fn not_eq() {
+        let actual = lexer("!=").unwrap();
+        let expected = vec![Token {
+            token_type: TokenType::Operator,
+            value: "!=".to_owned(),
+            start: 0,
+            end: 2,
+        }];
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn test_unrecognized_token() {
         let actual = lexer("12 ; 8").unwrap();
         let expected = vec![
@@ -1566,5 +1581,29 @@ const things = "things"
         ];
 
         assert_tokens(expected, actual);
+    }
+
+    #[test]
+    fn import_keyword() {
+        let actual = lexer("import foo").unwrap();
+        let expected = Token {
+            token_type: TokenType::Keyword,
+            value: "import".to_owned(),
+            start: 0,
+            end: 6,
+        };
+        assert_eq!(actual[0], expected);
+    }
+
+    #[test]
+    fn import_function() {
+        let actual = lexer("import(3)").unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "import".to_owned(),
+            start: 0,
+            end: 6,
+        };
+        assert_eq!(actual[0], expected);
     }
 }

@@ -1,9 +1,8 @@
 import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
-import { machineManager } from 'lib/machineManager'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
@@ -25,12 +24,16 @@ export type ModelingCommandSchema = {
     storage?: StorageUnion
   }
   Make: {
-    machine: components['schemas']['Machine']
+    machine: components['schemas']['MachineInfoResponse']
   }
   Extrude: {
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
+  }
+  Revolve: {
+    selection: Selections
+    angle: KclCommandValue
   }
   Fillet: {
     // todo
@@ -39,6 +42,9 @@ export type ModelingCommandSchema = {
   }
   'change tool': {
     tool: SketchTool
+  }
+  'Text-to-CAD': {
+    prompt: string
   }
 }
 
@@ -176,21 +182,46 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       machine: {
         inputType: 'options',
         required: true,
-        valueSummary: (machine: components['schemas']['Machine']) =>
-          machine.model || machine.manufacturer,
-        options: () => {
-          return Object.entries(machineManager.machines).map(
-            ([hostname, machine]) => ({
-              name: `${machine.model || machine.manufacturer}, ${hostname}`,
-              isCurrent: false,
-              value: machine as components['schemas']['Machine'],
-            })
-          )
-        },
-        defaultValue: () => {
+        valueSummary: (machine: components['schemas']['MachineInfoResponse']) =>
+          machine.make_model.model ||
+          machine.make_model.manufacturer ||
+          'Unknown Machine',
+        options: (commandBarContext) => {
           return Object.values(
-            machineManager.machines
-          )[0] as components['schemas']['Machine']
+            commandBarContext.machineManager?.machines || []
+          ).map((machine: components['schemas']['MachineInfoResponse']) => ({
+            name:
+              `${machine.id} (${
+                machine.make_model.model || machine.make_model.manufacturer
+              }) (${machine.state.state})` +
+              (machine.hardware_configuration &&
+              machine.hardware_configuration.type !== 'none' &&
+              machine.hardware_configuration.config.nozzle_diameter
+                ? ` - Nozzle Diameter: ${machine.hardware_configuration.config.nozzle_diameter}`
+                : '') +
+              (machine.hardware_configuration &&
+              machine.hardware_configuration.type !== 'none' &&
+              machine.hardware_configuration.config.filaments &&
+              machine.hardware_configuration.config.filaments[0]
+                ? ` - ${
+                    machine.hardware_configuration.config.filaments[0].name
+                  } #${
+                    machine.hardware_configuration.config &&
+                    machine.hardware_configuration.config.filaments[0].color?.slice(
+                      0,
+                      6
+                    )
+                  }`
+                : ''),
+            isCurrent: false,
+            disabled: machine.state.state !== 'idle',
+            value: machine,
+          }))
+        },
+        defaultValue: (commandBarContext) => {
+          return Object.values(
+            commandBarContext.machineManager.machines || []
+          )[0] as components['schemas']['MachineInfoResponse']
         },
       },
     },
@@ -202,6 +233,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
+        // TODO: These are products of an extrude
         selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
         multiple: false, // TODO: multiple selection
         required: true,
@@ -225,8 +257,27 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
+  Revolve: {
+    description: 'Create a 3D body by rotating a sketch region about an axis.',
+    icon: 'revolve',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
+        multiple: false, // TODO: multiple selection
+        required: true,
+        skip: true,
+      },
+      angle: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+    },
+  },
   Fillet: {
-    // todo
     description: 'Fillet edge',
     icon: 'fillet',
     needsReview: true,
@@ -237,7 +288,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'default',
           'line-end',
           'line-mid',
-          'extrude-wall', // to fix: accepts only this selection type
+          'extrude-wall',
           'solid2D',
           'start-cap',
           'end-cap',
@@ -247,13 +298,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'arc',
           'all',
         ],
-        multiple: true, // TODO: multiple selection like in extrude command
+        multiple: true,
         required: true,
-        skip: true,
+        skip: false,
+        warningMessage:
+          'Fillets cannot touch other fillets yet. This is under development.',
       },
       radius: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  'Text-to-CAD': {
+    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
+    icon: 'chat',
+    args: {
+      prompt: {
+        inputType: 'text',
         required: true,
       },
     },

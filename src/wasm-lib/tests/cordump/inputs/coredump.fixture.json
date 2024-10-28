@@ -2,7 +2,7 @@
   "version": "0.20.1",
   "git_rev": "3a05211d306ca045ace2e7bf10b7f8138e1daad5",
   "timestamp": "2024-05-07T20:06:34.655Z",
-  "tauri": false,
+  "desktop": false,
   "os": {
     "platform": "Mac OS",
     "version": "10.15.7",

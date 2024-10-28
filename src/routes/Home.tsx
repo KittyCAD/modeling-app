@@ -1,21 +1,19 @@
-import { FormEvent, useEffect, useRef } from 'react'
-import { remove } from '@tauri-apps/plugin-fs'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-} from 'lib/tauriFS'
+} from 'lib/desktopFS'
 import { ActionButton } from 'components/ActionButton'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from 'components/AppHeader'
 import ProjectCard from 'components/ProjectCard/ProjectCard'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { type HomeLoaderData } from 'lib/types'
 import Loading from 'components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
-import { ContextFrom, EventFrom } from 'xstate'
+import { fromPromise } from 'xstate'
 import { PATHS } from 'lib/paths'
 import {
   getNextSearchParams,
@@ -25,29 +23,34 @@ import {
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { join, sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
 import {
   createNewProjectDirectory,
   listProjects,
   renameProjectDirectory,
-} from 'lib/tauri'
+} from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
+import { Project } from 'lib/project'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { useProjectsLoader } from 'hooks/useProjectsLoader'
 
-// This route only opens in the Tauri desktop context for now,
-// as defined in Router.tsx, so we can use the Tauri APIs and types.
+// This route only opens in the desktop context for now,
+// as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
+  const { projectPaths, projectsDir } = useProjectsLoader([
+    projectsLoaderTrigger,
+  ])
+
   useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
     settings: { context: settings },
   } = useSettingsAuthContext()
@@ -62,7 +65,7 @@ const Home = () => {
     e.preventDefault()
   })
   useHotkeys(
-    isTauri() ? 'mod+,' : 'shift+mod+,',
+    isDesktop() ? 'mod+,' : 'shift+mod+,',
     () => navigate(PATHS.HOME + PATHS.SETTINGS),
     {
       splitKey: '|',
@@ -70,89 +73,115 @@ const Home = () => {
   )
   const ref = useRef<HTMLDivElement>(null)
 
-  const [state, send, actor] = useMachine(homeMachine, {
-    context: {
-      projects: loadedProjects,
-      defaultProjectName: settings.projects.defaultProjectName.current,
-      defaultDirectory: settings.app.projectDirectory.current,
-    },
-    actions: {
-      navigateToProject: (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine>
-      ) => {
-        if (event.data && 'name' in event.data) {
-          let projectPath = context.defaultDirectory + sep() + event.data.name
-          onProjectOpen(
-            {
-              name: event.data.name,
-              path: projectPath,
-            },
-            null
+  const [state, send, actor] = useMachine(
+    homeMachine.provide({
+      actions: {
+        navigateToProject: ({ context, event }) => {
+          if ('data' in event && event.data && 'name' in event.data) {
+            let projectPath =
+              context.defaultDirectory +
+              window.electron.path.sep +
+              event.data.name
+            onProjectOpen(
+              {
+                name: event.data.name,
+                path: projectPath,
+              },
+              null
+            )
+            commandBarSend({ type: 'Close' })
+            navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
+          }
+        },
+        toastSuccess: ({ event }) =>
+          toast.success(
+            ('data' in event && typeof event.data === 'string' && event.data) ||
+              ('output' in event &&
+                typeof event.output === 'string' &&
+                event.output) ||
+              ''
+          ),
+        toastError: ({ event }) =>
+          toast.error(
+            ('data' in event && typeof event.data === 'string' && event.data) ||
+              ('output' in event &&
+                typeof event.output === 'string' &&
+                event.output) ||
+              ''
+          ),
+      },
+      actors: {
+        readProjects: fromPromise(() => listProjects()),
+        createProject: fromPromise(async ({ input }) => {
+          let name = (
+            input && 'name' in input && input.name
+              ? input.name
+              : settings.projects.defaultProjectName.current
+          ).trim()
+
+          if (doesProjectNameNeedInterpolated(name)) {
+            const nextIndex = getNextProjectIndex(name, projects)
+            name = interpolateProjectNameWithIndex(name, nextIndex)
+          }
+
+          await createNewProjectDirectory(name)
+
+          return `Successfully created "${name}"`
+        }),
+        renameProject: fromPromise(async ({ input }) => {
+          const { oldName, newName, defaultProjectName, defaultDirectory } =
+            input
+          let name = newName ? newName : defaultProjectName
+          if (doesProjectNameNeedInterpolated(name)) {
+            const nextIndex = await getNextProjectIndex(name, projects)
+            name = interpolateProjectNameWithIndex(name, nextIndex)
+          }
+
+          await renameProjectDirectory(
+            window.electron.path.join(defaultDirectory, oldName),
+            name
           )
-          commandBarSend({ type: 'Close' })
-          navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
-        }
+          return `Successfully renamed "${oldName}" to "${name}"`
+        }),
+        deleteProject: fromPromise(async ({ input }) => {
+          await window.electron.rm(
+            window.electron.path.join(input.defaultDirectory, input.name),
+            {
+              recursive: true,
+            }
+          )
+          return `Successfully deleted "${input.name}"`
+        }),
       },
-      toastSuccess: (_, event) => toast.success((event.data || '') + ''),
-      toastError: (_, event) => toast.error((event.data || '') + ''),
+      guards: {
+        'Has at least 1 project': ({ event }) => {
+          if (event.type !== 'xstate.done.actor.read-projects') return false
+          console.log(`from has at least 1 project: ${event.output.length}`)
+          return event.output.length ? event.output.length >= 1 : false
+        },
+      },
+    }),
+    {
+      input: {
+        projects: projectPaths,
+        defaultProjectName: settings.projects.defaultProjectName.current,
+        defaultDirectory: settings.app.projectDirectory.current,
+      },
+    }
+  )
+
+  useEffect(() => {
+    send({ type: 'Read projects', data: {} })
+  }, [projectPaths])
+
+  // Re-read projects listing if the projectDir has any updates.
+  useFileSystemWatcher(
+    async () => {
+      setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
     },
-    services: {
-      readProjects: async (context: ContextFrom<typeof homeMachine>) =>
-        listProjects(),
-      createProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Create project'>
-      ) => {
-        let name = (
-          event.data && 'name' in event.data
-            ? event.data.name
-            : settings.projects.defaultProjectName.current
-        ).trim()
+    projectsDir ? [projectsDir] : []
+  )
 
-        if (doesProjectNameNeedInterpolated(name)) {
-          const nextIndex = await getNextProjectIndex(name, projects)
-          name = interpolateProjectNameWithIndex(name, nextIndex)
-        }
-
-        await createNewProjectDirectory(name)
-
-        return `Successfully created "${name}"`
-      },
-      renameProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Rename project'>
-      ) => {
-        const { oldName, newName } = event.data
-        let name = newName ? newName : context.defaultProjectName
-        if (doesProjectNameNeedInterpolated(name)) {
-          const nextIndex = await getNextProjectIndex(name, projects)
-          name = interpolateProjectNameWithIndex(name, nextIndex)
-        }
-
-        await renameProjectDirectory(
-          await join(context.defaultDirectory, oldName),
-          name
-        )
-        return `Successfully renamed "${oldName}" to "${name}"`
-      },
-      deleteProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Delete project'>
-      ) => {
-        await remove(await join(context.defaultDirectory, event.data.name), {
-          recursive: true,
-        })
-        return `Successfully deleted "${event.data.name}"`
-      },
-    },
-    guards: {
-      'Has at least 1 project': (_, event: EventFrom<typeof homeMachine>) => {
-        if (event.type !== 'done.invoke.read-projects') return false
-        return event?.data?.length ? event.data?.length >= 1 : false
-      },
-    },
-  })
   const { projects } = state.context
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
@@ -193,14 +222,18 @@ const Home = () => {
     )
 
     if (newProjectName !== project.name) {
-      send('Rename project', {
-        data: { oldName: project.name, newName: newProjectName },
+      send({
+        type: 'Rename project',
+        data: { oldName: project.name, newName: newProjectName as string },
       })
     }
   }
 
   async function handleDeleteProject(project: Project) {
-    send('Delete project', { data: { name: project.name || '' } })
+    send({
+      type: 'Delete project',
+      data: { name: project.name || '' },
+    })
   }
 
   return (
@@ -213,7 +246,9 @@ const Home = () => {
               <h1 className="text-3xl font-bold">Your Projects</h1>
               <ActionButton
                 Element="button"
-                onClick={() => send('Create project')}
+                onClick={() =>
+                  send({ type: 'Create project', data: { name: '' } })
+                }
                 className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
                 iconStart={{
                   icon: 'plus',
@@ -231,6 +266,7 @@ const Home = () => {
               <small>Sort by</small>
               <ActionButton
                 Element="button"
+                data-testid="home-sort-by-name"
                 className={
                   'text-xs border-primary/10 ' +
                   (!sort.includes('name')
@@ -252,6 +288,7 @@ const Home = () => {
               </ActionButton>
               <ActionButton
                 Element="button"
+                data-testid="home-sort-by-modified"
                 className={
                   'text-xs border-primary/10 ' +
                   (!isSortByModified
@@ -276,7 +313,8 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <Link
-              to={`${PATHS.SETTINGS_USER}#projectDirectory`}
+              data-testid="project-directory-settings-link"
+              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
               className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
             >
               {settings.app.projectDirectory.current}

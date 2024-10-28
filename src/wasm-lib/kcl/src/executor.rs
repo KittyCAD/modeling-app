@@ -1,23 +1,64 @@
 //! The executor for the AST.
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use kcmc::{
+    each_cmd as mcmd,
+    ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
+    websocket::{ModelingSessionData, OkWebSocketResponseData},
+    ImageFormat, ModelingCmd,
+};
+use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
+type Point2D = kcmc::shared::Point2d<f64>;
+type Point3D = kcmc::shared::Point3d<f64>;
+
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, KclNone, Program, TagDeclarator, Value},
-    engine::EngineManager,
+    ast::types::{
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, ItemVisibility,
+        KclNone, Program, ReturnStatement, TagDeclarator,
+    },
+    engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
-    fs::FileManager,
+    fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{FnAsArg, StdLib},
 };
+
+/// State for executing a program.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecState {
+    /// Program variable bindings.
+    pub memory: ProgramMemory,
+    /// The stable artifact ID generator.
+    pub id_generator: IdGenerator,
+    /// Dynamic state that follows dynamic flow of the program.
+    pub dynamic_state: DynamicState,
+    /// The current value of the pipe operator returned from the previous
+    /// expression.  If we're not currently in a pipeline, this will be None.
+    pub pipe_value: Option<KclValue>,
+    /// Identifiers that have been exported from the current module.
+    pub module_exports: HashSet<String>,
+    /// The stack of import statements for detecting circular module imports.
+    /// If this is empty, we're not currently executing an import statement.
+    pub import_stack: Vec<std::path::PathBuf>,
+    /// The directory of the current project.  This is used for resolving import
+    /// paths.  If None is given, the current working directory is used.
+    pub project_directory: Option<String>,
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -26,7 +67,7 @@ pub struct ProgramMemory {
     pub environments: Vec<Environment>,
     pub current_env: EnvironmentRef,
     #[serde(rename = "return")]
-    pub return_: Option<ProgramReturn>,
+    pub return_: Option<KclValue>,
 }
 
 impl ProgramMemory {
@@ -46,7 +87,7 @@ impl ProgramMemory {
     }
 
     /// Add to the program memory in the current scope.
-    pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
+    pub fn add(&mut self, key: &str, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         if self.environments[self.current_env.index()].contains_key(key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine `{}`", key),
@@ -60,14 +101,14 @@ impl ProgramMemory {
     }
 
     pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
-        self.environments[self.current_env.index()].insert(tag.to_string(), MemoryItem::TagIdentifier(Box::new(value)));
+        self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
 
         Ok(())
     }
 
     /// Get a value from the program memory.
     /// Return Err if not found.
-    pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
+    pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
         let mut env_ref = self.current_env;
         loop {
             let env = &self.environments[env_ref.index()];
@@ -87,17 +128,17 @@ impl ProgramMemory {
         }))
     }
 
-    /// Find all extrude groups in the memory that are on a specific sketch group id.
+    /// Find all solids in the memory that are on a specific sketch id.
     /// This does not look inside closures.  But as long as we do not allow
     /// mutation of variables in KCL, closure memory should be a subset of this.
-    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
+    pub fn find_solids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<Box<Solid>> {
         self.environments
             .iter()
             .flat_map(|env| {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        MemoryItem::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                        KclValue::Solid(eg) if eg.sketch.id == sketch_id => Some(eg.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -128,7 +169,7 @@ impl EnvironmentRef {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 pub struct Environment {
-    bindings: HashMap<String, MemoryItem>,
+    bindings: HashMap<String, KclValue>,
     parent: Option<EnvironmentRef>,
 }
 
@@ -139,28 +180,28 @@ impl Environment {
             bindings: HashMap::from([
                 (
                     "ZERO".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(0)),
                         meta: Default::default(),
                     }),
                 ),
                 (
                     "QUARTER_TURN".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(90)),
                         meta: Default::default(),
                     }),
                 ),
                 (
                     "HALF_TURN".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(180)),
                         meta: Default::default(),
                     }),
                 ),
                 (
                     "THREE_QUARTER_TURN".to_string(),
-                    MemoryItem::UserVal(UserVal {
+                    KclValue::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(270)),
                         meta: Default::default(),
                     }),
@@ -177,7 +218,7 @@ impl Environment {
         }
     }
 
-    pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
+    pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
         self.bindings.get(key).ok_or_else(|| {
             KclError::UndefinedValue(KclErrorDetails {
                 message: format!("memory item key `{}` is not defined", key),
@@ -186,7 +227,7 @@ impl Environment {
         })
     }
 
-    pub fn insert(&mut self, key: String, value: MemoryItem) {
+    pub fn insert(&mut self, key: String, value: KclValue) {
         self.bindings.insert(key, value);
     }
 
@@ -194,19 +235,28 @@ impl Environment {
         self.bindings.contains_key(key)
     }
 
-    pub fn update_sketch_group_tags(&mut self, sg: &SketchGroup) {
+    pub fn update_sketch_tags(&mut self, sg: &Sketch) {
         if sg.tags.is_empty() {
             return;
         }
 
         for (_, val) in self.bindings.iter_mut() {
-            if let MemoryItem::SketchGroup(ref mut sketch_group) = val {
-                if sketch_group.original_id == sg.original_id {
-                    for tag in sg.tags.iter() {
-                        sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
-                    }
+            let KclValue::UserVal(v) = val else { continue };
+            let meta = v.meta.clone();
+            let maybe_sg: Result<Sketch, _> = serde_json::from_value(v.value.clone());
+            let Ok(mut sketch) = maybe_sg else {
+                continue;
+            };
+
+            if sketch.original_id == sg.original_id {
+                for tag in sg.tags.iter() {
+                    sketch.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
+            *val = KclValue::UserVal(UserVal {
+                meta,
+                value: serde_json::to_value(sketch).expect("can always turn Sketch into JSON"),
+            });
         }
     }
 }
@@ -214,9 +264,9 @@ impl Environment {
 /// Dynamic state that depends on the dynamic flow of the program, like the call
 /// stack.  If the language had exceptions, for example, you could store the
 /// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 pub struct DynamicState {
-    pub extrude_group_ids: Vec<ExtrudeGroupLazyIds>,
+    pub solid_ids: Vec<SolidLazyIds>,
 }
 
 impl DynamicState {
@@ -234,19 +284,19 @@ impl DynamicState {
     pub fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let MemoryItem::ExtrudeGroup(eg) = item {
-                    self.extrude_group_ids.push(ExtrudeGroupLazyIds::from(eg.as_ref()));
+                if let KclValue::Solid(eg) = item {
+                    self.solid_ids.push(SolidLazyIds::from(eg.as_ref()));
                 }
             }
         }
     }
 
-    pub fn fillet_or_chamfer_ids_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<uuid::Uuid> {
-        self.extrude_group_ids
+    pub fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
+        self.solid_ids
             .iter()
             .flat_map(|eg| {
-                if eg.sketch_group_id == sketch_group_id {
-                    eg.fillet_or_chamfers.clone()
+                if eg.sketch_id == sketch_id {
+                    eg.edge_cuts.clone()
                 } else {
                     Vec::new()
                 }
@@ -255,52 +305,47 @@ impl DynamicState {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+/// A generator for ArtifactIds that can be stable across executions.
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum ProgramReturn {
-    Arguments,
-    Value(MemoryItem),
+#[serde(rename_all = "camelCase")]
+pub struct IdGenerator {
+    next_id: usize,
+    ids: Vec<uuid::Uuid>,
 }
 
-impl From<ProgramReturn> for Vec<SourceRange> {
-    fn from(item: ProgramReturn) -> Self {
-        match item {
-            ProgramReturn::Arguments => Default::default(),
-            ProgramReturn::Value(v) => v.into(),
+impl IdGenerator {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn next_uuid(&mut self) -> uuid::Uuid {
+        if let Some(id) = self.ids.get(self.next_id) {
+            self.next_id += 1;
+            *id
+        } else {
+            let id = uuid::Uuid::new_v4();
+            self.ids.push(id);
+            self.next_id += 1;
+            id
         }
     }
 }
 
-impl ProgramReturn {
-    pub fn get_value(&self) -> Result<MemoryItem, KclError> {
-        match self {
-            ProgramReturn::Value(v) => Ok(v.clone()),
-            ProgramReturn::Arguments => Err(KclError::Semantic(KclErrorDetails {
-                message: "Cannot get value from arguments".to_owned(),
-                source_ranges: self.clone().into(),
-            })),
-        }
-    }
-}
-
-/// A memory item.
+/// Any KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub enum MemoryItem {
+pub enum KclValue {
     UserVal(UserVal),
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(Box<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
-    SketchGroup(Box<SketchGroup>),
-    SketchGroups {
-        value: Vec<Box<SketchGroup>>,
-    },
-    ExtrudeGroup(Box<ExtrudeGroup>),
-    ExtrudeGroups {
-        value: Vec<Box<ExtrudeGroup>>,
+
+    Solid(Box<Solid>),
+    Solids {
+        value: Vec<Box<Solid>>,
     },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
@@ -314,68 +359,93 @@ pub enum MemoryItem {
     },
 }
 
-impl MemoryItem {
-    pub(crate) fn get_sketch_group_set(&self) -> Result<SketchGroupSet> {
+impl KclValue {
+    pub(crate) fn new_user_val<T: Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self::UserVal(UserVal::new(meta, val))
+    }
+
+    pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
-            MemoryItem::SketchGroup(s) => Ok(SketchGroupSet::SketchGroup(s.clone())),
-            MemoryItem::SketchGroups { value } => Ok(SketchGroupSet::SketchGroups(value.clone())),
-            MemoryItem::UserVal(value) => {
-                let sg: Vec<Box<SketchGroup>> = serde_json::from_value(value.value.clone())
-                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of sketch groups from JSON: {}", e))?;
-                Ok(sg.into())
+            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
+            KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
+            KclValue::UserVal(value) => {
+                let value = value.value.clone();
+                match value {
+                    JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => Err(anyhow::anyhow!(
+                        "Failed to deserialize solid set from JSON {}",
+                        human_friendly_type(&value)
+                    )),
+                    JValue::Array(_) => serde_json::from_value::<Vec<Box<Solid>>>(value)
+                        .map(SolidSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of solids from JSON: {}", e)),
+                    JValue::Object(_) => serde_json::from_value::<Box<Solid>>(value)
+                        .map(SolidSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize solid from JSON: {}", e)),
+                }
             }
-            _ => anyhow::bail!("Not a sketch group or sketch groups: {:?}", self),
+            _ => anyhow::bail!("Not a solid or solids: {:?}", self),
         }
     }
 
-    pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
+    /// Human readable type name used in error messages.  Should not be relied
+    /// on for program logic.
+    pub(crate) fn human_friendly_type(&self) -> &'static str {
         match self {
-            MemoryItem::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
-            MemoryItem::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
-            MemoryItem::UserVal(value) => {
-                let eg: Vec<Box<ExtrudeGroup>> = serde_json::from_value(value.value.clone())
-                    .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e))?;
-                Ok(eg.into())
-            }
-            _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+            KclValue::UserVal(u) => human_friendly_type(&u.value),
+            KclValue::TagDeclarator(_) => "TagDeclarator",
+            KclValue::TagIdentifier(_) => "TagIdentifier",
+            KclValue::Solid(_) => "Solid",
+            KclValue::Solids { .. } => "Solids",
+            KclValue::ImportedGeometry(_) => "ImportedGeometry",
+            KclValue::Function { .. } => "Function",
+            KclValue::Plane(_) => "Plane",
+            KclValue::Face(_) => "Face",
+        }
+    }
+
+    pub(crate) fn is_function(&self) -> bool {
+        match self {
+            KclValue::UserVal(..)
+            | KclValue::TagIdentifier(..)
+            | KclValue::TagDeclarator(..)
+            | KclValue::Plane(..)
+            | KclValue::Face(..)
+            | KclValue::Solid(..)
+            | KclValue::Solids { .. }
+            | KclValue::ImportedGeometry(..) => false,
+            KclValue::Function { .. } => true,
         }
     }
 }
 
-impl From<SketchGroupSet> for MemoryItem {
-    fn from(sg: SketchGroupSet) -> Self {
-        match sg {
-            SketchGroupSet::SketchGroup(sg) => MemoryItem::SketchGroup(sg),
-            SketchGroupSet::SketchGroups(sgs) => MemoryItem::SketchGroups { value: sgs },
-        }
+impl From<SketchSet> for KclValue {
+    fn from(sg: SketchSet) -> Self {
+        KclValue::UserVal(UserVal::new(sg.meta(), sg))
     }
 }
 
-impl From<Vec<Box<SketchGroup>>> for MemoryItem {
-    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
-        if sg.len() == 1 {
-            MemoryItem::SketchGroup(sg[0].clone())
-        } else {
-            MemoryItem::SketchGroups { value: sg }
-        }
+impl From<Vec<Box<Sketch>>> for KclValue {
+    fn from(sg: Vec<Box<Sketch>>) -> Self {
+        let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
+        KclValue::UserVal(UserVal::new(meta, sg))
     }
 }
 
-impl From<ExtrudeGroupSet> for MemoryItem {
-    fn from(eg: ExtrudeGroupSet) -> Self {
+impl From<SolidSet> for KclValue {
+    fn from(eg: SolidSet) -> Self {
         match eg {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => MemoryItem::ExtrudeGroup(eg),
-            ExtrudeGroupSet::ExtrudeGroups(egs) => MemoryItem::ExtrudeGroups { value: egs },
+            SolidSet::Solid(eg) => KclValue::Solid(eg),
+            SolidSet::Solids(egs) => KclValue::Solids { value: egs },
         }
     }
 }
 
-impl From<Vec<Box<ExtrudeGroup>>> for MemoryItem {
-    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+impl From<Vec<Box<Solid>>> for KclValue {
+    fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            MemoryItem::ExtrudeGroup(eg[0].clone())
+            KclValue::Solid(eg[0].clone())
         } else {
-            MemoryItem::ExtrudeGroups { value: eg }
+            KclValue::Solids { value: eg }
         }
     }
 }
@@ -385,15 +455,15 @@ impl From<Vec<Box<ExtrudeGroup>>> for MemoryItem {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometry {
-    SketchGroup(Box<SketchGroup>),
-    ExtrudeGroup(Box<ExtrudeGroup>),
+    Sketch(Box<Sketch>),
+    Solid(Box<Solid>),
 }
 
 impl Geometry {
     pub fn id(&self) -> uuid::Uuid {
         match self {
-            Geometry::SketchGroup(s) => s.id,
-            Geometry::ExtrudeGroup(e) => e.id,
+            Geometry::Sketch(s) => s.id,
+            Geometry::Solid(e) => e.id,
         }
     }
 }
@@ -403,130 +473,157 @@ impl Geometry {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometries {
-    SketchGroups(Vec<Box<SketchGroup>>),
-    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+    Sketches(Vec<Box<Sketch>>),
+    Solids(Vec<Box<Solid>>),
 }
 
-/// A sketch group or a group of sketch groups.
+impl From<Geometry> for Geometries {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketches(vec![x]),
+            Geometry::Solid(x) => Self::Solids(vec![x]),
+        }
+    }
+}
+
+/// A sketch or a group of sketches.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum SketchGroupSet {
-    SketchGroup(Box<SketchGroup>),
-    SketchGroups(Vec<Box<SketchGroup>>),
+pub enum SketchSet {
+    Sketch(Box<Sketch>),
+    Sketches(Vec<Box<Sketch>>),
 }
 
-impl From<SketchGroup> for SketchGroupSet {
-    fn from(sg: SketchGroup) -> Self {
-        SketchGroupSet::SketchGroup(Box::new(sg))
-    }
-}
-
-impl From<Box<SketchGroup>> for SketchGroupSet {
-    fn from(sg: Box<SketchGroup>) -> Self {
-        SketchGroupSet::SketchGroup(sg)
-    }
-}
-
-impl From<Vec<SketchGroup>> for SketchGroupSet {
-    fn from(sg: Vec<SketchGroup>) -> Self {
-        if sg.len() == 1 {
-            SketchGroupSet::SketchGroup(Box::new(sg[0].clone()))
-        } else {
-            SketchGroupSet::SketchGroups(sg.into_iter().map(Box::new).collect())
+impl SketchSet {
+    pub fn meta(&self) -> Vec<Metadata> {
+        match self {
+            SketchSet::Sketch(sg) => sg.meta.clone(),
+            SketchSet::Sketches(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
         }
     }
 }
 
-impl From<Vec<Box<SketchGroup>>> for SketchGroupSet {
-    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
-        if sg.len() == 1 {
-            SketchGroupSet::SketchGroup(sg[0].clone())
-        } else {
-            SketchGroupSet::SketchGroups(sg)
+impl From<SketchSet> for Vec<Sketch> {
+    fn from(value: SketchSet) -> Self {
+        match value {
+            SketchSet::Sketch(sg) => vec![*sg],
+            SketchSet::Sketches(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
         }
     }
 }
 
-impl From<SketchGroupSet> for Vec<Box<SketchGroup>> {
-    fn from(sg: SketchGroupSet) -> Self {
+impl From<Sketch> for SketchSet {
+    fn from(sg: Sketch) -> Self {
+        SketchSet::Sketch(Box::new(sg))
+    }
+}
+
+impl From<Box<Sketch>> for SketchSet {
+    fn from(sg: Box<Sketch>) -> Self {
+        SketchSet::Sketch(sg)
+    }
+}
+
+impl From<Vec<Sketch>> for SketchSet {
+    fn from(sg: Vec<Sketch>) -> Self {
+        if sg.len() == 1 {
+            SketchSet::Sketch(Box::new(sg[0].clone()))
+        } else {
+            SketchSet::Sketches(sg.into_iter().map(Box::new).collect())
+        }
+    }
+}
+
+impl From<Vec<Box<Sketch>>> for SketchSet {
+    fn from(sg: Vec<Box<Sketch>>) -> Self {
+        if sg.len() == 1 {
+            SketchSet::Sketch(sg[0].clone())
+        } else {
+            SketchSet::Sketches(sg)
+        }
+    }
+}
+
+impl From<SketchSet> for Vec<Box<Sketch>> {
+    fn from(sg: SketchSet) -> Self {
         match sg {
-            SketchGroupSet::SketchGroup(sg) => vec![sg],
-            SketchGroupSet::SketchGroups(sgs) => sgs,
+            SketchSet::Sketch(sg) => vec![sg],
+            SketchSet::Sketches(sgs) => sgs,
         }
     }
 }
 
-impl From<&SketchGroup> for Vec<Box<SketchGroup>> {
-    fn from(sg: &SketchGroup) -> Self {
+impl From<&Sketch> for Vec<Box<Sketch>> {
+    fn from(sg: &Sketch) -> Self {
         vec![Box::new(sg.clone())]
     }
 }
 
-impl From<Box<SketchGroup>> for Vec<Box<SketchGroup>> {
-    fn from(sg: Box<SketchGroup>) -> Self {
+impl From<Box<Sketch>> for Vec<Box<Sketch>> {
+    fn from(sg: Box<Sketch>) -> Self {
         vec![sg]
     }
 }
 
-/// A extrude group or a group of extrude groups.
+/// A solid or a group of solids.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum ExtrudeGroupSet {
-    ExtrudeGroup(Box<ExtrudeGroup>),
-    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+pub enum SolidSet {
+    Solid(Box<Solid>),
+    Solids(Vec<Box<Solid>>),
 }
 
-impl From<ExtrudeGroup> for ExtrudeGroupSet {
-    fn from(eg: ExtrudeGroup) -> Self {
-        ExtrudeGroupSet::ExtrudeGroup(Box::new(eg))
+impl From<Solid> for SolidSet {
+    fn from(eg: Solid) -> Self {
+        SolidSet::Solid(Box::new(eg))
     }
 }
 
-impl From<Box<ExtrudeGroup>> for ExtrudeGroupSet {
-    fn from(eg: Box<ExtrudeGroup>) -> Self {
-        ExtrudeGroupSet::ExtrudeGroup(eg)
+impl From<Box<Solid>> for SolidSet {
+    fn from(eg: Box<Solid>) -> Self {
+        SolidSet::Solid(eg)
     }
 }
 
-impl From<Vec<ExtrudeGroup>> for ExtrudeGroupSet {
-    fn from(eg: Vec<ExtrudeGroup>) -> Self {
+impl From<Vec<Solid>> for SolidSet {
+    fn from(eg: Vec<Solid>) -> Self {
         if eg.len() == 1 {
-            ExtrudeGroupSet::ExtrudeGroup(Box::new(eg[0].clone()))
+            SolidSet::Solid(Box::new(eg[0].clone()))
         } else {
-            ExtrudeGroupSet::ExtrudeGroups(eg.into_iter().map(Box::new).collect())
+            SolidSet::Solids(eg.into_iter().map(Box::new).collect())
         }
     }
 }
 
-impl From<Vec<Box<ExtrudeGroup>>> for ExtrudeGroupSet {
-    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+impl From<Vec<Box<Solid>>> for SolidSet {
+    fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            ExtrudeGroupSet::ExtrudeGroup(eg[0].clone())
+            SolidSet::Solid(eg[0].clone())
         } else {
-            ExtrudeGroupSet::ExtrudeGroups(eg)
+            SolidSet::Solids(eg)
         }
     }
 }
 
-impl From<ExtrudeGroupSet> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: ExtrudeGroupSet) -> Self {
+impl From<SolidSet> for Vec<Box<Solid>> {
+    fn from(eg: SolidSet) -> Self {
         match eg {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg],
-            ExtrudeGroupSet::ExtrudeGroups(egs) => egs,
+            SolidSet::Solid(eg) => vec![eg],
+            SolidSet::Solids(egs) => egs,
         }
     }
 }
 
-impl From<&ExtrudeGroup> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: &ExtrudeGroup) -> Self {
+impl From<&Solid> for Vec<Box<Solid>> {
+    fn from(eg: &Solid) -> Self {
         vec![Box::new(eg.clone())]
     }
 }
 
-impl From<Box<ExtrudeGroup>> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: Box<ExtrudeGroup>) -> Self {
+impl From<Box<Solid>> for Vec<Box<Solid>> {
+    fn from(eg: Box<Solid>) -> Self {
         vec![eg]
     }
 }
@@ -565,6 +662,82 @@ pub struct Plane {
     pub meta: Vec<Metadata>,
 }
 
+impl Plane {
+    pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
+        let id = exec_state.id_generator.next_uuid();
+        match value {
+            crate::std::sketch::PlaneData::XY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, 1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, -1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::XZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, -1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::YZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegYZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(-1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::Plane {
+                origin,
+                x_axis,
+                y_axis,
+                z_axis,
+            } => Plane {
+                id,
+                origin: *origin,
+                x_axis: *x_axis,
+                y_axis: *y_axis,
+                z_axis: *z_axis,
+                value: PlaneType::Custom,
+                meta: vec![],
+            },
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -592,8 +765,8 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
-    /// The extrude group the face is on.
-    pub extrude_group: Box<ExtrudeGroup>,
+    /// The solid the face is on.
+    pub solid: Box<Solid>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -627,6 +800,42 @@ pub struct UserVal {
     pub value: serde_json::Value,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
+}
+
+impl UserVal {
+    pub fn new<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
+        Self {
+            meta,
+            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
+        }
+    }
+
+    /// If the UserVal matches the type `T`, return it.
+    pub fn get<T: serde::de::DeserializeOwned>(&self) -> Option<(T, Vec<Metadata>)> {
+        let meta = self.meta.clone();
+        // TODO: This clone might cause performance problems, it'll happen a lot.
+        let res: Result<T, _> = serde_json::from_value(self.value.clone());
+        if let Ok(t) = res {
+            Some((t, meta))
+        } else {
+            None
+        }
+    }
+
+    /// If the UserVal matches the type `T`, then mutate it via the given closure.
+    /// If the closure returns Err, the mutation won't be applied.
+    pub fn mutate<T, F, E>(&mut self, mutate: F) -> Result<(), E>
+    where
+        T: serde::de::DeserializeOwned + Serialize,
+        F: FnOnce(&mut T) -> Result<(), E>,
+    {
+        let Some((mut val, meta)) = self.get::<T>() else {
+            return Ok(());
+        };
+        mutate(&mut val)?;
+        *self = Self::new(meta, val);
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -679,56 +888,55 @@ impl std::hash::Hash for TagIdentifier {
 
 pub type MemoryFunction =
     fn(
-        s: Vec<MemoryItem>,
+        s: Vec<KclValue>,
         memory: ProgramMemory,
         expression: Box<FunctionExpression>,
         metadata: Vec<Metadata>,
-        dynamic_state: DynamicState,
+        exec_state: &ExecState,
         ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>;
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>;
 
-fn force_memory_function<
-    F: Fn(
-        Vec<MemoryItem>,
-        ProgramMemory,
-        Box<FunctionExpression>,
-        Vec<Metadata>,
-        DynamicState,
-        ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>,
->(
-    f: F,
-) -> F {
-    f
-}
-
-impl From<MemoryItem> for Vec<SourceRange> {
-    fn from(item: MemoryItem) -> Self {
+impl From<KclValue> for Vec<SourceRange> {
+    fn from(item: KclValue) -> Self {
         match item {
-            MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::TagDeclarator(t) => t.into(),
-            MemoryItem::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::SketchGroups { value } => value
-                .iter()
-                .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
-                .collect(),
-            MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::ExtrudeGroups { value } => value
+            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::TagDeclarator(t) => t.into(),
+            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solids { value } => value
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
-            MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
 
-impl MemoryItem {
+impl From<&KclValue> for Vec<SourceRange> {
+    fn from(item: &KclValue) -> Self {
+        match item {
+            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::TagDeclarator(ref t) => vec![t.into()],
+            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solids { value } => value
+                .iter()
+                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
+                .collect(),
+            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+        }
+    }
+}
+
+impl KclValue {
     pub fn get_json_value(&self) -> Result<serde_json::Value, KclError> {
-        if let MemoryItem::UserVal(user_val) = self {
+        if let KclValue::UserVal(user_val) = self {
             Ok(user_val.value.clone())
         } else {
             serde_json::to_value(self).map_err(|err| {
@@ -775,7 +983,7 @@ impl MemoryItem {
     }
 
     pub fn as_user_val(&self) -> Option<&UserVal> {
-        if let MemoryItem::UserVal(x) = self {
+        if let KclValue::UserVal(x) = self {
             Some(x)
         } else {
             None
@@ -797,7 +1005,7 @@ impl MemoryItem {
 
     /// If this value is of type function, return it.
     pub fn get_function(&self) -> Option<FnAsArg<'_>> {
-        let MemoryItem::Function {
+        let KclValue::Function {
             func,
             expression,
             memory,
@@ -806,9 +1014,8 @@ impl MemoryItem {
         else {
             return None;
         };
-        let func = func.as_ref()?;
         Some(FnAsArg {
-            func,
+            func: func.as_ref(),
             expr: expression.to_owned(),
             memory: memory.to_owned(),
         })
@@ -817,8 +1024,8 @@ impl MemoryItem {
     /// Get a tag identifier from a memory item.
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
-            MemoryItem::TagIdentifier(t) => Ok(*t.clone()),
-            MemoryItem::UserVal(_) => {
+            KclValue::TagIdentifier(t) => Ok(*t.clone()),
+            KclValue::UserVal(_) => {
                 if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
                     Ok(identifier)
                 } else {
@@ -838,7 +1045,7 @@ impl MemoryItem {
     /// Get a tag declarator from a memory item.
     pub fn get_tag_declarator(&self) -> Result<TagDeclarator, KclError> {
         match self {
-            MemoryItem::TagDeclarator(t) => Ok(*t.clone()),
+            KclValue::TagDeclarator(t) => Ok(*t.clone()),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -849,7 +1056,7 @@ impl MemoryItem {
     /// Get an optional tag from a memory item.
     pub fn get_tag_declarator_opt(&self) -> Result<Option<TagDeclarator>, KclError> {
         match self {
-            MemoryItem::TagDeclarator(t) => Ok(Some(*t.clone())),
+            KclValue::TagDeclarator(t) => Ok(Some(*t.clone())),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -857,15 +1064,32 @@ impl MemoryItem {
         }
     }
 
+    /// If this KCL value is a bool, retrieve it.
+    pub fn get_bool(&self) -> Result<bool, KclError> {
+        let Self::UserVal(uv) = self else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", self.human_friendly_type()),
+            }));
+        };
+        let JValue::Bool(b) = uv.value else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", human_friendly_type(&uv.value)),
+            }));
+        };
+        Ok(b)
+    }
+
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
     /// If it's not a function, return Err.
     pub async fn call_fn(
         &self,
-        args: Vec<MemoryItem>,
-        dynamic_state: &DynamicState,
+        args: Vec<KclValue>,
+        exec_state: &mut ExecState,
         ctx: ExecutorContext,
-    ) -> Result<Option<ProgramReturn>, KclError> {
-        let MemoryItem::Function {
+    ) -> Result<Option<KclValue>, KclError> {
+        let KclValue::Function {
             func,
             expression,
             memory: closure_memory,
@@ -877,21 +1101,19 @@ impl MemoryItem {
                 source_ranges: vec![],
             }));
         };
-        let Some(func) = func else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a function: {:?}", expression),
-                source_ranges: vec![],
-            }));
-        };
-        func(
-            args,
-            closure_memory.as_ref().clone(),
-            expression.clone(),
-            meta.clone(),
-            dynamic_state.clone(),
-            ctx,
-        )
-        .await
+        if let Some(func) = func {
+            func(
+                args,
+                closure_memory.as_ref().clone(),
+                expression.clone(),
+                meta.clone(),
+                exec_state,
+                ctx,
+            )
+            .await
+        } else {
+            call_user_defined_function(args, closure_memory.as_ref(), expression.as_ref(), exec_state, &ctx).await
+        }
     }
 }
 
@@ -902,31 +1124,31 @@ impl MemoryItem {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch group the tag is on.
-    pub sketch_group: uuid::Uuid,
+    /// The sketch the tag is on.
+    pub sketch: uuid::Uuid,
     /// The path the tag is on.
-    pub path: Option<BasePath>,
+    pub path: Option<Path>,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
 }
 
-/// A sketch group is a collection of paths.
+/// A sketch is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub struct SketchGroup {
-    /// The id of the sketch group (this will change when the engine's reference to it changes.
+pub struct Sketch {
+    /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
-    /// The paths in the sketch group.
-    pub value: Vec<Path>,
+    /// The paths in the sketch.
+    pub paths: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
-    /// Tag identifiers that have been declared in this sketch group.
+    /// Tag identifiers that have been declared in this sketch.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub tags: HashMap<String, TagIdentifier>,
-    /// The original id of the sketch group. This stays the same even if the sketch group is
+    /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
     #[serde(skip)]
     pub original_id: uuid::Uuid,
@@ -935,7 +1157,7 @@ pub struct SketchGroup {
     pub meta: Vec<Metadata>,
 }
 
-/// A sketch group type.
+/// A sketch type.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -953,20 +1175,20 @@ impl SketchSurface {
     }
     pub(crate) fn x_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.x_axis.clone(),
-            SketchSurface::Face(face) => face.x_axis.clone(),
+            SketchSurface::Plane(plane) => plane.x_axis,
+            SketchSurface::Face(face) => face.x_axis,
         }
     }
     pub(crate) fn y_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.y_axis.clone(),
-            SketchSurface::Face(face) => face.y_axis.clone(),
+            SketchSurface::Plane(plane) => plane.y_axis,
+            SketchSurface::Face(face) => face.y_axis,
         }
     }
     pub(crate) fn z_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.z_axis.clone(),
-            SketchSurface::Face(face) => face.z_axis.clone(),
+            SketchSurface::Plane(plane) => plane.z_axis,
+            SketchSurface::Face(face) => face.z_axis,
         }
     }
 }
@@ -977,14 +1199,14 @@ pub struct GetTangentialInfoFromPathsResult {
     pub ccw: bool,
 }
 
-impl SketchGroup {
+impl Sketch {
     pub(crate) fn add_tag(&mut self, tag: &TagDeclarator, current_path: &Path) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
-            sketch_group: self.id,
-            path: Some(base.clone()),
+            sketch: self.id,
+            path: Some(current_path.clone()),
             surface: None,
         });
 
@@ -993,7 +1215,7 @@ impl SketchGroup {
 
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
-        self.value.last()
+        self.paths.last()
     }
 
     /// The "pen" is an imaginary pen drawing the path.
@@ -1039,54 +1261,54 @@ impl SketchGroup {
     }
 }
 
-/// An extrude group is a collection of extrude surfaces.
+/// An solid is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub struct ExtrudeGroup {
-    /// The id of the extrude group.
+pub struct Solid {
+    /// The id of the solid.
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch group.
-    pub sketch_group: SketchGroup,
-    /// The height of the extrude group.
+    /// The sketch.
+    pub sketch: Sketch,
+    /// The height of the solid.
     pub height: f64,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
     pub end_cap_id: Option<uuid::Uuid>,
-    /// Chamfers or fillets on this extrude group.
+    /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub fillet_or_chamfers: Vec<FilletOrChamfer>,
+    pub edge_cuts: Vec<EdgeCut>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
 
-impl ExtrudeGroup {
-    pub(crate) fn get_all_fillet_or_chamfer_ids(&self) -> Vec<uuid::Uuid> {
-        self.fillet_or_chamfers.iter().map(|foc| foc.id()).collect()
+impl Solid {
+    pub(crate) fn get_all_edge_cut_ids(&self) -> Vec<uuid::Uuid> {
+        self.edge_cuts.iter().map(|foc| foc.id()).collect()
     }
 }
 
-/// An extrude group ID and its fillet and chamfer IDs.  This is needed for lazy
+/// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
 /// fillet evaluation.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-pub struct ExtrudeGroupLazyIds {
-    pub extrude_group_id: uuid::Uuid,
-    pub sketch_group_id: uuid::Uuid,
-    /// Chamfers or fillets on this extrude group.
+pub struct SolidLazyIds {
+    pub solid_id: uuid::Uuid,
+    pub sketch_id: uuid::Uuid,
+    /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub fillet_or_chamfers: Vec<uuid::Uuid>,
+    pub edge_cuts: Vec<uuid::Uuid>,
 }
 
-impl From<&ExtrudeGroup> for ExtrudeGroupLazyIds {
-    fn from(eg: &ExtrudeGroup) -> Self {
+impl From<&Solid> for SolidLazyIds {
+    fn from(eg: &Solid) -> Self {
         Self {
-            extrude_group_id: eg.id,
-            sketch_group_id: eg.sketch_group.id,
-            fillet_or_chamfers: eg.fillet_or_chamfers.iter().map(|foc| foc.id()).collect(),
+            solid_id: eg.id,
+            sketch_id: eg.sketch.id,
+            edge_cuts: eg.edge_cuts.iter().map(|foc| foc.id()).collect(),
         }
     }
 }
@@ -1095,7 +1317,7 @@ impl From<&ExtrudeGroup> for ExtrudeGroupLazyIds {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum FilletOrChamfer {
+pub enum EdgeCut {
     /// A fillet.
     Fillet {
         /// The id of the engine command that called this fillet.
@@ -1118,25 +1340,25 @@ pub enum FilletOrChamfer {
     },
 }
 
-impl FilletOrChamfer {
+impl EdgeCut {
     pub fn id(&self) -> uuid::Uuid {
         match self {
-            FilletOrChamfer::Fillet { id, .. } => *id,
-            FilletOrChamfer::Chamfer { id, .. } => *id,
+            EdgeCut::Fillet { id, .. } => *id,
+            EdgeCut::Chamfer { id, .. } => *id,
         }
     }
 
     pub fn edge_id(&self) -> uuid::Uuid {
         match self {
-            FilletOrChamfer::Fillet { edge_id, .. } => *edge_id,
-            FilletOrChamfer::Chamfer { edge_id, .. } => *edge_id,
+            EdgeCut::Fillet { edge_id, .. } => *edge_id,
+            EdgeCut::Chamfer { edge_id, .. } => *edge_id,
         }
     }
 
     pub fn tag(&self) -> Option<TagDeclarator> {
         match self {
-            FilletOrChamfer::Fillet { tag, .. } => *tag.clone(),
-            FilletOrChamfer::Chamfer { tag, .. } => *tag.clone(),
+            EdgeCut::Fillet { tag, .. } => *tag.clone(),
+            EdgeCut::Chamfer { tag, .. } => *tag.clone(),
         }
     }
 }
@@ -1246,7 +1468,7 @@ impl From<Point2d> for [f64; 2] {
     }
 }
 
-impl From<Point2d> for kittycad::types::Point2D {
+impl From<Point2d> for Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
     }
@@ -1262,7 +1484,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema, Default)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -1271,14 +1493,24 @@ pub struct Point3d {
 }
 
 impl Point3d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0, z: 0.0 };
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
 }
 
-impl From<Point3d> for kittycad::types::Point3D {
+impl From<Point3d> for Point3D {
     fn from(p: Point3d) -> Self {
         Self { x: p.x, y: p.y, z: p.z }
+    }
+}
+impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
+    fn from(p: Point3d) -> Self {
+        Self {
+            x: LengthUnit(p.x),
+            y: LengthUnit(p.y),
+            z: LengthUnit(p.z),
+        }
     }
 }
 
@@ -1294,6 +1526,38 @@ pub struct Metadata {
 impl From<SourceRange> for Metadata {
     fn from(source_range: SourceRange) -> Self {
         Self { source_range }
+    }
+}
+
+impl From<&ImportStatement> for Metadata {
+    fn from(stmt: &ImportStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(stmt.start, stmt.end),
+        }
+    }
+}
+
+impl From<&ExpressionStatement> for Metadata {
+    fn from(exp_statement: &ExpressionStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(exp_statement.start, exp_statement.end),
+        }
+    }
+}
+
+impl From<&ReturnStatement> for Metadata {
+    fn from(return_statement: &ReturnStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(return_statement.start, return_statement.end),
+        }
+    }
+}
+
+impl From<&Expr> for Metadata {
+    fn from(expr: &Expr) -> Self {
+        Self {
+            source_range: SourceRange::from(expr),
+        }
     }
 }
 
@@ -1357,6 +1621,20 @@ pub enum Path {
         /// arc's direction
         ccw: bool,
     },
+    // TODO: consolidate segment enums, remove Circle. https://github.com/KittyCAD/modeling-app/issues/3940
+    /// a complete arc
+    Circle {
+        #[serde(flatten)]
+        base: BasePath,
+        /// the arc's center
+        #[ts(type = "[number, number]")]
+        center: [f64; 2],
+        /// the arc's radius
+        radius: f64,
+        /// arc's direction
+        // Maybe this one's not needed since it's a full revolution?
+        ccw: bool,
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -1378,6 +1656,43 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A circular arc, not necessarily tangential to the current point.
+    Arc {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Center of the circle that this arc is drawn on.
+        center: [f64; 2],
+        /// Radius of the circle that this arc is drawn on.
+        radius: f64,
+    },
+}
+
+/// What kind of path is this?
+#[derive(Display)]
+enum PathType {
+    ToPoint,
+    Base,
+    TangentialArc,
+    TangentialArcTo,
+    Circle,
+    Horizontal,
+    AngledLineTo,
+    Arc,
+}
+
+impl From<&Path> for PathType {
+    fn from(value: &Path) -> Self {
+        match value {
+            Path::ToPoint { .. } => Self::ToPoint,
+            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
+            Path::TangentialArc { .. } => Self::TangentialArc,
+            Path::Circle { .. } => Self::Circle,
+            Path::Horizontal { .. } => Self::Horizontal,
+            Path::AngledLineTo { .. } => Self::AngledLineTo,
+            Path::Base { .. } => Self::Base,
+            Path::Arc { .. } => Self::Arc,
+        }
+    }
 }
 
 impl Path {
@@ -1389,6 +1704,8 @@ impl Path {
             Path::Base { base } => base.geo_meta.id,
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
+            Path::Circle { base, .. } => base.geo_meta.id,
+            Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1400,6 +1717,8 @@ impl Path {
             Path::Base { base } => base.tag.clone(),
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
+            Path::Circle { base, .. } => base.tag.clone(),
+            Path::Arc { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1411,6 +1730,48 @@ impl Path {
             Path::Base { base } => base,
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
+            Path::Circle { base, .. } => base,
+            Path::Arc { base, .. } => base,
+        }
+    }
+
+    /// Where does this path segment start?
+    pub fn get_from(&self) -> &[f64; 2] {
+        &self.get_base().from
+    }
+    /// Where does this path segment end?
+    pub fn get_to(&self) -> &[f64; 2] {
+        &self.get_base().to
+    }
+
+    /// Length of this path segment, in cartesian plane.
+    pub fn length(&self) -> f64 {
+        match self {
+            Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::TangentialArc {
+                base: _,
+                center,
+                ccw: _,
+            }
+            | Self::TangentialArcTo {
+                base: _,
+                center,
+                ccw: _,
+            } => {
+                // The radius can be calculated as the linear distance between `to` and `center`,
+                // or between `from` and `center`. They should be the same.
+                let radius = linear_distance(self.get_from(), center);
+                debug_assert_eq!(radius, linear_distance(self.get_to(), center));
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Arc { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
         }
     }
 
@@ -1422,8 +1783,21 @@ impl Path {
             Path::Base { base } => Some(base),
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
+            Path::Circle { base, .. } => Some(base),
+            Path::Arc { base, .. } => Some(base),
         }
     }
+}
+
+/// Compute the straight-line distance between a pair of (2D) points.
+#[rustfmt::skip]
+fn linear_distance(
+    [x0, y0]: &[f64; 2],
+    [x1, y1]: &[f64; 2]
+) -> f64 {
+    let y_sq = (y1 - y0).powi(2);
+    let x_sq = (x1 - x0).powi(2);
+    (y_sq + x_sq).sqrt()
 }
 
 /// An extrude surface.
@@ -1514,23 +1888,20 @@ impl ExtrudeSurface {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct PipeInfo {
-    pub previous_results: Option<MemoryItem>,
-}
+/// The type of ExecutorContext being used
+#[derive(PartialEq, Debug, Default, Clone)]
+pub enum ContextType {
+    /// Live engine connection
+    #[default]
+    Live,
 
-impl PipeInfo {
-    pub fn new() -> Self {
-        Self { previous_results: None }
-    }
-}
+    /// Completely mocked connection
+    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
+    /// actually make them.
+    Mock,
 
-impl Default for PipeInfo {
-    fn default() -> Self {
-        Self::new()
-    }
+    /// Handled by some other interpreter/conversion system
+    MockCustomForwarded,
 }
 
 /// The executor context.
@@ -1542,9 +1913,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub stdlib: Arc<StdLib>,
     pub settings: ExecutorSettings,
-    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
-    /// actually make them.
-    pub is_mock: bool,
+    pub context_type: ContextType,
 }
 
 /// The executor settings.
@@ -1556,8 +1925,11 @@ pub struct ExecutorSettings {
     pub highlight_edges: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     pub enable_ssao: bool,
-    // Show grid?
+    /// Show grid?
     pub show_grid: bool,
+    /// Should engine store this for replay?
+    /// If so, under what name?
+    pub replay: Option<String>,
 }
 
 impl Default for ExecutorSettings {
@@ -1567,6 +1939,7 @@ impl Default for ExecutorSettings {
             highlight_edges: true,
             enable_ssao: false,
             show_grid: false,
+            replay: None,
         }
     }
 }
@@ -1578,6 +1951,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1589,6 +1963,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             highlight_edges: config.settings.modeling.highlight_edges.into(),
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
+            replay: None,
         }
     }
 }
@@ -1600,15 +1975,81 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             highlight_edges: modeling.highlight_edges.into(),
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
+            replay: None,
         }
     }
+}
+
+/// Create a new zoo api client.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let zoo_token_env = std::env::var("ZOO_API_TOKEN");
+
+    let token = if let Some(token) = token {
+        token
+    } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
+        if let Ok(zoo_token) = zoo_token_env {
+            if zoo_token != token {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                    token,
+                    zoo_token
+                ));
+            }
+        }
+        token
+    } else if let Ok(token) = zoo_token_env {
+        token
+    } else {
+        return Err(anyhow::anyhow!(
+            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+        ));
+    };
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set an engine address if it's set.
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
+    if let Some(addr) = engine_addr {
+        client.set_base_url(addr);
+    } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if let Ok(kittycad_host) = kittycad_host_env {
+            if kittycad_host != addr {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                    kittycad_host,
+                    addr
+                ));
+            }
+        }
+        client.set_base_url(addr);
+    } else if let Ok(addr) = kittycad_host_env {
+        client.set_base_url(addr);
+    }
+
+    Ok(client)
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let ws = client
+        let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
@@ -1618,6 +2059,7 @@ impl ExecutorContext {
                 } else {
                     None
                 },
+                settings.replay.clone(),
                 if settings.show_grid { Some(true) } else { None },
                 None,
                 None,
@@ -1634,9 +2076,9 @@ impl ExecutorContext {
             .batch_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
-                &kittycad::types::ModelingCmd::EdgeLinesVisible {
+                &ModelingCmd::from(mcmd::EdgeLinesVisible {
                     hidden: !settings.highlight_edges,
-                },
+                }),
             )
             .await?;
 
@@ -1645,55 +2087,67 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
             settings,
-            is_mock: false,
+            context_type: ContextType::Live,
         })
+    }
+
+    /// Create a new default executor context.
+    /// With a kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+    ) -> Result<Self> {
+        // Create the client.
+        let client = new_zoo_client(token, engine_addr)?;
+
+        let ctx = Self::new(&client, settings).await?;
+        Ok(ctx)
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_default_client(settings: ExecutorSettings) -> Result<Self> {
+        // Create the client.
+        let ctx = Self::new_with_client(settings, None, None).await?;
+        Ok(ctx)
+    }
+
+    pub fn is_mock(&self) -> bool {
+        self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
-        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"));
-        let http_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60));
-        let ws_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60))
-            .connection_verbose(true)
-            .tcp_keepalive(std::time::Duration::from_secs(600))
-            .http1_only();
-
-        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-        // Create the client.
-        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-        // Set a local engine address if it's set.
-        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-            client.set_base_url(addr);
-        }
-        if let Some(addr) = engine_addr {
-            client.set_base_url(addr);
-        }
-
-        let ctx = ExecutorContext::new(
-            &client,
+        let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 units,
                 highlight_edges: true,
                 enable_ssao: false,
                 show_grid: false,
+                replay: None,
             },
+            None,
+            engine_addr,
         )
         .await?;
         Ok(ctx)
     }
 
-    pub async fn reset_scene(&self, source_range: crate::executor::SourceRange) -> Result<()> {
-        self.engine.clear_scene(source_range).await?;
+    pub async fn reset_scene(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<()> {
+        self.engine.clear_scene(id_generator, source_range).await?;
         Ok(())
     }
 
@@ -1704,30 +2158,56 @@ impl ExecutorContext {
         &self,
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
-    ) -> Result<ProgramMemory, KclError> {
-        // Before we even start executing the program, set the units.
-        self.engine
-            .batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                &kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.settings.units.into(),
-                },
-            )
-            .await?;
-        let mut memory = if let Some(memory) = memory {
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
+    ) -> Result<ExecState, KclError> {
+        self.run_with_session_data(program, memory, id_generator, project_directory)
+            .await
+            .map(|x| x.0)
+    }
+    /// Perform the execution of a program.
+    /// You can optionally pass in some initialization memory.
+    /// Kurt uses this for partial execution.
+    pub async fn run_with_session_data(
+        &self,
+        program: &crate::ast::types::Program,
+        memory: Option<ProgramMemory>,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
+    ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
+        let memory = if let Some(memory) = memory {
             memory.clone()
         } else {
             Default::default()
         };
-        let mut dynamic_state = DynamicState::default();
-        self.inner_execute(
-            program,
-            &mut memory,
-            &mut dynamic_state,
-            crate::executor::BodyType::Root,
-        )
-        .await
+        let mut exec_state = ExecState {
+            memory,
+            id_generator,
+            project_directory,
+            ..Default::default()
+        };
+        // Before we even start executing the program, set the units.
+        self.engine
+            .batch_modeling_cmd(
+                exec_state.id_generator.next_uuid(),
+                SourceRange::default(),
+                &ModelingCmd::from(mcmd::SetSceneUnits {
+                    unit: match self.settings.units {
+                        UnitLength::Cm => kcmc::units::UnitLength::Centimeters,
+                        UnitLength::Ft => kcmc::units::UnitLength::Feet,
+                        UnitLength::In => kcmc::units::UnitLength::Inches,
+                        UnitLength::M => kcmc::units::UnitLength::Meters,
+                        UnitLength::Mm => kcmc::units::UnitLength::Millimeters,
+                        UnitLength::Yd => kcmc::units::UnitLength::Yards,
+                    },
+                }),
+            )
+            .await?;
+
+        self.inner_execute(program, &mut exec_state, crate::executor::BodyType::Root)
+            .await?;
+        let session_data = self.engine.get_session_data();
+        Ok((exec_state, session_data))
     }
 
     /// Execute an AST's program.
@@ -1735,86 +2215,155 @@ impl ExecutorContext {
     pub(crate) async fn inner_execute(
         &self,
         program: &crate::ast::types::Program,
-        memory: &mut ProgramMemory,
-        dynamic_state: &mut DynamicState,
+        exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<ProgramMemory, KclError> {
-        let pipe_info = PipeInfo::default();
-
+    ) -> Result<Option<KclValue>, KclError> {
+        let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
-                        pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                    } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
-                        call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
+                BodyItem::ImportStatement(import_stmt) => {
+                    let source_range = SourceRange::from(import_stmt);
+                    let path = import_stmt.path.clone();
+                    let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
+                        std::path::PathBuf::from(project_dir).join(&path)
+                    } else {
+                        std::path::PathBuf::from(&path)
+                    };
+                    if exec_state.import_stack.contains(&resolved_path) {
+                        return Err(KclError::ImportCycle(KclErrorDetails {
+                            message: format!(
+                                "circular import of modules is not allowed: {} -> {}",
+                                exec_state
+                                    .import_stack
+                                    .iter()
+                                    .map(|p| p.as_path().to_string_lossy())
+                                    .collect::<Vec<_>>()
+                                    .join(" -> "),
+                                resolved_path.to_string_lossy()
+                            ),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
                     }
+                    let source = self.fs.read_to_string(&resolved_path, source_range).await?;
+                    let program = crate::parser::parse(&source)?;
+                    let (module_memory, module_exports) = {
+                        exec_state.import_stack.push(resolved_path.clone());
+                        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
+                        let original_memory = std::mem::take(&mut exec_state.memory);
+                        let original_exports = std::mem::take(&mut exec_state.module_exports);
+                        let result = self
+                            .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
+                            .await;
+                        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
+                        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
+                        self.engine.replace_execution_kind(original_execution);
+                        exec_state.import_stack.pop();
+
+                        result.map_err(|err| {
+                            if let KclError::ImportCycle(_) = err {
+                                // It was an import cycle.  Keep the original message.
+                                err.override_source_ranges(vec![source_range])
+                            } else {
+                                KclError::Semantic(KclErrorDetails {
+                                    message: format!(
+                                        "Error loading imported file. Open it to view more details. {path}: {}",
+                                        err.message()
+                                    ),
+                                    source_ranges: vec![source_range],
+                                })
+                            }
+                        })?;
+
+                        (module_memory, module_exports)
+                    };
+                    for import_item in &import_stmt.items {
+                        // Extract the item from the module.
+                        let item = module_memory
+                            .get(&import_item.name.name, import_item.into())
+                            .map_err(|_err| {
+                                KclError::UndefinedValue(KclErrorDetails {
+                                    message: format!("{} is not defined in module", import_item.name.name),
+                                    source_ranges: vec![SourceRange::from(&import_item.name)],
+                                })
+                            })?;
+                        // Check that the item is allowed to be imported.
+                        if !module_exports.contains(&import_item.name.name) {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: format!(
+                                    "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                    import_item.name.name
+                                ),
+                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                            }));
+                        }
+
+                        // Add the item to the current module.
+                        exec_state.memory.add(
+                            import_item.identifier(),
+                            item.clone(),
+                            SourceRange::from(&import_item.name),
+                        )?;
+                    }
+                    last_expr = None;
+                }
+                BodyItem::ExpressionStatement(expression_statement) => {
+                    let metadata = Metadata::from(expression_statement);
+                    last_expr = Some(
+                        self.execute_expr(
+                            &expression_statement.expression,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?,
+                    );
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
                         let var_name = declaration.id.name.to_string();
-                        let source_range: SourceRange = declaration.init.clone().into();
+                        let source_range = SourceRange::from(&declaration.init);
                         let metadata = Metadata { source_range };
 
                         let memory_item = self
-                            .arg_into_mem_item(
+                            .execute_expr(
                                 &declaration.init,
-                                memory,
-                                dynamic_state,
-                                &pipe_info,
+                                exec_state,
                                 &metadata,
                                 StatementKind::Declaration { name: &var_name },
                             )
                             .await?;
-                        memory.add(&var_name, memory_item, source_range)?;
+                        let is_function = memory_item.is_function();
+                        exec_state.memory.add(&var_name, memory_item, source_range)?;
+                        // Track exports.
+                        match variable_declaration.visibility {
+                            ItemVisibility::Export => {
+                                if !is_function {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "Only functions can be exported".to_owned(),
+                                        source_ranges: vec![source_range],
+                                    }));
+                                }
+                                exec_state.module_exports.insert(var_name);
+                            }
+                            ItemVisibility::Default => {}
+                        }
                     }
+                    last_expr = None;
                 }
-                BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
-                    Value::BinaryExpression(bin_expr) => {
-                        let result = bin_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
-                    }
-                    Value::UnaryExpression(unary_expr) => {
-                        let result = unary_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
-                    }
-                    Value::Identifier(identifier) => {
-                        let value = memory.get(&identifier.name, identifier.into())?.clone();
-                        memory.return_ = Some(ProgramReturn::Value(value));
-                    }
-                    Value::Literal(literal) => {
-                        memory.return_ = Some(ProgramReturn::Value(literal.into()));
-                    }
-                    Value::TagDeclarator(tag) => {
-                        memory.return_ = Some(ProgramReturn::Value(tag.into()));
-                    }
-                    Value::ArrayExpression(array_expr) => {
-                        let result = array_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
-                    }
-                    Value::ObjectExpression(obj_expr) => {
-                        let result = obj_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
-                    }
-                    Value::CallExpression(call_expr) => {
-                        let result = call_expr.execute(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
-                    }
-                    Value::MemberExpression(member_expr) => {
-                        let result = member_expr.get_result(memory)?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
-                    }
-                    Value::PipeExpression(pipe_expr) => {
-                        let result = pipe_expr.get_result(memory, dynamic_state, &pipe_info, self).await?;
-                        memory.return_ = Some(ProgramReturn::Value(result));
-                    }
-                    Value::PipeSubstitution(_) => {}
-                    Value::FunctionExpression(_) => {}
-                    Value::None(none) => {
-                        memory.return_ = Some(ProgramReturn::Value(MemoryItem::from(none)));
-                    }
-                },
+                BodyItem::ReturnStatement(return_statement) => {
+                    let metadata = Metadata::from(return_statement);
+                    let value = self
+                        .execute_expr(
+                            &return_statement.argument,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?;
+                    exec_state.memory.return_ = Some(value);
+                    last_expr = None;
+                }
             }
         }
 
@@ -1830,82 +2379,39 @@ impl ExecutorContext {
                 .await?;
         }
 
-        Ok(memory.clone())
+        Ok(last_expr)
     }
 
-    pub async fn arg_into_mem_item<'a>(
+    pub async fn execute_expr<'a>(
         &self,
-        init: &Value,
-        memory: &mut ProgramMemory,
-        dynamic_state: &DynamicState,
-        pipe_info: &PipeInfo,
+        init: &Expr,
+        exec_state: &mut ExecState,
         metadata: &Metadata,
         statement_kind: StatementKind<'a>,
-    ) -> Result<MemoryItem, KclError> {
+    ) -> Result<KclValue, KclError> {
         let item = match init {
-            Value::None(none) => none.into(),
-            Value::Literal(literal) => literal.into(),
-            Value::TagDeclarator(tag) => tag.execute(memory).await?,
-            Value::Identifier(identifier) => {
-                let value = memory.get(&identifier.name, identifier.into())?;
+            Expr::None(none) => KclValue::from(none),
+            Expr::Literal(literal) => KclValue::from(literal),
+            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
+            Expr::Identifier(identifier) => {
+                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
-            Value::BinaryExpression(binary_expression) => {
-                binary_expression
-                    .get_result(memory, dynamic_state, pipe_info, self)
-                    .await?
-            }
-            Value::FunctionExpression(function_expression) => {
-                let mem_func = force_memory_function(
-                    |args: Vec<MemoryItem>,
-                     memory: ProgramMemory,
-                     function_expression: Box<FunctionExpression>,
-                     _metadata: Vec<Metadata>,
-                     mut dynamic_state: DynamicState,
-                     ctx: ExecutorContext| {
-                        Box::pin(async move {
-                            // Create a new environment to execute the function
-                            // body in so that local variables shadow variables
-                            // in the parent scope.  The new environment's
-                            // parent should be the environment of the closure.
-                            let mut body_memory = memory.clone();
-                            let closure_env = memory.current_env;
-                            let body_env = body_memory.new_env_for_call(closure_env);
-                            body_memory.current_env = body_env;
-                            let mut fn_memory = assign_args_to_params(&function_expression, args, body_memory)?;
-
-                            let result = ctx
-                                .inner_execute(
-                                    &function_expression.body,
-                                    &mut fn_memory,
-                                    &mut dynamic_state,
-                                    BodyType::Block,
-                                )
-                                .await?;
-
-                            Ok(result.return_)
-                        })
-                    },
-                );
+            Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
+            Expr::FunctionExpression(function_expression) => {
                 // Cloning memory here is crucial for semantics so that we close
                 // over variables.  Variables defined lexically later shouldn't
                 // be available to the function body.
-                MemoryItem::Function {
+                KclValue::Function {
                     expression: function_expression.clone(),
                     meta: vec![metadata.to_owned()],
-                    func: Some(mem_func),
-                    memory: Box::new(memory.clone()),
+                    func: None,
+                    memory: Box::new(exec_state.memory.clone()),
                 }
             }
-            Value::CallExpression(call_expression) => {
-                call_expression.execute(memory, dynamic_state, pipe_info, self).await?
-            }
-            Value::PipeExpression(pipe_expression) => {
-                pipe_expression
-                    .get_result(memory, dynamic_state, pipe_info, self)
-                    .await?
-            }
-            Value::PipeSubstitution(pipe_substitution) => match statement_kind {
+            Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
+            Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
+            Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
                 StatementKind::Declaration { name } => {
                     let message = format!(
                         "you cannot declare variable {name} as %, because % can only be used in function calls"
@@ -1916,7 +2422,7 @@ impl ExecutorContext {
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                StatementKind::Expression => match pipe_info.previous_results.clone() {
+                StatementKind::Expression => match exec_state.pipe_value.clone() {
                     Some(x) => x,
                     None => {
                         return Err(KclError::Semantic(KclErrorDetails {
@@ -1926,20 +2432,12 @@ impl ExecutorContext {
                     }
                 },
             },
-            Value::ArrayExpression(array_expression) => {
-                array_expression.execute(memory, dynamic_state, pipe_info, self).await?
-            }
-            Value::ObjectExpression(object_expression) => {
-                object_expression
-                    .execute(memory, dynamic_state, pipe_info, self)
-                    .await?
-            }
-            Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-            Value::UnaryExpression(unary_expression) => {
-                unary_expression
-                    .get_result(memory, dynamic_state, pipe_info, self)
-                    .await?
-            }
+            Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
+            Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
+            Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
+            Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
+            Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
+            Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -1950,18 +2448,24 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<kittycad::types::TakeSnapshot> {
-        let _ = self.run(program, None).await?;
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        program: &Program,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
+    ) -> Result<TakeSnapshot> {
+        let _ = self.run(program, None, id_generator, project_directory).await?;
 
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::ZoomToFit {
+                ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
+                    animated: false,
                     padding: 0.1,
-                },
+                }),
             )
             .await?;
 
@@ -1971,19 +2475,19 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::TakeSnapshot {
-                    format: kittycad::types::ImageFormat::Png,
-                },
+                ModelingCmd::from(mcmd::TakeSnapshot {
+                    format: ImageFormat::Png,
+                }),
             )
             .await?;
 
-        let kittycad::types::OkWebSocketResponseData::Modeling {
-            modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
         } = resp
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok(data)
+        Ok(contents)
     }
 }
 
@@ -1992,7 +2496,7 @@ impl ExecutorContext {
 /// Returns Err if too few/too many arguments were given for the function.
 fn assign_args_to_params(
     function_expression: &FunctionExpression,
-    args: Vec<MemoryItem>,
+    args: Vec<KclValue>,
     mut fn_memory: ProgramMemory,
 ) -> Result<ProgramMemory, KclError> {
     let num_args = function_expression.number_of_args();
@@ -2024,13 +2528,10 @@ fn assign_args_to_params(
             if param.optional {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                let none = KclNone {
-                    start: param.identifier.start,
-                    end: param.identifier.end,
-                };
+                let none = KclNone::new(param.identifier.start, param.identifier.end);
                 fn_memory.add(
                     &param.identifier.name,
-                    MemoryItem::from(&none),
+                    KclValue::from(&none),
                     (&param.identifier).into(),
                 )?;
             } else {
@@ -2041,6 +2542,36 @@ fn assign_args_to_params(
         }
     }
     Ok(fn_memory)
+}
+
+pub(crate) async fn call_user_defined_function(
+    args: Vec<KclValue>,
+    memory: &ProgramMemory,
+    function_expression: &FunctionExpression,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Option<KclValue>, KclError> {
+    // Create a new environment to execute the function body in so that local
+    // variables shadow variables in the parent scope.  The new environment's
+    // parent should be the environment of the closure.
+    let mut body_memory = memory.clone();
+    let body_env = body_memory.new_env_for_call(memory.current_env);
+    body_memory.current_env = body_env;
+    let fn_memory = assign_args_to_params(function_expression, args, body_memory)?;
+
+    // Execute the function body using the memory we just created.
+    let (result, fn_memory) = {
+        let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
+        let result = ctx
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
+            .await;
+        // Restore the previous memory.
+        let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
+
+        (result, fn_memory)
+    };
+
+    result.map(|_| fn_memory.return_)
 }
 
 pub enum StatementKind<'a> {
@@ -2066,11 +2597,20 @@ mod tests {
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: true,
+            context_type: ContextType::Mock,
         };
-        let memory = ctx.run(&program, None).await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
-        Ok(memory)
+        Ok(exec_state.memory)
+    }
+
+    /// Convenience function to get a JSON value from memory and unwrap.
+    fn mem_get_json(memory: &ProgramMemory, name: &str) -> serde_json::Value {
+        memory
+            .get(name, SourceRange::default())
+            .unwrap()
+            .get_json_value()
+            .unwrap()
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2385,6 +2925,29 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // https://github.com/KittyCAD/modeling-app/issues/3338
+    async fn test_object_member_starting_pipeline() {
+        let ast = r#"
+fn test2 = () => {
+  return {
+    thing: startSketchOn('XY')
+      |> startProfileAt([0, 0], %)
+      |> line([0, 1], %)
+      |> line([1, 0], %)
+      |> line([0, -1], %)
+      |> close(%)
+  }
+}
+
+const x2 = test2()
+
+x2.thing
+  |> extrude(10, %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_objects() {
         let ast = r#"fn box = (obj) => {
@@ -2486,7 +3049,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, $tag1)
+    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
     |> extrude(10, %)
 }
 
@@ -2614,7 +3177,7 @@ fn transform = (replicaId) => {
 
 fn layer = () => {
   return startSketchOn("XY")
-    |> circle([0, 0], 1, %, $tag1)
+    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
     |> extrude(10, %)
 }
 
@@ -2721,6 +3284,172 @@ const bracket = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not_succeeds() {
+        let ast = r#"
+fn returnTrue = () => { return !false }
+const t = true
+const f = false
+let notTrue = !t
+let notFalse = !f
+let c = !!true
+let d = !returnTrue()
+
+assert(!false, "expected to pass")
+
+fn check = (x) => {
+  assert(!x, "expected argument to be false")
+  return true
+}
+check(false)
+"#;
+        let mem = parse_execute(ast).await.unwrap();
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notTrue"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notFalse"));
+        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "c"));
+        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "d"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unary_operator_not_on_non_bool_fails() {
+        let code1 = r#"
+// Yup, this is null.
+let myNull = 0 / 0
+let notNull = !myNull
+"#;
+        assert_eq!(
+            parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: null".to_owned(),
+                source_ranges: vec![SourceRange([56, 63])],
+            })
+        );
+
+        let code2 = "let notZero = !0";
+        assert_eq!(
+            parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 0".to_owned(),
+                source_ranges: vec![SourceRange([14, 16])],
+            })
+        );
+
+        let code3 = r#"
+let notEmptyString = !""
+"#;
+        assert_eq!(
+            parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: \"\"".to_owned(),
+                source_ranges: vec![SourceRange([22, 25])],
+            })
+        );
+
+        let code4 = r#"
+let obj = { a: 1 }
+let notMember = !obj.a
+"#;
+        assert_eq!(
+            parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: 1".to_owned(),
+                source_ranges: vec![SourceRange([36, 42])],
+            })
+        );
+
+        let code5 = "
+let a = []
+let notArray = !a";
+        assert_eq!(
+            parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: []".to_owned(),
+                source_ranges: vec![SourceRange([27, 29])],
+            })
+        );
+
+        let code6 = "
+let x = {}
+let notObject = !x";
+        assert_eq!(
+            parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Semantic(KclErrorDetails {
+                message: "Cannot apply unary operator ! to non-boolean value: {}".to_owned(),
+                source_ranges: vec![SourceRange([28, 30])],
+            })
+        );
+
+        let code7 = "
+fn x = () => { return 1 }
+let notFunction = !x";
+        let fn_err = parse_execute(code7).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            fn_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: "),
+            "Actual error: {:?}",
+            fn_err
+        );
+
+        let code8 = "
+let myTagDeclarator = $myTag
+let notTagDeclarator = !myTagDeclarator";
+        let tag_declarator_err = parse_execute(code8).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            tag_declarator_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagDeclarator\","),
+            "Actual error: {:?}",
+            tag_declarator_err
+        );
+
+        let code9 = "
+let myTagDeclarator = $myTag
+let notTagIdentifier = !myTag";
+        let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
+        // These are currently printed out as JSON objects, so we don't want to
+        // check the full error.
+        assert!(
+            tag_identifier_err
+                .message()
+                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagIdentifier\","),
+            "Actual error: {:?}",
+            tag_identifier_err
+        );
+
+        let code10 = "let notPipe = !(1 |> 2)";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token: !".to_owned(),
+                source_ranges: vec![SourceRange([14, 15])],
+            })
+        );
+
+        let code11 = "
+fn identity = (x) => { return x }
+let notPipeSub = 1 |> identity(!%))";
+        assert_eq!(
+            // TODO: We don't currently parse this, but we should.  It should be
+            // a runtime error instead.
+            parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token: |>".to_owned(),
+                source_ranges: vec![SourceRange([54, 56])],
+            })
+        );
+
+        // TODO: Add these tests when we support these types.
+        // let notNan = !NaN
+        // let notInfinity = !Infinity
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_negative_variable_in_binary_expression() {
         let ast = r#"const sigmaAllow = 35000 // psi
 const width = 1 // inch
@@ -2823,8 +3552,8 @@ let w = f() + f()
     #[test]
     fn test_assign_args_to_params() {
         // Set up a little framework for this test.
-        fn mem(number: usize) -> MemoryItem {
-            MemoryItem::UserVal(UserVal {
+        fn mem(number: usize) -> KclValue {
+            KclValue::UserVal(UserVal {
                 value: number.into(),
                 meta: Default::default(),
             })
@@ -2853,7 +3582,7 @@ let w = f() + f()
                 digest: None,
             }
         }
-        fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
+        fn additional_program_memory(items: &[(String, KclValue)]) -> ProgramMemory {
             let mut program_memory = ProgramMemory::new();
             for (name, item) in items {
                 program_memory
@@ -2886,7 +3615,7 @@ let w = f() + f()
                 vec![],
                 Ok(additional_program_memory(&[(
                     "x".to_owned(),
-                    MemoryItem::from(&KclNone::default()),
+                    KclValue::from(&KclNone::default()),
                 )])),
             ),
             (
@@ -2904,7 +3633,7 @@ let w = f() + f()
                 vec![mem(1)],
                 Ok(additional_program_memory(&[
                     ("x".to_owned(), mem(1)),
-                    ("y".to_owned(), MemoryItem::from(&KclNone::default())),
+                    ("y".to_owned(), KclValue::from(&KclNone::default())),
                 ])),
             ),
             (
@@ -2951,10 +3680,10 @@ let w = f() + f()
 
     #[test]
     fn test_serialize_memory_item() {
-        let mem = MemoryItem::ExtrudeGroups {
+        let mem = KclValue::Solids {
             value: Default::default(),
         };
         let json = serde_json::to_string(&mem).unwrap();
-        assert_eq!(json, r#"{"type":"ExtrudeGroups","value":[]}"#);
+        assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
     }
 }

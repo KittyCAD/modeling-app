@@ -3,7 +3,7 @@ import { kclManager, engineCommandManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { ProgramMemory, Value, parse } from 'lang/wasm'
+import { ProgramMemory, Expr, parse } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { executeAst } from 'lang/langHelpers'
 import { err, trap } from 'lib/trap'
@@ -24,7 +24,7 @@ export function useCalculateKclExpression({
   initialVariableName?: string
 }): {
   inputRef: React.RefObject<HTMLInputElement>
-  valueNode: Value | null
+  valueNode: Expr | null
   calcResult: string
   prevVariables: PrevVariable<unknown>[]
   newVariableName: string
@@ -45,7 +45,7 @@ export function useCalculateKclExpression({
     insertIndex: 0,
     bodyPath: [],
   })
-  const [valueNode, setValueNode] = useState<Value | null>(null)
+  const [valueNode, setValueNode] = useState<Expr | null>(null)
   const [calcResult, setCalcResult] = useState('NAN')
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
@@ -97,7 +97,7 @@ export function useCalculateKclExpression({
         })
         if (trap(error, { suppress: true })) return
       }
-      const { programMemory } = await executeAst({
+      const { execState } = await executeAst({
         ast,
         engineCommandManager,
         useFakeExecutor: true,
@@ -111,7 +111,7 @@ export function useCalculateKclExpression({
       const init =
         resultDeclaration?.type === 'VariableDeclaration' &&
         resultDeclaration?.declarations?.[0]?.init
-      const result = programMemory?.get('__result__')?.value
+      const result = execState.memory?.get('__result__')?.value
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }

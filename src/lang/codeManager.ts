@@ -2,8 +2,7 @@
 // NOT updating the code state when we don't need to.
 // This prevents re-renders of the codemirror editor, when typing.
 import { bracket } from 'lib/exampleKcl'
-import { isTauri } from 'lib/isTauri'
-import { writeTextFile } from '@tauri-apps/plugin-fs'
+import { isDesktop } from 'lib/isDesktop'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
@@ -19,16 +18,19 @@ export default class CodeManager {
   #updateState: (arg: string) => void = () => {}
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
+  private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+
+  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
 
   constructor() {
-    if (isTauri()) {
+    if (isDesktop()) {
       this.code = ''
       return
     }
 
     const storedCode = safeLSGetItem(PERSIST_CODE_KEY)
     // TODO #819 remove zustand persistence logic in a few months
-    // short term migration, shouldn't make a difference for tauri app users
+    // short term migration, shouldn't make a difference for desktop app users
     // anyway since that's filesystem based.
     const zustandStore = JSON.parse(safeLSGetItem('store') || '{}')
     if (storedCode === null && zustandStore?.state?.code) {
@@ -115,17 +117,24 @@ export default class CodeManager {
   }
 
   async writeToFile() {
-    if (isTauri()) {
-      setTimeout(() => {
+    if (isDesktop()) {
+      // Only write our buffer contents to file once per second. Any faster
+      // and file-system watchers which read, will receive empty data during
+      // writes.
+      clearTimeout(this.timeoutWriter)
+      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      this.timeoutWriter = setTimeout(() => {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk
         this._currentFilePath &&
-          writeTextFile(this._currentFilePath, this.code).catch((err) => {
-            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-            console.error('error saving file', err)
-            toast.error('Error saving file, please check file permissions')
-          })
-      })
+          window.electron
+            .writeFile(this._currentFilePath, this.code ?? '')
+            .catch((err: Error) => {
+              // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+              console.error('error saving file', err)
+              toast.error('Error saving file, please check file permissions')
+            })
+      }, 1000)
     } else {
       safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }

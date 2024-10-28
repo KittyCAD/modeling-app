@@ -1,7 +1,7 @@
 import { EditorView, ViewUpdate } from '@codemirror/view'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
 import { engineCommandManager } from 'lib/singletons'
-import { ModelingMachineEvent } from 'machines/modelingMachine'
+import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
 import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
@@ -11,6 +11,7 @@ import {
   forEachDiagnostic,
   setDiagnosticsEffect,
 } from '@codemirror/lint'
+import { StateFrom } from 'xstate'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -38,7 +39,7 @@ export default class EditorManager {
   private _lastEvent: { event: string; time: number } | null = null
 
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
-  private _modelingEvent: ModelingMachineEvent | null = null
+  private _modelingState: StateFrom<typeof modelingMachine> | null = null
 
   private _commandBarSend: (eventInfo: CommandBarMachineEvent) => void =
     () => {}
@@ -80,8 +81,8 @@ export default class EditorManager {
     this._modelingSend = send
   }
 
-  set modelingEvent(event: ModelingMachineEvent) {
-    this._modelingEvent = event
+  set modelingState(state: StateFrom<typeof modelingMachine>) {
+    this._modelingState = state
   }
 
   setCommandBarSend(send: (eventInfo: CommandBarMachineEvent) => void) {
@@ -248,13 +249,11 @@ export default class EditorManager {
       return
     }
 
-    const ignoreEvents: ModelingMachineEvent['type'][] = ['change tool']
-
-    if (!this._modelingEvent) {
+    if (!this._modelingState) {
       return
     }
 
-    if (ignoreEvents.includes(this._modelingEvent.type)) {
+    if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
       return
     }
 
@@ -286,8 +285,9 @@ export default class EditorManager {
 
     this._lastEvent = { event: stringEvent, time: Date.now() }
     this._modelingSend(eventInfo.modelingEvent)
-    eventInfo.engineEvents.forEach((event) =>
+    eventInfo.engineEvents.forEach((event) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand(event)
-    )
+    })
   }
 }

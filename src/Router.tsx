@@ -1,6 +1,7 @@
 import { App } from './App'
 import {
   createBrowserRouter,
+  createHashRouter,
   Outlet,
   redirect,
   RouterProvider,
@@ -10,7 +11,7 @@ import { Settings } from './routes/Settings'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
-import { isTauri } from './lib/isTauri'
+import { isDesktop } from './lib/isDesktop'
 import Home from './routes/Home'
 import { NetworkContext } from './hooks/useNetworkContext'
 import { useNetworkStatus } from './hooks/useNetworkStatus'
@@ -20,6 +21,7 @@ import { WasmErrBanner } from 'components/WasmErrBanner'
 import { CommandBar } from 'components/CommandBar/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
+import { MachineManagerProvider } from 'components/MachineManagerProvider'
 import { PATHS } from 'lib/paths'
 import {
   fileLoader,
@@ -32,21 +34,24 @@ import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
-import { getState, setState } from 'lib/tauri'
+import { codeManager, engineCommandManager } from 'lib/singletons'
 import { AppStateProvider } from 'AppState'
 import { InteractionMapMachineProvider } from 'components/InteractionMapMachineProvider'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useMemo } from 'react'
-import { engineCommandManager } from 'lib/singletons'
 import { CoreDumpManager } from 'lib/coredump'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
+import { reportRejection } from 'lib/trap'
 
-const router = createBrowserRouter([
+const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
+
+const router = createRouter([
   {
     loader: settingsLoader,
     id: PATHS.INDEX,
+    // TODO: Re-evaluate if this is true
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
@@ -56,7 +61,9 @@ const router = createBrowserRouter([
             <LspProvider>
               <KclContextProvider>
                 <AppStateProvider>
-                  <Outlet />
+                  <MachineManagerProvider>
+                    <Outlet />
+                  </MachineManagerProvider>
                 </AppStateProvider>
               </KclContextProvider>
             </LspProvider>
@@ -69,25 +76,8 @@ const router = createBrowserRouter([
       {
         path: PATHS.INDEX,
         loader: async () => {
-          const inTauri = isTauri()
-          if (inTauri) {
-            const appState = await getState()
-
-            if (appState) {
-              // Reset the state.
-              // We do this so that we load the initial state from the cli but everything
-              // else we can ignore.
-              await setState(undefined)
-              // Redirect to the file if we have a file path.
-              if (appState.current_file) {
-                return redirect(
-                  PATHS.FILE + '/' + encodeURIComponent(appState.current_file)
-                )
-              }
-            }
-          }
-
-          return inTauri
+          const onDesktop = isDesktop()
+          return onDesktop
             ? redirect(PATHS.HOME)
             : redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
         },
@@ -104,7 +94,10 @@ const router = createBrowserRouter([
                 <Outlet />
                 <App />
                 <CommandBar />
-                {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
+                {
+                  // @ts-ignore
+                  !isDesktop() && import.meta.env.PROD && <DownloadAppBanner />
+                }
               </ModelingMachineProvider>
               <WasmErrBanner />
             </FileMachineProvider>
@@ -184,25 +177,27 @@ function CoreDump() {
   const { auth } = useSettingsAuthContext()
   const token = auth?.context?.token
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, token),
+    () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
   )
-  useHotkeyWrapper(['meta + shift + .'], () => {
-    toast.promise(
-      coreDump(coreDumpManager, true),
-      {
-        loading: 'Starting core dump...',
-        success: 'Core dump completed successfully',
-        error: 'Error while exporting core dump',
-      },
-      {
-        success: {
-          // Note: this extended duration is especially important for Playwright e2e testing
-          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-          duration: 6000,
+  useHotkeyWrapper(['mod + shift + .'], () => {
+    toast
+      .promise(
+        coreDump(coreDumpManager, true),
+        {
+          loading: 'Starting core dump...',
+          success: 'Core dump completed successfully',
+          error: 'Error while exporting core dump',
         },
-      }
-    )
+        {
+          success: {
+            // Note: this extended duration is especially important for Playwright e2e testing
+            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+            duration: 6000,
+          },
+        }
+      )
+      .catch(reportRejection)
   })
   return null
 }

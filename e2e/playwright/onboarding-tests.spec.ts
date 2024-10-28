@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test'
-
-import { getUtils, setup, tearDown } from './test-utils'
+import { join } from 'path'
+import fsp from 'fs/promises'
+import {
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+  executorInputPath,
+} from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import {
@@ -12,7 +19,10 @@ import {
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 
-test.beforeEach(async ({ context, page }) => {
+test.beforeEach(async ({ context, page }, testInfo) => {
+  if (testInfo.tags.includes('@electron')) {
+    return
+  }
   await setup(context, page)
 })
 
@@ -45,8 +55,55 @@ test.describe('Onboarding tests', () => {
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
   })
 
+  test(
+    'Desktop: fresh onboarding executes and loads',
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        appSettings: {
+          app: {
+            onboardingStatus: 'incomplete',
+          },
+        },
+        cleanProjectDir: true,
+      })
+
+      const u = await getUtils(page)
+
+      const viewportSize = { width: 1200, height: 500 }
+      await page.setViewportSize(viewportSize)
+
+      // Locators and constants
+      const newProjectButton = page.getByRole('button', { name: 'New project' })
+      const projectLink = page.getByTestId('project-link')
+
+      await test.step(`Create a project and open to the onboarding`, async () => {
+        await newProjectButton.click()
+        await projectLink.click()
+        await test.step(`Ensure the engine connection works by testing the sketch button`, async () => {
+          await u.waitForPageLoad()
+        })
+      })
+
+      await test.step(`Ensure we see the onboarding stuff`, async () => {
+        // Test that the onboarding pane loaded
+        await expect(
+          page.getByText('Welcome to Modeling App! This')
+        ).toBeVisible()
+
+        // *and* that the code is shown in the editor
+        await expect(page.locator('.cm-content')).toContainText(
+          '// Shelf Bracket'
+        )
+      })
+
+      await electronApp.close()
+    }
+  )
+
   test('Code resets after confirmation', async ({ page }) => {
-    const initialCode = `const sketch001 = startSketchOn('XZ')`
+    const initialCode = `sketch001 = startSketchOn('XZ')`
 
     // Load the page up with some code so we see the confirmation warning
     // when we go to replay onboarding
@@ -135,7 +192,7 @@ test.describe('Onboarding tests', () => {
     await page.addInitScript(
       async ({ settingsKey, settings }) => {
         // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+        localStorage.setItem('persistCode', 'sigmaAllow = 15000')
         localStorage.setItem(settingsKey, settings)
       },
       {
@@ -339,3 +396,97 @@ test.describe('Onboarding tests', () => {
     }
   })
 })
+
+test(
+  'Restarting onboarding on desktop takes one attempt',
+  { tag: '@electron' },
+  async ({ browser: _ }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const routerTemplateDir = join(dir, 'router-template-slate')
+        await fsp.mkdir(routerTemplateDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('router-template-slate.kcl'),
+          join(routerTemplateDir, 'main.kcl')
+        )
+      },
+    })
+
+    // Our constants
+    const u = await getUtils(page)
+    const projectCard = page.getByText('router-template-slate')
+    const helpMenuButton = page.getByRole('button', {
+      name: 'Help and resources',
+    })
+    const restartOnboardingButton = page.getByRole('button', {
+      name: 'Reset onboarding',
+    })
+    const restartConfirmationButton = page.getByRole('button', {
+      name: 'Make a new project',
+    })
+    const tutorialProjectIndicator = page.getByText('Tutorial Project 00')
+    const tutorialModalText = page.getByText('Welcome to Modeling App!')
+    const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
+    const userMenuButton = page.getByTestId('user-sidebar-toggle')
+    const userMenuSettingsButton = page.getByRole('button', {
+      name: 'User settings',
+    })
+    const settingsHeading = page.getByRole('heading', {
+      name: 'Settings',
+      exact: true,
+    })
+    const restartOnboardingSettingsButton = page.getByRole('button', {
+      name: 'Replay onboarding',
+    })
+
+    await test.step('Navigate into project', async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      page.on('console', console.log)
+
+      await expect(
+        page.getByRole('heading', { name: 'Your Projects' })
+      ).toBeVisible()
+      await expect(projectCard).toBeVisible()
+      await projectCard.click()
+      await u.waitForPageLoad()
+    })
+
+    await test.step('Restart the onboarding from help menu', async () => {
+      await helpMenuButton.click()
+      await restartOnboardingButton.click()
+
+      await expect(restartConfirmationButton).toBeVisible()
+      await restartConfirmationButton.click()
+    })
+
+    await test.step('Confirm that the onboarding has restarted', async () => {
+      await expect(tutorialProjectIndicator).toBeVisible()
+      await expect(tutorialModalText).toBeVisible()
+      await tutorialDismissButton.click()
+    })
+
+    await test.step('Clear code and restart onboarding from settings', async () => {
+      await u.openKclCodePanel()
+      await expect(u.codeLocator).toContainText('// Shelf Bracket')
+      await u.codeLocator.selectText()
+      await u.codeLocator.fill('')
+
+      await test.step('Navigate to settings', async () => {
+        await userMenuButton.click()
+        await userMenuSettingsButton.click()
+        await expect(settingsHeading).toBeVisible()
+        await expect(restartOnboardingSettingsButton).toBeVisible()
+      })
+
+      await restartOnboardingSettingsButton.click()
+      // Since the code is empty, we should not see the confirmation dialog
+      await expect(restartConfirmationButton).not.toBeVisible()
+      await expect(tutorialProjectIndicator).toBeVisible()
+      await expect(tutorialModalText).toBeVisible()
+    })
+
+    await electronApp.close()
+  }
+)

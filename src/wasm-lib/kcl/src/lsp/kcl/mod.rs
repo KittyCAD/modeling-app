@@ -40,8 +40,8 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Value, VariableKind},
-    executor::SourceRange,
+    ast::types::{Expr, VariableKind},
+    executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
@@ -370,7 +370,7 @@ impl Backend {
                         crate::walk::Node::VariableDeclarator(variable) => {
                             let sr: SourceRange = (&variable.id).into();
                             if sr.contains(source_range.start()) {
-                                if let Value::FunctionExpression(_) = &variable.init {
+                                if let Expr::FunctionExpression(_) = &variable.init {
                                     let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                                     *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
                                         Some(index) => index,
@@ -588,11 +588,16 @@ impl Backend {
             return Ok(());
         }
 
-        // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx.engine.clear_scene(SourceRange::default()).await?;
+        let mut id_generator = IdGenerator::default();
 
-        let memory = match executor_ctx.run(ast, None).await {
-            Ok(memory) => memory,
+        // Clear the scene, before we execute so it's not fugly as shit.
+        executor_ctx
+            .engine
+            .clear_scene(&mut id_generator, SourceRange::default())
+            .await?;
+
+        let exec_state = match executor_ctx.run(ast, None, id_generator, None).await {
+            Ok(exec_state) => exec_state,
             Err(err) => {
                 self.memory_map.remove(params.uri.as_str());
                 self.add_to_diagnostics(params, &[err], false).await;
@@ -603,11 +608,12 @@ impl Backend {
             }
         };
 
-        self.memory_map.insert(params.uri.to_string(), memory.clone());
+        self.memory_map
+            .insert(params.uri.to_string(), exec_state.memory.clone());
 
         // Send the notification to the client that the memory was updated.
         self.client
-            .send_notification::<custom_notifications::MemoryUpdated>(memory)
+            .send_notification::<custom_notifications::MemoryUpdated>(exec_state.memory)
             .await;
 
         Ok(())
@@ -1117,7 +1123,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(value) = ast.get_value_for_position(pos) else {
+        let Some(value) = ast.get_expr_for_position(pos) else {
             return Ok(None);
         };
 

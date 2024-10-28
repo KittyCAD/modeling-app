@@ -1,0 +1,19 @@
+{{#if $ref}}
+{{pretty_ref $ref}}
+{{else if anyOf}}
+**anyOf**
+{{else if oneOf}}
+**oneOf**
+{{else if allOf}}
+**allOf**
+{{else if enum}}
+**enum:** {{pretty_enum enum}}
+{{else}}
+`{{type}}`{{
+#if
+ format}} (`{{format}}`){{
+/if
+}}
+{{
+/if
+}}

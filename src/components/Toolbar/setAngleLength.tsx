@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value } from '../../lang/wasm'
+import { Program, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -8,9 +8,10 @@ import {
 import {
   PathToNodeMap,
   getTransformInfos,
+  isExprBinaryPart,
   transformAstSketchLines,
-  TransformInfo,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
@@ -44,7 +45,7 @@ export function angleLengthInfo({
   )
 
   const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Value>(kclManager.ast, pathToNode, 'CallExpression')
+    getNodeFromPath<Expr>(kclManager.ast, pathToNode, 'CallExpression')
   )
   const _err1 = nodes.find(err)
   if (err(_err1)) return _err1
@@ -125,12 +126,9 @@ export async function applyConstraintAngleLength({
       valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
       shouldCreateVariable: true,
     })
-
-  let finalValue = removeDoubleNegatives(
-    valueNode as BinaryPart,
-    sign,
-    variableName
-  )
+  if (!isExprBinaryPart(valueNode))
+    return Promise.reject('Invalid valueNode, is not a BinaryPart')
+  let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
   if (
     isReferencingYAxisAngle ||
     (isReferencingXAxisAngle && calcIdentifier.name !== 'ZERO')

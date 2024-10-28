@@ -9,7 +9,7 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { coreDump } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { CoreDumpManager } from 'lib/coredump'
-import openWindow from 'lib/openWindow'
+import openWindow, { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
 
@@ -22,6 +22,8 @@ function InteractionSequenceInfo() {
 
   return <span className="font-mono text-xs">{currentSequence}</span>
 }
+import { ModelStateIndicator } from './ModelStateIndicator'
+import { reportRejection } from 'lib/trap'
 
 export function LowerRightControls({
   children,
@@ -32,17 +34,22 @@ export function LowerRightControls({
 }) {
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
+
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
-  const isPlayWright = window?.localStorage.getItem('playwright') === 'true'
-
-  async function reportbug(event: { preventDefault: () => void }) {
+  function reportbug(event: {
+    preventDefault: () => void
+    stopPropagation: () => void
+  }) {
     event?.preventDefault()
+    event?.stopPropagation()
 
     if (!coreDumpManager) {
       // open default reporting option
-      openWindow('https://github.com/KittyCAD/modeling-app/issues/new/choose')
+      openWindow(
+        'https://github.com/KittyCAD/modeling-app/issues/new/choose'
+      ).catch(reportRejection)
     } else {
       toast
         .promise(
@@ -64,7 +71,7 @@ export function LowerRightControls({
           if (err) {
             openWindow(
               'https://github.com/KittyCAD/modeling-app/issues/new/choose'
-            )
+            ).catch(reportRejection)
           }
         })
     }
@@ -75,13 +82,17 @@ export function LowerRightControls({
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         <InteractionSequenceInfo />
+        {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
+          onClick={openExternalBrowserIfDesktop(
+            `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`
+          )}
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
         >
-          v{isPlayWright ? '11.22.33' : APP_VERSION}
+          v{APP_VERSION}
         </a>
         <a
           onClick={reportbug}
@@ -100,9 +111,10 @@ export function LowerRightControls({
         <Link
           to={
             location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_PROJECT
+              ? filePath + PATHS.SETTINGS + '?tab=project'
               : PATHS.HOME + PATHS.SETTINGS
           }
+          data-testid="settings-link"
         >
           <CustomIcon
             name="settings"
@@ -114,7 +126,9 @@ export function LowerRightControls({
           </Tooltip>
         </Link>
         <NetworkMachineIndicator className={linkOverrideClassName} />
-        <NetworkHealthIndicator />
+        {!location.pathname.startsWith(PATHS.HOME) && (
+          <NetworkHealthIndicator />
+        )}
         <HelpMenu />
       </menu>
     </section>

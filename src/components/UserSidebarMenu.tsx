@@ -8,7 +8,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
 import usePlatform from 'hooks/usePlatform'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { CustomIcon } from './CustomIcon'
 
 type User = Models['User_type']
@@ -33,7 +33,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             <>
               <span className="flex-1">User settings</span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
-                isTauri() ? '' : '⬆'
+                isDesktop() ? '' : '⬆'
               },`}</kbd>
             </>
           ),
@@ -133,7 +133,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
           children: 'Sign out',
-          onClick: () => send('Log out'),
+          onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
       ].filter(
@@ -217,7 +217,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   </p>
                   {displayedName !== user.email && (
                     <p
-                      className="m-0 text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                      className="m-0 overflow-ellipsis overflow-hidden text-chalkboard-70 dark:text-chalkboard-40 text-xs"
                       data-testid="email"
                     >
                       {user.email}

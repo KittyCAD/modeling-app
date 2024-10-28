@@ -3,7 +3,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 
-use crate::ast::types::{Literal, Value};
+use crate::ast::types::{Expr, Literal};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -33,9 +33,9 @@ impl LiteralValue {
     }
 }
 
-impl From<Literal> for Value {
+impl From<Literal> for Expr {
     fn from(literal: Literal) -> Self {
-        Value::Literal(Box::new(literal))
+        Expr::Literal(Box::new(literal))
     }
 }
 

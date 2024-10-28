@@ -18,12 +18,24 @@ export function pathMapToSelections(
     const nodeMeta = getNodeFromPath<any>(ast, path)
     if (err(nodeMeta)) return
     const node = nodeMeta.node as any
-    const type = prevSelections.codeBasedSelections[Number(index)].type
+    const selection = prevSelections.codeBasedSelections[Number(index)]
     if (node) {
-      newSelections.codeBasedSelections.push({
-        range: [node.start, node.end],
-        type: type || 'default',
-      })
+      if (
+        selection.type === 'base-edgeCut' ||
+        selection.type === 'adjacent-edgeCut' ||
+        selection.type === 'opposite-edgeCut'
+      ) {
+        newSelections.codeBasedSelections.push({
+          range: [node.start, node.end],
+          type: selection.type,
+          secondaryRange: selection.secondaryRange,
+        })
+      } else {
+        newSelections.codeBasedSelections.push({
+          range: [node.start, node.end],
+          type: selection.type,
+        })
+      }
     }
   })
   return newSelections

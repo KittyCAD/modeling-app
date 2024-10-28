@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { Program, ProgramMemory, Value } from '../../lang/wasm'
+import { Program, ProgramMemory, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -9,8 +9,8 @@ import {
   PathToNodeMap,
   getTransformInfos,
   transformAstSketchLines,
-  TransformInfo,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 
@@ -27,13 +27,13 @@ export function horzVertInfo(
     getNodePathFromSourceRange(kclManager.ast, range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
   const _err1 = _nodes.find(err)
   if (err(_err1)) return _err1
-  const nodes = _nodes as Value[]
+  const nodes = _nodes as Expr[]
 
   const isAllTooltips = nodes.every(
     (node) =>

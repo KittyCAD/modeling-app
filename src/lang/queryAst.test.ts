@@ -5,10 +5,10 @@ import {
   isTypeInValue,
   getNodePathFromSourceRange,
   doesPipeHaveCallExp,
-  hasExtrudeSketchGroup,
+  hasExtrudeSketch,
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
-  hasExtrudableGeometry,
+  doesSceneHaveSweepableSketch,
   traverse,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
@@ -26,30 +26,30 @@ beforeAll(async () => {
 
 describe('findAllPreviousVariables', () => {
   it('should find all previous variables', async () => {
-    const code = `const baseThick = 1
-const armAngle = 60
+    const code = `baseThick = 1
+armAngle = 60
 
-const baseThickHalf = baseThick / 2
-const halfArmAngle = armAngle / 2
+baseThickHalf = baseThick / 2
+halfArmAngle = armAngle / 2
 
-const arrExpShouldNotBeIncluded = [1, 2, 3]
-const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
+arrExpShouldNotBeIncluded = [1, 2, 3]
+objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> yLineTo(1, %)
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
-const variableBelowShouldNotBeIncluded = 3
+variableBelowShouldNotBeIncluded = 3
 `
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,
-      programMemory,
+      execState.memory,
       [rangeStart, rangeStart]
     )
     expect(variables).toEqual([
@@ -67,7 +67,7 @@ const variableBelowShouldNotBeIncluded = 3
 })
 
 describe('testing argIsNotIdentifier', () => {
-  const code = `const part001 = startSketchOn('XY')
+  const code = `part001 = startSketchOn('XY')
 |> startProfileAt([-1.2, 4.83], %)
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.09], %)
@@ -75,8 +75,8 @@ describe('testing argIsNotIdentifier', () => {
 |> angledLine([def('yo'), 3.09], %)
 |> angledLine([ghi(%), 3.09], %)
 |> angledLine([jkl('yo') + 2, 3.09], %)
-const yo = 5 + 6
-const yo2 = hmm([identifierGuy + 5])`
+yo = 5 + 6
+yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
     const ast = parse(code)
     if (err(ast)) throw ast
@@ -150,7 +150,7 @@ const yo2 = hmm([identifierGuy + 5])`
     const replaced = result.replacer(structuredClone(ast), 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
-    expect(outCode).toContain(`const yo = replaceName`)
+    expect(outCode).toContain(`yo = replaceName`)
   })
   it('find a safe BinaryExpression that has a CallExpression within', () => {
     const ast = parse(code)
@@ -186,7 +186,7 @@ const yo2 = hmm([identifierGuy + 5])`
     if (err(replaced)) throw replaced
     const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)
-    expect(outCode).toContain(`const yo2 = hmm([replaceName])`)
+    expect(outCode).toContain(`yo2 = hmm([replaceName])`)
   })
 
   describe('testing isTypeInValue', () => {
@@ -214,7 +214,7 @@ const yo2 = hmm([identifierGuy + 5])`
 })
 
 describe('testing getNodePathFromSourceRange', () => {
-  const code = `const part001 = startSketchOn('XY')
+  const code = `part001 = startSketchOn('XY')
   |> startProfileAt([0.39, -0.05], %)
   |> line([0.94, 2.61], %)
   |> line([-0.21, -1.4], %)`
@@ -270,8 +270,8 @@ describe('testing getNodePathFromSourceRange', () => {
 
 describe('testing doesPipeHave', () => {
   it('finds close', () => {
-    const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+    const exampleCode = `length001 = 2
+part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -289,8 +289,8 @@ const part001 = startSketchAt([-1.41, 3.46])
     expect(result).toEqual(true)
   })
   it('finds extrude', () => {
-    const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+    const exampleCode = `length001 = 2
+part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -309,8 +309,8 @@ const part001 = startSketchAt([-1.41, 3.46])
     expect(result).toEqual(true)
   })
   it('does NOT find close', () => {
-    const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+    const exampleCode = `length001 = 2
+part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -327,7 +327,7 @@ const part001 = startSketchAt([-1.41, 3.46])
     expect(result).toEqual(false)
   })
   it('returns false if not a pipe', () => {
-    const exampleCode = `const length001 = 2`
+    const exampleCode = `length001 = 2`
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
@@ -340,10 +340,10 @@ const part001 = startSketchAt([-1.41, 3.46])
   })
 })
 
-describe('testing hasExtrudeSketchGroup', () => {
-  it('find sketch group', async () => {
-    const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+describe('testing hasExtrudeSketch', () => {
+  it('find sketch', async () => {
+    const exampleCode = `length001 = 2
+part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -351,17 +351,17 @@ const part001 = startSketchAt([-1.41, 3.46])
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
-    const result = hasExtrudeSketchGroup({
+    const execState = await enginelessExecutor(ast)
+    const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [100, 101] },
-      programMemory,
+      programMemory: execState.memory,
     })
     expect(result).toEqual(true)
   })
-  it('find extrude group', async () => {
-    const exampleCode = `const length001 = 2
-const part001 = startSketchAt([-1.41, 3.46])
+  it('find solid', async () => {
+    const exampleCode = `length001 = 2
+part001 = startSketchAt([-1.41, 3.46])
   |> line([19.49, 1.16], %, $seg01)
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
@@ -370,31 +370,31 @@ const part001 = startSketchAt([-1.41, 3.46])
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
-    const result = hasExtrudeSketchGroup({
+    const execState = await enginelessExecutor(ast)
+    const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [100, 101] },
-      programMemory,
+      programMemory: execState.memory,
     })
     expect(result).toEqual(true)
   })
   it('finds nothing', async () => {
-    const exampleCode = `const length001 = 2`
+    const exampleCode = `length001 = 2`
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
 
-    const programMemory = await enginelessExecutor(ast)
-    const result = hasExtrudeSketchGroup({
+    const execState = await enginelessExecutor(ast)
+    const result = hasExtrudeSketch({
       ast,
       selection: { type: 'default', range: [10, 11] },
-      programMemory,
+      programMemory: execState.memory,
     })
     expect(result).toEqual(false)
   })
 })
 
 describe('Testing findUsesOfTagInPipe', () => {
-  const exampleCode = `const part001 = startSketchOn('-XZ')
+  const exampleCode = `part001 = startSketchOn('-XZ')
 |> startProfileAt([68.12, 156.65], %)
 |> line([306.21, 198.82], %)
 |> line([306.21, 198.85], %, $seg01)
@@ -435,7 +435,7 @@ describe('Testing findUsesOfTagInPipe', () => {
 })
 
 describe('Testing hasSketchPipeBeenExtruded', () => {
-  const exampleCode = `const sketch001 = startSketchOn('XZ')
+  const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
@@ -448,8 +448,8 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-const extrude001 = extrude(10, sketch001)
-const sketch002 = startSketchOn(extrude001, $seg01)
+extrude001 = extrude(10, sketch001)
+sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
@@ -488,16 +488,16 @@ const sketch002 = startSketchOn(extrude001, $seg01)
   })
 })
 
-describe('Testing hasExtrudableGeometry', () => {
+describe('Testing doesSceneHaveSweepableSketch', () => {
   it('finds sketch001 pipe to be extruded', async () => {
-    const exampleCode = `const sketch001 = startSketchOn('XZ')
+    const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-const extrude001 = extrude(10, sketch001)
-const sketch002 = startSketchOn(extrude001, $seg01)
+extrude001 = extrude(10, sketch001)
+sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
@@ -506,21 +506,21 @@ const sketch002 = startSketchOn(extrude001, $seg01)
 `
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
-    const extrudable = hasExtrudableGeometry(ast)
+    const extrudable = doesSceneHaveSweepableSketch(ast)
     expect(extrudable).toBeTruthy()
   })
   it('find sketch002 NOT pipe to be extruded', async () => {
-    const exampleCode = `const sketch001 = startSketchOn('XZ')
+    const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-const extrude001 = extrude(10, sketch001)
+extrude001 = extrude(10, sketch001)
 `
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
-    const extrudable = hasExtrudableGeometry(ast)
+    const extrudable = doesSceneHaveSweepableSketch(ast)
     expect(extrudable).toBeFalsy()
   })
 })
@@ -533,15 +533,15 @@ describe('Testing traverse and pathToNode', () => {
       '.yo',
     ],
   ])('testing %s', async (testName, literalOfInterest) => {
-    const code = `const myVar = 5
-const sketch001 = startSketchOn('XZ')
+    const code = `myVar = 5
+sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-const bing = { yo: 55 }
-const myNestedVar = [
+bing = { yo: 55 }
+myNestedVar = [
   {
   prop:   line([bing.yo, 21], sketch001)
 }

@@ -1,11 +1,16 @@
 import toast from 'react-hot-toast'
 import ReactJson from 'react-json-view'
 import { useMemo } from 'react'
-import { ProgramMemory, Path, ExtrudeSurface } from 'lang/wasm'
+import {
+  ProgramMemory,
+  Path,
+  ExtrudeSurface,
+  sketchFromKclValue,
+} from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
-import { trap } from 'lib/trap'
+import { err, trap } from 'lib/trap'
 import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 
@@ -84,12 +89,13 @@ export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
   for (const [key, val] of programMemory?.visibleEntries()) {
     if (typeof val.value !== 'function') {
-      if (val.type === 'SketchGroup') {
-        processedMemory[key] = val.value.map(({ __geoMeta, ...rest }: Path) => {
+      const sg = sketchFromKclValue(val, null)
+      if (val.type === 'Solid') {
+        processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
-      } else if (val.type === 'ExtrudeGroup') {
-        processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
+      } else if (!err(sg)) {
+        processedMemory[key] = sg.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })
       } else if ((val.type as any) === 'Function') {

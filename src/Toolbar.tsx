@@ -24,6 +24,8 @@ import {
 import { useKclContext } from 'lang/KclProvider'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
 import { InteractionSequence } from 'components/Settings/AllKeybindingsFields'
+import { isDesktop } from 'lib/isDesktop'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 export function Toolbar({
   className = '',
@@ -72,12 +74,12 @@ export function Toolbar({
    */
   const configCallbackProps: ToolbarItemCallbackProps = useMemo(
     () => ({
-      modelingStateMatches: state.matches,
+      modelingState: state,
       modelingSend: send,
       commandBarSend,
       sketchPathId,
     }),
-    [state.matches, send, commandBarSend, sketchPathId]
+    [state, send, commandBarSend, sketchPathId]
   )
 
   /**
@@ -126,7 +128,7 @@ export function Toolbar({
   }, [currentMode, disableAllButtons, configCallbackProps])
 
   return (
-    <menu className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-20 dark:border-chalkboard-80 border-t-0 shadow-sm">
+    <menu className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm">
       <ul
         {...props}
         ref={toolbarButtonsRef}
@@ -189,6 +191,8 @@ export function Toolbar({
                     maybeIconConfig[0].disabled
                   }
                   name={maybeIconConfig[0].title}
+                  // aria-description is still in ARIA 1.3 draft.
+                  // eslint-disable-next-line jsx-a11y/aria-props
                   aria-description={maybeIconConfig[0].description}
                   onClick={() =>
                     maybeIconConfig[0].onClick(configCallbackProps)
@@ -229,6 +233,8 @@ export function Toolbar({
                   (!itemConfig.showTitle ? ' !px-0' : '')
                 }
                 name={itemConfig.title}
+                // aria-description is still in ARIA 1.3 draft.
+                // eslint-disable-next-line jsx-a11y/aria-props
                 aria-description={itemConfig.description}
                 aria-pressed={itemConfig.isActive}
                 disabled={
@@ -306,6 +312,11 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   return (
     <Tooltip
       inert={false}
+      wrapperStyle={
+        isDesktop()
+          ? ({ '-webkit-app-region': 'no-drag' } as React.CSSProperties)
+          : {}
+      }
       position="bottom"
       wrapperClassName="!p-4 !pointer-events-auto"
       contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
@@ -355,6 +366,7 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
               <li key={link.label} className="contents">
                 <a
                   href={link.url}
+                  onClick={openExternalBrowserIfDesktop(link.url)}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center rounded-sm p-1 no-underline text-inherit hover:bg-primary/10 hover:text-primary dark:hover:bg-chalkboard-70 dark:hover:text-inherit"
@@ -369,4 +381,4 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       )}
     </Tooltip>
   )
-}
+})

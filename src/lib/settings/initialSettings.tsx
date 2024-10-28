@@ -12,11 +12,13 @@ import {
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useRef } from 'react'
-import { open } from '@tauri-apps/plugin-dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
+import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 
 /**
  * A setting that can be set at the user or project level
@@ -63,8 +65,8 @@ export class Setting<T = unknown> {
   get user(): T | undefined {
     return this._user
   }
-  set user(v: T) {
-    this._user = this.validate(v) ? v : this._user
+  set user(v: T | undefined) {
+    this._user = v !== undefined ? (this.validate(v) ? v : this._user) : v
     this.current = this.resolve()
   }
   /**
@@ -73,8 +75,8 @@ export class Setting<T = unknown> {
   get project(): T | undefined {
     return this._project
   }
-  set project(v: T) {
-    this._project = this.validate(v) ? v : this._project
+  set project(v: T | undefined) {
+    this._project = v !== undefined ? (this.validate(v) ? v : this._project) : v
     this.current = this.resolve()
   }
   /**
@@ -99,6 +101,18 @@ export class Setting<T = unknown> {
         : this._default
       : this._default
   }
+  /**
+   * For the purposes of showing the `current` label in the command bar,
+   * is this setting at the given level the same as the given value?
+   */
+  public shouldShowCurrentLabel(
+    level: SettingsLevel | 'default',
+    valueToMatch: T
+  ): boolean {
+    return this[`_${level}`] === undefined
+      ? this.getFallback(level) === valueToMatch
+      : this[`_${level}`] === valueToMatch
+  }
   public getParentLevel(level: SettingsLevel): SettingsLevel | 'default' {
     return level === 'project' ? 'user' : 'default'
   }
@@ -114,6 +128,7 @@ export function createSettings() {
        * The overall appearance of the app: light, dark, or system
        */
       theme: new Setting<Themes>({
+        hideOnLevel: 'project',
         defaultValue: Themes.System,
         description: 'The overall appearance of the app',
         validate: (v) => isEnumMember(v, Themes),
@@ -192,7 +207,8 @@ export function createSettings() {
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
-        validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
+        validate: (v) =>
+          typeof v === 'string' && (v.length > 0 || !isDesktop()),
         Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (
@@ -205,27 +221,26 @@ export function createSettings() {
                 ref={inputRef}
               />
               <button
-                onClick={async () => {
-                  // In Tauri end-to-end tests we can't control the file picker,
+                onClick={toSync(async () => {
+                  // In desktop end-to-end tests we can't control the file picker,
                   // so we seed the new directory value in the element's dataset
-                  const newValue =
-                    inputRef.current && inputRef.current.dataset.testValue
-                      ? inputRef.current.dataset.testValue
-                      : await open({
-                          directory: true,
-                          recursive: true,
-                          defaultPath: value,
-                          title: 'Choose a new project directory',
-                        })
+                  const inputRefVal = inputRef.current?.dataset.testValue
                   if (
-                    newValue &&
-                    newValue !== null &&
-                    newValue !== value &&
-                    !Array.isArray(newValue)
+                    inputRef.current &&
+                    inputRefVal &&
+                    !Array.isArray(inputRefVal)
                   ) {
-                    updateValue(newValue)
+                    updateValue(inputRefVal)
+                  } else {
+                    const newPath = await window.electron.open({
+                      properties: ['openDirectory', 'createDirectory'],
+                      defaultPath: value,
+                      title: 'Choose a new project directory',
+                    })
+                    if (newPath.canceled) return
+                    updateValue(newPath.filePaths[0])
                   }
-                }}
+                }, reportRejection)}
                 className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
                 data-testid="project-directory-button"
               >
@@ -282,9 +297,9 @@ export function createSettings() {
               value: v,
               isCurrent:
                 v ===
-                settingsContext.modeling.mouseControls[
+                settingsContext.modeling.mouseControls.shouldShowCurrentLabel(
                   cmdContext.argumentsToSubmit.level as SettingsLevel
-                ],
+                ),
             })),
         },
         Component: ({ value, updateValue }) => (
@@ -323,6 +338,36 @@ export function createSettings() {
             </ul>
           </>
         ),
+      }),
+      /**
+       * Projection method applied to the 3D view, perspective or orthographic
+       */
+      cameraProjection: new Setting<CameraProjectionType>({
+        defaultValue: 'orthographic',
+        hideOnLevel: 'project',
+        description:
+          'Projection method applied to the 3D view, perspective or orthographic',
+        validate: (v) => ['perspective', 'orthographic'].includes(v),
+        commandConfig: {
+          inputType: 'options',
+          // This is how we could have toggling behavior for a non-boolean argument:
+          // Set it to "skippable", and make the default value the opposite of the current value
+          // skip: true,
+          defaultValueFromContext: (context) =>
+            context.modeling.cameraProjection.current === 'perspective'
+              ? 'orthographic'
+              : 'perspective',
+          options: (cmdContext, settingsContext) =>
+            (['perspective', 'orthographic'] as const).map((v) => ({
+              name: v.charAt(0).toUpperCase() + v.slice(1),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
       }),
       /**
        * Whether to highlight edges of 3D objects

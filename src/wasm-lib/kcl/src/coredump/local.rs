@@ -34,11 +34,15 @@ impl CoreDump for CoreDumper {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
 
+    fn kcl_code(&self) -> Result<String> {
+        Ok("".to_owned())
+    }
+
     fn pool(&self) -> Result<String> {
         Ok("".to_owned())
     }
 
-    async fn os(&self) -> Result<crate::coredump::OsInfo> {
+    fn os(&self) -> Result<crate::coredump::OsInfo> {
         Ok(crate::coredump::OsInfo {
             platform: Some(std::env::consts::OS.to_string()),
             arch: Some(std::env::consts::ARCH.to_string()),
@@ -47,7 +51,7 @@ impl CoreDump for CoreDumper {
         })
     }
 
-    fn is_tauri(&self) -> Result<bool> {
+    fn is_desktop(&self) -> Result<bool> {
         Ok(false)
     }
 

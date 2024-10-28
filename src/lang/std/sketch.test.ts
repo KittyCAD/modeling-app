@@ -106,7 +106,7 @@ describe('testing changeSketchArguments', () => {
   const lineAfterChange = 'lineTo([2, 3], %)'
   test('changeSketchArguments', async () => {
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+    const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)
@@ -117,14 +117,20 @@ describe('testing changeSketchArguments', () => {
     const ast = parse(code)
     if (err(ast)) return ast
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
-      programMemory,
-      [sourceStart, sourceStart + lineToChange.length],
-      [2, 3],
-      [0, 0]
+      execState.memory,
+      {
+        type: 'sourceRange',
+        sourceRange: [sourceStart, sourceStart + lineToChange.length],
+      },
+      {
+        type: 'straight-segment',
+        from: [0, 0],
+        to: [2, 3],
+      }
     )
     if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
     expect(recast(changeSketchArgsRetVal.modifiedAst)).toBe(expectedCode)
@@ -136,7 +142,7 @@ describe('testing addNewSketchLn', () => {
   test('addNewSketchLn', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchOn('XY')
+mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -144,14 +150,17 @@ const mySketch001 = startSketchOn('XY')
     const ast = parse(code)
     if (err(ast)) return ast
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
-    expect(sourceStart).toBe(95)
+    expect(sourceStart).toBe(89)
     const newSketchLnRetVal = addNewSketchLn({
       node: ast,
-      programMemory,
-      to: [2, 3],
-      from: [0, 0],
+      programMemory: execState.memory,
+      input: {
+        type: 'straight-segment',
+        from: [0, 0],
+        to: [2, 3],
+      },
       fnName: 'lineTo',
       pathToNode: [
         ['body', ''],
@@ -164,7 +173,7 @@ const mySketch001 = startSketchOn('XY')
     if (err(newSketchLnRetVal)) return newSketchLnRetVal
 
     // Enable rotations #152
-    let expectedCode = `const mySketch001 = startSketchOn('XY')
+    let expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -177,7 +186,7 @@ const mySketch001 = startSketchOn('XY')
 
     const modifiedAst2 = addCloseToPipe({
       node: ast,
-      programMemory,
+      programMemory: execState.memory,
       pathToNode: [
         ['body', ''],
         [0, 'index'],
@@ -188,7 +197,7 @@ const mySketch001 = startSketchOn('XY')
     })
     if (err(modifiedAst2)) return modifiedAst2
 
-    expectedCode = `const mySketch001 = startSketchOn('XY')
+    expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
@@ -203,7 +212,7 @@ describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
     const originalLine = 'lineTo([-1.59, -1.54], %)'
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+    const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> ${line}
@@ -221,17 +230,95 @@ describe('testing addTagForSketchOnFace', () => {
     const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
     const sketchOnFaceRetVal = addTagForSketchOnFace(
       {
-        // previousProgramMemory: programMemory, // redundant?
+        // previousProgramMemory: execState.memory, // redundant?
         pathToNode,
         node: ast,
       },
-      'lineTo'
+      'lineTo',
+      null
     )
     if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
     const { modifiedAst } = sketchOnFaceRetVal
     const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
     expect(recast(modifiedAst)).toBe(expectedCode)
+  })
+  const chamferTestCases = [
+    {
+      desc: 'chamfer in pipeExpr',
+      originalChamfer: `  |> chamfer({
+       length: 30,
+       tags: [seg01, getOppositeEdge(seg01)]
+     }, %)`,
+      expectedChamfer: `  |> chamfer({
+       length: 30,
+       tags: [getOppositeEdge(seg01)]
+     }, %, $seg03)
+  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+    },
+    {
+      desc: 'chamfer with its own variable',
+      originalChamfer: `chamf = chamfer({
+       length: 30,
+       tags: [seg01, getOppositeEdge(seg01)]
+     }, extrude001)`,
+      expectedChamfer: `chamf = chamfer({
+       length: 30,
+       tags: [getOppositeEdge(seg01)]
+     }, extrude001, $seg03)
+  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+    },
+    // Add more test cases here if needed
+  ] as const
+
+  chamferTestCases.forEach(({ originalChamfer, expectedChamfer, desc }) => {
+    it(`can break up chamfers in order to add tags - ${desc}`, async () => {
+      const genCode = (insertCode: string) => `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       217.26
+     ], %, $seg01)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+  |> close(%)
+extrude001 = extrude(100, sketch001)
+${insertCode}
+`
+      const code = genCode(originalChamfer)
+      const ast = parse(code)
+      await enginelessExecutor(ast)
+      const sourceStart = code.indexOf(originalChamfer)
+      const extraChars = originalChamfer.indexOf('chamfer')
+      const sourceRange: [number, number] = [
+        sourceStart + extraChars,
+        sourceStart + originalChamfer.length - extraChars,
+      ]
+
+      if (err(ast)) throw ast
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      console.log('pathToNode', pathToNode)
+      const sketchOnFaceRetVal = addTagForSketchOnFace(
+        {
+          pathToNode,
+          node: ast,
+        },
+        'chamfer',
+        {
+          type: 'edgeCut',
+          subType: 'opposite',
+          tagName: 'seg01',
+        }
+      )
+      if (err(sketchOnFaceRetVal)) throw sketchOnFaceRetVal
+      expect(recast(sketchOnFaceRetVal.modifiedAst)).toBe(
+        genCode(expectedChamfer)
+      )
+    })
   })
 })
 

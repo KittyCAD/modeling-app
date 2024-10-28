@@ -7,10 +7,14 @@ import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { editorShortcutMeta } from './KclEditorPane'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { kclManager } from 'lib/singletons'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { reportRejection } from 'lib/trap'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable()
+  const { commandBarSend } = useCommandsContext()
 
   return (
     <Menu>
@@ -46,7 +50,9 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           {convertToVarEnabled && (
             <Menu.Item>
               <button
-                onClick={() => handleConvertToVarClick()}
+                onClick={() => {
+                  handleConvertToVarClick().catch(reportRejection)
+                }}
                 className={styles.button}
               >
                 <span>Convert to Variable</span>
@@ -60,6 +66,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
               href="https://zoo.dev/docs/kcl"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={openExternalBrowserIfDesktop()}
             >
               <span>Read the KCL docs</span>
               <small>
@@ -73,13 +80,30 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
             </a>
           </Menu.Item>
           <Menu.Item>
+            <button
+              onClick={() => {
+                commandBarSend({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'code',
+                    name: 'open-kcl-example',
+                  },
+                })
+              }}
+              className={styles.button}
+            >
+              <span>Load a sample model</span>
+            </button>
+          </Menu.Item>
+          <Menu.Item>
             <a
               className={styles.button}
               href="https://zoo.dev/docs/kcl-samples"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={openExternalBrowserIfDesktop()}
             >
-              <span>KCL samples</span>
+              <span>View all samples</span>
               <small>
                 zoo.dev
                 <FontAwesomeIcon

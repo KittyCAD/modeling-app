@@ -1,6 +1,5 @@
 import { Completion } from '@codemirror/autocomplete'
 import { EditorView, ViewUpdate } from '@codemirror/view'
-import { EditorState } from '@codemirror/state'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -83,17 +82,13 @@ function CommandBarKclInput({
           if (event.key === 'Backspace' && value === '') {
             event.preventDefault()
             stepBack()
+          } else if (event.key === 'Enter') {
+            event.preventDefault()
+            handleSubmit()
           }
         },
       }),
       varMentions(varMentionData),
-      EditorState.transactionFilter.of((tr) => {
-        if (tr.newDoc.lines > 1) {
-          handleSubmit()
-          return []
-        }
-        return tr
-      }),
       EditorView.updateListener.of((vu: ViewUpdate) => {
         if (vu.docChanged) {
           setValue(vu.state.doc.toString())
@@ -143,10 +138,17 @@ function CommandBarKclInput({
   return (
     <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
-        <span className="capitalize text-chalkboard-80 dark:text-chalkboard-20">
+        <span
+          data-testid="cmd-bar-arg-name"
+          className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
+        >
           {arg.name}
         </span>
-        <div ref={editorRef} className={styles.editor} />
+        <div
+          data-testid="cmd-bar-arg-value"
+          ref={editorRef}
+          className={styles.editor}
+        />
         <CustomIcon
           name="equal"
           className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"

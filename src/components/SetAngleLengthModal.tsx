@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { type InstanceProps, create } from 'react-modal-promise'
-import { Value } from '../lang/wasm'
+import { Expr } from '../lang/wasm'
 import {
   AvailableVars,
   addToInputHelper,
@@ -13,7 +13,7 @@ import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 type ModalResolve = {
   value: string
   sign: number
-  valueNode: Value
+  valueNode: Expr
   variableName?: string
   newVariableInsertIndex: number
 }

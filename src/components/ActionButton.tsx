@@ -1,4 +1,5 @@
 import { ActionIcon, ActionIconProps } from './ActionIcon'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import React, { ForwardedRef, forwardRef } from 'react'
 import { PATHS } from 'lib/paths'
 import { Link } from 'react-router-dom'
@@ -41,7 +42,13 @@ export type ActionButtonProps =
 
 export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
   const classNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 ${
-    props.iconStart ? (props.iconEnd ? 'px-0' : 'pr-2') : 'px-2'
+    props.iconStart
+      ? props.iconEnd
+        ? 'px-0' // No padding if both icons are present
+        : 'pr-2' // Padding on the right if only the start icon is present
+      : props.iconEnd
+      ? 'pl-2' // Padding on the left if only the end icon is present
+      : 'px-2' // Padding on both sides if no icons are present
   } ${props.className ? props.className : ''}`
 
   switch (props.Element) {
@@ -107,6 +114,7 @@ export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
           ref={ref as ForwardedRef<HTMLAnchorElement>}
           to={to || PATHS.INDEX}
           className={classNames}
+          onClick={openExternalBrowserIfDesktop(to as string)}
           {...rest}
           target="_blank"
         >

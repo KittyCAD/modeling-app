@@ -36,6 +36,7 @@ import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompleti
 import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
 import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
 import { editorManager } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
 
 const copilotPluginAnnotation = Annotation.define<boolean>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(true)
@@ -266,7 +267,7 @@ export class CompletionRequester implements PluginValue {
 
     if (!this.client.ready) return
     try {
-      this.requestCompletions()
+      this.requestCompletions().catch(reportRejection)
     } catch (e) {
       console.error(e)
     }
@@ -462,7 +463,7 @@ export class CompletionRequester implements PluginValue {
       annotations: [copilotPluginEvent, Transaction.addToHistory.of(true)],
     })
 
-    this.accept(ghostText.uuid)
+    this.accept(ghostText.uuid).catch(reportRejection)
     return true
   }
 
@@ -490,7 +491,7 @@ export class CompletionRequester implements PluginValue {
       ],
     })
 
-    this.reject()
+    this.reject().catch(reportRejection)
     return false
   }
 

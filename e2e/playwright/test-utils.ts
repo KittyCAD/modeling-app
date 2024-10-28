@@ -2,21 +2,33 @@ import {
   expect,
   Page,
   Download,
-  TestInfo,
   BrowserContext,
+  TestInfo,
+  _electron as electron,
+  Locator,
+  test,
 } from '@playwright/test'
 import { EngineCommand } from 'lang/std/artifactGraph'
-import os from 'os'
 import fsp from 'fs/promises'
+import fsSync from 'fs'
+import { join } from 'path'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
-import { APP_NAME } from 'lib/constants'
-import waitOn from 'wait-on'
+import { APP_NAME, COOKIE_NAME } from 'lib/constants'
 import { secrets } from './secrets'
-import { TEST_SETTINGS_KEY, TEST_SETTINGS } from './storageStates'
+import {
+  TEST_SETTINGS_KEY,
+  TEST_SETTINGS,
+  IS_PLAYWRIGHT_KEY,
+} from './storageStates'
 import * as TOML from '@iarna/toml'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { isErrorWhitelisted } from './lib/console-error-whitelist'
+import { isArray } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -35,6 +47,17 @@ export const commonPoints = {
   num2: 14.44,
 }
 
+/** A semi-reliable color to check the default XZ plane on
+ * in dark mode in the default camera position
+ */
+export const darkModePlaneColorXZ: [number, number, number] = [50, 50, 99]
+
+/** A semi-reliable color to check the default dark mode bg color against */
+export const darkModeBgColor: [number, number, number] = [27, 27, 27]
+
+export const editorSelector = '[role="textbox"][data-language="kcl"]'
+type PaneId = 'variables' | 'code' | 'files' | 'logs'
+
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
@@ -44,7 +67,7 @@ async function waitForPageLoadWithRetry(page: Page) {
     })
 
     await expect(
-      page.getByRole('button', { name: 'Start Sketch' }),
+      page.getByRole('button', { name: 'sketch Start Sketch' }),
       errorMessage
     ).toBeEnabled({
       timeout: 20_000,
@@ -64,16 +87,15 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
-  const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
   await page.locator('.cm-content').click()
-  await page.keyboard.down(hotkey)
+  await page.keyboard.down('ControlOrMeta')
   await page.keyboard.press('a')
-  await page.keyboard.up(hotkey)
+  await page.keyboard.up('ControlOrMeta')
   await page.keyboard.press('Backspace')
   await expect(page.locator('.cm-content')).toHaveText('')
 }
 
-async function sendCustomCmd(page: Page, cmd: EngineCommand) {
+export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
   await page.getByTestId('custom-cmd-send-button').click()
 }
@@ -86,6 +108,8 @@ async function expectCmdLog(page: Page, locatorStr: string, timeout = 5000) {
   await expect(page.locator(locatorStr).last()).toBeVisible({ timeout })
 }
 
+// Ignoring the lint since I assume someone will want to use this for a test.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function waitForDefaultPlanesToBeVisible(page: Page) {
   await page.waitForFunction(
     () =>
@@ -94,15 +118,19 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openKclCodePanel(page: Page) {
-  const paneLocator = page.getByTestId('code-pane-button')
-  const ariaSelected = await paneLocator?.getAttribute('aria-pressed')
-  const isOpen = ariaSelected === 'true'
+async function openPane(page: Page, testId: string) {
+  const locator = page.getByTestId(testId)
+  await expect(locator).toBeVisible()
+  const isOpen = (await locator?.getAttribute('aria-pressed')) === 'true'
 
   if (!isOpen) {
-    await paneLocator.click()
-    await expect(paneLocator).toHaveAttribute('aria-pressed', 'true')
+    await locator.click()
+    await expect(locator).toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openKclCodePanel(page: Page) {
+  await openPane(page, 'code-pane-button')
 }
 
 async function closeKclCodePanel(page: Page) {
@@ -117,17 +145,10 @@ async function closeKclCodePanel(page: Page) {
 }
 
 async function openDebugPanel(page: Page) {
-  const debugLocator = page.getByTestId('debug-pane-button')
-  await expect(debugLocator).toBeVisible()
-  const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
-
-  if (!isOpen) {
-    await debugLocator.click()
-    await expect(debugLocator).toHaveAttribute('aria-pressed', 'true')
-  }
+  await openPane(page, 'debug-pane-button')
 }
 
-async function closeDebugPanel(page: Page) {
+export async function closeDebugPanel(page: Page) {
   const debugLocator = page.getByTestId('debug-pane-button')
   await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
@@ -135,6 +156,28 @@ async function closeDebugPanel(page: Page) {
     await debugLocator.click()
     await expect(debugLocator).not.toHaveAttribute('aria-pressed', 'true')
   }
+}
+
+async function openFilePanel(page: Page) {
+  await openPane(page, 'files-pane-button')
+}
+
+async function closeFilePanel(page: Page) {
+  const fileLocator = page.getByTestId('files-pane-button')
+  await expect(fileLocator).toBeVisible()
+  const isOpen = (await fileLocator?.getAttribute('aria-pressed')) === 'true'
+  if (isOpen) {
+    await fileLocator.click()
+    await expect(fileLocator).not.toHaveAttribute('aria-pressed', 'true')
+  }
+}
+
+async function openVariablesPane(page: Page) {
+  await openPane(page, 'variables-pane-button')
+}
+
+async function openLogsPane(page: Page) {
+  await openPane(page, 'logs-pane-button')
 }
 
 async function waitForCmdReceive(page: Page, commandType: string) {
@@ -163,7 +206,8 @@ export const wiggleMove = async (
       const isElVis = await page.locator(locator).isVisible()
       if (isElVis) return
     }
-    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
+    // x1 is 0.
+    const y1 = Math.sin((tau / steps) * j * freq) * amplitude
     const [x2, y2] = [
       Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
       Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
@@ -174,7 +218,7 @@ export const wiggleMove = async (
 }
 
 export const circleMove = async (
-  page: any,
+  page: Page,
   x: number,
   y: number,
   steps: number,
@@ -268,13 +312,31 @@ async function waitForAuthAndLsp(page: Page) {
   return waitForLspPromise
 }
 
-export async function getUtils(page: Page) {
+export function normaliseKclNumbers(code: string, ignoreZero = true): string {
+  const numberRegexp = /(?<!\w)-?\b\d+(\.\d+)?\b(?!\w)/g
+  const replaceNumber = (number: string) => {
+    if (ignoreZero && (number === '0' || number === '-0')) return number
+    const sign = number.startsWith('-') ? '-' : ''
+    return `${sign}12.34`
+  }
+  const replaceNumbers = (text: string) =>
+    text.replace(numberRegexp, replaceNumber)
+  return replaceNumbers(code)
+}
+
+export async function getUtils(page: Page, test_?: typeof test) {
+  if (!test) {
+    console.warn(
+      'Some methods in getUtils requires test object as second argument'
+    )
+  }
+
   // Chrome devtools protocol session only works in Chromium
   const browserType = page.context().browser()?.browserType().name()
   const cdpSession =
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
-  return {
+  const util = {
     waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
     waitForPageLoad: () => waitForPageLoad(page),
     waitForPageLoadWithRetry: () => waitForPageLoadWithRetry(page),
@@ -297,10 +359,11 @@ export async function getUtils(page: Page) {
     closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
-    openAndClearDebugPanel: async () => {
-      await openDebugPanel(page)
-      return clearCommandLogs(page)
-    },
+    openFilePanel: () => openFilePanel(page),
+    closeFilePanel: () => closeFilePanel(page),
+    openVariablesPane: () => openVariablesPane(page),
+    openLogsPane: () => openLogsPane(page),
+    openAndClearDebugPanel: () => openAndClearDebugPanel(page),
     clearAndCloseDebugPanel: async () => {
       await clearCommandLogs(page)
       return closeDebugPanel(page)
@@ -310,7 +373,7 @@ export async function getUtils(page: Page) {
     getSegmentBodyCoords: async (locator: string, px = 30) => {
       const overlay = page.locator(locator)
       const bbox = await overlay
-        .boundingBox({ timeout: 5000 })
+        .boundingBox({ timeout: 5_000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
@@ -327,9 +390,14 @@ export async function getUtils(page: Page) {
     getBoundingBox: async (locator: string) =>
       page
         .locator(locator)
-        .boundingBox()
+        .boundingBox({ timeout: 5_000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
+    normalisedEditorCode: async () => {
+      const code = await page.locator('.cm-content').innerText()
+      return normaliseKclNumbers(code)
+    },
+    normalisedCode: (code: string) => normaliseKclNumbers(code),
     canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
@@ -378,47 +446,9 @@ export async function getUtils(page: Page) {
       }
       return maxDiff
     },
-    doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
-      new Promise(async (resolve) => {
-        await page.screenshot({
-          path: './e2e/playwright/temp1.png',
-          fullPage: true,
-        })
-        await fn()
-        const isImageDiff = async () => {
-          await page.screenshot({
-            path: './e2e/playwright/temp2.png',
-            fullPage: true,
-          })
-          const screenshot1 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp1.png')
-          )
-          const screenshot2 = PNG.sync.read(
-            await fsp.readFile('./e2e/playwright/temp2.png')
-          )
-          const actualDiffCount = pixelMatch(
-            screenshot1.data,
-            screenshot2.data,
-            null,
-            screenshot1.width,
-            screenshot2.height
-          )
-          return actualDiffCount > diffCount
-        }
-
-        // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-        let count = 0
-        const interval = setInterval(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
-          }
-        }, 50)
-      }),
+    getPixelRGBs: getPixelRGBs(page),
+    doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
+      doAndWaitForImageDiff(page, fn, diffCount),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
@@ -427,9 +457,140 @@ export async function getUtils(page: Page) {
         return page.evaluate('window.tearDown()')
       }
 
-      cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
+      return cdpSession?.send(
+        'Network.emulateNetworkConditions',
+        networkOptions
+      )
+    },
+
+    toNormalizedCode: (text: string) => {
+      return text.replace(/\s+/g, '')
+    },
+
+    createAndSelectProject: async (hasText: string) => {
+      return test_?.step(
+        `Create and select project with text "${hasText}"`,
+        async () => {
+          // Without this, we get unreliable project creation. It's probably
+          // due to a race between the FS being read and clicking doing something.
+          await page.waitForTimeout(100)
+          await page.getByTestId('home-new-file').click()
+          const projectLinksPost = page.getByTestId('project-link')
+          await projectLinksPost.filter({ hasText }).click()
+        }
+      )
+    },
+
+    editorTextMatches: async (code: string) => {
+      const editor = page.locator(editorSelector)
+      return expect(editor).toHaveText(code, { useInnerText: true })
+    },
+
+    pasteCodeInEditor: async (code: string) => {
+      return test?.step('Paste in KCL code', async () => {
+        const editor = page.locator(editorSelector)
+        await editor.fill(code)
+        await util.editorTextMatches(code)
+      })
+    },
+
+    clickPane: async (paneId: PaneId) => {
+      return test?.step(`Open ${paneId} pane`, async () => {
+        await page.getByTestId(paneId + '-pane-button').click()
+        await expect(page.locator('#' + paneId + '-pane')).toBeVisible()
+      })
+    },
+
+    createNewFile: async (name: string) => {
+      return test?.step(`Create a file named ${name}`, async () => {
+        // If the application is in the middle of connecting a stream
+        // then creating a new file won't work in the end.
+        await expect(
+          page.getByRole('button', { name: 'Start Sketch' })
+        ).not.toBeDisabled()
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+      })
+    },
+
+    selectFile: async (name: string) => {
+      return test?.step(`Select ${name}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click()
+      })
+    },
+
+    createNewFileAndSelect: async (name: string) => {
+      return test?.step(`Create a file named ${name}, select it`, async () => {
+        await openFilePanel(page)
+        await page.getByTestId('create-file-button').click()
+        await page.getByTestId('file-rename-field').fill(name)
+        await page.keyboard.press('Enter')
+        const newFile = page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+
+        await expect(newFile).toBeVisible()
+        await newFile.click()
+      })
+    },
+
+    renameFile: async (fromName: string, toName: string) => {
+      return test?.step(`Rename ${fromName} to ${toName}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: fromName })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-rename').click()
+        await page.getByTestId('file-rename-field').fill(toName)
+        await page.keyboard.press('Enter')
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: toName })
+          .click()
+      })
+    },
+
+    deleteFile: async (name: string) => {
+      return test?.step(`Delete ${name}`, async () => {
+        await page
+          .locator('[data-testid="file-pane-scroll-container"] button')
+          .filter({ hasText: name })
+          .click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await page.getByTestId('delete-confirmation').click()
+      })
+    },
+
+    /**
+     * @deprecated Sorry I don't have time to fix this right now, but runs like
+     * the one linked below show me that setting the open panes in this manner is not reliable.
+     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
+     * or you can imperatively open the panes with functions like {openKclCodePanel}
+     * (or we can make a general openPane function that takes a paneId).,
+     * but having a separate initScript does not seem to work reliably.
+     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
+     */
+    panesOpen: async (paneIds: PaneId[]) => {
+      return test?.step(`Setting ${paneIds} panes to be open`, async () => {
+        await page.addInitScript(
+          ({ PERSIST_MODELING_CONTEXT, paneIds }) => {
+            localStorage.setItem(
+              PERSIST_MODELING_CONTEXT,
+              JSON.stringify({ openPanes: paneIds })
+            )
+          },
+          { PERSIST_MODELING_CONTEXT, paneIds }
+        )
+        await page.reload()
+      })
     },
   }
+
+  return util
 }
 
 type TemplateOptions = Array<number | Array<number>>
@@ -450,7 +611,7 @@ const _makeTemplate = (
   templateParts: TemplateStringsArray,
   ...options: TemplateOptions
 ) => {
-  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  const length = Math.max(...options.map((a) => (isArray(a) ? a[0] : 0)))
   let reExpTemplate = ''
   for (let i = 0; i < length; i++) {
     const currentStr = templateParts.map((str, index) => {
@@ -458,7 +619,7 @@ const _makeTemplate = (
       return (
         escapeRegExp(str) +
         String(
-          Array.isArray(currentOptions)
+          isArray(currentOptions)
             ? currentOptions[i]
             : typeof currentOptions === 'number'
             ? currentOptions
@@ -513,14 +674,36 @@ export interface Paths {
 
 export const doExport = async (
   output: Models['OutputFormat_type'],
-  page: Page
+  page: Page,
+  exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
-  await page.getByRole('button', { name: APP_NAME }).click()
-  const exportMenuButton = page.getByRole('button', {
-    name: 'Export current part',
-  })
-  await expect(exportMenuButton).toBeVisible()
-  await exportMenuButton.click()
+  if (exportFrom === 'dropdown') {
+    await page.getByRole('button', { name: APP_NAME }).click()
+    const exportMenuButton = page.getByRole('button', {
+      name: 'Export current part',
+    })
+    await expect(exportMenuButton).toBeVisible()
+    await exportMenuButton.click()
+  } else if (exportFrom === 'sidebarButton') {
+    await expect(page.getByTestId('export-pane-button')).toBeVisible()
+    await page.getByTestId('export-pane-button').click()
+  } else if (exportFrom === 'commandBar') {
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    await expect(commandBarButton).toBeVisible()
+    // Click the command bar button
+    await commandBarButton.click()
+
+    // Wait for the command bar to appear
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeVisible()
+
+    const textToCadCommand = page.getByRole('option', {
+      name: 'floppy disk arrow Export',
+    })
+    await expect(textToCadCommand.first()).toBeVisible()
+    // Click the Text-to-CAD command
+    await textToCadCommand.first().click()
+  }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
   // Go through export via command bar
@@ -547,13 +730,21 @@ export const doExport = async (
   const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
   let downloadCnt = 0
 
-  page.on('download', async (download) => {
-    if (downloadCnt === 0) {
-      downloadResolve1(download)
-    }
-    downloadCnt++
-  })
+  if (exportFrom === 'dropdown')
+    page.on('download', async (download) => {
+      if (downloadCnt === 0) {
+        downloadResolve1(download)
+      }
+      downloadCnt++
+    })
   await page.getByRole('button', { name: 'Submit command' }).click()
+  if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
+    return {
+      modelPath: '',
+      imagePath: '',
+      outputType: output.type,
+    }
+  }
 
   // Handle download
   const download = await downloadPromise1
@@ -582,11 +773,6 @@ export const doExport = async (
   }
 }
 
-/**
- * Gets the appropriate modifier key for the platform.
- */
-export const metaModifier = os.platform() === 'darwin' ? 'Meta' : 'Control'
-
 export async function tearDown(page: Page, testInfo: TestInfo) {
   if (testInfo.status === 'skipped') return
   if (testInfo.status === 'failed') return
@@ -606,26 +792,309 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   await page.waitForTimeout(3000)
 }
 
-export async function setup(context: BrowserContext, page: Page) {
-  // wait for Vite preview server to be up
-  await waitOn({
-    resources: ['tcp:3000'],
-    timeout: 5000,
-  })
-
+// settingsOverrides may need to be augmented to take more generic items,
+// but we'll be strict for now
+export async function setup(
+  context: BrowserContext,
+  page: Page,
+  testInfo?: TestInfo
+) {
   await context.addInitScript(
-    async ({ token, settingsKey, settings }) => {
+    async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+      localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
-      localStorage.setItem('playwright', 'true')
+      localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
     },
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS }),
+      settings: TOML.stringify({
+        settings: {
+          ...TEST_SETTINGS,
+          app: {
+            ...TEST_SETTINGS.projects,
+            projectDirectory: TEST_SETTINGS.app.projectDirectory,
+            onboardingStatus: 'dismissed',
+            theme: 'dark',
+          },
+        } as Partial<SaveSettingsPayload>,
+      }),
+      IS_PLAYWRIGHT_KEY,
     }
   )
+
+  await context.addCookies([
+    {
+      name: COOKIE_NAME,
+      value: secrets.token,
+      path: '/',
+      domain: 'localhost',
+      secure: true,
+    },
+  ])
+
+  failOnConsoleErrors(page, testInfo)
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
+
+  // Trigger a navigation, since loading file:// doesn't.
+  await page.reload()
+}
+
+export async function setupElectron({
+  testInfo,
+  folderSetupFn,
+  cleanProjectDir = true,
+  appSettings,
+}: {
+  testInfo: TestInfo
+  folderSetupFn?: (projectDirName: string) => Promise<void>
+  cleanProjectDir?: boolean
+  appSettings?: Partial<SaveSettingsPayload>
+}) {
+  // create or otherwise clear the folder
+  const projectDirName = testInfo.outputPath('electron-test-projects-dir')
+  try {
+    if (fsSync.existsSync(projectDirName) && cleanProjectDir) {
+      await fsp.rm(projectDirName, { recursive: true })
+    }
+  } catch (e) {
+    console.error(e)
+  }
+
+  if (cleanProjectDir) {
+    await fsp.mkdir(projectDirName)
+  }
+
+  const electronApp = await electron.launch({
+    args: ['.', '--no-sandbox'],
+    env: {
+      ...process.env,
+      TEST_SETTINGS_FILE_KEY: projectDirName,
+      IS_PLAYWRIGHT: 'true',
+    },
+    ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
+      ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
+      : {}),
+  })
+  const context = electronApp.context()
+  const page = await electronApp.firstWindow()
+  context.on('console', console.log)
+  page.on('console', console.log)
+
+  if (cleanProjectDir) {
+    const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
+    const settingsOverrides = TOML.stringify(
+      appSettings
+        ? {
+            settings: {
+              ...TEST_SETTINGS,
+              ...appSettings,
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+                ...appSettings.app,
+              },
+            },
+          }
+        : {
+            settings: {
+              ...TEST_SETTINGS,
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+              },
+            },
+          }
+    )
+    await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
+  }
+
+  await folderSetupFn?.(projectDirName)
+
+  await setup(context, page)
+
+  return { electronApp, page, dir: projectDirName }
+}
+
+function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
+  // enabled for chrome for now
+  if (page.context().browser()?.browserType().name() === 'chromium') {
+    page.on('pageerror', (exception) => {
+      if (isErrorWhitelisted(exception)) {
+        return
+      }
+
+      // only set this env var to false if you want to collect console errors
+      // This can be configured in the GH workflow.  This should be set to true by default (we want tests to fail when
+      // unwhitelisted console errors are detected).
+      if (process.env.FAIL_ON_CONSOLE_ERRORS === 'true') {
+        // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
+        // use expect to prevent page from closing and not cleaning up
+        expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
+          
+          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
+          `).toEqual('Console error detected')
+      } else {
+        // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
+        fsp
+          .appendFile(
+            './test-results/exceptions.txt',
+            [
+              '~~~',
+              `triggered_by_test:${
+                testInfo?.file + ' ' + (testInfo?.title || ' ')
+              }`,
+              `name:${exception.name}`,
+              `message:${exception.message}`,
+              `stack:${exception.stack}`,
+              `project:${testInfo?.project.name}`,
+              '~~~',
+            ].join('\n')
+          )
+          .catch((err) => {
+            console.error(err)
+          })
+      }
+    })
+  }
+}
+export async function isOutOfViewInScrollContainer(
+  element: Locator,
+  container: Locator
+): Promise<boolean> {
+  const elementBox = await element.boundingBox({ timeout: 5_000 })
+  const containerBox = await container.boundingBox({ timeout: 5_000 })
+
+  let isOutOfView = false
+  if (elementBox && containerBox)
+    return (
+      elementBox.y + elementBox.height > containerBox.y + containerBox.height ||
+      elementBox.y < containerBox.y ||
+      elementBox.x + elementBox.width > containerBox.x + containerBox.width ||
+      elementBox.x < containerBox.x
+    )
+
+  return isOutOfView
+}
+
+export async function createProjectAndRenameIt({
+  name,
+  page,
+}: {
+  name: string
+  page: Page
+}) {
+  await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page.getByText('Successfully created')).toBeVisible()
+  await expect(page.getByText('Successfully created')).not.toBeVisible()
+
+  await expect(page.getByText(`project-000`)).toBeVisible()
+  await page.getByText(`project-000`).hover()
+  await page.getByText(`project-000`).focus()
+
+  await page.getByLabel('sketch').first().click()
+
+  await page.waitForTimeout(100)
+
+  // type the name passed in
+  await page.keyboard.press('Backspace')
+  await page.keyboard.type(name)
+
+  await page.getByLabel('checkmark').last().click()
+}
+
+export function executorInputPath(fileName: string): string {
+  return join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+}
+
+export async function doAndWaitForImageDiff(
+  page: Page,
+  fn: () => Promise<unknown>,
+  diffCount = 200
+) {
+  return new Promise<boolean>((resolve) => {
+    ;(async () => {
+      await page.screenshot({
+        path: './e2e/playwright/temp1.png',
+        fullPage: true,
+      })
+      await fn()
+      const isImageDiff = async () => {
+        await page.screenshot({
+          path: './e2e/playwright/temp2.png',
+          fullPage: true,
+        })
+        const screenshot1 = PNG.sync.read(
+          await fsp.readFile('./e2e/playwright/temp1.png')
+        )
+        const screenshot2 = PNG.sync.read(
+          await fsp.readFile('./e2e/playwright/temp2.png')
+        )
+        const actualDiffCount = pixelMatch(
+          screenshot1.data,
+          screenshot2.data,
+          null,
+          screenshot1.width,
+          screenshot2.height
+        )
+        return actualDiffCount > diffCount
+      }
+
+      // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
+      let count = 0
+      const interval = setInterval(() => {
+        ;(async () => {
+          count++
+          if (await isImageDiff()) {
+            clearInterval(interval)
+            resolve(true)
+          } else if (count > 100) {
+            clearInterval(interval)
+            resolve(false)
+          }
+        })().catch(reportRejection)
+      }, 50)
+    })().catch(reportRejection)
+  })
+}
+
+export async function openAndClearDebugPanel(page: Page) {
+  await openDebugPanel(page)
+  return clearCommandLogs(page)
+}
+
+export function sansWhitespace(str: string) {
+  return str.replace(/\s+/g, '').trim()
+}
+
+export function getPixelRGBs(page: Page) {
+  return async (
+    coords: { x: number; y: number },
+    radius: number
+  ): Promise<[number, number, number][]> => {
+    const buffer = await page.screenshot({
+      fullPage: true,
+    })
+    const screenshot = await PNG.sync.read(buffer)
+    const pixMultiplier: number = await page.evaluate('window.devicePixelRatio')
+    const allCords: [number, number][] = [[coords.x, coords.y]]
+    for (let i = 1; i < radius; i++) {
+      allCords.push([coords.x + i, coords.y])
+      allCords.push([coords.x - i, coords.y])
+      allCords.push([coords.x, coords.y + i])
+      allCords.push([coords.x, coords.y - i])
+    }
+    return allCords.map(([x, y]) => {
+      const index =
+        (screenshot.width * y * pixMultiplier + x * pixMultiplier) * 4 // rbga is 4 channels
+      return [
+        screenshot.data[index],
+        screenshot.data[index + 1],
+        screenshot.data[index + 2],
+      ]
+    })
+  }
 }

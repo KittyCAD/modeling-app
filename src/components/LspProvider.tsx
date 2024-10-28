@@ -15,7 +15,7 @@ import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
-import { FileEntry } from 'lib/types'
+import { FileEntry } from 'lib/project'
 import Worker from 'editor/plugins/lsp/worker.ts?worker'
 import {
   KclWorkerOptions,
@@ -25,7 +25,7 @@ import {
 import { wasmUrl } from 'lang/wasm'
 import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { err } from 'lib/trap'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { codeManager } from 'lib/singletons'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
@@ -125,7 +125,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!isTauri() && isKclLspReady && kclLspClient && codeManager.code) {
+    if (!isDesktop() && isKclLspReady && kclLspClient && codeManager.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
@@ -160,7 +160,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
                 // Update the folding ranges, since the AST has changed.
                 // This is a hack since codemirror does not support async foldService.
                 // When they do we can delete this.
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.updateFoldingRanges()
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.requestSemanticTokens()
                 break
               case 'kcl/memoryUpdated':

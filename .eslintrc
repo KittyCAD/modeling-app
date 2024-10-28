@@ -13,6 +13,8 @@
       "plugin:css-modules/recommended"
     ],
     "rules": {
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": "error",
       "semi": [
         "error",
         "never"
@@ -24,8 +26,9 @@
       {
         "files": ["e2e/**/*.ts"], // Update the pattern based on your file structure
         "rules": {
-          "@typescript-eslint/no-floating-promises": "warn",
-          "testing-library/prefer-screen-queries": "off"
+          "suggest-no-throw/suggest-no-throw": "off",
+          "testing-library/prefer-screen-queries": "off",
+          "jest/valid-expect": "off"
         }
       },
       {

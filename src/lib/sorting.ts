@@ -1,5 +1,5 @@
 import { CustomIconName } from 'components/CustomIcon'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
 
 const DESC = ':desc'
 

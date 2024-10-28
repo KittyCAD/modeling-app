@@ -1,10 +1,4 @@
-import {
-  IconDefinition,
-  faBugSlash,
-  faCode,
-  faCodeCommit,
-  faSquareRootVariable,
-} from '@fortawesome/free-solid-svg-icons'
+import { IconDefinition, faBugSlash } from '@fortawesome/free-solid-svg-icons'
 import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
 import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
@@ -15,6 +9,8 @@ import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
 import { useKclContext } from 'lang/KclProvider'
 import { editorManager } from 'lib/singletons'
+import { ContextFrom } from 'xstate'
+import { settingsMachine } from 'machines/settingsMachine'
 
 export type SidebarType =
   | 'code'
@@ -38,6 +34,8 @@ export interface BadgeInfo {
  */
 interface PaneCallbackProps {
   kclContext: ReturnType<typeof useKclContext>
+  settings: ContextFrom<typeof settingsMachine>
+  platform: 'web' | 'desktop'
 }
 
 export type SidebarPane = {
@@ -47,15 +45,26 @@ export type SidebarPane = {
   keybinding: string
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
-  hideOnPlatform?: 'desktop' | 'web'
+  hide?: boolean | ((props: PaneCallbackProps) => boolean)
   showBadge?: BadgeInfo
+}
+
+export type SidebarAction = {
+  id: string
+  title: string
+  icon: CustomIconName
+  iconClassName?: string // Just until we get rid of FontAwesome icons
+  keybinding: string
+  action: () => void
+  hide?: boolean | ((props: PaneCallbackProps) => boolean)
+  disable?: () => string | undefined
 }
 
 export const sidebarPanes: SidebarPane[] = [
   {
     id: 'code',
     title: 'KCL Code',
-    icon: faCode,
+    icon: 'code',
     Content: KclEditorPane,
     keybinding: PANE_KEYBINDING_PREFIX + 'c',
     Menu: KclEditorMenu,
@@ -76,12 +85,12 @@ export const sidebarPanes: SidebarPane[] = [
     Content: FileTreeInner,
     keybinding: PANE_KEYBINDING_PREFIX + 'f',
     Menu: FileTreeMenu,
-    hideOnPlatform: 'web',
+    hide: ({ platform }) => platform === 'web',
   },
   {
     id: 'variables',
     title: 'Variables',
-    icon: faSquareRootVariable,
+    icon: 'make-variable',
     Content: MemoryPane,
     Menu: MemoryPaneMenu,
     keybinding: PANE_KEYBINDING_PREFIX + 'v',
@@ -89,7 +98,7 @@ export const sidebarPanes: SidebarPane[] = [
   {
     id: 'logs',
     title: 'Logs',
-    icon: faCodeCommit,
+    icon: 'logs',
     Content: LogsPane,
     keybinding: PANE_KEYBINDING_PREFIX + 'l',
   },
@@ -99,5 +108,6 @@ export const sidebarPanes: SidebarPane[] = [
     icon: faBugSlash,
     Content: DebugPane,
     keybinding: PANE_KEYBINDING_PREFIX + 'd',
+    hide: ({ settings }) => !settings.modeling.showDebugPanel.current,
   },
 ]

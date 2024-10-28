@@ -3,30 +3,36 @@ use schemars::JsonSchema;
 use crate::{
     ast::types::FunctionExpression,
     errors::KclError,
-    executor::{DynamicState, ExecutorContext, MemoryFunction, MemoryItem, Metadata, ProgramMemory, ProgramReturn},
+    executor::{
+        call_user_defined_function, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
+    },
 };
 
-/// A function being used as a parameter into a stdlib function.
+/// A function being used as a parameter into a stdlib function.  This is a
+/// closure, plus everything needed to execute it.
 pub struct FunctionParam<'a> {
-    pub inner: &'a MemoryFunction,
+    pub inner: Option<&'a MemoryFunction>,
     pub memory: ProgramMemory,
-    pub dynamic_state: DynamicState,
     pub fn_expr: Box<FunctionExpression>,
     pub meta: Vec<Metadata>,
     pub ctx: ExecutorContext,
 }
 
 impl<'a> FunctionParam<'a> {
-    pub async fn call(&self, args: Vec<MemoryItem>) -> Result<Option<ProgramReturn>, KclError> {
-        (self.inner)(
-            args,
-            self.memory.clone(),
-            self.fn_expr.clone(),
-            self.meta.clone(),
-            self.dynamic_state.clone(),
-            self.ctx.clone(),
-        )
-        .await
+    pub async fn call(&self, exec_state: &mut ExecState, args: Vec<KclValue>) -> Result<Option<KclValue>, KclError> {
+        if let Some(inner) = self.inner {
+            inner(
+                args,
+                self.memory.clone(),
+                self.fn_expr.clone(),
+                self.meta.clone(),
+                exec_state,
+                self.ctx.clone(),
+            )
+            .await
+        } else {
+            call_user_defined_function(args, &self.memory, self.fn_expr.as_ref(), exec_state, &self.ctx).await
+        }
     }
 }
 

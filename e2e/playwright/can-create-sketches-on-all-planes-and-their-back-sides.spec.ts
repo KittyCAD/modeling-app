@@ -3,8 +3,8 @@ import { getUtils, setup, tearDown } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -44,7 +44,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
       },
     }
 
-    const code = `const sketch001 = startSketchOn('${plane}')
+    const code = `sketch001 = startSketchOn('${plane}')
     |> startProfileAt([0.9, -1.22], %)`
 
     await u.openDebugPanel()
@@ -61,7 +61,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
     await page.waitForTimeout(300) // wait for animation
 
     await expect(
-      page.getByRole('button', { name: 'Line', exact: true })
+      page.getByRole('button', { name: 'line Line', exact: true })
     ).toBeVisible()
 
     // draw a line
@@ -72,7 +72,10 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 
     await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page.getByRole('button', { name: 'Line', exact: true }).click()
+    await page
+      .getByRole('button', { name: 'line Line', exact: true })
+      .first()
+      .click()
     await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')

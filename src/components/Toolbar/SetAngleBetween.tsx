@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
+import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -10,8 +10,9 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
-  TransformInfo,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
@@ -35,13 +36,13 @@ export function angleBetweenInfo({
   )
 
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Value>(kclManager.ast, pathToNode)
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
   const _err1 = _nodes.find(err)
   if (err(_err1)) return _err1
-  const nodes = _nodes as Value[]
+  const nodes = _nodes as Expr[]
 
   const _varDecs = paths.map((pathToNode) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
@@ -133,11 +134,9 @@ export async function applyConstraintAngleBetween({
     }
   }
 
-  const finalValue = removeDoubleNegatives(
-    valueNode as BinaryPart,
-    sign,
-    variableName
-  )
+  if (!isExprBinaryPart(valueNode))
+    return Promise.reject('Invalid valueNode, is not a BinaryPart')
+  const finalValue = removeDoubleNegatives(valueNode, sign, variableName)
   // transform again but forcing certain values
   const transformed2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,

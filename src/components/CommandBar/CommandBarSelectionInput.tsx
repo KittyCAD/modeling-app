@@ -9,7 +9,7 @@ import {
   getSelectionTypeDisplayText,
 } from 'lib/selections'
 import { modelingMachine } from 'machines/modelingMachine'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
 const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
@@ -31,8 +31,8 @@ function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
   return Array.from(semanticSelectionType)
 }
 
-const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
-  snapshot.context.selectionRanges
+const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
+  snapshot?.context.selectionRanges
 
 function CommandBarSelectionInput({
   arg,
@@ -48,15 +48,15 @@ function CommandBarSelectionInput({
   const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
-  const initSelectionsByType = useCallback(() => {
-    const selectionRangeEnd = selection.codeBasedSelections[0]?.range[1]
+  const selectionsByType = useMemo(() => {
+    const selectionRangeEnd = selection?.codeBasedSelections[0]?.range[1]
     return !selectionRangeEnd || selectionRangeEnd === code.length
       ? 'none'
       : getSelectionType(selection)
   }, [selection, code])
-  const selectionsByType = initSelectionsByType()
-  const [canSubmitSelection, setCanSubmitSelection] = useState<boolean>(
-    canSubmitSelectionArg(selectionsByType, arg)
+  const canSubmitSelection = useMemo<boolean>(
+    () => canSubmitSelectionArg(selectionsByType, arg),
+    [selectionsByType]
   )
 
   useEffect(() => {
@@ -66,26 +66,18 @@ function CommandBarSelectionInput({
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already
   useEffect(() => {
-    console.log('selection input effect', {
-      selectionsByType,
-      canSubmitSelection,
-      arg,
-    })
-    setCanSubmitSelection(canSubmitSelectionArg(selectionsByType, arg))
     const argValue = commandBarState.context.argumentsToSubmit[arg.name]
     if (canSubmitSelection && arg.skip && argValue === undefined) {
-      handleSubmit({
-        preventDefault: () => {},
-      } as React.FormEvent<HTMLFormElement>)
+      handleSubmit()
     }
-  }, [selectionsByType, arg])
+  }, [canSubmitSelection])
 
   function handleChange() {
     inputRef.current?.focus()
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
+    e?.preventDefault()
 
     if (!canSubmitSelection) {
       setHasSubmitted(true)
@@ -99,7 +91,7 @@ function CommandBarSelectionInput({
     <form id="arg-form" onSubmit={handleSubmit}>
       <label
         className={
-          'relative flex items-center mx-4 my-4 ' +
+          'relative flex flex-col mx-4 my-4 ' +
           (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
         }
       >
@@ -108,13 +100,18 @@ function CommandBarSelectionInput({
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
+        {arg.warningMessage && (
+          <p className="text-warn-80 bg-warn-10 px-2 py-1 rounded-sm mt-3 mr-2 -mb-2 w-full text-sm cursor-default">
+            {arg.warningMessage}
+          </p>
+        )}
         <input
           id="selection"
           name="selection"
           ref={inputRef}
           required
           placeholder="Select an entity with your mouse"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-default"
           onKeyDown={(event) => {
             if (event.key === 'Backspace') {
               stepBack()

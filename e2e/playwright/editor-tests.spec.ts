@@ -1,9 +1,19 @@
 import { test, expect } from '@playwright/test'
+import fsp from 'fs/promises'
 import { uuidv4 } from 'lib/utils'
-import { getUtils, setup, tearDown } from './test-utils'
+import {
+  darkModeBgColor,
+  darkModePlaneColorXZ,
+  executorInputPath,
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+} from './test-utils'
+import { join } from 'path'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -16,25 +26,24 @@ test.describe('Editor tests', () => {
     await page.setViewportSize({ width: 1000, height: 500 })
 
     await u.waitForAuthSkipAppStart()
-    const CtrlKey = process.platform === 'darwin' ? 'Meta' : 'Control'
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)`)
 
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -42,12 +51,12 @@ test.describe('Editor tests', () => {
     // |> close(%)`)
 
     // uncomment the code
-    await page.keyboard.down(CtrlKey)
+    await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
-    await page.keyboard.up(CtrlKey)
+    await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -67,7 +76,7 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`const sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -77,7 +86,7 @@ test.describe('Editor tests', () => {
     await page.locator('button:has-text("Format code")').click()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -85,10 +94,67 @@ test.describe('Editor tests', () => {
     |> close(%)`)
   })
 
+  test('if you click the format button it formats your code and executes so lints are still there', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    await u.codeLocator.click()
+    await page.keyboard.type(`sketch_001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
+
+    await page.locator('#code-pane button:first-child').click()
+    await page.locator('button:has-text("Format code")').click()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`sketch_001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
+  })
+
   test('fold gutters work', async ({ page }) => {
     const u = await getUtils(page)
 
-    const fullCode = `const sketch001 = startSketchOn('XY')
+    const fullCode = `sketch001 = startSketchOn('XY')
      |> startProfileAt([-10, -10], %)
      |> line([20, 0], %)
      |> line([0, 20], %)
@@ -97,7 +163,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
      |> startProfileAt([-10, -10], %)
      |> line([20, 0], %)
      |> line([0, 20], %)
@@ -135,7 +201,7 @@ test.describe('Editor tests', () => {
     await foldGutterFoldLine.click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XY')…   `
+      `sketch001 = startSketchOn('XY')…   `
     )
     await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
     await expect(foldGutterFoldLine).not.toBeVisible()
@@ -148,9 +214,7 @@ test.describe('Editor tests', () => {
     // Delete all the code.
     await page.locator('.cm-content').click()
     // Select all
-    await page.keyboard.press('Control+A')
-    await page.keyboard.press('Backspace')
-    await page.keyboard.press('Meta+A')
+    await page.keyboard.press('ControlOrMeta+A')
     await page.keyboard.press('Backspace')
 
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -165,7 +229,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -209,7 +273,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -236,12 +300,73 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('Alt+Shift+KeyF')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
     |> line([-20, 0], %)
     |> close(%)`)
+  })
+
+  test('if you use the format keyboard binding it formats your code and executes so lints are shown', async ({
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch_001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`
+      )
+      localStorage.setItem('disableAxis', 'true')
+    })
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
+
+    // focus the editor
+    await u.codeLocator.click()
+
+    // Hit alt+shift+f to format the code
+    await page.keyboard.press('Alt+Shift+KeyF')
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`sketch_001 = startSketchOn('XY')
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('Identifiers must be lowerCamelCase').first()
+    ).toBeVisible()
   })
 
   test('if you write kcl with lint errors you get lints', async ({ page }) => {
@@ -254,9 +379,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type('const my_snake_case_var = 5')
+    await page.keyboard.type('my_snake_case_var = 5')
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const myCamelCaseVar = 5')
+    await page.keyboard.type('myCamelCaseVar = 5')
     await page.keyboard.press('Enter')
 
     // press arrows to clear autocomplete
@@ -273,7 +398,7 @@ test.describe('Editor tests', () => {
     ).toBeVisible()
 
     // select the line that's causing the error and delete it
-    await page.getByText('const my_snake_case_var = 5').click()
+    await page.getByText('my_snake_case_var = 5').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('Home')
@@ -289,7 +414,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
@@ -344,9 +469,9 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowRight')
 
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const topAng = 30')
+    await page.keyboard.type('topAng = 30')
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const bottomAng = 25')
+    await page.keyboard.type('bottomAng = 25')
     await page.keyboard.press('Enter')
 
     // error in guter
@@ -354,7 +479,7 @@ test.describe('Editor tests', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token').first()).toBeVisible()
+    await expect(page.getByText('Unexpected token: $').first()).toBeVisible()
 
     // select the line that's causing the error and delete it
     await page.getByText('$ error').click()
@@ -368,11 +493,11 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     // let's check we get an error when defining the same variable twice
-    await page.getByText('const bottomAng = 25').click()
+    await page.getByText('bottomAng = 25').click()
     await page.keyboard.press('Enter')
     await page.keyboard.type("// Let's define the same thing twice")
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const topAng = 42')
+    await page.keyboard.type('topAng = 42')
     await page.keyboard.press('ArrowLeft')
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -398,13 +523,13 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const length = .750
-  const width = 0.500
-  const height = 0.500
-  const dia = 4
-  
+        `length = .750
+  width = 0.500
+  height = 0.500
+  dia = 4
+
   fn squareHole = (l, w) => {
-    const squareHoleSketch = startSketchOn('XY')
+    squareHoleSketch = startSketchOn('XY')
     |> startProfileAt([-width / 2, -length / 2], %)
     |> lineTo([width / 2, -length / 2], %)
     |> lineTo([width / 2, length / 2], %)
@@ -442,8 +567,8 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await page.keyboard.type(`const extrusion = startSketchOn('XY')
-    |> circle([0, 0], dia/2, %)
+    await page.keyboard.type(`extrusion = startSketchOn('XY')
+    |> circle({ center: [0, 0], radius: dia/2 }, %)
   |> hole(squareHole(length, width, height), %)
   |> extrude(height, %)`)
 
@@ -464,7 +589,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const box = startSketchOn('XY')
+        `box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -472,7 +597,7 @@ test.describe('Editor tests', () => {
   |> close(%)
   |> extrude(10, %)
 
-  const sketch001 = startSketchOn(box, revolveAxis)
+  sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
@@ -513,7 +638,7 @@ test.describe('Editor tests', () => {
       // and arrowing down to an option
 
       await u.codeLocator.click()
-      await page.keyboard.type('const sketch001 = start')
+      await page.keyboard.type('sketch001 = start')
 
       // expect there to be six auto complete options
       await expect(page.locator('.cm-completionLabel')).toHaveCount(8)
@@ -564,7 +689,7 @@ test.describe('Editor tests', () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`const sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([3.14, 12], %)
     |> xLine(5, %) // lin`)
     })
@@ -582,7 +707,7 @@ test.describe('Editor tests', () => {
       // and arrowing down to an option
 
       await u.codeLocator.click()
-      await page.keyboard.type('const sketch001 = startSketchO')
+      await page.keyboard.type('sketch001 = startSketchO')
       await page.waitForTimeout(100)
 
       // Make sure just hitting tab will take the only one left
@@ -635,7 +760,7 @@ test.describe('Editor tests', () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`const sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([3.14, 12], %)
     |> xLine(5, %) // lin`)
     })
@@ -645,7 +770,7 @@ test.describe('Editor tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
@@ -682,10 +807,6 @@ test.describe('Editor tests', () => {
     })
     await page.waitForTimeout(100)
 
-    const startPX = [665, 458]
-
-    const dragPX = 40
-
     await page.getByText('startProfileAt([4.61, -14.01], %)').click()
     await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
     await page.getByRole('button', { name: 'Extrude' }).click()
@@ -693,15 +814,15 @@ test.describe('Editor tests', () => {
     await expect(page.getByTestId('command-bar')).toBeVisible()
     await page.waitForTimeout(100)
 
-    await page.keyboard.press('Enter')
+    await page.getByRole('button', { name: 'arrow right Continue' }).click()
     await page.waitForTimeout(100)
     await expect(page.getByText('Confirm Extrude')).toBeVisible()
-    await page.keyboard.press('Enter')
+    await page.getByRole('button', { name: 'checkmark Submit command' }).click()
     await page.waitForTimeout(100)
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)const extrude001 = extrude(5, sketch001)`
+      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)extrude001 = extrude(5, sketch001)`
     )
 
     // Now hit undo
@@ -711,24 +832,22 @@ test.describe('Editor tests', () => {
 
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([4.61, -14.01], %)
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
     |> close(%)`)
   })
 
-  // failing for the same reason as "Can edit a sketch that has been extruded in the same pipe"
-  // please fix together
-  test.fixme('Can undo a sketch modification with ctrl+z', async ({ page }) => {
+  test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -14.01], %)
+        `sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -0.38], %)
     |> close(%)
     |> extrude(5, %)`
       )
@@ -763,11 +882,11 @@ test.describe('Editor tests', () => {
     })
     await page.waitForTimeout(100)
 
-    const startPX = [665, 458]
+    const startPX = [665, 397]
 
     const dragPX = 40
 
-    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await page.getByText('startProfileAt([4.61, -10.01], %)').click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
@@ -805,7 +924,7 @@ test.describe('Editor tests', () => {
     // drag tangentialArcTo handle
     const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: tangentEnd.x, y: tangentEnd.y - 5 },
+      sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
       targetPosition: {
         x: tangentEnd.x + dragPX,
         y: tangentEnd.y + dragPX,
@@ -816,13 +935,13 @@ test.describe('Editor tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.12, -16.82], %)
-    |> line([15.4, -2.74], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> line([2.65, -2.69], %)
-    |> close(%)
-    |> extrude(5, %)`)
+      .toHaveText(`sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.12, -12.68], %)
+  |> line([15.39, -2.78], %)
+  |> tangentialArcTo([27.6, -3.05], %)
+  |> close(%)
+  |> extrude(5, %)
+`)
 
     // Hit undo
     await page.keyboard.down('Control')
@@ -830,12 +949,12 @@ test.describe('Editor tests', () => {
     await page.keyboard.up('Control')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.12, -16.82], %)
-    |> line([15.4, -2.74], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> close(%)
-    |> extrude(5, %)`)
+      .toHaveText(`sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.12, -12.68], %)
+  |> line([15.39, -2.78], %)
+  |> tangentialArcTo([24.95, -0.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
 
     // Hit undo again.
     await page.keyboard.down('Control')
@@ -843,12 +962,13 @@ test.describe('Editor tests', () => {
     await page.keyboard.up('Control')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([7.12, -16.82], %)
-    |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> close(%)
-    |> extrude(5, %)`)
+      .toHaveText(`sketch001 = startSketchOn('XZ')
+  |> startProfileAt([7.12, -12.68], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -0.38], %)
+  |> close(%)
+  |> extrude(5, %)
+`)
 
     // Hit undo again.
     await page.keyboard.down('Control')
@@ -857,11 +977,91 @@ test.describe('Editor tests', () => {
 
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -14.01], %)
+      .toHaveText(`sketch001 = startSketchOn('XZ')
+    |> startProfileAt([4.61, -10.01], %)
     |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
+    |> tangentialArcTo([24.95, -0.38], %)
     |> close(%)
     |> extrude(5, %)`)
   })
+
+  test(
+    `Can use the import stdlib function on a local OBJ file`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          const bracketDir = join(dir, 'cube')
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('cube.obj'),
+            join(bracketDir, 'cube.obj')
+          )
+          await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
+        },
+      })
+      const viewportSize = { width: 1200, height: 500 }
+      await page.setViewportSize(viewportSize)
+
+      // Locators and constants
+      const u = await getUtils(page)
+      const projectLink = page.getByRole('link', { name: 'cube' })
+      const gizmo = page.locator('[aria-label*=gizmo]')
+      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+      const locationToHavColor = async (
+        position: { x: number; y: number },
+        color: [number, number, number]
+      ) => {
+        return u.getGreatestPixDiff(position, color)
+      }
+      const notTheOrigin = {
+        x: viewportSize.width * 0.55,
+        y: viewportSize.height * 0.3,
+      }
+      const origin = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
+      const errorIndicators = page.locator('.cm-lint-marker-error')
+
+      await test.step(`Open the empty file, see the default planes`, async () => {
+        await projectLink.click()
+        await u.waitForPageLoad()
+        await expect
+          .poll(
+            async () => locationToHavColor(notTheOrigin, darkModePlaneColorXZ),
+            {
+              timeout: 5000,
+              message: 'XZ plane color is visible',
+            }
+          )
+          .toBeLessThan(15)
+      })
+      await test.step(`Write the import function line`, async () => {
+        await u.codeLocator.fill(`import('cube.obj')`)
+        await page.waitForTimeout(800)
+      })
+      await test.step(`Reset the camera before checking`, async () => {
+        await u.doAndWaitForCmd(async () => {
+          await gizmo.click({ button: 'right' })
+          await resetCameraButton.click()
+        }, 'zoom_to_fit')
+      })
+      await test.step(`Verify that we see the imported geometry and no errors`, async () => {
+        await expect(errorIndicators).toHaveCount(0)
+        await expect
+          .poll(async () => locationToHavColor(origin, darkModePlaneColorXZ), {
+            timeout: 3000,
+            message: 'Plane color should not be visible',
+          })
+          .toBeGreaterThan(15)
+        await expect
+          .poll(async () => locationToHavColor(origin, darkModeBgColor), {
+            timeout: 3000,
+            message: 'Background color should not be visible',
+          })
+          .toBeGreaterThan(15)
+      })
+
+      await electronApp.close()
+    }
+  )
 })

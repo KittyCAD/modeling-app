@@ -4,12 +4,21 @@ use std::str::FromStr;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
-use schemars::JsonSchema;
+use kcmc::{
+    coord::{Axis, AxisDirectionPair, Direction, System},
+    each_cmd as mcmd,
+    format::InputFormat,
+    ok_response::OkModelingCmdResponse,
+    shared::FileImportFormat,
+    units::UnitLength,
+    websocket::OkWebSocketResponseData,
+    ImportFile, ModelingCmd,
+};
+use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ImportedGeometry, MemoryItem},
+    executor::{ExecState, ImportedGeometry, KclValue},
     fs::FileSystem,
     std::Args,
 };
@@ -19,14 +28,14 @@ use crate::{
 // * Forward: -Y
 // * Up: +Z
 // * Handedness: Right
-const ZOO_COORD_SYSTEM: kittycad::types::System = kittycad::types::System {
-    forward: kittycad::types::AxisDirectionPair {
-        axis: kittycad::types::Axis::Y,
-        direction: kittycad::types::Direction::Negative,
+const ZOO_COORD_SYSTEM: System = System {
+    forward: AxisDirectionPair {
+        axis: Axis::Y,
+        direction: Direction::Negative,
     },
-    up: kittycad::types::AxisDirectionPair {
-        axis: kittycad::types::Axis::Z,
-        direction: kittycad::types::Direction::Positive,
+    up: AxisDirectionPair {
+        axis: Axis::Z,
+        direction: Direction::Positive,
     },
 };
 
@@ -47,22 +56,22 @@ pub enum ImportFormat {
     Obj {
         /// Co-ordinate system of input data.
         /// Defaults to the [KittyCAD co-ordinate system.
-        coords: Option<kittycad::types::System>,
+        coords: Option<System>,
         /// The units of the input data. This is very important for correct scaling and when
         /// calculating physics properties like mass, etc.
         /// Defaults to millimeters.
-        units: kittycad::types::UnitLength,
+        units: UnitLength,
     },
     /// The PLY Polygon File Format.
     #[serde(rename = "ply")]
     Ply {
         /// Co-ordinate system of input data.
         /// Defaults to the [KittyCAD co-ordinate system.
-        coords: Option<kittycad::types::System>,
+        coords: Option<System>,
         /// The units of the input data. This is very important for correct scaling and when
         /// calculating physics properties like mass, etc.
         /// Defaults to millimeters.
-        units: kittycad::types::UnitLength,
+        units: UnitLength,
     },
     /// SolidWorks part (SLDPRT) format.
     #[serde(rename = "sldprt")]
@@ -75,33 +84,37 @@ pub enum ImportFormat {
     Stl {
         /// Co-ordinate system of input data.
         /// Defaults to the [KittyCAD co-ordinate system.
-        coords: Option<kittycad::types::System>,
+        coords: Option<System>,
         /// The units of the input data. This is very important for correct scaling and when
         /// calculating physics properties like mass, etc.
         /// Defaults to millimeters.
-        units: kittycad::types::UnitLength,
+        units: UnitLength,
     },
 }
 
-impl From<ImportFormat> for kittycad::types::InputFormat {
+impl From<ImportFormat> for InputFormat {
     fn from(format: ImportFormat) -> Self {
         match format {
-            ImportFormat::Fbx {} => kittycad::types::InputFormat::Fbx {},
-            ImportFormat::Gltf {} => kittycad::types::InputFormat::Gltf {},
-            ImportFormat::Obj { coords, units } => kittycad::types::InputFormat::Obj {
+            ImportFormat::Fbx {} => InputFormat::Fbx(Default::default()),
+            ImportFormat::Gltf {} => InputFormat::Gltf(Default::default()),
+            ImportFormat::Obj { coords, units } => InputFormat::Obj(kcmc::format::obj::import::Options {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
-            },
-            ImportFormat::Ply { coords, units } => kittycad::types::InputFormat::Ply {
+            }),
+            ImportFormat::Ply { coords, units } => InputFormat::Ply(kcmc::format::ply::import::Options {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
-            },
-            ImportFormat::Sldprt {} => kittycad::types::InputFormat::Sldprt {},
-            ImportFormat::Step {} => kittycad::types::InputFormat::Step {},
-            ImportFormat::Stl { coords, units } => kittycad::types::InputFormat::Stl {
+            }),
+            ImportFormat::Sldprt {} => InputFormat::Sldprt(kcmc::format::sldprt::import::Options {
+                split_closed_faces: false,
+            }),
+            ImportFormat::Step {} => InputFormat::Step(kcmc::format::step::import::Options {
+                split_closed_faces: false,
+            }),
+            ImportFormat::Stl { coords, units } => InputFormat::Stl(kcmc::format::stl::import::Options {
                 coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
                 units,
-            },
+            }),
         }
     }
 }
@@ -113,11 +126,11 @@ impl From<ImportFormat> for kittycad::types::InputFormat {
 ///
 /// Import paths are relative to the current project directory. This only works in the desktop app
 /// not in browser.
-pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (file_path, options): (String, Option<ImportFormat>) = args.get_import_data()?;
 
-    let imported_geometry = inner_import(file_path, options, args).await?;
-    Ok(MemoryItem::ImportedGeometry(imported_geometry))
+    let imported_geometry = inner_import(file_path, options, exec_state, args).await?;
+    Ok(KclValue::ImportedGeometry(imported_geometry))
 }
 
 /// Import a CAD file.
@@ -157,6 +170,7 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_import(
     file_path: String,
     options: Option<ImportFormat>,
+    exec_state: &mut ExecState,
     args: Args,
 ) -> Result<ImportedGeometry, KclError> {
     if file_path.is_empty() {
@@ -190,7 +204,7 @@ async fn inner_import(
     // Get the format type from the extension of the file.
     let format = if let Some(options) = options {
         // Validate the given format with the extension format.
-        let format: kittycad::types::InputFormat = options.into();
+        let format: InputFormat = options.into();
         validate_extension_format(ext_format, format.clone()).map_err(|e| {
             KclError::Semantic(KclErrorDetails {
                 message: e.to_string(),
@@ -220,14 +234,14 @@ async fn inner_import(
                 source_ranges: vec![args.source_range],
             })
         })?;
-    let mut import_files = vec![kittycad::types::ImportFile {
+    let mut import_files = vec![kcmc::ImportFile {
         path: file_name.to_string(),
         data: file_contents.clone(),
     }];
 
     // In the case of a gltf importing a bin file we need to handle that! and figure out where the
     // file is relative to our current file.
-    if let kittycad::types::InputFormat::Gltf {} = format {
+    if let InputFormat::Gltf(..) = format {
         // Check if the file is a binary gltf file, in that case we don't need to import the bin
         // file.
         if !file_contents.starts_with(b"glTF") {
@@ -261,7 +275,7 @@ async fn inner_import(
                             })
                         })?;
 
-                        import_files.push(kittycad::types::ImportFile {
+                        import_files.push(ImportFile {
                             path: uri.to_string(),
                             data: bin_contents,
                         });
@@ -271,27 +285,27 @@ async fn inner_import(
         }
     }
 
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         return Ok(ImportedGeometry {
-            id: uuid::Uuid::new_v4(),
+            id: exec_state.id_generator.next_uuid(),
             value: import_files.iter().map(|f| f.path.to_string()).collect(),
             meta: vec![args.source_range.into()],
         });
     }
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     let resp = args
         .send_modeling_cmd(
             id,
-            ModelingCmd::ImportFiles {
+            ModelingCmd::from(mcmd::ImportFiles {
                 files: import_files.clone(),
                 format,
-            },
+            }),
         )
         .await?;
 
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::ImportFiles { data: imported_files },
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::ImportFiles(imported_files),
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -308,14 +322,14 @@ async fn inner_import(
 }
 
 /// Get the source format from the extension.
-fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputFormat> {
-    let format = match kittycad::types::FileImportFormat::from_str(ext) {
+fn get_import_format_from_extension(ext: &str) -> Result<InputFormat> {
+    let format = match FileImportFormat::from_str(ext) {
         Ok(format) => format,
         Err(_) => {
             if ext == "stp" {
-                kittycad::types::FileImportFormat::Step
+                FileImportFormat::Step
             } else if ext == "glb" {
-                kittycad::types::FileImportFormat::Gltf
+                FileImportFormat::Gltf
             } else {
                 anyhow::bail!("unknown source format for file extension: {}. Try setting the `--src-format` flag explicitly or use a valid format.", ext)
             }
@@ -323,7 +337,7 @@ fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputF
     };
 
     // Make the default units millimeters.
-    let ul = kittycad::types::UnitLength::Mm;
+    let ul = UnitLength::Millimeters;
 
     // Zoo co-ordinate system.
     //
@@ -331,40 +345,44 @@ fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputF
     // * Up: +Z
     // * Handedness: Right
     match format {
-        kittycad::types::FileImportFormat::Step => Ok(kittycad::types::InputFormat::Step {}),
-        kittycad::types::FileImportFormat::Stl => Ok(kittycad::types::InputFormat::Stl {
+        FileImportFormat::Step => Ok(InputFormat::Step(kcmc::format::step::import::Options {
+            split_closed_faces: false,
+        })),
+        FileImportFormat::Stl => Ok(InputFormat::Stl(kcmc::format::stl::import::Options {
             coords: ZOO_COORD_SYSTEM,
             units: ul,
-        }),
-        kittycad::types::FileImportFormat::Obj => Ok(kittycad::types::InputFormat::Obj {
+        })),
+        FileImportFormat::Obj => Ok(InputFormat::Obj(kcmc::format::obj::import::Options {
             coords: ZOO_COORD_SYSTEM,
             units: ul,
-        }),
-        kittycad::types::FileImportFormat::Gltf => Ok(kittycad::types::InputFormat::Gltf {}),
-        kittycad::types::FileImportFormat::Ply => Ok(kittycad::types::InputFormat::Ply {
+        })),
+        FileImportFormat::Gltf => Ok(InputFormat::Gltf(kcmc::format::gltf::import::Options {})),
+        FileImportFormat::Ply => Ok(InputFormat::Ply(kcmc::format::ply::import::Options {
             coords: ZOO_COORD_SYSTEM,
             units: ul,
-        }),
-        kittycad::types::FileImportFormat::Fbx => Ok(kittycad::types::InputFormat::Fbx {}),
-        kittycad::types::FileImportFormat::Sldprt => Ok(kittycad::types::InputFormat::Sldprt {}),
+        })),
+        FileImportFormat::Fbx => Ok(InputFormat::Fbx(kcmc::format::fbx::import::Options {})),
+        FileImportFormat::Sldprt => Ok(InputFormat::Sldprt(kcmc::format::sldprt::import::Options {
+            split_closed_faces: false,
+        })),
     }
 }
 
-fn validate_extension_format(ext: kittycad::types::InputFormat, given: kittycad::types::InputFormat) -> Result<()> {
-    if let kittycad::types::InputFormat::Stl { coords: _, units: _ } = ext {
-        if let kittycad::types::InputFormat::Stl { coords: _, units: _ } = given {
+fn validate_extension_format(ext: InputFormat, given: InputFormat) -> Result<()> {
+    if let InputFormat::Stl(_) = ext {
+        if let InputFormat::Stl(_) = given {
             return Ok(());
         }
     }
 
-    if let kittycad::types::InputFormat::Obj { coords: _, units: _ } = ext {
-        if let kittycad::types::InputFormat::Obj { coords: _, units: _ } = given {
+    if let InputFormat::Obj(_) = ext {
+        if let InputFormat::Obj(_) = given {
             return Ok(());
         }
     }
 
-    if let kittycad::types::InputFormat::Ply { coords: _, units: _ } = ext {
-        if let kittycad::types::InputFormat::Ply { coords: _, units: _ } = given {
+    if let InputFormat::Ply(_) = ext {
+        if let InputFormat::Ply(_) = given {
             return Ok(());
         }
     }
@@ -380,14 +398,14 @@ fn validate_extension_format(ext: kittycad::types::InputFormat, given: kittycad:
     )
 }
 
-fn get_name_of_format(type_: kittycad::types::InputFormat) -> String {
+fn get_name_of_format(type_: InputFormat) -> &'static str {
     match type_ {
-        kittycad::types::InputFormat::Fbx {} => "fbx".to_string(),
-        kittycad::types::InputFormat::Gltf {} => "gltf".to_string(),
-        kittycad::types::InputFormat::Obj { coords: _, units: _ } => "obj".to_string(),
-        kittycad::types::InputFormat::Ply { coords: _, units: _ } => "ply".to_string(),
-        kittycad::types::InputFormat::Sldprt {} => "sldprt".to_string(),
-        kittycad::types::InputFormat::Step {} => "step".to_string(),
-        kittycad::types::InputFormat::Stl { coords: _, units: _ } => "stl".to_string(),
+        InputFormat::Fbx(_) => "fbx",
+        InputFormat::Gltf(_) => "gltf",
+        InputFormat::Obj(_) => "obj",
+        InputFormat::Ply(_) => "ply",
+        InputFormat::Sldprt(_) => "sldprt",
+        InputFormat::Step(_) => "step",
+        InputFormat::Stl(_) => "stl",
     }
 }

@@ -54,11 +54,15 @@ e2e/playwright/export-snapshots/*
 
 ## generated files
 src/**/*.typegen.ts
-src-tauri/gen
 
 src/wasm-lib/grackle/stdlib_cube_partial.json
 Mac_App_Distribution.provisionprofile
 
 *.tsbuildinfo
+src/wasm-lib/pkg
 
 venv
+.vite/
+
+# electron
+out/

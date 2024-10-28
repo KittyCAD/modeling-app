@@ -57,9 +57,8 @@ echo "New version number without 'v': $new_version_number"
 git checkout -b "cut-release-$new_version"
 
 echo "$(jq --arg v "$new_version_number" '.version=$v' package.json --indent 2)" > package.json
-echo "$(jq --arg v "$new_version_number" '.version=$v' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
 
-git add package.json src-tauri/tauri.conf.json
+git add package.json
 git commit -m "Cut release $new_version"
 
 echo ""
@@ -71,7 +70,7 @@ echo ""
 echo "Suggested changelog:"
 echo "\`\`\`"
 echo "## What's Changed"
-git log $(git describe --tags --abbrev=0)..HEAD --oneline --pretty=format:%s | grep -v Bump | grep -v 'Cut release v' | awk '{print "* "toupper(substr($0,0,1))substr($0,2)}'
+git log $(git describe --tags --match="v[0-9]*" --abbrev=0)..HEAD --oneline --pretty=format:%s | grep -v Bump | grep -v 'Cut release v' | awk '{print "* "toupper(substr($0,0,1))substr($0,2)}'
 echo ""
 echo "**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/${latest_tag}...${new_version}"
 echo "\`\`\`"

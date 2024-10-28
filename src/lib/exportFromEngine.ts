@@ -4,12 +4,12 @@ import { uuidv4 } from 'lib/utils'
 
 // Isolating a function to call the engine to export the current scene.
 // Because it has given us trouble in automated testing environments.
-export function exportFromEngine({
+export async function exportFromEngine({
   format,
 }: {
   format: Models['OutputFormat_type']
-}) {
-  return engineCommandManager.sendSceneCommand({
+}): Promise<Models['WebSocketResponse_type'] | null> {
+  let exportPromise = engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'export',
@@ -21,4 +21,6 @@ export function exportFromEngine({
     },
     cmd_id: uuidv4(),
   })
+
+  return exportPromise
 }

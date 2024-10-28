@@ -9,7 +9,6 @@ import { useAppState, useAppStream } from 'AppState'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
 import {
   EngineConnectionStateType,
-  EngineConnectionEvents,
   DisconnectingType,
 } from 'lang/std/engineConnection'
 
@@ -23,6 +22,7 @@ export function useSetupEngineManager(
     highlightEdges: true,
     enableSSAO: true,
     showScaleGrid: false,
+    cameraProjection: 'perspective',
   } as SettingsViaQueryString,
   token?: string
 ) {
@@ -58,15 +58,6 @@ export function useSetupEngineManager(
       },
       modifyGrid: (hidden: boolean) => {
         return modifyGrid(kclManager.engineCommandManager, hidden)
-      },
-    })
-    modelingSend({
-      type: 'Set context',
-      data: {
-        streamDimensions: {
-          streamWidth: quadWidth,
-          streamHeight: quadHeight,
-        },
       },
     })
     hasSetNonZeroDimensions.current = true
@@ -105,31 +96,17 @@ export function useSetupEngineManager(
   }, [immediateState])
 
   useEffect(() => {
-    engineCommandManager.settings.theme = settings.theme
+    engineCommandManager.settings = settings
 
     const handleResize = deferExecution(() => {
       const { width, height } = getDimensions(
         streamRef?.current?.offsetWidth ?? 0,
         streamRef?.current?.offsetHeight ?? 0
       )
-      if (
-        modelingContext.store.streamDimensions.streamWidth !== width ||
-        modelingContext.store.streamDimensions.streamHeight !== height
-      ) {
-        engineCommandManager.handleResize({
-          streamWidth: width,
-          streamHeight: height,
-        })
-        modelingSend({
-          type: 'Set context',
-          data: {
-            streamDimensions: {
-              streamWidth: width,
-              streamHeight: height,
-            },
-          },
-        })
-      }
+      engineCommandManager.handleResize({
+        streamWidth: width,
+        streamHeight: height,
+      })
     }, 500)
 
     const onOnline = () => {
@@ -195,13 +172,7 @@ export function useSetupEngineManager(
     // Engine relies on many settings so we should rebind events when it changes
     // We have to list out the ones we care about because the settings object holds
     // non-settings too...
-  }, [
-    settings.enableSSAO,
-    settings.highlightEdges,
-    settings.showScaleGrid,
-    settings.theme,
-    settings.pool,
-  ])
+  }, [...Object.values(settings)])
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {

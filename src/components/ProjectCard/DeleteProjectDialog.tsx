@@ -32,6 +32,7 @@ export function DeleteConfirmationDialog({
                 iconClassName: '!text-destroy-80 dark:!text-destroy-20',
               }}
               className="hover:border-destroy-40 dark:hover:border-destroy-40 hover:bg-destroy-10/20 dark:hover:bg-destroy-80/20"
+              data-testid="delete-confirmation"
             >
               Delete
             </ActionButton>

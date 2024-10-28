@@ -3,16 +3,18 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { createAndOpenNewProject } from 'lib/tauriFS'
-import { isTauri } from 'lib/isTauri'
+import { createAndOpenNewProject } from 'lib/desktopFS'
+import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
 import { APP_NAME } from 'lib/constants'
 import { useState } from 'react'
-import { useLspContext } from 'components/LspProvider'
 import { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { useFileContext } from 'hooks/useFileContext'
+import { useLspContext } from 'components/LspProvider'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -38,7 +40,7 @@ function OnboardingResetWarning(props: OnboardingResetWarningProps) {
   return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        {!isTauri() ? (
+        {!isDesktop() ? (
           <OnboardingWarningWeb {...props} />
         ) : (
           <OnboardingWarningDesktop {...props} />
@@ -80,7 +82,7 @@ function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
       <OnboardingButtons
         className="mt-6"
         dismiss={dismiss}
-        next={onAccept}
+        next={toSync(onAccept, reportRejection)}
         nextText="Make a new project"
       />
     </>
@@ -102,17 +104,14 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
       <OnboardingButtons
         className="mt-6"
         dismiss={dismiss}
-        next={async () => {
+        next={toSync(async () => {
           // We do want to update both the state and editor here.
           codeManager.updateCodeStateEditor(bracket)
           await codeManager.writeToFile()
 
-          kclManager.isFirstRender = true
-          await kclManager.executeCode(true).then(() => {
-            kclManager.isFirstRender = false
-          })
+          await kclManager.executeCode(true)
           props.setShouldShowWarning(false)
-        }}
+        }, reportRejection)}
         nextText="Overwrite code and continue"
       />
     </>
@@ -145,7 +144,7 @@ function OnboardingIntroductionInner() {
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
           <img
-            src={`/zma-logomark${getLogoTheme()}.svg`}
+            src={`${isDesktop() ? '.' : ''}/zma-logomark${getLogoTheme()}.svg`}
             alt={APP_NAME}
             className="h-20 max-w-full"
           />

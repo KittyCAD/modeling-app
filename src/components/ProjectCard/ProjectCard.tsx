@@ -7,7 +7,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from '../Tooltip'
 import { DeleteConfirmationDialog } from './DeleteProjectDialog'
 import { ProjectCardRenameForm } from './ProjectCardRenameForm'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 function ProjectCard({
   project,
@@ -36,8 +38,8 @@ function ProjectCard({
     void handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
-  function getDisplayedTime(dateStr: string) {
-    const date = new Date(dateStr)
+  function getDisplayedTime(dateTimeMs: number) {
+    const date = new Date(dateTimeMs)
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     return date.getTime() < startOfToday.getTime()
@@ -52,7 +54,7 @@ function ProjectCard({
     }
 
     // async function setupImageUrl() {
-    //   const projectImagePath = await join(project.path, PROJECT_IMAGE_NAME)
+    //   const projectImagePath = await join(project.file.path, PROJECT_IMAGE_NAME)
     //   if (await exists(projectImagePath)) {
     //     const imageData = await readFile(projectImagePath)
     //     const blob = new Blob([imageData], { type: 'image/jpg' })
@@ -102,25 +104,41 @@ function ProjectCard({
               ref={inputRef}
             />
           ) : (
-            <h3 className="font-sans relative z-0 p-2">
+            <h3
+              className="font-sans relative z-0 p-2"
+              data-testid="project-title"
+            >
               {project.name?.replace(FILE_EXT, '')}
             </h3>
           )}
           <span className="px-2 text-chalkboard-60 text-xs">
-            {numberOfFiles} file{numberOfFiles === 1 ? '' : 's'}{' '}
-            {numberOfFolders > 0 &&
-              `/ ${numberOfFolders} folder${numberOfFolders === 1 ? '' : 's'}`}
+            <span data-testid="project-file-count">{numberOfFiles}</span> file
+            {numberOfFiles === 1 ? '' : 's'}{' '}
+            {numberOfFolders > 0 && (
+              <>
+                {'/ '}
+                <span data-testid="project-folder-count">
+                  {numberOfFolders}
+                </span>{' '}
+                folder{numberOfFolders === 1 ? '' : 's'}
+              </>
+            )}
           </span>
           <span className="px-2 text-chalkboard-60 text-xs">
             Edited{' '}
-            {project.metadata && project.metadata?.modified
-              ? getDisplayedTime(project.metadata.modified)
-              : 'never'}
+            <span data-testid="project-edit-date">
+              {project.metadata && project.metadata.modified
+                ? getDisplayedTime(parseInt(project.metadata.modified))
+                : 'never'}
+            </span>
           </span>
         </div>
       </Link>
       {!isEditing && (
-        <div className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100">
+        <div
+          className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100"
+          data-edit-buttons-for={project.name?.replace(FILE_EXT, '')}
+        >
           <ActionButton
             Element="button"
             iconStart={{
@@ -162,10 +180,10 @@ function ProjectCard({
       {isConfirmingDelete && (
         <DeleteConfirmationDialog
           title="Delete Project"
-          onConfirm={async () => {
+          onConfirm={toSync(async () => {
             await handleDeleteProject(project)
             setIsConfirmingDelete(false)
-          }}
+          }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >
           <p className="my-4">

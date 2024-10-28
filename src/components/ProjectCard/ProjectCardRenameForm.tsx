@@ -1,7 +1,7 @@
 import { ActionButton } from 'components/ActionButton'
 import Tooltip from 'components/Tooltip'
 import { HTMLProps, forwardRef } from 'react'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
 
 interface ProjectCardRenameFormProps extends HTMLProps<HTMLFormElement> {
   project: Project

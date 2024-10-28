@@ -7,7 +7,11 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
 use winnow::stream::ContainsToken;
 
-use crate::{ast::types::VariableKind, errors::KclError, executor::SourceRange};
+use crate::{
+    ast::types::{ItemVisibility, VariableKind},
+    errors::KclError,
+    executor::SourceRange,
+};
 
 mod tokeniser;
 
@@ -72,6 +76,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             TokenType::Operator => Self::OPERATOR,
             TokenType::QuestionMark => Self::OPERATOR,
             TokenType::String => Self::STRING,
+            TokenType::Bang => Self::OPERATOR,
             TokenType::LineComment => Self::COMMENT,
             TokenType::BlockComment => Self::COMMENT,
             TokenType::Function => Self::FUNCTION,
@@ -83,7 +88,6 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::DoublePeriod
             | TokenType::Hash
             | TokenType::Dollar
-            | TokenType::Bang
             | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
@@ -196,6 +200,16 @@ impl Token {
         vec![self.as_source_range()]
     }
 
+    pub fn visibility_keyword(&self) -> Option<ItemVisibility> {
+        if !matches!(self.token_type, TokenType::Keyword) {
+            return None;
+        }
+        match self.value.as_str() {
+            "export" => Some(ItemVisibility::Export),
+            _ => None,
+        }
+    }
+
     /// Is this token the beginning of a variable/function declaration?
     /// If so, what kind?
     /// If not, returns None.
@@ -204,10 +218,8 @@ impl Token {
             return None;
         }
         Some(match self.value.as_str() {
-            "var" => VariableKind::Var,
-            "let" => VariableKind::Let,
             "fn" => VariableKind::Fn,
-            "const" => VariableKind::Const,
+            "var" | "let" | "const" => VariableKind::Const,
             _ => return None,
         })
     }

@@ -1,5 +1,6 @@
 use winnow::{
     error::{ErrorKind, ParseError, StrContext},
+    stream::Stream,
     Located,
 };
 
@@ -79,7 +80,7 @@ impl From<ParseError<&[Token], ContextError>> for KclError {
         // See https://github.com/KittyCAD/modeling-app/issues/784
         KclError::Syntax(KclErrorDetails {
             source_ranges: bad_token.as_source_ranges(),
-            message: "Unexpected token".to_string(),
+            message: format!("Unexpected token: {}", bad_token.value),
         })
     }
 }
@@ -102,14 +103,17 @@ impl<C> std::default::Default for ContextError<C> {
     }
 }
 
-impl<I, C> winnow::error::ParserError<I> for ContextError<C> {
+impl<I, C> winnow::error::ParserError<I> for ContextError<C>
+where
+    I: Stream,
+{
     #[inline]
     fn from_error_kind(_input: &I, _kind: ErrorKind) -> Self {
         Self::default()
     }
 
     #[inline]
-    fn append(self, _input: &I, _kind: ErrorKind) -> Self {
+    fn append(self, _input: &I, _input_checkpoint: &<I as Stream>::Checkpoint, _kind: ErrorKind) -> Self {
         self
     }
 
@@ -119,9 +123,12 @@ impl<I, C> winnow::error::ParserError<I> for ContextError<C> {
     }
 }
 
-impl<C, I> winnow::error::AddContext<I, C> for ContextError<C> {
+impl<C, I> winnow::error::AddContext<I, C> for ContextError<C>
+where
+    I: Stream,
+{
     #[inline]
-    fn add_context(mut self, _input: &I, ctx: C) -> Self {
+    fn add_context(mut self, _input: &I, _input_checkpoint: &<I as Stream>::Checkpoint, ctx: C) -> Self {
         self.context.push(ctx);
         self
     }

@@ -1,6 +1,12 @@
 import fs from 'node:fs'
 
-import { parse, ProgramMemory, SketchGroup, initPromise } from './wasm'
+import {
+  parse,
+  ProgramMemory,
+  Sketch,
+  initPromise,
+  sketchFromKclValue,
+} from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
 
@@ -52,7 +58,7 @@ const newVar = myVar + 1`
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
-    const minusGeo = mem.get('mySketch')?.value
+    const minusGeo = mem.get('mySketch')?.value?.paths
     expect(minusGeo).toEqual([
       {
         type: 'ToPoint',
@@ -67,7 +73,6 @@ const newVar = myVar + 1`
           start: 89,
           type: 'TagDeclarator',
           value: 'myPath',
-          digest: null,
         },
       },
       {
@@ -93,7 +98,6 @@ const newVar = myVar + 1`
           start: 143,
           type: 'TagDeclarator',
           value: 'rightPath',
-          digest: null,
         },
       },
     ])
@@ -119,12 +123,12 @@ const newVar = myVar + 1`
   //   ].join('\n')
   //   const mem = await exe(code)
   //   expect(mem.get('mySk1')?.value).toHaveLength(3)
-  //   expect(mem.get('rotated')?.type).toBe('SketchGroup')
+  //   expect(mem.get('rotated')?.type).toBe('Sketch')
   //   if (
-  //     mem.get('mySk1')?.type !== 'SketchGroup' ||
-  //     mem.get('rotated')?.type !== 'SketchGroup'
+  //     mem.get('mySk1')?.type !== 'Sketch' ||
+  //     mem.get('rotated')?.type !== 'Sketch'
   //   )
-  //     throw new Error('not a sketch group')
+  //     throw new Error('not a sketch')
   //   expect(mem.get('mySk1')?.rotation).toEqual([0, 0, 0, 1])
   //   expect(mem.get('rotated')?.rotation.map((a) => a.toFixed(4))).toEqual([
   //     '0.7071',
@@ -146,68 +150,71 @@ const newVar = myVar + 1`
     ].join('\n')
     const mem = await exe(code)
     expect(mem.get('mySk1')).toEqual({
-      type: 'SketchGroup',
-      on: expect.any(Object),
-      start: {
-        to: [0, 0],
-        from: [0, 0],
-        tag: null,
-        __geoMeta: {
-          id: expect.any(String),
-          sourceRange: [39, 63],
-        },
-      },
-      tags: {
-        myPath: {
-          __meta: [
-            {
-              sourceRange: [109, 116],
-            },
-          ],
-          type: 'TagIdentifier',
-          value: 'myPath',
-          info: expect.any(Object),
-        },
-      },
-      value: [
-        {
-          type: 'ToPoint',
-          to: [1, 1],
+      type: 'UserVal',
+      value: {
+        type: 'Sketch',
+        on: expect.any(Object),
+        start: {
+          to: [0, 0],
           from: [0, 0],
           tag: null,
           __geoMeta: {
-            sourceRange: [69, 85],
             id: expect.any(String),
+            sourceRange: [39, 63],
           },
         },
-        {
-          type: 'ToPoint',
-          to: [0, 1],
-          from: [1, 1],
-          __geoMeta: {
-            sourceRange: [91, 117],
-            id: expect.any(String),
-          },
-          tag: {
-            end: 116,
-            start: 109,
-            type: 'TagDeclarator',
+        tags: {
+          myPath: {
+            __meta: [
+              {
+                sourceRange: [109, 116],
+              },
+            ],
+            type: 'TagIdentifier',
             value: 'myPath',
-            digest: null,
+            info: expect.any(Object),
           },
         },
-        {
-          type: 'ToPoint',
-          to: [1, 1],
-          from: [0, 1],
-          tag: null,
-          __geoMeta: {
-            sourceRange: [123, 139],
-            id: expect.any(String),
+        paths: [
+          {
+            type: 'ToPoint',
+            to: [1, 1],
+            from: [0, 0],
+            tag: null,
+            __geoMeta: {
+              sourceRange: [69, 85],
+              id: expect.any(String),
+            },
           },
-        },
-      ],
-      id: expect.any(String),
+          {
+            type: 'ToPoint',
+            to: [0, 1],
+            from: [1, 1],
+            __geoMeta: {
+              sourceRange: [91, 117],
+              id: expect.any(String),
+            },
+            tag: {
+              end: 116,
+              start: 109,
+              type: 'TagDeclarator',
+              value: 'myPath',
+            },
+          },
+          {
+            type: 'ToPoint',
+            to: [1, 1],
+            from: [0, 1],
+            tag: null,
+            __geoMeta: {
+              sourceRange: [123, 139],
+              id: expect.any(String),
+            },
+          },
+        ],
+        id: expect.any(String),
+        __meta: [{ sourceRange: [39, 63] }],
+      },
       __meta: [{ sourceRange: [39, 63] }],
     })
   })
@@ -358,9 +365,9 @@ describe('testing math operators', () => {
       '|> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
     const mem = await exe(code)
-    const sketch = mem.get('part001')
+    const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
     // result of `-legLen(5, min(3, 999))` should be -4
-    const yVal = (sketch as SketchGroup).value?.[0]?.to?.[1]
+    const yVal = (sketch as Sketch).paths?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
   })
   it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
@@ -376,26 +383,32 @@ describe('testing math operators', () => {
       ``,
     ].join('\n')
     const mem = await exe(code)
-    const sketch = mem.get('part001')
+    const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
     // expect -legLen(segLen('seg01'), myVar) to equal -4 setting the y value back to 0
-    expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
-    expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
+    expect((sketch as Sketch).paths?.[1]?.from).toEqual([3, 4])
+    expect((sketch as Sketch).paths?.[1]?.to).toEqual([6, 0])
     const removedUnaryExp = code.replace(
       `-legLen(segLen(seg01), myVar)`,
       `legLen(segLen(seg01), myVar)`
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
-    const removedUnaryExpMemSketch = removedUnaryExpMem.get('part001')
+    const removedUnaryExpMemSketch = sketchFromKclValue(
+      removedUnaryExpMem.get('part001'),
+      'part001'
+    )
 
     // without the minus sign, the y value should be 8
-    expect((removedUnaryExpMemSketch as SketchGroup).value?.[1]?.to).toEqual([
-      6, 8,
-    ])
+    expect((removedUnaryExpMemSketch as Sketch).paths?.[1]?.to).toEqual([6, 8])
   })
   it('with nested callExpression and binaryExpression', async () => {
     const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
     const mem = await exe(code)
     expect(mem.get('myVar')?.value).toBe(5)
+  })
+  it('can do power of math', async () => {
+    const code = 'const myNeg2 = 4 ^ 2 - 3 ^ 2 * 2'
+    const mem = await exe(code)
+    expect(mem.get('myNeg2')?.value).toBe(-2)
   })
 })
 
@@ -427,6 +440,6 @@ async function exe(
 ) {
   const ast = parse(code)
 
-  const result = await enginelessExecutor(ast, programMemory)
-  return result
+  const execState = await enginelessExecutor(ast, programMemory)
+  return execState.memory
 }

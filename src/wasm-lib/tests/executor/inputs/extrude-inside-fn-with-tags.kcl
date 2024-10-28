@@ -56,16 +56,16 @@ const bracketBody = bs
   |> fillet({
        radius: radius,
        tags: [
-         getNextAdjacentEdge(bs.sketchGroup.tags.edge7),
-         getNextAdjacentEdge(bs.sketchGroup.tags.edge2),
-         getNextAdjacentEdge(bs.sketchGroup.tags.edge3),
-         getNextAdjacentEdge(bs.sketchGroup.tags.edge6)
+         getPreviousAdjacentEdge(bs.sketch.tags.edge7),
+         getPreviousAdjacentEdge(bs.sketch.tags.edge2),
+         getPreviousAdjacentEdge(bs.sketch.tags.edge3),
+         getPreviousAdjacentEdge(bs.sketch.tags.edge6)
        ]
      }, %)
 
 
 // sketch on the face
-const retBack = startSketchOn(bs, bs.sketchGroup.tags.edge4)
+const retBack = startSketchOn(bs, bs.sketch.tags.edge4)
   |> startProfileAt([length / 2 + thk, 0], %)
   |> line([0, thk], %)
   |> line([-thk, 0], %)

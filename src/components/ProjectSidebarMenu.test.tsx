@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { SettingsAuthProviderJest } from './SettingsAuthProvider'
 import { CommandBarProvider } from './CommandBar/CommandBarProvider'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { Project } from 'lib/project'
 
 const now = new Date()
 const projectWellFormed = {

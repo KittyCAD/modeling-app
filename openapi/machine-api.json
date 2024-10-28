@@ -13,18 +13,6 @@
       }
     },
     "schemas": {
-      "AccessoryType": {
-        "description": "The type of accessory.",
-        "oneOf": [
-          {
-            "description": "No accessory.",
-            "enum": [
-              "none"
-            ],
-            "type": "string"
-          }
-        ]
-      },
       "Error": {
         "description": "Error information from a response.",
         "properties": {
@@ -44,405 +32,591 @@
         ],
         "type": "object"
       },
-      "Info": {
-        "description": "An info command.",
+      "ExtraMachineInfoResponse": {
+        "description": "Extra machine-specific information regarding a connected machine.",
         "oneOf": [
           {
-            "additionalProperties": true,
-            "description": "Get the version.",
             "properties": {
-              "command": {
+              "type": {
                 "enum": [
-                  "get_version"
+                  "moonraker"
                 ],
                 "type": "string"
-              },
-              "module": {
-                "description": "The info module.",
-                "items": {
-                  "$ref": "#/components/schemas/InfoModule"
-                },
-                "type": "array"
-              },
-              "reason": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Reason"
-                  }
-                ],
-                "description": "The reason of the info command.",
-                "nullable": true
-              },
-              "result": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Result"
-                  }
-                ],
-                "description": "The result of the info command."
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
               }
             },
             "required": [
-              "command",
-              "module",
-              "result",
-              "sequence_id"
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "usb"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "properties": {
+              "current_stage": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Stage"
+                  }
+                ],
+                "description": "The current stage of the machine as defined by Bambu which can include errors, etc.",
+                "nullable": true
+              },
+              "nozzle_diameter": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/NozzleDiameter"
+                  }
+                ],
+                "description": "The nozzle diameter of the machine."
+              },
+              "type": {
+                "enum": [
+                  "bambu"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "nozzle_diameter",
+              "type"
             ],
             "type": "object"
           }
         ]
       },
-      "InfoModule": {
-        "description": "An info module.",
+      "FdmHardwareConfiguration": {
+        "description": "Configuration for a FDM-based printer.",
         "properties": {
-          "hw_ver": {
-            "description": "The hardware version.",
-            "type": "string"
+          "filaments": {
+            "description": "The filaments the printer has access to.",
+            "items": {
+              "$ref": "#/components/schemas/Filament"
+            },
+            "type": "array"
           },
-          "loader_ver": {
-            "description": "The loader version.",
+          "loaded_filament_idx": {
+            "description": "The currently loaded filament index.",
+            "format": "uint",
+            "minimum": 0,
+            "nullable": true,
+            "type": "integer"
+          },
+          "nozzle_diameter": {
+            "description": "Diameter of the extrusion nozzle, in mm.",
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "filaments",
+          "nozzle_diameter"
+        ],
+        "type": "object"
+      },
+      "Filament": {
+        "description": "Information about the filament being used in a FDM printer.",
+        "properties": {
+          "color": {
+            "description": "The color (as hex without the `#`) of the filament, this is likely specific to the manufacturer.",
+            "maxLength": 6,
+            "minLength": 6,
             "nullable": true,
             "type": "string"
+          },
+          "material": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FilamentMaterial"
+              }
+            ],
+            "description": "The material that the filament is made of."
           },
           "name": {
-            "description": "The module name.",
-            "type": "string"
-          },
-          "ota_ver": {
-            "description": "The ota version.",
+            "description": "The name of the filament, this is likely specfic to the manufacturer.",
             "nullable": true,
-            "type": "string"
-          },
-          "project_name": {
-            "description": "The project name.",
-            "nullable": true,
-            "type": "string"
-          },
-          "sn": {
-            "description": "The serial number.",
-            "type": "string"
-          },
-          "sw_ver": {
-            "description": "The software version.",
             "type": "string"
           }
         },
         "required": [
-          "hw_ver",
-          "name",
-          "sn",
-          "sw_ver"
+          "material"
         ],
         "type": "object"
       },
-      "LedMode": {
-        "description": "The mode for the led.",
+      "FilamentMaterial": {
+        "description": "The material that the filament is made of.",
         "oneOf": [
           {
-            "description": "Turn the LED on.",
-            "enum": [
-              "on"
-            ],
-            "type": "string"
-          },
-          {
-            "description": "Turn the LED off.",
-            "enum": [
-              "off"
-            ],
-            "type": "string"
-          },
-          {
-            "description": "Flash the LED.",
-            "enum": [
-              "flashing"
-            ],
-            "type": "string"
-          }
-        ]
-      },
-      "LedNode": {
-        "description": "The node for the led.",
-        "oneOf": [
-          {
-            "description": "The chamber light.",
-            "enum": [
-              "chamber_light"
-            ],
-            "type": "string"
-          },
-          {
-            "description": "The work light.",
-            "enum": [
-              "work_light"
-            ],
-            "type": "string"
-          }
-        ]
-      },
-      "Machine": {
-        "description": "Details for a 3d printer connected over USB.",
-        "oneOf": [
-          {
-            "description": "Details for a 3d printer connected over USB.",
+            "description": "Polylactic acid based plastics",
             "properties": {
-              "id": {
-                "type": "string"
-              },
-              "manufacturer": {
-                "type": "string"
-              },
-              "model": {
-                "type": "string"
-              },
-              "port": {
-                "type": "string"
-              },
               "type": {
                 "enum": [
-                  "UsbPrinter"
+                  "pla"
                 ],
                 "type": "string"
               }
             },
             "required": [
-              "id",
-              "manufacturer",
-              "model",
-              "port",
               "type"
             ],
             "type": "object"
           },
           {
-            "description": "Details for a 3d printer connected over network.",
+            "description": "Pla support",
             "properties": {
-              "hostname": {
-                "description": "The hostname of the printer.",
-                "nullable": true,
+              "type": {
+                "enum": [
+                  "pla_support"
+                ],
                 "type": "string"
-              },
-              "ip": {
-                "description": "The IP address of the printer.",
-                "format": "ip",
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "acrylonitrile butadiene styrene based plastics",
+            "properties": {
+              "type": {
+                "enum": [
+                  "abs"
+                ],
                 "type": "string"
-              },
-              "manufacturer": {
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "polyethylene terephthalate glycol based plastics",
+            "properties": {
+              "type": {
+                "enum": [
+                  "petg"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "unsuprisingly, nylon based",
+            "properties": {
+              "type": {
+                "enum": [
+                  "nylon"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "thermoplastic polyurethane based urethane material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "tpu"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "polyvinyl alcohol based material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "pva"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "high impact polystyrene based material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "hips"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "composite material with stuff in other stuff, something like PLA mixed with carbon fiber, kevlar, or fiberglass",
+            "properties": {
+              "type": {
+                "enum": [
+                  "composite"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Unknown material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "unknown"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "HardwareConfiguration": {
+        "description": "The hardware configuration of a machine.",
+        "oneOf": [
+          {
+            "description": "No configuration is possible. This isn't the same conceptually as an `Option<HardwareConfiguration>`, because this indicates we positively know there is no possible configuration changes that are possible with this method of manufcture.",
+            "properties": {
+              "type": {
+                "enum": [
+                  "none"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Hardware configuration specific to FDM based printers",
+            "properties": {
+              "config": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/NetworkPrinterManufacturer"
+                    "$ref": "#/components/schemas/FdmHardwareConfiguration"
                   }
                 ],
-                "description": "The manufacturer of the printer."
-              },
-              "model": {
-                "description": "The model of the printer.",
-                "nullable": true,
-                "type": "string"
-              },
-              "port": {
-                "description": "The port of the printer.",
-                "format": "uint16",
-                "minimum": 0,
-                "nullable": true,
-                "type": "integer"
-              },
-              "serial": {
-                "description": "The serial number of the printer.",
-                "nullable": true,
-                "type": "string"
+                "description": "The configuration for the FDM printer."
               },
               "type": {
                 "enum": [
-                  "NetworkPrinter"
+                  "fdm"
                 ],
                 "type": "string"
               }
             },
             "required": [
-              "ip",
-              "manufacturer",
+              "config",
               "type"
             ],
             "type": "object"
           }
         ]
       },
-      "Message": {
-        "description": "A message from a machine.",
-        "oneOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "UsbPrinter": {
-                "$ref": "#/components/schemas/Message2"
+      "MachineInfoResponse": {
+        "description": "Information regarding a connected machine.",
+        "properties": {
+          "extra": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExtraMachineInfoResponse"
               }
-            },
-            "required": [
-              "UsbPrinter"
             ],
-            "type": "object"
+            "description": "Additional, per-machine information which is specific to the underlying machine type.",
+            "nullable": true
           },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "NetworkPrinter": {
-                "$ref": "#/components/schemas/Message3"
+          "hardware_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HardwareConfiguration"
               }
-            },
-            "required": [
-              "NetworkPrinter"
             ],
-            "type": "object"
+            "description": "Information about how the Machine is currently configured."
+          },
+          "id": {
+            "description": "Machine Identifier (ID) for the specific Machine.",
+            "type": "string"
+          },
+          "machine_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MachineType"
+              }
+            ],
+            "description": "Information regarding the method of manufacture."
+          },
+          "make_model": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MachineMakeModel"
+              }
+            ],
+            "description": "Information regarding the make and model of the attached Machine."
+          },
+          "max_part_volume": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Volume"
+              }
+            ],
+            "description": "Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.\n\nThis may be `None` if the maximum size is not knowable by the Machine API.\n\nWhat \"close\" means is up to you!",
+            "nullable": true
+          },
+          "progress": {
+            "description": "Progress of the current print, if printing.",
+            "format": "double",
+            "nullable": true,
+            "type": "number"
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MachineState"
+              }
+            ],
+            "description": "Status of the printer -- be it printing, idle, or unreachable. This may dictate if a machine is capable of taking a new job."
           }
-        ]
-      },
-      "Message2": {
-        "description": "A message from the printer.",
-        "enum": [
-          "ok"
+        },
+        "required": [
+          "hardware_configuration",
+          "id",
+          "machine_type",
+          "make_model",
+          "state"
         ],
-        "type": "string"
+        "type": "object"
       },
-      "Message3": {
-        "description": "A message from the printer.",
-        "oneOf": [
-          {
-            "additionalProperties": false,
-            "properties": {
-              "Bambu": {
-                "$ref": "#/components/schemas/Message4"
-              }
-            },
-            "required": [
-              "Bambu"
-            ],
-            "type": "object"
+      "MachineMakeModel": {
+        "description": "Information regarding the make/model of a discovered endpoint.",
+        "properties": {
+          "manufacturer": {
+            "description": "The manufacturer that built the connected Machine.",
+            "nullable": true,
+            "type": "string"
           },
-          {
-            "additionalProperties": false,
-            "properties": {
-              "Formlabs": {
-                "type": "object"
-              }
-            },
-            "required": [
-              "Formlabs"
-            ],
-            "type": "object"
+          "model": {
+            "description": "The model of the connected Machine.",
+            "nullable": true,
+            "type": "string"
+          },
+          "serial": {
+            "description": "The unique serial number of the connected Machine.",
+            "nullable": true,
+            "type": "string"
           }
-        ]
+        },
+        "type": "object"
       },
-      "Message4": {
-        "description": "A message from/to the printer.",
+      "MachineState": {
+        "description": "Current state of the machine -- be it printing, idle or offline. This can be used to determine if a printer is in the correct state to take a new job.",
         "oneOf": [
           {
-            "additionalProperties": false,
-            "description": "A print message.",
+            "description": "If a print state can not be resolved at this time, an Unknown may be returned.",
             "properties": {
-              "print": {
-                "$ref": "#/components/schemas/Print"
-              }
-            },
-            "required": [
-              "print"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "An info message.",
-            "properties": {
-              "info": {
-                "$ref": "#/components/schemas/Info"
-              }
-            },
-            "required": [
-              "info"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "A system message.",
-            "properties": {
-              "system": {
-                "$ref": "#/components/schemas/System"
-              }
-            },
-            "required": [
-              "system"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "An unknown Json message.",
-            "properties": {
-              "json": {}
-            },
-            "required": [
-              "json"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "The message could not be parsed. The `Option<String>` contains the raw message. If the message could not be parsed as a string, the `Option` will be `None`.",
-            "properties": {
-              "unknown": {
-                "nullable": true,
+              "state": {
+                "enum": [
+                  "unknown"
+                ],
                 "type": "string"
               }
             },
             "required": [
-              "unknown"
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Idle, and ready for another job.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "idle"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Running a job -- 3D printing or CNC-ing a part.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "running"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Machine is currently offline or unreachable.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "offline"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Job is underway but halted, waiting for some action to take place.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "paused"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Job is finished, but waiting manual action to move back to Idle.",
+            "properties": {
+              "state": {
+                "enum": [
+                  "complete"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "The printer has failed and is in an unknown state that may require manual attention to resolve. The inner value is a human readable description of what specifically has failed.",
+            "properties": {
+              "message": {
+                "description": "A human-readable message describing the failure.",
+                "nullable": true,
+                "type": "string"
+              },
+              "state": {
+                "enum": [
+                  "failed"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "state"
             ],
             "type": "object"
           }
         ]
       },
-      "NetworkPrinterManufacturer": {
-        "description": "Network printer manufacturer.",
+      "MachineType": {
+        "description": "Specific technique by which this Machine takes a design, and produces a real-world 3D object.",
         "oneOf": [
           {
-            "description": "Bambu.",
+            "description": "Use light to cure a resin to build up layers.",
             "enum": [
-              "Bambu"
+              "stereolithography"
             ],
             "type": "string"
           },
           {
-            "description": "Formlabs.",
+            "description": "Fused Deposition Modeling, layers of melted plastic.",
             "enum": [
-              "Formlabs"
+              "fused_deposition"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "\"Computer numerical control\" - machine that grinds away material from a hunk of material to construct a part.",
+            "enum": [
+              "cnc"
             ],
             "type": "string"
           }
         ]
       },
-      "NozzleType": {
-        "description": "A nozzle type.",
+      "NozzleDiameter": {
+        "description": "A nozzle diameter.",
         "oneOf": [
           {
-            "description": "Hardened steel nozzle.",
+            "description": "0.2mm.",
             "enum": [
-              "hardened_steel"
+              "0.2"
             ],
             "type": "string"
           },
           {
-            "description": "Stainless steel nozzle.",
+            "description": "0.4mm.",
             "enum": [
-              "stainless_steel"
+              "0.4"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "0.6mm.",
+            "enum": [
+              "0.6"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "0.8mm.",
+            "enum": [
+              "0.8"
             ],
             "type": "string"
           }
@@ -459,808 +633,6 @@
         "required": [
           "message"
         ],
-        "type": "object"
-      },
-      "Print": {
-        "description": "A print command.",
-        "oneOf": [
-          {
-            "additionalProperties": true,
-            "description": "Ams control.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "ams_control"
-                ],
-                "type": "string"
-              },
-              "param": {
-                "description": "The param.",
-                "nullable": true,
-                "type": "string"
-              },
-              "reason": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Reason"
-                  }
-                ],
-                "description": "The reason for the message."
-              },
-              "result": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Result"
-                  }
-                ],
-                "description": "The result of the command."
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              }
-            },
-            "required": [
-              "command",
-              "reason",
-              "result",
-              "sequence_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "The status of the print.",
-            "properties": {
-              "ams": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PrintAms"
-                  }
-                ],
-                "description": "The ams.",
-                "nullable": true
-              },
-              "ams_rfid_status": {
-                "description": "The ams rfid status.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "ams_status": {
-                "description": "The ams status.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "aux_part_fan": {
-                "description": "The aux part fan.",
-                "nullable": true,
-                "type": "boolean"
-              },
-              "bed_target_temper": {
-                "description": "The target bed temperature.",
-                "format": "double",
-                "nullable": true,
-                "type": "number"
-              },
-              "bed_temper": {
-                "description": "The bed temperature.",
-                "format": "double",
-                "nullable": true,
-                "type": "number"
-              },
-              "big_fan1_speed": {
-                "description": "The big fan 1 speed.",
-                "nullable": true,
-                "type": "string"
-              },
-              "big_fan2_speed": {
-                "description": "The big fan 2 speed.",
-                "nullable": true,
-                "type": "string"
-              },
-              "chamber_temper": {
-                "description": "The chamber temperature.",
-                "format": "double",
-                "nullable": true,
-                "type": "number"
-              },
-              "command": {
-                "enum": [
-                  "push_status"
-                ],
-                "type": "string"
-              },
-              "cooling_fan_speed": {
-                "description": "The cooling fan speed.",
-                "nullable": true,
-                "type": "string"
-              },
-              "fan_gear": {
-                "description": "The fan gear.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "force_upgrade": {
-                "description": "Force upgrade?",
-                "nullable": true,
-                "type": "boolean"
-              },
-              "gcode_file": {
-                "description": "The gcode file.",
-                "nullable": true,
-                "type": "string"
-              },
-              "gcode_file_prepare_percent": {
-                "description": "The gcode file prepare percent.",
-                "nullable": true,
-                "type": "string"
-              },
-              "gcode_state": {
-                "description": "The gcode state.",
-                "nullable": true,
-                "type": "string"
-              },
-              "heatbreak_fan_speed": {
-                "description": "The heatbreak fan speed.",
-                "nullable": true,
-                "type": "string"
-              },
-              "hms": {
-                "description": "The hms.",
-                "items": {},
-                "nullable": true,
-                "type": "array"
-              },
-              "home_flag": {
-                "description": "The home flag.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "hw_switch_state": {
-                "description": "The hw switch state.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "ipcam": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PrintIpcam"
-                  }
-                ],
-                "description": "The ipcam.",
-                "nullable": true
-              },
-              "layer_num": {
-                "description": "The layer num.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "lifecycle": {
-                "description": "The lifecycle.",
-                "nullable": true,
-                "type": "string"
-              },
-              "lights_report": {
-                "description": "The lights report.",
-                "items": {
-                  "$ref": "#/components/schemas/PrintLightsReport"
-                },
-                "nullable": true,
-                "type": "array"
-              },
-              "mc_percent": {
-                "description": "The percentage of the print completed.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "mc_print_line_number": {
-                "description": "The mc print line number.",
-                "nullable": true,
-                "type": "string"
-              },
-              "mc_print_stage": {
-                "description": "The print stage.",
-                "nullable": true,
-                "type": "string"
-              },
-              "mc_print_sub_stage": {
-                "description": "The mc print sub stage.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "mc_remaining_time": {
-                "description": "The remaining time of the print.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "mess_production_state": {
-                "description": "The mess production state.",
-                "nullable": true,
-                "type": "string"
-              },
-              "msg": {
-                "description": "The message.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "nozzle_diameter": {
-                "description": "The nozzle diameter.",
-                "nullable": true,
-                "type": "string"
-              },
-              "nozzle_target_temper": {
-                "description": "The target nozzle temperature.",
-                "format": "double",
-                "nullable": true,
-                "type": "number"
-              },
-              "nozzle_temper": {
-                "description": "The nozzle temperature.",
-                "format": "double",
-                "nullable": true,
-                "type": "number"
-              },
-              "nozzle_type": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/NozzleType"
-                  }
-                ],
-                "description": "The nozzle type.",
-                "nullable": true
-              },
-              "online": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PrintOnline"
-                  }
-                ],
-                "description": "Online status.",
-                "nullable": true
-              },
-              "print_error": {
-                "description": "The print error.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "print_type": {
-                "description": "The print type.",
-                "nullable": true,
-                "type": "string"
-              },
-              "profile_id": {
-                "description": "The profile id.",
-                "nullable": true,
-                "type": "string"
-              },
-              "project_id": {
-                "description": "The project id.",
-                "nullable": true,
-                "type": "string"
-              },
-              "queue_est": {
-                "description": "The queue est.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "queue_number": {
-                "description": "The queue number.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "queue_sts": {
-                "description": "The queue sts.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "queue_total": {
-                "description": "The queue total.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "s_obj": {
-                "description": "The s obj.",
-                "items": {},
-                "nullable": true,
-                "type": "array"
-              },
-              "sdcard": {
-                "description": "Sdcard?",
-                "nullable": true,
-                "type": "boolean"
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              },
-              "spd_lvl": {
-                "description": "The spd lvl.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "spd_mag": {
-                "description": "The spd mag.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "stg": {
-                "description": "The stg.",
-                "items": {},
-                "nullable": true,
-                "type": "array"
-              },
-              "stg_cur": {
-                "description": "The stg cur.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "subtask_id": {
-                "description": "The subtask id.",
-                "nullable": true,
-                "type": "string"
-              },
-              "subtask_name": {
-                "description": "The subtask name.",
-                "nullable": true,
-                "type": "string"
-              },
-              "task_id": {
-                "description": "The task id.",
-                "nullable": true,
-                "type": "string"
-              },
-              "total_layer_num": {
-                "description": "The total layer num.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              },
-              "upgrade_state": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PrintUpgradeState"
-                  }
-                ],
-                "description": "The upgrade state.",
-                "nullable": true
-              },
-              "upload": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PrintUpload"
-                  }
-                ],
-                "description": "The upload.",
-                "nullable": true
-              },
-              "vt_tray": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PrintTray"
-                  }
-                ],
-                "description": "The tray.",
-                "nullable": true
-              },
-              "wifi_signal": {
-                "description": "The wifi signal.",
-                "nullable": true,
-                "type": "string"
-              }
-            },
-            "required": [
-              "command",
-              "sequence_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "The gcode line.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "gcode_line"
-                ],
-                "type": "string"
-              },
-              "param": {
-                "description": "The gcode line.",
-                "nullable": true,
-                "type": "string"
-              },
-              "reason": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Reason"
-                  }
-                ],
-                "description": "The reason for the message."
-              },
-              "result": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Result"
-                  }
-                ],
-                "description": "The result of the command."
-              },
-              "return_code": {
-                "description": "The return code.",
-                "nullable": true,
-                "type": "string"
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              },
-              "source": {
-                "description": "The source.",
-                "format": "int64",
-                "nullable": true,
-                "type": "integer"
-              }
-            },
-            "required": [
-              "command",
-              "reason",
-              "result",
-              "sequence_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "Project file.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "project_file"
-                ],
-                "type": "string"
-              },
-              "gcode_file": {
-                "description": "The gcode file.",
-                "nullable": true,
-                "type": "string"
-              },
-              "profile_id": {
-                "description": "The profile id.",
-                "type": "string"
-              },
-              "project_id": {
-                "description": "The project id.",
-                "type": "string"
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              },
-              "subtask_id": {
-                "description": "The subtask id.",
-                "type": "string"
-              },
-              "subtask_name": {
-                "description": "The subtask name.",
-                "type": "string"
-              },
-              "task_id": {
-                "description": "The task id.",
-                "type": "string"
-              }
-            },
-            "required": [
-              "command",
-              "profile_id",
-              "project_id",
-              "sequence_id",
-              "subtask_id",
-              "subtask_name",
-              "task_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "Pause the print.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "pause"
-                ],
-                "type": "string"
-              },
-              "reason": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Reason"
-                  }
-                ],
-                "description": "The reason for the message."
-              },
-              "result": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Result"
-                  }
-                ],
-                "description": "The result of the command."
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              }
-            },
-            "required": [
-              "command",
-              "reason",
-              "result",
-              "sequence_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "Resume the print.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "resume"
-                ],
-                "type": "string"
-              },
-              "reason": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Reason"
-                  }
-                ],
-                "description": "The reason for the message."
-              },
-              "result": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Result"
-                  }
-                ],
-                "description": "The result of the command."
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              }
-            },
-            "required": [
-              "command",
-              "reason",
-              "result",
-              "sequence_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "Stop the print.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "stop"
-                ],
-                "type": "string"
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              }
-            },
-            "required": [
-              "command",
-              "sequence_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "Extrusion calibration get.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "extrusion_cali_get"
-                ],
-                "type": "string"
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              }
-            },
-            "required": [
-              "command",
-              "sequence_id"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "PrintAms": {
-        "additionalProperties": true,
-        "description": "The print ams.",
-        "properties": {
-          "ams": {
-            "description": "The ams.",
-            "items": {
-              "$ref": "#/components/schemas/PrintAmsData"
-            },
-            "nullable": true,
-            "type": "array"
-          },
-          "ams_exist_bits": {
-            "description": "The ams exist bits.",
-            "nullable": true,
-            "type": "string"
-          },
-          "insert_flag": {
-            "description": "The insert flag.",
-            "nullable": true,
-            "type": "boolean"
-          },
-          "power_on_flag": {
-            "description": "The power on flag.",
-            "nullable": true,
-            "type": "boolean"
-          },
-          "tray_exist_bits": {
-            "description": "The tray exist bits.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_is_bbl_bits": {
-            "description": "The tray is bbl bits.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_now": {
-            "description": "The tray now.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_pre": {
-            "description": "The tray pre.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_read_done_bits": {
-            "description": "The tray read done bits.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_reading_bits": {
-            "description": "The tray reading bits.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_tar": {
-            "description": "The tray tar.",
-            "nullable": true,
-            "type": "string"
-          },
-          "version": {
-            "description": "The version.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
-          }
-        },
-        "type": "object"
-      },
-      "PrintAmsData": {
-        "additionalProperties": true,
-        "description": "The print ams data.",
-        "properties": {
-          "humidity": {
-            "description": "The humidity.",
-            "type": "string"
-          },
-          "id": {
-            "description": "The id.",
-            "type": "string"
-          },
-          "temp": {
-            "description": "The temperature.",
-            "type": "string"
-          },
-          "tray": {
-            "description": "The tray.",
-            "items": {
-              "$ref": "#/components/schemas/PrintTray"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "humidity",
-          "id",
-          "temp",
-          "tray"
-        ],
-        "type": "object"
-      },
-      "PrintIpcam": {
-        "additionalProperties": true,
-        "description": "The print ipcam.",
-        "properties": {
-          "ipcam_dev": {
-            "description": "The ipcam dev.",
-            "nullable": true,
-            "type": "string"
-          },
-          "ipcam_record": {
-            "description": "The ipcam record.",
-            "nullable": true,
-            "type": "string"
-          },
-          "mode_bits": {
-            "description": "The mode bits.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
-          },
-          "timelapse": {
-            "description": "The timelapse.",
-            "nullable": true,
-            "type": "string"
-          }
-        },
         "type": "object"
       },
       "PrintJobResponse": {
@@ -1285,58 +657,6 @@
         ],
         "type": "object"
       },
-      "PrintLightsReport": {
-        "additionalProperties": true,
-        "description": "A print lights report.",
-        "properties": {
-          "mode": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LedMode"
-              }
-            ],
-            "description": "The mode."
-          },
-          "node": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LedNode"
-              }
-            ],
-            "description": "The node."
-          }
-        },
-        "required": [
-          "mode",
-          "node"
-        ],
-        "type": "object"
-      },
-      "PrintOnline": {
-        "additionalProperties": true,
-        "description": "The print online.",
-        "properties": {
-          "ahb": {
-            "description": "The ahb.",
-            "type": "boolean"
-          },
-          "rfid": {
-            "description": "The rfid.",
-            "nullable": true,
-            "type": "boolean"
-          },
-          "version": {
-            "description": "The version.",
-            "format": "int64",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "ahb",
-          "version"
-        ],
-        "type": "object"
-      },
       "PrintParameters": {
         "description": "Parameters for printing.",
         "properties": {
@@ -1347,6 +667,15 @@
           "machine_id": {
             "description": "The machine id to print to.",
             "type": "string"
+          },
+          "slicer_configuration": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SlicerConfiguration"
+              }
+            ],
+            "description": "Requested design-specific slicer configurations.",
+            "nullable": true
           }
         },
         "required": [
@@ -1355,441 +684,308 @@
         ],
         "type": "object"
       },
-      "PrintTray": {
-        "additionalProperties": true,
-        "description": "The print tray.",
+      "SlicerConfiguration": {
+        "description": "The slicer configuration is a set of parameters that are passed to the slicer to control how the gcode is generated.",
         "properties": {
-          "bed_temp": {
-            "description": "The bed temperature.",
+          "filament_idx": {
+            "description": "The filament to use for the print.",
+            "format": "uint",
+            "minimum": 0,
             "nullable": true,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Stage": {
+        "description": "The print stage. These come from: https://github.com/SoftFever/OrcaSlicer/blob/431978baf17961df90f0d01871b0ad1d839d7f5d/src/slic3r/GUI/DeviceManager.cpp#L78",
+        "oneOf": [
+          {
+            "description": "Nothing.",
+            "enum": [
+              "nothing"
+            ],
             "type": "string"
           },
-          "bed_temp_type": {
-            "description": "The bed temperature type.",
-            "nullable": true,
+          {
+            "description": "Empty.",
+            "enum": [
+              "empty"
+            ],
             "type": "string"
           },
-          "id": {
-            "description": "The id.",
+          {
+            "description": "Auto bed leveling.",
+            "enum": [
+              "auto_bed_leveling"
+            ],
             "type": "string"
           },
-          "k": {
-            "description": "The tray k.",
+          {
+            "description": "Heatbed preheating.",
+            "enum": [
+              "heatbed_preheating"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Sweeping XY mech mode.",
+            "enum": [
+              "sweeping_xy_mech_mode"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Changing filament.",
+            "enum": [
+              "changing_filament"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "M400 pause.",
+            "enum": [
+              "m400_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to filament runout.",
+            "enum": [
+              "paused_due_to_filament_runout"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Heating hotend.",
+            "enum": [
+              "heating_hotend"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating extrusion.",
+            "enum": [
+              "calibrating_extrusion"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Scanning bed surface.",
+            "enum": [
+              "scanning_bed_surface"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Inspecting first layer.",
+            "enum": [
+              "inspecting_first_layer"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Identifying build plate type.",
+            "enum": [
+              "identifying_build_plate_type"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating micro lidar.",
+            "enum": [
+              "calibrating_micro_lidar"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Homing toolhead.",
+            "enum": [
+              "homing_toolhead"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Cleaning nozzle tip.",
+            "enum": [
+              "cleaning_nozzle_tip"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Checking extruder temperature.",
+            "enum": [
+              "checking_extruder_temperature"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Printing was paused by the user.",
+            "enum": [
+              "printing_was_paused_by_the_user"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Pause of front cover falling.",
+            "enum": [
+              "pause_of_front_cover_falling"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating micro lidar.",
+            "enum": [
+              "calibrating_micro_lidar2"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Calibrating extrusion flow.",
+            "enum": [
+              "calibrating_extrusion_flow"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to nozzle temperature malfunction.",
+            "enum": [
+              "paused_due_to_nozzle_temperature_malfunction"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to heat bed temperature malfunction.",
+            "enum": [
+              "paused_due_to_heat_bed_temperature_malfunction"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Filament unloading.",
+            "enum": [
+              "filament_unloading"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Skip step pause.",
+            "enum": [
+              "skip_step_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Filament loading.",
+            "enum": [
+              "filament_loading"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Motor noise calibration.",
+            "enum": [
+              "motor_noise_calibration"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to AMS lost.",
+            "enum": [
+              "paused_due_to_ams_lost"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to low speed of the heat break fan.",
+            "enum": [
+              "paused_due_to_low_speed_of_the_heat_break_fan"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused due to chamber temperature control error.",
+            "enum": [
+              "paused_due_to_chamber_temperature_control_error"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Cooling chamber.",
+            "enum": [
+              "cooling_chamber"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Paused by the Gcode inserted by the user.",
+            "enum": [
+              "paused_by_the_gcode_inserted_by_the_user"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Motor noise showoff.",
+            "enum": [
+              "motor_noise_showoff"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Nozzle filament covered detected pause.",
+            "enum": [
+              "nozzle_filament_covered_detected_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Cutter error pause.",
+            "enum": [
+              "cutter_error_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "First layer error pause.",
+            "enum": [
+              "first_layer_error_pause"
+            ],
+            "type": "string"
+          },
+          {
+            "description": "Nozzle clog pause.",
+            "enum": [
+              "nozzle_clog_pause"
+            ],
+            "type": "string"
+          }
+        ]
+      },
+      "Volume": {
+        "description": "Set of three values to represent the extent of a 3-D Volume. This contains the width, depth, and height values, generally used to represent some maximum or minimum.\n\nAll measurements are in millimeters.",
+        "properties": {
+          "depth": {
+            "description": "Depth of the volume (\"front to back\"), in millimeters.",
             "format": "double",
-            "nullable": true,
             "type": "number"
           },
-          "n": {
-            "description": "The tray n.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
+          "height": {
+            "description": "Height of the volume (\"up and down\"), in millimeters.",
+            "format": "double",
+            "type": "number"
           },
-          "nozzle_temp_max": {
-            "description": "The nozzle temperature max.",
-            "nullable": true,
-            "type": "string"
-          },
-          "nozzle_temp_min": {
-            "description": "The nozzle temperature min.",
-            "nullable": true,
-            "type": "string"
-          },
-          "remain": {
-            "description": "The tray remain.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
-          },
-          "tag_uid": {
-            "description": "The tag uid.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_color": {
-            "description": "The tray color.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_diameter": {
-            "description": "The tray diameter.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_id_name": {
-            "description": "The tray id name.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_info_idx": {
-            "description": "The tray info index.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_sub_brands": {
-            "description": "The tray sub brands.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_temp": {
-            "description": "The tray temperature.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_time": {
-            "description": "The tray time.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_type": {
-            "description": "The tray type.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_uuid": {
-            "description": "The tray uuid.",
-            "nullable": true,
-            "type": "string"
-          },
-          "tray_weight": {
-            "description": "The tray weight.",
-            "nullable": true,
-            "type": "string"
-          },
-          "xcam_info": {
-            "description": "The xcam info.",
-            "nullable": true,
-            "type": "string"
+          "width": {
+            "description": "Width of the volume (\"left and right\"), in millimeters.",
+            "format": "double",
+            "type": "number"
           }
         },
         "required": [
-          "id"
+          "depth",
+          "height",
+          "width"
         ],
         "type": "object"
-      },
-      "PrintUpgradeState": {
-        "additionalProperties": true,
-        "description": "A print upgrade state.",
-        "properties": {
-          "consistency_request": {
-            "description": "The consistency request.",
-            "nullable": true,
-            "type": "boolean"
-          },
-          "dis_state": {
-            "description": "The dis state.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
-          },
-          "err_code": {
-            "description": "The error code.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
-          },
-          "force_upgrade": {
-            "description": "Force upgrade?",
-            "nullable": true,
-            "type": "boolean"
-          },
-          "message": {
-            "description": "The message.",
-            "nullable": true,
-            "type": "string"
-          },
-          "module": {
-            "description": "The module.",
-            "nullable": true,
-            "type": "string"
-          },
-          "new_ver_list": {
-            "description": "The new version list.",
-            "items": {},
-            "nullable": true,
-            "type": "array"
-          },
-          "new_version_state": {
-            "description": "The new version state.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
-          },
-          "progress": {
-            "description": "The progress.",
-            "nullable": true,
-            "type": "string"
-          },
-          "sequence_id": {
-            "description": "The sequence id.",
-            "format": "int64",
-            "nullable": true,
-            "type": "integer"
-          },
-          "status": {
-            "description": "The status.",
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "PrintUpload": {
-        "additionalProperties": true,
-        "description": "The print upload.",
-        "properties": {
-          "message": {
-            "description": "The message.",
-            "type": "string"
-          },
-          "progress": {
-            "description": "The progress.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "status": {
-            "description": "The status.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "message",
-          "progress",
-          "status"
-        ],
-        "type": "object"
-      },
-      "Reason": {
-        "description": "A reason for a message.",
-        "oneOf": [
-          {
-            "description": "Success.",
-            "enum": [
-              "SUCCESS"
-            ],
-            "type": "string"
-          },
-          {
-            "description": "Fail.",
-            "enum": [
-              "FAIL"
-            ],
-            "type": "string"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Some unknown string.",
-            "properties": {
-              "UNKNOWN": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "UNKNOWN"
-            ],
-            "type": "object"
-          }
-        ]
-      },
-      "Result": {
-        "description": "The result of a message.",
-        "oneOf": [
-          {
-            "description": "Success.",
-            "enum": [
-              "SUCCESS"
-            ],
-            "type": "string"
-          },
-          {
-            "description": "Fail.",
-            "enum": [
-              "FAIL"
-            ],
-            "type": "string"
-          }
-        ]
-      },
-      "SequenceId": {
-        "anyOf": [
-          {
-            "description": "A string sequence id.",
-            "type": "string"
-          },
-          {
-            "description": "An integer sequence id.",
-            "format": "uint32",
-            "minimum": 0,
-            "type": "integer"
-          }
-        ],
-        "description": "The sequence id type."
-      },
-      "System": {
-        "description": "A system command.",
-        "oneOf": [
-          {
-            "additionalProperties": true,
-            "description": "Led control.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "ledctrl"
-                ],
-                "type": "string"
-              },
-              "interval_time": {
-                "description": "The interval time.",
-                "format": "uint32",
-                "minimum": 0,
-                "type": "integer"
-              },
-              "led_mode": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/LedMode"
-                  }
-                ],
-                "description": "The LED mode."
-              },
-              "led_node": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/LedNode"
-                  }
-                ],
-                "description": "The LED node."
-              },
-              "led_off_time": {
-                "description": "The LED off time.",
-                "format": "uint32",
-                "minimum": 0,
-                "type": "integer"
-              },
-              "led_on_time": {
-                "description": "The LED on time.",
-                "format": "uint32",
-                "minimum": 0,
-                "type": "integer"
-              },
-              "loop_times": {
-                "description": "The loop times.",
-                "format": "uint32",
-                "minimum": 0,
-                "type": "integer"
-              },
-              "reason": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Reason"
-                  }
-                ],
-                "description": "The reason for the message.",
-                "nullable": true
-              },
-              "result": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Result"
-                  }
-                ],
-                "description": "The result of the command."
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              }
-            },
-            "required": [
-              "command",
-              "interval_time",
-              "led_mode",
-              "led_node",
-              "led_off_time",
-              "led_on_time",
-              "loop_times",
-              "result",
-              "sequence_id"
-            ],
-            "type": "object"
-          },
-          {
-            "additionalProperties": true,
-            "description": "Get accessories.",
-            "properties": {
-              "accessory_type": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/AccessoryType"
-                  }
-                ],
-                "description": "The accessory type."
-              },
-              "aux_part_fan": {
-                "description": "The aux part fan.",
-                "type": "boolean"
-              },
-              "command": {
-                "enum": [
-                  "get_accessories"
-                ],
-                "type": "string"
-              },
-              "nozzle_diameter": {
-                "description": "The nozzle diameter.",
-                "format": "double",
-                "type": "number"
-              },
-              "nozzle_type": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/NozzleType"
-                  }
-                ],
-                "description": "The nozzle type."
-              },
-              "reason": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Reason"
-                  }
-                ],
-                "description": "The reason for the message.",
-                "nullable": true
-              },
-              "result": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Result"
-                  }
-                ],
-                "description": "The result of the command."
-              },
-              "sequence_id": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SequenceId"
-                  }
-                ],
-                "description": "The sequence id."
-              }
-            },
-            "required": [
-              "accessory_type",
-              "aux_part_fan",
-              "command",
-              "nozzle_diameter",
-              "nozzle_type",
-              "result",
-              "sequence_id"
-            ],
-            "type": "object"
-          }
-        ]
       }
     }
   },
@@ -1800,7 +996,7 @@
     },
     "description": "",
     "title": "machine-api",
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "openapi": "3.0.3",
   "paths": {
@@ -1837,11 +1033,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": {
-                    "$ref": "#/components/schemas/Machine"
+                  "items": {
+                    "$ref": "#/components/schemas/MachineInfoResponse"
                   },
-                  "title": "Map_of_Machine",
-                  "type": "object"
+                  "title": "Array_of_MachineInfoResponse",
+                  "type": "array"
                 }
               }
             },
@@ -1879,7 +1075,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Message"
+                  "$ref": "#/components/schemas/MachineInfoResponse"
                 }
               }
             },
@@ -1895,6 +1091,34 @@
         "summary": "Get the status of a specific machine",
         "tags": [
           "machines"
+        ]
+      }
+    },
+    "/metrics": {
+      "get": {
+        "operationId": "get_metrics",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "String",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "List available machines and their statuses",
+        "tags": [
+          "hidden"
         ]
       }
     },
@@ -1965,6 +1189,13 @@
     }
   },
   "tags": [
+    {
+      "description": "Hidden API endpoints that should not show up in the docs.",
+      "externalDocs": {
+        "url": "https://docs.zoo.dev/api/machines"
+      },
+      "name": "hidden"
+    },
     {
       "description": "Utilities for making parts and discovering machines.",
       "externalDocs": {

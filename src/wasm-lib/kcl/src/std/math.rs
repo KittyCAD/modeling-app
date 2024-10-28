@@ -2,16 +2,41 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
+use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::MemoryItem,
+    executor::{ExecState, KclValue},
     std::Args,
 };
 
+/// Compute the remainder after dividing `num` by `div`.
+/// If `num` is negative, the result will be too.
+pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (n, d) = FromArgs::from_args(&args, 0)?;
+    let result = inner_rem(n, d)?;
+
+    args.make_user_val_from_i64(result)
+}
+
+/// Compute the remainder after dividing `num` by `div`.
+/// If `num` is negative, the result will be too.
+///
+/// ```no_run
+/// assertEqual(rem(int( 7), int(4)),  3, 0.01, "remainder is 3")
+/// assertEqual(rem(int(-7), int(4)), -3, 0.01, "remainder is 3")
+/// assertEqual(rem(int( 7), int(-4)), 3, 0.01, "remainder is 3")
+/// ```
+#[stdlib {
+    name = "rem",
+    tags = ["math"],
+}]
+fn inner_rem(num: i64, divisor: i64) -> Result<i64, KclError> {
+    Ok(num % divisor)
+}
+
 /// Compute the cosine of a number (in radians).
-pub async fn cos(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_cos(num)?;
 
@@ -41,7 +66,7 @@ fn inner_cos(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the sine of a number (in radians).
-pub async fn sin(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_sin(num)?;
 
@@ -71,7 +96,7 @@ fn inner_sin(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the tangent of a number (in radians).
-pub async fn tan(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_tan(num)?;
 
@@ -101,7 +126,7 @@ fn inner_tan(num: f64) -> Result<f64, KclError> {
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).
-pub async fn pi(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_pi()?;
 
     args.make_user_val_from_f64(result)
@@ -113,7 +138,7 @@ pub async fn pi(args: Args) -> Result<MemoryItem, KclError> {
 /// const circumference = 70
 ///
 /// const exampleSketch = startSketchOn("XZ")
-///  |> circle([0, 0], circumference/ (2 * pi()), %)
+///  |> circle({ center: [0, 0], radius: circumference/ (2 * pi()) }, %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
@@ -126,7 +151,7 @@ fn inner_pi() -> Result<f64, KclError> {
 }
 
 /// Compute the square root of a number.
-pub async fn sqrt(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_sqrt(num)?;
 
@@ -156,7 +181,7 @@ fn inner_sqrt(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the absolute value of a number.
-pub async fn abs(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_abs(num)?;
 
@@ -193,7 +218,7 @@ fn inner_abs(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the largest integer less than or equal to a number.
-pub async fn floor(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn floor(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_floor(num)?;
 
@@ -221,7 +246,7 @@ fn inner_floor(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the smallest integer greater than or equal to a number.
-pub async fn ceil(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn ceil(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_ceil(num)?;
 
@@ -249,7 +274,7 @@ fn inner_ceil(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the minimum of the given arguments.
-pub async fn min(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums = args.get_number_array()?;
     let result = inner_min(nums);
 
@@ -286,7 +311,7 @@ fn inner_min(args: Vec<f64>) -> f64 {
 }
 
 /// Compute the maximum of the given arguments.
-pub async fn max(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums = args.get_number_array()?;
     let result = inner_max(nums);
 
@@ -323,7 +348,7 @@ fn inner_max(args: Vec<f64>) -> f64 {
 }
 
 /// Compute the number to a power.
-pub async fn pow(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums = args.get_number_array()?;
     if nums.len() > 2 {
         return Err(KclError::Type(KclErrorDetails {
@@ -367,7 +392,7 @@ fn inner_pow(num: f64, pow: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the arccosine of a number (in radians).
-pub async fn acos(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_acos(num)?;
 
@@ -398,7 +423,7 @@ fn inner_acos(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the arcsine of a number (in radians).
-pub async fn asin(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_asin(num)?;
 
@@ -428,7 +453,7 @@ fn inner_asin(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the arctangent of a number (in radians).
-pub async fn atan(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_atan(num)?;
 
@@ -462,7 +487,7 @@ fn inner_atan(num: f64) -> Result<f64, KclError> {
 /// The result might not be correctly rounded owing to implementation
 /// details; `log2()` can produce more accurate results for base 2,
 /// and `log10()` can produce more accurate results for base 10.
-pub async fn log(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn log(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let nums = args.get_number_array()?;
     if nums.len() > 2 {
         return Err(KclError::Type(KclErrorDetails {
@@ -507,7 +532,7 @@ fn inner_log(num: f64, base: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the base 2 logarithm of the number.
-pub async fn log2(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn log2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_log2(num)?;
 
@@ -535,7 +560,7 @@ fn inner_log2(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the base 10 logarithm of the number.
-pub async fn log10(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn log10(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_log10(num)?;
 
@@ -563,7 +588,7 @@ fn inner_log10(num: f64) -> Result<f64, KclError> {
 }
 
 /// Compute the natural logarithm of the number.
-pub async fn ln(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn ln(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_ln(num)?;
 
@@ -591,7 +616,7 @@ fn inner_ln(num: f64) -> Result<f64, KclError> {
 }
 
 /// Return the value of Euler’s number `e`.
-pub async fn e(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_e()?;
 
     args.make_user_val_from_f64(result)
@@ -620,7 +645,7 @@ fn inner_e() -> Result<f64, KclError> {
 }
 
 /// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
-pub async fn tau(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_tau()?;
 
     args.make_user_val_from_f64(result)
@@ -649,7 +674,7 @@ fn inner_tau() -> Result<f64, KclError> {
 }
 
 /// Converts a number from degrees to radians.
-pub async fn to_radians(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_to_radians(num)?;
 
@@ -679,7 +704,7 @@ fn inner_to_radians(num: f64) -> Result<f64, KclError> {
 }
 
 /// Converts a number from radians to degrees.
-pub async fn to_degrees(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let result = inner_to_degrees(num)?;
 

@@ -1,11 +1,10 @@
 //! Conversions between types.
 
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, SourceRange},
+    executor::{ExecState, KclValue, SourceRange},
     std::Args,
 };
 
@@ -31,7 +30,7 @@ impl ConversionError {
 }
 
 /// Converts a number to integer.
-pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
     let converted = inner_int(num).map_err(|err| err.into_kcl_error(args.source_range))?;
 
@@ -49,13 +48,15 @@ pub async fn int(args: Args) -> Result<MemoryItem, KclError> {
 /// a runtime error.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
-///   |> circle([0, 0], 2, %)
-/// const extrude001 = extrude(5, sketch001)
-///
-/// const pattern01 = patternTransform(int(ceil(5 / 2)), (id) => {
+/// let n = int(ceil(5/2))
+/// assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
+/// // Draw n cylinders.
+/// startSketchOn('XZ')
+///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> extrude(5, %)
+///   |> patternTransform(n, (id) => {
 ///   return { translate: [4 * id, 0, 0] }
-/// }, extrude001)
+/// }, %)
 /// ```
 #[stdlib {
     name = "int",

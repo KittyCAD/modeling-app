@@ -1,49 +1,53 @@
 import { deserialize_files } from 'wasm-lib/pkg/wasm_lib'
-import { machineManager } from './machineManager'
+import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'
 import ModelingAppFile from './modelingAppFile'
+import { MAKE_TOAST_MESSAGES } from './constants'
 
 // Make files locally from an export call.
-export async function exportMake(data: ArrayBuffer): Promise<Response | null> {
-  if (machineManager.machineCount() === 0) {
-    console.error('No machines available')
-    toast.error('No machines available')
+export async function exportMake(
+  data: ArrayBuffer,
+  name: string,
+  toastId: string,
+  machineManager: MachineManager
+): Promise<Response | null> {
+  if (name === '') {
+    console.error(MAKE_TOAST_MESSAGES.NO_NAME)
+    toast.error(MAKE_TOAST_MESSAGES.NO_NAME, { id: toastId })
+    return null
+  }
+
+  if (machineManager.machines.length === 0) {
+    console.error(MAKE_TOAST_MESSAGES.NO_MACHINES)
+    toast.error(MAKE_TOAST_MESSAGES.NO_MACHINES, { id: toastId })
     return null
   }
 
   const machineApiIp = machineManager.machineApiIp
   if (!machineApiIp) {
-    console.error('No machine api ip available')
-    toast.error('No machine api ip available')
+    console.error(MAKE_TOAST_MESSAGES.NO_MACHINE_API_IP)
+    toast.error(MAKE_TOAST_MESSAGES.NO_MACHINE_API_IP, { id: toastId })
     return null
   }
 
   const currentMachine = machineManager.currentMachine
   if (!currentMachine) {
-    console.error('No current machine available')
-    toast.error('No current machine available')
+    console.error(MAKE_TOAST_MESSAGES.NO_CURRENT_MACHINE)
+    toast.error(MAKE_TOAST_MESSAGES.NO_CURRENT_MACHINE, { id: toastId })
     return null
   }
 
-  let machineId = null
-  if ('id' in currentMachine) {
-    machineId = currentMachine.id
-  } else if ('hostname' in currentMachine && currentMachine.hostname) {
-    machineId = currentMachine.hostname
-  } else if ('ip' in currentMachine && currentMachine.ip) {
-    machineId = currentMachine.ip
-  }
-
+  let machineId = currentMachine?.id
   if (!machineId) {
-    console.error('No machine id available', currentMachine)
-    toast.error('No machine id available')
+    console.error(MAKE_TOAST_MESSAGES.NO_MACHINE_ID, currentMachine)
+    toast.error(MAKE_TOAST_MESSAGES.NO_MACHINE_ID, { id: toastId })
     return null
   }
 
   const params: components['schemas']['PrintParameters'] = {
     machine_id: machineId,
-    job_name: 'Exported Job', // TODO: make this the project name.
+    job_name: name,
   }
   try {
     console.log('params', params)
@@ -65,10 +69,23 @@ export async function exportMake(data: ArrayBuffer): Promise<Response | null> {
 
     console.log('response', response)
 
+    if (!response.ok) {
+      console.error(MAKE_TOAST_MESSAGES.ERROR_STARTING_PRINT, response)
+      const text = await response.text()
+      toast.error(
+        'Error while starting print: ' + response.statusText + ' ' + text,
+        {
+          id: toastId,
+        }
+      )
+      return null
+    }
+
+    toast.success(MAKE_TOAST_MESSAGES.SUCCESS, { id: toastId })
     return response
   } catch (error) {
-    console.error('Error exporting', error)
-    toast.error('Error exporting')
+    console.error(MAKE_TOAST_MESSAGES.ERROR_STARTING_PRINT, error)
+    toast.error(MAKE_TOAST_MESSAGES.ERROR_STARTING_PRINT, { id: toastId })
     return null
   }
 }

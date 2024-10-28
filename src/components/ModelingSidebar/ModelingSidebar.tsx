@@ -1,18 +1,24 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
-import { MouseEventHandler, useCallback, useMemo } from 'react'
-import { SidebarType, sidebarPanes } from './ModelingPanes'
+import {
+  MouseEventHandler,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react'
+import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
 import { ActionIcon } from 'components/ActionIcon'
 import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
-import { machineManager } from 'lib/machineManager'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { KEYBINDING_CATEGORIES } from 'lib/constants'
 import { useInteractionMap } from 'hooks/useInteractionMap'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
@@ -27,26 +33,38 @@ interface BadgeInfoComputed {
   onClick?: MouseEventHandler<any>
 }
 
+function getPlatformString(): 'web' | 'desktop' {
+  return isDesktop() ? 'desktop' : 'web'
+}
+
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
+  const machineManager = useContext(MachineManagerContext)
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
-    context.store?.buttonDownInStream ||
     onboardingStatus.current === 'camera' ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   const showDebugPanel = settings.context.modeling.showDebugPanel
 
+  const paneCallbackProps = useMemo(
+    () => ({
+      kclContext,
+      settings: settings.context,
+      platform: getPlatformString(),
+    }),
+    [kclContext.errors, settings.context]
+  )
+
   const sidebarActions: SidebarAction[] = [
     {
       id: 'export',
       title: 'Export part',
       icon: 'floppyDiskArrow',
-      iconClassName: '!p-0',
       keybinding: 'Ctrl + Shift + E',
       action: () =>
         commandBarSend({
@@ -58,25 +76,24 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       id: 'make',
       title: 'Make part',
       icon: 'printer3d',
-      iconClassName: '!p-0',
       keybinding: 'Ctrl + Shift + M',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
         commandBarSend({
           type: 'Find and select command',
           data: { name: 'Make', groupId: 'modeling' },
         })
       },
-      hide: () => machineManager.machineCount() === 0,
-      hideOnPlatform: 'web',
+      hide: () => !isDesktop(),
+      disable: () => {
+        return machineManager.noMachinesReason()
+      },
     },
   ]
   const filteredActions: SidebarAction[] = sidebarActions.filter(
     (action) =>
-      (!action.hide || (action.hide instanceof Function && !action.hide())) &&
-      (!action.hideOnPlatform ||
-        (isTauri()
-          ? action.hideOnPlatform === 'web'
-          : action.hideOnPlatform === 'desktop'))
+      !action.hide ||
+      (action.hide instanceof Function && !action.hide(paneCallbackProps))
   )
 
   //   // Filter out the debug panel if it's not supposed to be shown
@@ -88,25 +105,47 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         : sidebarPanes.filter((pane) => pane.id !== 'debug')
       ).filter(
         (pane) =>
-          !pane.hideOnPlatform ||
-          (isTauri()
-            ? pane.hideOnPlatform === 'web'
-            : pane.hideOnPlatform === 'desktop')
+          !pane.hide ||
+          (pane.hide instanceof Function && !pane.hide(paneCallbackProps))
       ),
-    [sidebarPanes, showDebugPanel.current]
+    [sidebarPanes, paneCallbackProps]
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
     return filteredPanes.reduce((acc, pane) => {
       if (pane.showBadge) {
         acc[pane.id] = {
-          value: pane.showBadge.value({ kclContext }),
+          value: pane.showBadge.value(paneCallbackProps),
           onClick: pane.showBadge.onClick,
         }
       }
       return acc
     }, {} as Record<SidebarType, BadgeInfoComputed>)
-  }, [kclContext.errors])
+  }, [paneCallbackProps])
+
+  // Clear any hidden panes from the `openPanes` array
+  useEffect(() => {
+    const panesToReset: SidebarType[] = []
+    sidebarPanes.forEach((pane) => {
+      if (
+        pane.hide === true ||
+        (pane.hide instanceof Function && pane.hide(paneCallbackProps))
+      ) {
+        panesToReset.push(pane.id)
+      }
+    })
+
+    if (panesToReset.length > 0) {
+      send({
+        type: 'Set context',
+        data: {
+          openPanes: context.store?.openPanes.filter(
+            (pane) => !panesToReset.includes(pane)
+          ),
+        },
+      })
+    }
+  }, [settings.context])
 
   const togglePane = useCallback(
     (newPane: SidebarType) => {
@@ -149,6 +188,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       }}
       minWidth={200}
       maxWidth={800}
+      handleWrapperClass="sidebar-resize-handles"
       handleClasses={{
         right:
           (context.store?.openPanes.length === 0 ? 'hidden ' : 'block ') +
@@ -167,7 +207,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           className={
             (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
             'relative z-[2] pointer-events-auto p-0 col-start-1 col-span-1 h-fit w-fit flex flex-col ' +
-            'bg-chalkboard-10 border border-solid border-chalkboard-20 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 '
+            'bg-chalkboard-10 border border-solid border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 group-focus-within:border-primary dark:group-focus-within:border-chalkboard-50 shadow-sm '
           }
         >
           <ul
@@ -190,7 +230,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
           </ul>
           {filteredActions.length > 0 && (
             <>
-              <hr className="w-full border-chalkboard-20 dark:border-chalkboard-80" />
+              <hr className="w-full border-chalkboard-30 dark:border-chalkboard-80" />
               <ul
                 id="sidebar-actions"
                 className="w-fit p-2 flex flex-col gap-2"
@@ -207,6 +247,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                       iconSize: 'md',
                     }}
                     onClick={action.action}
+                    disabledText={action.disable?.()}
                   />
                 ))}
               </ul>
@@ -259,6 +300,7 @@ interface ModelingPaneButtonProps
   onClick: () => void
   paneIsOpen?: boolean
   showBadge?: BadgeInfoComputed
+  disabledText?: string
 }
 
 function ModelingPaneButton({
@@ -266,6 +308,7 @@ function ModelingPaneButton({
   onClick,
   paneIsOpen,
   showBadge,
+  disabledText,
   ...props
 }: ModelingPaneButtonProps) {
   const { state: interactionMapState } = useInteractionMapContext()
@@ -281,21 +324,19 @@ function ModelingPaneButton({
   return (
     <div id={paneConfig.id + '-button-holder'}>
       <button
-        className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
+        className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
         name={paneConfig.title}
         data-testid={paneConfig.id + '-pane-button'}
+        disabled={disabledText !== undefined}
+        aria-disabled={disabledText !== undefined}
         {...props}
       >
         <ActionIcon
           icon={paneConfig.icon}
-          className={'p-1 ' + paneConfig.iconClassName || ''}
-          size={paneConfig.iconSize || 'sm'}
-          iconClassName={
-            paneIsOpen
-              ? ' !text-chalkboard-10'
-              : '!text-chalkboard-80 dark:!text-chalkboard-30'
-          }
+          className={paneConfig.iconClassName || ''}
+          size={paneConfig.iconSize || 'md'}
+          iconClassName={paneIsOpen ? ' !text-chalkboard-10' : ''}
           bgClassName={
             'rounded-sm ' + (paneIsOpen ? '!bg-primary' : '!bg-transparent')
           }
@@ -311,6 +352,7 @@ function ModelingPaneButton({
         >
           <span className="flex-1">
             {paneConfig.title}
+            {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <InteractionSequence
@@ -343,15 +385,4 @@ function ModelingPaneButton({
       )}
     </div>
   )
-}
-
-export type SidebarAction = {
-  id: string
-  title: string
-  icon: CustomIconName
-  iconClassName?: string // Just until we get rid of FontAwesome icons
-  keybinding: string
-  action: () => void
-  hideOnPlatform?: 'desktop' | 'web'
-  hide?: boolean | (() => boolean)
 }

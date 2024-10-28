@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { parse, BinaryPart, Value, ProgramMemory } from '../lang/wasm'
+import { parse, BinaryPart, Expr, ProgramMemory } from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -86,7 +86,7 @@ export function useCalc({
   initialVariableName?: string
 }): {
   inputRef: React.RefObject<HTMLInputElement>
-  valueNode: Value | null
+  valueNode: Expr | null
   calcResult: string
   prevVariables: PrevVariable<unknown>[]
   newVariableName: string
@@ -105,7 +105,7 @@ export function useCalc({
     insertIndex: 0,
     bodyPath: [],
   })
-  const [valueNode, setValueNode] = useState<Value | null>(null)
+  const [valueNode, setValueNode] = useState<Expr | null>(null)
   const [calcResult, setCalcResult] = useState('NAN')
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
@@ -151,12 +151,13 @@ export function useCalc({
         })
         if (trap(error)) return
       }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       executeAst({
         ast,
         engineCommandManager,
         useFakeExecutor: true,
         programMemoryOverride: kclManager.programMemory.clone(),
-      }).then(({ programMemory }) => {
+      }).then(({ execState }) => {
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&
@@ -165,7 +166,7 @@ export function useCalc({
         const init =
           resultDeclaration?.type === 'VariableDeclaration' &&
           resultDeclaration?.declarations?.[0]?.init
-        const result = programMemory?.get('__result__')?.value
+        const result = execState.memory?.get('__result__')?.value
         setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
         init && setValueNode(init)
       })

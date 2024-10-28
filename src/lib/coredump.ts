@@ -1,16 +1,12 @@
 import { CommandLog, EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
-import { isTauri } from 'lib/isTauri'
-import {
-  platform as tauriPlatform,
-  arch as tauriArch,
-  version as tauriKernelVersion,
-} from '@tauri-apps/plugin-os'
+import { isDesktop } from 'lib/isDesktop'
 import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import { VITE_KC_API_BASE_URL } from 'env'
+import CodeManager from 'lang/codeManager'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -32,14 +28,17 @@ import { VITE_KC_API_BASE_URL } from 'env'
 // TODO: Throw more
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
+  codeManager: CodeManager
   token: string | undefined
   baseUrl: string = VITE_KC_API_BASE_URL
 
   constructor(
     engineCommandManager: EngineCommandManager,
+    codeManager: CodeManager,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
+    this.codeManager = codeManager
     this.token = token
   }
 
@@ -61,22 +60,25 @@ export class CoreDumpManager {
     return APP_VERSION
   }
 
+  kclCode(): string {
+    return this.codeManager.code
+  }
+
   // Get the backend pool we've requested.
   pool(): string {
     return this.engineCommandManager.settings.pool || ''
   }
 
   // Get the os information.
-  getOsInfo(): Promise<string> {
-    if (this.isTauri()) {
+  getOsInfo(): string {
+    if (this.isDesktop()) {
       const osinfo: OsInfo = {
-        platform: tauriPlatform(),
-        arch: tauriArch(),
-        browser: 'tauri',
-        version: tauriKernelVersion(),
+        platform: window.electron.platform ?? null,
+        arch: window.electron.arch ?? null,
+        browser: 'desktop',
+        version: window.electron.version ?? null,
       }
-      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
-      // TODO: get rid of promises now that the tauri api doesn't require them anymore
+      return JSON.stringify(osinfo)
     }
 
     const userAgent = window.navigator.userAgent || 'unknown browser'
@@ -87,7 +89,7 @@ export class CoreDumpManager {
         version: userAgent,
         browser: userAgent,
       }
-      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+      return JSON.stringify(osinfo)
     }
 
     const parser = new UAParser(userAgent)
@@ -98,20 +100,22 @@ export class CoreDumpManager {
       version: parserResults.os.version || userAgent,
       browser: userAgent,
     }
-    return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+    return JSON.stringify(osinfo)
   }
 
-  isTauri(): boolean {
-    return isTauri()
+  isDesktop(): boolean {
+    return isDesktop()
   }
 
   getWebrtcStats(): Promise<string> {
     if (!this.engineCommandManager.engineConnection) {
-      throw new Error('Engine connection not initialized')
+      // when the engine connection is not available, return an empty object.
+      return Promise.resolve(JSON.stringify({}))
     }
 
     if (!this.engineCommandManager.engineConnection.webrtcStatsCollector) {
-      throw new Error('Engine webrtcStatsCollector not initialized')
+      // when the engine connection is not available, return an empty object.
+      return Promise.resolve(JSON.stringify({}))
     }
 
     return this.engineCommandManager.engineConnection

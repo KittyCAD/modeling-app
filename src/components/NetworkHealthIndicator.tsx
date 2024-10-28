@@ -4,6 +4,8 @@ import Tooltip from './Tooltip'
 import { ConnectingTypeGroup } from '../lang/std/engineConnection'
 import { useNetworkContext } from '../hooks/useNetworkContext'
 import { NetworkHealthState } from '../hooks/useNetworkStatus'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Connected',
@@ -160,13 +162,13 @@ export const NetworkHealthIndicator = () => {
               </div>
               {issues[name as ConnectingTypeGroup] && (
                 <button
-                  onClick={async () => {
+                  onClick={toSync(async () => {
                     await navigator.clipboard.writeText(
                       JSON.stringify(error, null, 2) || ''
                     )
                     setHasCopied(true)
                     setTimeout(() => setHasCopied(false), 5000)
-                  }}
+                  }, reportRejection)}
                   className="flex w-fit gap-2 items-center bg-transparent text-sm p-1 py-0 my-0 -mx-1 text-destroy-80 dark:text-destroy-10 hover:bg-transparent border-transparent dark:border-transparent hover:border-destroy-80 dark:hover:border-destroy-80 dark:hover:bg-destroy-80"
                 >
                   {hasCopied ? 'Copied' : 'Copy Error'}

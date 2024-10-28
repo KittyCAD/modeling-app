@@ -1,0 +1,98 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 32,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 1,
+      "end": 31,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 7,
+          "end": 31,
+          "id": {
+            "type": "Identifier",
+            "start": 7,
+            "end": 11,
+            "name": "my14"
+          },
+          "init": {
+            "type": "BinaryExpression",
+            "type": "BinaryExpression",
+            "start": 14,
+            "end": 31,
+            "operator": "-",
+            "left": {
+              "type": "BinaryExpression",
+              "type": "BinaryExpression",
+              "start": 14,
+              "end": 19,
+              "operator": "^",
+              "left": {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 14,
+                "end": 15,
+                "value": 4,
+                "raw": "4"
+              },
+              "right": {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 18,
+                "end": 19,
+                "value": 2,
+                "raw": "2"
+              }
+            },
+            "right": {
+              "type": "BinaryExpression",
+              "type": "BinaryExpression",
+              "start": 22,
+              "end": 31,
+              "operator": "*",
+              "left": {
+                "type": "BinaryExpression",
+                "type": "BinaryExpression",
+                "start": 22,
+                "end": 27,
+                "operator": "^",
+                "left": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 22,
+                  "end": 23,
+                  "value": 3,
+                  "raw": "3"
+                },
+                "right": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 26,
+                  "end": 27,
+                  "value": 2,
+                  "raw": "2"
+                }
+              },
+              "right": {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 30,
+                "end": 31,
+                "value": 2,
+                "raw": "2"
+              }
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ]
+}

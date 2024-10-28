@@ -1,25 +1,27 @@
-import type { FileEntry, IndexLoaderData } from 'lib/types'
+import type { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, useCallback, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import styles from './FileTree.module.css'
-import { sortProject } from 'lib/tauriFS'
+import { sortProject } from 'lib/desktopFS'
 import { FILE_EXT } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { codeManager, kclManager } from 'lib/singletons'
-import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
+import { FileEntry } from 'lib/project'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { normalizeLineEndings } from 'lib/codeEditor'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -44,7 +46,7 @@ function RenameForm({
       data: {
         oldName: fileOrDir.name || '',
         newName: inputRef.current?.value || fileOrDir.name || '',
-        isDir: fileOrDir.children !== undefined,
+        isDir: fileOrDir.children !== null,
       },
     })
   }
@@ -61,6 +63,7 @@ function RenameForm({
       <label>
         <span className="sr-only">Rename file</span>
         <input
+          data-testid="file-rename-field"
           ref={inputRef}
           type="text"
           autoFocus
@@ -90,7 +93,7 @@ function DeleteFileTreeItemDialog({
   const { send } = useFileContext()
   return (
     <DeleteConfirmationDialog
-      title={`Delete ${fileOrDir.children !== undefined ? 'folder' : 'file'}`}
+      title={`Delete ${fileOrDir.children !== null ? 'folder' : 'file'}`}
       onDismiss={() => setIsOpen(false)}
       onConfirm={() => {
         send({ type: 'Delete file', data: fileOrDir })
@@ -99,7 +102,7 @@ function DeleteFileTreeItemDialog({
     >
       <p className="my-4">
         This will permanently delete "{fileOrDir.name || 'this file'}"
-        {fileOrDir.children !== undefined ? ' and all of its contents. ' : '. '}
+        {fileOrDir.children !== null ? ' and all of its contents. ' : '. '}
       </p>
       <p className="my-4">
         Are you sure you want to delete "{fileOrDir.name || 'this file'}
@@ -129,6 +132,30 @@ const FileTreeItem = ({
   const isCurrentFile = fileOrDir.path === currentFile?.path
   const itemRef = useRef(null)
 
+  // Since every file or directory gets its own FileTreeItem, we can do this.
+  // Because subtrees only render when they are opened, that means this
+  // only listens when they open. Because this acts like a useEffect, when
+  // the ReactNodes are destroyed, so is this listener :)
+  useFileSystemWatcher(
+    async (eventType, path) => {
+      // Don't try to read a file that was removed.
+      if (isCurrentFile && eventType !== 'unlink') {
+        // Prevents a cyclic read / write causing editor problems such as
+        // misplaced cursor positions.
+        if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+          return
+        }
+
+        let code = await window.electron.readFile(path, { encoding: 'utf-8' })
+        code = normalizeLineEndings(code)
+        codeManager.updateCodeStateEditor(code)
+      }
+      fileSend({ type: 'Refresh' })
+    },
+    [fileOrDir.path]
+  )
+
   const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
   const removeCurrentItemFromRenaming = useCallback(
     () =>
@@ -152,6 +179,13 @@ const FileTreeItem = ({
     })
   }, [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend])
 
+  const clickDirectory = () => {
+    fileSend({
+      type: 'Set selected directory',
+      directory: fileOrDir,
+    })
+  }
+
   function handleKeyUp(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (e.metaKey && e.key === 'Backspace') {
       // Open confirmation dialog
@@ -165,7 +199,7 @@ const FileTreeItem = ({
   }
 
   function handleClick() {
-    if (fileOrDir.children !== undefined) return // Don't open directories
+    if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
       // Import non-kcl files
@@ -174,13 +208,12 @@ const FileTreeItem = ({
         `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
           codeManager.code
       )
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       codeManager.writeToFile()
 
       // Prevent seeing the model built one piece at a time when changing files
-      kclManager.isFirstRender = true
-      kclManager.executeCode(true).then(() => {
-        kclManager.isFirstRender = false
-      })
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
@@ -193,8 +226,8 @@ const FileTreeItem = ({
   }
 
   return (
-    <div className="contents" ref={itemRef}>
-      {fileOrDir.children === undefined ? (
+    <div className="contents" data-testid="file-tree-item" ref={itemRef}>
+      {fileOrDir.children === null ? (
         <li
           className={
             'group m-0 p-0 border-solid border-0 hover:bg-primary/5 focus-within:bg-primary/5 dark:hover:bg-primary/20 dark:focus-within:bg-primary/20 ' +
@@ -241,18 +274,8 @@ const FileTreeItem = ({
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
                   onClick={(e) => e.currentTarget.focus()}
-                  onClickCapture={(e) =>
-                    fileSend({
-                      type: 'Set selected directory',
-                      data: fileOrDir,
-                    })
-                  }
-                  onFocusCapture={(e) =>
-                    fileSend({
-                      type: 'Set selected directory',
-                      data: fileOrDir,
-                    })
-                  }
+                  onClickCapture={clickDirectory}
+                  onFocusCapture={clickDirectory}
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   onKeyUp={handleKeyUp}
                 >
@@ -297,13 +320,13 @@ const FileTreeItem = ({
                   onClickCapture={(e) => {
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }}
                   onFocusCapture={(e) =>
                     fileSend({
                       type: 'Set selected directory',
-                      data: fileOrDir,
+                      directory: fileOrDir,
                     })
                   }
                 >
@@ -356,10 +379,18 @@ function FileTreeContextMenu({
     <ContextMenu
       menuTargetElement={itemRef}
       items={[
-        <ContextMenuItem onClick={onRename} hotkey="Enter">
+        <ContextMenuItem
+          data-testid="context-menu-rename"
+          onClick={onRename}
+          hotkey="Enter"
+        >
           Rename
         </ContextMenuItem>,
-        <ContextMenuItem onClick={onDelete} hotkey={metaKey + ' + Del'}>
+        <ContextMenuItem
+          data-testid="context-menu-delete"
+          onClick={onDelete}
+          hotkey={metaKey + ' + Del'}
+        >
           Delete
         </ContextMenuItem>,
       ]}
@@ -380,22 +411,31 @@ interface FileTreeProps {
 
 export const FileTreeMenu = () => {
   const { send } = useFileContext()
+  const { send: modelingSend } = useModelingContext()
 
-  async function createFile() {
-    send({ type: 'Create file', data: { name: '', makeDir: false } })
+  function createFile() {
+    send({
+      type: 'Create file',
+      data: { name: '', makeDir: false, shouldSetToRename: true },
+    })
+    modelingSend({ type: 'Cancel' })
   }
 
-  async function createFolder() {
-    send({ type: 'Create file', data: { name: '', makeDir: true } })
+  function createFolder() {
+    send({
+      type: 'Create file',
+      data: { name: '', makeDir: true, shouldSetToRename: true },
+    })
   }
 
-  useHotkeyWrapper(['meta + n'], createFile)
-  useHotkeyWrapper(['meta + shift + n'], createFolder)
+  useHotkeyWrapper(['mod + n'], createFile)
+  useHotkeyWrapper(['mod + shift + n'], createFolder)
 
   return (
     <>
       <ActionButton
         Element="button"
+        data-testid="create-file-button"
         iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
@@ -411,6 +451,7 @@ export const FileTreeMenu = () => {
 
       <ActionButton
         Element="button"
+        data-testid="create-folder-button"
         iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',
@@ -450,24 +491,36 @@ export const FileTreeInner = ({
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
-  const documentHasFocus = useDocumentHasFocus()
 
-  // Refresh the file tree when the document gets focus
-  useEffect(() => {
-    fileSend({ type: 'Refresh' })
-  }, [documentHasFocus])
+  // Refresh the file tree when there are changes.
+  useFileSystemWatcher(
+    async (eventType, path) => {
+      // Our other watcher races with this watcher on the current file changes,
+      // so we need to stop this one from reacting at all, otherwise Bad Things
+      // Happen™.
+      const isCurrentFile = loaderData.file?.path === path
+      const hasChanged = eventType === 'change'
+      if (isCurrentFile && hasChanged) return
+      fileSend({ type: 'Refresh' })
+    },
+    [loaderData?.project?.path, fileContext.selectedDirectory.path].filter(
+      (x: string | undefined) => x !== undefined
+    )
+  )
+
+  const clickDirectory = () => {
+    fileSend({
+      type: 'Set selected directory',
+      directory: fileContext.project,
+    })
+  }
 
   return (
-    <div className="overflow-auto max-h-full pb-12">
-      <ul
-        className="m-0 p-0 text-sm"
-        onClickCapture={(e) => {
-          fileSend({
-            type: 'Set selected directory',
-            data: fileContext.project,
-          })
-        }}
-      >
+    <div
+      className="overflow-auto pb-12 absolute inset-0"
+      data-testid="file-pane-scroll-container"
+    >
+      <ul className="m-0 p-0 text-sm" onClickCapture={clickDirectory}>
         {sortProject(fileContext.project?.children || []).map((fileOrDir) => (
           <FileTreeItem
             project={fileContext.project}

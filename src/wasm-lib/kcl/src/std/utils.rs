@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use kittycad::types::Angle;
+use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -16,12 +16,12 @@ pub fn between(a: Point2d, b: Point2d) -> Angle {
 
 /// Normalize the angle
 pub fn normalize(angle: Angle) -> Angle {
-    let deg = angle.degrees();
+    let deg = angle.to_degrees();
     let result = ((deg % 360.0) + 360.0) % 360.0;
     Angle::from_degrees(if result > 180.0 { result - 360.0 } else { result })
 }
 
-/// Gives the ▲-angle between from and to angles (shortest path), use radians.
+/// Gives the ▲-angle between from and to angles (shortest path)
 ///
 /// Sign of the returned angle denotes direction, positive means counterClockwise 🔄
 /// # Examples
@@ -37,8 +37,8 @@ pub fn normalize(angle: Angle) -> Angle {
 /// );
 /// ```
 pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
-    let norm_from_angle = normalize_rad(from_angle.radians());
-    let norm_to_angle = normalize_rad(to_angle.radians());
+    let norm_from_angle = normalize_rad(from_angle.to_radians());
+    let norm_to_angle = normalize_rad(to_angle.to_radians());
     let provisional = norm_to_angle - norm_from_angle;
 
     if provisional > -PI && provisional <= PI {
@@ -50,7 +50,7 @@ pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     if provisional < -PI {
         return Angle::from_radians(provisional + 2.0 * PI);
     }
-    Angle::ZERO
+    Angle::default()
 }
 
 pub fn clockwise_sign(points: &[Point2d]) -> i32 {
@@ -183,7 +183,7 @@ fn offset_line(offset: f64, p1: Point2d, p2: Point2d) -> [Point2d; 2] {
 }
 
 pub fn get_y_component(angle: Angle, x: f64) -> Point2d {
-    let normalised_angle = ((angle.degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
+    let normalised_angle = ((angle.to_degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
     let y = x * f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 90.0 && normalised_angle <= 270.0 {
         -1.0
@@ -194,7 +194,7 @@ pub fn get_y_component(angle: Angle, x: f64) -> Point2d {
 }
 
 pub fn get_x_component(angle: Angle, y: f64) -> Point2d {
-    let normalised_angle = ((angle.degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
+    let normalised_angle = ((angle.to_degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
     let x = y / f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 180.0 && normalised_angle <= 360.0 {
         -1.0
@@ -205,8 +205,8 @@ pub fn get_x_component(angle: Angle, y: f64) -> Point2d {
 }
 
 pub fn arc_center_and_end(from: Point2d, start_angle: Angle, end_angle: Angle, radius: f64) -> (Point2d, Point2d) {
-    let start_angle = start_angle.radians();
-    let end_angle = end_angle.radians();
+    let start_angle = start_angle.to_radians();
+    let end_angle = end_angle.to_radians();
 
     let center = Point2d {
         x: -1.0 * (radius * start_angle.cos() - from.x),
@@ -304,7 +304,7 @@ mod tests {
 
         assert_eq!(results, expected);
 
-        let result = get_y_component(Angle::ZERO, 1.0);
+        let result = get_y_component(Angle::zero(), 1.0);
         assert_eq!(result.x as i32, 1);
         assert_eq!(result.y as i32, 0);
 
@@ -334,7 +334,7 @@ mod tests {
 
         assert_eq!(results, expected);
 
-        let result = get_x_component(Angle::ZERO, 1.0);
+        let result = get_x_component(Angle::zero(), 1.0);
         assert!(result.x > 100000.0);
         assert_eq!(result.y as i32, 1);
 
@@ -355,7 +355,7 @@ mod tests {
     fn test_arc_center_and_end() {
         let (center, end) = super::arc_center_and_end(
             super::Point2d { x: 0.0, y: 0.0 },
-            Angle::ZERO,
+            Angle::zero(),
             Angle::from_degrees(90.0),
             1.0,
         );
@@ -366,7 +366,7 @@ mod tests {
 
         let (center, end) = super::arc_center_and_end(
             super::Point2d { x: 0.0, y: 0.0 },
-            Angle::ZERO,
+            Angle::zero(),
             Angle::from_degrees(180.0),
             1.0,
         );
@@ -377,7 +377,7 @@ mod tests {
 
         let (center, end) = super::arc_center_and_end(
             super::Point2d { x: 0.0, y: 0.0 },
-            Angle::ZERO,
+            Angle::zero(),
             Angle::from_degrees(180.0),
             10.0,
         );
@@ -397,8 +397,8 @@ mod tests {
             SourceRange(Default::default()),
         )
         .unwrap();
-        assert_eq!(angle_start.degrees().round(), 0.0);
-        assert_eq!(angle_end.degrees().round(), 90.0);
+        assert_eq!(angle_start.to_degrees().round(), 0.0);
+        assert_eq!(angle_end.to_degrees().round(), 90.0);
 
         let (angle_start, angle_end) = super::arc_angles(
             super::Point2d { x: 0.0, y: 0.0 },
@@ -408,8 +408,8 @@ mod tests {
             SourceRange(Default::default()),
         )
         .unwrap();
-        assert_eq!(angle_start.degrees().round(), 0.0);
-        assert_eq!(angle_end.degrees().round(), 180.0);
+        assert_eq!(angle_start.to_degrees().round(), 0.0);
+        assert_eq!(angle_end.to_degrees().round(), 180.0);
 
         let (angle_start, angle_end) = super::arc_angles(
             super::Point2d { x: 0.0, y: 0.0 },
@@ -419,8 +419,8 @@ mod tests {
             SourceRange(Default::default()),
         )
         .unwrap();
-        assert_eq!(angle_start.degrees().round(), 0.0);
-        assert_eq!(angle_end.degrees().round(), 180.0);
+        assert_eq!(angle_start.to_degrees().round(), 0.0);
+        assert_eq!(angle_end.to_degrees().round(), 180.0);
 
         let result = super::arc_angles(
             super::Point2d { x: 0.0, y: 5.0 },
@@ -435,8 +435,8 @@ mod tests {
         } else {
             panic!("Expected error");
         }
-        assert_eq!(angle_start.degrees().round(), 0.0);
-        assert_eq!(angle_end.degrees().round(), 180.0);
+        assert_eq!(angle_start.to_degrees().round(), 0.0);
+        assert_eq!(angle_end.to_degrees().round(), 180.0);
     }
 }
 
@@ -631,11 +631,11 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
     let arc_mid_angle = (arc_mid_point[1] - center[1]).atan2(arc_mid_point[0] - center[0]);
     let start_to_mid_arc_length = radius
         * delta(Angle::from_radians(start_angle), Angle::from_radians(arc_mid_angle))
-            .radians()
+            .to_radians()
             .abs();
     let mid_to_end_arc_length = radius
         * delta(Angle::from_radians(arc_mid_angle), Angle::from_radians(end_angle))
-            .radians()
+            .to_radians()
             .abs();
     let arc_length = start_to_mid_arc_length + mid_to_end_arc_length;
 

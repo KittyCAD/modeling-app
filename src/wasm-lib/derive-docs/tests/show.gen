@@ -5,6 +5,7 @@ mod test_examples_show {
         let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
+        let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -14,13 +15,13 @@ mod test_examples_show {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: true,
+            context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_show0() {
+    async fn kcl_test_example_show0() {
         let code = "This is code.\nIt does other shit.\nshow";
         let result =
             crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
@@ -44,15 +45,17 @@ pub(crate) struct Show {}
 #[doc = "Std lib function: show\nThis is some function.\nIt does shit."]
 pub(crate) const Show: Show = Show {};
 fn boxed_show(
+    exec_state: &mut crate::executor::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-                Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
-            > + Send,
+                Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
+            > + Send
+            + '_,
     >,
 > {
-    Box::pin(show(args))
+    Box::pin(show(exec_state, args))
 }
 
 impl crate::docs::StdLibFn for Show {
@@ -72,26 +75,27 @@ impl crate::docs::StdLibFn for Show {
         vec![]
     }
 
-    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+    fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "[number]".to_string(),
-            schema: <Vec<f64>>::json_schema(&mut generator),
+            schema: generator.root_schema_for::<Vec<f64>>(),
             required: true,
         }]
     }
 
-    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
+    fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let schema = generator.root_schema_for::<()>();
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "()".to_string(),
-            schema: <()>::json_schema(&mut generator),
+            schema,
             required: true,
         })
     }

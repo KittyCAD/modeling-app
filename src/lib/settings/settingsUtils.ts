@@ -1,6 +1,6 @@
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
-import { isTauri } from 'lib/isTauri'
+import { isDesktop } from 'lib/isDesktop'
 import { err } from 'lib/trap'
 import {
   defaultAppSettings,
@@ -14,22 +14,24 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
 import { appThemeToTheme } from 'lib/theme'
 import {
+  getInitialDefaultDir,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
   writeProjectSettingsFile,
-} from 'lib/tauri'
+} from 'lib/desktop'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
+import { DeepPartial } from 'lib/types'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
  * We do this because the JS settings type has all the fancy shit
  * for hiding and showing settings.
  **/
-function configurationToSettingsPayload(
-  configuration: Configuration
-): Partial<SaveSettingsPayload> {
+export function configurationToSettingsPayload(
+  configuration: DeepPartial<Configuration>
+): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
       theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
@@ -44,6 +46,7 @@ function configurationToSettingsPayload(
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
+      cameraProjection: configuration?.settings?.modeling?.camera_projection,
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
@@ -65,12 +68,12 @@ function configurationToSettingsPayload(
   }
 }
 
-function projectConfigurationToSettingsPayload(
-  configuration: ProjectConfiguration
-): Partial<SaveSettingsPayload> {
+export function projectConfigurationToSettingsPayload(
+  configuration: DeepPartial<ProjectConfiguration>
+): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      // do not read in `theme`, because it is blocked on the project level
       themeColor: configuration?.settings?.app?.appearance?.color
         ? configuration?.settings?.app?.appearance?.color.toString()
         : undefined,
@@ -105,7 +108,9 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-export function readLocalStorageAppSettingsFile(): Configuration | Error {
+export function readLocalStorageAppSettingsFile():
+  | DeepPartial<Configuration>
+  | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??
@@ -129,7 +134,9 @@ export function readLocalStorageAppSettingsFile(): Configuration | Error {
   }
 }
 
-function readLocalStorageProjectSettingsFile(): ProjectConfiguration | Error {
+function readLocalStorageProjectSettingsFile():
+  | DeepPartial<ProjectConfiguration>
+  | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 
@@ -152,47 +159,58 @@ function readLocalStorageProjectSettingsFile(): ProjectConfiguration | Error {
 
 export interface AppSettings {
   settings: ReturnType<typeof createSettings>
-  configuration: Configuration
+  configuration: DeepPartial<Configuration>
 }
 
 export async function loadAndValidateSettings(
   projectPath?: string
 ): Promise<AppSettings> {
-  const settings = createSettings()
-  const inTauri = isTauri()
+  // Make sure we have wasm initialized.
+  await initPromise
 
-  if (!inTauri) {
-    // Make sure we have wasm initialized.
-    await initPromise
-  }
+  const onDesktop = isDesktop()
 
   // Load the app settings from the file system or localStorage.
-  const appSettings = inTauri
+  const appSettingsPayload = onDesktop
     ? await readAppSettingsFile()
     : readLocalStorageAppSettingsFile()
 
-  if (err(appSettings)) return Promise.reject(appSettings)
+  if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
-  // Convert the app settings to the JS settings format.
-  const appSettingsPayload = configurationToSettingsPayload(appSettings)
-  setSettingsAtLevel(settings, 'user', appSettingsPayload)
+  let settingsNext = createSettings()
+  // Because getting the default directory is async, we need to set it after
+  if (onDesktop) {
+    settings.app.projectDirectory.default = await getInitialDefaultDir()
+  }
+
+  settingsNext = setSettingsAtLevel(
+    settingsNext,
+    'user',
+    configurationToSettingsPayload(appSettingsPayload)
+  )
 
   // Load the project settings if they exist
   if (projectPath) {
-    const projectSettings = inTauri
+    const projectSettings = onDesktop
       ? await readProjectSettingsFile(projectPath)
       : readLocalStorageProjectSettingsFile()
 
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
 
-    const projectSettingsPayload =
-      projectConfigurationToSettingsPayload(projectSettings)
-    setSettingsAtLevel(settings, 'project', projectSettingsPayload)
+    const projectSettingsPayload = projectSettings
+    settingsNext = setSettingsAtLevel(
+      settingsNext,
+      'project',
+      projectConfigurationToSettingsPayload(projectSettingsPayload)
+    )
   }
 
   // Return the settings object
-  return { settings, configuration: appSettings }
+  return {
+    settings: settingsNext,
+    configuration: appSettingsPayload,
+  }
 }
 
 export async function saveSettings(
@@ -201,25 +219,18 @@ export async function saveSettings(
 ) {
   // Make sure we have wasm initialized.
   await initPromise
-  const inTauri = isTauri()
+  const onDesktop = isDesktop()
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
-  const tomlString = tomlStringify({ settings: jsAppSettings })
-  if (err(tomlString)) return
-
-  // Parse this as a Configuration.
-  const appSettings = parseAppSettings(tomlString)
-  if (err(appSettings)) return
-
-  const tomlString2 = tomlStringify(appSettings)
-  if (err(tomlString2)) return
+  const appTomlString = tomlStringify({ settings: jsAppSettings })
+  if (err(appTomlString)) return
 
   // Write the app settings.
-  if (inTauri) {
-    await writeAppSettingsFile(appSettings)
+  if (onDesktop) {
+    await writeAppSettingsFile(appTomlString)
   } else {
-    localStorage.setItem(localStorageAppSettingsPath(), tomlString2)
+    localStorage.setItem(localStorageAppSettingsPath(), appTomlString)
   }
 
   if (!projectPath) {
@@ -232,19 +243,11 @@ export async function saveSettings(
   const projectTomlString = tomlStringify({ settings: jsProjectSettings })
   if (err(projectTomlString)) return
 
-  // Parse this as a Configuration.
-  const projectSettings = parseProjectSettings(projectTomlString)
-  if (err(projectSettings)) return
-
-  const tomlStr = tomlStringify(projectSettings)
-
-  if (err(tomlStr)) return
-
   // Write the project settings.
-  if (inTauri) {
-    await writeProjectSettingsFile(projectPath, projectSettings)
+  if (onDesktop) {
+    await writeProjectSettingsFile(projectPath, projectTomlString)
   } else {
-    localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
+    localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
   }
 }
 
@@ -315,7 +318,7 @@ export function shouldHideSetting(
   return (
     setting.hideOnLevel === settingsLevel ||
     setting.hideOnPlatform === 'both' ||
-    (setting.hideOnPlatform && isTauri()
+    (setting.hideOnPlatform && isDesktop()
       ? setting.hideOnPlatform === 'desktop'
       : setting.hideOnPlatform === 'web')
   )

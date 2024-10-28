@@ -5,9 +5,9 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Value, parse, recast } from 'lang/wasm'
+import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { uuidv4 } from 'lib/utils'
+import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
@@ -20,10 +20,8 @@ import {
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
-  STRAIGHT_SEGMENT,
-  TANGENTIAL_ARC_TO_SEGMENT,
   getParentGroup,
-  PROFILE_START,
+  SEGMENT_BODIES_PLUS_PROFILE_START,
 } from 'clientSideScene/sceneEntities'
 import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
@@ -33,8 +31,10 @@ import {
   getArtifactOfTypes,
   getArtifactsOfTypes,
   getCapCodeRef,
+  getSweepEdgeCodeRef,
   getSolid2dCodeRef,
   getWallCodeRef,
+  ArtifactId,
 } from 'lang/std/artifactGraph'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -42,22 +42,30 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
-export type Selection = {
-  type:
-    | 'default'
-    | 'line-end'
-    | 'line-mid'
-    | 'extrude-wall'
-    | 'solid2D'
-    | 'start-cap'
-    | 'end-cap'
-    | 'point'
-    | 'edge'
-    | 'line'
-    | 'arc'
-    | 'all'
-  range: SourceRange
-}
+export type Selection =
+  | {
+      type:
+        | 'default'
+        | 'line-end'
+        | 'line-mid'
+        | 'extrude-wall'
+        | 'solid2D'
+        | 'start-cap'
+        | 'end-cap'
+        | 'point'
+        | 'edge'
+        | 'adjacent-edge'
+        | 'line'
+        | 'arc'
+        | 'all'
+      range: SourceRange
+    }
+  | {
+      type: 'opposite-edgeCut' | 'adjacent-edgeCut' | 'base-edgeCut'
+      range: SourceRange
+      // TODO this is a temporary measure that well be made redundant with: https://github.com/KittyCAD/modeling-app/pull/3836
+      secondaryRange: SourceRange
+    }
 export type Selections = {
   otherSelections: Axis[]
   codeBasedSelections: Selection[]
@@ -141,17 +149,82 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
+  if (_artifact.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    if (_artifact?.subType === 'adjacent') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: codeRef.range, type: 'adjacent-edge' },
+        },
+      }
+    }
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: { range: codeRef.range, type: 'edge' },
+      },
+    }
+  }
+  if (_artifact.type === 'edgeCut') {
+    const consumedEdge = getArtifactOfTypes(
+      { key: _artifact.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+      engineCommandManager.artifactGraph
+    )
+    if (err(consumedEdge))
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: _artifact.codeRef.range, type: 'default' },
+        },
+      }
+    if (consumedEdge.type === 'segment') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            range: _artifact.codeRef.range,
+            type: 'base-edgeCut',
+            secondaryRange: consumedEdge.codeRef.range,
+          },
+        },
+      }
+    }
+    const segment = getArtifactOfTypes(
+      { key: consumedEdge.segId, types: ['segment'] },
+      engineCommandManager.artifactGraph
+    )
+    if (err(segment)) return null
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          range: _artifact.codeRef.range,
+          type:
+            consumedEdge.subType === 'adjacent'
+              ? 'adjacent-edgeCut'
+              : 'opposite-edgeCut',
+          secondaryRange: segment.codeRef.range,
+        },
+      },
+    }
+  }
   return null
 }
 
 export function getEventForSegmentSelection(
   obj: Object3D<Object3DEventMap>
 ): ModelingMachineEvent | null {
-  const group = getParentGroup(obj, [
-    STRAIGHT_SEGMENT,
-    TANGENTIAL_ARC_TO_SEGMENT,
-    PROFILE_START,
-  ])
+  const group = getParentGroup(obj, SEGMENT_BODIES_PLUS_PROFILE_START)
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
   if (!group && !axisGroup) return null
   if (axisGroup?.userData.type === AXIS_GROUP) {
@@ -285,16 +358,10 @@ export function processCodeMirrorRanges({
 }
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
-  const updated = parse(recast(kclManager.ast))
-  if (err(updated)) return
+  const updated = kclManager.ast
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
-    if (
-      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT, PROFILE_START].includes(
-        segmentGroup?.name
-      )
-    )
-      return
+    if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
     const nodeMeta = getNodeFromPath<CallExpression>(
       updated,
       segmentGroup.userData.pathToNode,
@@ -361,7 +428,7 @@ export function isSelectionLastLine(
   return selectionRanges.codeBasedSelections[i].range[1] === code.length
 }
 
-export function isRangeInbetweenCharacters(selectionRanges: Selections) {
+export function isRangeBetweenCharacters(selectionRanges: Selections) {
   return (
     selectionRanges.codeBasedSelections.length === 1 &&
     selectionRanges.codeBasedSelections[0].range[0] === 0 &&
@@ -382,10 +449,16 @@ function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
 }
 
 function nodeHasExtrude(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'extrude',
-    ...node,
-  })
+  return (
+    doesPipeHaveCallExp({
+      calleeName: 'extrude',
+      ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'revolve',
+      ...node,
+    })
+  )
 }
 
 function nodeHasClose(node: CommonASTNode) {
@@ -394,15 +467,22 @@ function nodeHasClose(node: CommonASTNode) {
     ...node,
   })
 }
+function nodeHasCircle(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'circle',
+    ...node,
+  })
+}
 
-export function canExtrudeSelection(selection: Selections) {
+export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.codeBasedSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
   return (
     !!isSketchPipe(selection) &&
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n)) &&
+    (commonNodes.every((n) => nodeHasClose(n)) ||
+      commonNodes.every((n) => nodeHasCircle(n))) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
 }
@@ -419,11 +499,15 @@ export function canFilletSelection(selection: Selections) {
 }
 
 function canExtrudeSelectionItem(selection: Selections, i: number) {
+  const isolatedSelection = {
+    ...selection,
+    codeBasedSelections: [selection.codeBasedSelections[i]],
+  }
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
   return (
-    !!isSketchPipe(selection) &&
-    nodeHasClose(commonNode) &&
+    !!isSketchPipe(isolatedSelection) &&
+    (nodeHasClose(commonNode) || nodeHasCircle(commonNode)) &&
     !nodeHasExtrude(commonNode)
   )
 }
@@ -439,31 +523,24 @@ export type ResolvedSelectionType = [Selection['type'] | 'other', number]
  * @returns
  */
 export function getSelectionType(
-  selection: Selections
+  selection?: Selections
 ): ResolvedSelectionType[] {
-  return selection.codeBasedSelections
-    .map((s, i) => {
-      if (canExtrudeSelectionItem(selection, i)) {
-        return ['extrude-wall', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
-      } else {
-        return ['other', 1] as ResolvedSelectionType
-      }
-    })
-    .reduce((acc, [type, count]) => {
-      const foundIndex = acc.findIndex((item) => item && item[0] === type)
+  if (!selection) return []
+  const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
+    const singleSelection = {
+      ...selection,
+      codeBasedSelections: [selection.codeBasedSelections[i]],
+    }
+    return canExtrudeSelectionItem(singleSelection, 0)
+  }).length
 
-      if (foundIndex === -1) {
-        return [...acc, [type, count]]
-      } else {
-        const temp = [...acc]
-        temp[foundIndex][1] += count
-        return temp
-      }
-    }, [] as ResolvedSelectionType[])
+  return extrudableCount === selection.codeBasedSelections.length
+    ? [['extrude-wall', extrudableCount]]
+    : [['other', selection.codeBasedSelections.length]]
 }
 
 export function getSelectionTypeDisplayText(
-  selection: Selections
+  selection?: Selections
 ): string | null {
   const selectionsByType = getSelectionType(selection)
 
@@ -498,20 +575,21 @@ function codeToIdSelections(
   codeBasedSelections: Selection[]
 ): SelectionToEngine[] {
   return codeBasedSelections
-    .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
+    .flatMap((selection): null | SelectionToEngine[] => {
+      const { type } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact)) return false
-          return isOverlap(artifact.codeRef.range, range)
+          if (!('codeRef' in artifact)) return null
+          return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
-                selection: { type, range, ...rest },
+                selection,
                 id,
               }
-            : false
+            : null
         })
-        .filter(Boolean)
+        .filter(isNonNullable)
 
       /** TODO refactor
        * selections in our app is a sourceRange plus some metadata
@@ -524,9 +602,14 @@ function codeToIdSelections(
        * In the case of a user moving the cursor them, we will still need to figure out what artifact from the graph matches best, but we will just need sane defaults
        * and most of the time we can expect the user to be clicking in the 3d scene instead.
        */
-      let bestCandidate
+      let bestCandidate:
+        | {
+            id: ArtifactId
+            artifact: unknown
+            selection: Selection
+          }
+        | undefined
       overlappingEntries.forEach((entry) => {
-        if (!entry) return
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
@@ -536,9 +619,15 @@ function codeToIdSelections(
             entry.artifact.solid2dId || ''
           )
           if (solid?.type !== 'solid2D') return
+          if (!entry.artifact.solid2dId) {
+            console.error(
+              'Expected PathArtifact to have solid2dId, but none found'
+            )
+            return
+          }
           bestCandidate = {
             artifact: solid,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.solid2dId,
           }
         }
@@ -549,10 +638,39 @@ function codeToIdSelections(
           if (wall?.type !== 'wall') return
           bestCandidate = {
             artifact: wall,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.surfaceId,
           }
           return
+        }
+        if (type === 'edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(([_, edge]) => edge.type === 'sweepEdge')
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection,
+            id: edge[0],
+          }
+        }
+        if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
+          const edges = getArtifactsOfTypes(
+            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
+            engineCommandManager.artifactGraph
+          )
+          const edge = [...edges].find(
+            ([_, edge]) =>
+              edge.type === 'sweepEdge' && edge.subType === 'adjacent'
+          )
+          if (!edge) return
+          bestCandidate = {
+            artifact: edge[1],
+            selection,
+            id: edge[0],
+          }
         }
         if (
           (type === 'end-cap' || type === 'start-cap') &&
@@ -560,8 +678,8 @@ function codeToIdSelections(
         ) {
           const extrusion = getArtifactOfTypes(
             {
-              key: entry.artifact.extrusionId,
-              types: ['extrusion'],
+              key: entry.artifact.sweepId,
+              types: ['sweep'],
             },
             engineCommandManager.artifactGraph
           )
@@ -576,41 +694,81 @@ function codeToIdSelections(
           if (!cap) return
           bestCandidate = {
             artifact: entry.artifact,
-            selection: { type, range, ...rest },
+            selection,
             id: cap[0],
           }
           return
         }
+        if (entry.artifact.type === 'edgeCut') {
+          const consumedEdge = getArtifactOfTypes(
+            {
+              key: entry.artifact.consumedEdgeId,
+              types: ['segment', 'sweepEdge'],
+            },
+            engineCommandManager.artifactGraph
+          )
+          if (err(consumedEdge)) return
+          if (
+            consumedEdge.type === 'segment' &&
+            type === 'base-edgeCut' &&
+            isOverlap(
+              consumedEdge.codeRef.range,
+              selection.secondaryRange || [0, 0]
+            )
+          ) {
+            bestCandidate = {
+              artifact: entry.artifact,
+              selection,
+              id: entry.id,
+            }
+          } else if (
+            consumedEdge.type === 'sweepEdge' &&
+            ((type === 'adjacent-edgeCut' &&
+              consumedEdge.subType === 'adjacent') ||
+              (type === 'opposite-edgeCut' &&
+                consumedEdge.subType === 'opposite'))
+          ) {
+            const seg = getArtifactOfTypes(
+              { key: consumedEdge.segId, types: ['segment'] },
+              engineCommandManager.artifactGraph
+            )
+            if (err(seg)) return
+            if (
+              isOverlap(seg.codeRef.range, selection.secondaryRange || [0, 0])
+            ) {
+              bestCandidate = {
+                artifact: entry.artifact,
+                selection,
+                id: entry.id,
+              }
+            }
+          }
+        }
       })
 
       if (bestCandidate) {
-        const _bestCandidate = bestCandidate as {
-          artifact: any
-          selection: any
-          id: string
-        }
         return [
           {
             type,
-            id: _bestCandidate.id,
+            id: bestCandidate.id,
           },
         ]
       }
       return null
     })
-    .filter(Boolean) as any
+    .filter(isNonNullable)
 }
 
 export async function sendSelectEventToEngine(
   e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
-  el: HTMLVideoElement,
-  streamDimensions: { streamWidth: number; streamHeight: number }
+  el: HTMLVideoElement
 ) {
   const { x, y } = getNormalisedCoordinates({
     clientX: e.clientX,
     clientY: e.clientY,
     el,
-    ...streamDimensions,
+    streamWidth: el.clientWidth,
+    streamHeight: el.clientHeight,
   })
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -639,12 +797,23 @@ export function updateSelections(
 
   const newSelections = Object.entries(pathToNodeMap)
     .map(([index, pathToNode]): Selection | undefined => {
-      const nodeMeta = getNodeFromPath<Value>(ast, pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
+      const selection = prevSelectionRanges.codeBasedSelections[Number(index)]
+      if (
+        selection?.type === 'base-edgeCut' ||
+        selection?.type === 'adjacent-edgeCut' ||
+        selection?.type === 'opposite-edgeCut'
+      )
+        return {
+          range: [node.start, node.end],
+          type: selection?.type,
+          secondaryRange: selection?.secondaryRange,
+        }
       return {
         range: [node.start, node.end],
-        type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
+        type: selection?.type,
       }
     })
     .filter((x?: Selection) => x !== undefined) as Selection[]

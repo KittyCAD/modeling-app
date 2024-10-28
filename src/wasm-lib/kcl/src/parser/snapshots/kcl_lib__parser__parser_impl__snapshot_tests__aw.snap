@@ -1,0 +1,83 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 91,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 91,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 4,
+          "end": 91,
+          "id": {
+            "type": "Identifier",
+            "start": 4,
+            "end": 11,
+            "name": "numbers"
+          },
+          "init": {
+            "type": "ArrayExpression",
+            "type": "ArrayExpression",
+            "start": 14,
+            "end": 91,
+            "elements": [
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 28,
+                "end": 29,
+                "value": 1,
+                "raw": "1"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 79,
+                "end": 80,
+                "value": 3,
+                "raw": "3"
+              }
+            ],
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "type": "NonCodeNode",
+                    "start": 43,
+                    "end": 48,
+                    "value": {
+                      "type": "blockComment",
+                      "value": "A,",
+                      "style": "line"
+                    }
+                  }
+                ],
+                "2": [
+                  {
+                    "type": "NonCodeNode",
+                    "start": 61,
+                    "end": 66,
+                    "value": {
+                      "type": "blockComment",
+                      "value": "B,",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "start": []
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ]
+}

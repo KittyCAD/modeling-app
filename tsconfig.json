@@ -11,7 +11,6 @@
       "vite/client",
       "@types/wicg-file-system-access",
       "node",
-      "@wdio/globals/types",
       "mocha",
       "@lezer/generator"
     ],
@@ -24,7 +23,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "ES2022",
+    "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "composite": true,
@@ -32,7 +31,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "./*.ts"],
-  "exclude": ["node_modules", "./*.grammar"],
+  "include": ["src", "e2e", "packages", "*.ts"],
+  "exclude": ["node_modules", "./*.grammar", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

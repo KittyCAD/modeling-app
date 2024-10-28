@@ -16,7 +16,7 @@ window.tearDown = engineCommandManager.tearDown
 
 // This needs to be after codeManager is created.
 export const kclManager = new KclManager(engineCommandManager)
-kclManager.isFirstRender = true
+engineCommandManager.kclManager = kclManager
 
 engineCommandManager.getAstCb = () => kclManager.ast
 
@@ -49,6 +49,7 @@ if (typeof window !== 'undefined') {
         type: 'zoom_to_fit',
         object_ids: [], // leave empty to zoom to all objects
         padding: 0.2, // padding around the objects
+        animated: false, // don't animate the zoom for now
       },
     })
 }

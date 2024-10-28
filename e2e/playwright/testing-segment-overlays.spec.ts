@@ -4,8 +4,8 @@ import { deg, getUtils, setup, tearDown, wiggleMove } from './test-utils'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { uuidv4 } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
+test.beforeEach(async ({ context, page }, testInfo) => {
+  await setup(context, page, testInfo)
 })
 
 test.afterEach(async ({ page }, testInfo) => {
@@ -182,7 +182,7 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([5 + 0, 20 + 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -343,14 +343,14 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const yRel001 = -14
-const xRel001 = 0.5
-const angle001 = 3
-const len001 = 32
-const yAbs001 = 11.5
-const xAbs001 = 33
-const xAbs002 = 4
-const part001 = startSketchOn('XZ')
+          `yRel001 = -14
+xRel001 = 0.5
+angle001 = 3
+len001 = 32
+yAbs001 = 11.5
+xAbs001 = 33
+xAbs002 = 4
+part001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0.5, yRel001], %)
   |> angledLine({ angle: angle001, length: len001 }, %)
@@ -420,7 +420,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -548,7 +548,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -704,7 +704,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -774,6 +774,80 @@ const part001 = startSketchOn('XZ')
         locator: '[data-overlay-toolbar-index="12"]',
       })
     })
+    test('for segment [circle]', async ({ page }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `part001 = startSketchOn('XZ')
+  |> circle({ center: [1 + 0, 0], radius: 8 }, %)
+`
+        )
+        localStorage.setItem('disableAxis', 'true')
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      await u.waitForAuthSkipAppStart()
+
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
+
+      await page
+        .getByText('circle({ center: [1 + 0, 0], radius: 8 }, %)')
+        .click()
+      await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(500)
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
+
+      const clickUnconstrained = _clickUnconstrained(page)
+      const clickConstrained = _clickConstrained(page)
+
+      const hoverPos = { x: 789, y: 114 } as const
+      let ang = await u.getAngle('[data-overlay-index="0"]')
+      console.log('angl', ang)
+      console.log('circle center x')
+      await clickConstrained({
+        hoverPos,
+        constraintType: 'xAbsolute',
+        expectBeforeUnconstrained:
+          'circle({ center: [1 + 0, 0], radius: 8 }, %)',
+        expectAfterUnconstrained: 'circle({ center: [1, 0], radius: 8 }, %)',
+        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        ang: ang + 105,
+        steps: 6,
+        locator: '[data-overlay-toolbar-index="0"]',
+      })
+      console.log('circle center y')
+      await clickUnconstrained({
+        hoverPos,
+        constraintType: 'yAbsolute',
+        expectBeforeUnconstrained:
+          'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        expectAfterUnconstrained:
+          'circle({ center: [xAbs001, yAbs001], radius: 8 }, %)',
+        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        ang: ang + 105,
+        steps: 10,
+        locator: '[data-overlay-toolbar-index="0"]',
+      })
+      console.log('circle radius')
+      await clickUnconstrained({
+        hoverPos,
+        constraintType: 'radius',
+        expectBeforeUnconstrained:
+          'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        expectAfterUnconstrained:
+          'circle({ center: [xAbs001, 0], radius: radius001 }, %)',
+        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+        ang: ang + 105,
+        steps: 10,
+        locator: '[data-overlay-toolbar-index="0"]',
+      })
+    })
   })
   test.describe('Testing deleting a segment', () => {
     const _deleteSegmentSequence =
@@ -817,7 +891,7 @@ const part001 = startSketchOn('XZ')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('XZ')
+          `part001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0.5, -14 + 0], %)
   |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -977,10 +1051,6 @@ const part001 = startSketchOn('XZ')
       const hoverPos = { x: segmentToDelete.x, y: segmentToDelete.y }
       await page.mouse.move(0, 0)
       await page.waitForTimeout(1000)
-      let x = 0,
-        y = 0
-      x = hoverPos.x + Math.cos(ang * deg) * 32
-      y = hoverPos.y - Math.sin(ang * deg) * 32
       await page.mouse.move(hoverPos.x, hoverPos.y)
       await wiggleMove(
         page,
@@ -1053,12 +1123,12 @@ const part001 = startSketchOn('XZ')
             async ({ lineToBeDeleted, extraLine }) => {
               localStorage.setItem(
                 'persistCode',
-                `const part001 = startSketchOn('XZ')
+                `part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
   |> angledLine([-176, segLen(seg01)], %)        
-${extraLine ? 'const myVar = segLen(seg01)' : ''}`
+${extraLine ? 'myVar = segLen(seg01)' : ''}`
               )
             },
             {
@@ -1213,7 +1283,7 @@ ${extraLine ? 'const myVar = segLen(seg01)' : ''}`
           async ({ lineToBeDeleted }) => {
             localStorage.setItem(
               'persistCode',
-              `const part001 = startSketchOn('XZ')
+              `part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)

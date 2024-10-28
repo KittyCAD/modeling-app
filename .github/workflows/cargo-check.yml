@@ -37,4 +37,4 @@ jobs:
           # We specifically want to test the disable-println feature
           # Since it is not enabled by default, we need to specify it
           # This is used in kcl-lsp
-          cargo check --all --features disable-println --features pyo3
+          cargo check --all --features disable-println --features pyo3 --features cli

@@ -2,10 +2,10 @@ import {
   AnyStateMachine,
   ContextFrom,
   EventFrom,
-  InterpreterFrom,
+  Actor,
   StateFrom,
 } from 'xstate'
-import { isTauri } from './isTauri'
+import { isDesktop } from './isDesktop'
 import {
   Command,
   CommandArgument,
@@ -23,7 +23,7 @@ interface CreateMachineCommandProps<
   groupId: T['id']
   state: StateFrom<T>
   send: Function
-  actor: InterpreterFrom<T>
+  actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
 }
@@ -46,6 +46,7 @@ export function createMachineCommand<
   | Command<T, typeof type, S[typeof type]>[]
   | null {
   const commandConfig = commandBarConfig && commandBarConfig[type]
+
   // There may be no command config for this event type,
   // or there may be multiple commands to create.
   if (!commandConfig) {
@@ -76,8 +77,8 @@ export function createMachineCommand<
   if ('hide' in commandConfig) {
     const { hide } = commandConfig
     if (hide === 'both') return null
-    else if (hide === 'desktop' && isTauri()) return null
-    else if (hide === 'web' && !isTauri()) return null
+    else if (hide === 'desktop' && isDesktop()) return null
+    else if (hide === 'web' && !isDesktop()) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
@@ -90,9 +91,9 @@ export function createMachineCommand<
     needsReview: commandConfig.needsReview || false,
     onSubmit: (data?: S[typeof type]) => {
       if (data !== undefined && data !== null) {
-        send(type, { data })
+        send({ type, data })
       } else {
-        send(type)
+        send({ type })
       }
     },
   }
@@ -124,7 +125,7 @@ function buildCommandArguments<
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
-  machineActor: InterpreterFrom<T>
+  machineActor: Actor<T>
 ): NonNullable<Command<T, CommandName, S>['args']> {
   const newArgs = {} as NonNullable<Command<T, CommandName, S>['args']>
 
@@ -143,7 +144,7 @@ export function buildCommandArgument<
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,
-  machineActor: InterpreterFrom<T>
+  machineActor: Actor<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
   const baseCommandArgument = {
     description: arg.description,
@@ -151,13 +152,10 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    warningMessage: arg.warningMessage ?? '',
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
-    if (!(arg.options || arg.optionsFromContext)) {
-      throw new Error('Options must be provided for options input type')
-    }
-
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,

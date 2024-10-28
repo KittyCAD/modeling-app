@@ -4,9 +4,12 @@ import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  emptyExecState,
+  ExecState,
   initPromise,
   parse,
   PathToNode,
@@ -19,6 +22,16 @@ import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 
+interface ExecuteArgs {
+  ast?: Program
+  zoomToFit?: boolean
+  executionId?: number
+  zoomOnRangeAndType?: {
+    range: SourceRange
+    type: string
+  }
+}
+
 export class KclManager {
   private _ast: Program = {
     body: [],
@@ -27,15 +40,16 @@ export class KclManager {
     nonCodeMeta: {
       nonCodeNodes: {},
       start: [],
-      digest: null,
     },
-    digest: null,
   }
+  private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
+  lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
   private _lints: Diagnostic[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
+  private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
 
   engineCommandManager: EngineCommandManager
@@ -48,8 +62,6 @@ export class KclManager {
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
-  isFirstRender = true
-
   get ast() {
     return this._ast
   }
@@ -61,9 +73,19 @@ export class KclManager {
   get programMemory() {
     return this._programMemory
   }
-  set programMemory(programMemory) {
+  // This is private because callers should be setting the entire execState.
+  private set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
+  }
+
+  set execState(execState) {
+    this._execState = execState
+    this.programMemory = execState.memory
+  }
+
+  get execState() {
+    return this._execState
   }
 
   get logs() {
@@ -111,9 +133,26 @@ export class KclManager {
   get isExecuting() {
     return this._isExecuting
   }
+
   set isExecuting(isExecuting) {
     this._isExecuting = isExecuting
+    // If we have finished executing, but the execute is stale, we should
+    // execute again.
+    if (!isExecuting && this.executeIsStale) {
+      const args = this.executeIsStale
+      this.executeIsStale = null
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.executeAst(args)
+    }
     this._isExecutingCallback(isExecuting)
+  }
+
+  get executeIsStale() {
+    return this._executeIsStale
+  }
+
+  set executeIsStale(executeIsStale) {
+    this._executeIsStale = executeIsStale
   }
 
   get wasmInitFailed() {
@@ -127,6 +166,7 @@ export class KclManager {
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(() => {
       this.ast = this.safeParse(codeManager.code) || this.ast
     })
@@ -166,9 +206,7 @@ export class KclManager {
       nonCodeMeta: {
         nonCodeNodes: {},
         start: [],
-        digest: null,
       },
-      digest: null,
     }
   }
 
@@ -202,77 +240,93 @@ export class KclManager {
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist.
   // just call to codeManager from wherever you want in other files.
-  async executeAst(
-    ast: Program = this._ast,
-    zoomToFit?: boolean,
-    executionId?: number,
-    zoomOnRangeAndType?: {
-      range: SourceRange
-      type: string
+  async executeAst(args: ExecuteArgs = {}): Promise<void> {
+    if (this.isExecuting) {
+      this.executeIsStale = args
+
+      // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
+      // A new executeAst will start.
+      this.engineCommandManager.rejectAllModelingCommands(
+        EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      )
+      // Exit early if we are already executing.
+      return
     }
-  ): Promise<void> {
-    const currentExecutionId = executionId || Date.now()
+
+    const ast = args.ast || this.ast
+
+    const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
     // Make sure we clear before starting again. End session will do this.
     this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
-    const { logs, errors, programMemory } = await executeAst({
+    const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
     })
 
-    this.lints = await lintAst({ ast: ast })
+    // Program was not interrupted, setup the scene
+    // Do not send send scene commands if the program was interrupted, go to clean up
+    if (!isInterrupted) {
+      this.lints = await lintAst({ ast: ast })
 
-    sceneInfra.modelingSend({ type: 'code edit during sketch' })
-    defaultSelectionFilter(programMemory, this.engineCommandManager)
-    await this.engineCommandManager.waitForAllCommands()
+      sceneInfra.modelingSend({ type: 'code edit during sketch' })
+      defaultSelectionFilter(execState.memory, this.engineCommandManager)
 
-    if (zoomToFit) {
-      let zoomObjectId: string | undefined = ''
-      if (zoomOnRangeAndType) {
-        zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
-          zoomOnRangeAndType.range,
-          zoomOnRangeAndType.type
-        )
+      if (args.zoomToFit) {
+        let zoomObjectId: string | undefined = ''
+        if (args.zoomOnRangeAndType) {
+          zoomObjectId = this.engineCommandManager?.mapRangeToObjectId(
+            args.zoomOnRangeAndType.range,
+            args.zoomOnRangeAndType.type
+          )
+        }
+
+        await this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'zoom_to_fit',
+            object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
+            padding: 0.1, // padding around the objects
+            animated: false, // don't animate the zoom for now
+          },
+        })
       }
-
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'zoom_to_fit',
-          object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-          padding: 0.1, // padding around the objects
-        },
-      })
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'zoom_to_fit',
-          object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
-          padding: 0.1, // padding around the objects
-        },
-      })
     }
 
     this.isExecuting = false
+
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
       return
     }
+
+    // Exit sketch mode if the AST is empty
+    if (this._isAstEmpty(ast)) {
+      await this.disableSketchMode()
+    }
+
     this.logs = logs
-    this.addKclErrors(errors)
-    this.programMemory = programMemory
+    // Do not add the errors since the program was interrupted and the error is not a real KCL error
+    this.addKclErrors(isInterrupted ? [] : errors)
+    // Reset the next ID index so that we reuse the previous IDs next time.
+    execState.idGenerator.nextId = 0
+    this.execState = execState
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = execState.memory
+    }
     this.ast = { ...ast }
     this._executeCallback()
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
     })
+
     this._cancelTokens.delete(currentExecutionId)
   }
   // NOTE: this always updates the code state and editor.
@@ -302,15 +356,20 @@ export class KclManager {
     await codeManager.writeToFile()
     this._ast = { ...newAst }
 
-    const { logs, errors, programMemory } = await executeAst({
+    const { logs, errors, execState } = await executeAst({
       ast: newAst,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
       useFakeExecutor: true,
     })
 
     this._logs = logs
     this._kclErrors = errors
-    this._programMemory = programMemory
+    this._execState = execState
+    this._programMemory = execState.memory
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = execState.memory
+    }
     if (updates !== 'artifactRanges') return
 
     // TODO the below seems like a work around, I wish there's a comment explaining exactly what
@@ -351,8 +410,7 @@ export class KclManager {
       return
     }
     this.ast = { ...ast }
-    this.isExecuting = true // executeAst sets this to false again
-    return this.executeAst(ast, zoomToFit)
+    return this.executeAst({ zoomToFit })
   }
   format() {
     const originalCode = codeManager.code
@@ -371,7 +429,12 @@ export class KclManager {
     // Update the code state and the editor.
     codeManager.updateCodeStateEditor(code)
     // Write back to the file system.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     codeManager.writeToFile()
+
+    // execute the code.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.executeCode()
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
@@ -381,7 +444,7 @@ export class KclManager {
     ast: Program,
     execute: boolean,
     optionalParams?: {
-      focusPath?: PathToNode
+      focusPath?: Array<PathToNode>
       zoomToFit?: boolean
       zoomOnRangeAndType?: {
         range: SourceRange
@@ -400,27 +463,34 @@ export class KclManager {
     let returnVal: Selections | undefined = undefined
 
     if (optionalParams?.focusPath) {
-      const _node1 = getNodeFromPath<any>(
-        astWithUpdatedSource,
-        optionalParams?.focusPath
-      )
-      if (err(_node1)) return Promise.reject(_node1)
-      const { node } = _node1
-
-      const { start, end } = node
-      if (!start || !end)
-        return {
-          selections: undefined,
-          newAst: astWithUpdatedSource,
-        }
       returnVal = {
-        codeBasedSelections: [
-          {
+        codeBasedSelections: [],
+        otherSelections: [],
+      }
+
+      for (const path of optionalParams.focusPath) {
+        const getNodeFromPathResult = getNodeFromPath<any>(
+          astWithUpdatedSource,
+          path
+        )
+        if (err(getNodeFromPathResult))
+          return Promise.reject(getNodeFromPathResult)
+        const { node } = getNodeFromPathResult
+
+        const { start, end } = node
+
+        if (!start || !end)
+          return {
+            selections: undefined,
+            newAst: astWithUpdatedSource,
+          }
+
+        if (start && end) {
+          returnVal.codeBasedSelections.push({
             type: 'default',
             range: [start, end],
-          },
-        ],
-        otherSelections: [],
+          })
+        }
       }
     }
 
@@ -430,12 +500,11 @@ export class KclManager {
       codeManager.updateCodeEditor(newCode)
       // Write the file to disk.
       await codeManager.writeToFile()
-      await this.executeAst(
-        astWithUpdatedSource,
-        optionalParams?.zoomToFit,
-        undefined,
-        optionalParams?.zoomOnRangeAndType
-      )
+      await this.executeAst({
+        ast: astWithUpdatedSource,
+        zoomToFit: optionalParams?.zoomToFit,
+        zoomOnRangeAndType: optionalParams?.zoomOnRangeAndType,
+      })
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
@@ -504,13 +573,32 @@ export class KclManager {
   defaultSelectionFilter() {
     defaultSelectionFilter(this.programMemory, this.engineCommandManager)
   }
+
+  /**
+   * We can send a single command of 'enable_sketch_mode' or send this in a batched request.
+   * When there is no code in the KCL editor we should be sending 'sketch_mode_disable' since any previous half finished
+   * code could leave the state of the application in sketch mode on the engine side.
+   */
+  async disableSketchMode() {
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'sketch_mode_disable' },
+    })
+  }
+
+  // Determines if there is no KCL code which means it is executing a blank KCL file
+  _isAstEmpty(ast: Program) {
+    return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
 }
 
 function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
-  programMemory.hasSketchOrExtrudeGroup() &&
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  programMemory.hasSketchOrSolid() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

@@ -58,6 +58,9 @@
 
             nodejs_22
             yarn
+
+            electron
+            playwright-driver.browsers
           ]) ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
             libiconv 
             darwin.apple_sdk.frameworks.Security
@@ -65,6 +68,11 @@
 
           TARGET_CC = "${pkgs.stdenv.cc}/bin/${pkgs.stdenv.cc.targetPrefix}cc";
           LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
+          ELECTRON_OVERRIDE_DIST_PATH = "${pkgs.electron}/bin/";
+          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "${pkgs.playwright-driver.browsers}/chromium-1091/chrome-linux/chrome";
+          PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+          NODE_ENV = "development";
         };
       });
     };

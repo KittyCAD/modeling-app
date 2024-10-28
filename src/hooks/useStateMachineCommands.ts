@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { AnyStateMachine, InterpreterFrom, StateFrom } from 'xstate'
+import { AnyStateMachine, Actor, StateFrom } from 'xstate'
 import { createMachineCommand } from '../lib/createMachineCommand'
 import { useCommandsContext } from './useCommandsContext'
 import { modelingMachine } from 'machines/modelingMachine'
@@ -15,6 +15,7 @@ import {
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { useAppState } from 'AppState'
+import { getActorNextEvents } from 'lib/utils'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -30,7 +31,7 @@ interface UseStateMachineCommandsArgs<
   machineId: T['id']
   state: StateFrom<T>
   send: Function
-  actor: InterpreterFrom<T>
+  actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   allCommandsRequireNetwork?: boolean
   onCancel?: () => void
@@ -59,7 +60,7 @@ export default function useStateMachineCommands<
         overallState !== NetworkHealthState.Weak) ||
       isExecuting ||
       !isStreamReady
-    const newCommands = state.nextEvents
+    const newCommands = getActorNextEvents(state)
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .flatMap((type) =>

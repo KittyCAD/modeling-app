@@ -8,6 +8,7 @@ export const MAX_PADDING = 7
  * This is available for users to edit as a setting.
  */
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
 /** Name given the temporary file in the browser version of the app */
@@ -54,9 +55,59 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
   SEGMENT: 'seg',
+  REVOLVE: 'revolve',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+
+/** The default KCL degree expression */
+export const KCL_DEFAULT_DEGREE = `360`
+
+/** localStorage key for the playwright test-specific app settings file */
+export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
+
+export const DEFAULT_HOST = 'https://api.zoo.dev'
+export const SETTINGS_FILE_NAME = 'settings.toml'
+export const TOKEN_FILE_NAME = 'token.txt'
+export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
+export const COOKIE_NAME = '__Secure-next-auth.session-token'
+
+/** localStorage key to determine if we're in Playwright tests */
+export const PLAYWRIGHT_KEY = 'playwright'
+
+/** Custom error message to match when rejectAllModelCommands is called
+ * allows us to match if the execution of executeAst was interrupted */
+export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE =
+  'Force interrupt, executionIsStale, new AST requested'
+
+/** The messages that appear for exporting toasts */
+export const EXPORT_TOAST_MESSAGES = {
+  START: 'Exporting...',
+  SUCCESS: 'Exported successfully',
+  FAILED: 'Export failed',
+}
+
+/** The messages that appear for "make" command toasts */
+export const MAKE_TOAST_MESSAGES = {
+  START: 'Starting print...',
+  NO_MACHINES: 'No machines available',
+  NO_MACHINE_API_IP: 'No machine api ip available',
+  NO_CURRENT_MACHINE: 'No current machine available',
+  NO_MACHINE_ID: 'No machine id available',
+  NO_NAME: 'No name provided',
+  ERROR_STARTING_PRINT: 'Error while starting print',
+  SUCCESS: 'Started print successfully',
+}
+
+/** The URL for the KCL samples manifest files */
+export const KCL_SAMPLES_MANIFEST_URLS = {
+  remote:
+    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/manifest.json',
+  localFallback: '/kcl-samples-manifest-fallback.json',
+} as const
+
+/** Toast id for the app auto-updater toast */
+export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 /** keybinding categories */
 export const KEYBINDING_CATEGORIES = {
   MODELING: 'modeling',

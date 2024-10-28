@@ -4,6 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
+button,
+input,
+select,
+textarea,
+a {
+  /* Make all interactive elements not act as handles
+   * to drag the electron app window by default,
+   * per the electron docs: https://www.electronjs.org/docs/latest/tutorial/window-customization#set-custom-draggable-region
+  */
+  -webkit-app-region: no-drag;
+}
+
 body {
   margin: 0;
   @apply font-sans;
@@ -102,7 +114,7 @@ button > * {
 }
 
 a {
-  @apply text-primary underline hover:hue-rotate-15;
+  @apply text-primary hover:hue-rotate-15;
 }
 
 .dark a {
@@ -260,7 +272,8 @@ code {
 }
 
 .segment-length-label-text {
-  transform: translate(var(--x, 0), var(--y, 0));
+  transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--degree, 0));
+  @apply font-mono body-bg px-2 pt-0.5 rounded-sm border border-chalkboard-110 dark:border-chalkboard-10;
 }
 
 @layer components {
@@ -268,7 +281,7 @@ code {
     @apply font-mono text-xs inline-block px-0.5 py-[2px] rounded;
 
     /* This is the only place in our code where layout is impacted by theme.
-     * We may not want that later, if hotkeys are possibly visible 
+     * We may not want that later, if hotkeys are possibly visible
      * while switching theme, but more padding feels better in dark mode.
      */
     @apply dark:px-1;
@@ -276,6 +289,32 @@ code {
     @apply text-chalkboard-70 dark:text-chalkboard-40;
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
     @apply border border-t-0 border-b-2 border-chalkboard-30 dark:border-chalkboard-80;
+  }
+}
+
+@layer utilities {
+  /* 
+    This is where your own custom Tailwind utility classes can go,
+    which lets you use them with @apply in your CSS, and get 
+    autocomplete in classNames in your JSX.
+  */
+  .parsed-markdown ul,
+  .parsed-markdown ol {
+    @apply list-outside pl-4 lg:pl-8 my-2;
+  }
+
+  .parsed-markdown ul li {
+    @apply list-disc;
+  }
+
+  .parsed-markdown li p {
+    @apply inline;
+  }
+
+  .parsed-markdown code {
+    @apply px-1 py-0.5 rounded-sm;
+    @apply bg-chalkboard-20 text-chalkboard-80;
+    @apply dark:bg-chalkboard-80 dark:text-chalkboard-30;
   }
 }
 

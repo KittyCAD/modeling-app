@@ -1,6 +1,5 @@
 //! Types for kcl project and modeling-app settings.
 
-pub mod file;
 pub mod project;
 
 use anyhow::Result;
@@ -60,120 +59,6 @@ impl Configuration {
         settings.validate()?;
 
         Ok(settings)
-    }
-
-    #[cfg(not(target_arch = "wasm32"))]
-    /// Initialize the project directory.
-    pub async fn ensure_project_directory_exists(&self) -> Result<std::path::PathBuf> {
-        let project_dir = &self.settings.project.directory;
-
-        // Check if the directory exists.
-        if !project_dir.exists() {
-            // Create the directory.
-            tokio::fs::create_dir_all(project_dir).await?;
-        }
-
-        Ok(project_dir.clone())
-    }
-
-    #[cfg(not(target_arch = "wasm32"))]
-    /// Create a new project directory.
-    pub async fn create_new_project_directory(
-        &self,
-        project_name: &str,
-        initial_code: Option<&str>,
-    ) -> Result<crate::settings::types::file::Project> {
-        let main_dir = &self.ensure_project_directory_exists().await?;
-
-        if project_name.is_empty() {
-            return Err(anyhow::anyhow!("Project name cannot be empty."));
-        }
-
-        // Create the project directory.
-        let project_dir = main_dir.join(project_name);
-
-        // Create the directory.
-        if !project_dir.exists() {
-            tokio::fs::create_dir_all(&project_dir).await?;
-        }
-
-        // Write the initial project file.
-        let project_file = project_dir.join(DEFAULT_PROJECT_KCL_FILE);
-        tokio::fs::write(&project_file, initial_code.unwrap_or_default()).await?;
-
-        Ok(crate::settings::types::file::Project {
-            file: crate::settings::types::file::FileEntry {
-                path: project_dir.to_string_lossy().to_string(),
-                name: project_name.to_string(),
-                // We don't need to recursively get all files in the project directory.
-                // Because we just created it and it's empty.
-                children: None,
-            },
-            default_file: project_file.to_string_lossy().to_string(),
-            metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
-            kcl_file_count: 1,
-            directory_count: 0,
-        })
-    }
-
-    #[cfg(not(target_arch = "wasm32"))]
-    /// List all the projects for the configuration.
-    pub async fn list_projects(&self) -> Result<Vec<crate::settings::types::file::Project>> {
-        // Get all the top level directories in the project directory.
-        let main_dir = &self.ensure_project_directory_exists().await?;
-        let mut projects = vec![];
-
-        let mut entries = tokio::fs::read_dir(main_dir).await?;
-        while let Some(e) = entries.next_entry().await? {
-            if !e.file_type().await?.is_dir() || e.file_name().to_string_lossy().starts_with('.') {
-                // We don't care it's not a directory
-                // or it's a hidden directory.
-                continue;
-            }
-
-            // Make sure the project has at least one kcl file in it.
-            let project = self.get_project_info(&e.path().display().to_string()).await?;
-            if project.kcl_file_count == 0 {
-                continue;
-            }
-
-            projects.push(project);
-        }
-
-        Ok(projects)
-    }
-
-    #[cfg(not(target_arch = "wasm32"))]
-    /// Get information about a project.
-    pub async fn get_project_info(&self, project_path: &str) -> Result<crate::settings::types::file::Project> {
-        // Check the directory.
-        let project_dir = std::path::Path::new(project_path);
-        if !project_dir.exists() {
-            return Err(anyhow::anyhow!("Project directory does not exist: {}", project_path));
-        }
-
-        // Make sure it is a directory.
-        if !project_dir.is_dir() {
-            return Err(anyhow::anyhow!("Project path is not a directory: {}", project_path));
-        }
-
-        let walked = crate::settings::utils::walk_dir(project_dir).await?;
-
-        let mut project = crate::settings::types::file::Project {
-            file: walked.clone(),
-            metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
-            kcl_file_count: 0,
-            directory_count: 0,
-            default_file: crate::settings::types::file::get_default_kcl_file_for_dir(project_dir, walked).await?,
-        };
-
-        // Populate the number of KCL files in the project.
-        project.populate_kcl_file_count()?;
-
-        //Populate the number of directories in the project.
-        project.populate_directory_count()?;
-
-        Ok(project)
     }
 }
 
@@ -369,6 +254,9 @@ pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
     #[serde(default, alias = "defaultUnit", skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
+    /// The projection mode the camera should use while modeling.
+    #[serde(default, alias = "cameraProjection", skip_serializing_if = "is_default")]
+    pub camera_projection: CameraProjectionType,
     /// The controls for how to navigate the 3D view.
     #[serde(default, alias = "mouseControls", skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
@@ -460,6 +348,32 @@ impl From<UnitLength> for kittycad::types::UnitLength {
     }
 }
 
+impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLength {
+    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
+        match unit {
+            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLength::Cm,
+            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLength::Ft,
+            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLength::In,
+            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLength::M,
+            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLength::Mm,
+            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLength::Yd,
+        }
+    }
+}
+
+impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
+    fn from(unit: UnitLength) -> Self {
+        match unit {
+            UnitLength::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
+            UnitLength::Ft => kittycad_modeling_cmds::units::UnitLength::Feet,
+            UnitLength::In => kittycad_modeling_cmds::units::UnitLength::Inches,
+            UnitLength::M => kittycad_modeling_cmds::units::UnitLength::Meters,
+            UnitLength::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
+            UnitLength::Yd => kittycad_modeling_cmds::units::UnitLength::Yards,
+        }
+    }
+}
+
 /// The types of controls for how to navigate the 3D view.
 #[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
@@ -484,6 +398,19 @@ pub enum MouseControlType {
     #[display("autocad")]
     #[serde(rename = "autocad", alias = "AutoCAD")]
     AutoCad,
+}
+
+/// The types of camera projection for the 3D view.
+#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum CameraProjectionType {
+    /// Perspective projection https://en.wikipedia.org/wiki/3D_projection#Perspective_projection
+    Perspective,
+    /// Orthographic projection https://en.wikipedia.org/wiki/3D_projection#Orthographic_projection
+    #[default]
+    Orthographic,
 }
 
 /// Settings that affect the behavior of the KCL text editor.
@@ -611,8 +538,8 @@ mod tests {
     use validator::Validate;
 
     use super::{
-        AppColor, AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
-        OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
+        AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
+        ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
 
     #[test]
@@ -627,6 +554,7 @@ enableSSAO = false
 
 [settings.modeling]
 defaultUnit = "in"
+cameraProjection = "orthographic"
 mouseControls = "KittyCAD"
 showDebugPanel = true
 
@@ -658,6 +586,7 @@ textWrapping = true
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
+                        camera_projection: CameraProjectionType::Orthographic,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -718,6 +647,7 @@ includeSettings = false
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -783,6 +713,7 @@ defaultProjectName = "projects-$nnn"
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -860,6 +791,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
                         show_debug_panel: false,
@@ -953,197 +885,5 @@ color = 1567.4"#;
             .unwrap_err()
             .to_string()
             .contains("color: Validation error: color"));
-    }
-
-    #[tokio::test]
-    async fn test_create_new_project_directory_no_initial_code() {
-        let mut settings = Configuration::default();
-        settings.settings.project.directory =
-            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
-
-        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
-        let project = settings
-            .create_new_project_directory(&project_name, None)
-            .await
-            .unwrap();
-
-        assert_eq!(project.file.name, project_name);
-        assert_eq!(
-            project.file.path,
-            settings
-                .settings
-                .project
-                .directory
-                .join(&project_name)
-                .to_string_lossy()
-        );
-        assert_eq!(project.kcl_file_count, 1);
-        assert_eq!(project.directory_count, 0);
-        assert_eq!(
-            project.default_file,
-            std::path::Path::new(&project.file.path)
-                .join(super::DEFAULT_PROJECT_KCL_FILE)
-                .to_string_lossy()
-        );
-
-        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
-    }
-
-    #[tokio::test]
-    async fn test_create_new_project_directory_empty_name() {
-        let mut settings = Configuration::default();
-        settings.settings.project.directory =
-            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
-
-        let project_name = "";
-        let project = settings.create_new_project_directory(project_name, None).await;
-
-        assert!(project.is_err());
-        assert_eq!(project.unwrap_err().to_string(), "Project name cannot be empty.");
-
-        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
-    }
-
-    #[tokio::test]
-    async fn test_create_new_project_directory_with_initial_code() {
-        let mut settings = Configuration::default();
-        settings.settings.project.directory =
-            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
-
-        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
-        let initial_code = "initial code";
-        let project = settings
-            .create_new_project_directory(&project_name, Some(initial_code))
-            .await
-            .unwrap();
-
-        assert_eq!(project.file.name, project_name);
-        assert_eq!(
-            project.file.path,
-            settings
-                .settings
-                .project
-                .directory
-                .join(&project_name)
-                .to_string_lossy()
-        );
-        assert_eq!(project.kcl_file_count, 1);
-        assert_eq!(project.directory_count, 0);
-        assert_eq!(
-            project.default_file,
-            std::path::Path::new(&project.file.path)
-                .join(super::DEFAULT_PROJECT_KCL_FILE)
-                .to_string_lossy()
-        );
-        assert_eq!(
-            tokio::fs::read_to_string(&project.default_file).await.unwrap(),
-            initial_code
-        );
-
-        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
-    }
-
-    #[tokio::test]
-    async fn test_list_projects() {
-        let mut settings = Configuration::default();
-        settings.settings.project.directory =
-            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
-
-        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
-        let project = settings
-            .create_new_project_directory(&project_name, None)
-            .await
-            .unwrap();
-
-        let projects = settings.list_projects().await.unwrap();
-        assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].file.name, project_name);
-        assert_eq!(projects[0].file.path, project.file.path);
-        assert_eq!(projects[0].kcl_file_count, 1);
-        assert_eq!(projects[0].directory_count, 0);
-        assert_eq!(projects[0].default_file, project.default_file);
-
-        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
-    }
-
-    #[tokio::test]
-    async fn test_list_projects_with_rando_files() {
-        let mut settings = Configuration::default();
-        settings.settings.project.directory =
-            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
-
-        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
-        let project = settings
-            .create_new_project_directory(&project_name, None)
-            .await
-            .unwrap();
-
-        // Create a random file in the root project directory.
-        let random_file = std::path::Path::new(&settings.settings.project.directory).join("random_file.txt");
-        tokio::fs::write(&random_file, "random file").await.unwrap();
-
-        let projects = settings.list_projects().await.unwrap();
-        assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].file.name, project_name);
-        assert_eq!(projects[0].file.path, project.file.path);
-        assert_eq!(projects[0].kcl_file_count, 1);
-        assert_eq!(projects[0].directory_count, 0);
-        assert_eq!(projects[0].default_file, project.default_file);
-
-        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
-    }
-
-    #[tokio::test]
-    async fn test_list_projects_with_hidden_dir() {
-        let mut settings = Configuration::default();
-        settings.settings.project.directory =
-            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
-
-        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
-        let project = settings
-            .create_new_project_directory(&project_name, None)
-            .await
-            .unwrap();
-
-        // Create a hidden directory in the project directory.
-        let hidden_dir = std::path::Path::new(&settings.settings.project.directory).join(".git");
-        tokio::fs::create_dir_all(&hidden_dir).await.unwrap();
-
-        let projects = settings.list_projects().await.unwrap();
-        assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].file.name, project_name);
-        assert_eq!(projects[0].file.path, project.file.path);
-        assert_eq!(projects[0].kcl_file_count, 1);
-        assert_eq!(projects[0].directory_count, 0);
-        assert_eq!(projects[0].default_file, project.default_file);
-
-        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
-    }
-
-    #[tokio::test]
-    async fn test_list_projects_with_dir_not_containing_kcl_file() {
-        let mut settings = Configuration::default();
-        settings.settings.project.directory =
-            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
-
-        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
-        let project = settings
-            .create_new_project_directory(&project_name, None)
-            .await
-            .unwrap();
-
-        // Create a directory in the project directory that doesn't contain a KCL file.
-        let random_dir = std::path::Path::new(&settings.settings.project.directory).join("random_dir");
-        tokio::fs::create_dir_all(&random_dir).await.unwrap();
-
-        let projects = settings.list_projects().await.unwrap();
-        assert_eq!(projects.len(), 1);
-        assert_eq!(projects[0].file.name, project_name);
-        assert_eq!(projects[0].file.path, project.file.path);
-        assert_eq!(projects[0].kcl_file_count, 1);
-        assert_eq!(projects[0].directory_count, 0);
-        assert_eq!(projects[0].default_file, project.default_file);
-
-        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
     }
 }

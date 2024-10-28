@@ -4,16 +4,18 @@ import {
   ArrayExpression,
   BinaryExpression,
   CallExpression,
+  Expr,
   ExpressionStatement,
+  ObjectExpression,
+  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ProgramMemory,
   ReturnStatement,
-  SketchGroup,
+  sketchFromKclValue,
   SourceRange,
   SyntaxType,
-  Value,
   VariableDeclaration,
   VariableDeclarator,
 } from './wasm'
@@ -26,6 +28,7 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err } from 'lib/trap'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -118,7 +121,12 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node: Value | ExpressionStatement | VariableDeclaration | ReturnStatement,
+  node:
+    | Expr
+    | ImportStatement
+    | ExpressionStatement
+    | VariableDeclaration
+    | ReturnStatement,
   sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
@@ -337,7 +345,7 @@ export function getNodePathFromSourceRange(
 }
 
 type KCLNode =
-  | Value
+  | Expr
   | ExpressionStatement
   | VariableDeclaration
   | VariableDeclarator
@@ -514,7 +522,7 @@ export function isNodeSafeToReplacePath(
 ):
   | {
       isSafe: boolean
-      value: Value
+      value: Expr
       replacer: ReplacerFn
     }
   | Error {
@@ -538,7 +546,7 @@ export function isNodeSafeToReplacePath(
 
   // binaryExpression should take precedence
   const [finVal, finPath] =
-    (binValue as Value)?.type === 'BinaryExpression'
+    (binValue as Expr)?.type === 'BinaryExpression'
       ? [binValue, outBinPath]
       : [value, outPath]
 
@@ -561,7 +569,7 @@ export function isNodeSafeToReplacePath(
     return { modifiedAst: _ast, pathToReplaced }
   }
 
-  const hasPipeSub = isTypeInValue(finVal as Value, 'PipeSubstitution')
+  const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')
   const isIdentifierCallee = path[path.length - 1][0] !== 'callee'
   return {
     isSafe:
@@ -569,7 +577,7 @@ export function isNodeSafeToReplacePath(
       isIdentifierCallee &&
       acceptedNodeTypes.includes((finVal as any)?.type) &&
       finPath.map(([_, type]) => type).includes('VariableDeclaration'),
-    value: finVal as Value,
+    value: finVal as Expr,
     replacer: replaceNodeWithIdentifier,
   }
 }
@@ -580,7 +588,7 @@ export function isNodeSafeToReplace(
 ):
   | {
       isSafe: boolean
-      value: Value
+      value: Expr
       replacer: ReplacerFn
     }
   | Error {
@@ -588,7 +596,7 @@ export function isNodeSafeToReplace(
   return isNodeSafeToReplacePath(ast, path)
 }
 
-export function isTypeInValue(node: Value, syntaxType: SyntaxType): boolean {
+export function isTypeInValue(node: Expr, syntaxType: SyntaxType): boolean {
   if (node.type === syntaxType) return true
   if (node.type === 'BinaryExpression') return isTypeInBinExp(node, syntaxType)
   if (node.type === 'CallExpression') return isTypeInCallExp(node, syntaxType)
@@ -625,7 +633,7 @@ function isTypeInArrayExp(
   return node.elements.some((el) => isTypeInValue(el, syntaxType))
 }
 
-export function isValueZero(val?: Value): boolean {
+export function isValueZero(val?: Expr): boolean {
   return (
     (val?.type === 'Literal' && Number(val.value) === 0) ||
     (val?.type === 'UnaryExpression' &&
@@ -661,15 +669,16 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const path = programMemory?.get(varName) as SketchGroup
+    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
+    if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
-      path,
+      sg,
       primaryLine.range
     )
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
-    const _segment = getSketchSegmentFromSourceRange(path, secondaryLine.range)
+    const _segment = getSketchSegmentFromSourceRange(sg, secondaryLine.range)
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
     const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
@@ -708,9 +717,7 @@ export function isLinesParallelAndConstrained(
       constraintType === 'angle' || constraintLevel === 'full'
 
     // get the previous segment
-    const prevSegment = (programMemory.get(varName) as SketchGroup).value[
-      secondaryIndex - 1
-    ]
+    const prevSegment = sg.paths[secondaryIndex - 1]
     const prevSourceRange = prevSegment.__geoMeta.sourceRange
 
     const isParallelAndConstrained =
@@ -756,7 +763,7 @@ export function doesPipeHaveCallExp({
   )
 }
 
-export function hasExtrudeSketchGroup({
+export function hasExtrudeSketch({
   ast,
   selection,
   programMemory,
@@ -779,7 +786,9 @@ export function hasExtrudeSketchGroup({
   if (varDec.type !== 'VariableDeclaration') return false
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
-  return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
+  return (
+    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
+  )
 }
 
 export function isSingleCursorInPipe(
@@ -877,7 +886,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
       if (
         node.type === 'CallExpression' &&
         node.callee.type === 'Identifier' &&
-        node.callee.name === 'extrude' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
         node.arguments?.[1]?.type === 'Identifier' &&
         node.arguments[1].name === varDec.id.name
       ) {
@@ -889,7 +898,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
 }
 
 /** File must contain at least one sketch that has not been extruded already */
-export function hasExtrudableGeometry(ast: Program) {
+export function doesSceneHaveSweepableSketch(ast: Program) {
   const theMap: any = {}
   traverse(ast as any, {
     enter(node) {
@@ -900,6 +909,7 @@ export function hasExtrudableGeometry(ast: Program) {
         let hasStartProfileAt = false
         let hasStartSketchOn = false
         let hasClose = false
+        let hasCircle = false
         for (const pipe of node.init.body) {
           if (
             pipe.type === 'CallExpression' &&
@@ -916,13 +926,20 @@ export function hasExtrudableGeometry(ast: Program) {
           if (pipe.type === 'CallExpression' && pipe.callee.name === 'close') {
             hasClose = true
           }
+          if (pipe.type === 'CallExpression' && pipe.callee.name === 'circle') {
+            hasCircle = true
+          }
         }
-        if (hasStartProfileAt && hasStartSketchOn && hasClose) {
+        if (
+          (hasStartProfileAt || hasCircle) &&
+          hasStartSketchOn &&
+          (hasClose || hasCircle)
+        ) {
           theMap[node.id.name] = true
         }
       } else if (
         node.type === 'CallExpression' &&
-        node.callee.name === 'extrude' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
         node.arguments[1]?.type === 'Identifier' &&
         theMap?.[node?.arguments?.[1]?.name]
       ) {
@@ -931,4 +948,13 @@ export function hasExtrudableGeometry(ast: Program) {
     },
   })
   return Object.keys(theMap).length > 0
+}
+
+export function getObjExprProperty(
+  node: ObjectExpression,
+  propName: string
+): { expr: ObjectProperty['value']; index: number } | null {
+  const index = node.properties.findIndex(({ key }) => key.name === propName)
+  if (index === -1) return null
+  return { expr: node.properties[index].value, index }
 }
