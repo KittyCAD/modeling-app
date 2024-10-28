@@ -494,13 +494,13 @@ export function lexer(str: string): Token[] | Error {
 
 export const modifyAstForSketch = async (
   engineCommandManager: EngineCommandManager,
-  ast: Program,
+  ast: UnboxedNode<Program>,
   variableName: string,
   currentPlane: string,
   engineId: string
-): Promise<Program> => {
+): Promise<UnboxedNode<Program>> => {
   try {
-    const updatedAst: Program = await modify_ast_for_sketch_wasm(
+    const updatedAst: UnboxedNode<Program> = await modify_ast_for_sketch_wasm(
       engineCommandManager,
       JSON.stringify(ast),
       variableName,
