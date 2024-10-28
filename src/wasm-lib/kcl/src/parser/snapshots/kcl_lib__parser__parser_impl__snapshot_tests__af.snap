@@ -24,10 +24,12 @@ expression: actual
           },
           "init": {
             "type": "PipeExpression",
+            "type": "PipeExpression",
             "start": 17,
             "end": 165,
             "body": [
               {
+                "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 17,
                 "end": 37,
@@ -40,10 +42,12 @@ expression: actual
                 "arguments": [
                   {
                     "type": "ArrayExpression",
+                    "type": "ArrayExpression",
                     "start": 31,
                     "end": 36,
                     "elements": [
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 32,
                         "end": 33,
@@ -51,6 +55,7 @@ expression: actual
                         "raw": "0"
                       },
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 34,
                         "end": 35,
@@ -64,6 +69,7 @@ expression: actual
               },
               {
                 "type": "CallExpression",
+                "type": "CallExpression",
                 "start": 49,
                 "end": 75,
                 "callee": {
@@ -75,10 +81,12 @@ expression: actual
                 "arguments": [
                   {
                     "type": "ArrayExpression",
+                    "type": "ArrayExpression",
                     "start": 56,
                     "end": 62,
                     "elements": [
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 57,
                         "end": 58,
@@ -86,6 +94,7 @@ expression: actual
                         "raw": "0"
                       },
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 60,
                         "end": 61,
@@ -96,10 +105,12 @@ expression: actual
                   },
                   {
                     "type": "PipeSubstitution",
+                    "type": "PipeSubstitution",
                     "start": 64,
                     "end": 65
                   },
                   {
+                    "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "start": 67,
                     "end": 74,
@@ -109,6 +120,7 @@ expression: actual
                 "optional": false
               },
               {
+                "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 87,
                 "end": 104,
@@ -121,10 +133,12 @@ expression: actual
                 "arguments": [
                   {
                     "type": "ArrayExpression",
+                    "type": "ArrayExpression",
                     "start": 94,
                     "end": 100,
                     "elements": [
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 95,
                         "end": 96,
@@ -132,6 +146,7 @@ expression: actual
                         "raw": "1"
                       },
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 98,
                         "end": 99,
@@ -142,6 +157,7 @@ expression: actual
                   },
                   {
                     "type": "PipeSubstitution",
+                    "type": "PipeSubstitution",
                     "start": 102,
                     "end": 103
                   }
@@ -149,6 +165,7 @@ expression: actual
                 "optional": false
               },
               {
+                "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 116,
                 "end": 145,
@@ -161,10 +178,12 @@ expression: actual
                 "arguments": [
                   {
                     "type": "ArrayExpression",
+                    "type": "ArrayExpression",
                     "start": 123,
                     "end": 129,
                     "elements": [
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 124,
                         "end": 125,
@@ -172,6 +191,7 @@ expression: actual
                         "raw": "1"
                       },
                       {
+                        "type": "Literal",
                         "type": "Literal",
                         "start": 127,
                         "end": 128,
@@ -182,10 +202,12 @@ expression: actual
                   },
                   {
                     "type": "PipeSubstitution",
+                    "type": "PipeSubstitution",
                     "start": 131,
                     "end": 132
                   },
                   {
+                    "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "start": 134,
                     "end": 144,
@@ -195,6 +217,7 @@ expression: actual
                 "optional": false
               },
               {
+                "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 157,
                 "end": 165,
@@ -206,6 +229,7 @@ expression: actual
                 },
                 "arguments": [
                   {
+                    "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 163,
                     "end": 164

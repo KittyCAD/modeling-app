@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import fsSync from 'node:fs'
 import path from 'path'
 import { dialog, shell } from 'electron'
-import { MachinesListing } from 'lib/machineManager'
+import { MachinesListing } from 'components/MachineManagerProvider'
 
 type EnvFn = (value?: string) => string
 
@@ -23,8 +23,8 @@ export interface IElectronAPI {
     key: string,
     callback: (eventType: string, path: string) => void
   ) => void
+  readFile: typeof fs.readFile
   watchFileOff: (path: string, key: string) => void
-  readFile: (path: string) => ReturnType<fs.readFile>
   writeFile: (
     path: string,
     data: string | Uint8Array

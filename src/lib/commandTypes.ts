@@ -5,6 +5,7 @@ import { Selection } from './selections'
 import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -127,6 +128,7 @@ export type CommandArgumentConfig<
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
+              machineManager?: MachineManager
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
           ) => CommandArgumentOption<OutputType>[])
@@ -258,5 +260,6 @@ export type CommandArgumentWithName<
 export type CommandArgumentOption<A> = {
   name: string
   isCurrent?: boolean
+  disabled?: boolean
   value: A
 }

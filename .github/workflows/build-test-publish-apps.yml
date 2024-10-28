@@ -15,6 +15,7 @@ on:
 env:
   CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -25,7 +26,6 @@ jobs:
     runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
-      notes: ${{ steps.export_version.outputs.notes }}
     steps:
       - uses: actions/checkout@v4
 
@@ -55,8 +55,6 @@ jobs:
       # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
 
       - name: Generate release notes
-        env:
-          NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
         run: |
           echo "$NOTES" > release-notes.md
           cat release-notes.md
@@ -83,9 +81,6 @@ jobs:
           name: prepared-files-nightly
           path: |
             electron-builder.yml
-
-      - id: export_notes
-        run: echo "notes=`cat release-notes.md'`" >> "$GITHUB_OUTPUT"
 
       - name: Prepare electron-builder.yml file for updater test
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
@@ -211,7 +206,7 @@ jobs:
             out/*-x86_64-linux.*
 
       - uses: actions/upload-artifact@v3
-        if: ${{ env.CUT_RELEASE_PR == 'true' }}
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         with:
           name: out-yml
           path: |
@@ -262,7 +257,6 @@ jobs:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
-      NOTES: ${{ needs.prepare-files.outputs.notes }}
       BUCKET_DIR: ${{ github.event_name == 'schedule' && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app' }}
       WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
       URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}

@@ -24,10 +24,12 @@ expression: actual
           },
           "init": {
             "type": "PipeExpression",
+            "type": "PipeExpression",
             "start": 14,
             "end": 36,
             "body": [
               {
+                "type": "BinaryExpression",
                 "type": "BinaryExpression",
                 "start": 14,
                 "end": 19,
@@ -51,6 +53,7 @@ expression: actual
               },
               {
                 "type": "CallExpression",
+                "type": "CallExpression",
                 "start": 23,
                 "end": 36,
                 "callee": {
@@ -62,12 +65,14 @@ expression: actual
                 "arguments": [
                   {
                     "type": "Literal",
+                    "type": "Literal",
                     "start": 30,
                     "end": 32,
                     "value": 45,
                     "raw": "45"
                   },
                   {
+                    "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 34,
                     "end": 35

@@ -24,9 +24,11 @@ expression: actual
           },
           "init": {
             "type": "IfExpression",
+            "type": "IfExpression",
             "start": 10,
             "end": 74,
             "cond": {
+              "type": "Literal",
               "type": "Literal",
               "start": 13,
               "end": 17,
@@ -43,6 +45,7 @@ expression: actual
                   "start": 32,
                   "end": 33,
                   "expression": {
+                    "type": "Literal",
                     "type": "Literal",
                     "start": 32,
                     "end": 33,
@@ -63,6 +66,7 @@ expression: actual
                   "start": 63,
                   "end": 64,
                   "expression": {
+                    "type": "Literal",
                     "type": "Literal",
                     "start": 63,
                     "end": 64,
