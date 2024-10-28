@@ -2,7 +2,7 @@ import type { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, useCallback, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,7 +13,6 @@ import { sortProject } from 'lib/desktopFS'
 import { FILE_EXT } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { codeManager, kclManager } from 'lib/singletons'
-import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -21,6 +20,8 @@ import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { normalizeLineEndings } from 'lib/codeEditor'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -131,6 +132,30 @@ const FileTreeItem = ({
   const isCurrentFile = fileOrDir.path === currentFile?.path
   const itemRef = useRef(null)
 
+  // Since every file or directory gets its own FileTreeItem, we can do this.
+  // Because subtrees only render when they are opened, that means this
+  // only listens when they open. Because this acts like a useEffect, when
+  // the ReactNodes are destroyed, so is this listener :)
+  useFileSystemWatcher(
+    async (eventType, path) => {
+      // Don't try to read a file that was removed.
+      if (isCurrentFile && eventType !== 'unlink') {
+        // Prevents a cyclic read / write causing editor problems such as
+        // misplaced cursor positions.
+        if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+          return
+        }
+
+        let code = await window.electron.readFile(path, { encoding: 'utf-8' })
+        code = normalizeLineEndings(code)
+        codeManager.updateCodeStateEditor(code)
+      }
+      fileSend({ type: 'Refresh' })
+    },
+    [fileOrDir.path]
+  )
+
   const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
   const removeCurrentItemFromRenaming = useCallback(
     () =>
@@ -153,6 +178,13 @@ const FileTreeItem = ({
       },
     })
   }, [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend])
+
+  const clickDirectory = () => {
+    fileSend({
+      type: 'Set selected directory',
+      directory: fileOrDir,
+    })
+  }
 
   function handleKeyUp(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (e.metaKey && e.key === 'Backspace') {
@@ -242,18 +274,8 @@ const FileTreeItem = ({
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
                   onClick={(e) => e.currentTarget.focus()}
-                  onClickCapture={(e) =>
-                    fileSend({
-                      type: 'Set selected directory',
-                      directory: fileOrDir,
-                    })
-                  }
-                  onFocusCapture={(e) =>
-                    fileSend({
-                      type: 'Set selected directory',
-                      directory: fileOrDir,
-                    })
-                  }
+                  onClickCapture={clickDirectory}
+                  onFocusCapture={clickDirectory}
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   onKeyUp={handleKeyUp}
                 >
@@ -469,27 +491,36 @@ export const FileTreeInner = ({
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
-  const documentHasFocus = useDocumentHasFocus()
 
-  // Refresh the file tree when the document gets focus
-  useEffect(() => {
-    fileSend({ type: 'Refresh' })
-  }, [documentHasFocus])
+  // Refresh the file tree when there are changes.
+  useFileSystemWatcher(
+    async (eventType, path) => {
+      // Our other watcher races with this watcher on the current file changes,
+      // so we need to stop this one from reacting at all, otherwise Bad Things
+      // Happen™.
+      const isCurrentFile = loaderData.file?.path === path
+      const hasChanged = eventType === 'change'
+      if (isCurrentFile && hasChanged) return
+      fileSend({ type: 'Refresh' })
+    },
+    [loaderData?.project?.path, fileContext.selectedDirectory.path].filter(
+      (x: string | undefined) => x !== undefined
+    )
+  )
+
+  const clickDirectory = () => {
+    fileSend({
+      type: 'Set selected directory',
+      directory: fileContext.project,
+    })
+  }
 
   return (
     <div
       className="overflow-auto pb-12 absolute inset-0"
       data-testid="file-pane-scroll-container"
     >
-      <ul
-        className="m-0 p-0 text-sm"
-        onClickCapture={(e) => {
-          fileSend({
-            type: 'Set selected directory',
-            directory: fileContext.project,
-          })
-        }}
-      >
+      <ul className="m-0 p-0 text-sm" onClickCapture={clickDirectory}>
         {sortProject(fileContext.project?.children || []).map((fileOrDir) => (
           <FileTreeItem
             project={fileContext.project}

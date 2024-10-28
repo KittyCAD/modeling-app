@@ -37,8 +37,6 @@ if (!process.env.NODE_ENV)
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
-console.log(process.env)
-
 process.env.VITE_KC_API_WS_MODELING_URL ??=
   'wss://api.zoo.dev/ws/modeling/commands'
 process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
@@ -238,6 +236,7 @@ ipcMain.handle('find_machine_api', () => {
         const ip = service.addresses[0]
         const port = service.port
         // We want to return the ip address of the machine API.
+        console.log(`Machine API found at ${ip}:${port}`)
         resolve(`${ip}:${port}`)
       }
     )
@@ -287,7 +286,10 @@ app.on('ready', () => {
 
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
-    mainWindow?.webContents.send('update-downloaded', info.version)
+    mainWindow?.webContents.send('update-downloaded', {
+      version: info.version,
+      releaseNotes: info.releaseNotes,
+    })
   })
 
   ipcMain.handle('app.restart', () => {

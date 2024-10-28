@@ -762,7 +762,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::executor::ContextType::Mock,
             };
 
-            ctx.run(&program, None, id_generator).await.unwrap();
+            ctx.run(&program, None, id_generator, None).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

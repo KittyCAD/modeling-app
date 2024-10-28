@@ -23,6 +23,13 @@ pub trait FileSystem: Clone {
         source_range: crate::executor::SourceRange,
     ) -> Result<Vec<u8>, crate::errors::KclError>;
 
+    /// Read a file from the local file system.
+    async fn read_to_string<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
+        &self,
+        path: P,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<String, crate::errors::KclError>;
+
     /// Check if a file exists on the local file system.
     async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,

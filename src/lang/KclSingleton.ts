@@ -40,9 +40,7 @@ export class KclManager {
     nonCodeMeta: {
       nonCodeNodes: {},
       start: [],
-      digest: null,
     },
-    digest: null,
   }
   private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
@@ -208,9 +206,7 @@ export class KclManager {
       nonCodeMeta: {
         nonCodeNodes: {},
         start: [],
-        digest: null,
       },
-      digest: null,
     }
   }
 

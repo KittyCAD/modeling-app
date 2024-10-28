@@ -28,6 +28,7 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err } from 'lib/trap'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -120,7 +121,12 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node: Expr | ExpressionStatement | VariableDeclaration | ReturnStatement,
+  node:
+    | Expr
+    | ImportStatement
+    | ExpressionStatement
+    | VariableDeclaration
+    | ReturnStatement,
   sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
@@ -711,7 +717,7 @@ export function isLinesParallelAndConstrained(
       constraintType === 'angle' || constraintLevel === 'full'
 
     // get the previous segment
-    const prevSegment = sg.value[secondaryIndex - 1]
+    const prevSegment = sg.paths[secondaryIndex - 1]
     const prevSourceRange = prevSegment.__geoMeta.sourceRange
 
     const isParallelAndConstrained =

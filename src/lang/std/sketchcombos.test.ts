@@ -9,7 +9,7 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
@@ -96,6 +96,86 @@ function makeSelections(
 }
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
+  describe(`should always reorder selections to have the base selection first`, () => {
+    const inputScript = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 5], %)
+  |> line([-2, 5], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+
+    const expectedModifiedScript = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 5], %, $seg01)
+  |> angledLine([112, segLen(seg01)], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+
+    const selectLine = (script: string, lineNumber: number): Selection => {
+      const lines = script.split('\n')
+      const codeBeforeLine = lines.slice(0, lineNumber).join('\n').length
+      const line = lines.find((_, i) => i === lineNumber)
+      if (!line) {
+        throw new Error(
+          `line index ${lineNumber} not found in test sample, friend`
+        )
+      }
+      const start = codeBeforeLine + line.indexOf('|> ' + 5)
+      const range: [number, number] = [start, start]
+      return {
+        type: 'default',
+        range,
+      }
+    }
+
+    async function applyTransformation(
+      inputCode: string,
+      selectionRanges: Selections['codeBasedSelections']
+    ) {
+      const ast = parse(inputCode)
+      if (err(ast)) return Promise.reject(ast)
+      const execState = await enginelessExecutor(ast)
+      const transformInfos = getTransformInfos(
+        makeSelections(selectionRanges.slice(1)),
+        ast,
+        'equalLength'
+      )
+
+      const transformedSelection = makeSelections(selectionRanges)
+
+      const newAst = transformSecondarySketchLinesTagFirst({
+        ast,
+        selectionRanges: transformedSelection,
+        transformInfos,
+        programMemory: execState.memory,
+      })
+      if (err(newAst)) return Promise.reject(newAst)
+
+      const newCode = recast(newAst.modifiedAst)
+      return newCode
+    }
+
+    it(`Should reorder when user selects first-to-last`, async () => {
+      const selectionRanges: Selections['codeBasedSelections'] = [
+        selectLine(inputScript, 3),
+        selectLine(inputScript, 4),
+      ]
+
+      const newCode = await applyTransformation(inputScript, selectionRanges)
+      expect(newCode).toBe(expectedModifiedScript)
+    })
+
+    it(`Should reorder when user selects last-to-first`, async () => {
+      const selectionRanges: Selections['codeBasedSelections'] = [
+        selectLine(inputScript, 4),
+        selectLine(inputScript, 3),
+      ]
+
+      const newCode = await applyTransformation(inputScript, selectionRanges)
+      expect(newCode).toBe(expectedModifiedScript)
+    })
+  })
   const inputScript = `myVar = 3
 myVar2 = 5
 myVar3 = 6

@@ -1559,7 +1559,15 @@ export function transformSecondarySketchLinesTagFirst({
     }
   | Error {
   // let node = structuredClone(ast)
-  const primarySelection = selectionRanges.codeBasedSelections[0].range
+
+  // We need to sort the selections by their start position
+  // so that we can process them in dependency order and not write invalid KCL.
+  const sortedCodeBasedSelections =
+    selectionRanges.codeBasedSelections.toSorted(
+      (a, b) => a.range[0] - b.range[0]
+    )
+  const primarySelection = sortedCodeBasedSelections[0].range
+  const secondarySelections = sortedCodeBasedSelections.slice(1)
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
   if (err(_tag)) return _tag
@@ -1569,7 +1577,7 @@ export function transformSecondarySketchLinesTagFirst({
     ast: modifiedAst,
     selectionRanges: {
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+      codeBasedSelections: secondarySelections,
     },
     referencedSegmentRange: primarySelection,
     transformInfos,
@@ -1724,7 +1732,7 @@ export function transformAstSketchLines({
       if (err(_segment)) return _segment
       referencedSegment = _segment.segment
     } else {
-      referencedSegment = sketch.value.find(
+      referencedSegment = sketch.paths.find(
         (path) => path.tag?.value === _referencedSegmentName
       )
     }

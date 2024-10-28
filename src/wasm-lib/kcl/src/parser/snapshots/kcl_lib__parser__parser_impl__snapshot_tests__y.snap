@@ -20,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 8,
-            "name": "sg",
-            "digest": null
+            "name": "sg"
           },
           "init": {
             "type": "CallExpression",
@@ -32,8 +31,7 @@ expression: actual
               "type": "Identifier",
               "start": 11,
               "end": 24,
-              "name": "startSketchAt",
-              "digest": null
+              "name": "startSketchAt"
             },
             "arguments": [
               {
@@ -41,24 +39,14 @@ expression: actual
                 "type": "Identifier",
                 "start": 25,
                 "end": 28,
-                "name": "pos",
-                "digest": null
+                "name": "pos"
               }
             ],
-            "optional": false,
-            "digest": null
-          },
-          "digest": null
+            "optional": false
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

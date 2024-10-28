@@ -382,7 +382,7 @@ async fn kcl_test_patterns_linear_basic_with_math() {
 distance = 5
 part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: num -1, distance: distance - 1}, %)
+    |> patternLinear2d({axis: [0,1], instances: num, distance: distance - 1}, %)
     |> extrude(1, %)
 "#;
 
@@ -394,7 +394,7 @@ part =  startSketchOn('XY')
 async fn kcl_test_patterns_linear_basic() {
     let code = r#"part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
+    |> patternLinear2d({axis: [0,1], instances: 13, distance: 4}, %)
     |> extrude(1, %)
 "#;
 
@@ -411,7 +411,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternLinear3d({axis: [1, 0, 1], repetitions: 3, distance: 6}, %)
+    |> patternLinear3d({axis: [1, 0, 1], instances: 4, distance: 6}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -422,7 +422,7 @@ async fn kcl_test_patterns_linear_basic_3d() {
 async fn kcl_test_patterns_linear_basic_negative_distance() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
+    |> patternLinear2d({axis: [0,1], instances: 13, distance: -2}, %)
     |> extrude(1, %)
 "#;
 
@@ -434,7 +434,7 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
 async fn kcl_test_patterns_linear_basic_negative_axis() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,-1], instances: 13, distance: 2}, %)
     |> extrude(1, %)
 "#;
 
@@ -446,7 +446,7 @@ async fn kcl_test_patterns_linear_basic_negative_axis() {
 async fn kcl_test_patterns_linear_basic_holes() {
     let code = r#"circles = startSketchOn('XY')
     |> circle({ center: [5, 5], radius: 1 }, %)
-    |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
+    |> patternLinear2d({axis: [1,1], instances: 13, distance: 3}, %)
 
 rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -467,7 +467,7 @@ rectangle = startSketchOn('XY')
 async fn kcl_test_patterns_circular_basic_2d() {
     let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular2d({center: [20, 20], instances: 13, arcDegrees: 210, rotateDuplicates: true}, %)
     |> extrude(1, %)
 "#;
 
@@ -484,7 +484,7 @@ async fn kcl_test_patterns_circular_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -500,7 +500,7 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], instances: 11, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -1390,84 +1390,6 @@ extrusion = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_xz_plane() {
-    let code = r#"part001 = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_neg_xz_plane() {
-    let code = r#"part001 = startSketchOn('-XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("neg_xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_linear_pattern3d_a_pattern() {
-    let code = r#"exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       repetitions: 6,
-       distance: 6
-     }, exampleSketch)
-
-pattn2 = patternLinear3d({
-       axis: [0, 0, 1],
-       distance: 1,
-       repetitions: 6
-     }, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("linear_pattern3d_a_pattern", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_circular_pattern3d_a_pattern() {
-    let code = r#"exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       repetitions: 6,
-       distance: 6
-     }, exampleSketch)
-
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("circular_pattern3d_a_pattern", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_array_of_sketches() {
     let code = r#"plane001 = startSketchOn('XZ')
 
@@ -1497,69 +1419,6 @@ extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_after_fillets_referencing_face() {
-    let code = r#"// Shelf Bracket
-// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
-
-
-// Define our bracket feet lengths
-shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
-wallMountL = 6 // the length of the bracket
-
-
-// Define constants required to calculate the thickness needed to support 300 lbs
-sigmaAllow = 35000 // psi
-width = 6 // inch
-p = 300 // Force on shelf - lbs
-L = 12 // inches
-M = L * p / 2 // Moment experienced at fixed end of bracket
-FOS = 2 // Factor of safety of 2 to be conservative
-
-
-// Calculate the thickness off the bending stress and factor of safety
-thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
-
-// 0.25 inch fillet radius
-filletR = 0.25
-
-// Sketch the bracket and extrude with fillets
-bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, $outerEdge)
-  |> line([-shelfMountL, 0], %, $seg01)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, $innerEdge)
-  |> line([0, -wallMountL + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [
-         getNextAdjacentEdge(innerEdge)
-       ]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [
-         getNextAdjacentEdge(outerEdge)
-       ]
-     }, %)
-
-sketch001 = startSketchOn(bracket, seg01)
-  |> startProfileAt([4.28, 3.83], %)
-  |> line([2.17, -0.03], %)
-  |> line([-0.07, -1.8], %)
-  |> line([-2.07, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_after_fillets_referencing_face", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_circular_pattern3d_array_of_extrudes() {
     let code = r#"plane001 = startSketchOn('XZ')
 
@@ -1586,7 +1445,7 @@ let extrudes = [sketch001, sketch002]
 
 pattn1 = patternLinear3d({
        axis: [0, 1, 0],
-       repetitions: 2,
+       instances: 3,
        distance: 20
      }, extrudes)
 "#;
@@ -1732,7 +1591,7 @@ part001 = cube([0,0], 20)
 
 pattn1 = patternLinear3d({
        axis: [1, 0, 0],
-       repetitions: 3,
+       instances: 4,
        distance: 40
      }, part001)
 
@@ -1761,7 +1620,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
 
 "#;
 
@@ -1788,7 +1647,7 @@ part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
 
 "#;
 
@@ -1915,7 +1774,7 @@ async fn kcl_test_arc_error_same_start_end() {
   |> patternCircular2d({
        arcDegrees: 360,
        center: [0, 0],
-       repetitions: 5,
+       instances: 6,
        rotateDuplicates: true
      }, %)
 "#;

@@ -28,6 +28,18 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         memory: *f.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
+    let unwrapped = new_array
+        .clone()
+        .into_iter()
+        .map(|k| match k {
+            KclValue::UserVal(user_val) => Ok(user_val.value),
+            _ => Err(()),
+        })
+        .collect::<Result<Vec<_>, _>>();
+    if let Ok(unwrapped) = unwrapped {
+        let uv = UserVal::new(vec![args.source_range.into()], unwrapped);
+        return Ok(KclValue::UserVal(uv));
+    }
     let uv = UserVal::new(vec![args.source_range.into()], new_array);
     Ok(KclValue::UserVal(uv))
 }
