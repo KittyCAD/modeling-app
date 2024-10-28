@@ -454,7 +454,7 @@ pub(crate) use impl_value_meta;
 pub enum BodyItem {
     ImportStatement(Box<ImportStatement>),
     ExpressionStatement(ExpressionStatement),
-    VariableDeclaration(VariableDeclaration),
+    VariableDeclaration(Box<VariableDeclaration>),
     ReturnStatement(ReturnStatement),
 }
 
@@ -494,7 +494,7 @@ impl From<&BodyItem> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-#[serde(untagged)]
+#[serde(tag = "type")]
 pub enum Expr {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
@@ -2719,7 +2719,7 @@ pub struct FunctionExpression {
 impl_value_meta!(FunctionExpression);
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RequiredParamAfterOptionalParam(pub Parameter);
+pub struct RequiredParamAfterOptionalParam(pub Box<Parameter>);
 
 impl std::fmt::Display for RequiredParamAfterOptionalParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -2751,7 +2751,7 @@ impl FunctionExpression {
             if param.optional {
                 found_optional = true;
             } else if found_optional {
-                return Err(RequiredParamAfterOptionalParam(param.clone()));
+                return Err(RequiredParamAfterOptionalParam(Box::new(param.clone())));
             }
         }
         let boundary = self.params.partition_point(|param| !param.optional);

@@ -13,6 +13,7 @@ expression: actual
       "end": 28,
       "expression": {
         "type": "CallExpression",
+        "type": "CallExpression",
         "start": 0,
         "end": 28,
         "callee": {
@@ -24,6 +25,7 @@ expression: actual
         "arguments": [
           {
             "type": "Literal",
+            "type": "Literal",
             "start": 4,
             "end": 5,
             "value": 5,
@@ -31,12 +33,14 @@ expression: actual
           },
           {
             "type": "Literal",
+            "type": "Literal",
             "start": 7,
             "end": 14,
             "value": "hello",
             "raw": "\"hello\""
           },
           {
+            "type": "Identifier",
             "type": "Identifier",
             "start": 16,
             "end": 27,

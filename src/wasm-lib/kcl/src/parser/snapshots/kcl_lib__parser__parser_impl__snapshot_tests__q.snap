@@ -24,10 +24,12 @@ expression: actual
           },
           "init": {
             "type": "ArrayExpression",
+            "type": "ArrayExpression",
             "start": 15,
             "end": 30,
             "elements": [
               {
+                "type": "MemberExpression",
                 "type": "MemberExpression",
                 "start": 17,
                 "end": 25,
@@ -49,6 +51,7 @@ expression: actual
                 "computed": false
               },
               {
+                "type": "Literal",
                 "type": "Literal",
                 "start": 27,
                 "end": 28,

@@ -24,9 +24,11 @@ expression: actual
           },
           "init": {
             "type": "ArrayRangeExpression",
+            "type": "ArrayRangeExpression",
             "start": 16,
             "end": 23,
             "startElement": {
+              "type": "Literal",
               "type": "Literal",
               "start": 17,
               "end": 18,
@@ -34,6 +36,7 @@ expression: actual
               "raw": "0"
             },
             "endElement": {
+              "type": "Literal",
               "type": "Literal",
               "start": 20,
               "end": 22,

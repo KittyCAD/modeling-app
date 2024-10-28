@@ -24,6 +24,7 @@ expression: actual
           },
           "init": {
             "type": "UnaryExpression",
+            "type": "UnaryExpression",
             "start": 11,
             "end": 17,
             "operator": "-",

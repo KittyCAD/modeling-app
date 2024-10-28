@@ -551,13 +551,13 @@ impl ArrayRangeExpression {
             .execute_expr(&self.start_element, exec_state, &metadata, StatementKind::Expression)
             .await?
             .get_json_value()?;
-        let start = parse_json_number_as_u64(&start, (&*self.start_element).into())?;
+        let start = parse_json_number_as_i64(&start, (&*self.start_element).into())?;
         let metadata = Metadata::from(&*self.end_element);
         let end = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, StatementKind::Expression)
             .await?
             .get_json_value()?;
-        let end = parse_json_number_as_u64(&end, (&*self.end_element).into())?;
+        let end = parse_json_number_as_i64(&end, (&*self.end_element).into())?;
 
         if end < start {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -603,9 +603,9 @@ impl ObjectExpression {
     }
 }
 
-pub fn parse_json_number_as_u64(j: &serde_json::Value, source_range: SourceRange) -> Result<u64, KclError> {
+fn parse_json_number_as_i64(j: &serde_json::Value, source_range: SourceRange) -> Result<i64, KclError> {
     if let serde_json::Value::Number(n) = &j {
-        n.as_u64().ok_or_else(|| {
+        n.as_i64().ok_or_else(|| {
             KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![source_range],
                 message: format!("Invalid integer: {}", j),

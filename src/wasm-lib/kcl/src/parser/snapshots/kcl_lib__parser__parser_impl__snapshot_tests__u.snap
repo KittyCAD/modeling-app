@@ -24,6 +24,7 @@ expression: actual
           },
           "init": {
             "type": "MemberExpression",
+            "type": "MemberExpression",
             "start": 13,
             "end": 34,
             "object": {

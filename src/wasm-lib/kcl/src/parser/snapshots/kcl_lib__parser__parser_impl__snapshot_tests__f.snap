@@ -24,6 +24,7 @@ expression: actual
           },
           "init": {
             "type": "Literal",
+            "type": "Literal",
             "start": 10,
             "end": 11,
             "value": 1,

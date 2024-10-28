@@ -47,6 +47,14 @@ export const commonPoints = {
   num2: 14.44,
 }
 
+/** A semi-reliable color to check the default XZ plane on
+ * in dark mode in the default camera position
+ */
+export const darkModePlaneColorXZ: [number, number, number] = [50, 50, 99]
+
+/** A semi-reliable color to check the default dark mode bg color against */
+export const darkModeBgColor: [number, number, number] = [27, 27, 27]
+
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
@@ -880,10 +888,20 @@ export async function setupElectron({
     const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
     const settingsOverrides = TOML.stringify(
       appSettings
-        ? { settings: appSettings }
-        : {
-            ...TEST_SETTINGS,
+        ? {
             settings: {
+              ...TEST_SETTINGS,
+              ...appSettings,
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+                ...appSettings.app,
+              },
+            },
+          }
+        : {
+            settings: {
+              ...TEST_SETTINGS,
               app: {
                 ...TEST_SETTINGS.app,
                 projectDirectory: projectDirName,

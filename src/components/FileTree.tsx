@@ -140,7 +140,14 @@ const FileTreeItem = ({
     async (eventType, path) => {
       // Don't try to read a file that was removed.
       if (isCurrentFile && eventType !== 'unlink') {
-        let code = await window.electron.readFile(path)
+        // Prevents a cyclic read / write causing editor problems such as
+        // misplaced cursor positions.
+        if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+          return
+        }
+
+        let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
       }
@@ -488,6 +495,12 @@ export const FileTreeInner = ({
   // Refresh the file tree when there are changes.
   useFileSystemWatcher(
     async (eventType, path) => {
+      // Our other watcher races with this watcher on the current file changes,
+      // so we need to stop this one from reacting at all, otherwise Bad Things
+      // Happen™.
+      const isCurrentFile = loaderData.file?.path === path
+      const hasChanged = eventType === 'change'
+      if (isCurrentFile && hasChanged) return
       fileSend({ type: 'Refresh' })
     },
     [loaderData?.project?.path, fileContext.selectedDirectory.path].filter(

@@ -13,6 +13,7 @@ expression: actual
       "end": 7,
       "expression": {
         "type": "BinaryExpression",
+        "type": "BinaryExpression",
         "start": 0,
         "end": 7,
         "operator": "+",

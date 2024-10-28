@@ -24,6 +24,7 @@ expression: actual
           },
           "init": {
             "type": "BinaryExpression",
+            "type": "BinaryExpression",
             "start": 8,
             "end": 14,
             "operator": "!=",

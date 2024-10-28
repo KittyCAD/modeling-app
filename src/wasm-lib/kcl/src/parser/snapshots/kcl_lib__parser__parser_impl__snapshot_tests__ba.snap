@@ -24,10 +24,12 @@ expression: actual
           },
           "init": {
             "type": "PipeExpression",
+            "type": "PipeExpression",
             "start": 19,
             "end": 132,
             "body": [
               {
+                "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 19,
                 "end": 38,
@@ -40,6 +42,7 @@ expression: actual
                 "arguments": [
                   {
                     "type": "Literal",
+                    "type": "Literal",
                     "start": 33,
                     "end": 37,
                     "value": "XY",
@@ -49,6 +52,7 @@ expression: actual
                 "optional": false
               },
               {
+                "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 115,
                 "end": 132,
@@ -60,6 +64,7 @@ expression: actual
                 },
                 "arguments": [
                   {
+                    "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
                     "start": 130,
                     "end": 131
