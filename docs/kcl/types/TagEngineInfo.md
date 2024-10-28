@@ -10,40 +10,6 @@ Engine information for a tag.
 
 
 
-**This schema accepts exactly one of the following:**
-
-The path the tag is on.
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `path` |[`Path`](/docs/kcl/types/Path)| Engine information for a tag. | No |
-
-
-----
-The surface information for the tag.
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `surface` |[`ExtrudeSurface`](/docs/kcl/types/ExtrudeSurface)| Engine information for a tag. | No |
-
-
-----
 
 
 ## Properties
@@ -52,5 +18,7 @@ The surface information for the tag.
 |----------|------|-------------|----------|
 | `id` |`string`| The id of the tagged object. | No |
 | `sketch` |`string`| The sketch the tag is on. | No |
+| `path` |[`Path`](/docs/kcl/types/Path)| The path the tag is on. | No |
+| `surface` |[`ExtrudeSurface`](/docs/kcl/types/ExtrudeSurface)| The surface information for the tag. | No |
 
 
