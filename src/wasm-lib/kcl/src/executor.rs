@@ -339,7 +339,7 @@ impl IdGenerator {
 pub enum KclValue {
     UserVal(UserVal),
     TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(crate::ast::types::Node<TagDeclarator>),
+    TagDeclarator(crate::ast::types::BoxNode<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
 
@@ -352,7 +352,7 @@ pub enum KclValue {
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
-        expression: crate::ast::types::Node<FunctionExpression>,
+        expression: crate::ast::types::BoxNode<FunctionExpression>,
         memory: Box<ProgramMemory>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
@@ -890,7 +890,7 @@ pub type MemoryFunction =
     fn(
         s: Vec<KclValue>,
         memory: ProgramMemory,
-        expression: crate::ast::types::Node<FunctionExpression>,
+        expression: crate::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
         ctx: ExecutorContext,

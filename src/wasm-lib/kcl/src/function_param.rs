@@ -13,7 +13,7 @@ use crate::{
 pub struct FunctionParam<'a> {
     pub inner: Option<&'a MemoryFunction>,
     pub memory: ProgramMemory,
-    pub fn_expr: crate::ast::types::Node<FunctionExpression>,
+    pub fn_expr: crate::ast::types::BoxNode<FunctionExpression>,
     pub meta: Vec<Metadata>,
     pub ctx: ExecutorContext,
 }

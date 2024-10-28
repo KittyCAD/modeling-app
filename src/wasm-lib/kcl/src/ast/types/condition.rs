@@ -1,8 +1,8 @@
 use crate::executor::SourceRange;
 
+use super::BoxNode;
 use super::ConstraintLevel;
 use super::Hover;
-use super::Node;
 use super::NodeList;
 use super::UnboxedNode;
 use super::{Digest, Expr};
@@ -21,9 +21,9 @@ type IfBlock = crate::ast::types::Program;
 #[serde(tag = "type")]
 pub struct IfExpression {
     pub cond: Box<Expr>,
-    pub then_val: Node<IfBlock>,
+    pub then_val: BoxNode<IfBlock>,
     pub else_ifs: NodeList<ElseIf>,
-    pub final_else: Node<IfBlock>,
+    pub final_else: BoxNode<IfBlock>,
 
     pub digest: Option<Digest>,
 }
@@ -34,7 +34,7 @@ pub struct IfExpression {
 #[serde(tag = "type")]
 pub struct ElseIf {
     pub cond: Expr,
-    pub then_val: Node<IfBlock>,
+    pub then_val: BoxNode<IfBlock>,
 
     pub digest: Option<Digest>,
 }

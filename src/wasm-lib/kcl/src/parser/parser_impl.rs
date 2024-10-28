@@ -10,12 +10,12 @@ use winnow::{
 
 use crate::{
     ast::types::{
-        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier,
-        IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier, LiteralValue,
-        MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
-        Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression,
-        UnaryOperator, UnboxedNode, VariableDeclaration, VariableDeclarator, VariableKind,
+        ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
+        CallExpression, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression,
+        Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier,
+        LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        UnaryExpression, UnaryOperator, UnboxedNode, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -740,7 +740,7 @@ fn else_if(i: TokenSlice) -> PResult<UnboxedNode<ElseIf>> {
     ))
 }
 
-fn if_expr(i: TokenSlice) -> PResult<Node<IfExpression>> {
+fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
     let start = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
@@ -1155,7 +1155,7 @@ pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
     ))
 }
 
-fn import_stmt(i: TokenSlice) -> PResult<Node<ImportStatement>> {
+fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     let import_token = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
@@ -1376,7 +1376,7 @@ fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
 }
 
 /// Parse a variable/constant declaration.
-fn declaration(i: TokenSlice) -> PResult<Node<VariableDeclaration>> {
+fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
         .parse_next(i)?
         .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));

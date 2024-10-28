@@ -68,7 +68,7 @@ impl<T> UnboxedNode<T> {
         }
     }
 
-    pub fn boxed(inner: T, start: usize, end: usize) -> Node<T> {
+    pub fn boxed(inner: T, start: usize, end: usize) -> BoxNode<T> {
         Box::new(UnboxedNode { inner, start, end })
     }
 
@@ -109,13 +109,13 @@ impl<T> From<&UnboxedNode<T>> for crate::executor::SourceRange {
     }
 }
 
-impl<T> From<&Node<T>> for crate::executor::SourceRange {
-    fn from(v: &Node<T>) -> Self {
+impl<T> From<&BoxNode<T>> for crate::executor::SourceRange {
+    fn from(v: &BoxNode<T>) -> Self {
         Self([v.start, v.end])
     }
 }
 
-pub type Node<T> = Box<UnboxedNode<T>>;
+pub type BoxNode<T> = Box<UnboxedNode<T>>;
 pub type NodeList<T> = Vec<UnboxedNode<T>>;
 pub type NodeRef<'a, T> = &'a UnboxedNode<T>;
 
@@ -487,9 +487,9 @@ impl Program {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
-    ImportStatement(Node<ImportStatement>),
+    ImportStatement(BoxNode<ImportStatement>),
     ExpressionStatement(UnboxedNode<ExpressionStatement>),
-    VariableDeclaration(Node<VariableDeclaration>),
+    VariableDeclaration(BoxNode<VariableDeclaration>),
     ReturnStatement(UnboxedNode<ReturnStatement>),
 }
 
@@ -532,19 +532,19 @@ impl From<&BodyItem> for SourceRange {
 #[serde(tag = "type")]
 pub enum Expr {
     Literal(UnboxedNode<Literal>),
-    Identifier(Node<Identifier>),
-    TagDeclarator(Node<TagDeclarator>),
-    BinaryExpression(Node<BinaryExpression>),
-    FunctionExpression(Node<FunctionExpression>),
-    CallExpression(Node<CallExpression>),
-    PipeExpression(Node<PipeExpression>),
-    PipeSubstitution(Node<PipeSubstitution>),
-    ArrayExpression(Node<ArrayExpression>),
-    ArrayRangeExpression(Node<ArrayRangeExpression>),
-    ObjectExpression(Node<ObjectExpression>),
-    MemberExpression(Node<MemberExpression>),
-    UnaryExpression(Node<UnaryExpression>),
-    IfExpression(Node<IfExpression>),
+    Identifier(BoxNode<Identifier>),
+    TagDeclarator(BoxNode<TagDeclarator>),
+    BinaryExpression(BoxNode<BinaryExpression>),
+    FunctionExpression(BoxNode<FunctionExpression>),
+    CallExpression(BoxNode<CallExpression>),
+    PipeExpression(BoxNode<PipeExpression>),
+    PipeSubstitution(BoxNode<PipeSubstitution>),
+    ArrayExpression(BoxNode<ArrayExpression>),
+    ArrayRangeExpression(BoxNode<ArrayRangeExpression>),
+    ObjectExpression(BoxNode<ObjectExpression>),
+    MemberExpression(BoxNode<MemberExpression>),
+    UnaryExpression(BoxNode<UnaryExpression>),
+    IfExpression(BoxNode<IfExpression>),
     None(KclNone),
 }
 
@@ -751,12 +751,12 @@ impl From<&Expr> for SourceRange {
 #[serde(tag = "type")]
 pub enum BinaryPart {
     Literal(UnboxedNode<Literal>),
-    Identifier(Node<Identifier>),
-    BinaryExpression(Node<BinaryExpression>),
-    CallExpression(Node<CallExpression>),
-    UnaryExpression(Node<UnaryExpression>),
-    MemberExpression(Node<MemberExpression>),
-    IfExpression(Node<IfExpression>),
+    Identifier(BoxNode<Identifier>),
+    BinaryExpression(BoxNode<BinaryExpression>),
+    CallExpression(BoxNode<CallExpression>),
+    UnaryExpression(BoxNode<UnaryExpression>),
+    MemberExpression(BoxNode<MemberExpression>),
+    IfExpression(BoxNode<IfExpression>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -1719,8 +1719,8 @@ pub struct TagDeclarator {
 }
 pub type TagNode = UnboxedNode<TagDeclarator>;
 
-impl From<&Node<TagDeclarator>> for KclValue {
-    fn from(tag: &Node<TagDeclarator>) -> Self {
+impl From<&BoxNode<TagDeclarator>> for KclValue {
+    fn from(tag: &BoxNode<TagDeclarator>) -> Self {
         KclValue::TagDeclarator(tag.clone())
     }
 }
@@ -2093,8 +2093,8 @@ impl ObjectProperty {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
-    MemberExpression(Node<MemberExpression>),
-    Identifier(Node<Identifier>),
+    MemberExpression(BoxNode<MemberExpression>),
+    Identifier(BoxNode<Identifier>),
 }
 
 impl MemberObject {
@@ -2140,8 +2140,8 @@ impl From<&MemberObject> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
-    Identifier(Node<Identifier>),
-    Literal(Node<Literal>),
+    Identifier(BoxNode<Identifier>),
+    Literal(BoxNode<Literal>),
 }
 
 impl LiteralIdentifier {

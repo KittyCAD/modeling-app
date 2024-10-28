@@ -82,7 +82,9 @@ impl Serialize for Box<dyn KclStdLibFn> {
 /// Parse a KCL program. Expect it to have a single body item, which is a function.
 /// Return the program and its single function.
 /// Return None if those expectations aren't met.
-pub fn extract_function(source: &str) -> Option<(UnboxedNode<Program>, crate::ast::types::Node<FunctionExpression>)> {
+pub fn extract_function(
+    source: &str,
+) -> Option<(UnboxedNode<Program>, crate::ast::types::BoxNode<FunctionExpression>)> {
     let tokens = lexer(source).unwrap();
     let src = crate::parser::Parser::new(tokens).ast().ok()?;
     assert_eq!(src.body.len(), 1);
