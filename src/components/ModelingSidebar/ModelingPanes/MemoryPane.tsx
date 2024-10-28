@@ -99,7 +99,7 @@ export const processMemory = (programMemory: ProgramMemory) => {
           return rest
         })
       } else if (!err(sg)) {
-        processedMemory[key] = sg.value.map(({ __geoMeta, ...rest }: Path) => {
+        processedMemory[key] = sg.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })
       } else {
