@@ -73,7 +73,7 @@ export type InteractionMapEvents =
     }
   | {
       type: 'xstate.error.actor.resolveHotkeyByPrefix'
-      data: string | undefined
+      error: string | undefined
     }
   | {
       type: 'xstate.done.actor.executeKeymapAction'
@@ -94,10 +94,11 @@ export const interactionMapMachine = setup({
         if (event.type !== 'xstate.error.actor.resolveHotkeyByPrefix') {
           return context.currentSequence
         }
-        const newSequence = event.data
+        const newSequenceStep = event.error
+        const newSequence = newSequenceStep
           ? context.currentSequence
-            ? context.currentSequence.concat(' ', event.data)
-            : event.data
+            ? context.currentSequence.concat(' ', newSequenceStep)
+            : newSequenceStep
           : context.currentSequence
 
         console.log('newSequence', newSequence)
@@ -250,7 +251,7 @@ export const interactionMapMachine = setup({
     'There are prefix matches': ({ event }) => {
       return (
         event.type === 'xstate.error.actor.resolveHotkeyByPrefix' &&
-        event.data !== undefined
+        event.error !== undefined
       )
     },
   },
