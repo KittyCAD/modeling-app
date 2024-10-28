@@ -3,6 +3,7 @@ import { test, expect } from './fixtures/fixtureSetup'
 import * as fsp from 'fs/promises'
 import * as fs from 'fs'
 import {
+  createProject,
   executorInputPath,
   getUtils,
   setup,
@@ -114,20 +115,15 @@ test.describe('when using the file tree to', () => {
     async ({ browser: _, tronApp }, testInfo) => {
       await tronApp.initialise()
 
-      const {
-        panesOpen,
-        createAndSelectProject,
-        pasteCodeInEditor,
-        renameFile,
-        editorTextMatches,
-      } = await getUtils(tronApp.page, test)
+      const { panesOpen, pasteCodeInEditor, renameFile, editorTextMatches } =
+        await getUtils(tronApp.page, test)
 
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
 
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
@@ -167,15 +163,14 @@ test.describe('when using the file tree to', () => {
     async ({ browser: _, tronApp }, testInfo) => {
       await tronApp.initialise()
 
-      const { panesOpen, createAndSelectProject, createNewFile } =
-        await getUtils(tronApp.page, test)
+      const { panesOpen, createNewFile } = await getUtils(tronApp.page, test)
 
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files'])
 
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
 
       await createNewFile('')
       await createNewFile('')
@@ -204,7 +199,6 @@ test.describe('when using the file tree to', () => {
       const {
         openKclCodePanel,
         openFilePanel,
-        createAndSelectProject,
         pasteCodeInEditor,
         createNewFileAndSelect,
         renameFile,
@@ -215,7 +209,7 @@ test.describe('when using the file tree to', () => {
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
 
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
       await openKclCodePanel()
       await openFilePanel()
       // File the main.kcl with contents
@@ -263,20 +257,15 @@ test.describe('when using the file tree to', () => {
     async ({ browser: _, tronApp }, testInfo) => {
       await tronApp.initialise()
 
-      const {
-        panesOpen,
-        createAndSelectProject,
-        pasteCodeInEditor,
-        deleteFile,
-        editorTextMatches,
-      } = await getUtils(tronApp.page, _test)
+      const { panesOpen, pasteCodeInEditor, deleteFile, editorTextMatches } =
+        await getUtils(tronApp.page, _test)
 
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/cube.kcl',
@@ -306,7 +295,6 @@ test.describe('when using the file tree to', () => {
 
       const {
         panesOpen,
-        createAndSelectProject,
         pasteCodeInEditor,
         createNewFile,
         openDebugPanel,
@@ -318,7 +306,7 @@ test.describe('when using the file tree to', () => {
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
 
       // Create a small file
       const kclCube = await fsp.readFile(
@@ -722,7 +710,7 @@ _test.describe('Renaming in the file tree', () => {
       })
 
       await _test.step('Rename the folder', async () => {
-        await page.waitForTimeout(60000)
+        await page.waitForTimeout(1000)
         await folderToRename.click({ button: 'right' })
         await _expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
