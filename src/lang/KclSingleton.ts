@@ -41,8 +41,6 @@ export class KclManager {
     nonCodeMeta: {
       nonCodeNodes: {},
       startNodes: [],
-      start: 0,
-      end: 0,
     },
   }
   private _execState: ExecState = emptyExecState()
@@ -209,8 +207,6 @@ export class KclManager {
       nonCodeMeta: {
         nonCodeNodes: {},
         startNodes: [],
-        start: 0,
-        end: 0,
       },
     }
   }

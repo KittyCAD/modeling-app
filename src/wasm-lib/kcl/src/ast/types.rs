@@ -127,7 +127,7 @@ pub type NodeRef<'a, T> = &'a UnboxedNode<T>;
 pub struct Program {
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
-    pub non_code_meta: UnboxedNode<NonCodeMeta>,
+    pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1847,7 +1847,7 @@ impl From<UnboxedNode<PipeSubstitution>> for Expr {
 pub struct ArrayExpression {
     pub elements: Vec<Expr>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
-    pub non_code_meta: UnboxedNode<NonCodeMeta>,
+    pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1984,7 +1984,7 @@ impl ArrayRangeExpression {
 pub struct ObjectExpression {
     pub properties: NodeList<ObjectProperty>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
-    pub non_code_meta: UnboxedNode<NonCodeMeta>,
+    pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -2492,7 +2492,7 @@ pub struct PipeExpression {
     // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Expr>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
-    pub non_code_meta: UnboxedNode<NonCodeMeta>,
+    pub non_code_meta: NonCodeMeta,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
