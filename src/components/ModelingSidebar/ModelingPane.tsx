@@ -19,11 +19,12 @@ export interface ModelingPaneProps {
 }
 
 export const ModelingPaneHeader = ({
+  id,
   icon,
   title,
   Menu,
   onClose,
-}: Pick<ModelingPaneProps, 'icon' | 'title' | 'Menu' | 'onClose'>) => {
+}: Pick<ModelingPaneProps, 'id' | 'icon' | 'title' | 'Menu' | 'onClose'>) => {
   return (
     <div className={styles.header}>
       <div className="flex gap-2 items-center flex-1">
@@ -36,7 +37,7 @@ export const ModelingPaneHeader = ({
             bgClassName="!bg-transparent"
           />
         )}
-        <span>{title}</span>
+        <span data-testid={id + '-header'}>{title}</span>
       </div>
       {Menu instanceof Function ? <Menu /> : Menu}
       <ActionButton
@@ -88,6 +89,7 @@ export const ModelingPane = ({
       }
     >
       <ModelingPaneHeader
+        id={id}
         icon={icon}
         title={title}
         Menu={Menu}

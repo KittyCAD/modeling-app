@@ -39,6 +39,7 @@ interface PaneCallbackProps {
 export type SidebarPane = {
   id: SidebarType
   title: ReactNode
+  sidebarName?: string
   icon: CustomIconName | IconDefinition
   keybinding: string
   Content: ReactNode | React.FC
@@ -79,6 +80,7 @@ export const sidebarPanes: SidebarPane[] = [
   {
     id: 'files',
     title: <FileTreeRoot />,
+    sidebarName: 'Project Files',
     icon: 'folder',
     Content: FileTreeInner,
     keybinding: 'Shift + F',

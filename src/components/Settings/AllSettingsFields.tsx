@@ -15,7 +15,10 @@ import { SettingsFieldInput } from './SettingsFieldInput'
 import toast from 'react-hot-toast'
 import { APP_VERSION } from 'routes/Settings'
 import { PATHS } from 'lib/paths'
-import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/desktopFS'
+import {
+  createAndOpenNewTutorialProject,
+  getSettingsFolderPaths,
+} from 'lib/desktopFS'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
@@ -79,7 +82,7 @@ export const AllSettingsFields = forwardRef(
           } else {
             // If we're in the global settings, create a new project and navigate
             // to the onboarding start in that project
-            await createAndOpenNewProject({ onProjectOpen, navigate })
+            await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
           }
         }
       }

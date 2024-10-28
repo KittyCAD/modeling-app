@@ -272,6 +272,7 @@ interface ModelingPaneButtonProps
   paneConfig: {
     id: string
     title: ReactNode
+    sidebarName?: string
     icon: CustomIconName | IconDefinition
     keybinding: string
     iconClassName?: string
@@ -300,7 +301,10 @@ function ModelingPaneButton({
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
-        name={typeof paneConfig.title === 'string' ? paneConfig.title : ''}
+        name={
+          paneConfig.sidebarName ??
+          (typeof paneConfig.title === 'string' ? paneConfig.title : '')
+        }
         data-testid={paneConfig.id + '-pane-button'}
         disabled={disabledText !== undefined}
         aria-disabled={disabledText !== undefined}
@@ -316,7 +320,7 @@ function ModelingPaneButton({
           }
         />
         <span className="sr-only">
-          {paneConfig.title}
+          {paneConfig.sidebarName ?? paneConfig.title}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
         <Tooltip
@@ -325,7 +329,7 @@ function ModelingPaneButton({
           hoverOnly
         >
           <span className="flex-1">
-            {paneConfig.title}
+            {paneConfig.sidebarName ?? paneConfig.title}
             {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
