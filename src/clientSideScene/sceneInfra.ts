@@ -30,6 +30,7 @@ import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
 import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { orthoScale, perspScale } from './helpers'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -49,6 +50,8 @@ export const RAYCASTABLE_PLANE = 'raycastable-plane'
 
 export const X_AXIS = 'xAxis'
 export const Y_AXIS = 'yAxis'
+/** the THREEjs representation of a "snapped" point that is not yet placed */
+export const DRAFT_POINT = 'draft-point'
 export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
@@ -60,6 +63,11 @@ export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
   dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
+  /** The intersection of the mouse with the THREEjs raycast plane */
+  intersectionPoint?: {
+    twoD?: Vector2
+    threeD?: Vector3
+  }
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
@@ -348,6 +356,15 @@ export class SceneInfra {
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
+  getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
+    const orthoFactor = orthoScale(this.camControls.camera)
+    const factor =
+      (this.camControls.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(this.camControls.camera, meshOrGroup)) /
+      this._baseUnitMultiplier
+    return factor
+  }
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
@@ -447,18 +464,26 @@ export class SceneInfra {
 
     if (intersects[0]) {
       const firstIntersectObject = intersects[0].object
+      const planeIntersectPoint = this.getPlaneIntersectPoint()
+      const intersectionPoint = {
+        twoD: planeIntersectPoint?.twoD,
+        threeD: planeIntersectPoint?.threeD,
+      }
+
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
         await this.onMouseLeave({
           selected: hoveredObj,
           mouseEvent: mouseEvent,
+          intersectionPoint,
         })
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
+          intersectionPoint,
         })
         if (!this.selected)
           this.updateMouseState({

@@ -19,6 +19,7 @@ import {
 import {
   ARROWHEAD,
   AXIS_GROUP,
+  DRAFT_POINT,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
   OnClickCallbackArgs,
@@ -313,6 +314,43 @@ export class SceneEntities {
     const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
     if (intersectionPlane) this.scene.remove(intersectionPlane)
   }
+  getDraftPoint() {
+    return this.scene.getObjectByName(DRAFT_POINT)
+  }
+  createDraftPoint({
+    point,
+    up,
+    forward,
+  }: {
+    point: Vector2
+    up: Vec3Array
+    forward: Vec3Array
+  }) {
+    const dummy = new Mesh()
+    dummy.position.set(0, 0, 0)
+    const scale = sceneInfra.getClientSceneScaleFactor(dummy)
+
+    const draftPoint = createProfileStartHandle({
+      isDraft: true,
+      from: [point.x, point.y],
+      scale,
+      theme: sceneInfra._theme,
+    })
+    if (!this.currentSketchQuaternion) {
+      this.currentSketchQuaternion = quaternionFromUpNForward(
+        new Vector3(...up),
+        new Vector3(...forward)
+      )
+    }
+    draftPoint.setRotationFromQuaternion(this.currentSketchQuaternion)
+    draftPoint.name = DRAFT_POINT
+    draftPoint.layers.set(SKETCH_LAYER)
+    sceneInfra.scene.add(draftPoint)
+  }
+  removeDraftPoint() {
+    const draftPoint = this.getDraftPoint()
+    if (draftPoint) this.scene.remove(draftPoint)
+  }
 
   setupNoPointsListener({
     sketchDetails,
@@ -336,7 +374,41 @@ export class SceneEntities {
       )
     }
     sceneInfra.setCallbacks({
+      onMove: (args) => {
+        if (!args.intersects.length) return
+        const axisIntersection = args.intersects.find(
+          (sceneObject) =>
+            sceneObject.object.name === X_AXIS ||
+            sceneObject.object.name === Y_AXIS
+        )
+        if (!axisIntersection) return
+        const { intersectionPoint } = args
+        // We're hovering over an axis, so we should show a draft point
+        const snappedPoint = intersectionPoint.twoD.clone()
+        console.log('axisIntersection name', axisIntersection.object.name)
+        if (axisIntersection.object.name === X_AXIS) {
+          snappedPoint.setComponent(1, 0)
+        } else {
+          snappedPoint.setComponent(0, 0)
+        }
+        // Either create a new one or update the existing one
+        const draftPoint = this.getDraftPoint()
+        console.log('snappedPoint', snappedPoint)
+        if (!draftPoint) {
+          this.createDraftPoint({
+            point: snappedPoint,
+            up: sketchDetails.yAxis,
+            forward: sketchDetails.zAxis,
+          })
+        } else {
+          draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
+        }
+      },
+      onMouseLeave: () => {
+        this.removeDraftPoint()
+      },
       onClick: async (args) => {
+        this.removeDraftPoint()
         if (!args) return
         // If there is a valid camera interaction that matches, do that instead
         const interaction = sceneInfra.camControls.getInteractionType(
@@ -429,12 +501,7 @@ export class SceneEntities {
     const dummy = new Mesh()
     // TODO: When we actually have sketch positions and rotations we can use them here.
     dummy.position.set(0, 0, 0)
-    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-    const factor =
-      (sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(sceneInfra.camControls.camera, dummy)) /
-      sceneInfra._baseUnitMultiplier
+    const scale = sceneInfra.getClientSceneScaleFactor(dummy)
 
     const segPathToNode = getNodePathFromSourceRange(
       maybeModdedAst,
@@ -445,7 +512,7 @@ export class SceneEntities {
         from: sketch.start.from,
         id: sketch.start.__geoMeta.id,
         pathToNode: segPathToNode,
-        scale: factor,
+        scale,
         theme: sceneInfra._theme,
       })
       _profileStart.layers.set(SKETCH_LAYER)
@@ -522,7 +589,7 @@ export class SceneEntities {
         id: segment.__geoMeta.id,
         pathToNode: segPathToNode,
         isDraftSegment,
-        scale: factor,
+        scale,
         texture: sceneInfra.extraSegmentTexture,
         theme: sceneInfra._theme,
         isSelected,

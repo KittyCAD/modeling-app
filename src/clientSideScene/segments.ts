@@ -649,19 +649,20 @@ class CircleSegment implements SegmentUtils {
 
 export function createProfileStartHandle({
   from,
-  id,
-  pathToNode,
+  isDraft,
   scale = 1,
   theme,
   isSelected,
+  ...rest
 }: {
   from: Coords2d
-  id: string
-  pathToNode: PathToNode
   scale?: number
   theme: Themes
   isSelected?: boolean
-}) {
+} & (
+  | { isDraft: true }
+  | { isDraft?: false; id: string; pathToNode: PathToNode }
+)) {
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
@@ -674,11 +675,10 @@ export function createProfileStartHandle({
 
   group.userData = {
     type: PROFILE_START,
-    id,
     from,
-    pathToNode,
     isSelected,
     baseColor,
+    ...rest,
   }
   group.name = PROFILE_START
   group.position.set(from[0], from[1], 0)
