@@ -206,7 +206,7 @@ async fn call_reduce_closure<'a>(
 #[stdlib {
     name = "push",
 }]
-async fn inner_push<'a>(array: Vec<KclValue>, elem: KclValue, args: &'a Args) -> Result<KclValue, KclError> {
+async fn inner_push(array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
     // Unwrap the KclValues to JValues for manipulation
     let mut unwrapped_array = array
         .into_iter()
