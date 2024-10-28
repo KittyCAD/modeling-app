@@ -35,14 +35,14 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 }]
 fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
         })
     })?;
 
-    Ok(path.to[0])
+    Ok(path.get_base().to[0])
 }
 
 /// Returns the segment end of y.
@@ -72,14 +72,14 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 }]
 fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
         })
     })?;
 
-    Ok(path.to[1])
+    Ok(path.get_to()[1])
 }
 
 /// Returns the last segment of x.
@@ -195,14 +195,14 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 }]
 fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
         })
     })?;
 
-    let result = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let result = path.length();
 
     Ok(result)
 }
@@ -235,14 +235,14 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 }]
 fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
         })
     })?;
 
-    let result = between(path.from.into(), path.to.into());
+    let result = between(path.get_from().into(), path.get_to().into());
 
     Ok(result.to_degrees())
 }
@@ -279,14 +279,14 @@ fn inner_angle_to_match_length_x(
     args: Args,
 ) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
         })
     })?;
 
-    let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let length = path.length();
 
     let last_line = sketch
         .paths
@@ -343,14 +343,14 @@ fn inner_angle_to_match_length_y(
     args: Args,
 ) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
         })
     })?;
 
-    let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let length = path.length();
 
     let last_line = sketch
         .paths

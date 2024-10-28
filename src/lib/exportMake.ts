@@ -1,5 +1,5 @@
 import { deserialize_files } from 'wasm-lib/pkg/wasm_lib'
-import { machineManager } from './machineManager'
+import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'
 import ModelingAppFile from './modelingAppFile'
@@ -9,7 +9,8 @@ import { MAKE_TOAST_MESSAGES } from './constants'
 export async function exportMake(
   data: ArrayBuffer,
   name: string,
-  toastId: string
+  toastId: string,
+  machineManager: MachineManager
 ): Promise<Response | null> {
   if (name === '') {
     console.error(MAKE_TOAST_MESSAGES.NO_NAME)
@@ -17,7 +18,7 @@ export async function exportMake(
     return null
   }
 
-  if (machineManager.machineCount() === 0) {
+  if (machineManager.machines.length === 0) {
     console.error(MAKE_TOAST_MESSAGES.NO_MACHINES)
     toast.error(MAKE_TOAST_MESSAGES.NO_MACHINES, { id: toastId })
     return null

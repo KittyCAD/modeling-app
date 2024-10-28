@@ -140,6 +140,13 @@ const FileTreeItem = ({
     async (eventType, path) => {
       // Don't try to read a file that was removed.
       if (isCurrentFile && eventType !== 'unlink') {
+        // Prevents a cyclic read / write causing editor problems such as
+        // misplaced cursor positions.
+        if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+          return
+        }
+
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)

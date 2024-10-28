@@ -996,7 +996,7 @@
     },
     "description": "",
     "title": "machine-api",
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "openapi": "3.0.3",
   "paths": {

@@ -118,7 +118,7 @@ impl Args {
         'e: 'a,
     {
         if let Some(info) = &tag.info {
-            if info.surface.is_some() {
+            if info.surface().is_some() {
                 return Ok(info);
             }
         }
@@ -387,7 +387,7 @@ impl Args {
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
-        let surface = engine_info.surface.as_ref().ok_or_else(|| {
+        let surface = engine_info.surface().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Tag `{}` does not have a surface", tag.value),
                 source_ranges: vec![self.source_range],

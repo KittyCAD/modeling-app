@@ -28,6 +28,7 @@ import {
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1415,6 +1416,9 @@ export class EngineCommandManager extends EventTarget {
     (() => {}) as any
   kclManager: null | KclManager = null
 
+  // The current "manufacturing machine" aka 3D printer, CNC, etc.
+  public machineManager: MachineManager | null = null
+
   set exportInfo(info: ExportInfo | null) {
     this._exportInfo = info
   }
@@ -1630,10 +1634,16 @@ export class EngineCommandManager extends EventTarget {
               break
             }
             case ExportIntent.Make: {
+              if (!this.machineManager) {
+                console.warn('Some how, no manufacturing machine is selected.')
+                break
+              }
+
               exportMake(
                 event.data,
                 this.exportInfo.name,
-                this.pendingExport.toastId
+                this.pendingExport.toastId,
+                this.machineManager
               ).then((result) => {
                 if (result) {
                   this.pendingExport?.resolve(null)
