@@ -813,7 +813,7 @@ async fn inner_angled_line_that_intersects(
 
     let from = sketch.current_pen_position()?;
     let to = intersection_with_parallel_line(
-        &[path.from.into(), path.to.into()],
+        &[path.get_from().into(), path.get_to().into()],
         data.offset.unwrap_or_default(),
         data.angle,
         from,
@@ -1244,7 +1244,9 @@ pub(crate) async fn inner_start_profile_at(
             tag_identifier.info = Some(TagEngineInfo {
                 id: current_path.geo_meta.id,
                 sketch: path_id,
-                path: Some(current_path.clone()),
+                path: Some(Path::Base {
+                    base: current_path.clone(),
+                }),
                 surface: None,
             });
             HashMap::from([(tag.name.to_string(), tag_identifier)])
@@ -1528,7 +1530,7 @@ pub(crate) async fn inner_arc(
     )
     .await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::Arc {
         base: BasePath {
             from: from.into(),
             to: end.into(),
@@ -1538,6 +1540,8 @@ pub(crate) async fn inner_arc(
                 metadata: args.source_range.into(),
             },
         },
+        center: center.into(),
+        radius,
     };
 
     let mut new_sketch = sketch.clone();
