@@ -21,6 +21,7 @@ import { WasmErrBanner } from 'components/WasmErrBanner'
 import { CommandBar } from 'components/CommandBar/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
+import { MachineManagerProvider } from 'components/MachineManagerProvider'
 import { PATHS } from 'lib/paths'
 import {
   fileLoader,
@@ -50,6 +51,7 @@ const router = createRouter([
   {
     loader: settingsLoader,
     id: PATHS.INDEX,
+    // TODO: Re-evaluate if this is true
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
@@ -59,7 +61,9 @@ const router = createRouter([
             <ProjectsContextProvider>
               <KclContextProvider>
                 <AppStateProvider>
-                  <Outlet />
+                  <MachineManagerProvider>
+                    <Outlet />
+                  </MachineManagerProvider>
                 </AppStateProvider>
               </KclContextProvider>
             </ProjectsContextProvider>
