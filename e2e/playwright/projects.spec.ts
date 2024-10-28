@@ -927,7 +927,9 @@ test(
 
     await test.step('Check we can still create a project', async () => {
       await createProject({ name: 'project-000', page, returnHome: true })
-      await expect(page.getByText('project-000')).toBeVisible()
+      await expect(
+        page.getByTestId('project-link').filter({ hasText: 'project-000' })
+      ).toBeVisible()
     })
 
     await electronApp.close()
