@@ -13,8 +13,8 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  CUT_RELEASE_PR: true
+  BUILD_RELEASE: true
   NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
 
 concurrency:
