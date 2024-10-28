@@ -4,7 +4,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
-import { createAndOpenNewProject } from 'lib/desktopFS'
+import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
@@ -116,9 +116,10 @@ export function HelpMenu(props: React.PropsWithChildren) {
             if (isInProject) {
               navigate(filePath + PATHS.ONBOARDING.INDEX)
             } else {
-              createAndOpenNewProject({ onProjectOpen, navigate }).catch(
-                reportRejection
-              )
+              createAndOpenNewTutorialProject({
+                onProjectOpen,
+                navigate,
+              }).catch(reportRejection)
             }
           }}
         >

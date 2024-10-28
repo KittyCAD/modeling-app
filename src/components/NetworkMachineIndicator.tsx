@@ -1,7 +1,9 @@
 import { Popover } from '@headlessui/react'
+import { useContext } from 'react'
 import Tooltip from './Tooltip'
-import { machineManager } from 'lib/machineManager'
 import { isDesktop } from 'lib/isDesktop'
+import { components } from 'lib/machine-api'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { CustomIcon } from './CustomIcon'
 
 export const NetworkMachineIndicator = ({
@@ -9,9 +11,12 @@ export const NetworkMachineIndicator = ({
 }: {
   className?: string
 }) => {
-  const machineCount = machineManager.machineCount()
-  const reason = machineManager.noMachinesReason()
-  const machines = machineManager.machines
+  const {
+    noMachinesReason,
+    machines,
+    machines: { length: machineCount },
+  } = useContext(MachineManagerContext)
+  const reason = noMachinesReason()
 
   return isDesktop() ? (
     <Popover className="relative">
@@ -47,34 +52,36 @@ export const NetworkMachineIndicator = ({
         </div>
         {machineCount > 0 && (
           <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
-            {machines.map((machine) => {
-              return (
-                <li key={machine.id} className={'px-2 py-4 gap-1 last:mb-0 '}>
-                  <p className="">{machine.id.toUpperCase()}</p>
-                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                    {machine.make_model.model}
-                  </p>
-                  {machine.extra &&
-                    machine.extra.type === 'bambu' &&
-                    machine.extra.nozzle_diameter && (
-                      <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                        Nozzle Diameter: {machine.extra.nozzle_diameter}
-                      </p>
-                    )}
-                  <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                    {`Status: ${machine.state.state
-                      .charAt(0)
-                      .toUpperCase()}${machine.state.state.slice(1)}`}
-                    {machine.state.state === 'failed' && machine.state.message
-                      ? ` (${machine.state.message})`
-                      : ''}
-                    {machine.state.state === 'running' && machine.progress
-                      ? ` (${Math.round(machine.progress)}%)`
-                      : ''}
-                  </p>
-                </li>
-              )
-            })}
+            {machines.map(
+              (machine: components['schemas']['MachineInfoResponse']) => {
+                return (
+                  <li key={machine.id} className={'px-2 py-4 gap-1 last:mb-0 '}>
+                    <p className="">{machine.id.toUpperCase()}</p>
+                    <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                      {machine.make_model.model}
+                    </p>
+                    {machine.extra &&
+                      machine.extra.type === 'bambu' &&
+                      machine.extra.nozzle_diameter && (
+                        <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                          Nozzle Diameter: {machine.extra.nozzle_diameter}
+                        </p>
+                      )}
+                    <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
+                      {`Status: ${machine.state.state
+                        .charAt(0)
+                        .toUpperCase()}${machine.state.state.slice(1)}`}
+                      {machine.state.state === 'failed' && machine.state.message
+                        ? ` (${machine.state.message})`
+                        : ''}
+                      {machine.state.state === 'running' && machine.progress
+                        ? ` (${Math.round(machine.progress)}%)`
+                        : ''}
+                    </p>
+                  </li>
+                )
+              }
+            )}
           </ul>
         )}
       </Popover.Panel>

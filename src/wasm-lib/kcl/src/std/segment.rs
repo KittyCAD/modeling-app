@@ -35,7 +35,7 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 }]
 fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
@@ -72,7 +72,7 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 }]
 fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
@@ -195,7 +195,7 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 }]
 fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
@@ -235,7 +235,7 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 }]
 fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
@@ -279,7 +279,7 @@ fn inner_angle_to_match_length_x(
     args: Args,
 ) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],
@@ -343,7 +343,7 @@ fn inner_angle_to_match_length_y(
     args: Args,
 ) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
+    let path = line.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected a line segment with a path, found `{:?}`", line),
             source_ranges: vec![args.source_range],

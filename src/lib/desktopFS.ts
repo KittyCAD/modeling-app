@@ -120,7 +120,7 @@ export async function getSettingsFolderPaths(projectPath?: string) {
   }
 }
 
-export async function createAndOpenNewProject({
+export async function createAndOpenNewTutorialProject({
   onProjectOpen,
   navigate,
 }: {
@@ -144,6 +144,22 @@ export async function createAndOpenNewProject({
     ONBOARDING_PROJECT_NAME,
     nextIndex
   )
+
+  // Delete the tutorial project if it already exists.
+  if (isDesktop()) {
+    if (configuration.settings?.project?.directory === undefined) {
+      return Promise.reject(new Error('configuration settings are undefined'))
+    }
+
+    const fullPath = window.electron.join(
+      configuration.settings.project.directory,
+      name
+    )
+    if (window.electron.exists(fullPath)) {
+      await window.electron.rm(fullPath)
+    }
+  }
+
   const newProject = await createNewProjectDirectory(
     name,
     bracket,

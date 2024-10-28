@@ -710,7 +710,9 @@ test(
     await page.setViewportSize({ width: 1200, height: 500 })
 
     // Locators
-    const projectMenuButton = page.getByRole('button', { name: projectName })
+    const projectMenuButton = page
+      .getByTestId('project-sidebar-toggle')
+      .filter({ hasText: projectName })
     const textToCadFileButton = page.getByRole('listitem').filter({
       has: page.getByRole('button', { name: textToCadFileName }),
     })
