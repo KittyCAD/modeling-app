@@ -10,7 +10,7 @@ use pretty_assertions::assert_eq;
 fn basic() {
     let actual = parse!("const y = 4");
     let expected = UnboxedNode {
-        kind: Program {
+        inner: Program {
             body: vec![BodyItem::VariableDeclaration(Box::new(UnboxedNode::new(
                 VariableDeclaration {
                     declarations: vec![UnboxedNode::new(

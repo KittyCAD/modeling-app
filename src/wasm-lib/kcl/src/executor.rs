@@ -3641,7 +3641,7 @@ let w = f() + f()
             let func_expr = &UnboxedNode::no_src(FunctionExpression {
                 params,
                 body: UnboxedNode {
-                    kind: crate::ast::types::Program {
+                    inner: crate::ast::types::Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         digest: None,
