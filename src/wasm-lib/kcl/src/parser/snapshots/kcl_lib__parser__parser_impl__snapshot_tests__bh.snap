@@ -1,6 +1,5 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3718
 expression: actual
 ---
 {
@@ -21,8 +20,7 @@ expression: actual
             "type": "Identifier",
             "start": 6,
             "end": 9,
-            "name": "obj",
-            "digest": null
+            "name": "obj"
           },
           "init": {
             "type": "ObjectExpression",
@@ -38,8 +36,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 13,
                   "end": 19,
-                  "name": "center",
-                  "digest": null
+                  "name": "center"
                 },
                 "value": {
                   "type": "ArrayExpression",
@@ -53,8 +50,7 @@ expression: actual
                       "start": 23,
                       "end": 25,
                       "value": 10,
-                      "raw": "10",
-                      "digest": null
+                      "raw": "10"
                     },
                     {
                       "type": "Literal",
@@ -62,13 +58,10 @@ expression: actual
                       "start": 27,
                       "end": 29,
                       "value": 10,
-                      "raw": "10",
-                      "digest": null
+                      "raw": "10"
                     }
-                  ],
-                  "digest": null
-                },
-                "digest": null
+                  ]
+                }
               },
               {
                 "type": "ObjectProperty",
@@ -78,8 +71,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 32,
                   "end": 38,
-                  "name": "radius",
-                  "digest": null
+                  "name": "radius"
                 },
                 "value": {
                   "type": "Literal",
@@ -87,25 +79,14 @@ expression: actual
                   "start": 40,
                   "end": 41,
                   "value": 5,
-                  "raw": "5",
-                  "digest": null
-                },
-                "digest": null
+                  "raw": "5"
+                }
               }
-            ],
-            "digest": null
-          },
-          "digest": null
+            ]
+          }
         }
       ],
-      "kind": "const",
-      "digest": null
+      "kind": "const"
     }
-  ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  ]
 }

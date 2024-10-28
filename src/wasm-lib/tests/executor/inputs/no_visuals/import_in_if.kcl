@@ -1,0 +1,6 @@
+if true {
+  import identity from "identity.kcl"
+  1
+} else {
+  2
+}

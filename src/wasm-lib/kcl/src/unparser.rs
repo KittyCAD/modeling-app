@@ -3,9 +3,9 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        Expr, FormatOptions, FunctionExpression, IfExpression, Literal, LiteralIdentifier, LiteralValue,
-        MemberExpression, MemberObject, NonCodeValue, ObjectExpression, PipeExpression, Program, TagDeclarator,
-        UnaryExpression, VariableDeclaration, VariableKind,
+        Expr, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeValue, ObjectExpression,
+        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -17,6 +17,7 @@ impl Program {
             .body
             .iter()
             .map(|statement| match statement.clone() {
+                BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
                 BodyItem::ExpressionStatement(expression_statement) => {
                     expression_statement
                         .expression
@@ -108,6 +109,27 @@ impl NonCodeValue {
     }
 }
 
+impl ImportStatement {
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let indentation = options.get_indentation(indentation_level);
+        let mut string = format!("{}import ", indentation);
+        for (i, item) in self.items.iter().enumerate() {
+            if i > 0 {
+                string.push_str(", ");
+            }
+            string.push_str(&item.name.name);
+            if let Some(alias) = &item.alias {
+                // If the alias is the same, don't output it.
+                if item.name.name != alias.name {
+                    string.push_str(&format!(" as {}", alias.name));
+                }
+            }
+        }
+        string.push_str(&format!(" from {}", self.raw_path));
+        string
+    }
+}
+
 impl Expr {
     pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         match &self {
@@ -168,7 +190,11 @@ impl CallExpression {
 impl VariableDeclaration {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        self.declarations.iter().fold(String::new(), |mut output, declaration| {
+        let output = match self.visibility {
+            ItemVisibility::Default => String::new(),
+            ItemVisibility::Export => "export ".to_owned(),
+        };
+        self.declarations.iter().fold(output, |mut output, declaration| {
             let keyword = match self.kind {
                 VariableKind::Fn => "fn ",
                 VariableKind::Const => "",
@@ -572,6 +598,46 @@ mod tests {
   3
 } else {
   5
+}
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_import() {
+        let input = r#"import a from "a.kcl"
+import a as aaa from "a.kcl"
+import a, b from "a.kcl"
+import a as aaa, b from "a.kcl"
+import a, b as bbb from "a.kcl"
+import a as aaa, b as bbb from "a.kcl"
+"#;
+        let tokens = crate::token::lexer(input).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_import_as_same_name() {
+        let input = r#"import a as a from "a.kcl"
+"#;
+        let program = crate::parser::parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        let expected = r#"import a from "a.kcl"
+"#;
+        assert_eq!(output, expected);
+    }
+
+    #[test]
+    fn test_recast_export_fn() {
+        let input = r#"export fn a = () => {
+  return 0
 }
 "#;
         let tokens = crate::token::lexer(input).unwrap();

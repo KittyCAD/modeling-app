@@ -9,6 +9,7 @@ use crate::{
 pub enum Node<'a> {
     Program(&'a types::Program),
 
+    ImportStatement(&'a types::ImportStatement),
     ExpressionStatement(&'a types::ExpressionStatement),
     VariableDeclaration(&'a types::VariableDeclaration),
     ReturnStatement(&'a types::ReturnStatement),
@@ -42,6 +43,7 @@ impl From<&Node<'_>> for SourceRange {
     fn from(node: &Node) -> Self {
         match node {
             Node::Program(p) => SourceRange([p.start, p.end]),
+            Node::ImportStatement(e) => SourceRange([e.start(), e.end()]),
             Node::ExpressionStatement(e) => SourceRange([e.start(), e.end()]),
             Node::VariableDeclaration(v) => SourceRange([v.start(), v.end()]),
             Node::ReturnStatement(r) => SourceRange([r.start(), r.end()]),
@@ -79,6 +81,7 @@ macro_rules! impl_from {
 }
 
 impl_from!(Node, Program);
+impl_from!(Node, ImportStatement);
 impl_from!(Node, ExpressionStatement);
 impl_from!(Node, VariableDeclaration);
 impl_from!(Node, ReturnStatement);

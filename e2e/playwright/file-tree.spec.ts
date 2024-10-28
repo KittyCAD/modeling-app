@@ -136,6 +136,9 @@ test.describe('when using the file tree to', () => {
       )
       await pasteCodeInEditor(kclCube)
 
+      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
+      await tronApp.page.waitForTimeout(2000)
+
       await renameFile(fromFile, toFile)
       await tronApp.page.reload()
 
@@ -222,15 +225,20 @@ test.describe('when using the file tree to', () => {
       )
       await pasteCodeInEditor(kclCube)
 
+      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
+      await tronApp.page.waitForTimeout(2000)
+
       const kcl1 = 'main.kcl'
       const kcl2 = '2.kcl'
-
       await createNewFileAndSelect(kcl2)
       const kclCylinder = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclCylinder)
+
+      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
+      await tronApp.page.waitForTimeout(2000)
 
       await renameFile(kcl2, kcl1)
 
@@ -959,5 +967,172 @@ _test.describe('Deleting items from the file pane', () => {
   _test.fixme(
     'TODO - delete folder we are in, with no main.kcl',
     async () => {}
+  )
+
+  // Copied from tests above.
+  _test(
+    `external deletion of project navigates back home`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const TEST_PROJECT_NAME = 'Test Project'
+      const {
+        electronApp,
+        page,
+        dir: projectsDirName,
+      } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
+            recursive: true,
+          })
+          await fsp.copyFile(
+            executorInputPath('basic_fillet_cube_end.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'main.kcl')
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
+          )
+        },
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Constants and locators
+      const projectCard = page.getByText(TEST_PROJECT_NAME)
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const folderToDelete = page.getByRole('button', {
+        name: 'folderToDelete',
+      })
+      const fileWithinFolder = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
+      })
+
+      await _test.step(
+        'Open project and navigate into folderToDelete',
+        async () => {
+          await projectCard.click()
+          await u.waitForPageLoad()
+          await _expect(projectMenuButton).toContainText('main.kcl')
+          await u.closeKclCodePanel()
+          await u.openFilePanel()
+
+          await folderToDelete.click()
+          await _expect(fileWithinFolder).toBeVisible()
+          await fileWithinFolder.click()
+          await _expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        }
+      )
+
+      // Point of divergence. Delete the project folder and see if it goes back
+      // to the home view.
+      await _test.step(
+        'Delete projectsDirName/<project-name> externally',
+        async () => {
+          await fsp.rm(join(projectsDirName, TEST_PROJECT_NAME), {
+            recursive: true,
+            force: true,
+          })
+        }
+      )
+
+      await _test.step('Check the app is back on the home view', async () => {
+        const projectsDirLink = page.getByText('Loaded from')
+        await _expect(projectsDirLink).toBeVisible()
+      })
+
+      await electronApp.close()
+    }
+  )
+
+  // Similar to the above
+  _test(
+    `external deletion of file in sub-directory updates the file tree and recreates it on code editor typing`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const TEST_PROJECT_NAME = 'Test Project'
+      const {
+        electronApp,
+        page,
+        dir: projectsDirName,
+      } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
+            recursive: true,
+          })
+          await fsp.copyFile(
+            executorInputPath('basic_fillet_cube_end.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'main.kcl')
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
+          )
+        },
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Constants and locators
+      const projectCard = page.getByText(TEST_PROJECT_NAME)
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const folderToDelete = page.getByRole('button', {
+        name: 'folderToDelete',
+      })
+      const fileWithinFolder = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
+      })
+
+      await _test.step(
+        'Open project and navigate into folderToDelete',
+        async () => {
+          await projectCard.click()
+          await u.waitForPageLoad()
+          await _expect(projectMenuButton).toContainText('main.kcl')
+
+          await u.openFilePanel()
+
+          await folderToDelete.click()
+          await _expect(fileWithinFolder).toBeVisible()
+          await fileWithinFolder.click()
+          await _expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        }
+      )
+
+      await _test.step(
+        'Delete projectsDirName/<project-name> externally',
+        async () => {
+          await fsp.rm(
+            join(
+              projectsDirName,
+              TEST_PROJECT_NAME,
+              'folderToDelete',
+              'someFileWithin.kcl'
+            )
+          )
+        }
+      )
+
+      await _test.step('Check the file is gone in the file tree', async () => {
+        await _expect(
+          page.getByTestId('file-pane-scroll-container')
+        ).not.toContainText('someFileWithin.kcl')
+      })
+
+      await _test.step(
+        'Check the file is back in the file tree after typing in code editor',
+        async () => {
+          await u.pasteCodeInEditor('hello = 1')
+          await _expect(
+            page.getByTestId('file-pane-scroll-container')
+          ).toContainText('someFileWithin.kcl')
+        }
+      )
+
+      await electronApp.close()
+    }
   )
 })

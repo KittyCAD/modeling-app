@@ -9,7 +9,7 @@ import {
   executorInputPath,
 } from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import {
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_CORRUPTED,
@@ -430,7 +430,6 @@ test.describe('Testing settings', () => {
       await test.step('Check color of logo changed when in modeling view', async () => {
         await page.getByRole('button', { name: 'New project' }).click()
         await page.getByTestId('project-link').first().click()
-        await page.getByRole('button', { name: 'Dismiss' }).click()
         await changeColor('58')
         await expect(logoLink).toHaveCSS('--primary-hue', '58')
       })
@@ -441,6 +440,58 @@ test.describe('Testing settings', () => {
         await changeColor('21')
         await expect(logoLink).toHaveCSS('--primary-hue', '21')
       })
+      await electronApp.close()
+    }
+  )
+
+  test(
+    'project settings reload on external change',
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
+        testInfo,
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const logoLink = page.getByTestId('app-logo')
+      const projectDirLink = page.getByText('Loaded from')
+
+      await test.step('Wait for project view', async () => {
+        await expect(projectDirLink).toBeVisible()
+      })
+
+      const projectLinks = page.getByTestId('project-link')
+      const oldCount = await projectLinks.count()
+      await page.getByRole('button', { name: 'New project' }).click()
+      await expect(projectLinks).toHaveCount(oldCount + 1)
+      await projectLinks.filter({ hasText: 'project-000' }).first().click()
+
+      const changeColorFs = async (color: string) => {
+        const tempSettingsFilePath = join(
+          projectDirName,
+          'project-000',
+          PROJECT_SETTINGS_FILE_NAME
+        )
+        await fsp.writeFile(
+          tempSettingsFilePath,
+          `[settings.app]\nthemeColor = "${color}"`
+        )
+      }
+
+      await test.step('Check the color is first starting as we expect', async () => {
+        await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
+      })
+
+      await test.step('Check color of logo changed', async () => {
+        await changeColorFs('99')
+        await expect(logoLink).toHaveCSS('--primary-hue', '99')
+      })
+
       await electronApp.close()
     }
   )

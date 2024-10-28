@@ -1,6 +1,9 @@
 //! The executor for the AST.
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -23,12 +26,12 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program,
-        ReturnStatement, TagDeclarator,
+        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, ItemVisibility,
+        KclNone, Program, ReturnStatement, TagDeclarator,
     },
-    engine::EngineManager,
+    engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
-    fs::FileManager,
+    fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{FnAsArg, StdLib},
 };
@@ -47,6 +50,14 @@ pub struct ExecState {
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
+    /// Identifiers that have been exported from the current module.
+    pub module_exports: HashSet<String>,
+    /// The stack of import statements for detecting circular module imports.
+    /// If this is empty, we're not currently executing an import statement.
+    pub import_stack: Vec<std::path::PathBuf>,
+    /// The directory of the current project.  This is used for resolving import
+    /// paths.  If None is given, the current working directory is used.
+    pub project_directory: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -389,6 +400,20 @@ impl KclValue {
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
             KclValue::Face(_) => "Face",
+        }
+    }
+
+    pub(crate) fn is_function(&self) -> bool {
+        match self {
+            KclValue::UserVal(..)
+            | KclValue::TagIdentifier(..)
+            | KclValue::TagDeclarator(..)
+            | KclValue::Plane(..)
+            | KclValue::Face(..)
+            | KclValue::Solid(..)
+            | KclValue::Solids { .. }
+            | KclValue::ImportedGeometry(..) => false,
+            KclValue::Function { .. } => true,
         }
     }
 }
@@ -1102,7 +1127,7 @@ pub struct TagEngineInfo {
     /// The sketch the tag is on.
     pub sketch: uuid::Uuid,
     /// The path the tag is on.
-    pub path: Option<BasePath>,
+    pub path: Option<Path>,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
 }
@@ -1112,10 +1137,10 @@ pub struct TagEngineInfo {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Sketch {
-    /// The id of the sketch (this will change when the engine's reference to it changes.
+    /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
     /// The paths in the sketch.
-    pub value: Vec<Path>,
+    pub paths: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
@@ -1181,7 +1206,7 @@ impl Sketch {
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
             sketch: self.id,
-            path: Some(base.clone()),
+            path: Some(current_path.clone()),
             surface: None,
         });
 
@@ -1190,7 +1215,7 @@ impl Sketch {
 
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
-        self.value.last()
+        self.paths.last()
     }
 
     /// The "pen" is an imaginary pen drawing the path.
@@ -1504,6 +1529,14 @@ impl From<SourceRange> for Metadata {
     }
 }
 
+impl From<&ImportStatement> for Metadata {
+    fn from(stmt: &ImportStatement) -> Self {
+        Self {
+            source_range: SourceRange::new(stmt.start, stmt.end),
+        }
+    }
+}
+
 impl From<&ExpressionStatement> for Metadata {
     fn from(exp_statement: &ExpressionStatement) -> Self {
         Self {
@@ -1623,6 +1656,43 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A circular arc, not necessarily tangential to the current point.
+    Arc {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Center of the circle that this arc is drawn on.
+        center: [f64; 2],
+        /// Radius of the circle that this arc is drawn on.
+        radius: f64,
+    },
+}
+
+/// What kind of path is this?
+#[derive(Display)]
+enum PathType {
+    ToPoint,
+    Base,
+    TangentialArc,
+    TangentialArcTo,
+    Circle,
+    Horizontal,
+    AngledLineTo,
+    Arc,
+}
+
+impl From<&Path> for PathType {
+    fn from(value: &Path) -> Self {
+        match value {
+            Path::ToPoint { .. } => Self::ToPoint,
+            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
+            Path::TangentialArc { .. } => Self::TangentialArc,
+            Path::Circle { .. } => Self::Circle,
+            Path::Horizontal { .. } => Self::Horizontal,
+            Path::AngledLineTo { .. } => Self::AngledLineTo,
+            Path::Base { .. } => Self::Base,
+            Path::Arc { .. } => Self::Arc,
+        }
+    }
 }
 
 impl Path {
@@ -1635,6 +1705,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1647,6 +1718,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::Arc { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1659,6 +1731,47 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::Arc { base, .. } => base,
+        }
+    }
+
+    /// Where does this path segment start?
+    pub fn get_from(&self) -> &[f64; 2] {
+        &self.get_base().from
+    }
+    /// Where does this path segment end?
+    pub fn get_to(&self) -> &[f64; 2] {
+        &self.get_base().to
+    }
+
+    /// Length of this path segment, in cartesian plane.
+    pub fn length(&self) -> f64 {
+        match self {
+            Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::TangentialArc {
+                base: _,
+                center,
+                ccw: _,
+            }
+            | Self::TangentialArcTo {
+                base: _,
+                center,
+                ccw: _,
+            } => {
+                // The radius can be calculated as the linear distance between `to` and `center`,
+                // or between `from` and `center`. They should be the same.
+                let radius = linear_distance(self.get_from(), center);
+                debug_assert_eq!(radius, linear_distance(self.get_to(), center));
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Arc { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
         }
     }
 
@@ -1671,8 +1784,20 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::Arc { base, .. } => Some(base),
         }
     }
+}
+
+/// Compute the straight-line distance between a pair of (2D) points.
+#[rustfmt::skip]
+fn linear_distance(
+    [x0, y0]: &[f64; 2],
+    [x1, y1]: &[f64; 2]
+) -> f64 {
+    let y_sq = (y1 - y0).powi(2);
+    let x_sq = (x1 - x0).powi(2);
+    (y_sq + x_sq).sqrt()
 }
 
 /// An extrude surface.
@@ -1855,9 +1980,73 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     }
 }
 
+/// Create a new zoo api client.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let zoo_token_env = std::env::var("ZOO_API_TOKEN");
+
+    let token = if let Some(token) = token {
+        token
+    } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
+        if let Ok(zoo_token) = zoo_token_env {
+            if zoo_token != token {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                    token,
+                    zoo_token
+                ));
+            }
+        }
+        token
+    } else if let Ok(token) = zoo_token_env {
+        token
+    } else {
+        return Err(anyhow::anyhow!(
+            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+        ));
+    };
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set an engine address if it's set.
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
+    if let Some(addr) = engine_addr {
+        client.set_base_url(addr);
+    } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if let Ok(kittycad_host) = kittycad_host_env {
+            if kittycad_host != addr {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                    kittycad_host,
+                    addr
+                ));
+            }
+        }
+        client.set_base_url(addr);
+    } else if let Ok(addr) = kittycad_host_env {
+        client.set_base_url(addr);
+    }
+
+    Ok(client)
+}
+
 impl ExecutorContext {
     /// Create a new default executor context.
-    /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
@@ -1902,6 +2091,35 @@ impl ExecutorContext {
         })
     }
 
+    /// Create a new default executor context.
+    /// With a kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+    ) -> Result<Self> {
+        // Create the client.
+        let client = new_zoo_client(token, engine_addr)?;
+
+        let ctx = Self::new(&client, settings).await?;
+        Ok(ctx)
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_default_client(settings: ExecutorSettings) -> Result<Self> {
+        // Create the client.
+        let ctx = Self::new_with_client(settings, None, None).await?;
+        Ok(ctx)
+    }
+
     pub fn is_mock(&self) -> bool {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
@@ -1909,35 +2127,7 @@ impl ExecutorContext {
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
-        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"));
-        let http_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60));
-        let ws_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60))
-            .connection_verbose(true)
-            .tcp_keepalive(std::time::Duration::from_secs(600))
-            .http1_only();
-
-        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-        // Create the client.
-        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-        // Set a local engine address if it's set.
-        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-            client.set_base_url(addr);
-        }
-        if let Some(addr) = engine_addr {
-            client.set_base_url(addr);
-        }
-
-        let ctx = ExecutorContext::new(
-            &client,
+        let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 units,
                 highlight_edges: true,
@@ -1945,6 +2135,8 @@ impl ExecutorContext {
                 show_grid: false,
                 replay: None,
             },
+            None,
+            engine_addr,
         )
         .await?;
         Ok(ctx)
@@ -1967,8 +2159,9 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory, id_generator)
+        self.run_with_session_data(program, memory, id_generator, project_directory)
             .await
             .map(|x| x.0)
     }
@@ -1980,6 +2173,7 @@ impl ExecutorContext {
         program: &crate::ast::types::Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
         let memory = if let Some(memory) = memory {
             memory.clone()
@@ -1989,6 +2183,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState {
             memory,
             id_generator,
+            project_directory,
             ..Default::default()
         };
         // Before we even start executing the program, set the units.
@@ -2027,6 +2222,91 @@ impl ExecutorContext {
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
+                BodyItem::ImportStatement(import_stmt) => {
+                    let source_range = SourceRange::from(import_stmt);
+                    let path = import_stmt.path.clone();
+                    let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
+                        std::path::PathBuf::from(project_dir).join(&path)
+                    } else {
+                        std::path::PathBuf::from(&path)
+                    };
+                    if exec_state.import_stack.contains(&resolved_path) {
+                        return Err(KclError::ImportCycle(KclErrorDetails {
+                            message: format!(
+                                "circular import of modules is not allowed: {} -> {}",
+                                exec_state
+                                    .import_stack
+                                    .iter()
+                                    .map(|p| p.as_path().to_string_lossy())
+                                    .collect::<Vec<_>>()
+                                    .join(" -> "),
+                                resolved_path.to_string_lossy()
+                            ),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
+                    }
+                    let source = self.fs.read_to_string(&resolved_path, source_range).await?;
+                    let program = crate::parser::parse(&source)?;
+                    let (module_memory, module_exports) = {
+                        exec_state.import_stack.push(resolved_path.clone());
+                        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
+                        let original_memory = std::mem::take(&mut exec_state.memory);
+                        let original_exports = std::mem::take(&mut exec_state.module_exports);
+                        let result = self
+                            .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
+                            .await;
+                        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
+                        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
+                        self.engine.replace_execution_kind(original_execution);
+                        exec_state.import_stack.pop();
+
+                        result.map_err(|err| {
+                            if let KclError::ImportCycle(_) = err {
+                                // It was an import cycle.  Keep the original message.
+                                err.override_source_ranges(vec![source_range])
+                            } else {
+                                KclError::Semantic(KclErrorDetails {
+                                    message: format!(
+                                        "Error loading imported file. Open it to view more details. {path}: {}",
+                                        err.message()
+                                    ),
+                                    source_ranges: vec![source_range],
+                                })
+                            }
+                        })?;
+
+                        (module_memory, module_exports)
+                    };
+                    for import_item in &import_stmt.items {
+                        // Extract the item from the module.
+                        let item = module_memory
+                            .get(&import_item.name.name, import_item.into())
+                            .map_err(|_err| {
+                                KclError::UndefinedValue(KclErrorDetails {
+                                    message: format!("{} is not defined in module", import_item.name.name),
+                                    source_ranges: vec![SourceRange::from(&import_item.name)],
+                                })
+                            })?;
+                        // Check that the item is allowed to be imported.
+                        if !module_exports.contains(&import_item.name.name) {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: format!(
+                                    "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                    import_item.name.name
+                                ),
+                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                            }));
+                        }
+
+                        // Add the item to the current module.
+                        exec_state.memory.add(
+                            import_item.identifier(),
+                            item.clone(),
+                            SourceRange::from(&import_item.name),
+                        )?;
+                    }
+                    last_expr = None;
+                }
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
                     last_expr = Some(
@@ -2053,7 +2333,21 @@ impl ExecutorContext {
                                 StatementKind::Declaration { name: &var_name },
                             )
                             .await?;
+                        let is_function = memory_item.is_function();
                         exec_state.memory.add(&var_name, memory_item, source_range)?;
+                        // Track exports.
+                        match variable_declaration.visibility {
+                            ItemVisibility::Export => {
+                                if !is_function {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "Only functions can be exported".to_owned(),
+                                        source_ranges: vec![source_range],
+                                    }));
+                                }
+                                exec_state.module_exports.insert(var_name);
+                            }
+                            ItemVisibility::Default => {}
+                        }
                     }
                     last_expr = None;
                 }
@@ -2158,8 +2452,9 @@ impl ExecutorContext {
         &self,
         program: &Program,
         id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None, id_generator).await?;
+        let _ = self.run(program, None, id_generator, project_directory).await?;
 
         // Zoom to fit.
         self.engine
@@ -2304,7 +2599,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None, IdGenerator::default()).await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
         Ok(exec_state.memory)
     }

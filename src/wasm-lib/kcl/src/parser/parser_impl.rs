@@ -12,10 +12,10 @@ use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier,
-        IfExpression, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeMeta,
-        NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
-        Program, ReturnStatement, TagDeclarator, UnaryExpression, UnaryOperator, ValueMeta, VariableDeclaration,
-        VariableDeclarator, VariableKind,
+        IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+        Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression,
+        UnaryOperator, ValueMeta, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -956,8 +956,10 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
-        token if token.declaration_keyword().is_some() =>
+        token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        token if token.value == "import" && matches!(token.token_type, TokenType::Keyword) =>
+            (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if !token.is_code_token() => {
@@ -1122,6 +1124,111 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
     })
 }
 
+fn import_stmt(i: TokenSlice) -> PResult<Box<ImportStatement>> {
+    let import_token = any
+        .try_map(|token: Token| {
+            if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
+                Ok(token)
+            } else {
+                Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: token.as_source_ranges(),
+                    message: format!("{} is not the 'import' keyword", token.value.as_str()),
+                }))
+            }
+        })
+        .context(expected("the 'import' keyword"))
+        .parse_next(i)?;
+    let start = import_token.start;
+
+    require_whitespace(i)?;
+
+    let items = separated(1.., import_item, comma_sep)
+        .parse_next(i)
+        .map_err(|e| e.cut())?;
+
+    require_whitespace(i)?;
+
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
+            Ok(())
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("{} is not the 'from' keyword", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'from' keyword"))
+    .parse_next(i)
+    .map_err(|e| e.cut())?;
+
+    require_whitespace(i)?;
+
+    let path = string_literal(i)?;
+    let end = path.end();
+    let path_string = match path.value {
+        LiteralValue::String(s) => s,
+        _ => unreachable!(),
+    };
+    if path_string
+        .chars()
+        .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
+    {
+        return Err(ErrMode::Cut(
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![SourceRange::new(path.start, path.end)],
+                message: "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.".to_owned(),
+            })
+            .into(),
+        ));
+    }
+    Ok(Box::new(ImportStatement {
+        items,
+        path: path_string,
+        raw_path: path.raw,
+        start,
+        end,
+        digest: None,
+    }))
+}
+
+fn import_item(i: TokenSlice) -> PResult<ImportItem> {
+    let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
+    let start = name.start;
+    let alias = opt(preceded(
+        (whitespace, import_as_keyword, whitespace),
+        identifier.context(expected("an identifier to alias the import")),
+    ))
+    .parse_next(i)?;
+    let end = if let Some(ref alias) = alias {
+        alias.end()
+    } else {
+        name.end()
+    };
+    Ok(ImportItem {
+        name,
+        alias,
+        start,
+        end,
+        digest: None,
+    })
+}
+
+fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| {
+        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "as" {
+            Ok(token)
+        } else {
+            Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: token.as_source_ranges(),
+                message: format!("{} is not the 'as' keyword", token.value.as_str()),
+            }))
+        }
+    })
+    .context(expected("the 'as' keyword"))
+    .parse_next(i)
+}
+
 /// Parse a return statement of a user-defined function, e.g. `return x`.
 pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
     let start = any
@@ -1214,6 +1321,19 @@ fn possible_operands(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
+/// Parse an item visibility specifier, e.g. export.
+fn item_visibility(i: TokenSlice) -> PResult<(ItemVisibility, Token)> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Keyword && token.value == "export" {
+            Some((ItemVisibility::Export, token))
+        } else {
+            None
+        }
+    })
+    .context(expected("item visibility, e.g. 'export'"))
+    .parse_next(i)
+}
+
 fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
     let res = any
         .verify_map(|token: Token| token.declaration_keyword().map(|kw| (kw, token)))
@@ -1222,7 +1342,10 @@ fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
 }
 
 /// Parse a variable/constant declaration.
-fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
+fn declaration(i: TokenSlice) -> PResult<Box<VariableDeclaration>> {
+    let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
+        .parse_next(i)?
+        .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
     let decl_token = opt(declaration_keyword).parse_next(i)?;
     if decl_token.is_some() {
         // If there was a declaration keyword like `fn`, then it must be followed by some spaces.
@@ -1235,11 +1358,14 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             "an identifier, which becomes name you're binding the value to",
         ))
         .parse_next(i)?;
-    let (kind, start, dec_end) = if let Some((kind, token)) = &decl_token {
+    let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
         (*kind, token.start, token.end)
     } else {
         (VariableKind::Const, id.start(), id.end())
     };
+    if let Some(token) = visibility_token {
+        start = token.start;
+    }
 
     ignore_whitespace(i);
     equals(i)?;
@@ -1278,7 +1404,7 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
     .map_err(|e| e.cut())?;
 
     let end = val.end();
-    Ok(VariableDeclaration {
+    Ok(Box::new(VariableDeclaration {
         start,
         end,
         declarations: vec![VariableDeclarator {
@@ -1288,9 +1414,10 @@ fn declaration(i: TokenSlice) -> PResult<VariableDeclaration> {
             init: val,
             digest: None,
         }],
+        visibility,
         kind,
         digest: None,
-    })
+    }))
 }
 
 impl TryFrom<Token> for Identifier {
