@@ -65,7 +65,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       id: 'export',
       title: 'Export part',
       icon: 'floppyDiskArrow',
-      keybinding: 'Ctrl + Shift + E',
+      keybinding: 'Ctrl+Shift+E',
       action: () =>
         commandBarSend({
           type: 'Find and select command',
@@ -76,7 +76,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       id: 'make',
       title: 'Make part',
       icon: 'printer3d',
-      keybinding: 'Ctrl + Shift + M',
+      keybinding: 'Ctrl+Shift+M',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
         commandBarSend({
