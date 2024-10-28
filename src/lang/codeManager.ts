@@ -20,6 +20,8 @@ export default class CodeManager {
   private _hotkeys: { [key: string]: () => void } = {}
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
 
+  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+
   constructor() {
     if (isDesktop()) {
       this.code = ''
@@ -120,6 +122,7 @@ export default class CodeManager {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
+      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       this.timeoutWriter = setTimeout(() => {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk

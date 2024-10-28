@@ -8,33 +8,10 @@ use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
 async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid::Uuid)> {
-    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-    let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60));
-    let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60))
-        .tcp_keepalive(std::time::Duration::from_secs(600))
-        .http1_only();
-
-    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-    // Create the client.
-    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    // Set a local engine address if it's set.
-    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-        client.set_base_url(addr);
-    }
-
     let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
+    let ctx = kcl_lib::executor::ExecutorContext::new_with_default_client(Default::default()).await?;
     let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
     // We need to get the sketch ID.

@@ -12,6 +12,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::executor::Tagged;
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
@@ -154,7 +155,7 @@ async fn inner_line_to(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -323,7 +324,7 @@ async fn inner_line(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -506,7 +507,7 @@ async fn inner_angled_line(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
     Ok(new_sketch)
 }
 
@@ -804,7 +805,7 @@ async fn inner_angled_line_that_intersects(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let intersect_path = args.get_tag_engine_info(exec_state, &data.intersect_tag)?;
-    let path = intersect_path.path.clone().ok_or_else(|| {
+    let path = intersect_path.path().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!("Expected an intersect path with a path, found `{:?}`", intersect_path),
             source_ranges: vec![args.source_range],
@@ -813,7 +814,7 @@ async fn inner_angled_line_that_intersects(
 
     let from = sketch.current_pen_position()?;
     let to = intersection_with_parallel_line(
-        &[path.from.into(), path.to.into()],
+        &[path.get_from().into(), path.get_to().into()],
         data.offset.unwrap_or_default(),
         data.angle,
         from,
@@ -1237,15 +1238,16 @@ pub(crate) async fn inner_start_profile_at(
         id: path_id,
         original_id: path_id,
         on: sketch_surface.clone(),
-        value: vec![],
+        paths: vec![],
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
             tag_identifier.info = Some(TagEngineInfo {
                 id: current_path.geo_meta.id,
                 sketch: path_id,
-                path: Some(current_path.clone()),
-                surface: None,
+                tagged: Tagged::Path(Path::Base {
+                    base: current_path.clone(),
+                }),
             });
             HashMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
@@ -1411,7 +1413,7 @@ pub(crate) async fn inner_close(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1528,7 +1530,7 @@ pub(crate) async fn inner_arc(
     )
     .await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::Arc {
         base: BasePath {
             from: from.into(),
             to: end.into(),
@@ -1538,6 +1540,8 @@ pub(crate) async fn inner_arc(
                 metadata: args.source_range.into(),
             },
         },
+        center: center.into(),
+        radius,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1545,7 +1549,7 @@ pub(crate) async fn inner_arc(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1677,7 +1681,7 @@ async fn inner_tangential_arc(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1773,7 +1777,7 @@ async fn inner_tangential_arc_to(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1858,7 +1862,7 @@ async fn inner_tangential_arc_to_relative(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1951,7 +1955,7 @@ async fn inner_bezier_curve(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }

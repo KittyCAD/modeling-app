@@ -107,6 +107,13 @@
             },
             "type": "array"
           },
+          "loaded_filament_idx": {
+            "description": "The currently loaded filament index.",
+            "format": "uint",
+            "minimum": 0,
+            "nullable": true,
+            "type": "integer"
+          },
           "nozzle_diameter": {
             "description": "Diameter of the extrusion nozzle, in mm.",
             "format": "double",
@@ -277,6 +284,21 @@
               "type": {
                 "enum": [
                   "composite"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "Unknown material",
+            "properties": {
+              "type": {
+                "enum": [
+                  "unknown"
                 ],
                 "type": "string"
               }
@@ -974,7 +996,7 @@
     },
     "description": "",
     "title": "machine-api",
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "openapi": "3.0.3",
   "paths": {

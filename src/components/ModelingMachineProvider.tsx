@@ -1,5 +1,11 @@
 import { useMachine } from '@xstate/react'
-import React, { createContext, useEffect, useMemo, useRef } from 'react'
+import React, {
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useContext,
+} from 'react'
 import {
   Actor,
   AnyStateMachine,
@@ -28,7 +34,7 @@ import {
   editorManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { machineManager } from 'lib/machineManager'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -139,6 +145,8 @@ export const ModelingMachineProvider = ({
   //     (typeof settingsMachine)['context']
   //   >
   // )
+
+  const machineManager = useContext(MachineManagerContext)
 
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine.provide({
@@ -408,7 +416,7 @@ export const ModelingMachineProvider = ({
             return {}
           }
         ),
-        Make: ({ event }) => {
+        Make: ({ context, event }) => {
           if (event.type !== 'Make') return
           // Check if we already have an export intent.
           if (engineCommandManager.exportInfo) {
@@ -422,7 +430,21 @@ export const ModelingMachineProvider = ({
           }
 
           // Set the current machine.
-          machineManager.currentMachine = event.data.machine
+          // Due to our use of singeton pattern, we need to do this to reliably
+          // update this object across React and non-React boundary.
+          // We need to do this eagerly because of the exportToEngine call below.
+          if (engineCommandManager.machineManager === null) {
+            console.warn(
+              "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+            )
+            return
+          } else {
+            engineCommandManager.machineManager.currentMachine =
+              event.data.machine
+          }
+
+          // Update the rest of the UI that needs to know the current machine
+          context.machineManager.setCurrentMachine(event.data.machine)
 
           const format: Models['OutputFormat_type'] = {
             type: 'stl',
@@ -644,6 +666,7 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
+          sceneInfra.camControls.enableRotate = false
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
           await letEngineAnimateAndSyncCamAfter(
@@ -994,6 +1017,7 @@ export const ModelingMachineProvider = ({
           ...modelingMachineDefaultContext.store,
           ...persistedContext,
         },
+        machineManager,
       },
       // devTools: true,
     }
