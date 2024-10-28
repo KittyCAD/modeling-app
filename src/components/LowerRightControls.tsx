@@ -12,6 +12,8 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow, { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { NetworkMachineIndicator } from './NetworkMachineIndicator'
 import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
+import { ModelStateIndicator } from './ModelStateIndicator'
+import { reportRejection } from 'lib/trap'
 
 function InteractionSequenceInfo() {
   const {
@@ -22,8 +24,6 @@ function InteractionSequenceInfo() {
 
   return <span className="font-mono text-xs">{currentSequence}</span>
 }
-import { ModelStateIndicator } from './ModelStateIndicator'
-import { reportRejection } from 'lib/trap'
 
 export function LowerRightControls({
   children,
