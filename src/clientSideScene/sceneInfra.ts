@@ -372,24 +372,28 @@ export class SceneInfra {
     threeD?: Vector3
     intersection: Intersection<Object3D<Object3DEventMap>>
   } | null => {
+    // Get the orientations from the camera and mouse position
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
       this.camControls.camera
     )
+    // Get the intersection of the ray with the default planes
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
       true
     )
-    const recastablePlaneIntersect = planeIntersects.find(
+    if (!planeIntersects.length) return null
+
+    // Find the intersection with the raycastable (or sketch) plane
+    const raycastablePlaneIntersection = planeIntersects.find(
       (intersect) => intersect.object.name === RAYCASTABLE_PLANE
     )
-    if (!planeIntersects.length) return null
-    if (!recastablePlaneIntersect) return { intersection: planeIntersects[0] }
-    const planePosition = planeIntersects[0].object.position
-    const inversePlaneQuaternion = planeIntersects[0].object.quaternion
-      .clone()
-      .invert()
-    const intersectPoint = planeIntersects[0].point
+    if (!raycastablePlaneIntersection)
+      return { intersection: planeIntersects[0] }
+    const planePosition = raycastablePlaneIntersection.object.position
+    const inversePlaneQuaternion =
+      raycastablePlaneIntersection.object.quaternion.clone().invert()
+    const intersectPoint = raycastablePlaneIntersection.point
     let transformedPoint = intersectPoint.clone()
     if (transformedPoint) {
       transformedPoint.applyQuaternion(inversePlaneQuaternion)

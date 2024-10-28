@@ -335,7 +335,6 @@ export class SceneEntities {
   }
   removeDraftPoint() {
     const draftPoint = this.getDraftPoint()
-    console.log('from within removeDraftPoint', draftPoint)
     if (draftPoint) draftPoint.removeFromParent()
   }
 
@@ -371,12 +370,10 @@ export class SceneEntities {
     )
 
     // Position the click raycast plane
-    if (this.intersectionPlane) {
-      this.intersectionPlane.setRotationFromQuaternion(quaternion)
-      this.intersectionPlane.position.copy(
-        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-      )
-    }
+    this.intersectionPlane!.setRotationFromQuaternion(quaternion)
+    this.intersectionPlane!.position.copy(
+      new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+    )
     sceneInfra.setCallbacks({
       onMove: (args) => {
         if (!args.intersects.length) return
@@ -396,10 +393,7 @@ export class SceneEntities {
         }
         // Either create a new one or update the existing one
         const draftPoint = this.getDraftPoint()
-        console.log('add a snapped point', {
-          snappedPoint,
-          draftPoint,
-        })
+
         if (!draftPoint) {
           this.createDraftPoint({
             point: snappedPoint,
@@ -419,7 +413,6 @@ export class SceneEntities {
         }
       },
       onMouseLeave: () => {
-        console.log('remove draft point')
         this.removeDraftPoint()
       },
       onClick: async (args) => {
