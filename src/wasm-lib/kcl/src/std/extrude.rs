@@ -238,7 +238,7 @@ pub(crate) async fn do_post_extrude(
                         });
                         Some(extrude_surface)
                     }
-                    Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+                    Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),

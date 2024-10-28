@@ -142,26 +142,6 @@ An angled line to.
 
 
 ----
-A base path.
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: `Base`|  | No |
-| `from` |`[number, number]`| The from point. | No |
-| `to` |`[number, number]`| The to point. | No |
-| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
-| `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
-
-
-----
 A circular arc, not necessarily tangential to the current point.
 
 **Type:** `object`

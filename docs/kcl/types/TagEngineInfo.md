@@ -44,6 +44,22 @@ The surface information for the tag.
 
 
 ----
+The point being tagged.
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `point` |`[number, number]`|  | No |
+
+
+----
 
 
 ## Properties

@@ -12,7 +12,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::executor::Tagged;
+use crate::executor::{SketchStart, Tagged};
 use crate::{
     ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
@@ -1224,9 +1224,8 @@ pub(crate) async fn inner_start_profile_at(
     )
     .await?;
 
-    let current_path = BasePath {
-        from: to,
-        to,
+    let start = SketchStart {
+        at: to,
         tag: tag.clone(),
         geo_meta: GeoMeta {
             id,
@@ -1243,17 +1242,15 @@ pub(crate) async fn inner_start_profile_at(
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
             tag_identifier.info = Some(TagEngineInfo {
-                id: current_path.geo_meta.id,
+                id,
                 sketch: path_id,
-                tagged: Tagged::Path(Path::Base {
-                    base: current_path.clone(),
-                }),
+                tagged: Tagged::Point(to),
             });
             HashMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
             Default::default()
         },
-        start: current_path,
+        start,
     };
     Ok(sketch)
 }
@@ -1279,7 +1276,7 @@ pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<
     name = "profileStartX"
 }]
 pub(crate) fn inner_profile_start_x(sketch: Sketch) -> Result<f64, KclError> {
-    Ok(sketch.start.to[0])
+    Ok(sketch.start.at[0])
 }
 
 /// Returns the Y component of the sketch profile start point.
@@ -1302,7 +1299,7 @@ pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<
     name = "profileStartY"
 }]
 pub(crate) fn inner_profile_start_y(sketch: Sketch) -> Result<f64, KclError> {
-    Ok(sketch.start.to[1])
+    Ok(sketch.start.at[1])
 }
 
 /// Returns the sketch profile start point.
@@ -1336,7 +1333,7 @@ pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<Kc
     name = "profileStart"
 }]
 pub(crate) fn inner_profile_start(sketch: Sketch) -> Result<[f64; 2], KclError> {
-    Ok(sketch.start.to)
+    Ok(sketch.start.at)
 }
 
 /// Close the current sketch.
@@ -1379,7 +1376,7 @@ pub(crate) async fn inner_close(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    let to: Point2d = sketch.start.from.into();
+    let to: Point2d = sketch.start.at.into();
 
     let id = exec_state.id_generator.next_uuid();
 

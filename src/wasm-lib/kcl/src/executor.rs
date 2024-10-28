@@ -1141,6 +1141,11 @@ impl TagEngineInfo {
     pub fn surface(&self) -> Option<&ExtrudeSurface> {
         self.tagged.surface()
     }
+
+    /// If this is tagging a point, get it.
+    pub fn point(&self) -> Option<&[f64; 2]> {
+        self.tagged.point()
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1151,6 +1156,8 @@ pub enum Tagged {
     Path(Path),
     /// The surface information for the tag.
     Surface(ExtrudeSurface),
+    /// The point being tagged.
+    Point([f64; 2]),
 }
 
 impl Tagged {
@@ -1169,6 +1176,13 @@ impl Tagged {
         };
         Some(x)
     }
+    /// If this is a path, get it.
+    fn point(&self) -> Option<&[f64; 2]> {
+        let Self::Point(x) = &self else {
+            return None;
+        };
+        Some(x)
+    }
 }
 
 /// A sketch is a collection of paths.
@@ -1183,7 +1197,7 @@ pub struct Sketch {
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
-    pub start: BasePath,
+    pub start: SketchStart,
     /// Tag identifiers that have been declared in this sketch.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub tags: HashMap<String, TagIdentifier>,
@@ -1261,7 +1275,7 @@ impl Sketch {
     /// where the last path segment ends, and the next path segment will begin.
     pub(crate) fn current_pen_position(&self) -> Result<Point2d, KclError> {
         let Some(path) = self.latest_path() else {
-            return Ok(self.start.to.into());
+            return Ok(self.start.at.into());
         };
 
         let base = path.get_base();
@@ -1271,7 +1285,7 @@ impl Sketch {
     pub(crate) fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
         let Some(path) = self.latest_path() else {
             return GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: self.start.to,
+                center_or_tangent_point: self.start.at,
                 is_center: false,
                 ccw: false,
             };
@@ -1617,6 +1631,21 @@ pub struct BasePath {
     pub geo_meta: GeoMeta,
 }
 
+/// Where the sketch starts.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchStart {
+    /// Start point.
+    #[ts(type = "[number, number]")]
+    pub at: [f64; 2],
+    /// Tag of the start point.
+    pub tag: Option<TagDeclarator>,
+    /// Metadata.
+    #[serde(rename = "__geoMeta")]
+    pub geo_meta: GeoMeta,
+}
+
 /// Geometry metadata.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1689,11 +1718,6 @@ pub enum Path {
         /// The y coordinate.
         y: Option<f64>,
     },
-    /// A base path.
-    Base {
-        #[serde(flatten)]
-        base: BasePath,
-    },
     /// A circular arc, not necessarily tangential to the current point.
     Arc {
         #[serde(flatten)]
@@ -1709,7 +1733,6 @@ pub enum Path {
 #[derive(Display)]
 enum PathType {
     ToPoint,
-    Base,
     TangentialArc,
     TangentialArcTo,
     Circle,
@@ -1727,7 +1750,6 @@ impl From<&Path> for PathType {
             Path::Circle { .. } => Self::Circle,
             Path::Horizontal { .. } => Self::Horizontal,
             Path::AngledLineTo { .. } => Self::AngledLineTo,
-            Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
         }
     }
@@ -1739,7 +1761,6 @@ impl Path {
             Path::ToPoint { base } => base.geo_meta.id,
             Path::Horizontal { base, .. } => base.geo_meta.id,
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
-            Path::Base { base } => base.geo_meta.id,
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
@@ -1752,7 +1773,6 @@ impl Path {
             Path::ToPoint { base } => base.tag.clone(),
             Path::Horizontal { base, .. } => base.tag.clone(),
             Path::AngledLineTo { base, .. } => base.tag.clone(),
-            Path::Base { base } => base.tag.clone(),
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
@@ -1765,7 +1785,6 @@ impl Path {
             Path::ToPoint { base } => base,
             Path::Horizontal { base, .. } => base,
             Path::AngledLineTo { base, .. } => base,
-            Path::Base { base } => base,
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
@@ -1785,7 +1804,7 @@ impl Path {
     /// Length of this path segment, in cartesian plane.
     pub fn length(&self) -> f64 {
         match self {
-            Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
+            Self::ToPoint { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
                 linear_distance(self.get_from(), self.get_to())
             }
             Self::TangentialArc {
@@ -1818,7 +1837,6 @@ impl Path {
             Path::ToPoint { base } => Some(base),
             Path::Horizontal { base, .. } => Some(base),
             Path::AngledLineTo { base, .. } => Some(base),
-            Path::Base { base } => Some(base),
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
