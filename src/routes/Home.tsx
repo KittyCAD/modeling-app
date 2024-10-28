@@ -4,6 +4,7 @@ import { AppHeader } from 'components/AppHeader'
 import ProjectCard from 'components/ProjectCard/ProjectCard'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import Loading from 'components/Loading'
 import { PATHS } from 'lib/paths'
 import {
