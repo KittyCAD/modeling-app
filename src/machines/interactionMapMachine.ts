@@ -166,7 +166,7 @@ export const interactionMapMachine = setup({
         }
       },
     }),
-    'Persist keybinding overrides': ({context}) => {
+    'Persist keybinding overrides': ({ context }) => {
       console.log('Persisting keybinding overrides', context.overrides)
     },
   },
@@ -178,77 +178,80 @@ export const interactionMapMachine = setup({
         input: { context: InteractionMapContext; data: InteractionEvent }
       }) => {
         return new Promise<InteractionMapItem>((resolve, reject) => {
-        const resolvedInteraction = resolveInteractionEvent(data)
+          const resolvedInteraction = resolveInteractionEvent(data)
 
-        // if the key is already a modifier key, skip everything else and reject
-        if (resolvedInteraction.isModifier) {
-          // We return an empty string so that we don't clear the currentSequence
-          reject('')
-        }
+          // if the key is already a modifier key, skip everything else and reject
+          if (resolvedInteraction.isModifier) {
+            // We return an empty string so that we don't clear the currentSequence
+            reject('')
+          }
 
-        // Find all the sequences that start with the current sequence
-        const searchString =
-          (context.currentSequence ? context.currentSequence + ' ' : '') +
-          resolvedInteraction.asString
-        const sortedInteractions = getSortedInteractionMapSequences(context)
+          // Find all the sequences that start with the current sequence
+          const searchString =
+            (context.currentSequence ? context.currentSequence + ' ' : '') +
+            resolvedInteraction.asString
+          const sortedInteractions = getSortedInteractionMapSequences(context)
 
-        const matches = sortedInteractions.filter(([sequence]) =>
-          sequence.startsWith(searchString)
-        )
-
-        console.log('matches', {
-          matches,
-          sortedInteractions,
-          searchString,
-          overrides: context.overrides,
-        })
-
-        // If we have no matches, reject the promise
-        if (matches.length === 0) {
-          reject()
-        }
-
-        const exactMatches = matches.filter(
-          ([sequence]) => sequence === searchString
-        )
-        console.log('exactMatches', exactMatches)
-        if (!exactMatches.length) {
-          // We have a prefix match.
-          // Reject the promise and return the step
-          // so we can add it to currentSequence
-          reject(resolvedInteraction.asString)
-        }
-
-        // Resolve to just one exact match
-        const availableExactMatches = exactMatches.filter(
-          ([_, item]) => !item.guard || item.guard(data)
-        )
-
-        console.log('availableExactMatches', availableExactMatches)
-        if (availableExactMatches.length === 0) {
-          reject()
-        } else {
-          // return the last-added, available exact match
-          resolve(
-            availableExactMatches[availableExactMatches.length - 1][1]
+          const matches = sortedInteractions.filter(([sequence]) =>
+            sequence.startsWith(searchString)
           )
-        }
-      })
+
+          console.log('matches', {
+            matches,
+            sortedInteractions,
+            searchString,
+            overrides: context.overrides,
+          })
+
+          // If we have no matches, reject the promise
+          if (matches.length === 0) {
+            reject()
+          }
+
+          const exactMatches = matches.filter(
+            ([sequence]) => sequence === searchString
+          )
+          console.log('exactMatches', exactMatches)
+          if (!exactMatches.length) {
+            // We have a prefix match.
+            // Reject the promise and return the step
+            // so we can add it to currentSequence
+            reject(resolvedInteraction.asString)
+          }
+
+          // Resolve to just one exact match
+          const availableExactMatches = exactMatches.filter(
+            ([_, item]) => !item.guard || item.guard(data)
+          )
+
+          console.log('availableExactMatches', availableExactMatches)
+          if (availableExactMatches.length === 0) {
+            reject()
+          } else {
+            // return the last-added, available exact match
+            resolve(availableExactMatches[availableExactMatches.length - 1][1])
+          }
+        })
       }
     ),
-    'Execute keymap action': fromPromise(async ({ input }: { input: InteractionMapItem}) => {
-      try {
-        console.log('Executing action', input)
-        input.action()
-      } catch (error) {
-        console.error(error)
-        toast.error('There was an error executing the action.')
+    'Execute keymap action': fromPromise(
+      async ({ input }: { input: InteractionMapItem }) => {
+        try {
+          console.log('Executing action', input)
+          input.action()
+        } catch (error) {
+          console.error(error)
+          toast.error('There was an error executing the action.')
+        }
       }
-    }),
+    ),
   },
   guards: {
     'There are prefix matches': ({ event }) => {
-      return event.type === 'xstate.error.actor.resolveHotkeyByPrefix'  && event.data !== undefined
+      return (
+        event.type === 'xstate.error.actor.resolveHotkeyByPrefix' &&
+        event.data !== undefined
+      )
     },
   },
 }).createMachine({

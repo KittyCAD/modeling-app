@@ -2,7 +2,9 @@ import { InteractionMapMachineContext } from 'components/InteractionMapMachinePr
 
 export const useInteractionMapContext = () => {
   const interactionMapActor = InteractionMapMachineContext.useActorRef()
-  const interactionMapState = InteractionMapMachineContext.useSelector((state) => state)
+  const interactionMapState = InteractionMapMachineContext.useSelector(
+    (state) => state
+  )
   return {
     actor: interactionMapActor,
     send: interactionMapActor.send,
