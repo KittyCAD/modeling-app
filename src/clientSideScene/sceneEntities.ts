@@ -318,13 +318,7 @@ export class SceneEntities {
   getDraftPoint() {
     return this.scene.getObjectByName(DRAFT_POINT)
   }
-  createDraftPoint({
-    point,
-    group,
-  }: {
-    point: Vector2
-    group: Group
-  }) {
+  createDraftPoint({ point, group }: { point: Vector2; group: Group }) {
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
     const scale = sceneInfra.getClientSceneScaleFactor(dummy)
@@ -342,7 +336,7 @@ export class SceneEntities {
   removeDraftPoint() {
     const draftPoint = this.getDraftPoint()
     console.log('from within removeDraftPoint', draftPoint)
-    if (draftPoint) this.scene.remove(draftPoint)
+    if (draftPoint) draftPoint.removeFromParent()
   }
 
   setupNoPointsListener({
@@ -358,16 +352,16 @@ export class SceneEntities {
     this.createIntersectionPlane()
     const draftPointGroup = new Group()
     draftPointGroup.name = DRAFT_POINT_GROUP
-    sketchDetails.origin && draftPointGroup.position.set(...sketchDetails.origin)
-    if (!this.currentSketchQuaternion && !(sketchDetails.yAxis && sketchDetails)) {
+    sketchDetails.origin &&
+      draftPointGroup.position.set(...sketchDetails.origin)
+    if (!(sketchDetails.yAxis && sketchDetails)) {
       console.error('No sketch quaternion or sketch details found')
       return
-    } else if (!this.currentSketchQuaternion) {
-      this.currentSketchQuaternion = quaternionFromUpNForward(
-        new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.zAxis)
-      )
     }
+    this.currentSketchQuaternion = quaternionFromUpNForward(
+      new Vector3(...sketchDetails.yAxis),
+      new Vector3(...sketchDetails.zAxis)
+    )
     draftPointGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
     this.scene.add(draftPointGroup)
 
@@ -412,6 +406,14 @@ export class SceneEntities {
             group: draftPointGroup,
           })
         } else {
+          // Ignore if there are huge jumps in the mouse position,
+          // that is likely a strange behavior
+          if (
+            draftPoint.position.distanceTo(new Vector3(snappedPoint.x, snappedPoint.y, 0)) >
+            100
+          ) {
+            return
+          }
           draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
         }
       },
@@ -430,10 +432,25 @@ export class SceneEntities {
         if (args.mouseEvent.which !== 1) return
         const { intersectionPoint } = args
         if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode) return
+
+        // Snap to either or both axes
+        // if the click intersects their meshes
+        const yAxisIntersection = args.intersects.find(
+          (sceneObject) => sceneObject.object.name === Y_AXIS
+        )
+        const xAxisIntersection = args.intersects.find(
+          (sceneObject) => sceneObject.object.name === X_AXIS
+        )
+        
+        const snappedClickPoint = {
+          x: yAxisIntersection ? 0 : intersectionPoint.twoD.x,
+          y: xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        }
+
         const addStartProfileAtRes = addStartProfileAt(
           kclManager.ast,
           sketchDetails.sketchPathToNode,
-          [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
+          [snappedClickPoint.x, snappedClickPoint.y]
         )
 
         if (trap(addStartProfileAtRes)) return
@@ -744,6 +761,8 @@ export class SceneEntities {
           .find((a) => a?.name === PROFILE_START)
 
         let modifiedAst
+        
+        // Snapping logic for the profile start handle
         if (profileStart) {
           const lastSegment = sketch.paths.slice(-1)[0]
           modifiedAst = addCallExpressionsToPipe({
