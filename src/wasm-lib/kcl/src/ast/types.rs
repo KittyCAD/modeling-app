@@ -61,7 +61,19 @@ impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
     }
 
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        let mut child = T::json_schema(gen);
+        let mut child = T::json_schema(gen).into_object();
+        // We want to add the start and end fields to the schema.
+        // Ideally we would add _any_ extra fields from the Node type automatically
+        // but this is a bit hard since this isn't a macro.
+        let Some(ref mut object) = &mut child.object else {
+            // This should never happen. But it will panic at compile time of docs if it does.
+            // Which is better than runtime.
+            panic!("Expected object schema for {}", T::schema_name());
+        };
+        object.properties.insert("start".to_string(), usize::json_schema(gen));
+        object.properties.insert("end".to_string(), usize::json_schema(gen));
+
+        schemars::schema::Schema::Object(child.clone())
     }
 }
 

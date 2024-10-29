@@ -18,5 +18,7 @@ layout: manual
 | `name` |[`Identifier`](/docs/kcl/types/Identifier)| Name of the item to import. | No |
 | `alias` |[`Identifier`](/docs/kcl/types/Identifier)| Rename the item using an identifier after "as". | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 
 

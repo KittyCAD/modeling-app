@@ -17,5 +17,7 @@ layout: manual
 |----------|------|-------------|----------|
 | `name` |`string`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 
 

@@ -25,6 +25,8 @@ layout: manual
 | `type` |enum: [`Identifier`](/docs/kcl/types/Identifier)|  | No |
 | `name` |`string`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 
 
 ----
@@ -43,6 +45,8 @@ layout: manual
 | `value` |[`LiteralValue`](/docs/kcl/types/LiteralValue)|  | No |
 | `raw` |`string`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 
 
 ----
