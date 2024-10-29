@@ -76,7 +76,7 @@
     "build:both": "vite build",
     "build:both:local": "yarn build:wasm && vite build",
     "pretest": "yarn remove-importmeta",
-    "test:rust": "(cd src/wasm-lib && cargo test --all && cargo clippy --all --all-targets)",
+    "test:rust": "(cd src/wasm-lib && cargo test --workspace && cargo clippy --workspace --all-targets)",
     "simpleserver": "yarn pretest && http-server ./public --cors -p 3000",
     "simpleserver:ci": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver:bg": "yarn pretest && http-server ./public --cors -p 3000 &",
