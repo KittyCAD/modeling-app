@@ -9,7 +9,7 @@ Construct a 2-dimensional circle, of the specified radius, centered at
 the provided (x, y) origin point.
 
 ```js
-circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagNode) -> Sketch
+circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 

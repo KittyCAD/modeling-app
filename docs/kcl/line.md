@@ -9,7 +9,7 @@ Draw a line relative to the current origin to a specified (x, y) away
 from the current position.
 
 ```js
-line(delta: [number], sketch: Sketch, tag?: TagNode) -> Sketch
+line(delta: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 

@@ -396,9 +396,11 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
 fn cleanup_static_links(output: &str) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
+    // Gross hack for the stupid alias types.
+    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
+
     let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
     cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
-    cleaned_output = cleaned_output.replace("`TagNode`", &link);
     let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
     cleaned_output = cleaned_output.replace("`TagIdentifier`", &link);
 

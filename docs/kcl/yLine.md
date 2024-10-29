@@ -9,7 +9,7 @@ Draw a line relative to the current origin to a specified distance away
 from the current position along the 'y' axis.
 
 ```js
-yLine(length: number, sketch: Sketch, tag?: TagNode) -> Sketch
+yLine(length: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 

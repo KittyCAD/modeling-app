@@ -9,7 +9,7 @@ Draw a line from the current origin to some absolute (x, y) point.
 
 
 ```js
-lineTo(to: [number], sketch: Sketch, tag?: TagNode) -> Sketch
+lineTo(to: [number], sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```
 
 
