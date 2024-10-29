@@ -1,7 +1,7 @@
 use super::{
     human_friendly_type, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart,
-    CallExpression, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
-    ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator, UnboxedNode,
+    CallExpression, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
+    ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -32,7 +32,7 @@ impl BinaryPart {
     }
 }
 
-impl UnboxedNode<MemberExpression> {
+impl Node<MemberExpression> {
     pub fn get_result_array(&self, exec_state: &mut ExecState, index: usize) -> Result<KclValue, KclError> {
         let array = match &self.object {
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
@@ -137,7 +137,7 @@ impl UnboxedNode<MemberExpression> {
     }
 }
 
-impl UnboxedNode<BinaryExpression> {
+impl Node<BinaryExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let left_json_value = self.left.get_result(exec_state, ctx).await?.get_json_value()?;
@@ -186,7 +186,7 @@ impl UnboxedNode<BinaryExpression> {
     }
 }
 
-impl UnboxedNode<UnaryExpression> {
+impl Node<UnaryExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.operator == UnaryOperator::Not {
             let value = self.argument.get_result(exec_state, ctx).await?.get_json_value()?;
@@ -297,7 +297,7 @@ async fn inner_execute_pipe_body(
     Ok(final_output)
 }
 
-impl UnboxedNode<CallExpression> {
+impl Node<CallExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee.name;
@@ -502,7 +502,7 @@ impl UnboxedNode<CallExpression> {
     }
 }
 
-impl UnboxedNode<TagDeclarator> {
+impl Node<TagDeclarator> {
     pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
@@ -518,7 +518,7 @@ impl UnboxedNode<TagDeclarator> {
     }
 }
 
-impl UnboxedNode<ArrayExpression> {
+impl Node<ArrayExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
@@ -543,7 +543,7 @@ impl UnboxedNode<ArrayExpression> {
     }
 }
 
-impl UnboxedNode<ArrayRangeExpression> {
+impl Node<ArrayRangeExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let metadata = Metadata::from(&self.start_element);
@@ -581,7 +581,7 @@ impl UnboxedNode<ArrayRangeExpression> {
     }
 }
 
-impl UnboxedNode<ObjectExpression> {
+impl Node<ObjectExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let mut object = serde_json::Map::new();
@@ -655,7 +655,7 @@ pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
     }
 }
 
-impl UnboxedNode<IfExpression> {
+impl Node<IfExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         // Check the `if` branch.

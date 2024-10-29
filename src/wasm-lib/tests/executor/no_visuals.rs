@@ -1,5 +1,5 @@
 use kcl_lib::{
-    ast::types::{Program, UnboxedNode},
+    ast::types::{Node, Program},
     errors::KclError,
     executor::{ExecutorContext, IdGenerator},
     parser,
@@ -58,7 +58,7 @@ async fn run(code: &str) {
     }
 }
 
-async fn setup(program: &str) -> (ExecutorContext, UnboxedNode<Program>, IdGenerator) {
+async fn setup(program: &str) -> (ExecutorContext, Node<Program>, IdGenerator) {
     let tokens = kcl_lib::token::lexer(program).unwrap();
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().unwrap();

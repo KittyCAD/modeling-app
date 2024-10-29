@@ -13,9 +13,9 @@ use crate::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
         CallExpression, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression,
         Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+        LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
         ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
-        UnaryExpression, UnaryOperator, UnboxedNode, VariableDeclaration, VariableDeclarator, VariableKind,
+        UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -31,7 +31,7 @@ type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
 
 type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
 
-pub fn run_parser(i: TokenSlice) -> Result<UnboxedNode<Program>, KclError> {
+pub fn run_parser(i: TokenSlice) -> Result<Node<Program>, KclError> {
     program.parse(i).map_err(KclError::from)
 }
 
@@ -39,7 +39,7 @@ fn expected(what: &'static str) -> StrContext {
     StrContext::Expected(StrContextValue::Description(what))
 }
 
-fn program(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
+fn program(i: TokenSlice) -> PResult<Node<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
     let mut out = function_body.parse_next(i)?;
 
@@ -70,17 +70,17 @@ fn count_in(target: char, s: &str) -> usize {
 }
 
 /// Matches all four cases of NonCodeValue
-fn non_code_node(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
+fn non_code_node(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     /// Matches one case of NonCodeValue
     /// See docstring on [NonCodeValue::NewLineBlockComment] for why that case is different to the others.
-    fn non_code_node_leading_whitespace(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
+    fn non_code_node_leading_whitespace(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
         let leading_whitespace = one_of(TokenType::Whitespace)
             .context(expected("whitespace, with a newline"))
             .parse_next(i)?;
         let has_empty_line = count_in('\n', &leading_whitespace.value) >= 2;
         non_code_node_no_leading_whitespace
-            .verify_map(|node: UnboxedNode<NonCodeNode>| match node.inner.value {
-                NonCodeValue::BlockComment { value, style } => Some(UnboxedNode::new(
+            .verify_map(|node: Node<NonCodeNode>| match node.inner.value {
+                NonCodeValue::BlockComment { value, style } => Some(Node::new(
                     NonCodeNode {
                         value: if has_empty_line {
                             NonCodeValue::NewLineBlockComment { value, style }
@@ -102,7 +102,7 @@ fn non_code_node(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
 }
 
 // Matches remaining three cases of NonCodeValue
-fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
+fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     any.verify_map(|token: Token| {
         if token.is_code_token() {
             None
@@ -124,18 +124,14 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<UnboxedNode<Non
                 },
                 _ => return None,
             };
-            Some(UnboxedNode::new(
-                NonCodeNode { value, digest: None },
-                token.start,
-                token.end,
-            ))
+            Some(Node::new(NonCodeNode { value, digest: None }, token.start, token.end))
         }
     })
     .context(expected("Non-code token (comments or whitespace)"))
     .parse_next(i)
 }
 
-fn pipe_expression(i: TokenSlice) -> PResult<UnboxedNode<PipeExpression>> {
+fn pipe_expression(i: TokenSlice) -> PResult<Node<PipeExpression>> {
     let mut non_code_meta = NonCodeMeta::default();
     let (head, noncode): (_, Vec<_>) = terminated(
         (
@@ -195,7 +191,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<UnboxedNode<PipeExpression>> {
             non_code_meta.insert(code_count, nc);
         }
     }
-    Ok(UnboxedNode {
+    Ok(Node {
         start: values.first().unwrap().start(),
         end: values.last().unwrap().end().max(max_noncode_end),
         inner: PipeExpression {
@@ -218,7 +214,7 @@ fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
-    Ok(Box::new(UnboxedNode::new(
+    Ok(Box::new(Node::new(
         Literal {
             value: LiteralValue::Bool(value),
             raw: value.to_string(),
@@ -237,7 +233,7 @@ pub fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
 }
 
 /// Parse a KCL string literal
-pub fn string_literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
+pub fn string_literal(i: TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::String => {
@@ -251,7 +247,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
         })
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         Literal {
             value,
             raw: token.value.clone(),
@@ -263,7 +259,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
 }
 
 /// Parse a KCL literal number, with no - sign.
-pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
+pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -286,7 +282,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<UnboxedNode<Lite
         })
         .context(expected("an unsigned number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         Literal {
             value,
             raw: token.value.clone(),
@@ -431,7 +427,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 
 /// A shebang is a line at the start of a file that starts with `#!`.
 /// If the shebang is present it takes up the whole line.
-fn shebang(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
+fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     // Parse the hash and the bang.
     hash.parse_next(i)?;
     bang.parse_next(i)?;
@@ -453,7 +449,7 @@ fn shebang(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
     // Strip all the whitespace after the shebang.
     opt(whitespace).parse_next(i)?;
 
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         NonCodeNode {
             value: NonCodeValue::Shebang {
                 value: format!("#!{}", value),
@@ -474,7 +470,7 @@ fn equals(i: TokenSlice) -> PResult<Token> {
 
 #[allow(clippy::large_enum_variant)]
 pub enum NonCodeOr<T> {
-    NonCode(UnboxedNode<NonCodeNode>),
+    NonCode(Node<NonCodeNode>),
     Code(T),
 }
 
@@ -489,11 +485,11 @@ fn array(i: TokenSlice) -> PResult<Expr> {
 }
 
 /// Match an empty array.
-fn array_empty(i: TokenSlice) -> PResult<UnboxedNode<ArrayExpression>> {
+fn array_empty(i: TokenSlice) -> PResult<Node<ArrayExpression>> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         ArrayExpression {
             elements: Default::default(),
             non_code_meta: Default::default(),
@@ -515,7 +511,7 @@ fn array_separator(i: TokenSlice) -> PResult<()> {
     .parse_next(i)
 }
 
-pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<UnboxedNode<ArrayExpression>> {
+pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<Node<ArrayExpression>> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
     let elements: Vec<_> = repeat(
@@ -550,7 +546,7 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<UnboxedNode<ArrayExpr
         start_nodes: Vec::new(),
         digest: None,
     };
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         ArrayExpression {
             elements,
             non_code_meta,
@@ -561,7 +557,7 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<UnboxedNode<ArrayExpr
     ))
 }
 
-fn array_end_start(i: TokenSlice) -> PResult<UnboxedNode<ArrayRangeExpression>> {
+fn array_end_start(i: TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
     let start_element = expression.parse_next(i)?;
@@ -571,7 +567,7 @@ fn array_end_start(i: TokenSlice) -> PResult<UnboxedNode<ArrayRangeExpression>> 
     let end_element = expression.parse_next(i)?;
     ignore_whitespace(i);
     let end = close_bracket(i)?.end;
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         ArrayRangeExpression {
             start_element,
             end_element,
@@ -583,7 +579,7 @@ fn array_end_start(i: TokenSlice) -> PResult<UnboxedNode<ArrayRangeExpression>> 
     ))
 }
 
-fn object_property(i: TokenSlice) -> PResult<UnboxedNode<ObjectProperty>> {
+fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     colon
@@ -597,7 +593,7 @@ fn object_property(i: TokenSlice) -> PResult<UnboxedNode<ObjectProperty>> {
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
         .parse_next(i)?;
-    Ok(UnboxedNode {
+    Ok(Node {
         start: key.start,
         end: expr.end(),
         inner: ObjectProperty {
@@ -620,7 +616,7 @@ fn property_separator(i: TokenSlice) -> PResult<()> {
 }
 
 /// Parse a KCL object value.
-pub(crate) fn object(i: TokenSlice) -> PResult<UnboxedNode<ObjectExpression>> {
+pub(crate) fn object(i: TokenSlice) -> PResult<Node<ObjectExpression>> {
     let start = open_brace(i)?.start;
     ignore_whitespace(i);
     let properties: Vec<_> = repeat(
@@ -657,7 +653,7 @@ pub(crate) fn object(i: TokenSlice) -> PResult<UnboxedNode<ObjectExpression>> {
         non_code_nodes,
         ..Default::default()
     };
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         ObjectExpression {
             properties,
             non_code_meta,
@@ -669,14 +665,10 @@ pub(crate) fn object(i: TokenSlice) -> PResult<UnboxedNode<ObjectExpression>> {
 }
 
 /// Parse the % symbol, used to substitute a curried argument from a |> (pipe).
-fn pipe_sub(i: TokenSlice) -> PResult<UnboxedNode<PipeSubstitution>> {
+fn pipe_sub(i: TokenSlice) -> PResult<Node<PipeSubstitution>> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::Operator) && token.value == PIPE_SUBSTITUTION_OPERATOR {
-            Ok(UnboxedNode::new(
-                PipeSubstitution { digest: None },
-                token.start,
-                token.end,
-            ))
+            Ok(Node::new(PipeSubstitution { digest: None }, token.start, token.end))
         } else {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -691,7 +683,7 @@ fn pipe_sub(i: TokenSlice) -> PResult<UnboxedNode<PipeSubstitution>> {
     .parse_next(i)
 }
 
-fn else_if(i: TokenSlice) -> PResult<UnboxedNode<ElseIf>> {
+fn else_if(i: TokenSlice) -> PResult<Node<ElseIf>> {
     let start = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
@@ -730,7 +722,7 @@ fn else_if(i: TokenSlice) -> PResult<UnboxedNode<ElseIf>> {
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
     ignore_whitespace(i);
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         ElseIf {
             cond,
             then_val,
@@ -795,7 +787,7 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
         .map(Box::new)?;
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
-    Ok(UnboxedNode::boxed(
+    Ok(Node::boxed(
         IfExpression {
             cond,
             then_val,
@@ -813,7 +805,7 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_expression(i: TokenSlice) -> PResult<UnboxedNode<FunctionExpression>> {
+fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
     let start = open_paren(i)?.start;
     let params = parameters(i)?;
     close_paren(i)?;
@@ -826,7 +818,7 @@ fn function_expression(i: TokenSlice) -> PResult<UnboxedNode<FunctionExpression>
     open_brace(i)?;
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         FunctionExpression {
             params,
             body,
@@ -867,7 +859,7 @@ fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usi
 
 /// Get a property of an object, or an index of an array, or a member of a collection.
 /// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
-fn member_expression(i: TokenSlice) -> PResult<UnboxedNode<MemberExpression>> {
+fn member_expression(i: TokenSlice) -> PResult<Node<MemberExpression>> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
     let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
@@ -882,7 +874,7 @@ fn member_expression(i: TokenSlice) -> PResult<UnboxedNode<MemberExpression>> {
     // which is guaranteed to have >=1 elements.
     let (property, end, computed) = members.remove(0);
     let start = id.start;
-    let initial_member_expression = UnboxedNode::new(
+    let initial_member_expression = Node::new(
         MemberExpression {
             object: MemberObject::Identifier(Box::new(id)),
             computed,
@@ -899,7 +891,7 @@ fn member_expression(i: TokenSlice) -> PResult<UnboxedNode<MemberExpression>> {
         // Take the accumulated member expression from the previous iteration,
         // and use it as the `object` of a new, bigger member expression.
         .fold(initial_member_expression, |accumulated, (property, end, computed)| {
-            UnboxedNode::new(
+            Node::new(
                 MemberExpression {
                     object: MemberObject::MemberExpression(Box::new(accumulated)),
                     computed,
@@ -914,7 +906,7 @@ fn member_expression(i: TokenSlice) -> PResult<UnboxedNode<MemberExpression>> {
 
 /// Find a noncode node which occurs just after a body item,
 /// such that if the noncode item is a comment, it might be an inline comment.
-fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
+fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     let ws = opt(whitespace).parse_next(i)?;
 
     // What is the preceding whitespace like?
@@ -942,7 +934,7 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
-                UnboxedNode::new(NonCodeNode { value, ..nc.inner }, nc.start.saturating_sub(1), nc.end)
+                Node::new(NonCodeNode { value, ..nc.inner }, nc.start.saturating_sub(1), nc.end)
             } else if has_newline {
                 // Nothing has to change, a single newline does not need preserving.
                 nc
@@ -958,10 +950,10 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
-                UnboxedNode::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end)
+                Node::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end)
             }
         })
-        .map(|nc| UnboxedNode::new(nc.inner, nc.start.saturating_sub(1), nc.end))
+        .map(|nc| Node::new(nc.inner, nc.start.saturating_sub(1), nc.end))
         .parse_next(i)?;
     Ok(nc)
 }
@@ -973,8 +965,8 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<UnboxedNode<NonCodeNode>> {
 #[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 enum WithinFunction {
-    BodyItem((BodyItem, Option<UnboxedNode<NonCodeNode>>)),
-    NonCode(UnboxedNode<NonCodeNode>),
+    BodyItem((BodyItem, Option<Node<NonCodeNode>>)),
+    NonCode(Node<NonCodeNode>),
 }
 
 impl WithinFunction {
@@ -1017,7 +1009,7 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
 }
 
 /// Parse the body of a user-defined function.
-pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
+pub fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
     let leading_whitespace_start = alt((
         peek(non_code_node).map(|_| None),
         // Subtract 1 from `t.start` to match behaviour of the old parser.
@@ -1062,7 +1054,7 @@ pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
         // deliberately put an empty line there. We should track this and preserve it.
         if let Ok(ref ws_token) = found_ws {
             if ws_token.value.contains("\n\n") {
-                things_within_body.push(WithinFunction::NonCode(UnboxedNode::new(
+                things_within_body.push(WithinFunction::NonCode(Node::new(
                     NonCodeNode {
                         value: NonCodeValue::NewLine,
                         digest: None,
@@ -1145,7 +1137,7 @@ pub fn function_body(i: TokenSlice) -> PResult<UnboxedNode<Program>> {
         end = end.max(end_ws);
     }
     end += 1;
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         Program {
             body,
             non_code_meta,
@@ -1214,7 +1206,7 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             .into(),
         ));
     }
-    Ok(UnboxedNode::boxed(
+    Ok(Node::boxed(
         ImportStatement {
             items,
             path: path_string,
@@ -1226,7 +1218,7 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     ))
 }
 
-fn import_item(i: TokenSlice) -> PResult<UnboxedNode<ImportItem>> {
+fn import_item(i: TokenSlice) -> PResult<Node<ImportItem>> {
     let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
     let start = name.start;
     let alias = opt(preceded(
@@ -1239,7 +1231,7 @@ fn import_item(i: TokenSlice) -> PResult<UnboxedNode<ImportItem>> {
     } else {
         name.end
     };
-    Ok(UnboxedNode::new(
+    Ok(Node::new(
         ImportItem {
             name,
             alias,
@@ -1266,7 +1258,7 @@ fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
 }
 
 /// Parse a return statement of a user-defined function, e.g. `return x`.
-pub fn return_stmt(i: TokenSlice) -> PResult<UnboxedNode<ReturnStatement>> {
+pub fn return_stmt(i: TokenSlice) -> PResult<Node<ReturnStatement>> {
     let start = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "return" {
@@ -1284,7 +1276,7 @@ pub fn return_stmt(i: TokenSlice) -> PResult<UnboxedNode<ReturnStatement>> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
-    Ok(UnboxedNode {
+    Ok(Node {
         start,
         end: argument.end(),
         inner: ReturnStatement { argument, digest: None },
@@ -1439,9 +1431,9 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     .map_err(|e| e.cut())?;
 
     let end = val.end();
-    Ok(Box::new(UnboxedNode {
+    Ok(Box::new(Node {
         inner: VariableDeclaration {
-            declarations: vec![UnboxedNode {
+            declarations: vec![Node {
                 start: id.start,
                 end,
                 inner: VariableDeclarator {
@@ -1459,12 +1451,12 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     }))
 }
 
-impl TryFrom<Token> for UnboxedNode<Identifier> {
+impl TryFrom<Token> for Node<Identifier> {
     type Error = KclError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
-            Ok(UnboxedNode::new(
+            Ok(Node::new(
                 Identifier {
                     name: token.value,
                     digest: None,
@@ -1485,16 +1477,16 @@ impl TryFrom<Token> for UnboxedNode<Identifier> {
 }
 
 /// Parse a KCL identifier (name of a constant/variable/function)
-fn identifier(i: TokenSlice) -> PResult<UnboxedNode<Identifier>> {
-    any.try_map(UnboxedNode::<Identifier>::try_from)
+fn identifier(i: TokenSlice) -> PResult<Node<Identifier>> {
+    any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
         .parse_next(i)
 }
 
-fn sketch_keyword(i: TokenSlice) -> PResult<UnboxedNode<Identifier>> {
+fn sketch_keyword(i: TokenSlice) -> PResult<Node<Identifier>> {
     any.try_map(|token: Token| {
         if token.token_type == TokenType::Type && token.value == "sketch" {
-            Ok(UnboxedNode::new(
+            Ok(Node::new(
                 Identifier {
                     name: token.value,
                     digest: None,
@@ -1513,12 +1505,12 @@ fn sketch_keyword(i: TokenSlice) -> PResult<UnboxedNode<Identifier>> {
     .parse_next(i)
 }
 
-impl TryFrom<Token> for UnboxedNode<TagDeclarator> {
+impl TryFrom<Token> for Node<TagDeclarator> {
     type Error = KclError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
-            Ok(UnboxedNode::new(
+            Ok(Node::new(
                 TagDeclarator {
                     // We subtract 1 from the start because the tag starts with a `$`.
                     name: token.value,
@@ -1536,7 +1528,7 @@ impl TryFrom<Token> for UnboxedNode<TagDeclarator> {
     }
 }
 
-impl UnboxedNode<TagDeclarator> {
+impl Node<TagDeclarator> {
     fn into_valid_binding_name(self) -> Result<Self, KclError> {
         // Make sure they are not assigning a variable to a stdlib function.
         if crate::std::name_in_stdlib(&self.name) {
@@ -1550,9 +1542,9 @@ impl UnboxedNode<TagDeclarator> {
 }
 
 /// Parse a Kcl tag that starts with a `$`.
-fn tag(i: TokenSlice) -> PResult<UnboxedNode<TagDeclarator>> {
+fn tag(i: TokenSlice) -> PResult<Node<TagDeclarator>> {
     dollar.parse_next(i)?;
-    any.try_map(UnboxedNode::<TagDeclarator>::try_from)
+    any.try_map(Node::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
         .parse_next(i)
 }
@@ -1572,7 +1564,7 @@ fn require_whitespace(i: TokenSlice) -> PResult<()> {
     repeat(1.., whitespace).parse_next(i)
 }
 
-fn unary_expression(i: TokenSlice) -> PResult<UnboxedNode<UnaryExpression>> {
+fn unary_expression(i: TokenSlice) -> PResult<Node<UnaryExpression>> {
     const EXPECTED: &str = "expected a unary operator (like '-', the negative-numeric operator),";
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
@@ -1587,7 +1579,7 @@ fn unary_expression(i: TokenSlice) -> PResult<UnboxedNode<UnaryExpression>> {
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
     let argument = operand.parse_next(i)?;
-    Ok(UnboxedNode {
+    Ok(Node {
         start: op_token.start,
         end: argument.end(),
         inner: UnaryExpression {
@@ -1621,7 +1613,7 @@ fn binary_expression_tokens(i: TokenSlice) -> PResult<Vec<BinaryExpressionToken>
 }
 
 /// Parse an infix binary expression.
-fn binary_expression(i: TokenSlice) -> PResult<UnboxedNode<BinaryExpression>> {
+fn binary_expression(i: TokenSlice) -> PResult<Node<BinaryExpression>> {
     // Find the slice of tokens which makes up the binary expression
     let tokens = binary_expression_tokens.parse_next(i)?;
 
@@ -1631,7 +1623,7 @@ fn binary_expression(i: TokenSlice) -> PResult<UnboxedNode<BinaryExpression>> {
     Ok(expr)
 }
 
-fn binary_expr_in_parens(i: TokenSlice) -> PResult<UnboxedNode<BinaryExpression>> {
+fn binary_expr_in_parens(i: TokenSlice) -> PResult<Node<BinaryExpression>> {
     let span_with_brackets = bracketed_section.take().parse_next(i)?;
     let n = span_with_brackets.len();
     let mut span_no_brackets = &span_with_brackets[1..n - 1];
@@ -1662,13 +1654,13 @@ fn bracketed_section(i: TokenSlice) -> PResult<usize> {
 }
 
 /// Parse a KCL expression statement.
-fn expression_stmt(i: TokenSlice) -> PResult<UnboxedNode<ExpressionStatement>> {
+fn expression_stmt(i: TokenSlice) -> PResult<Node<ExpressionStatement>> {
     let val = expression
         .context(expected(
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
-    Ok(UnboxedNode {
+    Ok(Node {
         start: val.start(),
         end: val.end(),
         inner: ExpressionStatement {
@@ -1867,8 +1859,8 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     let params: Vec<Parameter> = candidates
         .into_iter()
         .map(|(arg_name, type_, optional)| {
-            let identifier = UnboxedNode::<Identifier>::try_from(arg_name)
-                .and_then(UnboxedNode::<Identifier>::into_valid_binding_name)?;
+            let identifier =
+                Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
 
             Ok(Parameter {
                 identifier,
@@ -1904,8 +1896,8 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), KclError> {
     Ok(())
 }
 
-impl UnboxedNode<Identifier> {
-    fn into_valid_binding_name(self) -> Result<UnboxedNode<Identifier>, KclError> {
+impl Node<Identifier> {
+    fn into_valid_binding_name(self) -> Result<Node<Identifier>, KclError> {
         // Make sure they are not assigning a variable to a stdlib function.
         if crate::std::name_in_stdlib(&self.name) {
             return Err(KclError::Syntax(KclErrorDetails {
@@ -1918,15 +1910,15 @@ impl UnboxedNode<Identifier> {
 }
 
 /// Introduce a new name, which binds some value.
-fn binding_name(i: TokenSlice) -> PResult<UnboxedNode<Identifier>> {
+fn binding_name(i: TokenSlice) -> PResult<Node<Identifier>> {
     identifier
         .context(expected("an identifier, which will be the name of some value"))
-        .try_map(UnboxedNode::<Identifier>::into_valid_binding_name)
+        .try_map(Node::<Identifier>::into_valid_binding_name)
         .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)
 }
 
-fn fn_call(i: TokenSlice) -> PResult<UnboxedNode<CallExpression>> {
+fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     let fn_name = identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
@@ -1976,7 +1968,7 @@ fn fn_call(i: TokenSlice) -> PResult<UnboxedNode<CallExpression>> {
         }
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
-    Ok(UnboxedNode {
+    Ok(Node {
         start: fn_name.start,
         end,
         inner: CallExpression {
@@ -2159,14 +2151,14 @@ const mySk1 = startSketchAt([0, 0])"#;
         let expr = function_expression.parse_next(&mut slice).unwrap();
         assert_eq!(
             expr,
-            UnboxedNode::new(
+            Node::new(
                 FunctionExpression {
                     params: Default::default(),
-                    body: UnboxedNode::new(
+                    body: Node::new(
                         Program {
-                            body: vec![BodyItem::ReturnStatement(UnboxedNode::new(
+                            body: vec![BodyItem::ReturnStatement(Node::new(
                                 ReturnStatement {
-                                    argument: Expr::Literal(Box::new(UnboxedNode::new(
+                                    argument: Expr::Literal(Box::new(Node::new(
                                         Literal {
                                             value: 2u32.into(),
                                             raw: "2".to_owned(),
@@ -2182,7 +2174,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                             ))],
                             non_code_meta: NonCodeMeta {
                                 non_code_nodes: Default::default(),
-                                start_nodes: vec![UnboxedNode::new(
+                                start_nodes: vec![Node::new(
                                     NonCodeNode {
                                         value: NonCodeValue::NewLine,
                                         digest: None
@@ -2215,7 +2207,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
         let tokens = crate::token::lexer(test_input).unwrap();
         let mut slice = tokens.as_slice();
-        let UnboxedNode {
+        let Node {
             inner: PipeExpression {
                 body, non_code_meta, ..
             },
@@ -2246,7 +2238,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(test_program).unwrap();
         let Program { non_code_meta, .. } = function_body.parse(&tokens).unwrap().inner;
         assert_eq!(
-            vec![UnboxedNode::new(
+            vec![Node::new(
                 NonCodeNode {
                     value: NonCodeValue::BlockComment {
                         value: "this is a comment".to_owned(),
@@ -2262,7 +2254,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
         assert_eq!(
             Some(&vec![
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::InlineComment {
                             value: "block\n  comment".to_owned(),
@@ -2273,7 +2265,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     60,
                     82,
                 ),
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::NewLine,
                         digest: None,
@@ -2286,7 +2278,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         );
 
         assert_eq!(
-            Some(&vec![UnboxedNode::new(
+            Some(&vec![Node::new(
                 NonCodeNode {
                     value: NonCodeValue::BlockComment {
                         value: "this is also a comment".to_owned(),
@@ -2487,7 +2479,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         for (i, (test_program, expected)) in [
             (
                 "//hi",
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hi".to_owned(),
@@ -2501,7 +2493,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             ),
             (
                 "/*hello*/",
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -2515,7 +2507,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             ),
             (
                 "/* hello */",
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -2529,7 +2521,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             ),
             (
                 "/* \nhello */",
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -2544,7 +2536,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             (
                 "
                 /* hello */",
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "hello".to_owned(),
@@ -2561,7 +2553,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 "
   
                 /* hello */",
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::NewLineBlockComment {
                             value: "hello".to_owned(),
@@ -2578,7 +2570,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 "
 
                 /* hello */",
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::NewLineBlockComment {
                             value: "hello".to_owned(),
@@ -2593,7 +2585,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             (
                 r#"/* block
                     comment */"#,
-                UnboxedNode::new(
+                Node::new(
                     NonCodeNode {
                         value: NonCodeValue::BlockComment {
                             value: "block\n                    comment".to_owned(),
@@ -2737,10 +2729,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn test_math_parse() {
         let tokens = crate::token::lexer(r#"5 + "a""#).unwrap();
         let actual = crate::parser::Parser::new(tokens).ast().unwrap().inner.body;
-        let expr = UnboxedNode::boxed(
+        let expr = Node::boxed(
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(Box::new(UnboxedNode::new(
+                left: BinaryPart::Literal(Box::new(Node::new(
                     Literal {
                         value: 5u32.into(),
                         raw: "5".to_owned(),
@@ -2749,7 +2741,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     0,
                     1,
                 ))),
-                right: BinaryPart::Literal(Box::new(UnboxedNode::new(
+                right: BinaryPart::Literal(Box::new(Node::new(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -2763,7 +2755,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             0,
             7,
         );
-        let expected = vec![BodyItem::ExpressionStatement(UnboxedNode::new(
+        let expected = vec![BodyItem::ExpressionStatement(Node::new(
             ExpressionStatement {
                 expression: Expr::BinaryExpression(expr),
                 digest: None,
@@ -2857,13 +2849,13 @@ const mySk1 = startSketchAt([0, 0])"#;
         let code = "5 +6";
         let parser = crate::parser::Parser::new(crate::token::lexer(code).unwrap());
         let result = parser.ast().unwrap();
-        let expected_result = UnboxedNode::new(
+        let expected_result = Node::new(
             Program {
-                body: vec![BodyItem::ExpressionStatement(UnboxedNode::new(
+                body: vec![BodyItem::ExpressionStatement(Node::new(
                     ExpressionStatement {
-                        expression: Expr::BinaryExpression(UnboxedNode::boxed(
+                        expression: Expr::BinaryExpression(Node::boxed(
                             BinaryExpression {
-                                left: BinaryPart::Literal(Box::new(UnboxedNode::new(
+                                left: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
                                         value: 5u32.into(),
                                         raw: "5".to_string(),
@@ -2873,7 +2865,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                                     1,
                                 ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(Box::new(UnboxedNode::new(
+                                right: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
                                         value: 6u32.into(),
                                         raw: "6".to_string(),
@@ -3176,7 +3168,7 @@ e
         for (i, (params, expect_ok)) in [
             (
                 vec![Parameter {
-                    identifier: UnboxedNode::no_src(Identifier {
+                    identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
                     }),
@@ -3188,7 +3180,7 @@ e
             ),
             (
                 vec![Parameter {
-                    identifier: UnboxedNode::no_src(Identifier {
+                    identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
                     }),
@@ -3201,7 +3193,7 @@ e
             (
                 vec![
                     Parameter {
-                        identifier: UnboxedNode::no_src(Identifier {
+                        identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
                         }),
@@ -3210,7 +3202,7 @@ e
                         digest: None,
                     },
                     Parameter {
-                        identifier: UnboxedNode::no_src(Identifier {
+                        identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
                         }),
@@ -3224,7 +3216,7 @@ e
             (
                 vec![
                     Parameter {
-                        identifier: UnboxedNode::no_src(Identifier {
+                        identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
                         }),
@@ -3233,7 +3225,7 @@ e
                         digest: None,
                     },
                     Parameter {
-                        identifier: UnboxedNode::no_src(Identifier {
+                        identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
                         }),

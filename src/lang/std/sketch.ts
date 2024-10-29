@@ -55,7 +55,7 @@ import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -1786,8 +1786,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
     if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]
-        ?.value as UnboxedNode<Identifier>
+      const tag = firstArg.properties[intersectTag]?.value as Node<Identifier>
       const pathToTagProp: PathToNode = [
         ...pathToObjectExp,
         [intersectTag, 'index'],
@@ -1869,7 +1868,7 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
 } as const
 
 export function changeSketchArguments(
-  node: UnboxedNode<Program>,
+  node: Node<Program>,
   programMemory: ProgramMemory,
   sourceRangeOrPath:
     | {
@@ -1881,7 +1880,7 @@ export function changeSketchArguments(
         pathToNode: PathToNode
       },
   input: SegmentInputs
-): { modifiedAst: UnboxedNode<Program>; pathToNode: PathToNode } | Error {
+): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   const _node = { ...node }
   const thePath =
     sourceRangeOrPath.type === 'sourceRange'
@@ -1910,7 +1909,7 @@ export function changeSketchArguments(
 }
 
 export function getConstraintInfo(
-  callExpression: UnboxedNode<CallExpression>,
+  callExpression: Node<CallExpression>,
   code: string,
   pathToNode: PathToNode
 ): ConstrainInfo[] {
@@ -1948,7 +1947,7 @@ export function compareVec2Epsilon2(
 }
 
 interface CreateLineFnCallArgs {
-  node: UnboxedNode<Program>
+  node: Node<Program>
   programMemory: ProgramMemory
   input: SegmentInputs
   fnName: ToolTip
@@ -1965,7 +1964,7 @@ export function addNewSketchLn({
   spliceBetween = false,
 }: CreateLineFnCallArgs):
   | {
-      modifiedAst: UnboxedNode<Program>
+      modifiedAst: Node<Program>
       pathToNode: PathToNode
     }
   | Error {
@@ -1975,12 +1974,12 @@ export function addNewSketchLn({
     return new Error('not a sketch line helper')
   }
 
-  getNodeFromPath<UnboxedNode<VariableDeclarator>>(
+  getNodeFromPath<Node<VariableDeclarator>>(
     node,
     pathToNode,
     'VariableDeclarator'
   )
-  getNodeFromPath<UnboxedNode<PipeExpression | CallExpression>>(
+  getNodeFromPath<Node<PipeExpression | CallExpression>>(
     node,
     pathToNode,
     'PipeExpression'
@@ -1999,13 +1998,13 @@ export function addCallExpressionsToPipe({
   pathToNode,
   expressions,
 }: {
-  node: UnboxedNode<Program>
+  node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
-  expressions: UnboxedNode<CallExpression>[]
+  expressions: Node<CallExpression>[]
 }) {
   const _node = { ...node }
-  const pipeExpression = getNodeFromPath<UnboxedNode<PipeExpression>>(
+  const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
     _node,
     pathToNode,
     'PipeExpression'
@@ -2054,7 +2053,7 @@ export function replaceSketchLine({
   replaceExistingCallback,
   referencedSegment,
 }: {
-  node: UnboxedNode<Program>
+  node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
   fnName: ToolTip
@@ -2063,7 +2062,7 @@ export function replaceSketchLine({
   referencedSegment?: Path
 }):
   | {
-      modifiedAst: UnboxedNode<Program>
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNode: PathToNode
     }
@@ -2115,7 +2114,7 @@ function addTagToChamfer(
   edgeCutMeta: EdgeCutInfo | null
 ):
   | {
-      modifiedAst: UnboxedNode<Program>
+      modifiedAst: Node<Program>
       tag: string
     }
   | Error {
@@ -2242,7 +2241,7 @@ export function addTagForSketchOnFace(
   edgeCutMeta: EdgeCutInfo | null
 ):
   | {
-      modifiedAst: UnboxedNode<Program>
+      modifiedAst: Node<Program>
       tag: string
     }
   | Error {
@@ -2282,12 +2281,12 @@ function isAngleLiteral(lineArugement: Expr): boolean {
 
 type addTagFn = (
   a: AddTagInfo
-) => { modifiedAst: UnboxedNode<Program>; tag: string } | Error
+) => { modifiedAst: Node<Program>; tag: string } | Error
 
 function addTag(tagIndex = 2): addTagFn {
   return ({ node, pathToNode }) => {
     const _node = { ...node }
-    const callExpr = getNodeFromPath<UnboxedNode<CallExpression>>(
+    const callExpr = getNodeFromPath<Node<CallExpression>>(
       _node,
       pathToNode,
       'CallExpression'

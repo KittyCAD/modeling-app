@@ -17,7 +17,7 @@ import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { err, reportRejection } from 'lib/trap'
 import { toSync } from './utils'
 import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 
@@ -85,7 +85,7 @@ class MockEngineCommandManager {
 }
 
 export async function enginelessExecutor(
-  ast: UnboxedNode<Program> | Error,
+  ast: Node<Program> | Error,
   pm: ProgramMemory | Error = ProgramMemory.empty(),
   idGenerator: IdGenerator = defaultIdGenerator()
 ): Promise<ExecState> {
@@ -110,7 +110,7 @@ export async function enginelessExecutor(
 }
 
 export async function executor(
-  ast: UnboxedNode<Program>,
+  ast: Node<Program>,
   pm: ProgramMemory = ProgramMemory.empty(),
   idGenerator: IdGenerator = defaultIdGenerator()
 ): Promise<ExecState> {

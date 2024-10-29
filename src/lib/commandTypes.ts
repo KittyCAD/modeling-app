@@ -6,7 +6,7 @@ import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -25,8 +25,8 @@ export interface KclExpression {
 }
 export interface KclExpressionWithVariable extends KclExpression {
   variableName: string
-  variableDeclarationAst: UnboxedNode<VariableDeclaration>
-  variableIdentifierAst: UnboxedNode<Identifier>
+  variableDeclarationAst: Node<VariableDeclaration>
+  variableIdentifierAst: Node<Identifier>
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable

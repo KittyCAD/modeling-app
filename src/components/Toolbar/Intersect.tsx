@@ -19,7 +19,7 @@ import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -137,7 +137,7 @@ export async function applyConstraintIntersect({
 }: {
   selectionRanges: Selections
 }): Promise<{
-  modifiedAst: UnboxedNode<Program>
+  modifiedAst: Node<Program>
   pathToNodeMap: PathToNodeMap
 }> {
   const info = intersectInfo({

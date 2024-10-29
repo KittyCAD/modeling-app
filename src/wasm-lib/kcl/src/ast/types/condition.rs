@@ -3,8 +3,8 @@ use crate::executor::SourceRange;
 use super::BoxNode;
 use super::ConstraintLevel;
 use super::Hover;
+use super::Node;
 use super::NodeList;
-use super::UnboxedNode;
 use super::{Digest, Expr};
 use databake::*;
 use schemars::JsonSchema;
@@ -41,13 +41,13 @@ pub struct ElseIf {
 
 // Source code metadata
 
-impl UnboxedNode<IfExpression> {
+impl Node<IfExpression> {
     fn source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange::from(self)]
     }
 }
 
-impl UnboxedNode<ElseIf> {
+impl Node<ElseIf> {
     #[allow(dead_code)]
     fn source_ranges(&self) -> Vec<SourceRange> {
         vec![SourceRange([self.start, self.end])]
@@ -56,7 +56,7 @@ impl UnboxedNode<ElseIf> {
 
 // IDE support and refactors
 
-impl UnboxedNode<IfExpression> {
+impl Node<IfExpression> {
     /// Get the constraint level.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {

@@ -44,7 +44,7 @@ import {
 import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -202,7 +202,7 @@ const Overlay = ({
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
-  const _node1 = getNodeFromPath<UnboxedNode<CallExpression>>(
+  const _node1 = getNodeFromPath<Node<CallExpression>>(
     kclManager.ast,
     overlay.pathToNode,
     'CallExpression'
@@ -382,7 +382,7 @@ export async function deleteSegment({
   pathToNode: PathToNode
   sketchDetails: SketchDetails | null
 }) {
-  let modifiedAst: UnboxedNode<Program> | Error = kclManager.ast
+  let modifiedAst: Node<Program> | Error = kclManager.ast
   const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 
   const shouldContinueSegDelete = dependentRanges.length

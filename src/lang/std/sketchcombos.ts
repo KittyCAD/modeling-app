@@ -49,7 +49,7 @@ import {
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -326,7 +326,7 @@ const setHorzVertDistanceCreateNode =
     if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
 
     const valueUsedInTransform = roundOff(literalArg - refNum, 2)
-    let finalValue: UnboxedNode<Expr> = createBinaryExpressionWithUnary([
+    let finalValue: Node<Expr> = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, !index),
       forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
@@ -1542,7 +1542,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceSegName,
   forceValueUsedInTransform,
 }: {
-  ast: UnboxedNode<Program>
+  ast: Node<Program>
   selectionRanges: Selections
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
@@ -1550,7 +1550,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceValueUsedInTransform?: BinaryPart
 }):
   | {
-      modifiedAst: UnboxedNode<Program>
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNodeMap: PathToNodeMap
       tagInfo: {
@@ -1621,7 +1621,7 @@ export function transformAstSketchLines({
   forceValueUsedInTransform,
   referencedSegmentRange,
 }: {
-  ast: UnboxedNode<Program>
+  ast: Node<Program>
   selectionRanges: Selections | PathToNode[]
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
@@ -1630,7 +1630,7 @@ export function transformAstSketchLines({
   referencedSegmentRange?: Selection['range']
 }):
   | {
-      modifiedAst: UnboxedNode<Program>
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNodeMap: PathToNodeMap
     }
@@ -1648,7 +1648,7 @@ export function transformAstSketchLines({
 
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
-    const callExp = getNode<UnboxedNode<CallExpression>>('CallExpression')
+    const callExp = getNode<Node<CallExpression>>('CallExpression')
     if (err(callExp)) return callExp
     const varDec = getNode<VariableDeclarator>('VariableDeclarator')
     if (err(varDec)) return varDec
@@ -1810,13 +1810,13 @@ function createSegAngle(referenceSegName: string): BinaryPart {
 function createSegEnd(
   referenceSegName: string,
   isX: boolean
-): UnboxedNode<CallExpression> {
+): Node<CallExpression> {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
     createIdentifier(referenceSegName),
   ])
 }
 
-function createLastSeg(isX: boolean): UnboxedNode<CallExpression> {
+function createLastSeg(isX: boolean): Node<CallExpression> {
   return createCallExpression(isX ? 'lastSegX' : 'lastSegY', [
     createPipeSubstitution(),
   ])
@@ -1834,7 +1834,7 @@ export function getConstraintLevelFromSourceRange(
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
-  const nodeMeta = getNodeFromPath<UnboxedNode<CallExpression>>(
+  const nodeMeta = getNodeFromPath<Node<CallExpression>>(
     ast,
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'

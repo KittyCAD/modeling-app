@@ -1,6 +1,6 @@
 extern crate alloc;
 use kcl_lib::ast::types::{
-    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, Program, UnboxedNode, VariableDeclaration,
+    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, Node, Program, VariableDeclaration,
     VariableDeclarator, VariableKind,
 };
 use kcl_macros::parse;
@@ -9,13 +9,13 @@ use pretty_assertions::assert_eq;
 #[test]
 fn basic() {
     let actual = parse!("const y = 4");
-    let expected = UnboxedNode {
+    let expected = Node {
         inner: Program {
-            body: vec![BodyItem::VariableDeclaration(Box::new(UnboxedNode::new(
+            body: vec![BodyItem::VariableDeclaration(Box::new(Node::new(
                 VariableDeclaration {
-                    declarations: vec![UnboxedNode::new(
+                    declarations: vec![Node::new(
                         VariableDeclarator {
-                            id: UnboxedNode::new(
+                            id: Node::new(
                                 Identifier {
                                     name: "y".to_owned(),
                                     digest: None,
@@ -23,7 +23,7 @@ fn basic() {
                                 6,
                                 7,
                             ),
-                            init: Expr::Literal(Box::new(UnboxedNode::new(
+                            init: Expr::Literal(Box::new(Node::new(
                                 Literal {
                                     value: LiteralValue::IInteger(4),
                                     raw: "4".to_owned(),

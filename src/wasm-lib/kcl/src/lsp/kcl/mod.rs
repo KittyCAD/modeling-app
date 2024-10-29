@@ -40,7 +40,7 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Expr, NodeRef, UnboxedNode, VariableKind},
+    ast::types::{Expr, Node, NodeRef, VariableKind},
     executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
@@ -99,7 +99,7 @@ pub struct Backend {
     /// Token maps.
     pub token_map: DashMap<String, Vec<crate::token::Token>>,
     /// AST maps.
-    pub ast_map: DashMap<String, UnboxedNode<crate::ast::types::Program>>,
+    pub ast_map: DashMap<String, Node<crate::ast::types::Program>>,
     /// Memory maps.
     pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
     /// Current code.

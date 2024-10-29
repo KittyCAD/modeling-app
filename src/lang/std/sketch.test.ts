@@ -17,7 +17,7 @@ import {
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
@@ -688,7 +688,7 @@ describe('testing getConstraintInfo', () => {
       ]
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<UnboxedNode<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression>>(
         ast,
         pathToNode,
         'CallExpression'
@@ -842,7 +842,7 @@ describe('testing getConstraintInfo', () => {
       ]
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<UnboxedNode<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression>>(
         ast,
         pathToNode,
         'CallExpression'
@@ -1198,7 +1198,7 @@ describe('testing getConstraintInfo', () => {
       ]
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<UnboxedNode<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression>>(
         ast,
         pathToNode,
         'CallExpression'

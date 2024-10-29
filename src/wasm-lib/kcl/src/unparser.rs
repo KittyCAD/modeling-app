@@ -4,8 +4,8 @@ use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         Expr, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeValue, ObjectExpression,
-        PipeExpression, Program, TagDeclarator, UnaryExpression, UnboxedNode, VariableDeclaration, VariableKind,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression,
+        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -511,7 +511,7 @@ impl IfExpression {
     }
 }
 
-impl UnboxedNode<PipeExpression> {
+impl Node<PipeExpression> {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let pipe = self
             .body

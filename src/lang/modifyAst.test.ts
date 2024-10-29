@@ -21,7 +21,7 @@ import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 beforeAll(async () => {
   await initPromise
@@ -110,7 +110,7 @@ describe('Testing findUniqueName', () => {
         { type: 'Identifier', name: 'yo07', start: 0, end: 0 },
         { type: 'Identifier', name: 'yo08', start: 0, end: 0 },
         { type: 'Identifier', name: 'yo09', start: 0, end: 0 },
-      ] satisfies UnboxedNode<Identifier>[]),
+      ] satisfies Node<Identifier>[]),
       'yo',
       2
     )

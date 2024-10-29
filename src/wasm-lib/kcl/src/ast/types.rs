@@ -48,14 +48,14 @@ pub enum Definition<'a> {
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-pub struct UnboxedNode<T> {
+pub struct Node<T> {
     #[serde(flatten)]
     pub inner: T,
     pub start: usize,
     pub end: usize,
 }
 
-impl<T> UnboxedNode<T> {
+impl<T> Node<T> {
     pub fn new(inner: T, start: usize, end: usize) -> Self {
         Self { inner, start, end }
     }
@@ -69,7 +69,7 @@ impl<T> UnboxedNode<T> {
     }
 
     pub fn boxed(inner: T, start: usize, end: usize) -> BoxNode<T> {
-        Box::new(UnboxedNode { inner, start, end })
+        Box::new(Node { inner, start, end })
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
@@ -77,7 +77,7 @@ impl<T> UnboxedNode<T> {
     }
 }
 
-impl<T> Deref for UnboxedNode<T> {
+impl<T> Deref for Node<T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -85,26 +85,26 @@ impl<T> Deref for UnboxedNode<T> {
     }
 }
 
-impl<T> DerefMut for UnboxedNode<T> {
+impl<T> DerefMut for Node<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.inner
     }
 }
 
-impl<T: fmt::Display> fmt::Display for UnboxedNode<T> {
+impl<T: fmt::Display> fmt::Display for Node<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.inner.fmt(f)
     }
 }
 
-impl<T> From<UnboxedNode<T>> for crate::executor::SourceRange {
-    fn from(v: UnboxedNode<T>) -> Self {
+impl<T> From<Node<T>> for crate::executor::SourceRange {
+    fn from(v: Node<T>) -> Self {
         Self([v.start, v.end])
     }
 }
 
-impl<T> From<&UnboxedNode<T>> for crate::executor::SourceRange {
-    fn from(v: &UnboxedNode<T>) -> Self {
+impl<T> From<&Node<T>> for crate::executor::SourceRange {
+    fn from(v: &Node<T>) -> Self {
         Self([v.start, v.end])
     }
 }
@@ -115,9 +115,9 @@ impl<T> From<&BoxNode<T>> for crate::executor::SourceRange {
     }
 }
 
-pub type BoxNode<T> = Box<UnboxedNode<T>>;
-pub type NodeList<T> = Vec<UnboxedNode<T>>;
-pub type NodeRef<'a, T> = &'a UnboxedNode<T>;
+pub type BoxNode<T> = Box<Node<T>>;
+pub type NodeList<T> = Vec<Node<T>>;
+pub type NodeRef<'a, T> = &'a Node<T>;
 
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -134,7 +134,7 @@ pub struct Program {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<Program> {
+impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
         let completions = Arc::new(Mutex::new(vec![]));
@@ -413,7 +413,7 @@ impl Program {
     }
 
     /// Replace a variable declaration with the given name with a new one.
-    pub fn replace_variable(&mut self, name: &str, declarator: UnboxedNode<VariableDeclarator>) {
+    pub fn replace_variable(&mut self, name: &str, declarator: Node<VariableDeclarator>) {
         for item in &mut self.body {
             match item {
                 BodyItem::ImportStatement(_) => {
@@ -488,9 +488,9 @@ impl Program {
 #[serde(tag = "type")]
 pub enum BodyItem {
     ImportStatement(BoxNode<ImportStatement>),
-    ExpressionStatement(UnboxedNode<ExpressionStatement>),
+    ExpressionStatement(Node<ExpressionStatement>),
     VariableDeclaration(BoxNode<VariableDeclaration>),
-    ReturnStatement(UnboxedNode<ReturnStatement>),
+    ReturnStatement(Node<ReturnStatement>),
 }
 
 impl BodyItem {
@@ -878,7 +878,7 @@ pub struct NonCodeNode {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<NonCodeNode> {
+impl Node<NonCodeNode> {
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
     }
@@ -1055,7 +1055,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
 }
 
 impl NonCodeMeta {
-    pub fn insert(&mut self, i: usize, new: UnboxedNode<NonCodeNode>) {
+    pub fn insert(&mut self, i: usize, new: Node<NonCodeNode>) {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
 
@@ -1076,16 +1076,16 @@ impl NonCodeMeta {
 #[serde(tag = "type")]
 pub struct ImportItem {
     /// Name of the item to import.
-    pub name: UnboxedNode<Identifier>,
+    pub name: Node<Identifier>,
     /// Rename the item using an identifier after "as".
-    pub alias: Option<UnboxedNode<Identifier>>,
+    pub alias: Option<Node<Identifier>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<ImportItem> {
+impl Node<ImportItem> {
     pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
         match &mut self.alias {
             Some(alias) => {
@@ -1137,7 +1137,7 @@ pub struct ImportStatement {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<ImportStatement> {
+impl Node<ImportStatement> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
@@ -1183,7 +1183,7 @@ pub struct ExpressionStatement {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
-    pub callee: UnboxedNode<Identifier>,
+    pub callee: Node<Identifier>,
     pub arguments: Vec<Expr>,
     pub optional: bool,
 
@@ -1192,13 +1192,13 @@ pub struct CallExpression {
     pub digest: Option<Digest>,
 }
 
-impl From<UnboxedNode<CallExpression>> for Expr {
-    fn from(call_expression: UnboxedNode<CallExpression>) -> Self {
+impl From<Node<CallExpression>> for Expr {
+    fn from(call_expression: Node<CallExpression>) -> Self {
         Expr::CallExpression(Box::new(call_expression))
     }
 }
 
-impl UnboxedNode<CallExpression> {
+impl Node<CallExpression> {
     /// Return the constraint level for this call expression.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.arguments.is_empty() {
@@ -1218,8 +1218,8 @@ impl UnboxedNode<CallExpression> {
 }
 
 impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<UnboxedNode<Self>, KclError> {
-        Ok(UnboxedNode::no_src(Self {
+    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
+        Ok(Node::no_src(Self {
             callee: Identifier::new(name),
             arguments,
             optional: false,
@@ -1345,8 +1345,8 @@ pub struct VariableDeclaration {
     pub digest: Option<Digest>,
 }
 
-impl From<&UnboxedNode<VariableDeclaration>> for Vec<CompletionItem> {
-    fn from(declaration: &UnboxedNode<VariableDeclaration>) -> Self {
+impl From<&Node<VariableDeclaration>> for Vec<CompletionItem> {
+    fn from(declaration: &Node<VariableDeclaration>) -> Self {
         let mut completions = vec![];
         for variable in &declaration.declarations {
             completions.push(CompletionItem {
@@ -1377,7 +1377,7 @@ impl From<&UnboxedNode<VariableDeclaration>> for Vec<CompletionItem> {
     }
 }
 
-impl UnboxedNode<VariableDeclaration> {
+impl Node<VariableDeclaration> {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
         let recasted = self.recast(&FormatOptions::default(), 0);
         // If the recasted value only has one line, don't fold it.
@@ -1589,7 +1589,7 @@ impl VariableKind {
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
     /// The identifier of the variable.
-    pub id: UnboxedNode<Identifier>,
+    pub id: Node<Identifier>,
     /// The value of the variable.
     pub init: Expr,
 
@@ -1599,8 +1599,8 @@ pub struct VariableDeclarator {
 }
 
 impl VariableDeclarator {
-    pub fn new(name: &str, init: Expr) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(name: &str, init: Expr) -> Node<Self> {
+        Node::no_src(Self {
             id: Identifier::new(name),
             init,
             digest: None,
@@ -1625,7 +1625,7 @@ pub struct Literal {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<Literal> {
+impl Node<Literal> {
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1636,8 +1636,8 @@ impl UnboxedNode<Literal> {
 }
 
 impl Literal {
-    pub fn new(value: LiteralValue) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(value: LiteralValue) -> Node<Self> {
+        Node::no_src(Self {
             raw: JValue::from(value.clone()).to_string(),
             value,
             digest: None,
@@ -1645,8 +1645,8 @@ impl Literal {
     }
 }
 
-impl From<UnboxedNode<Literal>> for KclValue {
-    fn from(literal: UnboxedNode<Literal>) -> Self {
+impl From<Node<Literal>> for KclValue {
+    fn from(literal: Node<Literal>) -> Self {
         KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
@@ -1656,8 +1656,8 @@ impl From<UnboxedNode<Literal>> for KclValue {
     }
 }
 
-impl From<&UnboxedNode<Literal>> for KclValue {
-    fn from(literal: &UnboxedNode<Literal>) -> Self {
+impl From<&Node<Literal>> for KclValue {
+    fn from(literal: &Node<Literal>) -> Self {
         KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
@@ -1690,7 +1690,7 @@ pub struct Identifier {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<Identifier> {
+impl Node<Identifier> {
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1701,8 +1701,8 @@ impl UnboxedNode<Identifier> {
 }
 
 impl Identifier {
-    pub fn new(name: &str) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Self {
             name: name.to_string(),
             digest: None,
         })
@@ -1728,7 +1728,7 @@ pub struct TagDeclarator {
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
-pub type TagNode = UnboxedNode<TagDeclarator>;
+pub type TagNode = Node<TagDeclarator>;
 
 impl From<&BoxNode<TagDeclarator>> for KclValue {
     fn from(tag: &BoxNode<TagDeclarator>) -> Self {
@@ -1736,14 +1736,14 @@ impl From<&BoxNode<TagDeclarator>> for KclValue {
     }
 }
 
-impl From<&UnboxedNode<TagDeclarator>> for KclValue {
-    fn from(tag: &UnboxedNode<TagDeclarator>) -> Self {
+impl From<&Node<TagDeclarator>> for KclValue {
+    fn from(tag: &Node<TagDeclarator>) -> Self {
         KclValue::TagDeclarator(Box::new(tag.clone()))
     }
 }
 
-impl From<&UnboxedNode<TagDeclarator>> for TagIdentifier {
-    fn from(tag: &UnboxedNode<TagDeclarator>) -> Self {
+impl From<&Node<TagDeclarator>> for TagIdentifier {
+    fn from(tag: &Node<TagDeclarator>) -> Self {
         TagIdentifier {
             value: tag.name.clone(),
             info: None,
@@ -1754,8 +1754,8 @@ impl From<&UnboxedNode<TagDeclarator>> for TagIdentifier {
     }
 }
 
-impl From<&UnboxedNode<TagDeclarator>> for CompletionItem {
-    fn from(tag: &UnboxedNode<TagDeclarator>) -> Self {
+impl From<&Node<TagDeclarator>> for CompletionItem {
+    fn from(tag: &Node<TagDeclarator>) -> Self {
         CompletionItem {
             label: tag.name.to_string(),
             label_details: None,
@@ -1779,7 +1779,7 @@ impl From<&UnboxedNode<TagDeclarator>> for CompletionItem {
     }
 }
 
-impl UnboxedNode<TagDeclarator> {
+impl Node<TagDeclarator> {
     /// Get the constraint level for this identifier.
     /// TagDeclarator are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1808,8 +1808,8 @@ impl UnboxedNode<TagDeclarator> {
 }
 
 impl TagDeclarator {
-    pub fn new(name: &str) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Self {
             name: name.to_string(),
             digest: None,
         })
@@ -1834,13 +1834,13 @@ pub struct PipeSubstitution {
 }
 
 impl PipeSubstitution {
-    pub fn new() -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self { digest: None })
+    pub fn new() -> Node<Self> {
+        Node::no_src(Self { digest: None })
     }
 }
 
-impl From<UnboxedNode<PipeSubstitution>> for Expr {
-    fn from(pipe_substitution: UnboxedNode<PipeSubstitution>) -> Self {
+impl From<Node<PipeSubstitution>> for Expr {
+    fn from(pipe_substitution: Node<PipeSubstitution>) -> Self {
         Expr::PipeSubstitution(Box::new(pipe_substitution))
     }
 }
@@ -1859,13 +1859,13 @@ pub struct ArrayExpression {
     pub digest: Option<Digest>,
 }
 
-impl From<UnboxedNode<ArrayExpression>> for Expr {
-    fn from(array_expression: UnboxedNode<ArrayExpression>) -> Self {
+impl From<Node<ArrayExpression>> for Expr {
+    fn from(array_expression: Node<ArrayExpression>) -> Self {
         Expr::ArrayExpression(Box::new(array_expression))
     }
 }
 
-impl UnboxedNode<ArrayExpression> {
+impl Node<ArrayExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.elements.is_empty() {
             return ConstraintLevel::Ignore {
@@ -1883,8 +1883,8 @@ impl UnboxedNode<ArrayExpression> {
 }
 
 impl ArrayExpression {
-    pub fn new(elements: Vec<Expr>) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(elements: Vec<Expr>) -> Node<Self> {
+        Node::no_src(Self {
             elements,
             non_code_meta: Default::default(),
             digest: None,
@@ -1932,13 +1932,13 @@ pub struct ArrayRangeExpression {
     pub digest: Option<Digest>,
 }
 
-impl From<UnboxedNode<ArrayRangeExpression>> for Expr {
-    fn from(array_expression: UnboxedNode<ArrayRangeExpression>) -> Self {
+impl From<Node<ArrayRangeExpression>> for Expr {
+    fn from(array_expression: Node<ArrayRangeExpression>) -> Self {
         Expr::ArrayRangeExpression(Box::new(array_expression))
     }
 }
 
-impl UnboxedNode<ArrayRangeExpression> {
+impl Node<ArrayRangeExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         let mut constraint_levels = ConstraintLevels::new();
         constraint_levels.push(self.start_element.get_constraint_level());
@@ -1949,8 +1949,8 @@ impl UnboxedNode<ArrayRangeExpression> {
 }
 
 impl ArrayRangeExpression {
-    pub fn new(start_element: Expr, end_element: Expr) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(start_element: Expr, end_element: Expr) -> Node<Self> {
+        Node::no_src(Self {
             start_element,
             end_element,
             end_inclusive: true,
@@ -1996,7 +1996,7 @@ pub struct ObjectExpression {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<ObjectExpression> {
+impl Node<ObjectExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.properties.is_empty() {
             return ConstraintLevel::Ignore {
@@ -2014,8 +2014,8 @@ impl UnboxedNode<ObjectExpression> {
 }
 
 impl ObjectExpression {
-    pub fn new(properties: NodeList<ObjectProperty>) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(properties: NodeList<ObjectProperty>) -> Node<Self> {
+        Node::no_src(Self {
             properties,
             non_code_meta: Default::default(),
             digest: None,
@@ -2053,7 +2053,7 @@ impl ObjectExpression {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
-    pub key: UnboxedNode<Identifier>,
+    pub key: Node<Identifier>,
     pub value: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2061,7 +2061,7 @@ pub struct ObjectProperty {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<ObjectProperty> {
+impl Node<ObjectProperty> {
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
         let source_range: SourceRange = self.clone().into();
         let inner_source_range: SourceRange = self.key.clone().into();
@@ -2191,7 +2191,7 @@ pub struct MemberExpression {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<MemberExpression> {
+impl Node<MemberExpression> {
     /// Get the constraint level for a member expression.
     /// This is always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2250,7 +2250,7 @@ pub struct BinaryExpression {
     pub digest: Option<Digest>,
 }
 
-impl UnboxedNode<BinaryExpression> {
+impl Node<BinaryExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         let left_constraint_level = self.left.get_constraint_level();
         let right_constraint_level = self.right.get_constraint_level();
@@ -2263,8 +2263,8 @@ impl UnboxedNode<BinaryExpression> {
 }
 
 impl BinaryExpression {
-    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Node<Self> {
+        Node::no_src(Self {
             operator,
             left,
             right,
@@ -2431,8 +2431,8 @@ pub struct UnaryExpression {
 }
 
 impl UnaryExpression {
-    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Node<Self> {
+        Node::no_src(Self {
             operator,
             argument,
             digest: None,
@@ -2504,13 +2504,13 @@ pub struct PipeExpression {
     pub digest: Option<Digest>,
 }
 
-impl From<UnboxedNode<PipeExpression>> for Expr {
-    fn from(pipe_expression: UnboxedNode<PipeExpression>) -> Self {
+impl From<Node<PipeExpression>> for Expr {
+    fn from(pipe_expression: Node<PipeExpression>) -> Self {
         Expr::PipeExpression(Box::new(pipe_expression))
     }
 }
 
-impl UnboxedNode<PipeExpression> {
+impl Node<PipeExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.body.is_empty() {
             return ConstraintLevel::Ignore {
@@ -2534,8 +2534,8 @@ impl UnboxedNode<PipeExpression> {
 }
 
 impl PipeExpression {
-    pub fn new(body: Vec<Expr>) -> UnboxedNode<Self> {
-        UnboxedNode::no_src(Self {
+    pub fn new(body: Vec<Expr>) -> Node<Self> {
+        Node::no_src(Self {
             body,
             non_code_meta: Default::default(),
             digest: None,
@@ -2626,7 +2626,7 @@ pub enum FnArgType {
 #[serde(tag = "type")]
 pub struct Parameter {
     /// The parameter's label or name.
-    pub identifier: UnboxedNode<Identifier>,
+    pub identifier: Node<Identifier>,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
     #[serde(skip)]
@@ -2645,7 +2645,7 @@ pub struct Parameter {
 #[serde(tag = "type")]
 pub struct FunctionExpression {
     pub params: Vec<Parameter>,
-    pub body: UnboxedNode<Program>,
+    pub body: Node<Program>,
     #[serde(skip)]
     pub return_type: Option<FnArgType>,
 
@@ -2663,7 +2663,7 @@ impl std::fmt::Display for RequiredParamAfterOptionalParam {
     }
 }
 
-impl UnboxedNode<FunctionExpression> {
+impl Node<FunctionExpression> {
     /// Function expressions don't really apply.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Ignore {
@@ -3176,7 +3176,7 @@ const cylinder = startSketchOn('-XZ')
             Some(FnArgType::Object {
                 properties: vec![
                     Parameter {
-                        identifier: UnboxedNode::new(
+                        identifier: Node::new(
                             Identifier {
                                 name: "thing".to_owned(),
                                 digest: None,
@@ -3189,7 +3189,7 @@ const cylinder = startSketchOn('-XZ')
                         digest: None
                     },
                     Parameter {
-                        identifier: UnboxedNode::new(
+                        identifier: Node::new(
                             Identifier {
                                 name: "things".to_owned(),
                                 digest: None,
@@ -3202,7 +3202,7 @@ const cylinder = startSketchOn('-XZ')
                         digest: None
                     },
                     Parameter {
-                        identifier: UnboxedNode::new(
+                        identifier: Node::new(
                             Identifier {
                                 name: "more".to_owned(),
                                 digest: None
@@ -3244,7 +3244,7 @@ const cylinder = startSketchOn('-XZ')
             Some(FnArgType::Object {
                 properties: vec![
                     Parameter {
-                        identifier: UnboxedNode::new(
+                        identifier: Node::new(
                             Identifier {
                                 name: "thing".to_owned(),
                                 digest: None
@@ -3257,7 +3257,7 @@ const cylinder = startSketchOn('-XZ')
                         digest: None
                     },
                     Parameter {
-                        identifier: UnboxedNode::new(
+                        identifier: Node::new(
                             Identifier {
                                 name: "things".to_owned(),
                                 digest: None
@@ -3270,7 +3270,7 @@ const cylinder = startSketchOn('-XZ')
                         digest: None
                     },
                     Parameter {
-                        identifier: UnboxedNode::new(
+                        identifier: Node::new(
                             Identifier {
                                 name: "more".to_owned(),
                                 digest: None
@@ -3293,9 +3293,9 @@ const cylinder = startSketchOn('-XZ')
             (
                 "no params",
                 (0..=0),
-                UnboxedNode::no_src(FunctionExpression {
+                Node::no_src(FunctionExpression {
                     params: vec![],
-                    body: UnboxedNode::no_src(Program {
+                    body: Node::no_src(Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         digest: None,
@@ -3307,9 +3307,9 @@ const cylinder = startSketchOn('-XZ')
             (
                 "all required params",
                 (1..=1),
-                UnboxedNode::no_src(FunctionExpression {
+                Node::no_src(FunctionExpression {
                     params: vec![Parameter {
-                        identifier: UnboxedNode::no_src(Identifier {
+                        identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
                         }),
@@ -3317,7 +3317,7 @@ const cylinder = startSketchOn('-XZ')
                         optional: false,
                         digest: None,
                     }],
-                    body: UnboxedNode {
+                    body: Node {
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
@@ -3333,9 +3333,9 @@ const cylinder = startSketchOn('-XZ')
             (
                 "all optional params",
                 (0..=1),
-                UnboxedNode::no_src(FunctionExpression {
+                Node::no_src(FunctionExpression {
                     params: vec![Parameter {
-                        identifier: UnboxedNode::no_src(Identifier {
+                        identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
                         }),
@@ -3343,7 +3343,7 @@ const cylinder = startSketchOn('-XZ')
                         optional: true,
                         digest: None,
                     }],
-                    body: UnboxedNode {
+                    body: Node {
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
@@ -3359,10 +3359,10 @@ const cylinder = startSketchOn('-XZ')
             (
                 "mixed params",
                 (1..=2),
-                UnboxedNode::no_src(FunctionExpression {
+                Node::no_src(FunctionExpression {
                     params: vec![
                         Parameter {
-                            identifier: UnboxedNode::no_src(Identifier {
+                            identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
                             }),
@@ -3371,7 +3371,7 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         },
                         Parameter {
-                            identifier: UnboxedNode::no_src(Identifier {
+                            identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,
                             }),
@@ -3380,7 +3380,7 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         },
                     ],
-                    body: UnboxedNode {
+                    body: Node {
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
@@ -3411,7 +3411,7 @@ const cylinder = startSketchOn('-XZ')
 
         // We want to get the bool and verify it is a bool.
 
-        let BodyItem::ExpressionStatement(UnboxedNode {
+        let BodyItem::ExpressionStatement(Node {
             inner:
                 ExpressionStatement {
                     expression,

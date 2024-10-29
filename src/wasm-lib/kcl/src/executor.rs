@@ -26,8 +26,8 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, NodeRef, Program,
-        TagDeclarator, TagNode, UnboxedNode,
+        human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, Program,
+        TagDeclarator, TagNode,
     },
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
@@ -1804,7 +1804,7 @@ pub struct ChamferSurface {
     /// The id for the chamfer surface.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<UnboxedNode<TagDeclarator>>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1818,7 +1818,7 @@ pub struct FilletSurface {
     /// The id for the fillet surface.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<UnboxedNode<TagDeclarator>>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1832,7 +1832,7 @@ pub struct ExtrudePlane {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<UnboxedNode<TagDeclarator>>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1846,7 +1846,7 @@ pub struct ExtrudeArc {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<UnboxedNode<TagDeclarator>>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1862,7 +1862,7 @@ impl ExtrudeSurface {
         }
     }
 
-    pub fn get_tag(&self) -> Option<UnboxedNode<TagDeclarator>> {
+    pub fn get_tag(&self) -> Option<Node<TagDeclarator>> {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
@@ -2570,7 +2570,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::ast::types::{Identifier, Parameter, UnboxedNode};
+    use crate::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::token::lexer(code)?;
@@ -3542,8 +3542,8 @@ let w = f() + f()
                 meta: Default::default(),
             })
         }
-        fn ident(s: &'static str) -> UnboxedNode<Identifier> {
-            UnboxedNode::no_src(Identifier {
+        fn ident(s: &'static str) -> Node<Identifier> {
+            Node::no_src(Identifier {
                 name: s.to_owned(),
                 digest: None,
             })
@@ -3638,9 +3638,9 @@ let w = f() + f()
             ),
         ] {
             // Run each test.
-            let func_expr = &UnboxedNode::no_src(FunctionExpression {
+            let func_expr = &Node::no_src(FunctionExpression {
                 params,
-                body: UnboxedNode {
+                body: Node {
                     inner: crate::ast::types::Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),

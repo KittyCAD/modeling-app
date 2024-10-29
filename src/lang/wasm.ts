@@ -42,7 +42,7 @@ import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
 import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
-import { UnboxedNode } from 'wasm-lib/kcl/bindings/UnboxedNode'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -123,11 +123,11 @@ export const initPromise = initialise()
 export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
   ranges.map(([start, end]) => [start, end])
 
-export const parse = (code: string | Error): UnboxedNode<Program> | Error => {
+export const parse = (code: string | Error): Node<Program> | Error => {
   if (err(code)) return code
 
   try {
-    const program: UnboxedNode<Program> = parse_wasm(code)
+    const program: Node<Program> = parse_wasm(code)
     return program
   } catch (e: any) {
     // throw e
@@ -379,7 +379,7 @@ export function sketchFromKclValue(
 }
 
 export const executor = async (
-  node: UnboxedNode<Program>,
+  node: Node<Program>,
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
@@ -403,7 +403,7 @@ export const executor = async (
 }
 
 export const _executor = async (
-  node: UnboxedNode<Program>,
+  node: Node<Program>,
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
@@ -494,13 +494,13 @@ export function lexer(str: string): Token[] | Error {
 
 export const modifyAstForSketch = async (
   engineCommandManager: EngineCommandManager,
-  ast: UnboxedNode<Program>,
+  ast: Node<Program>,
   variableName: string,
   currentPlane: string,
   engineId: string
-): Promise<UnboxedNode<Program>> => {
+): Promise<Node<Program>> => {
   try {
-    const updatedAst: UnboxedNode<Program> = await modify_ast_for_sketch_wasm(
+    const updatedAst: Node<Program> = await modify_ast_for_sketch_wasm(
       engineCommandManager,
       JSON.stringify(ast),
       variableName,

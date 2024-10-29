@@ -1,18 +1,18 @@
 use crate::{
-    ast::types::{BinaryExpression, BinaryOperator, BinaryPart, UnboxedNode},
+    ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
 };
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
 /// into a binary expression tree.
-pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<UnboxedNode<BinaryExpression>, KclError> {
+pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, KclError> {
     let rpn = postfix(infix_tokens);
     evaluate(rpn)
 }
 
 /// Parses a list of tokens (in postfix order) into a binary expression tree.
-fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<UnboxedNode<BinaryExpression>, KclError> {
+fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, KclError> {
     let source_ranges = source_range(&rpn);
     let mut operand_stack: Vec<BinaryPart> = Vec::new();
     let e = KclError::Internal(KclErrorDetails {
@@ -31,7 +31,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<UnboxedNode<BinaryExpress
                 let start = left.start();
                 let end = right.end();
 
-                BinaryPart::BinaryExpression(UnboxedNode::boxed(
+                BinaryPart::BinaryExpression(Node::boxed(
                     BinaryExpression {
                         operator,
                         left,
@@ -130,7 +130,7 @@ mod tests {
     fn parse_and_evaluate() {
         /// Make a literal
         fn lit(n: u8) -> BinaryPart {
-            BinaryPart::Literal(Box::new(UnboxedNode::new(
+            BinaryPart::Literal(Box::new(Node::new(
                 Literal {
                     value: n.into(),
                     raw: n.to_string(),
@@ -149,7 +149,7 @@ mod tests {
                 BinaryOperator::Mul.into(),
                 lit(2).into(),
                 BinaryOperator::Div.into(),
-                BinaryPart::BinaryExpression(UnboxedNode::boxed(
+                BinaryPart::BinaryExpression(Node::boxed(
                     BinaryExpression {
                         operator: BinaryOperator::Sub,
                         left: lit(1),
