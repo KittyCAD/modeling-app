@@ -37,7 +37,7 @@ impl LiteralValue {
 
 impl From<UnboxedNode<Literal>> for Expr {
     fn from(literal: UnboxedNode<Literal>) -> Self {
-        Expr::Literal(literal)
+        Expr::Literal(Box::new(literal))
     }
 }
 

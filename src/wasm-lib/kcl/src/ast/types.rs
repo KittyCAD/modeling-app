@@ -531,7 +531,7 @@ impl From<&BodyItem> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Expr {
-    Literal(UnboxedNode<Literal>),
+    Literal(BoxNode<Literal>),
     Identifier(BoxNode<Identifier>),
     TagDeclarator(BoxNode<TagDeclarator>),
     BinaryExpression(BoxNode<BinaryExpression>),
@@ -750,7 +750,7 @@ impl From<&Expr> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
-    Literal(UnboxedNode<Literal>),
+    Literal(BoxNode<Literal>),
     Identifier(BoxNode<Identifier>),
     BinaryExpression(BoxNode<BinaryExpression>),
     CallExpression(BoxNode<CallExpression>),
@@ -1658,6 +1658,17 @@ impl From<UnboxedNode<Literal>> for KclValue {
 
 impl From<&UnboxedNode<Literal>> for KclValue {
     fn from(literal: &UnboxedNode<Literal>) -> Self {
+        KclValue::UserVal(UserVal {
+            value: JValue::from(literal.value.clone()),
+            meta: vec![Metadata {
+                source_range: literal.into(),
+            }],
+        })
+    }
+}
+
+impl From<&BoxNode<Literal>> for KclValue {
+    fn from(literal: &BoxNode<Literal>) -> Self {
         KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {

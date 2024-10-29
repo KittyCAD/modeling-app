@@ -206,7 +206,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<UnboxedNode<PipeExpression>> {
     })
 }
 
-fn bool_value(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
+fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
@@ -218,7 +218,7 @@ fn bool_value(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
-    Ok(UnboxedNode::new(
+    Ok(Box::new(UnboxedNode::new(
         Literal {
             value: LiteralValue::Bool(value),
             raw: value.to_string(),
@@ -226,11 +226,12 @@ fn bool_value(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
         },
         token.start,
         token.end,
-    ))
+    )))
 }
 
-pub fn literal(i: TokenSlice) -> PResult<UnboxedNode<Literal>> {
+pub fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
     alt((string_literal, unsigned_number_literal))
+        .map(Box::new)
         .context(expected("a KCL literal, like 'myPart' or 3"))
         .parse_next(i)
 }
@@ -854,7 +855,7 @@ fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usi
     let _ = open_bracket.parse_next(i)?;
     let property = alt((
         sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
-        literal.map(Box::new).map(LiteralIdentifier::Literal),
+        literal.map(LiteralIdentifier::Literal),
         identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
@@ -2165,7 +2166,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         Program {
                             body: vec![BodyItem::ReturnStatement(UnboxedNode::new(
                                 ReturnStatement {
-                                    argument: Expr::Literal(UnboxedNode::new(
+                                    argument: Expr::Literal(Box::new(UnboxedNode::new(
                                         Literal {
                                             value: 2u32.into(),
                                             raw: "2".to_owned(),
@@ -2173,7 +2174,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                                         },
                                         32,
                                         33,
-                                    )),
+                                    ))),
                                     digest: None,
                                 },
                                 25,
@@ -2739,7 +2740,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let expr = UnboxedNode::boxed(
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(UnboxedNode::new(
+                left: BinaryPart::Literal(Box::new(UnboxedNode::new(
                     Literal {
                         value: 5u32.into(),
                         raw: "5".to_owned(),
@@ -2747,8 +2748,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                     },
                     0,
                     1,
-                )),
-                right: BinaryPart::Literal(UnboxedNode::new(
+                ))),
+                right: BinaryPart::Literal(Box::new(UnboxedNode::new(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -2756,7 +2757,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     },
                     4,
                     7,
-                )),
+                ))),
                 digest: None,
             },
             0,
@@ -2862,7 +2863,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     ExpressionStatement {
                         expression: Expr::BinaryExpression(UnboxedNode::boxed(
                             BinaryExpression {
-                                left: BinaryPart::Literal(UnboxedNode::new(
+                                left: BinaryPart::Literal(Box::new(UnboxedNode::new(
                                     Literal {
                                         value: 5u32.into(),
                                         raw: "5".to_string(),
@@ -2870,9 +2871,9 @@ const mySk1 = startSketchAt([0, 0])"#;
                                     },
                                     0,
                                     1,
-                                )),
+                                ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(UnboxedNode::new(
+                                right: BinaryPart::Literal(Box::new(UnboxedNode::new(
                                     Literal {
                                         value: 6u32.into(),
                                         raw: "6".to_string(),
@@ -2880,7 +2881,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                                     },
                                     3,
                                     4,
-                                )),
+                                ))),
                                 digest: None,
                             },
                             0,

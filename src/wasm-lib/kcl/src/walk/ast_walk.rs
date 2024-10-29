@@ -99,7 +99,7 @@ where
     WalkT: Walker<'a>,
 {
     match node {
-        BinaryPart::Literal(lit) => f.walk(lit.into()),
+        BinaryPart::Literal(lit) => f.walk(lit.as_ref().into()),
         BinaryPart::Identifier(id) => f.walk(id.as_ref().into()),
         BinaryPart::BinaryExpression(be) => f.walk(be.as_ref().into()),
         BinaryPart::CallExpression(ce) => f.walk(ce.as_ref().into()),
@@ -115,7 +115,7 @@ where
     WalkT: Walker<'a>,
 {
     match node {
-        Expr::Literal(lit) => f.walk(lit.into()),
+        Expr::Literal(lit) => f.walk(lit.as_ref().into()),
         Expr::TagDeclarator(tag) => f.walk(tag.as_ref().into()),
 
         Expr::Identifier(id) => {

@@ -130,7 +130,7 @@ mod tests {
     fn parse_and_evaluate() {
         /// Make a literal
         fn lit(n: u8) -> BinaryPart {
-            BinaryPart::Literal(UnboxedNode::new(
+            BinaryPart::Literal(Box::new(UnboxedNode::new(
                 Literal {
                     value: n.into(),
                     raw: n.to_string(),
@@ -138,7 +138,7 @@ mod tests {
                 },
                 0,
                 0,
-            ))
+            )))
         }
         let tests: Vec<Vec<BinaryExpressionToken>> = vec![
             // 3 + 4 × 2 ÷ ( 1 − 5 ) ^ 2 ^ 3

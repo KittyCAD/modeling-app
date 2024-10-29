@@ -23,7 +23,7 @@ fn basic() {
                                 6,
                                 7,
                             ),
-                            init: Expr::Literal(UnboxedNode::new(
+                            init: Expr::Literal(Box::new(UnboxedNode::new(
                                 Literal {
                                     value: LiteralValue::IInteger(4),
                                     raw: "4".to_owned(),
@@ -31,7 +31,7 @@ fn basic() {
                                 },
                                 10,
                                 11,
-                            )),
+                            ))),
                             digest: None,
                         },
                         6,
