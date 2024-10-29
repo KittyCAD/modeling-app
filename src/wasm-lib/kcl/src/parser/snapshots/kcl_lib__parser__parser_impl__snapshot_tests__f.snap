@@ -1,79 +1,55 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3620
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "x"
-                  },
-                  "start": 6,
-                  "end": 7
-                },
-                "init": {
-                  "type": "Literal",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Literal",
-                    "value": 1,
-                    "raw": "1"
-                  },
-                  "start": 10,
-                  "end": 11
-                }
-              },
-              "start": 6,
-              "end": 11
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 11
-      }
-    ],
-    "nonCodeMeta": {
-      "type": "UnboxedNode",
-      "kind": {
-        "nonCodeNodes": {
-          "0": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "NonCodeNode",
-                "value": {
-                  "type": "inlineComment",
-                  "value": "this is an inline comment",
-                  "style": "line"
-                }
-              },
-              "start": 11,
-              "end": 40
-            }
-          ]
-        },
-        "start": []
-      },
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 11,
+          "id": {
+            "end": 7,
+            "name": "x",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 11,
+            "raw": "1",
+            "start": 10,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 1
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 11,
+      "kind": "const",
       "start": 0,
-      "end": 0
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
+  ],
+  "end": 40,
+  "nonCodeMeta": {
+    "nonCodeNodes": {
+      "0": [
+        {
+          "end": 40,
+          "start": 11,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "inlineComment",
+            "value": "this is an inline comment",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "startNodes": []
   },
-  "start": 0,
-  "end": 40
+  "start": 0
 }

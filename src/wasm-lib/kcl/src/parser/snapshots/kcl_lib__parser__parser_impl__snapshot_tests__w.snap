@@ -1,74 +1,52 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3672
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "pt1"
-                  },
-                  "start": 6,
-                  "end": 9
-                },
-                "init": {
-                  "type": "MemberExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "MemberExpression",
-                    "object": {
-                      "type": "Identifier",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "Identifier",
-                        "name": "b1"
-                      },
-                      "start": 12,
-                      "end": 14
-                    },
-                    "property": {
-                      "type": "Literal",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "Literal",
-                        "value": "zero",
-                        "raw": "'zero'"
-                      },
-                      "start": 15,
-                      "end": 21
-                    },
-                    "computed": false
-                  },
-                  "start": 12,
-                  "end": 22
-                }
-              },
-              "start": 6,
-              "end": 22
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 22
-      }
-    ]
-  },
-  "start": 0,
-  "end": 22
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 22,
+          "id": {
+            "end": 9,
+            "name": "pt1",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": false,
+            "end": 22,
+            "object": {
+              "end": 14,
+              "name": "b1",
+              "start": 12,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "end": 21,
+              "raw": "'zero'",
+              "start": 15,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "zero"
+            },
+            "start": 12,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 22,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 22,
+  "start": 0
 }

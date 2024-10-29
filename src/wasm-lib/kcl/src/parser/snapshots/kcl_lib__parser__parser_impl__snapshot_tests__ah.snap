@@ -1,74 +1,52 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3706
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "myBox"
-                  },
-                  "start": 6,
-                  "end": 11
-                },
-                "init": {
-                  "type": "CallExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "CallExpression",
-                    "callee": {
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "Identifier",
-                        "name": "startSketchAt"
-                      },
-                      "start": 14,
-                      "end": 27
-                    },
-                    "arguments": [
-                      {
-                        "type": "Identifier",
-                        "type": "UnboxedNode",
-                        "kind": {
-                          "type": "Identifier",
-                          "name": "p"
-                        },
-                        "start": 28,
-                        "end": 29
-                      }
-                    ],
-                    "optional": false
-                  },
-                  "start": 14,
-                  "end": 30
-                }
-              },
-              "start": 6,
-              "end": 30
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 30
-      }
-    ]
-  },
-  "start": 0,
-  "end": 30
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 30,
+          "id": {
+            "end": 11,
+            "name": "myBox",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 29,
+                "name": "p",
+                "start": 28,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 27,
+              "name": "startSketchAt",
+              "start": 14,
+              "type": "Identifier"
+            },
+            "end": 30,
+            "optional": false,
+            "start": 14,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 30,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 30,
+  "start": 0
 }

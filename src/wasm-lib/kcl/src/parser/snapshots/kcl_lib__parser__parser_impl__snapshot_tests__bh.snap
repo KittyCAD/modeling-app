@@ -1,132 +1,92 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3792
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "obj"
-                  },
-                  "start": 6,
-                  "end": 9
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 42,
+          "id": {
+            "end": 9,
+            "name": "obj",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 42,
+            "properties": [
+              {
+                "end": 30,
+                "key": {
+                  "end": 19,
+                  "name": "center",
+                  "start": 13,
+                  "type": "Identifier"
                 },
-                "init": {
-                  "type": "ObjectExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "ObjectExpression",
-                    "properties": [
-                      {
-                        "type": "UnboxedNode",
-                        "kind": {
-                          "type": "ObjectProperty",
-                          "key": {
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "Identifier",
-                              "name": "center"
-                            },
-                            "start": 13,
-                            "end": 19
-                          },
-                          "value": {
-                            "type": "ArrayExpression",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "ArrayExpression",
-                              "elements": [
-                                {
-                                  "type": "Literal",
-                                  "type": "UnboxedNode",
-                                  "kind": {
-                                    "type": "Literal",
-                                    "value": 10,
-                                    "raw": "10"
-                                  },
-                                  "start": 23,
-                                  "end": 25
-                                },
-                                {
-                                  "type": "Literal",
-                                  "type": "UnboxedNode",
-                                  "kind": {
-                                    "type": "Literal",
-                                    "value": 10,
-                                    "raw": "10"
-                                  },
-                                  "start": 27,
-                                  "end": 29
-                                }
-                              ]
-                            },
-                            "start": 22,
-                            "end": 30
-                          }
-                        },
-                        "start": 13,
-                        "end": 30
-                      },
-                      {
-                        "type": "UnboxedNode",
-                        "kind": {
-                          "type": "ObjectProperty",
-                          "key": {
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "Identifier",
-                              "name": "radius"
-                            },
-                            "start": 32,
-                            "end": 38
-                          },
-                          "value": {
-                            "type": "Literal",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "Literal",
-                              "value": 5,
-                              "raw": "5"
-                            },
-                            "start": 40,
-                            "end": 41
-                          }
-                        },
-                        "start": 32,
-                        "end": 41
-                      }
-                    ]
-                  },
-                  "start": 12,
-                  "end": 42
+                "start": 13,
+                "type": "ObjectProperty",
+                "value": {
+                  "elements": [
+                    {
+                      "end": 25,
+                      "raw": "10",
+                      "start": 23,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 10
+                    },
+                    {
+                      "end": 29,
+                      "raw": "10",
+                      "start": 27,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 10
+                    }
+                  ],
+                  "end": 30,
+                  "start": 22,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               },
-              "start": 6,
-              "end": 42
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 42
-      }
-    ]
-  },
-  "start": 0,
-  "end": 42
+              {
+                "end": 41,
+                "key": {
+                  "end": 38,
+                  "name": "radius",
+                  "start": 32,
+                  "type": "Identifier"
+                },
+                "start": 32,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 41,
+                  "raw": "5",
+                  "start": 40,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 5
+                }
+              }
+            ],
+            "start": 12,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 42,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 42,
+  "start": 0
 }

@@ -1,55 +1,39 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3716
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "ExpressionStatement",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "ExpressionStatement",
-          "expression": {
-            "type": "BinaryExpression",
-            "type": "UnboxedNode",
-            "kind": {
-              "type": "BinaryExpression",
-              "operator": "+",
-              "left": {
-                "type": "Literal",
-                "type": "UnboxedNode",
-                "kind": {
-                  "type": "Literal",
-                  "value": 5,
-                  "raw": "5"
-                },
-                "start": 0,
-                "end": 1
-              },
-              "right": {
-                "type": "Literal",
-                "type": "UnboxedNode",
-                "kind": {
-                  "type": "Literal",
-                  "value": "a",
-                  "raw": "\"a\""
-                },
-                "start": 4,
-                "end": 7
-              }
-            },
-            "start": 0,
-            "end": 7
-          }
+  "body": [
+    {
+      "end": 7,
+      "expression": {
+        "end": 7,
+        "left": {
+          "end": 1,
+          "raw": "5",
+          "start": 0,
+          "type": "Literal",
+          "type": "Literal",
+          "value": 5
+        },
+        "operator": "+",
+        "right": {
+          "end": 7,
+          "raw": "\"a\"",
+          "start": 4,
+          "type": "Literal",
+          "type": "Literal",
+          "value": "a"
         },
         "start": 0,
-        "end": 7
-      }
-    ]
-  },
-  "start": 0,
-  "end": 7
+        "type": "BinaryExpression",
+        "type": "BinaryExpression"
+      },
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
+    }
+  ],
+  "end": 7,
+  "start": 0
 }

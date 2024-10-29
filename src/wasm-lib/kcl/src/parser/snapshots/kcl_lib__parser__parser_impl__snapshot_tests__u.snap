@@ -1,133 +1,93 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3670
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 34,
+          "id": {
+            "end": 10,
+            "name": "prop",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": false,
+            "end": 34,
+            "object": {
+              "computed": false,
+              "end": 29,
+              "object": {
+                "computed": false,
+                "end": 23,
+                "object": {
+                  "computed": false,
+                  "end": 19,
+                  "object": {
+                    "end": 15,
+                    "name": "yo",
+                    "start": 13,
                     "type": "Identifier",
-                    "name": "prop"
+                    "type": "Identifier"
                   },
-                  "start": 6,
-                  "end": 10
-                },
-                "init": {
-                  "type": "MemberExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "MemberExpression",
-                    "object": {
-                      "type": "MemberExpression",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "MemberExpression",
-                        "object": {
-                          "type": "MemberExpression",
-                          "type": "UnboxedNode",
-                          "kind": {
-                            "type": "MemberExpression",
-                            "object": {
-                              "type": "MemberExpression",
-                              "type": "UnboxedNode",
-                              "kind": {
-                                "type": "MemberExpression",
-                                "object": {
-                                  "type": "Identifier",
-                                  "type": "UnboxedNode",
-                                  "kind": {
-                                    "type": "Identifier",
-                                    "name": "yo"
-                                  },
-                                  "start": 13,
-                                  "end": 15
-                                },
-                                "property": {
-                                  "type": "Identifier",
-                                  "type": "UnboxedNode",
-                                  "kind": {
-                                    "type": "Identifier",
-                                    "name": "one"
-                                  },
-                                  "start": 16,
-                                  "end": 19
-                                },
-                                "computed": false
-                              },
-                              "start": 13,
-                              "end": 19
-                            },
-                            "property": {
-                              "type": "Identifier",
-                              "type": "UnboxedNode",
-                              "kind": {
-                                "type": "Identifier",
-                                "name": "two"
-                              },
-                              "start": 20,
-                              "end": 23
-                            },
-                            "computed": false
-                          },
-                          "start": 13,
-                          "end": 23
-                        },
-                        "property": {
-                          "type": "Identifier",
-                          "type": "UnboxedNode",
-                          "kind": {
-                            "type": "Identifier",
-                            "name": "three"
-                          },
-                          "start": 24,
-                          "end": 29
-                        },
-                        "computed": false
-                      },
-                      "start": 13,
-                      "end": 29
-                    },
-                    "property": {
-                      "type": "Identifier",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "Identifier",
-                        "name": "four"
-                      },
-                      "start": 30,
-                      "end": 34
-                    },
-                    "computed": false
+                  "property": {
+                    "end": 19,
+                    "name": "one",
+                    "start": 16,
+                    "type": "Identifier",
+                    "type": "Identifier"
                   },
                   "start": 13,
-                  "end": 34
-                }
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
+                },
+                "property": {
+                  "end": 23,
+                  "name": "two",
+                  "start": 20,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "start": 13,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
-              "start": 6,
-              "end": 34
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 34
-      }
-    ]
-  },
-  "start": 0,
-  "end": 34
+              "property": {
+                "end": 29,
+                "name": "three",
+                "start": 24,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 13,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "property": {
+              "end": 34,
+              "name": "four",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 13,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 34,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 34,
+  "start": 0
 }

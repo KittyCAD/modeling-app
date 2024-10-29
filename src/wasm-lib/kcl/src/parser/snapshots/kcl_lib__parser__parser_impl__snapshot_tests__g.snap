@@ -1,100 +1,69 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3621
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 58,
+          "id": {
+            "end": 4,
+            "name": "x",
+            "start": 3,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 32,
+                    "name": "sg",
+                    "start": 30,
                     "type": "Identifier",
-                    "name": "x"
+                    "type": "Identifier"
                   },
-                  "start": 3,
-                  "end": 4
+                  "end": 32,
+                  "start": 23,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 },
-                "init": {
-                  "type": "FunctionExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "FunctionExpression",
-                    "params": [],
-                    "body": {
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "body": [
-                          {
-                            "type": "ReturnStatement",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "ReturnStatement",
-                              "argument": {
-                                "type": "Identifier",
-                                "type": "UnboxedNode",
-                                "kind": {
-                                  "type": "Identifier",
-                                  "name": "sg"
-                                },
-                                "start": 30,
-                                "end": 32
-                              }
-                            },
-                            "start": 23,
-                            "end": 32
-                          },
-                          {
-                            "type": "ReturnStatement",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "ReturnStatement",
-                              "argument": {
-                                "type": "Identifier",
-                                "type": "UnboxedNode",
-                                "kind": {
-                                  "type": "Identifier",
-                                  "name": "sg"
-                                },
-                                "start": 48,
-                                "end": 50
-                              }
-                            },
-                            "start": 41,
-                            "end": 50
-                          }
-                        ]
-                      },
-                      "start": 13,
-                      "end": 58
-                    }
+                {
+                  "argument": {
+                    "end": 50,
+                    "name": "sg",
+                    "start": 48,
+                    "type": "Identifier",
+                    "type": "Identifier"
                   },
-                  "start": 7,
-                  "end": 58
+                  "end": 50,
+                  "start": 41,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 }
-              },
-              "start": 3,
-              "end": 58
-            }
-          ],
-          "kind": "fn"
-        },
-        "start": 0,
-        "end": 58
-      }
-    ]
-  },
-  "start": 0,
-  "end": 58
+              ],
+              "end": 58,
+              "start": 13
+            },
+            "end": 58,
+            "params": [],
+            "start": 7,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 3,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 58,
+      "kind": "fn",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 58,
+  "start": 0
 }

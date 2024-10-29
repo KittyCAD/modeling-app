@@ -1,83 +1,58 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3628
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "x"
-                  },
-                  "start": 6,
-                  "end": 7
-                },
-                "init": {
-                  "type": "BinaryExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "BinaryExpression",
-                    "operator": "+",
-                    "left": {
-                      "type": "UnaryExpression",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "UnaryExpression",
-                        "operator": "-",
-                        "argument": {
-                          "type": "Identifier",
-                          "type": "UnboxedNode",
-                          "kind": {
-                            "type": "Identifier",
-                            "name": "leg2"
-                          },
-                          "start": 11,
-                          "end": 15
-                        }
-                      },
-                      "start": 10,
-                      "end": 15
-                    },
-                    "right": {
-                      "type": "Identifier",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "Identifier",
-                        "name": "thickness"
-                      },
-                      "start": 18,
-                      "end": 27
-                    }
-                  },
-                  "start": 10,
-                  "end": 27
-                }
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 27,
+          "id": {
+            "end": 7,
+            "name": "x",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 27,
+            "left": {
+              "argument": {
+                "end": 15,
+                "name": "leg2",
+                "start": 11,
+                "type": "Identifier",
+                "type": "Identifier"
               },
-              "start": 6,
-              "end": 27
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 27
-      }
-    ]
-  },
-  "start": 0,
-  "end": 27
+              "end": 15,
+              "operator": "-",
+              "start": 10,
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
+            },
+            "operator": "+",
+            "right": {
+              "end": 27,
+              "name": "thickness",
+              "start": 18,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 27,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 27,
+  "start": 0
 }

@@ -1,114 +1,80 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3576
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
+  "type": "BinaryExpression",
+  "operator": "/",
+  "left": {
     "type": "BinaryExpression",
-    "operator": "/",
+    "type": "BinaryExpression",
+    "operator": "*",
     "left": {
       "type": "BinaryExpression",
-      "type": "UnboxedNode",
-      "kind": {
+      "type": "BinaryExpression",
+      "operator": "*",
+      "left": {
+        "type": "BinaryExpression",
         "type": "BinaryExpression",
         "operator": "*",
         "left": {
-          "type": "BinaryExpression",
-          "type": "UnboxedNode",
-          "kind": {
-            "type": "BinaryExpression",
-            "operator": "*",
-            "left": {
-              "type": "BinaryExpression",
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "BinaryExpression",
-                "operator": "*",
-                "left": {
-                  "type": "Identifier",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "distance"
-                  },
-                  "start": 0,
-                  "end": 8
-                },
-                "right": {
-                  "type": "Identifier",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "p"
-                  },
-                  "start": 11,
-                  "end": 12
-                }
-              },
-              "start": 0,
-              "end": 12
-            },
-            "right": {
-              "type": "Identifier",
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "Identifier",
-                "name": "FOS"
-              },
-              "start": 15,
-              "end": 18
-            }
-          },
+          "type": "Identifier",
+          "type": "Identifier",
+          "name": "distance",
           "start": 0,
-          "end": 18
+          "end": 8
         },
         "right": {
-          "type": "Literal",
-          "type": "UnboxedNode",
-          "kind": {
-            "type": "Literal",
-            "value": 6,
-            "raw": "6"
-          },
-          "start": 21,
-          "end": 22
-        }
+          "type": "Identifier",
+          "type": "Identifier",
+          "name": "p",
+          "start": 11,
+          "end": 12
+        },
+        "start": 0,
+        "end": 12
+      },
+      "right": {
+        "type": "Identifier",
+        "type": "Identifier",
+        "name": "FOS",
+        "start": 15,
+        "end": 18
       },
       "start": 0,
-      "end": 22
+      "end": 18
     },
     "right": {
-      "type": "BinaryExpression",
-      "type": "UnboxedNode",
-      "kind": {
-        "type": "BinaryExpression",
-        "operator": "*",
-        "left": {
-          "type": "Identifier",
-          "type": "UnboxedNode",
-          "kind": {
-            "type": "Identifier",
-            "name": "sigmaAllow"
-          },
-          "start": 26,
-          "end": 36
-        },
-        "right": {
-          "type": "Identifier",
-          "type": "UnboxedNode",
-          "kind": {
-            "type": "Identifier",
-            "name": "width"
-          },
-          "start": 39,
-          "end": 44
-        }
-      },
+      "type": "Literal",
+      "type": "Literal",
+      "value": 6,
+      "raw": "6",
+      "start": 21,
+      "end": 22
+    },
+    "start": 0,
+    "end": 22
+  },
+  "right": {
+    "type": "BinaryExpression",
+    "type": "BinaryExpression",
+    "operator": "*",
+    "left": {
+      "type": "Identifier",
+      "type": "Identifier",
+      "name": "sigmaAllow",
       "start": 26,
+      "end": 36
+    },
+    "right": {
+      "type": "Identifier",
+      "type": "Identifier",
+      "name": "width",
+      "start": 39,
       "end": 44
-    }
+    },
+    "start": 26,
+    "end": 44
   },
   "start": 0,
   "end": 44

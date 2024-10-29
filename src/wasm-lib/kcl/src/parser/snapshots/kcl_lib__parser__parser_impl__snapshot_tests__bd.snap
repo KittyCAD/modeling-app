@@ -1,193 +1,135 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3779
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "x"
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 121,
+          "id": {
+            "end": 7,
+            "name": "x",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "cond": {
+              "end": 17,
+              "raw": "true",
+              "start": 13,
+              "type": "Literal",
+              "type": "Literal",
+              "value": true
+            },
+            "digest": null,
+            "else_ifs": [
+              {
+                "cond": {
+                  "arguments": [
+                    {
+                      "end": 63,
+                      "name": "radius",
+                      "start": 57,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  ],
+                  "callee": {
+                    "end": 56,
+                    "name": "func",
+                    "start": 52,
+                    "type": "Identifier"
                   },
-                  "start": 6,
-                  "end": 7
+                  "end": 64,
+                  "optional": false,
+                  "start": 52,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
                 },
-                "init": {
-                  "type": "IfExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "IfExpression",
-                    "cond": {
-                      "type": "Literal",
-                      "type": "UnboxedNode",
-                      "kind": {
+                "digest": null,
+                "end": 90,
+                "start": 44,
+                "then_val": {
+                  "body": [
+                    {
+                      "end": 80,
+                      "expression": {
+                        "end": 80,
+                        "raw": "4",
+                        "start": 79,
                         "type": "Literal",
-                        "value": true,
-                        "raw": "true"
+                        "type": "Literal",
+                        "value": 4
                       },
-                      "start": 13,
-                      "end": 17
-                    },
-                    "then_val": {
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "body": [
-                          {
-                            "type": "ExpressionStatement",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "ExpressionStatement",
-                              "expression": {
-                                "type": "Literal",
-                                "type": "UnboxedNode",
-                                "kind": {
-                                  "type": "Literal",
-                                  "value": 3,
-                                  "raw": "3"
-                                },
-                                "start": 32,
-                                "end": 33
-                              }
-                            },
-                            "start": 32,
-                            "end": 33
-                          }
-                        ]
-                      },
-                      "start": 32,
-                      "end": 42
-                    },
-                    "else_ifs": [
-                      {
-                        "type": "UnboxedNode",
-                        "kind": {
-                          "type": "ElseIf",
-                          "cond": {
-                            "type": "CallExpression",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "CallExpression",
-                              "callee": {
-                                "type": "UnboxedNode",
-                                "kind": {
-                                  "type": "Identifier",
-                                  "name": "func"
-                                },
-                                "start": 52,
-                                "end": 56
-                              },
-                              "arguments": [
-                                {
-                                  "type": "Identifier",
-                                  "type": "UnboxedNode",
-                                  "kind": {
-                                    "type": "Identifier",
-                                    "name": "radius"
-                                  },
-                                  "start": 57,
-                                  "end": 63
-                                }
-                              ],
-                              "optional": false
-                            },
-                            "start": 52,
-                            "end": 64
-                          },
-                          "then_val": {
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "body": [
-                                {
-                                  "type": "ExpressionStatement",
-                                  "type": "UnboxedNode",
-                                  "kind": {
-                                    "type": "ExpressionStatement",
-                                    "expression": {
-                                      "type": "Literal",
-                                      "type": "UnboxedNode",
-                                      "kind": {
-                                        "type": "Literal",
-                                        "value": 4,
-                                        "raw": "4"
-                                      },
-                                      "start": 79,
-                                      "end": 80
-                                    }
-                                  },
-                                  "start": 79,
-                                  "end": 80
-                                }
-                              ]
-                            },
-                            "start": 65,
-                            "end": 89
-                          },
-                          "digest": null
-                        },
-                        "start": 44,
-                        "end": 90
-                      }
-                    ],
-                    "final_else": {
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "body": [
-                          {
-                            "type": "ExpressionStatement",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "ExpressionStatement",
-                              "expression": {
-                                "type": "Literal",
-                                "type": "UnboxedNode",
-                                "kind": {
-                                  "type": "Literal",
-                                  "value": 5,
-                                  "raw": "5"
-                                },
-                                "start": 110,
-                                "end": 111
-                              }
-                            },
-                            "start": 110,
-                            "end": 111
-                          }
-                        ]
-                      },
-                      "start": 110,
-                      "end": 120
-                    },
-                    "digest": null
+                      "start": 79,
+                      "type": "ExpressionStatement",
+                      "type": "ExpressionStatement"
+                    }
+                  ],
+                  "end": 89,
+                  "start": 65
+                },
+                "type": "ElseIf"
+              }
+            ],
+            "end": 121,
+            "final_else": {
+              "body": [
+                {
+                  "end": 111,
+                  "expression": {
+                    "end": 111,
+                    "raw": "5",
+                    "start": 110,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 5
                   },
-                  "start": 10,
-                  "end": 121
+                  "start": 110,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
-              },
-              "start": 6,
-              "end": 121
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 121
-      }
-    ]
-  },
-  "start": 0,
-  "end": 121
+              ],
+              "end": 120,
+              "start": 110
+            },
+            "start": 10,
+            "then_val": {
+              "body": [
+                {
+                  "end": 33,
+                  "expression": {
+                    "end": 33,
+                    "raw": "3",
+                    "start": 32,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 3
+                  },
+                  "start": 32,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                }
+              ],
+              "end": 42,
+              "start": 32
+            },
+            "type": "IfExpression",
+            "type": "IfExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 121,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 121,
+  "start": 0
 }

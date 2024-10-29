@@ -1,111 +1,77 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3679
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "firstPrimeNumber"
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 57,
+          "id": {
+            "end": 24,
+            "name": "firstPrimeNumber",
+            "start": 8,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 51,
+                    "raw": "2",
+                    "start": 50,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 2
                   },
-                  "start": 8,
-                  "end": 24
-                },
-                "init": {
-                  "type": "FunctionExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "FunctionExpression",
-                    "params": [],
-                    "body": {
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "body": [
-                          {
-                            "type": "ReturnStatement",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "ReturnStatement",
-                              "argument": {
-                                "type": "Literal",
-                                "type": "UnboxedNode",
-                                "kind": {
-                                  "type": "Literal",
-                                  "value": 2,
-                                  "raw": "2"
-                                },
-                                "start": 50,
-                                "end": 51
-                              }
-                            },
-                            "start": 43,
-                            "end": 51
-                          }
-                        ]
-                      },
-                      "start": 33,
-                      "end": 57
-                    }
-                  },
-                  "start": 27,
-                  "end": 57
+                  "end": 51,
+                  "start": 43,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 }
-              },
-              "start": 8,
-              "end": 57
-            }
-          ],
-          "kind": "fn"
-        },
-        "start": 5,
-        "end": 57
-      },
-      {
-        "type": "ExpressionStatement",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "ExpressionStatement",
-          "expression": {
-            "type": "CallExpression",
-            "type": "UnboxedNode",
-            "kind": {
-              "type": "CallExpression",
-              "callee": {
-                "type": "UnboxedNode",
-                "kind": {
-                  "type": "Identifier",
-                  "name": "firstPrimeNumber"
-                },
-                "start": 62,
-                "end": 78
-              },
-              "arguments": [],
-              "optional": false
+              ],
+              "end": 57,
+              "start": 33
             },
-            "start": 62,
-            "end": 80
-          }
+            "end": 57,
+            "params": [],
+            "start": 27,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 8,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 57,
+      "kind": "fn",
+      "start": 5,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    },
+    {
+      "end": 80,
+      "expression": {
+        "arguments": [],
+        "callee": {
+          "end": 78,
+          "name": "firstPrimeNumber",
+          "start": 62,
+          "type": "Identifier"
         },
+        "end": 80,
+        "optional": false,
         "start": 62,
-        "end": 80
-      }
-    ]
-  },
-  "start": 0,
-  "end": 80
+        "type": "CallExpression",
+        "type": "CallExpression"
+      },
+      "start": 62,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
+    }
+  ],
+  "end": 80,
+  "start": 0
 }

@@ -1,94 +1,66 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3659
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "height"
-                  },
-                  "start": 6,
-                  "end": 12
-                },
-                "init": {
-                  "type": "BinaryExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "BinaryExpression",
-                    "operator": "-",
-                    "left": {
-                      "type": "Literal",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "Literal",
-                        "value": 1,
-                        "raw": "1"
-                      },
-                      "start": 15,
-                      "end": 16
-                    },
-                    "right": {
-                      "type": "MemberExpression",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "MemberExpression",
-                        "object": {
-                          "type": "Identifier",
-                          "type": "UnboxedNode",
-                          "kind": {
-                            "type": "Identifier",
-                            "name": "obj"
-                          },
-                          "start": 19,
-                          "end": 22
-                        },
-                        "property": {
-                          "type": "Identifier",
-                          "type": "UnboxedNode",
-                          "kind": {
-                            "type": "Identifier",
-                            "name": "a"
-                          },
-                          "start": 23,
-                          "end": 24
-                        },
-                        "computed": false
-                      },
-                      "start": 19,
-                      "end": 24
-                    }
-                  },
-                  "start": 15,
-                  "end": 24
-                }
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 24,
+          "id": {
+            "end": 12,
+            "name": "height",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 24,
+            "left": {
+              "end": 16,
+              "raw": "1",
+              "start": 15,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 1
+            },
+            "operator": "-",
+            "right": {
+              "computed": false,
+              "end": 24,
+              "object": {
+                "end": 22,
+                "name": "obj",
+                "start": 19,
+                "type": "Identifier",
+                "type": "Identifier"
               },
-              "start": 6,
-              "end": 24
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 24
-      }
-    ]
-  },
-  "start": 0,
-  "end": 24
+              "property": {
+                "end": 24,
+                "name": "a",
+                "start": 23,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 19,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "start": 15,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 24,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 24,
+  "start": 0
 }

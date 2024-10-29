@@ -1,63 +1,44 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3676
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "sg"
-                  },
-                  "start": 6,
-                  "end": 8
-                },
-                "init": {
-                  "type": "UnaryExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "UnaryExpression",
-                    "operator": "-",
-                    "argument": {
-                      "type": "Identifier",
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "type": "Identifier",
-                        "name": "scale"
-                      },
-                      "start": 12,
-                      "end": 17
-                    }
-                  },
-                  "start": 11,
-                  "end": 17
-                }
-              },
-              "start": 6,
-              "end": 17
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 17
-      }
-    ]
-  },
-  "start": 0,
-  "end": 17
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 17,
+          "id": {
+            "end": 8,
+            "name": "sg",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "argument": {
+              "end": 17,
+              "name": "scale",
+              "start": 12,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "end": 17,
+            "operator": "-",
+            "start": 11,
+            "type": "UnaryExpression",
+            "type": "UnaryExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 17,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 17,
+  "start": 0
 }

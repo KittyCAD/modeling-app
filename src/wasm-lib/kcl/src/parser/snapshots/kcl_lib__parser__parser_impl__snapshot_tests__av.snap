@@ -1,127 +1,90 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3719
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "f"
-                  },
-                  "start": 3,
-                  "end": 4
-                },
-                "init": {
-                  "type": "FunctionExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "FunctionExpression",
-                    "params": [
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 49,
+          "id": {
+            "end": 4,
+            "name": "f",
+            "start": 3,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "arguments": [
                       {
-                        "type": "Parameter",
-                        "identifier": {
-                          "type": "UnboxedNode",
-                          "kind": {
-                            "type": "Identifier",
-                            "name": "angle"
-                          },
-                          "start": 8,
-                          "end": 13
-                        },
-                        "optional": true
+                        "end": 41,
+                        "name": "angle",
+                        "start": 36,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      {
+                        "end": 46,
+                        "raw": "360",
+                        "start": 43,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 360
                       }
                     ],
-                    "body": {
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "body": [
-                          {
-                            "type": "ReturnStatement",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "ReturnStatement",
-                              "argument": {
-                                "type": "CallExpression",
-                                "type": "UnboxedNode",
-                                "kind": {
-                                  "type": "CallExpression",
-                                  "callee": {
-                                    "type": "UnboxedNode",
-                                    "kind": {
-                                      "type": "Identifier",
-                                      "name": "default"
-                                    },
-                                    "start": 28,
-                                    "end": 35
-                                  },
-                                  "arguments": [
-                                    {
-                                      "type": "Identifier",
-                                      "type": "UnboxedNode",
-                                      "kind": {
-                                        "type": "Identifier",
-                                        "name": "angle"
-                                      },
-                                      "start": 36,
-                                      "end": 41
-                                    },
-                                    {
-                                      "type": "Literal",
-                                      "type": "UnboxedNode",
-                                      "kind": {
-                                        "type": "Literal",
-                                        "value": 360,
-                                        "raw": "360"
-                                      },
-                                      "start": 43,
-                                      "end": 46
-                                    }
-                                  ],
-                                  "optional": false
-                                },
-                                "start": 28,
-                                "end": 47
-                              }
-                            },
-                            "start": 21,
-                            "end": 47
-                          }
-                        ]
-                      },
-                      "start": 19,
-                      "end": 49
-                    }
+                    "callee": {
+                      "end": 35,
+                      "name": "default",
+                      "start": 28,
+                      "type": "Identifier"
+                    },
+                    "end": 47,
+                    "optional": false,
+                    "start": 28,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
                   },
-                  "start": 7,
-                  "end": 49
+                  "end": 47,
+                  "start": 21,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 }
-              },
-              "start": 3,
-              "end": 49
-            }
-          ],
-          "kind": "fn"
-        },
-        "start": 0,
-        "end": 49
-      }
-    ]
-  },
-  "start": 0,
-  "end": 49
+              ],
+              "end": 49,
+              "start": 19
+            },
+            "end": 49,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 13,
+                  "name": "angle",
+                  "start": 8,
+                  "type": "Identifier"
+                },
+                "optional": true
+              }
+            ],
+            "start": 7,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 3,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 49,
+      "kind": "fn",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 49,
+  "start": 0
 }

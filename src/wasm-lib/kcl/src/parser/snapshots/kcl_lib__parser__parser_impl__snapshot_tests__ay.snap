@@ -1,135 +1,93 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3738
 expression: actual
 ---
 {
-  "type": "UnboxedNode",
-  "kind": {
-    "body": [
-      {
-        "type": "VariableDeclaration",
-        "type": "UnboxedNode",
-        "kind": {
-          "type": "VariableDeclaration",
-          "declarations": [
-            {
-              "type": "UnboxedNode",
-              "kind": {
-                "type": "VariableDeclarator",
-                "id": {
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "Identifier",
-                    "name": "props"
-                  },
-                  "start": 4,
-                  "end": 9
-                },
-                "init": {
-                  "type": "ObjectExpression",
-                  "type": "UnboxedNode",
-                  "kind": {
-                    "type": "ObjectExpression",
-                    "properties": [
-                      {
-                        "type": "UnboxedNode",
-                        "kind": {
-                          "type": "ObjectProperty",
-                          "key": {
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "Identifier",
-                              "name": "a"
-                            },
-                            "start": 26,
-                            "end": 27
-                          },
-                          "value": {
-                            "type": "Literal",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "Literal",
-                              "value": 1,
-                              "raw": "1"
-                            },
-                            "start": 29,
-                            "end": 30
-                          }
-                        },
-                        "start": 26,
-                        "end": 30
-                      },
-                      {
-                        "type": "UnboxedNode",
-                        "kind": {
-                          "type": "ObjectProperty",
-                          "key": {
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "Identifier",
-                              "name": "c"
-                            },
-                            "start": 65,
-                            "end": 66
-                          },
-                          "value": {
-                            "type": "Literal",
-                            "type": "UnboxedNode",
-                            "kind": {
-                              "type": "Literal",
-                              "value": 3,
-                              "raw": "3"
-                            },
-                            "start": 68,
-                            "end": 69
-                          }
-                        },
-                        "start": 65,
-                        "end": 69
-                      }
-                    ],
-                    "nonCodeMeta": {
-                      "type": "UnboxedNode",
-                      "kind": {
-                        "nonCodeNodes": {
-                          "1": [
-                            {
-                              "type": "UnboxedNode",
-                              "kind": {
-                                "type": "NonCodeNode",
-                                "value": {
-                                  "type": "blockComment",
-                                  "value": "b: 2,",
-                                  "style": "line"
-                                }
-                              },
-                              "start": 44,
-                              "end": 52
-                            }
-                          ]
-                        },
-                        "start": []
-                      },
-                      "start": 0,
-                      "end": 0
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 80,
+          "id": {
+            "end": 9,
+            "name": "props",
+            "start": 4,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 80,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "1": [
+                  {
+                    "end": 52,
+                    "start": 44,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "b: 2,",
+                      "style": "line"
                     }
-                  },
-                  "start": 12,
-                  "end": 80
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "properties": [
+              {
+                "end": 30,
+                "key": {
+                  "end": 27,
+                  "name": "a",
+                  "start": 26,
+                  "type": "Identifier"
+                },
+                "start": 26,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 30,
+                  "raw": "1",
+                  "start": 29,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 1
                 }
               },
-              "start": 4,
-              "end": 80
-            }
-          ],
-          "kind": "const"
-        },
-        "start": 0,
-        "end": 80
-      }
-    ]
-  },
-  "start": 0,
-  "end": 80
+              {
+                "end": 69,
+                "key": {
+                  "end": 66,
+                  "name": "c",
+                  "start": 65,
+                  "type": "Identifier"
+                },
+                "start": 65,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 69,
+                  "raw": "3",
+                  "start": 68,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 3
+                }
+              }
+            ],
+            "start": 12,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 4,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 80,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 80,
+  "start": 0
 }
