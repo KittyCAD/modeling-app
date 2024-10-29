@@ -118,15 +118,32 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openPane(page: Page, testId: string) {
-  const locator = page.getByTestId(testId)
-  await expect(locator).toBeVisible()
-  const isOpen = (await locator?.getAttribute('aria-pressed')) === 'true'
+export async function isPaneOpen(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  return (await paneButtonLocator?.getAttribute('aria-pressed')) === 'true'
+}
+
+export async function openPane(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  const isOpen = await isPaneOpen(page, testId)
 
   if (!isOpen) {
-    await locator.click()
-    await expect(locator).toHaveAttribute('aria-pressed', 'true')
+    await paneButtonLocator.click()
   }
+  await expect(paneButtonLocator).toHaveAttribute('aria-pressed', 'true')
+}
+
+export async function closePane(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  const isOpen = await isPaneOpen(page, testId)
+
+  if (isOpen) {
+    await paneButtonLocator.click()
+  }
+  await expect(paneButtonLocator).toHaveAttribute('aria-pressed', 'false')
 }
 
 async function openKclCodePanel(page: Page) {

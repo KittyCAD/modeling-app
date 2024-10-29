@@ -1,6 +1,6 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { sansWhitespace } from '../test-utils'
+import { closePane, isPaneOpen, openPane, sansWhitespace } from '../test-utils'
 
 interface EditorState {
   activeLines: Array<string>
@@ -11,6 +11,7 @@ interface EditorState {
 export class EditorFixture {
   public page: Page
 
+  private paneButtonTestId = 'code-pane-button'
   private diagnosticsTooltip!: Locator
   private diagnosticsGutterIcon!: Locator
   private codeContent!: Locator
@@ -31,13 +32,17 @@ export class EditorFixture {
 
   private _expectEditorToContain =
     (not = false) =>
-    (
+    async (
       code: string,
       {
         shouldNormalise = false,
         timeout = 5_000,
       }: { shouldNormalise?: boolean; timeout?: number } = {}
     ) => {
+      expect(
+        await this.isPaneOpen(),
+        'Code pane needs to be open to check its contents'
+      ).toBe(true)
       if (!shouldNormalise) {
         const expectStart = expect(this.codeContent)
         if (not) {
@@ -114,5 +119,14 @@ export class EditorFixture {
     if (!lines) return
     code = code.replace(findCode, replaceCode)
     await this.codeContent.fill(code)
+  }
+  isPaneOpen() {
+    return isPaneOpen(this.page, this.paneButtonTestId)
+  }
+  closePane() {
+    return closePane(this.page, this.paneButtonTestId)
+  }
+  openPane() {
+    return openPane(this.page, this.paneButtonTestId)
   }
 }
