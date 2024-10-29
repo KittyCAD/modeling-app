@@ -193,61 +193,74 @@ test.describe('when using the file tree to', () => {
   test(
     'create a new file with the same name as an existing file cancels the operation',
     { tag: '@electron' },
-    async ({ browser: _, tronApp }, testInfo) => {
-      await tronApp.initialise()
+    async (
+      { browser: _, tronApp, homePage, scene, editor, toolbar },
+      testInfo
+    ) => {
+      const projectName = 'cube'
+      const mainFile = 'main.kcl'
+      const secondFile = 'cylinder.kcl'
+      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
+      const kclCylinder = await fsp.readFile(
+        executorInputPath('cylinder.kcl'),
+        'utf-8'
+      )
+      await tronApp.initialise({
+        fixtures: { homePage, scene, editor, toolbar },
+        folderSetupFn: async (dir) => {
+          const cubeDir = join(dir, projectName)
+          await fsp.mkdir(cubeDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('cube.kcl'),
+            join(cubeDir, mainFile)
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(cubeDir, secondFile)
+          )
+        },
+      })
 
       const {
-        openKclCodePanel,
         openFilePanel,
-        pasteCodeInEditor,
-        createNewFileAndSelect,
         renameFile,
         selectFile,
         editorTextMatches,
+        waitForPageLoad,
       } = await getUtils(tronApp.page, _test)
 
-      await tronApp.page.setViewportSize({ width: 1200, height: 500 })
-      tronApp.page.on('console', console.log)
+      await test.step(`Setup: Open project and navigate to ${secondFile}`, async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: projectName,
+              fileCount: 2,
+              folderCount: 2, // TODO: This is a pre-existing bug, there are no folders within the project
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject(projectName)
+        await waitForPageLoad()
+        await openFilePanel()
+        await selectFile(secondFile)
+      })
 
-      await createProject({ name: 'project-000', page: tronApp.page })
-      await openKclCodePanel()
-      await openFilePanel()
-      // File the main.kcl with contents
-      const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCube)
+      await test.step(`Attempt to rename ${secondFile} to ${mainFile}`, async () => {
+        await renameFile(secondFile, mainFile)
+      })
 
-      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
-      await tronApp.page.waitForTimeout(2000)
-
-      const kcl1 = 'main.kcl'
-      const kcl2 = '2.kcl'
-      await createNewFileAndSelect(kcl2)
-      const kclCylinder = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCylinder)
-
-      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
-      await tronApp.page.waitForTimeout(2000)
-
-      await renameFile(kcl2, kcl1)
-
-      await test.step(`Postcondition: ${kcl1} still has the original content`, async () => {
-        await selectFile(kcl1)
+      await test.step(`Postcondition: ${mainFile} still has the original content`, async () => {
+        await selectFile(mainFile)
         await editorTextMatches(kclCube)
       })
-      await tronApp.page.waitForTimeout(500)
 
-      await test.step(`Postcondition: ${kcl2} still exists with the original content`, async () => {
-        await selectFile(kcl2)
+      await test.step(`Postcondition: ${secondFile} still exists with the original content`, async () => {
+        await selectFile(secondFile)
         await editorTextMatches(kclCylinder)
       })
 
-      await tronApp?.close?.()
+      await tronApp.close()
     }
   )
 
@@ -273,11 +286,11 @@ test.describe('when using the file tree to', () => {
       )
       await pasteCodeInEditor(kclCube)
 
-      const kcl1 = 'main.kcl'
+      const mainFile = 'main.kcl'
 
-      await deleteFile(kcl1)
+      await deleteFile(mainFile)
 
-      await test.step(`Postcondition: ${kcl1} is recreated but has no content`, async () => {
+      await test.step(`Postcondition: ${mainFile} is recreated but has no content`, async () => {
         await editorTextMatches('')
       })
 
