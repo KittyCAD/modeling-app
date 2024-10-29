@@ -7,7 +7,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BodyType, ExecState, ExecutorContext, KclValue, Metadata, Sketch, SourceRange, StatementKind, TagEngineInfo,
-        TagIdentifier, Tagged, UserVal,
+        TagIdentifier, UserVal,
     },
     std::FunctionKind,
 };
@@ -346,7 +346,8 @@ impl CallExpression {
                                         value: tag.name.clone(),
                                         info: Some(TagEngineInfo {
                                             id: value.get_id(),
-                                            tagged: Tagged::Surface(value.clone()),
+                                            surface: Some(value.clone()),
+                                            path: None,
                                             sketch: solid.id,
                                         }),
                                         meta: vec![Metadata {
@@ -363,7 +364,7 @@ impl CallExpression {
                                 };
 
                                 let mut info = info.clone();
-                                info.tagged = Tagged::Surface(value.clone());
+                                info.surface = Some(value.clone());
                                 info.sketch = solid.id;
                                 t.info = Some(info);
 
