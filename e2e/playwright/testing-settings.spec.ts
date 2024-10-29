@@ -716,18 +716,19 @@ extrude001 = extrude(5, sketch001)
       )
     })
     await page.setViewportSize({ width: 1200, height: 500 })
+    await u.waitForAuthSkipAppStart()
 
     // Selectors and constants
     const editSketchButton = page.getByRole('button', { name: 'Edit Sketch' })
     const lineToolButton = page.getByTestId('line')
     const segmentOverlays = page.getByTestId('segment-overlay')
-    const sketchOriginLocation = { x: 600, y: 250 }
+    const sketchOriginLocation = await u.getCenterOfModelViewArea()
     const darkThemeSegmentColor: [number, number, number] = [215, 215, 215]
     const lightThemeSegmentColor: [number, number, number] = [90, 90, 90]
 
     await test.step(`Get into sketch mode`, async () => {
-      await u.waitForAuthSkipAppStart()
-      await page.mouse.click(700, 200)
+      await page.mouse.click(sketchOriginLocation.x, sketchOriginLocation.y)
+
       await expect(editSketchButton).toBeVisible()
       await editSketchButton.click()
 
@@ -738,12 +739,18 @@ extrude001 = extrude(5, sketch001)
       await page.waitForTimeout(1000)
     })
 
+    const line1 = await u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`, 0)
+
+    // Our lines are translucent (surprise!), so we need to get on portion
+    // of the line that is only on the background, and not on top of something
+    // like the axis lines.
+    line1.x -= 1
+    line1.y -= 1
+
     await test.step(`Check the sketch line color before`, async () => {
       await expect
-        .poll(() =>
-          u.getGreatestPixDiff(sketchOriginLocation, darkThemeSegmentColor)
-        )
-        .toBeLessThan(15)
+        .poll(() => u.getGreatestPixDiff(line1, darkThemeSegmentColor))
+        .toBeLessThanOrEqual(34)
     })
 
     await test.step(`Change theme to light using command palette`, async () => {
@@ -758,10 +765,8 @@ extrude001 = extrude(5, sketch001)
 
     await test.step(`Check the sketch line color after`, async () => {
       await expect
-        .poll(() =>
-          u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
-        )
-        .toBeLessThan(15)
+        .poll(() => u.getGreatestPixDiff(line1, lightThemeSegmentColor))
+        .toBeLessThanOrEqual(34)
     })
   })
 

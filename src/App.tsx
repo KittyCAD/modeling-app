@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
-import { Stream } from './components/Stream'
 import { AppHeader } from './components/AppHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
-import { codeManager, engineCommandManager } from 'lib/singletons'
+import { codeManager, engineCommandManager, sceneInfra } from 'lib/singletons'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
@@ -22,6 +21,8 @@ import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
+import EngineStreamContext from 'hooks/useEngineStreamContext'
+import { EngineStream } from 'components/EngineStream'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -32,6 +33,13 @@ export function App() {
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
   const ref = useRef<HTMLDivElement>(null)
+
+  // Stream related refs and data
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const modelingSidebarRef = useRef<HTMLUListElement>(null)
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
@@ -52,6 +60,10 @@ export function App() {
   const {
     app: { onboardingStatus },
   } = settings.context
+
+  useEffect(() => {
+    sceneInfra.camControls.modelingSidebarRef = modelingSidebarRef
+  }, [modelingSidebarRef.current])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -80,14 +92,26 @@ export function App() {
         enableMenu={true}
       />
       <ModalContainer />
-      <ModelingSidebar paneOpacity={paneOpacity} />
-      <Stream />
-      {/* <CamToggle /> */}
-      <LowerRightControls coreDumpManager={coreDumpManager}>
-        <UnitsMenu />
-        <Gizmo />
-        <CameraProjectionToggle />
-      </LowerRightControls>
+      <ModelingSidebar paneOpacity={paneOpacity} ref={modelingSidebarRef} />
+      <EngineStreamContext.Provider
+        options={{
+          input: {
+            videoRef,
+            canvasRef,
+            mediaStream: null,
+            authToken: auth?.context?.token ?? null,
+            pool,
+          },
+        }}
+      >
+        <EngineStream />
+        {/* <CamToggle /> */}
+        <LowerRightControls coreDumpManager={coreDumpManager}>
+          <UnitsMenu />
+          <Gizmo />
+          <CameraProjectionToggle />
+        </LowerRightControls>
+      </EngineStreamContext.Provider>
     </div>
   )
 }

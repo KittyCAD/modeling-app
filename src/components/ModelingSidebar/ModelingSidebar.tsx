@@ -7,6 +7,11 @@ import {
   useMemo,
   ReactNode,
   useContext,
+  MutableRefObject,
+  forwardRef,
+  // https://stackoverflow.com/a/77055468 Thank you.
+  useImperativeHandle,
+  useRef,
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
@@ -21,9 +26,12 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
+import { sceneInfra } from 'lib/singletons'
+import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from 'lib/timings'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
+  ref: MutableRefObject<HTMLDivElement>
 }
 
 interface BadgeInfoComputed {
@@ -35,19 +43,34 @@ function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
 }
 
-export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
+export const ModelingSidebar = forwardRef<
+  HTMLUListElement,
+  ModelingSidebarProps
+>(function ModelingSidebar({ paneOpacity }, outerRef) {
   const machineManager = useContext(MachineManagerContext)
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
-  const { send, context } = useModelingContext()
+  const { send, state, context } = useModelingContext()
   const pointerEventsCssClass =
     onboardingStatus.current === 'camera' ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   const showDebugPanel = settings.context.modeling.showDebugPanel
+  const innerRef = useRef<HTMLUListElement>(null)
+
+  // forwardRef's type causes me to do this type narrowing.
+  useEffect(() => {
+    if (typeof outerRef === 'function') {
+      outerRef(innerRef.current)
+    } else {
+      if (outerRef) {
+        outerRef.current = innerRef.current
+      }
+    }
+  }, [innerRef.current])
 
   const paneCallbackProps = useMemo(
     () => ({
@@ -159,8 +182,37 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     [context.store?.openPanes, send]
   )
 
+  useEffect(() => {
+    // Don't send camera adjustment commands after 1 pane is open. It
+    // won't make any difference.
+    if (context.store?.openPanes.length > 1) return
+
+    void sceneInfra.camControls.centerModelRelativeToPanes()
+  }, [context.store?.openPanes])
+
+  // If the panes are resized then center the model also
+  useEffect(() => {
+    if (!innerRef.current) return
+
+    let last = Date.now()
+    const observer = new ResizeObserver(() => {
+      if (Date.now() - last < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE) return
+      if (!innerRef.current) return
+
+      last = Date.now()
+      void sceneInfra.camControls.centerModelRelativeToPanes()
+    })
+
+    observer.observe(innerRef.current)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [state, innerRef.current])
+
   return (
     <Resizable
+      data-testid="modeling-sidebar"
       className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}
       defaultSize={{
         width: '550px',
@@ -192,6 +244,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         >
           <ul
             id="pane-buttons-section"
+            data-testid="pane-buttons-section"
             className={
               'w-fit p-2 flex flex-col gap-2 ' +
               (context.store?.openPanes.length >= 1 ? 'pr-0.5' : '')
@@ -236,6 +289,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         </ul>
         <ul
           id="pane-section"
+          data-testid="pane-section"
+          ref={innerRef}
           className={
             'ml-[-1px] col-start-2 col-span-1 flex flex-col gap-2 ' +
             (context.store?.openPanes.length >= 1
@@ -265,7 +320,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       </div>
     </Resizable>
   )
-}
+})
 
 interface ModelingPaneButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {

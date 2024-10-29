@@ -22,6 +22,7 @@ import {
 } from 'lib/toolbar'
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { EngineConnectionStateType } from 'lang/std/engineConnection'
 
 export function Toolbar({
   className = '',
@@ -48,7 +49,7 @@ export function Toolbar({
   }, [engineCommandManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
-  const { overallState } = useNetworkContext()
+  const { overallState, immediateState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
 
@@ -56,6 +57,7 @@ export function Toolbar({
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
 
   const currentMode =

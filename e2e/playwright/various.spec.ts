@@ -498,14 +498,16 @@ test('Sketch on face', async ({ page }) => {
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await u.openAndClearDebugPanel()
+  const center = await u.getCenterOfModelViewArea()
+
+  // This basically waits for sketch mode to be ready.
   await u.doAndWaitForCmd(
-    () => page.mouse.click(625, 165),
+    async () => page.mouse.click(center.x, 180),
     'default_camera_get_settings',
     true
   )
-  await page.waitForTimeout(150)
-  await u.closeDebugPanel()
+
+  await page.waitForTimeout(300)
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]
