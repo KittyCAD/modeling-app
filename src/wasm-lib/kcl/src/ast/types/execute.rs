@@ -723,7 +723,7 @@ impl Property {
                     Ok(Property::String(name.to_string()))
                 } else {
                     // Actually evaluate memory to compute the property.
-                    let prop = exec_state.memory.get(&name, property_src)?;
+                    let prop = exec_state.memory.get(name, property_src)?;
                     let KclValue::UserVal(prop) = prop else {
                         return Err(KclError::Semantic(KclErrorDetails {
                             source_ranges: property_sr,
@@ -732,7 +732,7 @@ impl Property {
                             ),
                         }));
                     };
-                    jvalue_to_prop(&prop.value, property_sr, &name)
+                    jvalue_to_prop(&prop.value, property_sr, name)
                 }
             }
             LiteralIdentifier::Literal(literal) => {

@@ -1812,7 +1812,7 @@ impl TagDeclarator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1825,12 +1825,6 @@ pub struct PipeSubstitution {
 impl PipeSubstitution {
     pub fn new() -> UnboxedNode<Self> {
         UnboxedNode::no_src(Self { digest: None })
-    }
-}
-
-impl Default for PipeSubstitution {
-    fn default() -> Self {
-        Self { digest: None }
     }
 }
 
