@@ -513,26 +513,22 @@ test(`Verify axis and origin snapping`, async ({
   await app.initialise()
 
   await test.step(`Start a sketch on the XZ plane`, async () => {
+    await editor.closePane()
     await toolbar.startSketchPlaneSelection()
     await moveToXzPlane()
     await clickOnXzPlane()
     // timeout wait for engine animation is unavoidable
     await app.page.waitForTimeout(600)
     await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
-    await editor.closePane()
   })
   await test.step(`Place a point a few pixels off the middle, verify it still snaps to 0,0`, async () => {
     await clickOriginSloppy()
-    await editor.openPane()
     await editor.expectEditor.toContain(expectedCodeSnippets.pointAtOrigin)
-    await editor.closePane()
   })
   await test.step(`Add a segment on x-axis after moving the mouse a bit, verify it snaps`, async () => {
     await moveXAxisSloppy()
     await clickXAxisSloppy()
-    await editor.openPane()
     await editor.expectEditor.toContain(expectedCodeSnippets.segmentOnXAxis)
-    await editor.closePane()
   })
   await test.step(`Unequip line tool`, async () => {
     await toolbar.lineBtn.click()
@@ -542,20 +538,16 @@ test(`Verify axis and origin snapping`, async ({
     await dragToOffYAxis({
       fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
     })
-    await editor.openPane()
     await editor.expectEditor.toContain(
       expectedCodeSnippets.afterSegmentDraggedOffYAxis
     )
-    await editor.closePane()
   })
   await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
     await dragFromOffAxis({
       toPoint: { x: yAxisSloppy.screen[0], y: yAxisSloppy.screen[1] },
     })
-    await editor.openPane()
     await editor.expectEditor.toContain(
       expectedCodeSnippets.afterSegmentDraggedOnYAxis
     )
-    await editor.closePane()
   })
 })

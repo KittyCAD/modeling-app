@@ -39,16 +39,25 @@ export class EditorFixture {
         timeout = 5_000,
       }: { shouldNormalise?: boolean; timeout?: number } = {}
     ) => {
-      expect(
-        await this.isPaneOpen(),
-        'Code pane needs to be open to check its contents'
-      ).toBe(true)
+      const wasPaneOpen = await this.isPaneOpen()
+      if (!wasPaneOpen) {
+        await this.openPane()
+      }
+      const resetPane = async () => {
+        if (!wasPaneOpen) {
+          await this.closePane()
+        }
+      }
       if (!shouldNormalise) {
         const expectStart = expect(this.codeContent)
         if (not) {
-          return expectStart.not.toContainText(code, { timeout })
+          const result = await expectStart.not.toContainText(code, { timeout })
+          await resetPane()
+          return result
         }
-        return expectStart.toContainText(code, { timeout })
+        const result = await expectStart.toContainText(code, { timeout })
+        await resetPane()
+        return result
       }
       const normalisedCode = code.replaceAll(/\s+/g, '').trim()
       const expectStart = expect.poll(
@@ -61,9 +70,13 @@ export class EditorFixture {
         }
       )
       if (not) {
-        return expectStart.not.toContain(normalisedCode)
+        const result = await expectStart.not.toContain(normalisedCode)
+        await resetPane()
+        return result
       }
-      return expectStart.toContain(normalisedCode)
+      const result = await expectStart.toContain(normalisedCode)
+      await resetPane()
+      return result
     }
   expectEditor = {
     toContain: this._expectEditorToContain(),
