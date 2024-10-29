@@ -451,3 +451,111 @@ sketch002 = startSketchOn(extrude001, seg03)
     }
   )
 })
+
+test(`Verify axis and origin snapping`, async ({
+  app,
+  editor,
+  toolbar,
+  scene,
+}) => {
+  // Constants and locators
+  // These are mappings from screenspace to KCL coordinates,
+  // until we merge in our coordinate system helpers
+  const xzPlane = [
+    app.viewPortSize.width * 0.65,
+    app.viewPortSize.height * 0.3,
+  ] as const
+  const originSloppy = {
+    screen: [
+      app.viewPortSize.width / 2 + 3, // 3px off the center of the screen
+      app.viewPortSize.height / 2,
+    ],
+    kcl: [0, 0],
+  } as const
+  const xAxisSloppy = {
+    screen: [
+      app.viewPortSize.width * 0.75,
+      app.viewPortSize.height / 2 - 3, // 3px off the X-axis
+    ],
+    kcl: [16.95, 0],
+  } as const
+  const offYAxis = {
+    screen: [
+      app.viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
+      app.viewPortSize.height * 0.3,
+    ],
+    kcl: [6.78, 6.78],
+  } as const
+  const yAxisSloppy = {
+    screen: [
+      app.viewPortSize.width / 2 + 5, // 5px off the Y-axis
+      app.viewPortSize.height * 0.3,
+    ],
+    kcl: [0, 6.78],
+  } as const
+  const [clickOnXzPlane, moveToXzPlane] = scene.makeMouseHelpers(...xzPlane)
+  const [clickOriginSloppy] = scene.makeMouseHelpers(...originSloppy.screen)
+  const [clickXAxisSloppy, moveXAxisSloppy] = scene.makeMouseHelpers(
+    ...xAxisSloppy.screen
+  )
+  const [dragToOffYAxis, dragFromOffAxis] = scene.makeDragHelpers(
+    ...offYAxis.screen
+  )
+
+  const expectedCodeSnippets = {
+    sketchOnXzPlane: `sketch001 = startSketchOn('XZ')`,
+    pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], %)`,
+    segmentOnXAxis: `line([${xAxisSloppy.kcl[0]}, ${xAxisSloppy.kcl[1]}], %)`,
+    afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], %)`,
+    afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], %)`,
+  }
+
+  await app.initialise()
+
+  await test.step(`Start a sketch on the XZ plane`, async () => {
+    await toolbar.startSketchPlaneSelection()
+    await moveToXzPlane()
+    await clickOnXzPlane()
+    // timeout wait for engine animation is unavoidable
+    await app.page.waitForTimeout(600)
+    await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
+    await editor.closePane()
+  })
+  await test.step(`Place a point a few pixels off the middle, verify it still snaps to 0,0`, async () => {
+    await clickOriginSloppy()
+    await editor.openPane()
+    await editor.expectEditor.toContain(expectedCodeSnippets.pointAtOrigin)
+    await editor.closePane()
+  })
+  await test.step(`Add a segment on x-axis after moving the mouse a bit, verify it snaps`, async () => {
+    await moveXAxisSloppy()
+    await clickXAxisSloppy()
+    await editor.openPane()
+    await editor.expectEditor.toContain(expectedCodeSnippets.segmentOnXAxis)
+    await editor.closePane()
+  })
+  await test.step(`Unequip line tool`, async () => {
+    await toolbar.lineBtn.click()
+    await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
+  })
+  await test.step(`Drag the origin point up and to the right, verify it's past snapping`, async () => {
+    await dragToOffYAxis({
+      fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
+    })
+    await editor.openPane()
+    await editor.expectEditor.toContain(
+      expectedCodeSnippets.afterSegmentDraggedOffYAxis
+    )
+    await editor.closePane()
+  })
+  await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
+    await dragFromOffAxis({
+      toPoint: { x: yAxisSloppy.screen[0], y: yAxisSloppy.screen[1] },
+    })
+    await editor.openPane()
+    await editor.expectEditor.toContain(
+      expectedCodeSnippets.afterSegmentDraggedOnYAxis
+    )
+    await editor.closePane()
+  })
+})
