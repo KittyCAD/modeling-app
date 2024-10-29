@@ -27,8 +27,8 @@ layout: manual
 | `path` |`string`|  | No |
 | `raw_path` |`string`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 
 ----
@@ -46,8 +46,8 @@ layout: manual
 | `type` |enum: `ExpressionStatement`|  | No |
 | `expression` |[`Expr`](/docs/kcl/types/Expr)|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 
 ----
@@ -67,8 +67,8 @@ layout: manual
 | `visibility` |[`ItemVisibility`](/docs/kcl/types/ItemVisibility)|  | No |
 | `kind` |[`VariableKind`](/docs/kcl/types/VariableKind)|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 
 ----
@@ -86,8 +86,8 @@ layout: manual
 | `type` |enum: `ReturnStatement`|  | No |
 | `argument` |[`Expr`](/docs/kcl/types/Expr)|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 
 ----

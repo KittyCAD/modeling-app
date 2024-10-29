@@ -61,8 +61,8 @@ Any KCL value.
 | `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
 | `value` |`string`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 
 ----

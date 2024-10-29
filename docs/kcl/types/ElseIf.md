@@ -18,7 +18,7 @@ layout: manual
 | `cond` |[`Expr`](/docs/kcl/types/Expr)|  | No |
 | `then_val` |[`Program`](/docs/kcl/types/Program)|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 

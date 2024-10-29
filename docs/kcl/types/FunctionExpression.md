@@ -18,7 +18,7 @@ layout: manual
 | `params` |`[` [`Parameter`](/docs/kcl/types/Parameter) `]`|  | No |
 | `body` |[`Program`](/docs/kcl/types/Program)|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 

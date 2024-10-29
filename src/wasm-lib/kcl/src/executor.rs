@@ -155,6 +155,7 @@ impl Default for ProgramMemory {
 
 /// An index pointing to an environment.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[schemars(transparent)]
 pub struct EnvironmentRef(usize);
 
 impl EnvironmentRef {
