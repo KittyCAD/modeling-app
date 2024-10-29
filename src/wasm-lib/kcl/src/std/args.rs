@@ -118,7 +118,7 @@ impl Args {
         'e: 'a,
     {
         if let Some(info) = &tag.info {
-            if info.surface().is_some() {
+            if info.surface.is_some() {
                 return Ok(info);
             }
         }
@@ -387,7 +387,7 @@ impl Args {
 
         let engine_info = self.get_tag_engine_info_check_surface(exec_state, tag)?;
 
-        let surface = engine_info.surface().ok_or_else(|| {
+        let surface = engine_info.surface.as_ref().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Tag `{}` does not have a surface", tag.value),
                 source_ranges: vec![self.source_range],
@@ -458,6 +458,19 @@ impl Args {
             message: format!("Expected a face with the tag `{}`", tag.value),
             source_ranges: vec![self.source_range],
         }))
+    }
+
+    pub(crate) fn get_polygon_args(
+        &self,
+    ) -> Result<
+        (
+            crate::std::shapes::PolygonData,
+            crate::std::shapes::SketchOrSurface,
+            Option<TagDeclarator>,
+        ),
+        KclError,
+    > {
+        FromArgs::from_args(self, 0)
     }
 }
 
@@ -652,6 +665,7 @@ impl_from_arg_via_json!(super::sketch::AngledLineData);
 impl_from_arg_via_json!(super::sketch::AngledLineToData);
 impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
 impl_from_arg_via_json!(super::shapes::CircleData);
+impl_from_arg_via_json!(super::shapes::PolygonData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
 impl_from_arg_via_json!(super::sketch::BezierData);
