@@ -45,7 +45,7 @@ pub enum Definition<'a> {
     Import(NodeRef<'a, ImportStatement>),
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 pub struct Node<T> {
@@ -53,6 +53,16 @@ pub struct Node<T> {
     pub inner: T,
     pub start: usize,
     pub end: usize,
+}
+
+impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
+    fn schema_name() -> String {
+        T::schema_name()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        T::json_schema(gen)
+    }
 }
 
 impl<T> Node<T> {
