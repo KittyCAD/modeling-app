@@ -112,7 +112,7 @@ fn LSystem = (args, axioms) => {
 }
 
 LSystem({
-  iterations: 2,
+  iterations: 1,
   factor: 1.36,
   angle: 60,
 }, (_) => {
