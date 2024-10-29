@@ -16,7 +16,7 @@ layout: manual
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `nonCodeNodes` |`object`|  | No |
-| `startNodes` |`[` [`Node_for_NonCodeNode`](/docs/kcl/types/Node_for_NonCodeNode) `]`|  | No |
+| `startNodes` |`[` [`NonCodeNode`](/docs/kcl/types/NonCodeNode) `]`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 

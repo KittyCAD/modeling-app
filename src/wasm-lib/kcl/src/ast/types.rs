@@ -61,7 +61,7 @@ impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
     }
 
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        T::json_schema(gen)
+        let mut child = T::json_schema(gen);
     }
 }
 

@@ -5,12 +5,17 @@ layout: manual
 ---
 
 
-`Identifier`
+**Type:** `object`
 
 
 
 
 
+## Properties
 
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `name` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
