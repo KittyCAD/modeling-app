@@ -4,7 +4,7 @@ new-test name:
     TWENTY_TWENTY=overwrite cargo nextest run --test executor -E 'test(=visuals::{{name}})'
 
 lint:
-    cargo clippy --all --tests --benches -- -D warnings
+    cargo clippy --all --all-targets --tests --benches -- -D warnings
 
 redo-kcl-stdlib-docs:
     EXPECTORATE=overwrite cargo nextest run -p kcl-lib docs::gen_std_tests::test_generate_stdlib
