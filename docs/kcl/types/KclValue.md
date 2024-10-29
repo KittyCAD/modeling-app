@@ -59,9 +59,10 @@ Any KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
-| `kind` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| Any KCL value. | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `value` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -182,7 +183,7 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Function`|  | No |
-| `expression` |[`UnboxedNode_for_FunctionExpression`](/docs/kcl/types/UnboxedNode_for_FunctionExpression)| Any KCL value. | No |
+| `expression` |[`Node_for_FunctionExpression`](/docs/kcl/types/Node_for_FunctionExpression)| Any KCL value. | No |
 | `memory` |[`ProgramMemory`](/docs/kcl/types/ProgramMemory)| Any KCL value. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 

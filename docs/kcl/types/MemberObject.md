@@ -22,10 +22,13 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`MemberExpression`](/docs/kcl/types/MemberExpression)|  | No |
-| `kind` |[`MemberExpression`](/docs/kcl/types/MemberExpression)|  | No |
+| `type` |enum: `MemberExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `object` |[`MemberObject`](/docs/kcl/types/MemberObject)|  | No |
+| `property` |[`LiteralIdentifier`](/docs/kcl/types/LiteralIdentifier)|  | No |
+| `computed` |`boolean`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -40,10 +43,11 @@ layout: manual
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`Identifier`](/docs/kcl/types/Identifier)|  | No |
-| `kind` |[`Identifier`](/docs/kcl/types/Identifier)|  | No |
+| `type` |enum: `Identifier`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `name` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----

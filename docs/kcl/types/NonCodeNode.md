@@ -5,17 +5,12 @@ layout: manual
 ---
 
 
-**Type:** `object`
+`NonCodeNode`
 
 
 
 
 
-## Properties
 
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `value` |[`NonCodeValue`](/docs/kcl/types/NonCodeValue)|  | No |
-| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 

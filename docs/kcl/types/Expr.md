@@ -23,10 +23,12 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`Literal`](/docs/kcl/types/Literal)|  | No |
-| `kind` |[`Literal`](/docs/kcl/types/Literal)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `Literal`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `value` |[`LiteralValue`](/docs/kcl/types/LiteralValue)| An expression can be evaluated to yield a single KCL value. | No |
+| `raw` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -41,10 +43,11 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`Identifier`](/docs/kcl/types/Identifier)|  | No |
-| `kind` |[`Identifier`](/docs/kcl/types/Identifier)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `Identifier`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `name` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -60,9 +63,10 @@ An expression can be evaluated to yield a single KCL value.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`TagDeclarator`](/docs/kcl/types#tag-declaration)|  | No |
-| `kind` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| An expression can be evaluated to yield a single KCL value. | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `value` |`string`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -77,10 +81,13 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`BinaryExpression`](/docs/kcl/types/BinaryExpression)|  | No |
-| `kind` |[`BinaryExpression`](/docs/kcl/types/BinaryExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `BinaryExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `operator` |[`BinaryOperator`](/docs/kcl/types/BinaryOperator)| An expression can be evaluated to yield a single KCL value. | No |
+| `left` |[`BinaryPart`](/docs/kcl/types/BinaryPart)| An expression can be evaluated to yield a single KCL value. | No |
+| `right` |[`BinaryPart`](/docs/kcl/types/BinaryPart)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -95,10 +102,12 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`FunctionExpression`](/docs/kcl/types/FunctionExpression)|  | No |
-| `kind` |[`FunctionExpression`](/docs/kcl/types/FunctionExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `FunctionExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `params` |`[` [`Parameter`](/docs/kcl/types/Parameter) `]`|  | No |
+| `body` |[`Node_for_Program`](/docs/kcl/types/Node_for_Program)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -113,10 +122,13 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`CallExpression`](/docs/kcl/types/CallExpression)|  | No |
-| `kind` |[`CallExpression`](/docs/kcl/types/CallExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `CallExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `callee` |[`Node_for_Identifier`](/docs/kcl/types/Node_for_Identifier)| An expression can be evaluated to yield a single KCL value. | No |
+| `arguments` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
+| `optional` |`boolean`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -131,10 +143,12 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`PipeExpression`](/docs/kcl/types/PipeExpression)|  | No |
-| `kind` |[`PipeExpression`](/docs/kcl/types/PipeExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `PipeExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `body` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
+| `nonCodeMeta` |[`NonCodeMeta`](/docs/kcl/types/NonCodeMeta)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -149,10 +163,10 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`PipeSubstitution`](/docs/kcl/types/PipeSubstitution)|  | No |
-| `kind` |[`PipeSubstitution`](/docs/kcl/types/PipeSubstitution)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `PipeSubstitution`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -167,10 +181,12 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`ArrayExpression`](/docs/kcl/types/ArrayExpression)|  | No |
-| `kind` |[`ArrayExpression`](/docs/kcl/types/ArrayExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `ArrayExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `elements` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
+| `nonCodeMeta` |[`NonCodeMeta`](/docs/kcl/types/NonCodeMeta)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -185,10 +201,13 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`ArrayRangeExpression`](/docs/kcl/types/ArrayRangeExpression)|  | No |
-| `kind` |[`ArrayRangeExpression`](/docs/kcl/types/ArrayRangeExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `ArrayRangeExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `startElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `endElement` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `endInclusive` |`boolean`| Is the `end_element` included in the range? | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -203,10 +222,12 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`ObjectExpression`](/docs/kcl/types/ObjectExpression)|  | No |
-| `kind` |[`ObjectExpression`](/docs/kcl/types/ObjectExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `ObjectExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `properties` |`[` [`Node_for_ObjectProperty`](/docs/kcl/types/Node_for_ObjectProperty) `]`|  | No |
+| `nonCodeMeta` |[`NonCodeMeta`](/docs/kcl/types/NonCodeMeta)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -221,10 +242,13 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`MemberExpression`](/docs/kcl/types/MemberExpression)|  | No |
-| `kind` |[`MemberExpression`](/docs/kcl/types/MemberExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `MemberExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `object` |[`MemberObject`](/docs/kcl/types/MemberObject)| An expression can be evaluated to yield a single KCL value. | No |
+| `property` |[`LiteralIdentifier`](/docs/kcl/types/LiteralIdentifier)| An expression can be evaluated to yield a single KCL value. | No |
+| `computed` |`boolean`|  | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -239,10 +263,12 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`UnaryExpression`](/docs/kcl/types/UnaryExpression)|  | No |
-| `kind` |[`UnaryExpression`](/docs/kcl/types/UnaryExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `UnaryExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `operator` |[`UnaryOperator`](/docs/kcl/types/UnaryOperator)| An expression can be evaluated to yield a single KCL value. | No |
+| `argument` |[`BinaryPart`](/docs/kcl/types/BinaryPart)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
@@ -257,10 +283,14 @@ An expression can be evaluated to yield a single KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`IfExpression`](/docs/kcl/types/IfExpression)|  | No |
-| `kind` |[`IfExpression`](/docs/kcl/types/IfExpression)| An expression can be evaluated to yield a single KCL value. | No |
+| `type` |enum: `IfExpression`|  | No |
 | `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `cond` |[`Expr`](/docs/kcl/types/Expr)| An expression can be evaluated to yield a single KCL value. | No |
+| `then_val` |[`Node_for_Program`](/docs/kcl/types/Node_for_Program)| An expression can be evaluated to yield a single KCL value. | No |
+| `else_ifs` |`[` [`Node_for_ElseIf`](/docs/kcl/types/Node_for_ElseIf) `]`|  | No |
+| `final_else` |[`Node_for_Program`](/docs/kcl/types/Node_for_Program)| An expression can be evaluated to yield a single KCL value. | No |
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 
 ----
