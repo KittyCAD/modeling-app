@@ -5,3 +5,6 @@ new-test name:
 
 lint:
     cargo clippy --all --tests --benches -- -D warnings
+
+redo-kcl-stdlib-docs:
+    EXPECTORATE=overwrite cargo nextest run -p kcl-lib docs::gen_std_tests::test_generate_stdlib
