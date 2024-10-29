@@ -19,7 +19,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch: Sketch, tag
 |----------|------|-------------|----------|
 | `data` | [`AngledLineThatIntersectsData`](/docs/kcl/types/AngledLineThatIntersectsData) | Data for drawing an angled line that intersects with a given line. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 

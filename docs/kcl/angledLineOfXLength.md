@@ -19,7 +19,7 @@ angledLineOfXLength(data: AngledLineData, sketch: Sketch, tag?: TagNode) -> Sket
 |----------|------|-------------|----------|
 | `data` | [`AngledLineData`](/docs/kcl/types/AngledLineData) | Data to draw an angled line. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 

@@ -398,6 +398,7 @@ fn cleanup_static_links(output: &str) -> String {
     // Fix the links to the types.
     let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
     cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
+    cleaned_output = cleaned_output.replace("`TagNode`", &link);
     let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
     cleaned_output = cleaned_output.replace("`TagIdentifier`", &link);
 
@@ -409,7 +410,7 @@ fn cleanup_type_links(output: &str, types: Vec<String>) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
     for type_name in types {
-        if type_name == "TagDeclarator" || type_name == "TagIdentifier" {
+        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" {
             continue;
         } else {
             let link = format!("(/docs/kcl/types/{})", type_name);
@@ -486,7 +487,7 @@ fn generate_type(
     }
 
     // Skip over TagDeclarator and TagIdentifier since they have custom docs.
-    if name == "TagDeclarator" || name == "TagIdentifier" {
+    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" {
         return Ok(());
     }
 

@@ -21,7 +21,7 @@ arc(data: ArcData, sketch: Sketch, tag?: TagNode) -> Sketch
 |----------|------|-------------|----------|
 | `data` | [`ArcData`](/docs/kcl/types/ArcData) | Data to draw an arc. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 

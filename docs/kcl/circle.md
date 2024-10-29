@@ -19,7 +19,7 @@ circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagNode
 |----------|------|-------------|----------|
 | `data` | [`CircleData`](/docs/kcl/types/CircleData) | Data for drawing an circle | Yes |
 | `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 

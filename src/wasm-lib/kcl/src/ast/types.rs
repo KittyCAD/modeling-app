@@ -1750,6 +1750,7 @@ pub struct TagDeclarator {
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
+
 pub type TagNode = Node<TagDeclarator>;
 
 impl From<&BoxNode<TagDeclarator>> for KclValue {

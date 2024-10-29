@@ -19,7 +19,7 @@ angledLineToX(data: AngledLineToData, sketch: Sketch, tag?: TagNode) -> Sketch
 |----------|------|-------------|----------|
 | `data` | [`AngledLineToData`](/docs/kcl/types/AngledLineToData) | Data to draw an angled line to a point. | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | A sketch is a collection of paths. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 

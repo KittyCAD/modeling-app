@@ -19,7 +19,7 @@ polygon(data: PolygonData, sketch_surface_or_group: SketchOrSurface, tag?: TagNo
 |----------|------|-------------|----------|
 | `data` | [`PolygonData`](/docs/kcl/types/PolygonData) | Data for drawing a polygon | Yes |
 | `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 

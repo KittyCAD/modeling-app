@@ -19,7 +19,7 @@ startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: TagNode) -> Sk
 |----------|------|-------------|----------|
 | `to` | `[number]` |  | Yes |
 | `sketch_surface` | [`SketchSurface`](/docs/kcl/types/SketchSurface) | A sketch type. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 

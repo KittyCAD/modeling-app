@@ -19,7 +19,7 @@ chamfer(data: ChamferData, solid: Solid, tag?: TagNode) -> Solid
 |----------|------|-------------|----------|
 | `data` | [`ChamferData`](/docs/kcl/types/ChamferData) | Data for chamfers. | Yes |
 | `solid` | [`Solid`](/docs/kcl/types/Solid) | An solid is a collection of extrude surfaces. | Yes |
-| `tag` | [`TagNode`](/docs/kcl/types/TagNode) |  | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
 
 ### Returns
 
