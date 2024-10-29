@@ -1,0 +1,7 @@
+---
+source: kcl/src/simulation_tests.rs
+assertion_line: 98
+description: Error from executing cube.kcl
+snapshot_kind: text
+---
+No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN
