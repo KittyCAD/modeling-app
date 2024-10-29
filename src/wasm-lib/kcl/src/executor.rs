@@ -361,6 +361,30 @@ impl IdGenerator {
 #[serde(tag = "type")]
 pub enum KclValue {
     UserVal(UserVal),
+    Bool {
+        value: bool,
+        meta: Vec<Metadata>,
+    },
+    Number {
+        value: f64,
+        meta: Vec<Metadata>,
+    },
+    Int {
+        value: i64,
+        meta: Vec<Metadata>,
+    },
+    String {
+        value: String,
+        meta: Vec<Metadata>,
+    },
+    Array {
+        value: Vec<KclValue>,
+        meta: Vec<Metadata>,
+    },
+    Object {
+        value: HashMap<String, KclValue>,
+        meta: Vec<Metadata>,
+    },
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(crate::ast::types::BoxNode<TagDeclarator>),
     Plane(Box<Plane>),
@@ -423,21 +447,17 @@ impl KclValue {
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
             KclValue::Face(_) => "Face",
+            KclValue::Bool { .. } => "bool",
+            KclValue::Number { .. } => "number",
+            KclValue::Int { .. } => "integer",
+            KclValue::String { .. } => "string",
+            KclValue::Array { .. } => "array",
+            KclValue::Object { .. } => "object",
         }
     }
 
     pub(crate) fn is_function(&self) -> bool {
-        match self {
-            KclValue::UserVal(..)
-            | KclValue::TagIdentifier(..)
-            | KclValue::TagDeclarator(..)
-            | KclValue::Plane(..)
-            | KclValue::Face(..)
-            | KclValue::Solid(..)
-            | KclValue::Solids { .. }
-            | KclValue::ImportedGeometry(..) => false,
-            KclValue::Function { .. } => true,
-        }
+        matches!(self, KclValue::Function { .. })
     }
 }
 
@@ -922,37 +942,47 @@ pub type MemoryFunction =
 impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
-            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::TagDeclarator(t) => vec![(&t).into()],
-            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Solids { value } => value
-                .iter()
-                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
-                .collect(),
-            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::UserVal(u) => to_vec_sr(&u.meta),
+            KclValue::TagDeclarator(t) => t.into(),
+            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
+            KclValue::Function { meta, .. } => to_vec_sr(&meta),
+            KclValue::Plane(p) => to_vec_sr(&p.meta),
+            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Bool { meta, .. } => to_vec_sr(&meta),
+            KclValue::Number { meta, .. } => to_vec_sr(&meta),
+            KclValue::Int { meta, .. } => to_vec_sr(&meta),
+            KclValue::String { meta, .. } => to_vec_sr(&meta),
+            KclValue::Array { meta, .. } => to_vec_sr(&meta),
+            KclValue::Object { meta, .. } => to_vec_sr(&meta),
         }
     }
+}
+
+fn to_vec_sr(meta: &[Metadata]) -> Vec<SourceRange> {
+    meta.iter().map(|m| m.source_range).collect()
 }
 
 impl From<&KclValue> for Vec<SourceRange> {
     fn from(item: &KclValue) -> Self {
         match item {
-            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::TagDeclarator(ref t) => vec![t.into()],
-            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Solids { value } => value
-                .iter()
-                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
-                .collect(),
-            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::UserVal(u) => to_vec_sr(&u.meta),
+            KclValue::TagDeclarator(t) => t.to_owned().into(),
+            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
+            KclValue::Function { meta, .. } => to_vec_sr(meta),
+            KclValue::Plane(p) => to_vec_sr(&p.meta),
+            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Bool { meta, .. } => to_vec_sr(meta),
+            KclValue::Number { meta, .. } => to_vec_sr(meta),
+            KclValue::Int { meta, .. } => to_vec_sr(meta),
+            KclValue::String { meta, .. } => to_vec_sr(meta),
+            KclValue::Array { meta, .. } => to_vec_sr(meta),
+            KclValue::Object { meta, .. } => to_vec_sr(meta),
         }
     }
 }
@@ -1561,6 +1591,12 @@ impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
 pub struct Metadata {
     /// The source range.
     pub source_range: SourceRange,
+}
+
+impl From<Metadata> for Vec<SourceRange> {
+    fn from(meta: Metadata) -> Self {
+        vec![meta.source_range]
+    }
 }
 
 impl From<SourceRange> for Metadata {
