@@ -3,95 +3,95 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 66,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 49,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 3,
           "end": 49,
           "id": {
-            "type": "Identifier",
-            "start": 3,
             "end": 8,
-            "name": "thing"
+            "name": "thing",
+            "start": 3,
+            "type": "Identifier"
           },
           "init": {
-            "type": "FunctionExpression",
-            "type": "FunctionExpression",
-            "start": 11,
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 43,
+                    "raw": "true",
+                    "start": 39,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": true
+                  },
+                  "end": 43,
+                  "start": 32,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 49,
+              "start": 22
+            },
             "end": 49,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "type": "Identifier",
-                  "start": 12,
                   "end": 17,
-                  "name": "param"
+                  "name": "param",
+                  "start": 12,
+                  "type": "Identifier"
                 },
                 "optional": false
               }
             ],
-            "body": {
-              "start": 22,
-              "end": 49,
-              "body": [
-                {
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement",
-                  "start": 32,
-                  "end": 43,
-                  "argument": {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 39,
-                    "end": 43,
-                    "value": true,
-                    "raw": "true"
-                  }
-                }
-              ]
-            }
-          }
+            "start": 11,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 3,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "fn"
+      "end": 49,
+      "kind": "fn",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     },
     {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 54,
       "end": 66,
       "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 54,
-        "end": 66,
-        "callee": {
-          "type": "Identifier",
-          "start": 54,
-          "end": 59,
-          "name": "thing"
-        },
         "arguments": [
           {
-            "type": "Literal",
-            "type": "Literal",
-            "start": 60,
             "end": 65,
-            "value": false,
-            "raw": "false"
+            "raw": "false",
+            "start": 60,
+            "type": "Literal",
+            "type": "Literal",
+            "value": false
           }
         ],
-        "optional": false
-      }
+        "callee": {
+          "end": 59,
+          "name": "thing",
+          "start": 54,
+          "type": "Identifier"
+        },
+        "end": 66,
+        "optional": false,
+        "start": 54,
+        "type": "CallExpression",
+        "type": "CallExpression"
+      },
+      "start": 54,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
     }
-  ]
+  ],
+  "end": 66,
+  "start": 0
 }

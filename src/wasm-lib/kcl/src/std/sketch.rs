@@ -12,8 +12,8 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::ast::types::TagNode;
 use crate::{
-    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
@@ -94,7 +94,7 @@ pub enum StartOrEnd {
 
 /// Draw a line to a point.
 pub async fn line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_line_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -118,7 +118,7 @@ pub async fn line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 async fn inner_line_to(
     to: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -161,7 +161,7 @@ async fn inner_line_to(
 
 /// Draw a line to a point on the x-axis.
 pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_x_line_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -196,7 +196,7 @@ pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 async fn inner_x_line_to(
     to: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -209,7 +209,7 @@ async fn inner_x_line_to(
 
 /// Draw a line to a point on the y-axis.
 pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_y_line_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -237,7 +237,7 @@ pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 async fn inner_y_line_to(
     to: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -249,7 +249,7 @@ async fn inner_y_line_to(
 
 /// Draw a line.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_line(delta, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -285,7 +285,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 async fn inner_line(
     delta: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -330,7 +330,7 @@ async fn inner_line(
 
 /// Draw a line on the x-axis.
 pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_x_line(length, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -364,7 +364,7 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_x_line(
     length: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -373,7 +373,7 @@ async fn inner_x_line(
 
 /// Draw a line on the y-axis.
 pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_y_line(length, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -402,7 +402,7 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_y_line(
     length: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -427,7 +427,7 @@ pub enum AngledLineData {
 
 /// Draw an angled line.
 pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -456,7 +456,7 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 async fn inner_angled_line(
     data: AngledLineData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -512,7 +512,7 @@ async fn inner_angled_line(
 
 /// Draw an angled line of a given x length.
 pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_of_x_length(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -537,7 +537,7 @@ pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> 
 async fn inner_angled_line_of_x_length(
     data: AngledLineData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -580,7 +580,7 @@ pub struct AngledLineToData {
 
 /// Draw an angled line to a given x coordinate.
 pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_to_x(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -606,7 +606,7 @@ pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<
 async fn inner_angled_line_to_x(
     data: AngledLineToData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -637,7 +637,7 @@ async fn inner_angled_line_to_x(
 
 /// Draw an angled line of a given y length.
 pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_of_y_length(data, sketch, tag, exec_state, args).await?;
 
@@ -665,7 +665,7 @@ pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> 
 async fn inner_angled_line_of_y_length(
     data: AngledLineData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -697,7 +697,7 @@ async fn inner_angled_line_of_y_length(
 
 /// Draw an angled line to a given y coordinate.
 pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_to_y(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -723,7 +723,7 @@ pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<
 async fn inner_angled_line_to_y(
     data: AngledLineToData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -768,7 +768,7 @@ pub struct AngledLineThatIntersectsData {
 
 /// Draw an angled line that intersects with a given line.
 pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineThatIntersectsData, Sketch, Option<TagDeclarator>) =
+    let (data, sketch, tag): (AngledLineThatIntersectsData, Sketch, Option<TagNode>) =
         args.get_data_and_sketch_and_tag()?;
     let new_sketch = inner_angled_line_that_intersects(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -799,7 +799,7 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 async fn inner_angled_line_that_intersects(
     data: AngledLineThatIntersectsData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1131,7 +1131,7 @@ async fn start_sketch_on_plane(
 
 /// Start a new profile at a given point.
 pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<TagDeclarator>) =
+    let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<TagNode>) =
         args.get_data_and_sketch_surface()?;
 
     let sketch = inner_start_profile_at(start, sketch_surface, tag, exec_state, args).await?;
@@ -1178,7 +1178,7 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 pub(crate) async fn inner_start_profile_at(
     to: [f64; 2],
     sketch_surface: SketchSurface,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1341,7 +1341,7 @@ pub(crate) fn inner_profile_start(sketch: Sketch) -> Result<[f64; 2], KclError> 
 
 /// Close the current sketch.
 pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (sketch, tag): (Sketch, Option<TagDeclarator>) = args.get_sketch_and_optional_tag()?;
+    let (sketch, tag): (Sketch, Option<TagNode>) = args.get_sketch_and_optional_tag()?;
 
     let new_sketch = inner_close(sketch, tag, exec_state, args).await?;
 
@@ -1374,7 +1374,7 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 }]
 pub(crate) async fn inner_close(
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1449,7 +1449,7 @@ pub enum ArcData {
 
 /// Draw an arc.
 pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (ArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (ArcData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_arc(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -1483,7 +1483,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 pub(crate) async fn inner_arc(
     data: ArcData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1570,7 +1570,7 @@ pub enum TangentialArcData {
 
 /// Draw a tangential arc.
 pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (TangentialArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (TangentialArcData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_tangential_arc(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -1605,7 +1605,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 async fn inner_tangential_arc(
     data: TangentialArcData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1698,7 +1698,7 @@ fn tan_arc_to(sketch: &Sketch, to: &[f64; 2]) -> ModelingCmd {
 
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = super::args::FromArgs::from_args(&args, 0)?;
+    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = super::args::FromArgs::from_args(&args, 0)?;
 
     let new_sketch = inner_tangential_arc_to(to, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -1706,7 +1706,7 @@ pub async fn tangential_arc_to(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Draw a tangential arc to point some distance away..
 pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = super::args::FromArgs::from_args(&args, 0)?;
+    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = super::args::FromArgs::from_args(&args, 0)?;
 
     let new_sketch = inner_tangential_arc_to_relative(delta, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -1735,7 +1735,7 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 async fn inner_tangential_arc_to(
     to: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1805,7 +1805,7 @@ async fn inner_tangential_arc_to(
 async fn inner_tangential_arc_to_relative(
     delta: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1882,7 +1882,7 @@ pub struct BezierData {
 
 /// Draw a bezier curve.
 pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (BezierData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (BezierData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_bezier_curve(data, sketch, tag, exec_state, args).await?;
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
@@ -1912,7 +1912,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 async fn inner_bezier_curve(
     data: BezierData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {

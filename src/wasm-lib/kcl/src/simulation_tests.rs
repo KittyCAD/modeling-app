@@ -1,4 +1,9 @@
-use crate::{ast::types::Program, errors::KclError, parser::Parser, token::Token};
+use crate::{
+    ast::types::{Node, Program},
+    errors::KclError,
+    parser::Parser,
+    token::Token,
+};
 
 /// Deserialize the data from a snapshot.
 fn get<T: serde::de::DeserializeOwned>(snapshot: &str) -> T {
@@ -79,7 +84,7 @@ fn unparse(test_name: &str) {
 async fn execute(test_name: &str) {
     // Read the AST from disk.
     let input = read("ast.snap", test_name);
-    let ast_res: Result<Program, KclError> = get(&input);
+    let ast_res: Result<Node<Program>, KclError> = get(&input);
     let Ok(ast) = ast_res else {
         return;
     };

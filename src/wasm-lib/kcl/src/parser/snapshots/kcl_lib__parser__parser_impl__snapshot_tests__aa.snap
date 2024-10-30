@@ -3,42 +3,42 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 17,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 17,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 17,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 8,
-            "name": "sg"
+            "name": "sg",
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "UnaryExpression",
-            "type": "UnaryExpression",
-            "start": 11,
+            "argument": {
+              "end": 17,
+              "name": "scale",
+              "start": 12,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
             "end": 17,
             "operator": "-",
-            "argument": {
-              "type": "Identifier",
-              "type": "Identifier",
-              "start": 12,
-              "end": 17,
-              "name": "scale"
-            }
-          }
+            "start": 11,
+            "type": "UnaryExpression",
+            "type": "UnaryExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 17,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
-  ]
+  ],
+  "end": 17,
+  "start": 0
 }

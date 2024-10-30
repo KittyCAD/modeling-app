@@ -2,8 +2,8 @@ use anyhow::Result;
 
 use crate::{
     ast::types::{
-        BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression,
-        ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
+        BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, NodeRef,
+        ObjectExpression, ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
     },
     walk::Node,
 };
@@ -26,7 +26,7 @@ where
 }
 
 /// Run the Walker against all [Node]s in a [Program].
-pub fn walk<'a, WalkT>(prog: &'a Program, f: &WalkT) -> Result<bool>
+pub fn walk<'a, WalkT>(prog: NodeRef<'a, Program>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -42,7 +42,7 @@ where
     Ok(true)
 }
 
-fn walk_variable_declarator<'a, WalkT>(node: &'a VariableDeclarator, f: &WalkT) -> Result<bool>
+fn walk_variable_declarator<'a, WalkT>(node: NodeRef<'a, VariableDeclarator>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -79,7 +79,7 @@ where
     f.walk(node.into())
 }
 
-fn walk_member_expression<'a, WalkT>(node: &'a MemberExpression, f: &WalkT) -> Result<bool>
+fn walk_member_expression<'a, WalkT>(node: NodeRef<'a, MemberExpression>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -204,7 +204,7 @@ where
 }
 
 /// Walk through an [ObjectProperty].
-fn walk_object_property<'a, WalkT>(node: &'a ObjectProperty, f: &WalkT) -> Result<bool>
+fn walk_object_property<'a, WalkT>(node: NodeRef<'a, ObjectProperty>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -215,7 +215,7 @@ where
 }
 
 /// Walk through an [ObjectExpression].
-fn walk_object_expression<'a, WalkT>(node: &'a ObjectExpression, f: &WalkT) -> Result<bool>
+fn walk_object_expression<'a, WalkT>(node: NodeRef<'a, ObjectExpression>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -232,7 +232,7 @@ where
 }
 
 /// Walk through an [IfExpression].
-fn walk_if_expression<'a, WalkT>(node: &'a IfExpression, f: &WalkT) -> Result<bool>
+fn walk_if_expression<'a, WalkT>(node: NodeRef<'a, IfExpression>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -259,7 +259,7 @@ where
 }
 
 /// walk through an [UnaryExpression].
-fn walk_unary_expression<'a, WalkT>(node: &'a UnaryExpression, f: &WalkT) -> Result<bool>
+fn walk_unary_expression<'a, WalkT>(node: NodeRef<'a, UnaryExpression>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {

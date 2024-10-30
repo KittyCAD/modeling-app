@@ -3,90 +3,90 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 42,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 42,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 42,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 9,
-            "name": "obj"
+            "name": "obj",
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 12,
             "end": 42,
             "properties": [
               {
-                "type": "ObjectProperty",
-                "start": 13,
                 "end": 30,
                 "key": {
-                  "type": "Identifier",
-                  "start": 13,
                   "end": 19,
-                  "name": "center"
+                  "name": "center",
+                  "start": 13,
+                  "type": "Identifier"
                 },
+                "start": 13,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 22,
-                  "end": 30,
                   "elements": [
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 23,
                       "end": 25,
-                      "value": 10,
-                      "raw": "10"
+                      "raw": "10",
+                      "start": 23,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 10
                     },
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 27,
                       "end": 29,
-                      "value": 10,
-                      "raw": "10"
+                      "raw": "10",
+                      "start": 27,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 10
                     }
-                  ]
+                  ],
+                  "end": 30,
+                  "start": 22,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               },
               {
-                "type": "ObjectProperty",
-                "start": 32,
                 "end": 41,
                 "key": {
-                  "type": "Identifier",
-                  "start": 32,
                   "end": 38,
-                  "name": "radius"
+                  "name": "radius",
+                  "start": 32,
+                  "type": "Identifier"
                 },
+                "start": 32,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 40,
                   "end": 41,
-                  "value": 5,
-                  "raw": "5"
+                  "raw": "5",
+                  "start": 40,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 5
                 }
               }
-            ]
-          }
+            ],
+            "start": 12,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 42,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
-  ]
+  ],
+  "end": 42,
+  "start": 0
 }

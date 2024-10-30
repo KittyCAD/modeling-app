@@ -3,88 +3,88 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 36,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 36,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 36,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 11,
-            "name": "myVar"
+            "name": "myVar",
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 14,
-            "end": 36,
             "body": [
               {
-                "type": "BinaryExpression",
-                "type": "BinaryExpression",
-                "start": 14,
                 "end": 19,
-                "operator": "+",
                 "left": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 14,
                   "end": 15,
-                  "value": 5,
-                  "raw": "5"
+                  "raw": "5",
+                  "start": 14,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 5
                 },
+                "operator": "+",
                 "right": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 18,
                   "end": 19,
-                  "value": 6,
-                  "raw": "6"
-                }
+                  "raw": "6",
+                  "start": 18,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 6
+                },
+                "start": 14,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
               },
               {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 23,
-                "end": 36,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 23,
-                  "end": 29,
-                  "name": "myFunc"
-                },
                 "arguments": [
                   {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 30,
                     "end": 32,
-                    "value": 45,
-                    "raw": "45"
+                    "raw": "45",
+                    "start": 30,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 45
                   },
                   {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
+                    "end": 35,
                     "start": 34,
-                    "end": 35
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
                   }
                 ],
-                "optional": false
+                "callee": {
+                  "end": 29,
+                  "name": "myFunc",
+                  "start": 23,
+                  "type": "Identifier"
+                },
+                "end": 36,
+                "optional": false,
+                "start": 23,
+                "type": "CallExpression",
+                "type": "CallExpression"
               }
-            ]
-          }
+            ],
+            "end": 36,
+            "start": 14,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 36,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
-  ]
+  ],
+  "end": 36,
+  "start": 0
 }
