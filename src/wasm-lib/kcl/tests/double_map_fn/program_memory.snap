@@ -34,55 +34,55 @@ snapshot_kind: text
         "increment": {
           "type": "Function",
           "expression": {
-            "type": "FunctionExpression",
-            "start": 15,
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 38,
+                    "left": {
+                      "end": 34,
+                      "name": "i",
+                      "start": 33,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 38,
+                      "raw": "1",
+                      "start": 37,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 1
+                    },
+                    "start": 33,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 38,
+                  "start": 26,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 40,
+              "start": 22
+            },
             "end": 40,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "type": "Identifier",
-                  "start": 16,
                   "end": 17,
-                  "name": "i"
+                  "name": "i",
+                  "start": 16,
+                  "type": "Identifier"
                 },
                 "optional": false
               }
             ],
-            "body": {
-              "start": 22,
-              "end": 40,
-              "body": [
-                {
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement",
-                  "start": 26,
-                  "end": 38,
-                  "argument": {
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression",
-                    "start": 33,
-                    "end": 38,
-                    "operator": "+",
-                    "left": {
-                      "type": "Identifier",
-                      "type": "Identifier",
-                      "start": 33,
-                      "end": 34,
-                      "name": "i"
-                    },
-                    "right": {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 37,
-                      "end": 38,
-                      "value": 1,
-                      "raw": "1"
-                    }
-                  }
-                }
-              ]
-            }
+            "start": 15,
+            "type": "FunctionExpression"
           },
           "memory": {
             "environments": [
