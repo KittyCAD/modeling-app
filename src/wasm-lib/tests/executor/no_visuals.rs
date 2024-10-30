@@ -173,3 +173,4 @@ gen_test_parse_fail!(
 // );
 gen_test!(add_lots);
 gen_test!(double_map);
+gen_test!(array_elem_push);

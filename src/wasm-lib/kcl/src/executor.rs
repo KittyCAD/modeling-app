@@ -1127,7 +1127,7 @@ pub struct TagEngineInfo {
     /// The sketch the tag is on.
     pub sketch: uuid::Uuid,
     /// The path the tag is on.
-    pub path: Option<BasePath>,
+    pub path: Option<Path>,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
 }
@@ -1137,10 +1137,10 @@ pub struct TagEngineInfo {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct Sketch {
-    /// The id of the sketch (this will change when the engine's reference to it changes.
+    /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
     /// The paths in the sketch.
-    pub value: Vec<Path>,
+    pub paths: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
@@ -1206,7 +1206,7 @@ impl Sketch {
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
             sketch: self.id,
-            path: Some(base.clone()),
+            path: Some(current_path.clone()),
             surface: None,
         });
 
@@ -1215,7 +1215,7 @@ impl Sketch {
 
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
-        self.value.last()
+        self.paths.last()
     }
 
     /// The "pen" is an imaginary pen drawing the path.
@@ -1656,6 +1656,43 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A circular arc, not necessarily tangential to the current point.
+    Arc {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Center of the circle that this arc is drawn on.
+        center: [f64; 2],
+        /// Radius of the circle that this arc is drawn on.
+        radius: f64,
+    },
+}
+
+/// What kind of path is this?
+#[derive(Display)]
+enum PathType {
+    ToPoint,
+    Base,
+    TangentialArc,
+    TangentialArcTo,
+    Circle,
+    Horizontal,
+    AngledLineTo,
+    Arc,
+}
+
+impl From<&Path> for PathType {
+    fn from(value: &Path) -> Self {
+        match value {
+            Path::ToPoint { .. } => Self::ToPoint,
+            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
+            Path::TangentialArc { .. } => Self::TangentialArc,
+            Path::Circle { .. } => Self::Circle,
+            Path::Horizontal { .. } => Self::Horizontal,
+            Path::AngledLineTo { .. } => Self::AngledLineTo,
+            Path::Base { .. } => Self::Base,
+            Path::Arc { .. } => Self::Arc,
+        }
+    }
 }
 
 impl Path {
@@ -1668,6 +1705,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1680,6 +1718,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::Arc { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1692,6 +1731,47 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::Arc { base, .. } => base,
+        }
+    }
+
+    /// Where does this path segment start?
+    pub fn get_from(&self) -> &[f64; 2] {
+        &self.get_base().from
+    }
+    /// Where does this path segment end?
+    pub fn get_to(&self) -> &[f64; 2] {
+        &self.get_base().to
+    }
+
+    /// Length of this path segment, in cartesian plane.
+    pub fn length(&self) -> f64 {
+        match self {
+            Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::TangentialArc {
+                base: _,
+                center,
+                ccw: _,
+            }
+            | Self::TangentialArcTo {
+                base: _,
+                center,
+                ccw: _,
+            } => {
+                // The radius can be calculated as the linear distance between `to` and `center`,
+                // or between `from` and `center`. They should be the same.
+                let radius = linear_distance(self.get_from(), center);
+                debug_assert_eq!(radius, linear_distance(self.get_to(), center));
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Arc { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
         }
     }
 
@@ -1704,8 +1784,20 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::Arc { base, .. } => Some(base),
         }
     }
+}
+
+/// Compute the straight-line distance between a pair of (2D) points.
+#[rustfmt::skip]
+fn linear_distance(
+    [x0, y0]: &[f64; 2],
+    [x1, y1]: &[f64; 2]
+) -> f64 {
+    let y_sq = (y1 - y0).powi(2);
+    let x_sq = (x1 - x0).powi(2);
+    (y_sq + x_sq).sqrt()
 }
 
 /// An extrude surface.
@@ -1888,9 +1980,73 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     }
 }
 
+/// Create a new zoo api client.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let zoo_token_env = std::env::var("ZOO_API_TOKEN");
+
+    let token = if let Some(token) = token {
+        token
+    } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
+        if let Ok(zoo_token) = zoo_token_env {
+            if zoo_token != token {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                    token,
+                    zoo_token
+                ));
+            }
+        }
+        token
+    } else if let Ok(token) = zoo_token_env {
+        token
+    } else {
+        return Err(anyhow::anyhow!(
+            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+        ));
+    };
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set an engine address if it's set.
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
+    if let Some(addr) = engine_addr {
+        client.set_base_url(addr);
+    } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if let Ok(kittycad_host) = kittycad_host_env {
+            if kittycad_host != addr {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                    kittycad_host,
+                    addr
+                ));
+            }
+        }
+        client.set_base_url(addr);
+    } else if let Ok(addr) = kittycad_host_env {
+        client.set_base_url(addr);
+    }
+
+    Ok(client)
+}
+
 impl ExecutorContext {
     /// Create a new default executor context.
-    /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
@@ -1935,6 +2091,35 @@ impl ExecutorContext {
         })
     }
 
+    /// Create a new default executor context.
+    /// With a kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+    ) -> Result<Self> {
+        // Create the client.
+        let client = new_zoo_client(token, engine_addr)?;
+
+        let ctx = Self::new(&client, settings).await?;
+        Ok(ctx)
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_default_client(settings: ExecutorSettings) -> Result<Self> {
+        // Create the client.
+        let ctx = Self::new_with_client(settings, None, None).await?;
+        Ok(ctx)
+    }
+
     pub fn is_mock(&self) -> bool {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
@@ -1942,35 +2127,7 @@ impl ExecutorContext {
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
-        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"));
-        let http_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60));
-        let ws_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60))
-            .connection_verbose(true)
-            .tcp_keepalive(std::time::Duration::from_secs(600))
-            .http1_only();
-
-        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-        // Create the client.
-        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-        // Set a local engine address if it's set.
-        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-            client.set_base_url(addr);
-        }
-        if let Some(addr) = engine_addr {
-            client.set_base_url(addr);
-        }
-
-        let ctx = ExecutorContext::new(
-            &client,
+        let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 units,
                 highlight_edges: true,
@@ -1978,6 +2135,8 @@ impl ExecutorContext {
                 show_grid: false,
                 replay: None,
             },
+            None,
+            engine_addr,
         )
         .await?;
         Ok(ctx)

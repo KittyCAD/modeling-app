@@ -6,7 +6,7 @@ import { MouseEventHandler, ReactNode } from 'react'
 import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
 import { LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
-import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
+import { FileTreeInner, FileTreeMenu, FileTreeRoot } from 'components/FileTree'
 import { useKclContext } from 'lang/KclProvider'
 import { editorManager } from 'lib/singletons'
 import { ContextFrom } from 'xstate'
@@ -38,7 +38,8 @@ interface PaneCallbackProps {
 
 export type SidebarPane = {
   id: SidebarType
-  title: string
+  title: ReactNode
+  sidebarName?: string
   icon: CustomIconName | IconDefinition
   keybinding: string
   Content: ReactNode | React.FC
@@ -49,7 +50,7 @@ export type SidebarPane = {
 
 export type SidebarAction = {
   id: string
-  title: string
+  title: ReactNode
   icon: CustomIconName
   iconClassName?: string // Just until we get rid of FontAwesome icons
   keybinding: string
@@ -78,7 +79,8 @@ export const sidebarPanes: SidebarPane[] = [
   },
   {
     id: 'files',
-    title: 'Project Files',
+    title: <FileTreeRoot />,
+    sidebarName: 'Project Files',
     icon: 'folder',
     Content: FileTreeInner,
     keybinding: 'Shift + F',

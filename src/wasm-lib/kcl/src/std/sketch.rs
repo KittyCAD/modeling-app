@@ -154,7 +154,7 @@ async fn inner_line_to(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -323,7 +323,7 @@ async fn inner_line(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -506,7 +506,7 @@ async fn inner_angled_line(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
     Ok(new_sketch)
 }
 
@@ -813,7 +813,7 @@ async fn inner_angled_line_that_intersects(
 
     let from = sketch.current_pen_position()?;
     let to = intersection_with_parallel_line(
-        &[path.from.into(), path.to.into()],
+        &[path.get_from().into(), path.get_to().into()],
         data.offset.unwrap_or_default(),
         data.angle,
         from,
@@ -1237,14 +1237,16 @@ pub(crate) async fn inner_start_profile_at(
         id: path_id,
         original_id: path_id,
         on: sketch_surface.clone(),
-        value: vec![],
+        paths: vec![],
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
             tag_identifier.info = Some(TagEngineInfo {
                 id: current_path.geo_meta.id,
                 sketch: path_id,
-                path: Some(current_path.clone()),
+                path: Some(Path::Base {
+                    base: current_path.clone(),
+                }),
                 surface: None,
             });
             HashMap::from([(tag.name.to_string(), tag_identifier)])
@@ -1411,7 +1413,7 @@ pub(crate) async fn inner_close(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1499,7 +1501,7 @@ pub(crate) async fn inner_arc(
             (center, a_start, a_end, *radius, end)
         }
         ArcData::CenterToRadius { center, to, radius } => {
-            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
+            let (angle_start, angle_end) = arc_angles(from, to.into(), center.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
     };
@@ -1528,7 +1530,7 @@ pub(crate) async fn inner_arc(
     )
     .await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::Arc {
         base: BasePath {
             from: from.into(),
             to: end.into(),
@@ -1538,6 +1540,8 @@ pub(crate) async fn inner_arc(
                 metadata: args.source_range.into(),
             },
         },
+        center: center.into(),
+        radius,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1545,7 +1549,7 @@ pub(crate) async fn inner_arc(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1677,7 +1681,7 @@ async fn inner_tangential_arc(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1773,7 +1777,7 @@ async fn inner_tangential_arc_to(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1858,7 +1862,7 @@ async fn inner_tangential_arc_to_relative(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
@@ -1951,7 +1955,7 @@ async fn inner_bezier_curve(
         new_sketch.add_tag(tag, &current_path);
     }
 
-    new_sketch.value.push(current_path);
+    new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
 }
