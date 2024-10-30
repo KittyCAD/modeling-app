@@ -118,7 +118,7 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-export async function isPaneOpen(page: Page, testId: string) {
+export async function checkIfPaneIsOpen(page: Page, testId: string) {
   const paneButtonLocator = page.getByTestId(testId)
   await expect(paneButtonLocator).toBeVisible()
   return (await paneButtonLocator?.getAttribute('aria-pressed')) === 'true'
@@ -127,7 +127,7 @@ export async function isPaneOpen(page: Page, testId: string) {
 export async function openPane(page: Page, testId: string) {
   const paneButtonLocator = page.getByTestId(testId)
   await expect(paneButtonLocator).toBeVisible()
-  const isOpen = await isPaneOpen(page, testId)
+  const isOpen = await checkIfPaneIsOpen(page, testId)
 
   if (!isOpen) {
     await paneButtonLocator.click()
@@ -138,7 +138,7 @@ export async function openPane(page: Page, testId: string) {
 export async function closePane(page: Page, testId: string) {
   const paneButtonLocator = page.getByTestId(testId)
   await expect(paneButtonLocator).toBeVisible()
-  const isOpen = await isPaneOpen(page, testId)
+  const isOpen = await checkIfPaneIsOpen(page, testId)
 
   if (isOpen) {
     await paneButtonLocator.click()

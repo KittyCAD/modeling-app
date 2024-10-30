@@ -329,7 +329,6 @@ export class SceneEntities {
       scale,
       theme: sceneInfra._theme,
     })
-    draftPoint.name = DRAFT_POINT
     draftPoint.layers.set(SKETCH_LAYER)
     group.add(draftPoint)
   }
@@ -538,6 +537,7 @@ export class SceneEntities {
         pathToNode: segPathToNode,
         scale,
         theme: sceneInfra._theme,
+        isDraft: false,
       })
       _profileStart.layers.set(SKETCH_LAYER)
       _profileStart.traverse((child) => {

@@ -45,6 +45,7 @@ import {
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
   ARROWHEAD,
+  DRAFT_POINT,
   SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
@@ -686,7 +687,7 @@ class CircleSegment implements SegmentUtils {
 
 export function createProfileStartHandle({
   from,
-  isDraft,
+  isDraft = false,
   scale = 1,
   theme,
   isSelected,
@@ -698,7 +699,7 @@ export function createProfileStartHandle({
   isSelected?: boolean
 } & (
   | { isDraft: true }
-  | { isDraft?: false; id: string; pathToNode: PathToNode }
+  | { isDraft: false; id: string; pathToNode: PathToNode }
 )) {
   const group = new Group()
 
@@ -717,7 +718,7 @@ export function createProfileStartHandle({
     baseColor,
     ...rest,
   }
-  group.name = PROFILE_START
+  group.name = isDraft ? DRAFT_POINT : PROFILE_START
   group.position.set(from[0], from[1], 0)
   group.scale.set(scale, scale, scale)
   return group

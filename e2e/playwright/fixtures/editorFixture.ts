@@ -1,6 +1,11 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { closePane, isPaneOpen, openPane, sansWhitespace } from '../test-utils'
+import {
+  closePane,
+  checkIfPaneIsOpen,
+  openPane,
+  sansWhitespace,
+} from '../test-utils'
 
 interface EditorState {
   activeLines: Array<string>
@@ -39,7 +44,7 @@ export class EditorFixture {
         timeout = 5_000,
       }: { shouldNormalise?: boolean; timeout?: number } = {}
     ) => {
-      const wasPaneOpen = await this.isPaneOpen()
+      const wasPaneOpen = await this.checkIfPaneIsOpen()
       if (!wasPaneOpen) {
         await this.openPane()
       }
@@ -133,8 +138,8 @@ export class EditorFixture {
     code = code.replace(findCode, replaceCode)
     await this.codeContent.fill(code)
   }
-  isPaneOpen() {
-    return isPaneOpen(this.page, this.paneButtonTestId)
+  checkIfPaneIsOpen() {
+    return checkIfPaneIsOpen(this.page, this.paneButtonTestId)
   }
   closePane() {
     return closePane(this.page, this.paneButtonTestId)
