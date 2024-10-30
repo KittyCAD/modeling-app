@@ -683,6 +683,14 @@ const transformMap: TransformMap = {
             tag
           ),
       },
+      xAbs: {
+        tooltip: 'lineTo',
+        createNode: setAbsDistanceCreateNode('x'),
+      },
+      yAbs: {
+        tooltip: 'lineTo',
+        createNode: setAbsDistanceCreateNode('y'),
+      },
     },
     xAbsolute: {
       equalLength: {

@@ -45,7 +45,9 @@ export const commonPoints = {
   startAt: '[7.19, -9.7]',
   num1: 7.25,
   num2: 14.44,
-}
+  /** The Y-value of a common lineTo move we perform in tests */
+  num3: -2.44,
+} as const
 
 /** A semi-reliable color to check the default XZ plane on
  * in dark mode in the default camera position
