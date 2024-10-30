@@ -2447,7 +2447,7 @@ impl ExecutorContext {
     /// Execute the program, return the interpreter and outputs.
     pub async fn execute_and_prepare(
         &self,
-        program: &Program,
+        program: NodeRef<'_, Program>,
         id_generator: IdGenerator,
         project_directory: Option<String>,
     ) -> Result<(ExecState, TakeSnapshot)> {
