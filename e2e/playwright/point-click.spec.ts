@@ -505,7 +505,7 @@ test(`Verify axis and origin snapping`, async ({
   const expectedCodeSnippets = {
     sketchOnXzPlane: `sketch001 = startSketchOn('XZ')`,
     pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], %)`,
-    segmentOnXAxis: `line([${xAxisSloppy.kcl[0]}, ${xAxisSloppy.kcl[1]}], %)`,
+    segmentOnXAxis: `lineTo([${xAxisSloppy.kcl[0]}, ${xAxisSloppy.kcl[1]}], %)`,
     afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], %)`,
     afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], %)`,
   }

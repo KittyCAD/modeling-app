@@ -809,6 +809,9 @@ export class SceneEntities {
           // case-based logic for different segment types
           if (lastSegment.type === 'TangentialArcTo') {
             resolvedFunctionName = 'tangentialArcTo'
+          } else if (snappedPoint.x === 0 || snappedPoint.y === 0) {
+            // We consider a point placed on axes or origin to be absolute
+            resolvedFunctionName = 'lineTo'
           }
 
           const tmp = addNewSketchLn({
