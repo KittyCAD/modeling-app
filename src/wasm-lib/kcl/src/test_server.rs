@@ -1,7 +1,7 @@
 //! Types used to send data to the test server.
 
 use crate::{
-    executor::{ExecutorContext, ExecutorSettings, IdGenerator},
+    executor::{new_zoo_client, ExecutorContext, ExecutorSettings, IdGenerator},
     settings::types::UnitLength,
 };
 
@@ -43,7 +43,16 @@ async fn do_execute_and_snapshot(ctx: &ExecutorContext, code: &str) -> anyhow::R
 }
 
 async fn new_context(units: UnitLength, with_auth: bool) -> anyhow::Result<ExecutorContext> {
-    let ctx = ExecutorContext::new_with_client(
+    let mut client = new_zoo_client(if with_auth { None } else { Some("bad_token".to_string()) }, None)?;
+    if !with_auth {
+        // Use prod, don't override based on env vars.
+        // We do this so even in the engine repo, tests that need to run with
+        // no auth can fail in the same way as they would in prod.
+        client.set_base_url("https://api.zoo.dev".to_string());
+    }
+
+    let ctx = ExecutorContext::new(
+        &client,
         ExecutorSettings {
             units,
             highlight_edges: true,
@@ -51,8 +60,6 @@ async fn new_context(units: UnitLength, with_auth: bool) -> anyhow::Result<Execu
             show_grid: false,
             replay: None,
         },
-        if with_auth { None } else { Some("bad_token".to_string()) },
-        None,
     )
     .await?;
     Ok(ctx)
