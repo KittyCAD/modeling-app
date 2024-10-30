@@ -57,6 +57,10 @@ debug = true
 [profile.dev]
 debug = 0
 
+[profile.dev.package]
+insta.opt-level = 3
+similar.opt-level = 3
+
 [profile.test]
 debug = "line-tables-only"
 
