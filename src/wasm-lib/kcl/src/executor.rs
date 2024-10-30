@@ -390,6 +390,10 @@ pub enum KclValue {
     Plane(Box<Plane>),
     Face(Box<Face>),
 
+    Sketch(Box<Sketch>),
+    Sketches {
+        value: Vec<Box<Sketch>>,
+    },
     Solid(Box<Solid>),
     Solids {
         value: Vec<Box<Solid>>,
@@ -443,6 +447,8 @@ impl KclValue {
             KclValue::TagIdentifier(_) => "TagIdentifier",
             KclValue::Solid(_) => "Solid",
             KclValue::Solids { .. } => "Solids",
+            KclValue::Sketch(_) => "Sketch",
+            KclValue::Sketches { .. } => "Sketches",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
@@ -943,10 +949,12 @@ impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
             KclValue::UserVal(u) => to_vec_sr(&u.meta),
-            KclValue::TagDeclarator(t) => t.into(),
+            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end])],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Sketch(e) => to_vec_sr(&e.meta),
+            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane(p) => to_vec_sr(&p.meta),
@@ -969,10 +977,12 @@ impl From<&KclValue> for Vec<SourceRange> {
     fn from(item: &KclValue) -> Self {
         match item {
             KclValue::UserVal(u) => to_vec_sr(&u.meta),
-            KclValue::TagDeclarator(t) => t.to_owned().into(),
+            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end])],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Sketch(e) => to_vec_sr(&e.meta),
+            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane(p) => to_vec_sr(&p.meta),
