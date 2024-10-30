@@ -1,4 +1,4 @@
-import { parse, initPromise } from './wasm'
+import { parse, initPromise, programMemoryInit } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { assert } from 'vitest'
 // These unit tests makes web requests to a public github repository.
@@ -34,7 +34,7 @@ async function getKclSampleCodeFromGithub(file: string): Promise<string> {
 
 async function getFileNamesFromManifestJSON(): Promise<KclSampleFile[]> {
   const result = await fetch(
-    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/refs/heads/nadro/adhoc/update-manifest-fix/manifest.json'
+    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/refs/heads/main/manifest.json'
   )
   const json = await result.json()
   json.forEach((file: KclSampleFile) => {
@@ -78,7 +78,7 @@ describe('Test KCL Samples from public Github repository', () => {
           const code = await getKclSampleCodeFromGithub(file.filename)
           const parsed = parse(code)
           assert(!(parsed instanceof Error))
-          await enginelessExecutor(parsed)
+          await enginelessExecutor(parsed, programMemoryInit())
         }
       },
       files.length * 1000
