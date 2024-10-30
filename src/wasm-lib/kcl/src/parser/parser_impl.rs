@@ -1544,9 +1544,19 @@ impl Node<TagDeclarator> {
 /// Parse a Kcl tag that starts with a `$`.
 fn tag(i: TokenSlice) -> PResult<Node<TagDeclarator>> {
     dollar.parse_next(i)?;
-    any.try_map(Node::<TagDeclarator>::try_from)
+    let tag_declarator = any
+        .try_map(Node::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
-        .parse_next(i)
+        .parse_next(i)?;
+    // Now that we've parsed a tag declarator, verify that it's not a stdlib
+    // name.  If it is, stop backtracking.
+    let verified_tag = match tag_declarator.into_valid_binding_name() {
+        Ok(t) => t,
+        Err(e) => {
+            return Err(ErrMode::Cut(e.into()));
+        }
+    };
+    Ok(verified_tag)
 }
 
 /// Helper function. Matches any number of whitespace tokens and ignores them.
@@ -1931,7 +1941,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
                 continue;
             };
             match spec_arg.type_.as_ref() {
-                "TagDeclarator" => match &arg {
+                "TagNode" => match &arg {
                     Expr::Identifier(_) => {
                         // These are fine since we want someone to be able to map a variable to a tag declarator.
                     }
