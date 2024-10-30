@@ -1,12 +1,21 @@
 import { parse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
+import { assert } from 'vitest'
 // These unit tests makes web requests to a public github repository.
+
+interface KclSampleFile {
+  file: string
+  title: string
+  filename: string
+  description: string
+}
 
 beforeAll(async () => {
   await initPromise
 })
 
 // Only used to actaully fetch an older version of KCL code that will break in the parser.
+/* eslint-disable @typescript-eslint/no-unused-vars */
 async function getBrokenSampleCodeForLocalTesting() {
   const result = await fetch(
     'https://raw.githubusercontent.com/KittyCAD/kcl-samples/5ccd04a1773ebdbfd02684057917ce5dbe0eaab3/80-20-rail.kcl'
@@ -23,12 +32,12 @@ async function getKclSampleCodeFromGithub(file: string): Promise<string> {
   return text
 }
 
-async function getFileNamesFromManifestJSON() {
+async function getFileNamesFromManifestJSON(): Promise<KclSampleFile[]> {
   const result = await fetch(
     'https://raw.githubusercontent.com/KittyCAD/kcl-samples/refs/heads/nadro/adhoc/update-manifest-fix/manifest.json'
   )
   const json = await result.json()
-  json.forEach((file) => {
+  json.forEach((file: KclSampleFile) => {
     const filenameWithoutExtension = file.file.split('.')[0]
     file.filename = filenameWithoutExtension
   })
@@ -36,7 +45,7 @@ async function getFileNamesFromManifestJSON() {
 }
 
 // Value to use across all tests!
-let files = []
+let files: KclSampleFile[] = []
 
 describe('Test KCL Samples from public Github repository', () => {
   describe('When parsing source code', () => {
@@ -50,7 +59,7 @@ describe('Test KCL Samples from public Github repository', () => {
       'should run through all the files',
       async () => {
         for (let i = 0; i < files.length; i++) {
-          const file = files[i]
+          const file: KclSampleFile = files[i]
           const code = await getKclSampleCodeFromGithub(file.filename)
           const parsed = parse(code)
           assert(!(parsed instanceof Error))
@@ -65,7 +74,7 @@ describe('Test KCL Samples from public Github repository', () => {
       'should run through all the files',
       async () => {
         for (let i = 0; i < files.length; i++) {
-          const file = files[i]
+          const file: KclSampleFile = files[i]
           const code = await getKclSampleCodeFromGithub(file.filename)
           const parsed = parse(code)
           assert(!(parsed instanceof Error))
