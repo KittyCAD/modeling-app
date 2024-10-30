@@ -7,6 +7,7 @@ import {
   setupElectron,
   tearDown,
   executorInputPath,
+  createProject,
 } from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
@@ -265,10 +266,15 @@ test.describe('Testing settings', () => {
         process.platform === 'win32',
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
-      const { electronApp, page } = await setupElectron({
+      const projectName = 'bracket'
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          const bracketDir = join(dir, 'bracket')
+          const bracketDir = join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
             executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
@@ -280,6 +286,12 @@ test.describe('Testing settings', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
 
       // Selectors and constants
+      const tempProjectSettingsFilePath = join(
+        projectDirName,
+        projectName,
+        PROJECT_SETTINGS_FILE_NAME
+      )
+      const tempUserSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
       const userThemeColor = '120'
       const projectThemeColor = '50'
       const settingsOpenButton = page.getByRole('link', {
@@ -300,6 +312,12 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(userThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
         await settingsCloseButton.click()
+        await expect
+          .poll(async () => fsp.readFile(tempUserSettingsFilePath, 'utf-8'), {
+            message: 'Setting should now be written to the file',
+            timeout: 5_000,
+          })
+          .toContain(`themeColor = "${userThemeColor}"`)
       })
 
       await test.step('Set project theme color', async () => {
@@ -311,6 +329,16 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         await settingsCloseButton.click()
+        // Make sure that the project settings file has been written to before continuing
+        await expect
+          .poll(
+            async () => fsp.readFile(tempProjectSettingsFilePath, 'utf-8'),
+            {
+              message: 'Setting should now be written to the file',
+              timeout: 5_000,
+            }
+          )
+          .toContain(`themeColor = "${projectThemeColor}"`)
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
@@ -323,6 +351,7 @@ test.describe('Testing settings', () => {
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
         await logoLink.click()
+        await page.screenshot({ path: 'out.png' })
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
       })
 
@@ -428,8 +457,7 @@ test.describe('Testing settings', () => {
       })
 
       await test.step('Check color of logo changed when in modeling view', async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await page.getByTestId('project-link').first().click()
+        await createProject({ name: 'project-000', page })
         await changeColor('58')
         await expect(logoLink).toHaveCSS('--primary-hue', '58')
       })
@@ -447,7 +475,7 @@ test.describe('Testing settings', () => {
   test(
     'project settings reload on external change',
     { tag: '@electron' },
-    async ({ browserName }, testInfo) => {
+    async ({ browserName: _ }, testInfo) => {
       const {
         electronApp,
         page,
@@ -465,11 +493,7 @@ test.describe('Testing settings', () => {
         await expect(projectDirLink).toBeVisible()
       })
 
-      const projectLinks = page.getByTestId('project-link')
-      const oldCount = await projectLinks.count()
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(projectLinks).toHaveCount(oldCount + 1)
-      await projectLinks.filter({ hasText: 'project-000' }).first().click()
+      await createProject({ name: 'project-000', page })
 
       const changeColorFs = async (color: string) => {
         const tempSettingsFilePath = join(

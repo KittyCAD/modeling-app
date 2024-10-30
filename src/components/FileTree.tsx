@@ -538,3 +538,19 @@ export const FileTreeInner = ({
     </div>
   )
 }
+
+export const FileTreeRoot = () => {
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { project } = loaderData
+
+  // project.path should never be empty here but I guess during initial loading
+  // it can be.
+  return (
+    <div
+      className="max-w-xs text-ellipsis overflow-hidden cursor-pointer"
+      title={project?.path ?? ''}
+    >
+      {project?.name ?? ''}
+    </div>
+  )
+}

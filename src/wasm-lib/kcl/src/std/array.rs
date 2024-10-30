@@ -193,3 +193,63 @@ async fn call_reduce_closure<'a>(
     })?;
     Ok(out)
 }
+
+/// Append an element to the end of an array.
+///
+/// Returns a new array with the element appended.
+///
+/// ```no_run
+/// let arr = [1, 2, 3]
+/// let new_arr = push(arr, 4)
+/// assertEqual(new_arr[3], 4, 0.00001, "4 was added to the end of the array")
+/// ```
+#[stdlib {
+    name = "push",
+}]
+async fn inner_push(array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
+    // Unwrap the KclValues to JValues for manipulation
+    let mut unwrapped_array = array
+        .into_iter()
+        .map(|k| match k {
+            KclValue::UserVal(user_val) => Ok(user_val.value),
+            _ => Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a UserVal in array".to_string(),
+                source_ranges: vec![args.source_range],
+            })),
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+
+    // Unwrap the element
+    let unwrapped_elem = match elem {
+        KclValue::UserVal(user_val) => user_val.value,
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a UserVal as element".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        }
+    };
+
+    // Append the element to the array
+    unwrapped_array.push(unwrapped_elem);
+
+    // Wrap the new array into a UserVal with the source range metadata
+    let uv = UserVal::new(vec![args.source_range.into()], unwrapped_array);
+
+    // Return the new array wrapped as a KclValue::UserVal
+    Ok(KclValue::UserVal(uv))
+}
+
+pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    // Extract the array and the element from the arguments
+    let (array_jvalues, elem): (Vec<JValue>, KclValue) = FromArgs::from_args(&args, 0)?;
+
+    // Convert the array of JValue into Vec<KclValue>
+    let array: Vec<KclValue> = array_jvalues
+        .into_iter()
+        .map(|jval| KclValue::UserVal(UserVal::new(vec![args.source_range.into()], jval)))
+        .collect();
+
+    // Call the inner_push function
+    inner_push(array, elem, &args).await
+}

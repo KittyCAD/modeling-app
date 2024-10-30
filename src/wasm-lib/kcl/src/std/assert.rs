@@ -78,7 +78,12 @@ pub async fn assert_gt(_exec_state: &mut ExecState, args: Args) -> Result<KclVal
     name = "assertEqual",
 }]
 async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    if (right - left).abs() < epsilon {
+    if epsilon <= 0.0 {
+        Err(KclError::Type(KclErrorDetails {
+            message: "assertEqual epsilon must be greater than zero".to_owned(),
+            source_ranges: vec![args.source_range],
+        }))
+    } else if (right - left).abs() < epsilon {
         Ok(())
     } else {
         Err(KclError::Type(KclErrorDetails {
