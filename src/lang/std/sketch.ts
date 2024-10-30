@@ -64,7 +64,7 @@ const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
 export type Coords2d = [number, number]
 
 export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
-  const currentPath = skGroup?.value?.[index]
+  const currentPath = skGroup?.paths?.[index]
   if (!currentPath && skGroup?.start) {
     return skGroup.start.to
   } else if (!currentPath) {
@@ -1704,7 +1704,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       varName
     )
     if (err(sketch)) return sketch
-    const intersectPath = sketch.value.find(
+    const intersectPath = sketch.paths.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
     )
     let offset = 0

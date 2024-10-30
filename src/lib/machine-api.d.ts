@@ -139,6 +139,11 @@ export interface components {
       /** @description The filaments the printer has access to. */
       filaments: components['schemas']['Filament'][]
       /**
+       * Format: uint
+       * @description The currently loaded filament index.
+       */
+      loaded_filament_idx?: number | null
+      /**
        * Format: double
        * @description Diameter of the extrusion nozzle, in mm.
        */
@@ -190,6 +195,10 @@ export interface components {
       | {
           /** @enum {string} */
           type: 'composite'
+        }
+      | {
+          /** @enum {string} */
+          type: 'unknown'
         }
     /** @description The hardware configuration of a machine. */
     HardwareConfiguration:

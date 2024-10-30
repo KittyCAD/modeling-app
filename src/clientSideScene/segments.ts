@@ -58,7 +58,7 @@ import { err } from 'lib/trap'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
-  prevSegment: Sketch['value'][number]
+  prevSegment: Sketch['paths'][number]
   id: string
   pathToNode: PathToNode
   isDraftSegment?: boolean
@@ -72,7 +72,7 @@ interface CreateSegmentArgs {
 
 interface UpdateSegmentArgs {
   input: SegmentInputs
-  prevSegment: Sketch['value'][number]
+  prevSegment: Sketch['paths'][number]
   group: Group
   sceneInfra: SceneInfra
   scale?: number
@@ -147,6 +147,7 @@ class StraightSegment implements SegmentUtils {
     segmentGroup.name = STRAIGHT_SEGMENT
     segmentGroup.userData = {
       type: STRAIGHT_SEGMENT,
+      draft: isDraftSegment,
       id,
       from,
       to,
@@ -347,6 +348,7 @@ class TangentialArcToSegment implements SegmentUtils {
     mesh.name = meshName
     group.userData = {
       type: TANGENTIAL_ARC_TO_SEGMENT,
+      draft: isDraftSegment,
       id,
       from,
       to,
@@ -515,11 +517,18 @@ class CircleSegment implements SegmentUtils {
     const meshType = isDraftSegment ? CIRCLE_SEGMENT_DASH : CIRCLE_SEGMENT_BODY
     const arrowGroup = createArrowhead(scale, theme, color)
     const circleCenterGroup = createCircleCenterHandle(scale, theme, color)
+    // A radius indicator that appears from the center to the perimeter
+    const radiusIndicatorGroup = createLengthIndicator({
+      from: center,
+      to: [center[0] + radius, center[1]],
+      scale,
+    })
 
     arcMesh.userData.type = meshType
     arcMesh.name = meshType
     group.userData = {
       type: CIRCLE_SEGMENT,
+      draft: isDraftSegment,
       id,
       from,
       radius,
@@ -532,7 +541,7 @@ class CircleSegment implements SegmentUtils {
     }
     group.name = CIRCLE_SEGMENT
 
-    group.add(arcMesh, arrowGroup, circleCenterGroup)
+    group.add(arcMesh, arrowGroup, circleCenterGroup, radiusIndicatorGroup)
     const updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -564,6 +573,9 @@ class CircleSegment implements SegmentUtils {
     group.userData.radius = radius
     group.userData.prevSegment = prevSegment
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const radiusLengthIndicator = group.getObjectByName(
+      SEGMENT_LENGTH_LABEL
+    ) as Group
     const circleCenterHandle = group.getObjectByName(
       CIRCLE_CENTER_HANDLE
     ) as Group
@@ -581,11 +593,14 @@ class CircleSegment implements SegmentUtils {
     }
 
     if (arrowGroup) {
-      arrowGroup.position.set(
-        center[0] + Math.cos(Math.PI / 4) * radius,
-        center[1] + Math.sin(Math.PI / 4) * radius,
-        0
-      )
+      // The arrowhead is placed at the perimeter of the circle,
+      // pointing up and to the right
+      const arrowPoint = {
+        x: center[0] + Math.cos(Math.PI / 4) * radius,
+        y: center[1] + Math.sin(Math.PI / 4) * radius,
+      }
+
+      arrowGroup.position.set(arrowPoint.x, arrowPoint.y, 0)
 
       const arrowheadAngle = Math.PI / 4
       arrowGroup.quaternion.setFromUnitVectors(
@@ -594,6 +609,31 @@ class CircleSegment implements SegmentUtils {
       )
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = isHandlesVisible
+    }
+
+    if (radiusLengthIndicator) {
+      // The radius indicator is placed at the midpoint of the radius,
+      // at a 45 degree CCW angle from the positive X-axis
+      const indicatorPoint = {
+        x: center[0] + (Math.cos(Math.PI / 4) * radius) / 2,
+        y: center[1] + (Math.sin(Math.PI / 4) * radius) / 2,
+      }
+      const labelWrapper = radiusLengthIndicator.getObjectByName(
+        SEGMENT_LENGTH_LABEL_TEXT
+      ) as CSS2DObject
+      const labelWrapperElem = labelWrapper.element as HTMLDivElement
+      const label = labelWrapperElem.children[0] as HTMLParagraphElement
+      label.innerText = `${roundOff(radius)}`
+      label.classList.add(SEGMENT_LENGTH_LABEL_TEXT)
+      const isPlaneBackFace = center[0] > indicatorPoint.x
+      label.style.setProperty(
+        '--degree',
+        `${isPlaneBackFace ? '45' : '-45'}deg`
+      )
+      label.style.setProperty('--x', `0px`)
+      label.style.setProperty('--y', `0px`)
+      labelWrapper.position.set(indicatorPoint.x, indicatorPoint.y, 0)
+      radiusLengthIndicator.visible = isHandlesVisible
     }
 
     if (circleCenterHandle) {

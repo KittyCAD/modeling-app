@@ -255,10 +255,14 @@ export const Stream = () => {
   }, [mediaStream])
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
+    // If we've got no stream or connection, don't do anything
     if (!isNetworkOkay) return
     if (!videoRef.current) return
+    // If we're in sketch mode, don't send a engine-side select event
     if (state.matches('Sketch')) return
     if (state.matches({ idle: 'showPlanes' })) return
+    // If we're mousing up from a camera drag, don't send a select event
+    if (sceneInfra.camControls.wasDragging === true) return
 
     if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises

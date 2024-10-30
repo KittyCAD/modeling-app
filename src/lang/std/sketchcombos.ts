@@ -1732,7 +1732,7 @@ export function transformAstSketchLines({
       if (err(_segment)) return _segment
       referencedSegment = _segment.segment
     } else {
-      referencedSegment = sketch.value.find(
+      referencedSegment = sketch.paths.find(
         (path) => path.tag?.value === _referencedSegmentName
       )
     }

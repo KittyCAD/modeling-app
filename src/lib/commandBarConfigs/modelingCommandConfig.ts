@@ -3,7 +3,6 @@ import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
-import { machineManager } from 'lib/machineManager'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
@@ -187,41 +186,41 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           machine.make_model.model ||
           machine.make_model.manufacturer ||
           'Unknown Machine',
-        options: () => {
-          return Object.entries(machineManager.machines).map(
-            ([_, machine]) => ({
-              name:
-                `${machine.id} (${
-                  machine.make_model.model || machine.make_model.manufacturer
-                }) (${machine.state.state})` +
-                (machine.hardware_configuration &&
-                machine.hardware_configuration.type !== 'none' &&
-                machine.hardware_configuration.config.nozzle_diameter
-                  ? ` - Nozzle Diameter: ${machine.hardware_configuration.config.nozzle_diameter}`
-                  : '') +
-                (machine.hardware_configuration &&
-                machine.hardware_configuration.type !== 'none' &&
-                machine.hardware_configuration.config.filaments &&
-                machine.hardware_configuration.config.filaments[0]
-                  ? ` - ${
-                      machine.hardware_configuration.config.filaments[0].name
-                    } #${
-                      machine.hardware_configuration.config &&
-                      machine.hardware_configuration.config.filaments[0].color?.slice(
-                        0,
-                        6
-                      )
-                    }`
-                  : ''),
-              isCurrent: false,
-              disabled: machine.state.state !== 'idle',
-              value: machine as components['schemas']['MachineInfoResponse'],
-            })
-          )
-        },
-        defaultValue: () => {
+        options: (commandBarContext) => {
           return Object.values(
-            machineManager.machines
+            commandBarContext.machineManager?.machines || []
+          ).map((machine: components['schemas']['MachineInfoResponse']) => ({
+            name:
+              `${machine.id} (${
+                machine.make_model.model || machine.make_model.manufacturer
+              }) (${machine.state.state})` +
+              (machine.hardware_configuration &&
+              machine.hardware_configuration.type !== 'none' &&
+              machine.hardware_configuration.config.nozzle_diameter
+                ? ` - Nozzle Diameter: ${machine.hardware_configuration.config.nozzle_diameter}`
+                : '') +
+              (machine.hardware_configuration &&
+              machine.hardware_configuration.type !== 'none' &&
+              machine.hardware_configuration.config.filaments &&
+              machine.hardware_configuration.config.filaments[0]
+                ? ` - ${
+                    machine.hardware_configuration.config.filaments[0].name
+                  } #${
+                    machine.hardware_configuration.config &&
+                    machine.hardware_configuration.config.filaments[0].color?.slice(
+                      0,
+                      6
+                    )
+                  }`
+                : ''),
+            isCurrent: false,
+            disabled: machine.state.state !== 'idle',
+            value: machine,
+          }))
+        },
+        defaultValue: (commandBarContext) => {
+          return Object.values(
+            commandBarContext.machineManager.machines || []
           )[0] as components['schemas']['MachineInfoResponse']
         },
       },

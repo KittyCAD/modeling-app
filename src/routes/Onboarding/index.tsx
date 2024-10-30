@@ -23,6 +23,9 @@ import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import { bracket } from 'lib/exampleKcl'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
+import { EngineConnectionStateType } from 'lang/std/engineConnection'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -80,8 +83,20 @@ export const onboardingRoutes = [
 ]
 
 export function useDemoCode() {
+  const { overallState, immediateState } = useNetworkContext()
+
   useEffect(() => {
-    if (!editorManager.editorView || codeManager.code === bracket) return
+    // Don't run if the editor isn't loaded or the code is already the bracket
+    if (!editorManager.editorView || codeManager.code === bracket) {
+      return
+    }
+    // Don't run if the network isn't healthy or the connection isn't established
+    if (
+      overallState !== NetworkHealthState.Ok ||
+      immediateState.type !== EngineConnectionStateType.ConnectionEstablished
+    ) {
+      return
+    }
     setTimeout(
       toSync(async () => {
         codeManager.updateCodeStateEditor(bracket)
@@ -89,7 +104,7 @@ export function useDemoCode() {
         await codeManager.writeToFile()
       }, reportRejection)
     )
-  }, [editorManager.editorView])
+  }, [editorManager.editorView, immediateState, overallState])
 }
 
 export function useNextClick(newStatus: string) {

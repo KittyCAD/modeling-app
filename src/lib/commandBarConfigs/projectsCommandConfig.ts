@@ -1,7 +1,8 @@
+import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { StateMachineCommandSetConfig } from 'lib/commandTypes'
-import { homeMachine } from 'machines/homeMachine'
+import { projectsMachine } from 'machines/projectsMachine'
 
-export type HomeCommandSchema = {
+export type ProjectsCommandSchema = {
   'Read projects': {}
   'Create project': {
     name: string
@@ -18,9 +19,9 @@ export type HomeCommandSchema = {
   }
 }
 
-export const homeCommandBarConfig: StateMachineCommandSetConfig<
-  typeof homeMachine,
-  HomeCommandSchema
+export const projectsCommandBarConfig: StateMachineCommandSetConfig<
+  typeof projectsMachine,
+  ProjectsCommandSchema
 > = {
   'Open project': {
     icon: 'arrowRight',
@@ -53,6 +54,11 @@ export const homeCommandBarConfig: StateMachineCommandSetConfig<
     icon: 'close',
     description: 'Delete a project',
     needsReview: true,
+    reviewMessage: ({ argumentsToSubmit }) =>
+      CommandBarOverwriteWarning({
+        heading: 'Are you sure you want to delete?',
+        message: `This will permanently delete the project "${argumentsToSubmit.name}" and all its contents.`,
+      }),
     args: {
       name: {
         inputType: 'options',

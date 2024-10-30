@@ -7,6 +7,7 @@ import {
 } from 'lib/commandTypes'
 import { Selections } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -14,6 +15,7 @@ export type CommandBarContext = {
   currentArgument?: CommandArgument<unknown> & { name: string }
   selectionRanges: Selections
   argumentsToSubmit: { [x: string]: unknown }
+  machineManager: MachineManager
 }
 
 export type CommandBarMachineEvent =
@@ -71,6 +73,7 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
+  | { type: 'Set machine manager'; data: MachineManager }
 
 export const commandBarMachine = setup({
   types: {
@@ -88,6 +91,12 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
+      },
+    }),
+    'Set machine manager': assign({
+      machineManager: ({ event, context }) => {
+        if (event.type !== 'Set machine manager') return context.machineManager
+        return event.data
       },
     }),
     'Execute command': ({ context, event }) => {
@@ -339,6 +348,13 @@ export const commandBarMachine = setup({
       codeBasedSelections: [],
     },
     argumentsToSubmit: {},
+    machineManager: {
+      machines: [],
+      machineApiIp: null,
+      currentMachine: null,
+      setCurrentMachine: () => {},
+      noMachinesReason: () => undefined,
+    },
   },
   id: 'Command Bar',
   initial: 'Closed',
@@ -520,6 +536,11 @@ export const commandBarMachine = setup({
     },
   },
   on: {
+    'Set machine manager': {
+      reenter: false,
+      actions: 'Set machine manager',
+    },
+
     Close: {
       target: '.Closed',
     },

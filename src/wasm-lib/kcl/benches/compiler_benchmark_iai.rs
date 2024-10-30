@@ -19,6 +19,9 @@ fn lex_cube() {
 fn lex_math() {
     black_box(kcl_lib::token::lexer(MATH_PROGRAM).unwrap());
 }
+fn lex_lsystem() {
+    black_box(kcl_lib::token::lexer(LSYSTEM_PROGRAM).unwrap());
+}
 
 fn parse_kitt() {
     parse(KITT_PROGRAM)
@@ -32,19 +35,25 @@ fn parse_cube() {
 fn parse_math() {
     parse(MATH_PROGRAM)
 }
+fn parse_lsystem() {
+    parse(LSYSTEM_PROGRAM)
+}
 
 iai::main! {
     lex_kitt,
     lex_pipes,
     lex_cube,
     lex_math,
+    lex_lsystem,
     parse_kitt,
     parse_pipes,
     parse_cube,
     parse_math,
+    parse_lsystem,
 }
 
 const KITT_PROGRAM: &str = include_str!("../../tests/executor/inputs/kittycad_svg.kcl");
 const PIPES_PROGRAM: &str = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../tests/executor/inputs/math.kcl");
+const LSYSTEM_PROGRAM: &str = include_str!("../../tests/executor/inputs/lsystem.kcl");

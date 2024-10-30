@@ -213,7 +213,7 @@ export class SceneInfra {
     to: Coords2d
     angle?: number
   }): SegmentOverlayPayload | null {
-    if (group.userData.pathToNode && arrowGroup) {
+    if (!group.userData.draft && group.userData.pathToNode && arrowGroup) {
       const vector = new Vector3(0, 0, 0)
 
       // Get the position of the object3D in world space

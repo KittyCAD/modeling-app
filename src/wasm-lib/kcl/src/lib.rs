@@ -25,6 +25,8 @@ pub mod lint;
 pub mod lsp;
 pub mod parser;
 pub mod settings;
+#[cfg(test)]
+mod simulation_tests;
 pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;

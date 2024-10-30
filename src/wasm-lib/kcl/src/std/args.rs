@@ -459,6 +459,19 @@ impl Args {
             source_ranges: vec![self.source_range],
         }))
     }
+
+    pub(crate) fn get_polygon_args(
+        &self,
+    ) -> Result<
+        (
+            crate::std::shapes::PolygonData,
+            crate::std::shapes::SketchOrSurface,
+            Option<TagDeclarator>,
+        ),
+        KclError,
+    > {
+        FromArgs::from_args(self, 0)
+    }
 }
 
 /// Types which impl this trait can be read out of the `Args` passed into a KCL function.
@@ -652,6 +665,7 @@ impl_from_arg_via_json!(super::sketch::AngledLineData);
 impl_from_arg_via_json!(super::sketch::AngledLineToData);
 impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
 impl_from_arg_via_json!(super::shapes::CircleData);
+impl_from_arg_via_json!(super::shapes::PolygonData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
 impl_from_arg_via_json!(super::sketch::BezierData);
