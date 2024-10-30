@@ -3151,7 +3151,6 @@ e
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        dbg!(&result);
         assert!(result
             .err()
             .unwrap()

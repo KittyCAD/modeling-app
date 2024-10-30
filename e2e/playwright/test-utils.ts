@@ -506,6 +506,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
           .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
           .click()
+        await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
+          name
+        )
       })
     },
 

@@ -122,6 +122,14 @@ async fn kcl_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_execute_lsystem() {
+    let code = kcl_input!("lsystem");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("lsystem", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_member_expression_sketch() {
     let code = kcl_input!("member_expression_sketch");
 
