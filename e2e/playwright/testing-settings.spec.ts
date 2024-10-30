@@ -286,11 +286,12 @@ test.describe('Testing settings', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
 
       // Selectors and constants
-      const tempSettingsFilePath = join(
+      const tempProjectSettingsFilePath = join(
         projectDirName,
         projectName,
         PROJECT_SETTINGS_FILE_NAME
       )
+      const tempUserSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
       const userThemeColor = '120'
       const projectThemeColor = '50'
       const settingsOpenButton = page.getByRole('link', {
@@ -311,6 +312,12 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(userThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
         await settingsCloseButton.click()
+        await expect
+          .poll(async () => fsp.readFile(tempUserSettingsFilePath, 'utf-8'), {
+            message: 'Setting should now be written to the file',
+            timeout: 5_000,
+          })
+          .toContain(`themeColor = "${userThemeColor}"`)
       })
 
       await test.step('Set project theme color', async () => {
@@ -324,10 +331,13 @@ test.describe('Testing settings', () => {
         await settingsCloseButton.click()
         // Make sure that the project settings file has been written to before continuing
         await expect
-          .poll(async () => fsp.readFile(tempSettingsFilePath, 'utf-8'), {
-            message: 'Setting should now be written to the file',
-            timeout: 5_000,
-          })
+          .poll(
+            async () => fsp.readFile(tempProjectSettingsFilePath, 'utf-8'),
+            {
+              message: 'Setting should now be written to the file',
+              timeout: 5_000,
+            }
+          )
           .toContain(`themeColor = "${projectThemeColor}"`)
       })
 
@@ -341,6 +351,7 @@ test.describe('Testing settings', () => {
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
         await logoLink.click()
+        await page.screenshot({ path: 'out.png' })
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
       })
 

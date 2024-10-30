@@ -8,6 +8,7 @@ pub fn bench_execute(c: &mut Criterion) {
         ("cube", CUBE_PROGRAM),
         ("server_rack_lite", SERVER_RACK_LITE_PROGRAM),
         ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
+        ("lsystem", LSYSTEM_PROGRAM),
     ] {
         let mut group = c.benchmark_group("executor");
         // Configure Criterion.rs to detect smaller differences and increase sample size to improve
@@ -52,3 +53,4 @@ const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const SERVER_RACK_HEAVY_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-heavy.kcl");
 const SERVER_RACK_LITE_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-lite.kcl");
 const LEGO_PROGRAM: &str = include_str!("../../tests/executor/inputs/slow_lego.kcl.tmpl");
+const LSYSTEM_PROGRAM: &str = include_str!("../../tests/executor/inputs/lsystem.kcl");
