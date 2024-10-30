@@ -162,3 +162,30 @@ mod helix_ccw {
         super::execute(TEST_NAME, true).await
     }
 }
+mod double_map_fn {
+    const TEST_NAME: &str = "double_map_fn";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
