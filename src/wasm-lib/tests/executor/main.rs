@@ -122,6 +122,14 @@ async fn kcl_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_execute_lsystem() {
+    let code = kcl_input!("lsystem");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("lsystem", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_member_expression_sketch() {
     let code = kcl_input!("member_expression_sketch");
 
@@ -1390,84 +1398,6 @@ extrusion = startSketchOn('XY')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_xz_plane() {
-    let code = r#"part001 = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_neg_xz_plane() {
-    let code = r#"part001 = startSketchOn('-XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("neg_xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_linear_pattern3d_a_pattern() {
-    let code = r#"exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       instances: 7,
-       distance: 6
-     }, exampleSketch)
-
-pattn2 = patternLinear3d({
-       axis: [0, 0, 1],
-       distance: 1,
-       instances: 7
-     }, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("linear_pattern3d_a_pattern", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_circular_pattern3d_a_pattern() {
-    let code = r#"exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       instances: 7,
-       distance: 6
-     }, exampleSketch)
-
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("circular_pattern3d_a_pattern", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_array_of_sketches() {
     let code = r#"plane001 = startSketchOn('XZ')
 
@@ -1494,69 +1424,6 @@ extrude(10, sketch001)
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("array_of_sketches", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_after_fillets_referencing_face() {
-    let code = r#"// Shelf Bracket
-// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
-
-
-// Define our bracket feet lengths
-shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
-wallMountL = 6 // the length of the bracket
-
-
-// Define constants required to calculate the thickness needed to support 300 lbs
-sigmaAllow = 35000 // psi
-width = 6 // inch
-p = 300 // Force on shelf - lbs
-L = 12 // inches
-M = L * p / 2 // Moment experienced at fixed end of bracket
-FOS = 2 // Factor of safety of 2 to be conservative
-
-
-// Calculate the thickness off the bending stress and factor of safety
-thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
-
-// 0.25 inch fillet radius
-filletR = 0.25
-
-// Sketch the bracket and extrude with fillets
-bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, $outerEdge)
-  |> line([-shelfMountL, 0], %, $seg01)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, $innerEdge)
-  |> line([0, -wallMountL + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [
-         getNextAdjacentEdge(innerEdge)
-       ]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [
-         getNextAdjacentEdge(outerEdge)
-       ]
-     }, %)
-
-sketch001 = startSketchOn(bracket, seg01)
-  |> startProfileAt([4.28, 3.83], %)
-  |> line([2.17, -0.03], %)
-  |> line([-0.07, -1.8], %)
-  |> line([-2.07, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_after_fillets_referencing_face", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]

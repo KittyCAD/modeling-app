@@ -1,7 +1,29 @@
+cnr := "cargo nextest run"
+cita := "cargo insta test --accept"
+
 # Create a new KCL snapshot test from `tests/inputs/my-test.kcl`.
 new-test name:
     echo "kcl_test!(\"{{name}}\", {{name}});" >> tests/executor/visuals.rs
-    TWENTY_TWENTY=overwrite cargo nextest run --test executor -E 'test(=visuals::{{name}})'
+    TWENTY_TWENTY=overwrite {{cnr}} --test executor -E 'test(=visuals::{{name}})'
 
 lint:
-    cargo clippy --all --tests --benches -- -D warnings
+    cargo clippy --workspace --all-targets -- -D warnings
+
+redo-kcl-stdlib-docs:
+    EXPECTORATE=overwrite {{cnr}} -p kcl-lib docs::gen_std_tests::test_generate_stdlib
+
+# Create a new KCL deterministic simulation test case.
+new-sim-test test_name kcl_program:
+    # Each test file gets its own directory. This will contain the KCL program, and its
+    # snapshotted artifacts (e.g. serialized tokens, serialized ASTs, program memory,
+    # PNG snapshots, etc).
+    mkdir kcl/tests/{{test_name}}
+    echo "{{kcl_program}}" > kcl/tests/{{test_name}}/input.kcl
+    # Add the various tests for this new test case.
+    cat kcl/tests/simtest.tmpl | sed "s/TEST_NAME_HERE/{{test_name}}/" >> kcl/src/tests.rs
+    # Run all the tests for the first time, in the right order.
+    {{cita}} -p kcl-lib -- tests::{{test_name}}::tokenize
+    {{cita}} -p kcl-lib -- tests::{{test_name}}::parse
+    {{cita}} -p kcl-lib -- tests::{{test_name}}::unparse
+    TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
+    

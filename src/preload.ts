@@ -4,7 +4,7 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import fsSync from 'node:fs'
 import packageJson from '../package.json'
-import { MachinesListing } from 'lib/machineManager'
+import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
