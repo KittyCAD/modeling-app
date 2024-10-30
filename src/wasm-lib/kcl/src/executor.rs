@@ -1983,8 +1983,6 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
 /// Create a new zoo api client.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
-    use crate::coredump::local;
-
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
