@@ -1942,6 +1942,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
                         // These are fine since we want someone to be able to map a variable to a tag declarator.
                     }
                     Expr::TagDeclarator(tag) => {
+                        // TODO: Remove this check. It should be redundant.
                         tag.clone()
                             .into_valid_binding_name()
                             .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
