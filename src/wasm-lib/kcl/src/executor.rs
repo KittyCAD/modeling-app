@@ -1983,6 +1983,8 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
 /// Create a new zoo api client.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
+    use crate::coredump::local;
+
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -2023,22 +2025,27 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Res
 
     // Create the client.
     let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+
     // Set an engine address if it's set.
-    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
+    let zoo_host = std::env::var("ZOO_HOST").ok();
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST").ok();
+    let local_engine_addr_env = std::env::var("LOCAL_ENGINE_ADDR").ok();
+    let hosts_set = [&zoo_host, &kittycad_host_env, &local_engine_addr_env]
+        .iter()
+        .filter(|h| h.is_some())
+        .count();
+
+    if hosts_set > 1 {
+        return Err(anyhow::anyhow!(
+            "Conflicting host environment variables KITTYCAD_HOST, ZOO_HOST, LOCAL_ENGINE_ADDR were set. Use only one.",
+        ));
+    }
+    let host_env = zoo_host.or(kittycad_host_env.or(local_engine_addr_env));
+
     if let Some(addr) = engine_addr {
+        println!("set base url {:?}", addr);
         client.set_base_url(addr);
-    } else if let Ok(addr) = std::env::var("ZOO_HOST") {
-        if let Ok(kittycad_host) = kittycad_host_env {
-            if kittycad_host != addr {
-                return Err(anyhow::anyhow!(
-                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
-                    kittycad_host,
-                    addr
-                ));
-            }
-        }
-        client.set_base_url(addr);
-    } else if let Ok(addr) = kittycad_host_env {
+    } else if let Some(addr) = host_env {
         client.set_base_url(addr);
     }
 
