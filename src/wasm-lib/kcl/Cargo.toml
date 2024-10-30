@@ -91,7 +91,7 @@ debug = true # Flamegraphs of benchmarks require accurate debug symbols
 base64 = "0.22.1"
 criterion = { version = "0.5.1", features = ["async_tokio"] }
 expectorate = "1.1.0"
-handlebars = "6.1.0"
+handlebars = "6.2.0"
 iai = "0.1"
 image = { version = "0.25.3", default-features = false, features = ["png"] }
 insta = { version = "1.40.0", features = ["json"] }
