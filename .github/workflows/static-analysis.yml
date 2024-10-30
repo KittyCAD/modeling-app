@@ -81,6 +81,31 @@ jobs:
       - name: Run codespell
         run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
 
+  yarn-unit-test-kcl-samples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      - run: yarn install
+      - run: yarn build:wasm
+
+      - run: yarn simpleserver:bg
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+
+      - name: Install Chromium Browser
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+        run: yarn playwright install chromium --with-deps
+
+      - name: run unit tests
+        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+        run: yarn test:unit:kcl-samples
+        env:
+          VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
   yarn-unit-test:
     runs-on: ubuntu-latest
