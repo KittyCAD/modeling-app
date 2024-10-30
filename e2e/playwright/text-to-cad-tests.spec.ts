@@ -1,5 +1,11 @@
 import { test, expect, Page } from '@playwright/test'
-import { getUtils, setup, tearDown, setupElectron } from './test-utils'
+import {
+  getUtils,
+  setup,
+  tearDown,
+  setupElectron,
+  createProject,
+} from './test-utils'
 import { join } from 'path'
 import fs from 'fs'
 
@@ -700,17 +706,17 @@ test(
     const fileExists = () =>
       fs.existsSync(join(dir, projectName, textToCadFileName))
 
-    const {
-      createAndSelectProject,
-      openFilePanel,
-      openKclCodePanel,
-      waitForPageLoad,
-    } = await getUtils(page, test)
+    const { openFilePanel, openKclCodePanel, waitForPageLoad } = await getUtils(
+      page,
+      test
+    )
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
     // Locators
-    const projectMenuButton = page.getByRole('button', { name: projectName })
+    const projectMenuButton = page
+      .getByTestId('project-sidebar-toggle')
+      .filter({ hasText: projectName })
     const textToCadFileButton = page.getByRole('listitem').filter({
       has: page.getByRole('button', { name: textToCadFileName }),
     })
@@ -719,7 +725,7 @@ test(
     )
 
     // Create and navigate to the project
-    await createAndSelectProject('project-000')
+    await createProject({ name: 'project-000', page })
 
     // Wait for Start Sketch otherwise you will not have access Text-to-CAD command
     await waitForPageLoad()
