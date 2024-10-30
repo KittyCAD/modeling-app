@@ -90,6 +90,7 @@ import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -971,7 +972,7 @@ export const ModelingMachineProvider = ({
             })
             let parsed = parse(recast(kclManager.ast))
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Program
+            parsed = parsed as Node<Program>
 
             const { modifiedAst: _modifiedAst, pathToReplacedNode } =
               moveValueIntoNewVariablePath(
@@ -982,7 +983,7 @@ export const ModelingMachineProvider = ({
               )
             parsed = parse(recast(_modifiedAst))
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Program
+            parsed = parsed as Node<Program>
             if (!pathToReplacedNode)
               return Promise.reject(new Error('No path to replaced node'))
 
