@@ -337,7 +337,7 @@ For individual testing:
 yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
 ```
 
-Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/** tests, in interactive mode by default.
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro) tests, in interactive mode by default.
 
 ### Rust tests
 
