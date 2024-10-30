@@ -21,7 +21,7 @@ pub fn normalize(angle: Angle) -> Angle {
     Angle::from_degrees(if result > 180.0 { result - 360.0 } else { result })
 }
 
-/// Gives the ▲-angle between from and to angles (shortest path), use radians.
+/// Gives the ▲-angle between from and to angles (shortest path)
 ///
 /// Sign of the returned angle denotes direction, positive means counterClockwise 🔄
 /// # Examples

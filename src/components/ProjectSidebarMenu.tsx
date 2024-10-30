@@ -4,14 +4,14 @@ import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { isDesktop } from '../lib/isDesktop'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, useContext } from 'react'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
 import { engineCommandManager } from 'lib/singletons'
-import { machineManager } from 'lib/machineManager'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
@@ -96,6 +96,8 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const machineManager = useContext(MachineManagerContext)
+
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -106,7 +108,7 @@ function ProjectMenuPopover({
         (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
-  const machineCount = machineManager.machineCount()
+  const machineCount = machineManager.machines.length
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(

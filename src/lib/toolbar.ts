@@ -39,6 +39,9 @@ export type ToolbarItem = {
   description: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
+  disabledReason?:
+    | string
+    | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
 }
 
 export type ToolbarItemResolved = Omit<
@@ -349,6 +352,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             (!isEditingExistingSketch(state.context) &&
               !state.matches({ Sketch: 'Tangential arc to' })) ||
             pipeHasCircle(state.context),
+          disabledReason: (state) =>
+            !isEditingExistingSketch(state.context) &&
+            !state.matches({ Sketch: 'Tangential arc to' })
+              ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
+              : undefined,
           title: 'Tangential Arc',
           hotkey: (state) =>
             state.matches({ Sketch: 'Tangential arc to' }) ? ['Esc', 'A'] : 'A',

@@ -5,7 +5,7 @@ import { useCommandsContext } from './useCommandsContext'
 import { modelingMachine } from 'machines/modelingMachine'
 import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
-import { homeMachine } from 'machines/homeMachine'
+import { projectsMachine } from 'machines/projectsMachine'
 import {
   Command,
   StateMachineCommandSetConfig,
@@ -22,7 +22,7 @@ export type AllMachines =
   | typeof modelingMachine
   | typeof settingsMachine
   | typeof authMachine
-  | typeof homeMachine
+  | typeof projectsMachine
 
 interface UseStateMachineCommandsArgs<
   T extends AllMachines,

@@ -139,6 +139,11 @@ export async function listProjects(
 
   const entries = await window.electron.readdir(projectDir)
   for (let entry of entries) {
+    // Skip directories that start with a dot
+    if (entry.startsWith('.')) {
+      continue
+    }
+
     const projectPath = window.electron.path.join(projectDir, entry)
     // if it's not a directory ignore.
     const isDirectory = await window.electron.statIsDirectory(projectPath)

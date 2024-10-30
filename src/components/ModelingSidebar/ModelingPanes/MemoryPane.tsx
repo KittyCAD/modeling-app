@@ -88,25 +88,30 @@ export const MemoryPane = () => {
 export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
   for (const [key, val] of programMemory?.visibleEntries()) {
-    if (typeof val.value !== 'function') {
-      const sg = sketchFromKclValue(val, null)
+    if (
+      (val.type === 'UserVal' && val.value.type === 'Sketch') ||
+      // @ts-ignore
+      (val.type !== 'Function' && val.type !== 'UserVal')
+    ) {
+      const sg = sketchFromKclValue(val, key)
       if (val.type === 'Solid') {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
       } else if (!err(sg)) {
-        processedMemory[key] = sg.value.map(({ __geoMeta, ...rest }: Path) => {
+        processedMemory[key] = sg.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })
-      } else if ((val.type as any) === 'Function') {
-        processedMemory[key] = `__function(${(val as any)?.expression?.params
-          ?.map?.(({ identifier }: any) => identifier?.name || '')
-          .join(', ')})__`
       } else {
         processedMemory[key] = val.value
       }
-    } else if (key !== 'log') {
-      processedMemory[key] = '__function__'
+      //@ts-ignore
+    } else if (val.type === 'Function') {
+      processedMemory[key] = `__function(${(val as any)?.expression?.params
+        ?.map?.(({ identifier }: any) => identifier?.name || '')
+        .join(', ')})__`
+    } else {
+      processedMemory[key] = val.value
     }
   }
   return processedMemory

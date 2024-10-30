@@ -717,7 +717,7 @@ export function isLinesParallelAndConstrained(
       constraintType === 'angle' || constraintLevel === 'full'
 
     // get the previous segment
-    const prevSegment = sg.value[secondaryIndex - 1]
+    const prevSegment = sg.paths[secondaryIndex - 1]
     const prevSourceRange = prevSegment.__geoMeta.sourceRange
 
     const isParallelAndConstrained =

@@ -64,6 +64,7 @@ import toast from 'react-hot-toast'
 import { ToolbarModeName } from 'lib/toolbar'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { Vector3 } from 'three'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -301,6 +302,7 @@ export const getPersistedContext = (): Partial<PersistedModelingContext> => {
 export interface ModelingMachineContext {
   currentMode: ToolbarModeName
   currentTool: SketchTool
+  machineManager: MachineManager
   selection: string[]
   selectionRanges: Selections
   sketchDetails: SketchDetails | null
@@ -315,6 +317,13 @@ export interface ModelingMachineContext {
 export const modelingMachineDefaultContext: ModelingMachineContext = {
   currentMode: 'modeling',
   currentTool: 'none',
+  machineManager: {
+    machines: [],
+    machineApiIp: null,
+    currentMachine: null,
+    setCurrentMachine: () => {},
+    noMachinesReason: () => undefined,
+  },
   selection: [],
   selectionRanges: {
     otherSelections: [],

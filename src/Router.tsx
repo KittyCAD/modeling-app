@@ -21,6 +21,7 @@ import { WasmErrBanner } from 'components/WasmErrBanner'
 import { CommandBar } from 'components/CommandBar/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
+import { MachineManagerProvider } from 'components/MachineManagerProvider'
 import { PATHS } from 'lib/paths'
 import {
   fileLoader,
@@ -42,6 +43,7 @@ import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
+import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -49,17 +51,22 @@ const router = createRouter([
   {
     loader: settingsLoader,
     id: PATHS.INDEX,
+    // TODO: Re-evaluate if this is true
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
       <CommandBarProvider>
         <SettingsAuthProvider>
           <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <Outlet />
-              </AppStateProvider>
-            </KclContextProvider>
+            <ProjectsContextProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <MachineManagerProvider>
+                    <Outlet />
+                  </MachineManagerProvider>
+                </AppStateProvider>
+              </KclContextProvider>
+            </ProjectsContextProvider>
           </LspProvider>
         </SettingsAuthProvider>
       </CommandBarProvider>

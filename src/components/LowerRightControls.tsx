@@ -23,6 +23,7 @@ export function LowerRightControls({
 }) {
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
+
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 

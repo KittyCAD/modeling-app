@@ -3,7 +3,7 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { createAndOpenNewProject } from 'lib/desktopFS'
+import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
 import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
@@ -63,7 +63,7 @@ function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
       fileContext.project.path || null,
       false
     )
-    await createAndOpenNewProject({ onProjectOpen, navigate })
+    await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
     props.setShouldShowWarning(false)
   }
 
