@@ -7,7 +7,7 @@ use serde::de::DeserializeOwned;
 use serde_json::Value as JValue;
 
 use crate::{
-    ast::types::{execute::parse_json_number_as_f64, TagDeclarator},
+    ast::types::{execute::parse_json_number_as_f64, TagNode},
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
@@ -260,7 +260,7 @@ impl Args {
         (
             crate::std::shapes::CircleData,
             crate::std::shapes::SketchOrSurface,
-            Option<TagDeclarator>,
+            Option<TagNode>,
         ),
         KclError,
     > {
@@ -286,7 +286,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagDeclarator>), KclError> {
+    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -318,16 +318,14 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(&'a self) -> Result<(T, Sketch, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(&'a self) -> Result<(T, Sketch, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_surface<'a, T>(
-        &'a self,
-    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_surface<'a, T>(&'a self) -> Result<(T, SketchSurface, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -348,9 +346,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_solid_and_tag<'a, T>(
-        &'a self,
-    ) -> Result<(T, Box<Solid>, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_solid_and_tag<'a, T>(&'a self) -> Result<(T, Box<Solid>, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -466,7 +462,7 @@ impl Args {
         (
             crate::std::shapes::PolygonData,
             crate::std::shapes::SketchOrSurface,
-            Option<TagDeclarator>,
+            Option<TagNode>,
         ),
         KclError,
     > {
@@ -603,7 +599,7 @@ impl<'a> FromKclValue<'a> for Vec<JValue> {
     }
 }
 
-impl<'a> FromKclValue<'a> for TagDeclarator {
+impl<'a> FromKclValue<'a> for TagNode {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
     }

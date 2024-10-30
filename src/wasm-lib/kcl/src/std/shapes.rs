@@ -14,7 +14,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagDeclarator,
+    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     std::Args,
@@ -44,7 +44,7 @@ pub struct CircleData {
 
 /// Sketch a circle.
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_surface_or_group, tag): (CircleData, SketchOrSurface, Option<TagDeclarator>) =
+    let (data, sketch_surface_or_group, tag): (CircleData, SketchOrSurface, Option<TagNode>) =
         args.get_circle_args()?;
 
     let sketch = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
@@ -78,7 +78,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_circle(
     data: CircleData,
     sketch_surface_or_group: SketchOrSurface,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -178,7 +178,7 @@ fn default_inscribed() -> bool {
 
 /// Create a regular polygon with the specified number of sides and radius.
 pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_surface_or_group, tag): (PolygonData, SketchOrSurface, Option<TagDeclarator>) =
+    let (data, sketch_surface_or_group, tag): (PolygonData, SketchOrSurface, Option<TagNode>) =
         args.get_polygon_args()?;
 
     let sketch = inner_polygon(data, sketch_surface_or_group, tag, exec_state, args).await?;
@@ -217,7 +217,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 async fn inner_polygon(
     data: PolygonData,
     sketch_surface_or_group: SketchOrSurface,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {

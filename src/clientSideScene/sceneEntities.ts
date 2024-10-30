@@ -94,6 +94,7 @@ import { err, reportRejection, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -469,14 +470,14 @@ export class SceneEntities {
     selectionRanges,
   }: {
     sketchPathToNode: PathToNode
-    maybeModdedAst: Program
+    maybeModdedAst: Node<Program>
     draftExpressionsIndices?: { start: number; end: number }
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
     selectionRanges?: Selections
   }): Promise<{
-    truncatedAst: Program
+    truncatedAst: Node<Program>
     programMemoryOverride: ProgramMemory
     sketch: Sketch
     variableDeclarationName: string
@@ -657,7 +658,7 @@ export class SceneEntities {
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
-    modifiedAst: Program | Error,
+    modifiedAst: Node<Program> | Error,
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number]
@@ -1315,7 +1316,7 @@ export class SceneEntities {
   }
   prepareTruncatedMemoryAndAst = (
     sketchPathToNode: PathToNode,
-    ast?: Program,
+    ast?: Node<Program>,
     draftSegment?: DraftSegment
   ) =>
     prepareTruncatedMemoryAndAst(
@@ -1336,7 +1337,7 @@ export class SceneEntities {
     sketchPathToNode: PathToNode
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
-      truncatedAst: Program
+      truncatedAst: Node<Program>
       programMemoryOverride: ProgramMemory
       variableDeclarationName: string
     }
@@ -1387,7 +1388,7 @@ export class SceneEntities {
     const dragTo: [number, number] = [snappedPoint.x, snappedPoint.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
-    const _node = getNodeFromPath<CallExpression>(
+    const _node = getNodeFromPath<Node<CallExpression>>(
       modifiedAst,
       pathToNode,
       'CallExpression'
@@ -1399,7 +1400,7 @@ export class SceneEntities {
 
     let modded:
       | {
-          modifiedAst: Program
+          modifiedAst: Node<Program>
           pathToNode: PathToNode
         }
       | Error
@@ -1694,7 +1695,7 @@ export class SceneEntities {
         if (parent?.userData?.pathToNode) {
           const updatedAst = parse(recast(kclManager.ast))
           if (trap(updatedAst)) return
-          const _node = getNodeFromPath<CallExpression>(
+          const _node = getNodeFromPath<Node<CallExpression>>(
             updatedAst,
             parent.userData.pathToNode,
             'CallExpression'
@@ -1829,12 +1830,12 @@ export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
 
 function prepareTruncatedMemoryAndAst(
   sketchPathToNode: PathToNode,
-  ast: Program,
+  ast: Node<Program>,
   programMemory: ProgramMemory,
   draftSegment?: DraftSegment
 ):
   | {
-      truncatedAst: Program
+      truncatedAst: Node<Program>
       programMemoryOverride: ProgramMemory
       variableDeclarationName: string
     }
@@ -1842,7 +1843,7 @@ function prepareTruncatedMemoryAndAst(
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
   const _ast = structuredClone(ast)
 
-  const _node = getNodeFromPath<VariableDeclaration>(
+  const _node = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,
     sketchPathToNode || [],
     'VariableDeclaration'
@@ -1892,15 +1893,15 @@ function prepareTruncatedMemoryAndAst(
     ).body.slice(-1)[0].start = lastPipeItem.start
 
     _ast.end = lastPipeItem.end
-    const varDec = _ast.body[bodyIndex] as VariableDeclaration
+    const varDec = _ast.body[bodyIndex] as Node<VariableDeclaration>
     varDec.end = lastPipeItem.end
     const declarator = varDec.declarations[0]
     declarator.end = lastPipeItem.end
-    const init = declarator.init as PipeExpression
+    const init = declarator.init as Node<PipeExpression>
     init.end = lastPipeItem.end
     init.body.slice(-1)[0].end = lastPipeItem.end
   }
-  const truncatedAst: Program = {
+  const truncatedAst: Node<Program> = {
     ..._ast,
     body: [structuredClone(_ast.body[bodyIndex])],
   }
