@@ -1550,13 +1550,9 @@ fn tag(i: TokenSlice) -> PResult<Node<TagDeclarator>> {
         .parse_next(i)?;
     // Now that we've parsed a tag declarator, verify that it's not a stdlib
     // name.  If it is, stop backtracking.
-    let verified_tag = match tag_declarator.into_valid_binding_name() {
-        Ok(t) => t,
-        Err(e) => {
-            return Err(ErrMode::Cut(e.into()));
-        }
-    };
-    Ok(verified_tag)
+    tag_declarator
+        .into_valid_binding_name()
+        .map_err(|e| ErrMode::Cut(ContextError::from(e)))
 }
 
 /// Helper function. Matches any number of whitespace tokens and ignores them.
