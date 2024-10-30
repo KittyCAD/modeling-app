@@ -35,6 +35,11 @@
     "description": "A car wheel assembly with a rotor, tire, and lug nuts."
   },
   {
+    "file": "dodecahedron.kcl",
+    "title": "Hollow Dodecahedron",
+    "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards."
+  },
+  {
     "file": "enclosure.kcl",
     "title": "Enclosure",
     "description": "An enclosure body and sealing lid for storing items"
@@ -55,13 +60,18 @@
     "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material"
   },
   {
+    "file": "food-service-spatula.kcl",
+    "title": "Food Service Spatula",
+    "description": "Use these spatulas for mixing, flipping, and scraping."
+  },
+  {
     "file": "french-press.kcl",
     "title": "French Press",
     "description": "A french press immersion coffee maker"
   },
   {
     "file": "gear.kcl",
-    "title": "Gear",
+    "title": "Spur Gear",
     "description": "A rotating machine part having cut teeth or, in the case of a cogwheel, inserted teeth (called cogs), which mesh with another toothed part to transmit torque. Geared devices can change the speed, torque, and direction of a power source. The two elements that define a gear are its circular shape and the teeth that are integrated into its outer edge, which are designed to fit into the teeth of another gear."
   },
   {
