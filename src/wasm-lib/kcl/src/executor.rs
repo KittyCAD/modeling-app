@@ -2454,7 +2454,19 @@ impl ExecutorContext {
         id_generator: IdGenerator,
         project_directory: Option<String>,
     ) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None, id_generator, project_directory).await?;
+        self.execute_and_prepare(program, id_generator, project_directory)
+            .await
+            .map(|(_state, snap)| snap)
+    }
+
+    /// Execute the program, return the interpreter and outputs.
+    pub async fn execute_and_prepare(
+        &self,
+        program: &Program,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
+    ) -> Result<(ExecState, TakeSnapshot)> {
+        let state = self.run(program, None, id_generator, project_directory).await?;
 
         // Zoom to fit.
         self.engine
@@ -2487,7 +2499,7 @@ impl ExecutorContext {
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok(contents)
+        Ok((state, contents))
     }
 }
 
