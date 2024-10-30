@@ -1497,6 +1497,7 @@ test(
           'i_shape.kcl',
           'kittycad_svg.kcl',
           'lego.kcl',
+          'lsystem.kcl',
           'math.kcl',
           'member_expression_sketch.kcl',
           'mike_stress_test.kcl',
