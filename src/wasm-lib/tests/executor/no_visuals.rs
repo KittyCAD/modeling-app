@@ -174,3 +174,7 @@ gen_test_parse_fail!(
 gen_test!(add_lots);
 gen_test!(double_map);
 gen_test!(array_elem_push);
+gen_test_fail!(
+    array_elem_push_fail,
+    "undefined value: The array doesn't have any item at index 3"
+);
