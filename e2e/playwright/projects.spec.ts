@@ -1490,7 +1490,6 @@ test(
           'function_sketch.kcl',
           'function_sketch_with_position.kcl',
           'global-tags.kcl',
-          'helix_ccw.kcl',
           'helix_defaults.kcl',
           'helix_defaults_negative_extrude.kcl',
           'helix_with_length.kcl',
