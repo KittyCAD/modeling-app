@@ -1029,6 +1029,7 @@ pub enum NonCodeValue {
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, NodeList<NonCodeNode>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub start_nodes: NodeList<NonCodeNode>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1059,6 +1060,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         #[serde(rename_all = "camelCase")]
         struct NonCodeMetaHelper {
             non_code_nodes: HashMap<String, NodeList<NonCodeNode>>,
+            #[serde(default, skip_serializing_if = "Vec::is_empty")]
             start_nodes: NodeList<NonCodeNode>,
         }
 
