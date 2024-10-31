@@ -687,16 +687,18 @@ test.describe('Sketch tests', () => {
     codeStr += `  |> startProfileAt(${coord.kcl}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    coord = await click00r(50, 0)
-    codeStr += `  |> line(${coord.kcl}, %)`
+    await click00r(50, 0)
+    await page.waitForTimeout(100)
+    codeStr += `  |> lineTo(${toSU([50, 0])}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     coord = await click00r(0, 50)
     codeStr += `  |> line(${coord.kcl}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    coord = await click00r(-50, 0)
-    codeStr += `  |> line(${coord.kcl}, %)`
+    let clickCoords = await click00r(-50, 0)
+    expect(clickCoords).not.toBeUndefined()
+    codeStr += `  |> lineTo(${toSU(clickCoords!)}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
@@ -723,8 +725,10 @@ test.describe('Sketch tests', () => {
     codeStr += `  |> startProfileAt(${coord.kcl}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    coord = await click00r(30, 0)
-    codeStr += `  |> line(${coord.kcl}, %)`
+    // TODO: I couldn't use `toSU` here because of some rounding error causing
+    // it to be off by 0.01
+    await click00r(30, 0)
+    codeStr += `  |> lineTo([4.07, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     coord = await click00r(0, 30)

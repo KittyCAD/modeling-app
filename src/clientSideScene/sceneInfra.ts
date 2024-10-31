@@ -30,16 +30,46 @@ import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
 import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import * as constants from './constants'
+import { orthoScale, perspScale } from './helpers'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
-export * from './constants'
+// 63.5 is definitely a bit of a magic number, play with it until it looked right
+// if it were 64, that would feel like it's something in the engine where a random
+// power of 2 is used, but it's the 0.5 seems to make things look much more correct
+export const ZOOM_MAGIC_NUMBER = 63.5
+
+export const INTERSECTION_PLANE_LAYER = 1
+export const SKETCH_LAYER = 2
+
+// redundant types so that it can be changed temporarily but CI will catch the wrong type
+export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
+export const DEBUG_SHOW_BOTH_SCENES: false = false
+
+export const RAYCASTABLE_PLANE = 'raycastable-plane'
+
+export const X_AXIS = 'xAxis'
+export const Y_AXIS = 'yAxis'
+/** the THREEjs representation of the group surrounding a "snapped" point that is not yet placed */
+export const DRAFT_POINT_GROUP = 'draft-point-group'
+/** the THREEjs representation of a "snapped" point that is not yet placed */
+export const DRAFT_POINT = 'draft-point'
+export const AXIS_GROUP = 'axisGroup'
+export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
+export const ARROWHEAD = 'arrowhead'
+export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
+export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
+export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
   dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
+  /** The intersection of the mouse with the THREEjs raycast plane */
+  intersectionPoint?: {
+    twoD?: Vector2
+    threeD?: Vector3
+  }
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
@@ -328,29 +358,42 @@ export class SceneInfra {
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
+  getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
+    const orthoFactor = orthoScale(this.camControls.camera)
+    const factor =
+      (this.camControls.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(this.camControls.camera, meshOrGroup)) /
+      this._baseUnitMultiplier
+    return factor
+  }
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
     intersection: Intersection<Object3D<Object3DEventMap>>
   } | null => {
+    // Get the orientations from the camera and mouse position
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
       this.camControls.camera
     )
+    // Get the intersection of the ray with the default planes
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
       true
     )
-    const recastablePlaneIntersect = planeIntersects.find(
-      (intersect) => intersect.object.name === constants.RAYCASTABLE_PLANE
-    )
     if (!planeIntersects.length) return null
-    if (!recastablePlaneIntersect) return { intersection: planeIntersects[0] }
-    const planePosition = planeIntersects[0].object.position
-    const inversePlaneQuaternion = planeIntersects[0].object.quaternion
-      .clone()
-      .invert()
-    const intersectPoint = planeIntersects[0].point
+
+    // Find the intersection with the raycastable (or sketch) plane
+    const raycastablePlaneIntersection = planeIntersects.find(
+      (intersect) => intersect.object.name === RAYCASTABLE_PLANE
+    )
+    if (!raycastablePlaneIntersection)
+      return { intersection: planeIntersects[0] }
+    const planePosition = raycastablePlaneIntersection.object.position
+    const inversePlaneQuaternion =
+      raycastablePlaneIntersection.object.quaternion.clone().invert()
+    const intersectPoint = raycastablePlaneIntersection.point
     let transformedPoint = intersectPoint.clone()
     if (transformedPoint) {
       transformedPoint.applyQuaternion(inversePlaneQuaternion)
@@ -427,18 +470,26 @@ export class SceneInfra {
 
     if (intersects[0]) {
       const firstIntersectObject = intersects[0].object
+      const planeIntersectPoint = this.getPlaneIntersectPoint()
+      const intersectionPoint = {
+        twoD: planeIntersectPoint?.twoD,
+        threeD: planeIntersectPoint?.threeD,
+      }
+
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
         await this.onMouseLeave({
           selected: hoveredObj,
           mouseEvent: mouseEvent,
+          intersectionPoint,
         })
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
+          intersectionPoint,
         })
         if (!this.selected)
           this.updateMouseState({
