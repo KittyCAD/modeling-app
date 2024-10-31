@@ -19,7 +19,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
-import dog from './beepbeepargs'
+import argvFromYargs from './commandLineArgs'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -159,7 +159,7 @@ ipcMain.handle('shell.openExternal', (event, data) => {
 })
 
 ipcMain.handle('argv.parser', (event, data) => {
-  return dog
+  return argvFromYargs
 })
 
 ipcMain.handle('startDeviceFlow', async (_, host: string) => {
