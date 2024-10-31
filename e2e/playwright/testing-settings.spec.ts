@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import * as fsp from 'fs/promises'
+import * as fs from 'fs'
 import { join } from 'path'
 import {
   getUtils,
@@ -304,6 +305,21 @@ test.describe('Testing settings', () => {
       const projectLink = page.getByText('bracket')
       const logoLink = page.getByTestId('app-logo')
 
+      async function confirmThemeWasWritten(filePath: string, value: string) {
+        return expect
+          .poll(
+            async () => {
+              const fileExists = await fs.existsSync(filePath)
+              return fileExists ? fsp.readFile(filePath, 'utf-8') : ''
+            },
+            {
+              message: 'Setting should now be written to the file',
+              timeout: 5_000,
+            }
+          )
+          .toContain(`themeColor = "${value}"`)
+      }
+
       await test.step('Set user theme color on home', async () => {
         await expect(settingsOpenButton).toBeVisible()
         await settingsOpenButton.click()
@@ -311,12 +327,7 @@ test.describe('Testing settings', () => {
         await expect(userSettingsTab).toBeChecked()
         await themeColorSetting.fill(userThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
-        await expect
-          .poll(async () => fsp.readFile(tempUserSettingsFilePath, 'utf-8'), {
-            message: 'Setting should now be written to the file',
-            timeout: 5_000,
-          })
-          .toContain(`themeColor = "${userThemeColor}"`)
+        await confirmThemeWasWritten(tempUserSettingsFilePath, userThemeColor)
         await settingsCloseButton.click()
       })
 
@@ -329,15 +340,10 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         // Make sure that the project settings file has been written to before continuing
-        await expect
-          .poll(
-            async () => fsp.readFile(tempProjectSettingsFilePath, 'utf-8'),
-            {
-              message: 'Setting should now be written to the file',
-              timeout: 5_000,
-            }
-          )
-          .toContain(`themeColor = "${projectThemeColor}"`)
+        await confirmThemeWasWritten(
+          tempProjectSettingsFilePath,
+          projectThemeColor
+        )
         await settingsCloseButton.click()
       })
 
