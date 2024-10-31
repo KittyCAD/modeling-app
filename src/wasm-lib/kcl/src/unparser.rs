@@ -4,7 +4,7 @@ use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         Expr, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, NonCodeValue, ObjectExpression,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression,
         PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
@@ -38,11 +38,11 @@ impl Program {
             .fold(String::new(), |mut output, (index, recast_str)| {
                 let start_string = if index == 0 {
                     // We need to indent.
-                    if self.non_code_meta.start.is_empty() {
+                    if self.non_code_meta.start_nodes.is_empty() {
                         indentation.to_string()
                     } else {
                         self.non_code_meta
-                            .start
+                            .start_nodes
                             .iter()
                             .map(|start| start.format(&indentation))
                             .collect()
@@ -511,7 +511,7 @@ impl IfExpression {
     }
 }
 
-impl PipeExpression {
+impl Node<PipeExpression> {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let pipe = self
             .body
