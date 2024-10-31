@@ -3,107 +3,107 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 35,
   "body": [
     {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 0,
       "end": 35,
       "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 0,
-        "end": 35,
-        "callee": {
-          "type": "Identifier",
-          "start": 0,
-          "end": 6,
-          "name": "lineTo"
-        },
         "arguments": [
           {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 7,
             "end": 34,
             "properties": [
               {
-                "type": "ObjectProperty",
-                "start": 9,
                 "end": 19,
                 "key": {
-                  "type": "Identifier",
-                  "start": 9,
                   "end": 11,
-                  "name": "to"
+                  "name": "to",
+                  "start": 9,
+                  "type": "Identifier"
                 },
+                "start": 9,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 13,
-                  "end": 19,
                   "elements": [
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 14,
                       "end": 15,
-                      "value": 0,
-                      "raw": "0"
+                      "raw": "0",
+                      "start": 14,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 0
                     },
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 17,
                       "end": 18,
-                      "value": 1,
-                      "raw": "1"
+                      "raw": "1",
+                      "start": 17,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 1
                     }
-                  ]
+                  ],
+                  "end": 19,
+                  "start": 13,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               },
               {
-                "type": "ObjectProperty",
-                "start": 21,
                 "end": 33,
                 "key": {
-                  "type": "Identifier",
-                  "start": 21,
                   "end": 25,
-                  "name": "from"
+                  "name": "from",
+                  "start": 21,
+                  "type": "Identifier"
                 },
+                "start": 21,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 27,
-                  "end": 33,
                   "elements": [
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 28,
                       "end": 29,
-                      "value": 3,
-                      "raw": "3"
+                      "raw": "3",
+                      "start": 28,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 3
                     },
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 31,
                       "end": 32,
-                      "value": 3,
-                      "raw": "3"
+                      "raw": "3",
+                      "start": 31,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 3
                     }
-                  ]
+                  ],
+                  "end": 33,
+                  "start": 27,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               }
-            ]
+            ],
+            "start": 7,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
           }
         ],
-        "optional": false
-      }
+        "callee": {
+          "end": 6,
+          "name": "lineTo",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "end": 35,
+        "optional": false,
+        "start": 0,
+        "type": "CallExpression",
+        "type": "CallExpression"
+      },
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
     }
-  ]
+  ],
+  "end": 35,
+  "start": 0
 }
