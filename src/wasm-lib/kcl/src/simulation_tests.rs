@@ -1,4 +1,9 @@
-use crate::{ast::types::Program, errors::KclError, parser::Parser, token::Token};
+use crate::{
+    ast::types::{Node, Program},
+    errors::KclError,
+    parser::Parser,
+    token::Token,
+};
 
 /// Deserialize the data from a snapshot.
 fn get<T: serde::de::DeserializeOwned>(snapshot: &str) -> T {
@@ -76,10 +81,10 @@ fn unparse(test_name: &str) {
     );
 }
 
-async fn execute(test_name: &str) {
+async fn execute(test_name: &str, render_to_png: bool) {
     // Read the AST from disk.
     let input = read("ast.snap", test_name);
-    let ast_res: Result<Program, KclError> = get(&input);
+    let ast_res: Result<Node<Program>, KclError> = get(&input);
     let Ok(ast) = ast_res else {
         return;
     };
@@ -88,7 +93,9 @@ async fn execute(test_name: &str) {
     let exec_res = crate::test_server::execute_and_snapshot_ast(ast, crate::settings::types::UnitLength::Mm).await;
     match exec_res {
         Ok((program_memory, png)) => {
-            twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
+            if render_to_png {
+                twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
+            }
             assert_snapshot(test_name, "Program memory after executing", || {
                 insta::assert_json_snapshot!("program_memory", program_memory);
             });
@@ -125,6 +132,60 @@ mod cube {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME).await
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod helix_ccw {
+    const TEST_NAME: &str = "helix_ccw";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod double_map_fn {
+    const TEST_NAME: &str = "double_map_fn";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
     }
 }

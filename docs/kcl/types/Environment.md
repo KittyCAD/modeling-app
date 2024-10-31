@@ -16,6 +16,6 @@ layout: manual
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `bindings` |`object`|  | No |
-| `parent` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `parent` |`integer`|  | No |
 
 
