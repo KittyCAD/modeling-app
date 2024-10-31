@@ -1,6 +1,11 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { sansWhitespace } from '../test-utils'
+import {
+  closePane,
+  checkIfPaneIsOpen,
+  openPane,
+  sansWhitespace,
+} from '../test-utils'
 
 interface EditorState {
   activeLines: Array<string>
@@ -11,6 +16,7 @@ interface EditorState {
 export class EditorFixture {
   public page: Page
 
+  private paneButtonTestId = 'code-pane-button'
   private diagnosticsTooltip!: Locator
   private diagnosticsGutterIcon!: Locator
   private codeContent!: Locator
@@ -31,19 +37,32 @@ export class EditorFixture {
 
   private _expectEditorToContain =
     (not = false) =>
-    (
+    async (
       code: string,
       {
         shouldNormalise = false,
         timeout = 5_000,
       }: { shouldNormalise?: boolean; timeout?: number } = {}
     ) => {
+      const wasPaneOpen = await this.checkIfPaneIsOpen()
+      if (!wasPaneOpen) {
+        await this.openPane()
+      }
+      const resetPane = async () => {
+        if (!wasPaneOpen) {
+          await this.closePane()
+        }
+      }
       if (!shouldNormalise) {
         const expectStart = expect(this.codeContent)
         if (not) {
-          return expectStart.not.toContainText(code, { timeout })
+          const result = await expectStart.not.toContainText(code, { timeout })
+          await resetPane()
+          return result
         }
-        return expectStart.toContainText(code, { timeout })
+        const result = await expectStart.toContainText(code, { timeout })
+        await resetPane()
+        return result
       }
       const normalisedCode = code.replaceAll(/\s+/g, '').trim()
       const expectStart = expect.poll(
@@ -56,9 +75,13 @@ export class EditorFixture {
         }
       )
       if (not) {
-        return expectStart.not.toContain(normalisedCode)
+        const result = await expectStart.not.toContain(normalisedCode)
+        await resetPane()
+        return result
       }
-      return expectStart.toContain(normalisedCode)
+      const result = await expectStart.toContain(normalisedCode)
+      await resetPane()
+      return result
     }
   expectEditor = {
     toContain: this._expectEditorToContain(),
@@ -114,5 +137,14 @@ export class EditorFixture {
     if (!lines) return
     code = code.replace(findCode, replaceCode)
     await this.codeContent.fill(code)
+  }
+  checkIfPaneIsOpen() {
+    return checkIfPaneIsOpen(this.page, this.paneButtonTestId)
+  }
+  closePane() {
+    return closePane(this.page, this.paneButtonTestId)
+  }
+  openPane() {
+    return openPane(this.page, this.paneButtonTestId)
   }
 }
