@@ -25,7 +25,6 @@ snapshot_kind: text
                 "type": "Literal",
                 "value": true
               },
-              "digest": null,
               "else_ifs": [
                 {
                   "cond": {
@@ -36,7 +35,6 @@ snapshot_kind: text
                     "type": "Literal",
                     "value": true
                   },
-                  "digest": null,
                   "end": 88,
                   "start": 68,
                   "then_val": {
@@ -188,7 +186,6 @@ snapshot_kind: text
                 "type": "Literal",
                 "value": false
               },
-              "digest": null,
               "else_ifs": [
                 {
                   "cond": {
@@ -199,7 +196,6 @@ snapshot_kind: text
                     "type": "Literal",
                     "value": true
                   },
-                  "digest": null,
                   "end": 202,
                   "start": 182,
                   "then_val": {
@@ -351,7 +347,6 @@ snapshot_kind: text
                 "type": "Literal",
                 "value": false
               },
-              "digest": null,
               "else_ifs": [
                 {
                   "cond": {
@@ -362,7 +357,6 @@ snapshot_kind: text
                     "type": "Literal",
                     "value": false
                   },
-                  "digest": null,
                   "end": 322,
                   "start": 301,
                   "then_val": {

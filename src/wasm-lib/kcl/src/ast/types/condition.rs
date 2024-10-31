@@ -25,6 +25,8 @@ pub struct IfExpression {
     pub else_ifs: NodeList<ElseIf>,
     pub final_else: BoxNode<IfBlock>,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
@@ -36,6 +38,8 @@ pub struct ElseIf {
     pub cond: Expr,
     pub then_val: BoxNode<IfBlock>,
 
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
