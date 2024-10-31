@@ -311,13 +311,13 @@ test.describe('Testing settings', () => {
         await expect(userSettingsTab).toBeChecked()
         await themeColorSetting.fill(userThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
-        await settingsCloseButton.click()
         await expect
           .poll(async () => fsp.readFile(tempUserSettingsFilePath, 'utf-8'), {
             message: 'Setting should now be written to the file',
             timeout: 5_000,
           })
           .toContain(`themeColor = "${userThemeColor}"`)
+        await settingsCloseButton.click()
       })
 
       await test.step('Set project theme color', async () => {
@@ -328,7 +328,6 @@ test.describe('Testing settings', () => {
         await expect(projectSettingsTab).toBeChecked()
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
-        await settingsCloseButton.click()
         // Make sure that the project settings file has been written to before continuing
         await expect
           .poll(
@@ -339,6 +338,7 @@ test.describe('Testing settings', () => {
             }
           )
           .toContain(`themeColor = "${projectThemeColor}"`)
+        await settingsCloseButton.click()
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
