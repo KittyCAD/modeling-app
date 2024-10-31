@@ -16,7 +16,7 @@ layout: manual
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `environments` |`[` [`Environment`](/docs/kcl/types/Environment) `]`|  | No |
-| `currentEnv` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
+| `currentEnv` |`integer`|  | No |
 | `return` |[`KclValue`](/docs/kcl/types/KclValue)|  | No |
 
 
