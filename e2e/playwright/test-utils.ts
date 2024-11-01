@@ -45,7 +45,9 @@ export const commonPoints = {
   startAt: '[7.19, -9.7]',
   num1: 7.25,
   num2: 14.44,
-}
+  /** The Y-value of a common lineTo move we perform in tests */
+  num3: -2.44,
+} as const
 
 /** A semi-reliable color to check the default XZ plane on
  * in dark mode in the default camera position
@@ -118,15 +120,32 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openPane(page: Page, testId: string) {
-  const locator = page.getByTestId(testId)
-  await expect(locator).toBeVisible()
-  const isOpen = (await locator?.getAttribute('aria-pressed')) === 'true'
+export async function checkIfPaneIsOpen(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  return (await paneButtonLocator?.getAttribute('aria-pressed')) === 'true'
+}
+
+export async function openPane(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  const isOpen = await checkIfPaneIsOpen(page, testId)
 
   if (!isOpen) {
-    await locator.click()
-    await expect(locator).toHaveAttribute('aria-pressed', 'true')
+    await paneButtonLocator.click()
   }
+  await expect(paneButtonLocator).toHaveAttribute('aria-pressed', 'true')
+}
+
+export async function closePane(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  const isOpen = await checkIfPaneIsOpen(page, testId)
+
+  if (isOpen) {
+    await paneButtonLocator.click()
+  }
+  await expect(paneButtonLocator).toHaveAttribute('aria-pressed', 'false')
 }
 
 async function openKclCodePanel(page: Page) {
@@ -506,6 +525,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
           .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
           .click()
+        await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
+          name
+        )
       })
     },
 

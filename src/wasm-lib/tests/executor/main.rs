@@ -122,6 +122,14 @@ async fn kcl_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_execute_lsystem() {
+    let code = kcl_input!("lsystem");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("lsystem", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_member_expression_sketch() {
     let code = kcl_input!("member_expression_sketch");
 
@@ -143,14 +151,6 @@ async fn kcl_test_helix_defaults_negative_extrude() {
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("helix_defaults_negative_extrude", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_helix_ccw() {
-    let code = kcl_input!("helix_ccw");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("helix_ccw", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -26,8 +26,8 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, ImportStatement, ItemVisibility,
-        KclNone, Program, ReturnStatement, TagDeclarator,
+        human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, Program,
+        TagDeclarator, TagNode,
     },
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
@@ -155,6 +155,7 @@ impl Default for ProgramMemory {
 
 /// An index pointing to an environment.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[schemars(transparent)]
 pub struct EnvironmentRef(usize);
 
 impl EnvironmentRef {
@@ -339,7 +340,7 @@ impl IdGenerator {
 pub enum KclValue {
     UserVal(UserVal),
     TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(Box<TagDeclarator>),
+    TagDeclarator(crate::ast::types::BoxNode<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
 
@@ -352,7 +353,7 @@ pub enum KclValue {
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
-        expression: Box<FunctionExpression>,
+        expression: crate::ast::types::BoxNode<FunctionExpression>,
         memory: Box<ProgramMemory>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
@@ -890,7 +891,7 @@ pub type MemoryFunction =
     fn(
         s: Vec<KclValue>,
         memory: ProgramMemory,
-        expression: Box<FunctionExpression>,
+        expression: crate::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
         ctx: ExecutorContext,
@@ -900,7 +901,7 @@ impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
             KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::TagDeclarator(t) => t.into(),
+            KclValue::TagDeclarator(t) => vec![(&t).into()],
             KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
             KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
             KclValue::Solids { value } => value
@@ -1043,9 +1044,9 @@ impl KclValue {
     }
 
     /// Get a tag declarator from a memory item.
-    pub fn get_tag_declarator(&self) -> Result<TagDeclarator, KclError> {
+    pub fn get_tag_declarator(&self) -> Result<TagNode, KclError> {
         match self {
-            KclValue::TagDeclarator(t) => Ok(*t.clone()),
+            KclValue::TagDeclarator(t) => Ok((**t).clone()),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -1054,9 +1055,9 @@ impl KclValue {
     }
 
     /// Get an optional tag from a memory item.
-    pub fn get_tag_declarator_opt(&self) -> Result<Option<TagDeclarator>, KclError> {
+    pub fn get_tag_declarator_opt(&self) -> Result<Option<TagNode>, KclError> {
         match self {
-            KclValue::TagDeclarator(t) => Ok(Some(*t.clone())),
+            KclValue::TagDeclarator(t) => Ok(Some((**t).clone())),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -1200,7 +1201,7 @@ pub struct GetTangentialInfoFromPathsResult {
 }
 
 impl Sketch {
-    pub(crate) fn add_tag(&mut self, tag: &TagDeclarator, current_path: &Path) {
+    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
         tag_identifier.info = Some(TagEngineInfo {
@@ -1326,7 +1327,7 @@ pub enum EdgeCut {
         /// The engine id of the edge to fillet.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
-        tag: Box<Option<TagDeclarator>>,
+        tag: Box<Option<TagNode>>,
     },
     /// A chamfer.
     Chamfer {
@@ -1336,7 +1337,7 @@ pub enum EdgeCut {
         /// The engine id of the edge to chamfer.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
-        tag: Box<Option<TagDeclarator>>,
+        tag: Box<Option<TagNode>>,
     },
 }
 
@@ -1355,7 +1356,7 @@ impl EdgeCut {
         }
     }
 
-    pub fn tag(&self) -> Option<TagDeclarator> {
+    pub fn tag(&self) -> Option<TagNode> {
         match self {
             EdgeCut::Fillet { tag, .. } => *tag.clone(),
             EdgeCut::Chamfer { tag, .. } => *tag.clone(),
@@ -1529,26 +1530,10 @@ impl From<SourceRange> for Metadata {
     }
 }
 
-impl From<&ImportStatement> for Metadata {
-    fn from(stmt: &ImportStatement) -> Self {
+impl<T> From<NodeRef<'_, T>> for Metadata {
+    fn from(node: NodeRef<'_, T>) -> Self {
         Self {
-            source_range: SourceRange::new(stmt.start, stmt.end),
-        }
-    }
-}
-
-impl From<&ExpressionStatement> for Metadata {
-    fn from(exp_statement: &ExpressionStatement) -> Self {
-        Self {
-            source_range: SourceRange::new(exp_statement.start, exp_statement.end),
-        }
-    }
-}
-
-impl From<&ReturnStatement> for Metadata {
-    fn from(return_statement: &ReturnStatement) -> Self {
-        Self {
-            source_range: SourceRange::new(return_statement.start, return_statement.end),
+            source_range: SourceRange::new(node.start, node.end),
         }
     }
 }
@@ -1573,7 +1558,7 @@ pub struct BasePath {
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
     /// The tag of the path.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<TagNode>,
     /// Metadata.
     #[serde(rename = "__geoMeta")]
     pub geo_meta: GeoMeta,
@@ -1709,7 +1694,7 @@ impl Path {
         }
     }
 
-    pub fn get_tag(&self) -> Option<TagDeclarator> {
+    pub fn get_tag(&self) -> Option<TagNode> {
         match self {
             Path::ToPoint { base } => base.tag.clone(),
             Path::Horizontal { base, .. } => base.tag.clone(),
@@ -1820,7 +1805,7 @@ pub struct ChamferSurface {
     /// The id for the chamfer surface.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1834,7 +1819,7 @@ pub struct FilletSurface {
     /// The id for the fillet surface.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1848,7 +1833,7 @@ pub struct ExtrudePlane {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1862,7 +1847,7 @@ pub struct ExtrudeArc {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1878,7 +1863,7 @@ impl ExtrudeSurface {
         }
     }
 
-    pub fn get_tag(&self) -> Option<TagDeclarator> {
+    pub fn get_tag(&self) -> Option<Node<TagDeclarator>> {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
@@ -2161,7 +2146,7 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run(
         &self,
-        program: &crate::ast::types::Program,
+        program: NodeRef<'_, crate::ast::types::Program>,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
         project_directory: Option<String>,
@@ -2175,7 +2160,7 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run_with_session_data(
         &self,
-        program: &crate::ast::types::Program,
+        program: NodeRef<'_, crate::ast::types::Program>,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
         project_directory: Option<String>,
@@ -2217,9 +2202,9 @@ impl ExecutorContext {
 
     /// Execute an AST's program.
     #[async_recursion]
-    pub(crate) async fn inner_execute(
-        &self,
-        program: &crate::ast::types::Program,
+    pub(crate) async fn inner_execute<'a>(
+        &'a self,
+        program: NodeRef<'a, crate::ast::types::Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
@@ -2455,11 +2440,23 @@ impl ExecutorContext {
     /// Execute the program, then get a PNG screenshot.
     pub async fn execute_and_prepare_snapshot(
         &self,
-        program: &Program,
+        program: NodeRef<'_, Program>,
         id_generator: IdGenerator,
         project_directory: Option<String>,
     ) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None, id_generator, project_directory).await?;
+        self.execute_and_prepare(program, id_generator, project_directory)
+            .await
+            .map(|(_state, snap)| snap)
+    }
+
+    /// Execute the program, return the interpreter and outputs.
+    pub async fn execute_and_prepare(
+        &self,
+        program: NodeRef<'_, Program>,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
+    ) -> Result<(ExecState, TakeSnapshot)> {
+        let state = self.run(program, None, id_generator, project_directory).await?;
 
         // Zoom to fit.
         self.engine
@@ -2492,7 +2489,7 @@ impl ExecutorContext {
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok(contents)
+        Ok((state, contents))
     }
 }
 
@@ -2500,7 +2497,7 @@ impl ExecutorContext {
 /// assign it to a parameter of the function, in the given block of function memory.
 /// Returns Err if too few/too many arguments were given for the function.
 fn assign_args_to_params(
-    function_expression: &FunctionExpression,
+    function_expression: NodeRef<'_, FunctionExpression>,
     args: Vec<KclValue>,
     mut fn_memory: ProgramMemory,
 ) -> Result<ProgramMemory, KclError> {
@@ -2552,7 +2549,7 @@ fn assign_args_to_params(
 pub(crate) async fn call_user_defined_function(
     args: Vec<KclValue>,
     memory: &ProgramMemory,
-    function_expression: &FunctionExpression,
+    function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
 ) -> Result<Option<KclValue>, KclError> {
@@ -2591,7 +2588,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::ast::types::{Identifier, Parameter};
+    use crate::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::token::lexer(code)?;
@@ -3563,13 +3560,11 @@ let w = f() + f()
                 meta: Default::default(),
             })
         }
-        fn ident(s: &'static str) -> Identifier {
-            Identifier {
-                start: 0,
-                end: 0,
+        fn ident(s: &'static str) -> Node<Identifier> {
+            Node::no_src(Identifier {
                 name: s.to_owned(),
                 digest: None,
-            }
+            })
         }
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
@@ -3661,20 +3656,20 @@ let w = f() + f()
             ),
         ] {
             // Run each test.
-            let func_expr = &FunctionExpression {
-                start: 0,
-                end: 0,
+            let func_expr = &Node::no_src(FunctionExpression {
                 params,
-                body: crate::ast::types::Program {
+                body: Node {
+                    inner: crate::ast::types::Program {
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                        digest: None,
+                    },
                     start: 0,
                     end: 0,
-                    body: Vec::new(),
-                    non_code_meta: Default::default(),
-                    digest: None,
                 },
                 return_type: None,
                 digest: None,
-            };
+            });
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(
                 actual, expected,
