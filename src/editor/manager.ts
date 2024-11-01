@@ -82,7 +82,7 @@ export default class EditorManager {
         function performanceTrackingUpdate(args) {
           /**
            * TreeHighlighter.update will be called multiple times on start up.
-           * We do not want to track the highlight peformance of an empty update.
+           * We do not want to track the highlight performance of an empty update.
            * mark the syntax highlight one time when the new tree comes in with the
            * initial code
            */

@@ -60,19 +60,19 @@ const router = createRouter([
     element: (
       <CommandBarProvider>
         <RouteProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
-            <ProjectsContextProvider>
-              <KclContextProvider>
-                <AppStateProvider>
-                  <MachineManagerProvider>
-                    <Outlet />
-                  </MachineManagerProvider>
-                </AppStateProvider>
-              </KclContextProvider>
-            </ProjectsContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <ProjectsContextProvider>
+                <KclContextProvider>
+                  <AppStateProvider>
+                    <MachineManagerProvider>
+                      <Outlet />
+                    </MachineManagerProvider>
+                  </AppStateProvider>
+                </KclContextProvider>
+              </ProjectsContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
         </RouteProvider>
       </CommandBarProvider>
     ),
