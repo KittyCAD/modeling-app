@@ -11,12 +11,14 @@ import { useKclContext } from 'lang/KclProvider'
 import { editorManager } from 'lib/singletons'
 import { ContextFrom } from 'xstate'
 import { settingsMachine } from 'machines/settingsMachine'
+import { FeatureTreePane } from './FeatureTreePane'
 
 export type SidebarType =
   | 'code'
   | 'debug'
   | 'export'
   | 'files'
+  | 'feature-tree'
   | 'logs'
   | 'lspMessages'
   | 'variables'
@@ -60,6 +62,14 @@ export type SidebarAction = {
 }
 
 export const sidebarPanes: SidebarPane[] = [
+  {
+    id: 'feature-tree',
+    title: 'Feature Tree',
+    icon: 'model',
+    Content: FeatureTreePane,
+    keybinding: 'Shift + T',
+    sidebarName: 'Feature Tree',
+  },
   {
     id: 'code',
     title: 'KCL Code',
