@@ -22,6 +22,6 @@ mod TEST_NAME_HERE {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME).await
+        super::execute(TEST_NAME, RENDER_TO_PNG).await
     }
 }

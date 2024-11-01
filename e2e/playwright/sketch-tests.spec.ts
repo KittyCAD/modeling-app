@@ -637,7 +637,6 @@ test.describe('Sketch tests', () => {
     |> revolve({ axis: "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page }) => {
-    test.skip(process.platform === 'darwin', 'Can add multiple sketches')
     const u = await getUtils(page)
     const viewportSize = { width: 1200, height: 500 }
     await page.setViewportSize(viewportSize)
@@ -675,15 +674,16 @@ test.describe('Sketch tests', () => {
 
     await click00r(50, 0)
     await page.waitForTimeout(100)
-    codeStr += `  |> line(${toSU([50, 0])}, %)`
+    codeStr += `  |> lineTo(${toSU([50, 0])}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 50)
     codeStr += `  |> line(${toSU([0, 50])}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    await click00r(-50, 0)
-    codeStr += `  |> line(${toSU([-50, 0])}, %)`
+    let clickCoords = await click00r(-50, 0)
+    expect(clickCoords).not.toBeUndefined()
+    codeStr += `  |> lineTo(${toSU(clickCoords!)}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
@@ -709,8 +709,10 @@ test.describe('Sketch tests', () => {
     codeStr += `  |> startProfileAt([2.03, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
+    // TODO: I couldn't use `toSU` here because of some rounding error causing
+    // it to be off by 0.01
     await click00r(30, 0)
-    codeStr += `  |> line([2.04, 0], %)`
+    codeStr += `  |> lineTo([4.07, 0], %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 30)

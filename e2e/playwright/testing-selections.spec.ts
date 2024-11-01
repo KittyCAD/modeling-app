@@ -96,7 +96,7 @@ test.describe('Testing selections', () => {
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)
     |> line([0, ${commonPoints.num1 + 0.01}], %)
-    |> line([-${commonPoints.num2}, 0], %)`)
+    |> lineTo([0, ${commonPoints.num3}], %)`)
 
       // deselect line tool
       await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -157,7 +157,9 @@ test.describe('Testing selections', () => {
         await emptySpaceClick()
 
         // check the same selection again by putting cursor in code first then selecting axis
-        await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+        await page
+          .getByText(`  |> lineTo([0, ${commonPoints.num3}], %)`)
+          .click()
         await page.keyboard.down('Shift')
         await constrainButton.click()
         await expect(absYButton).toBeDisabled()
@@ -180,7 +182,9 @@ test.describe('Testing selections', () => {
           process.platform === 'linux' ? 'Control' : 'Meta'
         )
         await page.waitForTimeout(100)
-        await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+        await page
+          .getByText(`  |> lineTo([0, ${commonPoints.num3}], %)`)
+          .click()
 
         await expect(page.locator('.cm-cursor')).toHaveCount(2)
         await page.waitForTimeout(500)

@@ -1,0 +1,262 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing helix_ccw.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declarations": [
+          {
+            "end": 183,
+            "id": {
+              "end": 7,
+              "name": "part001",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "init": {
+              "body": [
+                {
+                  "arguments": [
+                    {
+                      "end": 28,
+                      "raw": "'XY'",
+                      "start": 24,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "XY"
+                    }
+                  ],
+                  "callee": {
+                    "end": 23,
+                    "name": "startSketchOn",
+                    "start": 10,
+                    "type": "Identifier"
+                  },
+                  "end": 29,
+                  "optional": false,
+                  "start": 10,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "end": 72,
+                      "properties": [
+                        {
+                          "end": 58,
+                          "key": {
+                            "end": 50,
+                            "name": "center",
+                            "start": 44,
+                            "type": "Identifier"
+                          },
+                          "start": 44,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "elements": [
+                              {
+                                "end": 54,
+                                "raw": "5",
+                                "start": 53,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": 5
+                              },
+                              {
+                                "end": 57,
+                                "raw": "5",
+                                "start": 56,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": 5
+                              }
+                            ],
+                            "end": 58,
+                            "start": 52,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "end": 70,
+                          "key": {
+                            "end": 66,
+                            "name": "radius",
+                            "start": 60,
+                            "type": "Identifier"
+                          },
+                          "start": 60,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "end": 70,
+                            "raw": "10",
+                            "start": 68,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": 10
+                          }
+                        }
+                      ],
+                      "start": 42,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
+                      "end": 75,
+                      "start": 74,
+                      "type": "PipeSubstitution",
+                      "type": "PipeSubstitution"
+                    }
+                  ],
+                  "callee": {
+                    "end": 41,
+                    "name": "circle",
+                    "start": 35,
+                    "type": "Identifier"
+                  },
+                  "end": 76,
+                  "optional": false,
+                  "start": 35,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "end": 92,
+                      "raw": "10",
+                      "start": 90,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 10
+                    },
+                    {
+                      "end": 95,
+                      "start": 94,
+                      "type": "PipeSubstitution",
+                      "type": "PipeSubstitution"
+                    }
+                  ],
+                  "callee": {
+                    "end": 89,
+                    "name": "extrude",
+                    "start": 82,
+                    "type": "Identifier"
+                  },
+                  "end": 96,
+                  "optional": false,
+                  "start": 82,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "end": 179,
+                      "properties": [
+                        {
+                          "end": 132,
+                          "key": {
+                            "end": 128,
+                            "name": "revolutions",
+                            "start": 117,
+                            "type": "Identifier"
+                          },
+                          "start": 117,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "end": 132,
+                            "raw": "16",
+                            "start": 130,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": 16
+                          }
+                        },
+                        {
+                          "end": 154,
+                          "key": {
+                            "end": 151,
+                            "name": "angleStart",
+                            "start": 141,
+                            "type": "Identifier"
+                          },
+                          "start": 141,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "end": 154,
+                            "raw": "0",
+                            "start": 153,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": 0
+                          }
+                        },
+                        {
+                          "end": 172,
+                          "key": {
+                            "end": 166,
+                            "name": "ccw",
+                            "start": 163,
+                            "type": "Identifier"
+                          },
+                          "start": 163,
+                          "type": "ObjectProperty",
+                          "value": {
+                            "end": 172,
+                            "raw": "true",
+                            "start": 168,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": true
+                          }
+                        }
+                      ],
+                      "start": 108,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
+                      "end": 182,
+                      "start": 181,
+                      "type": "PipeSubstitution",
+                      "type": "PipeSubstitution"
+                    }
+                  ],
+                  "callee": {
+                    "end": 107,
+                    "name": "helix",
+                    "start": 102,
+                    "type": "Identifier"
+                  },
+                  "end": 183,
+                  "optional": false,
+                  "start": 102,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                }
+              ],
+              "end": 183,
+              "start": 10,
+              "type": "PipeExpression",
+              "type": "PipeExpression"
+            },
+            "start": 0,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 183,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 184,
+    "start": 0
+  }
+}

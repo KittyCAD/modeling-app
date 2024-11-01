@@ -1,0 +1,465 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing helix_ccw.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "word",
+      "start": 0,
+      "end": 7,
+      "value": "part001"
+    },
+    {
+      "type": "whitespace",
+      "start": 7,
+      "end": 8,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 8,
+      "end": 9,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 9,
+      "end": 10,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 10,
+      "end": 23,
+      "value": "startSketchOn"
+    },
+    {
+      "type": "brace",
+      "start": 23,
+      "end": 24,
+      "value": "("
+    },
+    {
+      "type": "string",
+      "start": 24,
+      "end": 28,
+      "value": "'XY'"
+    },
+    {
+      "type": "brace",
+      "start": 28,
+      "end": 29,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 29,
+      "end": 32,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 32,
+      "end": 34,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 34,
+      "end": 35,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 35,
+      "end": 41,
+      "value": "circle"
+    },
+    {
+      "type": "brace",
+      "start": 41,
+      "end": 42,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 42,
+      "end": 43,
+      "value": "{"
+    },
+    {
+      "type": "whitespace",
+      "start": 43,
+      "end": 44,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 44,
+      "end": 50,
+      "value": "center"
+    },
+    {
+      "type": "colon",
+      "start": 50,
+      "end": 51,
+      "value": ":"
+    },
+    {
+      "type": "whitespace",
+      "start": 51,
+      "end": 52,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 52,
+      "end": 53,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 53,
+      "end": 54,
+      "value": "5"
+    },
+    {
+      "type": "comma",
+      "start": 54,
+      "end": 55,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 55,
+      "end": 56,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 56,
+      "end": 57,
+      "value": "5"
+    },
+    {
+      "type": "brace",
+      "start": 57,
+      "end": 58,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 58,
+      "end": 59,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 59,
+      "end": 60,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 60,
+      "end": 66,
+      "value": "radius"
+    },
+    {
+      "type": "colon",
+      "start": 66,
+      "end": 67,
+      "value": ":"
+    },
+    {
+      "type": "whitespace",
+      "start": 67,
+      "end": 68,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 68,
+      "end": 70,
+      "value": "10"
+    },
+    {
+      "type": "whitespace",
+      "start": 70,
+      "end": 71,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 71,
+      "end": 72,
+      "value": "}"
+    },
+    {
+      "type": "comma",
+      "start": 72,
+      "end": 73,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 73,
+      "end": 74,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 74,
+      "end": 75,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 75,
+      "end": 76,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 76,
+      "end": 79,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 79,
+      "end": 81,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 81,
+      "end": 82,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 82,
+      "end": 89,
+      "value": "extrude"
+    },
+    {
+      "type": "brace",
+      "start": 89,
+      "end": 90,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 90,
+      "end": 92,
+      "value": "10"
+    },
+    {
+      "type": "comma",
+      "start": 92,
+      "end": 93,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 93,
+      "end": 94,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 94,
+      "end": 95,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 95,
+      "end": 96,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 96,
+      "end": 99,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 99,
+      "end": 101,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 101,
+      "end": 102,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 102,
+      "end": 107,
+      "value": "helix"
+    },
+    {
+      "type": "brace",
+      "start": 107,
+      "end": 108,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 108,
+      "end": 109,
+      "value": "{"
+    },
+    {
+      "type": "whitespace",
+      "start": 109,
+      "end": 117,
+      "value": "\n       "
+    },
+    {
+      "type": "word",
+      "start": 117,
+      "end": 128,
+      "value": "revolutions"
+    },
+    {
+      "type": "colon",
+      "start": 128,
+      "end": 129,
+      "value": ":"
+    },
+    {
+      "type": "whitespace",
+      "start": 129,
+      "end": 130,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 130,
+      "end": 132,
+      "value": "16"
+    },
+    {
+      "type": "comma",
+      "start": 132,
+      "end": 133,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 133,
+      "end": 141,
+      "value": "\n       "
+    },
+    {
+      "type": "word",
+      "start": 141,
+      "end": 151,
+      "value": "angleStart"
+    },
+    {
+      "type": "colon",
+      "start": 151,
+      "end": 152,
+      "value": ":"
+    },
+    {
+      "type": "whitespace",
+      "start": 152,
+      "end": 153,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 153,
+      "end": 154,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 154,
+      "end": 155,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 155,
+      "end": 163,
+      "value": "\n       "
+    },
+    {
+      "type": "word",
+      "start": 163,
+      "end": 166,
+      "value": "ccw"
+    },
+    {
+      "type": "colon",
+      "start": 166,
+      "end": 167,
+      "value": ":"
+    },
+    {
+      "type": "whitespace",
+      "start": 167,
+      "end": 168,
+      "value": " "
+    },
+    {
+      "type": "keyword",
+      "start": 168,
+      "end": 172,
+      "value": "true"
+    },
+    {
+      "type": "whitespace",
+      "start": 172,
+      "end": 178,
+      "value": "\n     "
+    },
+    {
+      "type": "brace",
+      "start": 178,
+      "end": 179,
+      "value": "}"
+    },
+    {
+      "type": "comma",
+      "start": 179,
+      "end": 180,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 180,
+      "end": 181,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 181,
+      "end": 182,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 182,
+      "end": 183,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 183,
+      "end": 184,
+      "value": "\n"
+    }
+  ]
+}
