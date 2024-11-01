@@ -19,6 +19,8 @@ import {
 import {
   ARROWHEAD,
   AXIS_GROUP,
+  DRAFT_POINT,
+  DRAFT_POINT_GROUP,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
   OnClickCallbackArgs,
@@ -53,7 +55,7 @@ import {
   editorManager,
 } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { executeAst } from 'lang/langHelpers'
+import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
   SegmentUtils,
@@ -314,6 +316,27 @@ export class SceneEntities {
     const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
     if (intersectionPlane) this.scene.remove(intersectionPlane)
   }
+  getDraftPoint() {
+    return this.scene.getObjectByName(DRAFT_POINT)
+  }
+  createDraftPoint({ point, group }: { point: Vector2; group: Group }) {
+    const dummy = new Mesh()
+    dummy.position.set(0, 0, 0)
+    const scale = sceneInfra.getClientSceneScaleFactor(dummy)
+
+    const draftPoint = createProfileStartHandle({
+      isDraft: true,
+      from: [point.x, point.y],
+      scale,
+      theme: sceneInfra._theme,
+    })
+    draftPoint.layers.set(SKETCH_LAYER)
+    group.add(draftPoint)
+  }
+  removeDraftPoint() {
+    const draftPoint = this.getDraftPoint()
+    if (draftPoint) draftPoint.removeFromParent()
+  }
 
   setupNoPointsListener({
     sketchDetails,
@@ -322,22 +345,78 @@ export class SceneEntities {
     sketchDetails: SketchDetails
     afterClick: (args: OnClickCallbackArgs) => void
   }) {
-    // Create a THREEjs plane to raycast clicks onto
+    // TODO: Consolidate shared logic between this and setupSketch
+    // Which should just fire when the sketch mode is entered,
+    // instead of in these two separate XState states.
     this.createIntersectionPlane()
+    const draftPointGroup = new Group()
+    draftPointGroup.name = DRAFT_POINT_GROUP
+    sketchDetails.origin &&
+      draftPointGroup.position.set(...sketchDetails.origin)
+    if (!(sketchDetails.yAxis && sketchDetails)) {
+      console.error('No sketch quaternion or sketch details found')
+      return
+    }
+    this.currentSketchQuaternion = quaternionFromUpNForward(
+      new Vector3(...sketchDetails.yAxis),
+      new Vector3(...sketchDetails.zAxis)
+    )
+    draftPointGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
+    this.scene.add(draftPointGroup)
+
     const quaternion = quaternionFromUpNForward(
       new Vector3(...sketchDetails.yAxis),
       new Vector3(...sketchDetails.zAxis)
     )
 
     // Position the click raycast plane
-    if (this.intersectionPlane) {
-      this.intersectionPlane.setRotationFromQuaternion(quaternion)
-      this.intersectionPlane.position.copy(
-        new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
-      )
-    }
+    this.intersectionPlane!.setRotationFromQuaternion(quaternion)
+    this.intersectionPlane!.position.copy(
+      new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+    )
     sceneInfra.setCallbacks({
+      onMove: (args) => {
+        if (!args.intersects.length) return
+        const axisIntersection = args.intersects.find(
+          (sceneObject) =>
+            sceneObject.object.name === X_AXIS ||
+            sceneObject.object.name === Y_AXIS
+        )
+        if (!axisIntersection) return
+        const { intersectionPoint } = args
+        // We're hovering over an axis, so we should show a draft point
+        const snappedPoint = intersectionPoint.twoD.clone()
+        if (axisIntersection.object.name === X_AXIS) {
+          snappedPoint.setComponent(1, 0)
+        } else {
+          snappedPoint.setComponent(0, 0)
+        }
+        // Either create a new one or update the existing one
+        const draftPoint = this.getDraftPoint()
+
+        if (!draftPoint) {
+          this.createDraftPoint({
+            point: snappedPoint,
+            group: draftPointGroup,
+          })
+        } else {
+          // Ignore if there are huge jumps in the mouse position,
+          // that is likely a strange behavior
+          if (
+            draftPoint.position.distanceTo(
+              new Vector3(snappedPoint.x, snappedPoint.y, 0)
+            ) > 100
+          ) {
+            return
+          }
+          draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
+        }
+      },
+      onMouseLeave: () => {
+        this.removeDraftPoint()
+      },
       onClick: async (args) => {
+        this.removeDraftPoint()
         if (!args) return
         // If there is a valid camera interaction that matches, do that instead
         const interaction = sceneInfra.camControls.getInteractionType(
@@ -347,10 +426,25 @@ export class SceneEntities {
         if (args.mouseEvent.which !== 1) return
         const { intersectionPoint } = args
         if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode) return
+
+        // Snap to either or both axes
+        // if the click intersects their meshes
+        const yAxisIntersection = args.intersects.find(
+          (sceneObject) => sceneObject.object.name === Y_AXIS
+        )
+        const xAxisIntersection = args.intersects.find(
+          (sceneObject) => sceneObject.object.name === X_AXIS
+        )
+
+        const snappedClickPoint = {
+          x: yAxisIntersection ? 0 : intersectionPoint.twoD.x,
+          y: xAxisIntersection ? 0 : intersectionPoint.twoD.y,
+        }
+
         const addStartProfileAtRes = addStartProfileAt(
           kclManager.ast,
           sketchDetails.sketchPathToNode,
-          [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
+          [snappedClickPoint.x, snappedClickPoint.y]
         )
 
         if (trap(addStartProfileAtRes)) return
@@ -358,6 +452,7 @@ export class SceneEntities {
 
         await kclManager.updateAst(modifiedAst, false)
         this.removeIntersectionPlane()
+        this.scene.remove(draftPointGroup)
 
         // Now perform the caller-specified action
         afterClick(args)
@@ -430,12 +525,7 @@ export class SceneEntities {
     const dummy = new Mesh()
     // TODO: When we actually have sketch positions and rotations we can use them here.
     dummy.position.set(0, 0, 0)
-    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-    const factor =
-      (sceneInfra.camControls.camera instanceof OrthographicCamera
-        ? orthoFactor
-        : perspScale(sceneInfra.camControls.camera, dummy)) /
-      sceneInfra._baseUnitMultiplier
+    const scale = sceneInfra.getClientSceneScaleFactor(dummy)
 
     const segPathToNode = getNodePathFromSourceRange(
       maybeModdedAst,
@@ -446,8 +536,9 @@ export class SceneEntities {
         from: sketch.start.from,
         id: sketch.start.__geoMeta.id,
         pathToNode: segPathToNode,
-        scale: factor,
+        scale,
         theme: sceneInfra._theme,
+        isDraft: false,
       })
       _profileStart.layers.set(SKETCH_LAYER)
       _profileStart.traverse((child) => {
@@ -523,7 +614,7 @@ export class SceneEntities {
         id: segment.__geoMeta.id,
         pathToNode: segPathToNode,
         isDraftSegment,
-        scale: factor,
+        scale,
         texture: sceneInfra.extraSegmentTexture,
         theme: sceneInfra._theme,
         isSelected,
@@ -660,12 +751,14 @@ export class SceneEntities {
 
         const { intersectionPoint } = args
         let intersection2d = intersectionPoint?.twoD
-        const profileStart = args.intersects
+        const intersectsProfileStart = args.intersects
           .map(({ object }) => getParentGroup(object, [PROFILE_START]))
           .find((a) => a?.name === PROFILE_START)
 
         let modifiedAst
-        if (profileStart) {
+
+        // Snapping logic for the profile start handle
+        if (intersectsProfileStart) {
           const lastSegment = sketch.paths.slice(-1)[0]
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
@@ -698,19 +791,39 @@ export class SceneEntities {
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else if (intersection2d) {
+          const intersectsYAxis = args.intersects.find(
+            (sceneObject) => sceneObject.object.name === Y_AXIS
+          )
+          const intersectsXAxis = args.intersects.find(
+            (sceneObject) => sceneObject.object.name === X_AXIS
+          )
+
           const lastSegment = sketch.paths.slice(-1)[0]
+          const snappedPoint = {
+            x: intersectsYAxis ? 0 : intersection2d.x,
+            y: intersectsXAxis ? 0 : intersection2d.y,
+          }
+
+          let resolvedFunctionName: ToolTip = 'line'
+
+          // This might need to become its own function if we want more
+          // case-based logic for different segment types
+          if (lastSegment.type === 'TangentialArcTo') {
+            resolvedFunctionName = 'tangentialArcTo'
+          } else if (snappedPoint.x === 0 || snappedPoint.y === 0) {
+            // We consider a point placed on axes or origin to be absolute
+            resolvedFunctionName = 'lineTo'
+          }
+
           const tmp = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             input: {
               type: 'straight-segment',
               from: [lastSegment.to[0], lastSegment.to[1]],
-              to: [intersection2d.x, intersection2d.y],
+              to: [snappedPoint.x, snappedPoint.y],
             },
-            fnName:
-              lastSegment.type === 'TangentialArcTo'
-                ? 'tangentialArcTo'
-                : 'line',
+            fnName: resolvedFunctionName,
             pathToNode: sketchPathToNode,
           })
           if (trap(tmp)) return Promise.reject(tmp)
@@ -722,7 +835,7 @@ export class SceneEntities {
         }
 
         await kclManager.executeAstMock(modifiedAst)
-        if (profileStart) {
+        if (intersectsProfileStart) {
           sceneInfra.modelingSend({ type: 'CancelSketch' })
         } else {
           await this.setUpDraftSegment(
@@ -1229,14 +1342,29 @@ export class SceneEntities {
       variableDeclarationName: string
     }
   }) {
-    const profileStart =
+    const intersectsProfileStart =
       draftInfo &&
       intersects
         .map(({ object }) => getParentGroup(object, [PROFILE_START]))
         .find((a) => a?.name === PROFILE_START)
-    const intersection2d = profileStart
-      ? new Vector2(profileStart.position.x, profileStart.position.y)
+    const intersection2d = intersectsProfileStart
+      ? new Vector2(
+          intersectsProfileStart.position.x,
+          intersectsProfileStart.position.y
+        )
       : _intersection2d
+
+    const intersectsYAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === Y_AXIS
+    )
+    const intersectsXAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === X_AXIS
+    )
+
+    const snappedPoint = new Vector2(
+      intersectsYAxis ? 0 : intersection2d.x,
+      intersectsXAxis ? 0 : intersection2d.y
+    )
 
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [ARROWHEAD, CIRCLE_CENTER_HANDLE])
@@ -1257,7 +1385,7 @@ export class SceneEntities {
       group.userData.from[0],
       group.userData.from[1],
     ]
-    const dragTo: [number, number] = [intersection2d.x, intersection2d.y]
+    const dragTo: [number, number] = [snappedPoint.x, snappedPoint.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
     const _node = getNodeFromPath<Node<CallExpression>>(
