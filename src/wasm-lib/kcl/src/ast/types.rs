@@ -53,6 +53,7 @@ pub struct Node<T> {
     pub inner: T,
     pub start: usize,
     pub end: usize,
+    pub module_id: ModuleId,
 }
 
 impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
@@ -78,8 +79,13 @@ impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
 }
 
 impl<T> Node<T> {
-    pub fn new(inner: T, start: usize, end: usize) -> Self {
-        Self { inner, start, end }
+    pub fn new(inner: T, start: usize, end: usize, module_id: ModuleId) -> Self {
+        Self {
+            inner,
+            start,
+            end,
+            module_id,
+        }
     }
 
     pub fn no_src(inner: T) -> Self {
@@ -87,15 +93,21 @@ impl<T> Node<T> {
             inner,
             start: 0,
             end: 0,
+            module_id: ModuleId::default(),
         }
     }
 
-    pub fn boxed(inner: T, start: usize, end: usize) -> BoxNode<T> {
-        Box::new(Node { inner, start, end })
+    pub fn boxed(inner: T, start: usize, end: usize, module_id: ModuleId) -> BoxNode<T> {
+        Box::new(Node {
+            inner,
+            start,
+            end,
+            module_id,
+        })
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
-        vec![SourceRange([self.start, self.end])]
+        vec![SourceRange([self.start, self.end, self.module_id.as_usize()])]
     }
 }
 
@@ -121,19 +133,19 @@ impl<T: fmt::Display> fmt::Display for Node<T> {
 
 impl<T> From<Node<T>> for crate::executor::SourceRange {
     fn from(v: Node<T>) -> Self {
-        Self([v.start, v.end])
+        Self([v.start, v.end, v.module_id.as_usize()])
     }
 }
 
 impl<T> From<&Node<T>> for crate::executor::SourceRange {
     fn from(v: &Node<T>) -> Self {
-        Self([v.start, v.end])
+        Self([v.start, v.end, v.module_id.as_usize()])
     }
 }
 
 impl<T> From<&BoxNode<T>> for crate::executor::SourceRange {
     fn from(v: &BoxNode<T>) -> Self {
-        Self([v.start, v.end])
+        Self([v.start, v.end, v.module_id.as_usize()])
     }
 }
 
@@ -505,6 +517,23 @@ impl Program {
     }
 }
 
+/// Identifier of a source file.  Uses a u32 to keep the size small.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+pub struct ModuleId(pub u32);
+
+impl ModuleId {
+    pub fn from_usize(id: usize) -> Self {
+        Self(u32::try_from(id).expect("module ID should fit in a u32"))
+    }
+
+    pub fn as_usize(&self) -> usize {
+        usize::try_from(self.0).expect("module ID should fit in a usize")
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -534,17 +563,26 @@ impl BodyItem {
             BodyItem::ReturnStatement(return_statement) => return_statement.end,
         }
     }
+
+    pub fn module_id(&self) -> ModuleId {
+        match self {
+            BodyItem::ImportStatement(stmt) => stmt.module_id,
+            BodyItem::ExpressionStatement(expression_statement) => expression_statement.module_id,
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.module_id,
+            BodyItem::ReturnStatement(return_statement) => return_statement.module_id,
+        }
+    }
 }
 
 impl From<BodyItem> for SourceRange {
     fn from(item: BodyItem) -> Self {
-        Self([item.start(), item.end()])
+        Self([item.start(), item.end(), item.module_id().as_usize()])
     }
 }
 
 impl From<&BodyItem> for SourceRange {
     fn from(item: &BodyItem) -> Self {
-        Self([item.start(), item.end()])
+        Self([item.start(), item.end(), item.module_id().as_usize()])
     }
 }
 
@@ -568,7 +606,7 @@ pub enum Expr {
     MemberExpression(BoxNode<MemberExpression>),
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
-    None(KclNone),
+    None(Node<KclNone>),
 }
 
 impl Expr {
@@ -678,6 +716,26 @@ impl Expr {
         }
     }
 
+    pub fn module_id(&self) -> ModuleId {
+        match self {
+            Expr::Literal(literal) => literal.module_id,
+            Expr::Identifier(identifier) => identifier.module_id,
+            Expr::TagDeclarator(tag) => tag.module_id,
+            Expr::BinaryExpression(binary_expression) => binary_expression.module_id,
+            Expr::FunctionExpression(function_expression) => function_expression.module_id,
+            Expr::CallExpression(call_expression) => call_expression.module_id,
+            Expr::PipeExpression(pipe_expression) => pipe_expression.module_id,
+            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.module_id,
+            Expr::ArrayExpression(array_expression) => array_expression.module_id,
+            Expr::ArrayRangeExpression(array_range) => array_range.module_id,
+            Expr::ObjectExpression(object_expression) => object_expression.module_id,
+            Expr::MemberExpression(member_expression) => member_expression.module_id,
+            Expr::UnaryExpression(unary_expression) => unary_expression.module_id,
+            Expr::IfExpression(expr) => expr.module_id,
+            Expr::None(none) => none.module_id,
+        }
+    }
+
     /// Returns a hover value that includes the given character position.
     /// This is really recursive so keep that in mind.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
@@ -758,13 +816,13 @@ impl Expr {
 
 impl From<Expr> for SourceRange {
     fn from(value: Expr) -> Self {
-        Self([value.start(), value.end()])
+        SourceRange([value.start(), value.end(), value.module_id().as_usize()])
     }
 }
 
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
-        Self([value.start(), value.end()])
+        SourceRange([value.start(), value.end(), value.module_id().as_usize()])
     }
 }
 
@@ -784,13 +842,13 @@ pub enum BinaryPart {
 
 impl From<BinaryPart> for SourceRange {
     fn from(value: BinaryPart) -> Self {
-        Self([value.start(), value.end()])
+        Self([value.start(), value.end(), value.module_id().as_usize()])
     }
 }
 
 impl From<&BinaryPart> for SourceRange {
     fn from(value: &BinaryPart) -> Self {
-        Self([value.start(), value.end()])
+        Self([value.start(), value.end(), value.module_id().as_usize()])
     }
 }
 
@@ -847,6 +905,18 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
+        }
+    }
+
+    pub fn module_id(&self) -> ModuleId {
+        match self {
+            BinaryPart::Literal(literal) => literal.module_id,
+            BinaryPart::Identifier(identifier) => identifier.module_id,
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.module_id,
+            BinaryPart::CallExpression(call_expression) => call_expression.module_id,
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.module_id,
+            BinaryPart::MemberExpression(member_expression) => member_expression.module_id,
+            BinaryPart::IfExpression(e) => e.module_id,
         }
     }
 
@@ -2150,17 +2220,24 @@ impl MemberObject {
             MemberObject::Identifier(identifier) => identifier.end,
         }
     }
+
+    pub fn module_id(&self) -> ModuleId {
+        match self {
+            MemberObject::MemberExpression(member_expression) => member_expression.module_id,
+            MemberObject::Identifier(identifier) => identifier.module_id,
+        }
+    }
 }
 
 impl From<MemberObject> for SourceRange {
     fn from(obj: MemberObject) -> Self {
-        Self([obj.start(), obj.end()])
+        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
     }
 }
 
 impl From<&MemberObject> for SourceRange {
     fn from(obj: &MemberObject) -> Self {
-        Self([obj.start(), obj.end()])
+        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
     }
 }
 
@@ -2187,17 +2264,24 @@ impl LiteralIdentifier {
             LiteralIdentifier::Literal(literal) => literal.end,
         }
     }
+
+    pub fn module_id(&self) -> ModuleId {
+        match self {
+            LiteralIdentifier::Identifier(identifier) => identifier.module_id,
+            LiteralIdentifier::Literal(literal) => literal.module_id,
+        }
+    }
 }
 
 impl From<LiteralIdentifier> for SourceRange {
     fn from(id: LiteralIdentifier) -> Self {
-        Self([id.start(), id.end()])
+        Self([id.start(), id.end(), id.module_id().as_usize()])
     }
 }
 
 impl From<&LiteralIdentifier> for SourceRange {
     fn from(id: &LiteralIdentifier) -> Self {
-        Self([id.start(), id.end()])
+        Self([id.start(), id.end(), id.module_id().as_usize()])
     }
 }
 
@@ -3018,9 +3102,7 @@ fn ghi = (x) => {
 
 ghi("things")
 "#;
-        let tokens = crate::token::lexer(code).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(code).unwrap();
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
         assert_eq!(folding_ranges[0].start_line, 29);
@@ -3056,9 +3138,7 @@ fn ghi = (x) => {
   return x
 }
 "#;
-        let tokens = crate::token::lexer(code).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(code).unwrap();
         let symbols = program.get_lsp_symbols(code).unwrap();
         assert_eq!(symbols.len(), 7);
     }
@@ -3078,9 +3158,7 @@ const cylinder = startSketchOn('-XZ')
      }, %)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let value = program.get_non_code_meta_for_position(50);
 
@@ -3103,9 +3181,7 @@ const cylinder = startSketchOn('-XZ')
      }, %)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let value = program.get_non_code_meta_for_position(124);
 
@@ -3118,9 +3194,7 @@ const cylinder = startSketchOn('-XZ')
   |> startProfileAt([0,0], %)
   |> xLine(5, %) // lin
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let value = program.get_non_code_meta_for_position(86);
 
@@ -3132,9 +3206,7 @@ const cylinder = startSketchOn('-XZ')
         let some_program_string = r#"fn thing = (arg0: number, arg1: string, tag?: string) => {
     return arg0
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         // Check the program output for the types of the parameters.
         let function = program.body.first().unwrap();
@@ -3156,9 +3228,7 @@ const cylinder = startSketchOn('-XZ')
         let some_program_string = r#"fn thing = (arg0: number[], arg1: string[], tag?: string) => {
     return arg0
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         // Check the program output for the types of the parameters.
         let function = program.body.first().unwrap();
@@ -3180,9 +3250,8 @@ const cylinder = startSketchOn('-XZ')
         let some_program_string = r#"fn thing = (arg0: number[], arg1: {thing: number, things: string[], more?: string}, tag?: string) => {
     return arg0
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let module_id = ModuleId::default();
+        let program = crate::parser::parse(some_program_string, module_id).unwrap();
 
         // Check the program output for the types of the parameters.
         let function = program.body.first().unwrap();
@@ -3207,6 +3276,7 @@ const cylinder = startSketchOn('-XZ')
                             },
                             35,
                             40,
+                            module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
@@ -3220,6 +3290,7 @@ const cylinder = startSketchOn('-XZ')
                             },
                             50,
                             56,
+                            module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
@@ -3233,6 +3304,7 @@ const cylinder = startSketchOn('-XZ')
                             },
                             68,
                             72,
+                            module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
@@ -3249,9 +3321,8 @@ const cylinder = startSketchOn('-XZ')
         let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
     return 1
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let module_id = ModuleId::default();
+        let program = crate::parser::parse(some_program_string, module_id).unwrap();
 
         // Check the program output for the types of the parameters.
         let function = program.body.first().unwrap();
@@ -3275,6 +3346,7 @@ const cylinder = startSketchOn('-XZ')
                             },
                             18,
                             23,
+                            module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
@@ -3288,6 +3360,7 @@ const cylinder = startSketchOn('-XZ')
                             },
                             33,
                             39,
+                            module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
@@ -3301,6 +3374,7 @@ const cylinder = startSketchOn('-XZ')
                             },
                             51,
                             55,
+                            module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
@@ -3349,6 +3423,7 @@ const cylinder = startSketchOn('-XZ')
                         },
                         start: 0,
                         end: 0,
+                        module_id: ModuleId::default(),
                     },
                     return_type: None,
                     digest: None,
@@ -3375,6 +3450,7 @@ const cylinder = startSketchOn('-XZ')
                         },
                         start: 0,
                         end: 0,
+                        module_id: ModuleId::default(),
                     },
                     return_type: None,
                     digest: None,
@@ -3412,6 +3488,7 @@ const cylinder = startSketchOn('-XZ')
                         },
                         start: 0,
                         end: 0,
+                        module_id: ModuleId::default(),
                     },
                     return_type: None,
                     digest: None,
@@ -3429,9 +3506,7 @@ const cylinder = startSketchOn('-XZ')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_object_bool() {
         let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         // We want to get the bool and verify it is a bool.
 
@@ -3479,14 +3554,12 @@ const cylinder = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %, $xLine)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
+        let result = crate::parser::top_level_parse(some_program_string);
 
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([76, 82])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([76, 82, 0])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
         );
     }
 
@@ -3496,14 +3569,12 @@ const cylinder = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %, $)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
+        let result = crate::parser::top_level_parse(some_program_string);
 
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59])], message: "Unexpected token: |>" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59, 0])], message: "Unexpected token: |>" }"#
         );
     }
 
@@ -3513,17 +3584,13 @@ const cylinder = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %)
 "#;
-        let prog1_tokens = crate::token::lexer(prog1_string).unwrap();
-        let prog1_parser = crate::parser::Parser::new(prog1_tokens);
-        let prog1_digest = prog1_parser.ast().unwrap().compute_digest();
+        let prog1_digest = crate::parser::top_level_parse(prog1_string).unwrap().compute_digest();
 
         let prog2_string = r#"startSketchOn('XY')
     |> startProfileAt([0, 2], %)
     |> line([5, 5], %)
 "#;
-        let prog2_tokens = crate::token::lexer(prog2_string).unwrap();
-        let prog2_parser = crate::parser::Parser::new(prog2_tokens);
-        let prog2_digest = prog2_parser.ast().unwrap().compute_digest();
+        let prog2_digest = crate::parser::top_level_parse(prog2_string).unwrap().compute_digest();
 
         assert!(prog1_digest != prog2_digest);
 
@@ -3531,9 +3598,7 @@ const cylinder = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %)
 "#;
-        let prog3_tokens = crate::token::lexer(prog3_string).unwrap();
-        let prog3_parser = crate::parser::Parser::new(prog3_tokens);
-        let prog3_digest = prog3_parser.ast().unwrap().compute_digest();
+        let prog3_digest = crate::parser::top_level_parse(prog3_string).unwrap().compute_digest();
 
         assert_eq!(prog1_digest, prog3_digest);
     }

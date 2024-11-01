@@ -27,8 +27,8 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, Program,
-        TagDeclarator, TagNode,
+        human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef,
+        Program, TagDeclarator, TagNode,
     },
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
@@ -68,10 +68,7 @@ pub struct ExecState {
 impl ExecState {
     pub fn add_new_module(&mut self, path: std::path::PathBuf) -> ModuleId {
         let id = ModuleId::from_usize(self.path_to_source_id.len());
-        let source_info = ModuleInfo {
-            id,
-            path: path.clone(),
-        };
+        let source_info = ModuleInfo { id, path: path.clone() };
         self.path_to_source_id.insert(path, id);
         self.source_infos.insert(id, source_info);
         id
@@ -1403,37 +1400,21 @@ pub struct ModuleInfo {
     path: std::path::PathBuf,
 }
 
-/// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[ts(export)]
-pub struct ModuleId(pub u32);
-
-impl ModuleId {
-    pub fn from_usize(id: usize) -> Self {
-        Self(u32::try_from(id).expect("module ID should fit in a u32"))
-    }
-
-    pub fn as_usize(&self) -> usize {
-        usize::try_from(self.0).expect("module ID should fit in a usize")
-    }
-}
-
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
-pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
+pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 3]);
 
-impl From<[usize; 2]> for SourceRange {
-    fn from(value: [usize; 2]) -> Self {
+impl From<[usize; 3]> for SourceRange {
+    fn from(value: [usize; 3]) -> Self {
         Self(value)
     }
 }
 
 impl SourceRange {
     /// Create a new source range.
-    pub fn new(start: usize, end: usize) -> Self {
-        Self([start, end])
+    pub fn new(start: usize, end: usize, module_id: ModuleId) -> Self {
+        Self([start, end, module_id.as_usize()])
     }
 
     /// Get the start of the range.
@@ -1444,6 +1425,11 @@ impl SourceRange {
     /// Get the end of the range.
     pub fn end(&self) -> usize {
         self.0[1]
+    }
+
+    /// Get the module ID of the range.
+    pub fn module_id(&self) -> ModuleId {
+        ModuleId::from_usize(self.0[2])
     }
 
     /// Check if the range contains a position.
@@ -1579,7 +1565,7 @@ impl From<SourceRange> for Metadata {
 impl<T> From<NodeRef<'_, T>> for Metadata {
     fn from(node: NodeRef<'_, T>) -> Self {
         Self {
-            source_range: SourceRange::new(node.start, node.end),
+            source_range: SourceRange::new(node.start, node.end, node.module_id),
         }
     }
 }
@@ -2276,9 +2262,9 @@ impl ExecutorContext {
                             source_ranges: vec![import_stmt.into()],
                         }));
                     }
-                    exec_state.add_new_module(resolved_path.clone());
+                    let module_id = exec_state.add_new_module(resolved_path.clone());
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-                    let program = crate::parser::parse(&source)?;
+                    let program = crate::parser::parse(&source, module_id)?;
                     let (module_memory, module_exports) = {
                         exec_state.import_stack.push(resolved_path.clone());
                         let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
@@ -2406,7 +2392,7 @@ impl ExecutorContext {
                     // True here tells the engine to flush all the end commands as well like fillets
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
-                    SourceRange([program.end, program.end]),
+                    SourceRange([program.end, program.end, program.module_id.as_usize()]),
                 )
                 .await?;
         }
@@ -2572,7 +2558,12 @@ fn assign_args_to_params(
             if param.optional {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                let none = KclNone::new(param.identifier.start, param.identifier.end);
+                let none = Node {
+                    inner: KclNone::new(),
+                    start: param.identifier.start,
+                    end: param.identifier.end,
+                    module_id: param.identifier.module_id,
+                };
                 fn_memory.add(
                     &param.identifier.name,
                     KclValue::from(&none),
@@ -2633,9 +2624,8 @@ mod tests {
     use crate::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
-        let tokens = crate::token::lexer(code)?;
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast()?;
+        let program = crate::parser::top_level_parse(code)?;
+
         let ctx = ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
             fs: Arc::new(crate::fs::FileManager::new()),
@@ -3074,7 +3064,7 @@ const answer = returnX()"#;
             err,
             KclError::UndefinedValue(KclErrorDetails {
                 message: "memory item key `x` is not defined".to_owned(),
-                source_ranges: vec![SourceRange([64, 65]), SourceRange([97, 106])],
+                source_ranges: vec![SourceRange([64, 65, 0]), SourceRange([97, 106, 0])],
             }),
         );
     }
@@ -3109,7 +3099,7 @@ let shape = layer() |> patternTransform(10, transform, %)
             err,
             KclError::UndefinedValue(KclErrorDetails {
                 message: "memory item key `x` is not defined".to_owned(),
-                source_ranges: vec![SourceRange([80, 81])],
+                source_ranges: vec![SourceRange([80, 81, 0])],
             }),
         );
     }
@@ -3364,7 +3354,7 @@ let notNull = !myNull
             parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: null".to_owned(),
-                source_ranges: vec![SourceRange([56, 63])],
+                source_ranges: vec![SourceRange([56, 63, 0])],
             })
         );
 
@@ -3373,7 +3363,7 @@ let notNull = !myNull
             parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: 0".to_owned(),
-                source_ranges: vec![SourceRange([14, 16])],
+                source_ranges: vec![SourceRange([14, 16, 0])],
             })
         );
 
@@ -3384,7 +3374,7 @@ let notEmptyString = !""
             parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: \"\"".to_owned(),
-                source_ranges: vec![SourceRange([22, 25])],
+                source_ranges: vec![SourceRange([22, 25, 0])],
             })
         );
 
@@ -3396,7 +3386,7 @@ let notMember = !obj.a
             parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: 1".to_owned(),
-                source_ranges: vec![SourceRange([36, 42])],
+                source_ranges: vec![SourceRange([36, 42, 0])],
             })
         );
 
@@ -3407,7 +3397,7 @@ let notArray = !a";
             parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: []".to_owned(),
-                source_ranges: vec![SourceRange([27, 29])],
+                source_ranges: vec![SourceRange([27, 29, 0])],
             })
         );
 
@@ -3418,7 +3408,7 @@ let notObject = !x";
             parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: {}".to_owned(),
-                source_ranges: vec![SourceRange([28, 30])],
+                source_ranges: vec![SourceRange([28, 30, 0])],
             })
         );
 
@@ -3471,7 +3461,7 @@ let notTagIdentifier = !myTag";
             parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: !".to_owned(),
-                source_ranges: vec![SourceRange([14, 15])],
+                source_ranges: vec![SourceRange([14, 15, 0])],
             })
         );
 
@@ -3484,7 +3474,7 @@ let notPipeSub = 1 |> identity(!%))";
             parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: |>".to_owned(),
-                source_ranges: vec![SourceRange([54, 56])],
+                source_ranges: vec![SourceRange([54, 56, 0])],
             })
         );
 
@@ -3530,7 +3520,7 @@ test([0, 0])
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"undefined value: KclErrorDetails { source_ranges: [SourceRange([10, 34])], message: "Result of user-defined function test is undefined" }"#.to_owned()
+            r#"undefined value: KclErrorDetails { source_ranges: [SourceRange([10, 34, 0])], message: "Result of user-defined function test is undefined" }"#.to_owned()
         );
     }
 
@@ -3647,7 +3637,7 @@ let w = f() + f()
                 vec![req_param("x")],
                 vec![],
                 Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange([0, 0])],
+                    source_ranges: vec![SourceRange([0, 0, 0])],
                     message: "Expected 1 arguments, got 0".to_owned(),
                 })),
             ),
@@ -3665,7 +3655,7 @@ let w = f() + f()
                 vec![req_param("x"), opt_param("y")],
                 vec![],
                 Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange([0, 0])],
+                    source_ranges: vec![SourceRange([0, 0, 0])],
                     message: "Expected 1-2 arguments, got 0".to_owned(),
                 })),
             ),
@@ -3692,7 +3682,7 @@ let w = f() + f()
                 vec![req_param("x"), opt_param("y")],
                 vec![mem(1), mem(2), mem(3)],
                 Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange([0, 0])],
+                    source_ranges: vec![SourceRange([0, 0, 0])],
                     message: "Expected 1-2 arguments, got 3".to_owned(),
                 })),
             ),
@@ -3708,6 +3698,7 @@ let w = f() + f()
                     },
                     start: 0,
                     end: 0,
+                    module_id: ModuleId::default(),
                 },
                 return_type: None,
                 digest: None,

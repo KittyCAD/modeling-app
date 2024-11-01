@@ -30,6 +30,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, K
                 };
                 let start = left.start();
                 let end = right.end();
+                let module_id = left.module_id();
 
                 BinaryPart::BinaryExpression(Node::boxed(
                     BinaryExpression {
@@ -40,6 +41,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, K
                     },
                     start,
                     end,
+                    module_id,
                 ))
             }
             BinaryExpressionToken::Operand(o) => o,
@@ -60,11 +62,11 @@ fn source_range(tokens: &[BinaryExpressionToken]) -> Vec<SourceRange> {
         .iter()
         .filter_map(|op| match op {
             BinaryExpressionToken::Operator(_) => None,
-            BinaryExpressionToken::Operand(o) => Some((o.start(), o.end())),
+            BinaryExpressionToken::Operand(o) => Some((o.start(), o.end(), o.module_id())),
         })
         .collect();
     match (sources.first(), sources.last()) {
-        (Some((start, _)), Some((_, end))) => vec![SourceRange([*start, *end])],
+        (Some((start, _, module_id)), Some((_, end, _))) => vec![SourceRange([*start, *end, module_id.as_usize()])],
         _ => Vec::new(),
     }
 }
@@ -124,7 +126,7 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ast::types::Literal;
+    use crate::ast::types::{Literal, ModuleId};
 
     #[test]
     fn parse_and_evaluate() {
@@ -138,6 +140,7 @@ mod tests {
                 },
                 0,
                 0,
+                ModuleId::default(),
             )))
         }
         let tests: Vec<Vec<BinaryExpressionToken>> = vec![
@@ -158,6 +161,7 @@ mod tests {
                     },
                     0,
                     0,
+                    ModuleId::default(),
                 ))
                 .into(),
                 BinaryOperator::Pow.into(),
