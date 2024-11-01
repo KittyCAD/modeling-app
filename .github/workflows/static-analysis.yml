@@ -101,7 +101,7 @@ jobs:
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: yarn playwright install chromium --with-deps
 
-      - name: run unit tests
+      - name: run unit tests for kcl samples
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: yarn test:unit:kcl-samples
         env:

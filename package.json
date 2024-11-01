@@ -106,7 +106,7 @@
     "test-setup": "yarn install && yarn build:wasm",
     "test": "vitest --mode development",
     "test:unit": "vitest run --mode development --exclude **/kclSamples.test.ts",
-    "test:unit:kcl-samples": "yarn test:unit -- ./src/lang/kclSamples.test.ts",
+    "test:unit:kcl-samples": "vitest run --mode development ./src/lang/kclSamples.test.ts",
     "test:playwright:browser:chrome": "playwright test --project='Google Chrome' --config=playwright.ci.config.ts --grep-invert='@snapshot|@electron'",
     "test:playwright:browser:chrome:windows": "playwright test --project=\"Google Chrome\" --config=playwright.ci.config.ts --grep-invert=\"@snapshot|@electron|@skipWin\"",
     "test:playwright:browser:chrome:ubuntu": "playwright test --project='Google Chrome' --config=playwright.ci.config.ts --grep-invert='@snapshot|@electron|@skipLinux'",
