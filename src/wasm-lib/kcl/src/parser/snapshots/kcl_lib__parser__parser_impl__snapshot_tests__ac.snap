@@ -3,51 +3,51 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 23,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 23,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 23,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 13,
-            "name": "myArray"
+            "name": "myArray",
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "ArrayRangeExpression",
-            "type": "ArrayRangeExpression",
-            "start": 16,
             "end": 23,
-            "startElement": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 17,
-              "end": 18,
-              "value": 0,
-              "raw": "0"
-            },
             "endElement": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 20,
               "end": 22,
-              "value": 10,
-              "raw": "10"
+              "raw": "10",
+              "start": 20,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 10
             },
-            "endInclusive": true
-          }
+            "endInclusive": true,
+            "start": 16,
+            "startElement": {
+              "end": 18,
+              "raw": "0",
+              "start": 17,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 0
+            },
+            "type": "ArrayRangeExpression",
+            "type": "ArrayRangeExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 23,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
-  ]
+  ],
+  "end": 23,
+  "start": 0
 }

@@ -29,6 +29,7 @@ import {
 } from './std/sketchcombos'
 import { err } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -121,12 +122,13 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node:
+  node: Node<
     | Expr
     | ImportStatement
     | ExpressionStatement
     | VariableDeclaration
-    | ReturnStatement,
+    | ReturnStatement
+  >,
   sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
@@ -344,15 +346,16 @@ export function getNodePathFromSourceRange(
   return path
 }
 
-type KCLNode =
+type KCLNode = Node<
   | Expr
   | ExpressionStatement
   | VariableDeclaration
   | VariableDeclarator
   | ReturnStatement
+>
 
 export function traverse(
-  node: KCLNode | Program,
+  node: KCLNode | Node<Program>,
   option: {
     enter?: (node: KCLNode, pathToNode: PathToNode) => void
     leave?: (node: KCLNode) => void
@@ -512,9 +515,9 @@ export function findAllPreviousVariables(
 }
 
 type ReplacerFn = (
-  _ast: Program,
+  _ast: Node<Program>,
   varName: string
-) => { modifiedAst: Program; pathToReplaced: PathToNode } | Error
+) => { modifiedAst: Node<Program>; pathToReplaced: PathToNode } | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
@@ -583,12 +586,12 @@ export function isNodeSafeToReplacePath(
 }
 
 export function isNodeSafeToReplace(
-  ast: Program,
+  ast: Node<Program>,
   sourceRange: [number, number]
 ):
   | {
       isSafe: boolean
-      value: Expr
+      value: Node<Expr>
       replacer: ReplacerFn
     }
   | Error {
@@ -837,7 +840,7 @@ export function findUsesOfTagInPipe(
       ? String(thirdParam.value)
       : thirdParam.name
 
-  const varDec = getNodeFromPath<VariableDeclaration>(
+  const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
     pathToNode,
     'VariableDeclaration'
@@ -898,7 +901,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
 }
 
 /** File must contain at least one sketch that has not been extruded already */
-export function doesSceneHaveSweepableSketch(ast: Program) {
+export function doesSceneHaveSweepableSketch(ast: Node<Program>) {
   const theMap: any = {}
   traverse(ast as any, {
     enter(node) {

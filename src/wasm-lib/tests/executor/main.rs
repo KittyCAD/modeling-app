@@ -154,14 +154,6 @@ async fn kcl_test_helix_defaults_negative_extrude() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_helix_ccw() {
-    let code = kcl_input!("helix_ccw");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("helix_ccw", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_helix_with_length() {
     let code = kcl_input!("helix_with_length");
 

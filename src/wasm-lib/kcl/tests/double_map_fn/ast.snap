@@ -1,0 +1,234 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing double_map_fn.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declarations": [
+          {
+            "end": 40,
+            "id": {
+              "end": 12,
+              "name": "increment",
+              "start": 3,
+              "type": "Identifier"
+            },
+            "init": {
+              "body": {
+                "body": [
+                  {
+                    "argument": {
+                      "end": 38,
+                      "left": {
+                        "end": 34,
+                        "name": "i",
+                        "start": 33,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "+",
+                      "right": {
+                        "end": 38,
+                        "raw": "1",
+                        "start": 37,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 1
+                      },
+                      "start": 33,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "end": 38,
+                    "start": 26,
+                    "type": "ReturnStatement",
+                    "type": "ReturnStatement"
+                  }
+                ],
+                "end": 40,
+                "start": 22
+              },
+              "end": 40,
+              "params": [
+                {
+                  "type": "Parameter",
+                  "identifier": {
+                    "end": 17,
+                    "name": "i",
+                    "start": 16,
+                    "type": "Identifier"
+                  },
+                  "optional": false
+                }
+              ],
+              "start": 15,
+              "type": "FunctionExpression",
+              "type": "FunctionExpression"
+            },
+            "start": 3,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 40,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declarations": [
+          {
+            "end": 53,
+            "id": {
+              "end": 44,
+              "name": "xs",
+              "start": 42,
+              "type": "Identifier"
+            },
+            "init": {
+              "end": 53,
+              "endElement": {
+                "end": 52,
+                "raw": "2",
+                "start": 51,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 2
+              },
+              "endInclusive": true,
+              "start": 47,
+              "startElement": {
+                "end": 49,
+                "raw": "0",
+                "start": 48,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 0
+              },
+              "type": "ArrayRangeExpression",
+              "type": "ArrayRangeExpression"
+            },
+            "start": 42,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 53,
+        "kind": "const",
+        "start": 42,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declarations": [
+          {
+            "end": 107,
+            "id": {
+              "end": 56,
+              "name": "ys",
+              "start": 54,
+              "type": "Identifier"
+            },
+            "init": {
+              "body": [
+                {
+                  "end": 61,
+                  "name": "xs",
+                  "start": 59,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                {
+                  "arguments": [
+                    {
+                      "end": 72,
+                      "start": 71,
+                      "type": "PipeSubstitution",
+                      "type": "PipeSubstitution"
+                    },
+                    {
+                      "end": 83,
+                      "name": "increment",
+                      "start": 74,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  ],
+                  "callee": {
+                    "end": 70,
+                    "name": "map",
+                    "start": 67,
+                    "type": "Identifier"
+                  },
+                  "end": 84,
+                  "optional": false,
+                  "start": 67,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                },
+                {
+                  "arguments": [
+                    {
+                      "end": 95,
+                      "start": 94,
+                      "type": "PipeSubstitution",
+                      "type": "PipeSubstitution"
+                    },
+                    {
+                      "end": 106,
+                      "name": "increment",
+                      "start": 97,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  ],
+                  "callee": {
+                    "end": 93,
+                    "name": "map",
+                    "start": 90,
+                    "type": "Identifier"
+                  },
+                  "end": 107,
+                  "optional": false,
+                  "start": 90,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                }
+              ],
+              "end": 107,
+              "start": 59,
+              "type": "PipeExpression",
+              "type": "PipeExpression"
+            },
+            "start": 54,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 107,
+        "kind": "const",
+        "start": 54,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 108,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 42,
+            "start": 40,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

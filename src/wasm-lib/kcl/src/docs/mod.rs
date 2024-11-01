@@ -76,7 +76,7 @@ impl StdLibFnArg {
             || self.type_ == "SketchOrSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
-        } else if self.type_ == "TagDeclarator" && self.required {
+        } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {
             return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
         } else if self.type_ == "TagIdentifier" && self.required {
             // TODO: actually use the ast to populate this.

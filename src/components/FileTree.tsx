@@ -138,15 +138,15 @@ const FileTreeItem = ({
   // the ReactNodes are destroyed, so is this listener :)
   useFileSystemWatcher(
     async (eventType, path) => {
+      // Prevents a cyclic read / write causing editor problems such as
+      // misplaced cursor positions.
+      if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+        codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+        return
+      }
+
       // Don't try to read a file that was removed.
       if (isCurrentFile && eventType !== 'unlink') {
-        // Prevents a cyclic read / write causing editor problems such as
-        // misplaced cursor positions.
-        if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
-          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-          return
-        }
-
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
@@ -194,11 +194,11 @@ const FileTreeItem = ({
       // Show the renaming form
       addCurrentItemToRenaming()
     } else if (e.code === 'Space') {
-      handleClick()
+      void handleClick()
     }
   }
 
-  function handleClick() {
+  async function handleClick() {
     if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
@@ -208,12 +208,10 @@ const FileTreeItem = ({
         `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
           codeManager.code
       )
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      codeManager.writeToFile()
+      await codeManager.writeToFile()
 
       // Prevent seeing the model built one piece at a time when changing files
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.executeCode(true)
+      await kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
@@ -242,7 +240,7 @@ const FileTreeItem = ({
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => {
                 e.currentTarget.focus()
-                handleClick()
+                void handleClick()
               }}
               onKeyUp={handleKeyUp}
             >
@@ -501,6 +499,13 @@ export const FileTreeInner = ({
       const isCurrentFile = loaderData.file?.path === path
       const hasChanged = eventType === 'change'
       if (isCurrentFile && hasChanged) return
+
+      // If it's a settings file we wrote to already from the app ignore it.
+      if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+        codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+        return
+      }
+
       fileSend({ type: 'Refresh' })
     },
     [loaderData?.project?.path, fileContext.selectedDirectory.path].filter(

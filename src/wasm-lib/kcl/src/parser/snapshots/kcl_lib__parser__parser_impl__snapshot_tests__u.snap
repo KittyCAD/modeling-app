@@ -3,91 +3,91 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 34,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 34,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 34,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 10,
-            "name": "prop"
+            "name": "prop",
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "MemberExpression",
-            "type": "MemberExpression",
-            "start": 13,
+            "computed": false,
             "end": 34,
             "object": {
-              "type": "MemberExpression",
-              "type": "MemberExpression",
-              "start": 13,
+              "computed": false,
               "end": 29,
               "object": {
-                "type": "MemberExpression",
-                "type": "MemberExpression",
-                "start": 13,
+                "computed": false,
                 "end": 23,
                 "object": {
-                  "type": "MemberExpression",
-                  "type": "MemberExpression",
-                  "start": 13,
+                  "computed": false,
                   "end": 19,
                   "object": {
-                    "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 13,
                     "end": 15,
-                    "name": "yo"
+                    "name": "yo",
+                    "start": 13,
+                    "type": "Identifier",
+                    "type": "Identifier"
                   },
                   "property": {
-                    "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 16,
                     "end": 19,
-                    "name": "one"
+                    "name": "one",
+                    "start": 16,
+                    "type": "Identifier",
+                    "type": "Identifier"
                   },
-                  "computed": false
+                  "start": 13,
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
-                  "type": "Identifier",
-                  "type": "Identifier",
-                  "start": 20,
                   "end": 23,
-                  "name": "two"
+                  "name": "two",
+                  "start": 20,
+                  "type": "Identifier",
+                  "type": "Identifier"
                 },
-                "computed": false
+                "start": 13,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
               "property": {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 24,
                 "end": 29,
-                "name": "three"
+                "name": "three",
+                "start": 24,
+                "type": "Identifier",
+                "type": "Identifier"
               },
-              "computed": false
+              "start": 13,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
             },
             "property": {
-              "type": "Identifier",
-              "type": "Identifier",
-              "start": 30,
               "end": 34,
-              "name": "four"
+              "name": "four",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
             },
-            "computed": false
-          }
+            "start": 13,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 34,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
-  ]
+  ],
+  "end": 34,
+  "start": 0
 }
