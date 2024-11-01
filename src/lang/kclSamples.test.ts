@@ -14,7 +14,7 @@ beforeAll(async () => {
   await initPromise
 })
 
-// Only used to actaully fetch an older version of KCL code that will break in the parser.
+// Only used to actually fetch an older version of KCL code that will break in the parser.
 /* eslint-disable @typescript-eslint/no-unused-vars */
 async function getBrokenSampleCodeForLocalTesting() {
   const result = await fetch(
