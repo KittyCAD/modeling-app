@@ -57,6 +57,7 @@ lazy_static! {
         Box::new(LegAngY),
         Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
+        Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
         Box::new(crate::std::segment::LastSegX),

@@ -84,6 +84,7 @@ layout: manual
 * [`rem`](kcl/rem)
 * [`revolve`](kcl/revolve)
 * [`segAng`](kcl/segAng)
+* [`segEnd`](kcl/segEnd)
 * [`segEndX`](kcl/segEndX)
 * [`segEndY`](kcl/segEndY)
 * [`segLen`](kcl/segLen)

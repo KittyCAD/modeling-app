@@ -9,6 +9,52 @@ use crate::{
     std::{utils::between, Args},
 };
 
+/// Returns the point at the end of the given segment.
+pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let tag: TagIdentifier = args.get_data()?;
+    let result = inner_segment_end(&tag, exec_state, args.clone())?;
+
+    args.make_user_val_from_point(result)
+}
+
+/// Compute the ending point of the provided line segment.
+///
+/// ```no_run
+/// w = 15
+/// cube = startSketchAt([0, 0])
+///   |> line([w, 0], %, $line1)
+///   |> line([0, w], %, $line2)
+///   |> line([-w, 0], %, $line3)
+///   |> line([0, -w], %, $line4)
+///   |> close(%)
+///   |> extrude(5, %)
+///
+/// fn cylinder = (radius, tag) => {
+///   return startSketchAt([0, 0])
+///   |> circle({ radius: radius, center: segEnd(tag) }, %)
+///   |> extrude(radius, %)
+/// }
+///
+/// cylinder(1, line1)
+/// cylinder(2, line2)
+/// cylinder(3, line3)
+/// cylinder(4, line4)
+/// ```
+#[stdlib {
+    name = "segEnd",
+}]
+fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[f64; 2], KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
+    let path = line.path.clone().ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Expected a line segment with a path, found `{:?}`", line),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+
+    Ok(path.get_base().to)
+}
+
 /// Returns the segment end of x.
 pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
