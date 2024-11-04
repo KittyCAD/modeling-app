@@ -254,6 +254,9 @@ pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
     #[serde(default, alias = "defaultUnit", skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
+    /// The projection mode the camera should use while modeling.
+    #[serde(default, alias = "cameraProjection", skip_serializing_if = "is_default")]
+    pub camera_projection: CameraProjectionType,
     /// The controls for how to navigate the 3D view.
     #[serde(default, alias = "mouseControls", skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
@@ -397,6 +400,19 @@ pub enum MouseControlType {
     AutoCad,
 }
 
+/// The types of camera projection for the 3D view.
+#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum CameraProjectionType {
+    /// Perspective projection https://en.wikipedia.org/wiki/3D_projection#Perspective_projection
+    Perspective,
+    /// Orthographic projection https://en.wikipedia.org/wiki/3D_projection#Orthographic_projection
+    #[default]
+    Orthographic,
+}
+
 /// Settings that affect the behavior of the KCL text editor.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
@@ -522,8 +538,8 @@ mod tests {
     use validator::Validate;
 
     use super::{
-        AppColor, AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
-        OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
+        AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
+        ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
 
     #[test]
@@ -538,6 +554,7 @@ enableSSAO = false
 
 [settings.modeling]
 defaultUnit = "in"
+cameraProjection = "orthographic"
 mouseControls = "KittyCAD"
 showDebugPanel = true
 
@@ -569,6 +586,7 @@ textWrapping = true
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
+                        camera_projection: CameraProjectionType::Orthographic,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -629,6 +647,7 @@ includeSettings = false
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -694,6 +713,7 @@ defaultProjectName = "projects-$nnn"
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -771,6 +791,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
                         show_debug_panel: false,

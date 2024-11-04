@@ -28,6 +28,7 @@ import {
   getKclSamplesManifest,
   KclSamplesManifestItem,
 } from 'lib/getKclSamplesManifest'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -46,6 +47,7 @@ export const FileMachineProvider = ({
 }) => {
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
+  const { settings } = useSettingsAuthContext()
   const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
@@ -303,6 +305,18 @@ export const FileMachineProvider = ({
                 name: data.sampleName,
                 content: data.code,
                 makeDir: false,
+              },
+            })
+          }
+
+          // Either way, we want to overwrite the defaultUnit project setting
+          // with the sample's setting.
+          if (data.sampleUnits) {
+            settings.send({
+              type: 'set.modeling.defaultUnit',
+              data: {
+                level: 'project',
+                value: data.sampleUnits,
               },
             })
           }

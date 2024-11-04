@@ -13,6 +13,7 @@ import {
 import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export function removeConstrainingValuesInfo({
   selectionRanges,
@@ -77,7 +78,7 @@ export function applyRemoveConstrainingValues({
   pathToNodes?: Array<PathToNode>
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {

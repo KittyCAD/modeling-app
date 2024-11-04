@@ -5,6 +5,7 @@ mod test_examples_someFn {
         let tokens = crate::token::lexer("someFn()").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
+        let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -14,9 +15,9 @@ mod test_examples_someFn {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: true,
+            context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -74,26 +75,27 @@ impl crate::docs::StdLibFn for SomeFn {
         vec![]
     }
 
-    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+    fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "data".to_string(),
             type_: "Foo".to_string(),
-            schema: Foo::json_schema(&mut generator),
+            schema: generator.root_schema_for::<Foo>(),
             required: true,
         }]
     }
 
-    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
+    fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let schema = generator.root_schema_for::<i32>();
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "i32".to_string(),
-            schema: <i32>::json_schema(&mut generator),
+            schema,
             required: true,
         })
     }

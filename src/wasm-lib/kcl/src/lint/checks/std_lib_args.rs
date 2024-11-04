@@ -3,7 +3,7 @@ use std::sync::Arc;
 use anyhow::Result;
 
 use crate::{
-    ast::types::CallExpression,
+    ast::types::{CallExpression, NodeRef},
     docs::StdLibFn,
     executor::SourceRange,
     lint::rule::{def_finding, Discovered, Finding},
@@ -18,7 +18,10 @@ def_finding!(
 Previously, we have not been failing when too many arguments are passed to a stdlib function. This is a problem because it can lead to unexpected behavior. We will in the future fail when too many arguments are passed to a function. So fix your code now."
 );
 
-fn lint_too_many_args_std_lib_function(f: Box<dyn StdLibFn>, exp: &CallExpression) -> Result<Vec<Discovered>> {
+fn lint_too_many_args_std_lib_function(
+    f: Box<dyn StdLibFn>,
+    exp: NodeRef<'_, CallExpression>,
+) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
 
     if f.name() == "pow" {
@@ -41,9 +44,10 @@ fn lint_too_many_args_std_lib_function(f: Box<dyn StdLibFn>, exp: &CallExpressio
         return Ok(findings);
     }
 
-    if exp.arguments.len() > f.args().len() {
+    let fn_args_len = f.args(false).len();
+    if exp.arguments.len() > fn_args_len {
         findings.push(Z0002.at(
-            format!("expected {} arguments, found {}", f.args().len(), exp.arguments.len()),
+            format!("expected {} arguments, found {}", fn_args_len, exp.arguments.len()),
             SourceRange::new(exp.start, exp.end),
         ));
     }

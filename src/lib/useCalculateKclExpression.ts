@@ -99,7 +99,7 @@ export function useCalculateKclExpression({
         })
         if (trap(error, { suppress: true })) return
       }
-      const { programMemory } = await executeAst({
+      const { execState } = await executeAst({
         ast,
         engineCommandManager,
         useFakeExecutor: true,
@@ -113,7 +113,7 @@ export function useCalculateKclExpression({
       const init =
         resultDeclaration?.type === 'VariableDeclaration' &&
         resultDeclaration?.declarations?.[0]?.init
-      const result = programMemory?.get('__result__')?.value
+      const result = execState.memory?.get('__result__')?.value
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }

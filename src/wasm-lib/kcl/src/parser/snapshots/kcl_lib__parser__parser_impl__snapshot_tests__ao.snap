@@ -3,127 +3,107 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 35,
   "body": [
     {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 0,
       "end": 35,
       "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 0,
-        "end": 35,
-        "callee": {
-          "type": "Identifier",
-          "start": 0,
-          "end": 6,
-          "name": "lineTo",
-          "digest": null
-        },
         "arguments": [
           {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 7,
             "end": 34,
             "properties": [
               {
-                "type": "ObjectProperty",
-                "start": 9,
                 "end": 19,
                 "key": {
-                  "type": "Identifier",
-                  "start": 9,
                   "end": 11,
                   "name": "to",
-                  "digest": null
+                  "start": 9,
+                  "type": "Identifier"
                 },
+                "start": 9,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 13,
-                  "end": 19,
                   "elements": [
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 14,
                       "end": 15,
-                      "value": 0,
                       "raw": "0",
-                      "digest": null
+                      "start": 14,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 0
                     },
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 17,
                       "end": 18,
-                      "value": 1,
                       "raw": "1",
-                      "digest": null
+                      "start": 17,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 1
                     }
                   ],
-                  "digest": null
-                },
-                "digest": null
+                  "end": 19,
+                  "start": 13,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               },
               {
-                "type": "ObjectProperty",
-                "start": 20,
                 "end": 32,
                 "key": {
-                  "type": "Identifier",
-                  "start": 20,
                   "end": 24,
                   "name": "from",
-                  "digest": null
+                  "start": 20,
+                  "type": "Identifier"
                 },
+                "start": 20,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression",
-                  "start": 26,
-                  "end": 32,
                   "elements": [
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 27,
                       "end": 28,
-                      "value": 3,
                       "raw": "3",
-                      "digest": null
+                      "start": 27,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 3
                     },
                     {
-                      "type": "Literal",
-                      "type": "Literal",
-                      "start": 30,
                       "end": 31,
-                      "value": 3,
                       "raw": "3",
-                      "digest": null
+                      "start": 30,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 3
                     }
                   ],
-                  "digest": null
-                },
-                "digest": null
+                  "end": 32,
+                  "start": 26,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
               }
             ],
-            "digest": null
+            "start": 7,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
           }
         ],
+        "callee": {
+          "end": 6,
+          "name": "lineTo",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "end": 35,
         "optional": false,
-        "digest": null
+        "start": 0,
+        "type": "CallExpression",
+        "type": "CallExpression"
       },
-      "digest": null
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 35,
+  "start": 0
 }

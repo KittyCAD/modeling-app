@@ -13,12 +13,13 @@ import {
   projectConfigurationToSettingsPayload,
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
+import { sceneInfra } from 'lib/singletons'
 
 export const settingsMachine = setup({
   types: {
     context: {} as ReturnType<typeof createSettings>,
     input: {} as ReturnType<typeof createSettings>,
-    events: {} as
+    events: {} as (
       | WildcardSetEvent<SettingsPaths>
       | SetEventTypes
       | {
@@ -33,7 +34,8 @@ export const settingsMachine = setup({
           type: 'Reset settings'
           level: SettingsLevel
         }
-      | { type: 'Set all settings'; settings: typeof settings },
+      | { type: 'Set all settings'; settings: typeof settings }
+    ) & { doNotPersist?: boolean },
   },
   actions: {
     setEngineTheme: () => {},
@@ -88,6 +90,10 @@ export const settingsMachine = setup({
       setThemeClass(
         currentTheme === Themes.System ? getSystemTheme() : currentTheme
       )
+    },
+    setEngineCameraProjection: ({ context }) => {
+      const newCurrentProjection = context.modeling.cameraProjection.current
+      sceneInfra.camControls.setEngineCameraProjection(newCurrentProjection)
     },
   },
 }).createMachine({
@@ -151,6 +157,16 @@ export const settingsMachine = setup({
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess'],
+        },
+
+        'set.modeling.cameraProjection': {
+          target: 'persisting settings',
+
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setEngineCameraProjection',
+          ],
         },
 
         'set.modeling.highlightEdges': {

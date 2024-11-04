@@ -1,5 +1,5 @@
 use crate::{
-    ast::types::Program,
+    ast::types::{Node, Program},
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
     token::{Token, TokenType},
@@ -11,6 +11,13 @@ pub(crate) mod parser_impl;
 
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
 pub const PIPE_OPERATOR: &str = "|>";
+
+/// Parse the given KCL code into an AST.
+pub fn parse(code: &str) -> Result<Node<Program>, KclError> {
+    let tokens = crate::token::lexer(code)?;
+    let parser = Parser::new(tokens);
+    parser.ast()
+}
 
 pub struct Parser {
     pub tokens: Vec<Token>,
@@ -26,7 +33,7 @@ impl Parser {
     }
 
     /// Run the parser
-    pub fn ast(&self) -> Result<Program, KclError> {
+    pub fn ast(&self) -> Result<Node<Program>, KclError> {
         if !self.unknown_tokens.is_empty() {
             let source_ranges = self.unknown_tokens.iter().map(SourceRange::from).collect();
             let token_list = self.unknown_tokens.iter().map(|t| t.value.as_str()).collect::<Vec<_>>();
@@ -41,7 +48,7 @@ impl Parser {
         // Important, to not call this before the unknown tokens check.
         if self.tokens.is_empty() {
             // Empty file should just do nothing.
-            return Ok(Program::default());
+            return Ok(Node::<Program>::default());
         }
 
         // Check all the tokens are whitespace or comments.
@@ -50,7 +57,7 @@ impl Parser {
             .iter()
             .all(|t| t.token_type.is_whitespace() || t.token_type.is_comment())
         {
-            return Ok(Program::default());
+            return Ok(Node::<Program>::default());
         }
 
         parser_impl::run_parser(&mut self.tokens.as_slice())

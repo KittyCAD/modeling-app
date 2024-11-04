@@ -3,110 +3,88 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 29,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 29,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 29,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 11,
             "name": "myBox",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 14,
-            "end": 29,
             "body": [
               {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 14,
-                "end": 18,
+                "arguments": [
+                  {
+                    "end": 17,
+                    "raw": "1",
+                    "start": 16,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 1
+                  }
+                ],
                 "callee": {
-                  "type": "Identifier",
-                  "start": 14,
                   "end": 15,
                   "name": "f",
-                  "digest": null
+                  "start": 14,
+                  "type": "Identifier"
                 },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 16,
-                    "end": 17,
-                    "value": 1,
-                    "raw": "1",
-                    "digest": null
-                  }
-                ],
+                "end": 18,
                 "optional": false,
-                "digest": null
+                "start": 14,
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 22,
-                "end": 29,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 22,
-                  "end": 23,
-                  "name": "g",
-                  "digest": null
-                },
                 "arguments": [
                   {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 24,
                     "end": 25,
-                    "value": 2,
                     "raw": "2",
-                    "digest": null
+                    "start": 24,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 2
                   },
                   {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 27,
                     "end": 28,
-                    "digest": null
+                    "start": 27,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
                   }
                 ],
+                "callee": {
+                  "end": 23,
+                  "name": "g",
+                  "start": 22,
+                  "type": "Identifier"
+                },
+                "end": 29,
                 "optional": false,
-                "digest": null
+                "start": 22,
+                "type": "CallExpression",
+                "type": "CallExpression"
               }
             ],
-            "nonCodeMeta": {
-              "nonCodeNodes": {},
-              "start": [],
-              "digest": null
-            },
-            "digest": null
+            "end": 29,
+            "start": 14,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 29,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 29,
+  "start": 0
 }

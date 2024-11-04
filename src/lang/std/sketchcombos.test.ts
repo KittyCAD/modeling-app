@@ -9,7 +9,7 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from 'lang/langHelpers'
-import { Selections__old } from 'lib/selections'
+import { Selections__old, Selections, Selection__old } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
@@ -96,12 +96,93 @@ function makeSelections(
 }
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
-  const inputScript = `const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+  describe(`should always reorder selections to have the base selection first`, () => {
+    const inputScript = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 5], %)
+  |> line([-2, 5], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+
+    const expectedModifiedScript = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 5], %, $seg01)
+  |> angledLine([112, segLen(seg01)], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+
+    const selectLine = (script: string, lineNumber: number): Selection__old => {
+      const lines = script.split('\n')
+      const codeBeforeLine = lines.slice(0, lineNumber).join('\n').length
+      const line = lines.find((_, i) => i === lineNumber)
+      if (!line) {
+        throw new Error(
+          `line index ${lineNumber} not found in test sample, friend`
+        )
+      }
+      const start = codeBeforeLine + line.indexOf('|> ' + 5)
+      const range: [number, number] = [start, start]
+      return {
+        type: 'default',
+        range,
+      }
+    }
+
+    async function applyTransformation(
+      inputCode: string,
+      selectionRanges: Selections__old['codeBasedSelections']
+    ) {
+      const ast = parse(inputCode)
+      if (err(ast)) return Promise.reject(ast)
+      const execState = await enginelessExecutor(ast)
+      const transformInfos = getTransformInfos(
+        makeSelections(selectionRanges.slice(1)),
+        ast,
+        'equalLength'
+      )
+
+      const transformedSelection = makeSelections(selectionRanges)
+
+      const newAst = transformSecondarySketchLinesTagFirst({
+        ast,
+        selectionRanges: transformedSelection,
+        transformInfos,
+        programMemory: execState.memory,
+      })
+      if (err(newAst)) return Promise.reject(newAst)
+
+      const newCode = recast(newAst.modifiedAst)
+      return newCode
+    }
+
+    it(`Should reorder when user selects first-to-last`, async () => {
+
+      const selectionRanges: Selections__old['codeBasedSelections'] = [
+        selectLine(inputScript, 3),
+        selectLine(inputScript, 4),
+      ]
+
+      const newCode = await applyTransformation(inputScript, selectionRanges)
+      expect(newCode).toBe(expectedModifiedScript)
+    })
+
+    it(`Should reorder when user selects last-to-first`, async () => {
+      const selectionRanges: Selections__old['codeBasedSelections'] = [
+        selectLine(inputScript, 4),
+        selectLine(inputScript, 3),
+      ]
+
+      const newCode = await applyTransformation(inputScript, selectionRanges)
+      expect(newCode).toBe(expectedModifiedScript)
+    })
+  })
+  const inputScript = `myVar = 3
+myVar2 = 5
+myVar3 = 6
+myAng = 40
+myAng2 = 134
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %) // ln-should-get-tag
   |> lineTo([myVar, 1], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
@@ -132,12 +213,12 @@ const part001 = startSketchOn('XY')
   |> xLineTo(30, %) // ln-xLineTo-free should convert to xLine
   |> yLineTo(20, %) // ln-yLineTo-free should convert to yLine
 `
-  const expectModifiedScript = `const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+  const expectModifiedScript = `myVar = 3
+myVar2 = 5
+myVar3 = 6
+myAng = 40
+myAng2 = 134
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
@@ -220,7 +301,7 @@ const part001 = startSketchOn('XY')
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -231,7 +312,7 @@ const part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -241,10 +322,10 @@ const part001 = startSketchOn('XY')
 })
 
 describe('testing transformAstForSketchLines for vertical and horizontal constraint', () => {
-  const inputScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+  const inputScript = `myVar = 2
+myVar2 = 12
+myVar3 = -10
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
@@ -269,10 +350,10 @@ const part001 = startSketchOn('XY')
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
   it('should transform horizontal lines the ast', async () => {
-    const expectModifiedScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+    const expectModifiedScript = `myVar = 2
+myVar2 = 12
+myVar3 = -10
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> xLine(-6.28, %) // select for horizontal constraint 1
@@ -311,7 +392,7 @@ const part001 = startSketchOn('XY')
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -322,7 +403,7 @@ const part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -331,10 +412,10 @@ const part001 = startSketchOn('XY')
     expect(newCode).toBe(expectModifiedScript)
   })
   it('should transform vertical lines the ast', async () => {
-    const expectModifiedScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+    const expectModifiedScript = `myVar = 2
+myVar2 = 12
+myVar3 = -10
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
@@ -373,7 +454,7 @@ const part001 = startSketchOn('XY')
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -384,7 +465,7 @@ const part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -396,8 +477,8 @@ const part001 = startSketchOn('XY')
 
 describe('testing transformAstForSketchLines for vertical and horizontal distance constraints', () => {
   describe('testing setHorzDistance for line', () => {
-    const inputScript = `const myVar = 1
-const part001 = startSketchOn('XY')
+    const inputScript = `myVar = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0.31, 1.67], %) // base selection
   |> line([0.45, 1.46], %)
@@ -470,7 +551,7 @@ async function helperThing(
       }
     })
 
-  const programMemory = await enginelessExecutor(ast)
+  const execState = await enginelessExecutor(ast)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,
@@ -481,7 +562,7 @@ async function helperThing(
     ast,
     selectionRanges: makeSelections(selectionRanges),
     transformInfos,
-    programMemory,
+    programMemory: execState.memory,
   })
 
   if (err(newAst)) return Promise.reject(newAst)
@@ -505,7 +586,7 @@ const baseThickHalf = baseThick / 2
 const halfHeight = totalHeight / 2
 const halfArmAngle = armAngle / 2
 
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.05], %)
   |> line([0.01, 0.94 + 0], %) // partial
   |> xLine(3.03, %) // partial

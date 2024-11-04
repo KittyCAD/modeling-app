@@ -3,80 +3,66 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 18,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 18,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 4,
           "end": 18,
           "id": {
-            "type": "Identifier",
-            "start": 4,
             "end": 5,
             "name": "x",
-            "digest": null
+            "start": 4,
+            "type": "Identifier"
           },
           "init": {
-            "type": "BinaryExpression",
-            "type": "BinaryExpression",
-            "start": 8,
             "end": 18,
-            "operator": "*",
             "left": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 8,
               "end": 9,
-              "value": 1,
               "raw": "1",
-              "digest": null
+              "start": 8,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 1
             },
+            "operator": "*",
             "right": {
-              "type": "BinaryExpression",
-              "type": "BinaryExpression",
-              "start": 13,
               "end": 18,
-              "operator": "-",
               "left": {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 13,
                 "end": 14,
-                "value": 3,
                 "raw": "3",
-                "digest": null
+                "start": 13,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 3
               },
+              "operator": "-",
               "right": {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 17,
                 "end": 18,
-                "value": 4,
                 "raw": "4",
-                "digest": null
+                "start": 17,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 4
               },
-              "digest": null
+              "start": 13,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
             },
-            "digest": null
+            "start": 8,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
           },
-          "digest": null
+          "start": 4,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "let",
-      "digest": null
+      "end": 18,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 18,
+  "start": 0
 }

@@ -12,10 +12,14 @@ import {
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
   getCodeRefsByArtifactId,
+  getArtifactOfTypes,
+  SegmentArtifact,
 } from 'lang/std/artifactGraph'
 import { err, reportRejection } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { CallExpression } from 'lang/wasm'
+import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -138,12 +142,21 @@ export function useEngineConnectionSubscriptions() {
                 engineCommandManager.artifactGraph
               )
 
-              if (artifact?.type !== 'cap' && artifact?.type !== 'wall') return
+              if (
+                artifact?.type !== 'cap' &&
+                artifact?.type !== 'wall' &&
+                !(
+                  artifact?.type === 'edgeCut' && artifact.subType === 'chamfer'
+                )
+              )
+                return
 
               const codeRef =
                 artifact.type === 'cap'
                   ? getCapCodeRef(artifact, engineCommandManager.artifactGraph)
-                  : getWallCodeRef(artifact, engineCommandManager.artifactGraph)
+                  : artifact.type === 'wall'
+                  ? getWallCodeRef(artifact, engineCommandManager.artifactGraph)
+                  : artifact.codeRef
 
               const faceInfo = await getFaceDetails(faceId)
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
@@ -153,6 +166,72 @@ export function useEngineConnectionSubscriptions() {
                 kclManager.ast,
                 err(codeRef) ? [0, 0] : codeRef.range
               )
+
+              const getEdgeCutMeta = (): null | EdgeCutInfo => {
+                let chamferInfo: {
+                  segment: SegmentArtifact
+                  type: EdgeCutInfo['subType']
+                } | null = null
+                if (
+                  artifact?.type === 'edgeCut' &&
+                  artifact.subType === 'chamfer'
+                ) {
+                  const consumedArtifact = getArtifactOfTypes(
+                    {
+                      key: artifact.consumedEdgeId,
+                      types: ['segment', 'sweepEdge'],
+                    },
+                    engineCommandManager.artifactGraph
+                  )
+                  if (err(consumedArtifact)) return null
+                  if (consumedArtifact.type === 'segment') {
+                    chamferInfo = {
+                      type: 'base',
+                      segment: consumedArtifact,
+                    }
+                  } else {
+                    const segment = getArtifactOfTypes(
+                      { key: consumedArtifact.segId, types: ['segment'] },
+                      engineCommandManager.artifactGraph
+                    )
+                    if (err(segment)) return null
+                    chamferInfo = {
+                      type: consumedArtifact.subType,
+                      segment,
+                    }
+                  }
+                }
+                if (!chamferInfo) return null
+                const segmentCallExpr = getNodeFromPath<CallExpression>(
+                  kclManager.ast,
+                  chamferInfo?.segment.codeRef.pathToNode || [],
+                  'CallExpression'
+                )
+                if (err(segmentCallExpr)) return null
+                if (segmentCallExpr.node.type !== 'CallExpression') return null
+                const sketchNodeArgs = segmentCallExpr.node.arguments
+                const tagDeclarator = sketchNodeArgs.find(
+                  ({ type }) => type === 'TagDeclarator'
+                )
+                if (!tagDeclarator || tagDeclarator.type !== 'TagDeclarator')
+                  return null
+
+                return {
+                  type: 'edgeCut',
+                  subType: chamferInfo.type,
+                  tagName: tagDeclarator.value,
+                }
+              }
+              const edgeCutMeta = getEdgeCutMeta()
+
+              const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
+                ? edgeCutMeta
+                : artifact.type === 'cap'
+                ? {
+                    type: 'cap',
+                    subType: artifact.subType,
+                  }
+                : { type: 'wall' }
 
               const extrudePathToNode = !err(extrusion)
                 ? getNodePathFromSourceRange(
@@ -172,7 +251,7 @@ export function useEngineConnectionSubscriptions() {
                   ) as [number, number, number],
                   sketchPathToNode,
                   extrudePathToNode,
-                  cap: artifact.type === 'cap' ? artifact.subType : 'none',
+                  faceInfo: _faceInfo,
                   faceId: faceId,
                 },
               })

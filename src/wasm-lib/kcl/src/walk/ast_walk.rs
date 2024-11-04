@@ -2,8 +2,8 @@ use anyhow::Result;
 
 use crate::{
     ast::types::{
-        BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression,
-        ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
+        BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, NodeRef,
+        ObjectExpression, ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
     },
     walk::Node,
 };
@@ -26,7 +26,7 @@ where
 }
 
 /// Run the Walker against all [Node]s in a [Program].
-pub fn walk<'a, WalkT>(prog: &'a Program, f: &WalkT) -> Result<bool>
+pub fn walk<'a, WalkT>(prog: NodeRef<'a, Program>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -42,7 +42,7 @@ where
     Ok(true)
 }
 
-fn walk_variable_declarator<'a, WalkT>(node: &'a VariableDeclarator, f: &WalkT) -> Result<bool>
+fn walk_variable_declarator<'a, WalkT>(node: NodeRef<'a, VariableDeclarator>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -79,7 +79,7 @@ where
     f.walk(node.into())
 }
 
-fn walk_member_expression<'a, WalkT>(node: &'a MemberExpression, f: &WalkT) -> Result<bool>
+fn walk_member_expression<'a, WalkT>(node: NodeRef<'a, MemberExpression>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -105,9 +105,11 @@ where
         BinaryPart::CallExpression(ce) => f.walk(ce.as_ref().into()),
         BinaryPart::UnaryExpression(ue) => walk_unary_expression(ue, f),
         BinaryPart::MemberExpression(me) => walk_member_expression(me, f),
+        BinaryPart::IfExpression(e) => walk_if_expression(e, f),
     }
 }
 
+// TODO: Rename this to walk_expr
 fn walk_value<'a, WalkT>(node: &'a Expr, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
@@ -181,15 +183,28 @@ where
             }
             Ok(true)
         }
+        Expr::ArrayRangeExpression(are) => {
+            if !f.walk(are.as_ref().into())? {
+                return Ok(false);
+            }
+            if !walk_value::<WalkT>(&are.start_element, f)? {
+                return Ok(false);
+            }
+            if !walk_value::<WalkT>(&are.end_element, f)? {
+                return Ok(false);
+            }
+            Ok(true)
+        }
         Expr::ObjectExpression(oe) => walk_object_expression(oe, f),
         Expr::MemberExpression(me) => walk_member_expression(me, f),
         Expr::UnaryExpression(ue) => walk_unary_expression(ue, f),
+        Expr::IfExpression(e) => walk_if_expression(e, f),
         Expr::None(_) => Ok(true),
     }
 }
 
 /// Walk through an [ObjectProperty].
-fn walk_object_property<'a, WalkT>(node: &'a ObjectProperty, f: &WalkT) -> Result<bool>
+fn walk_object_property<'a, WalkT>(node: NodeRef<'a, ObjectProperty>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -200,7 +215,7 @@ where
 }
 
 /// Walk through an [ObjectExpression].
-fn walk_object_expression<'a, WalkT>(node: &'a ObjectExpression, f: &WalkT) -> Result<bool>
+fn walk_object_expression<'a, WalkT>(node: NodeRef<'a, ObjectExpression>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -216,8 +231,35 @@ where
     Ok(true)
 }
 
+/// Walk through an [IfExpression].
+fn walk_if_expression<'a, WalkT>(node: NodeRef<'a, IfExpression>, f: &WalkT) -> Result<bool>
+where
+    WalkT: Walker<'a>,
+{
+    if !f.walk(node.into())? {
+        return Ok(false);
+    }
+    if !walk_value(&node.cond, f)? {
+        return Ok(false);
+    }
+
+    for else_if in &node.else_ifs {
+        if !walk_value(&else_if.cond, f)? {
+            return Ok(false);
+        }
+        if !walk(&else_if.then_val, f)? {
+            return Ok(false);
+        }
+    }
+    let final_else = &(*node.final_else);
+    if !f.walk(final_else.into())? {
+        return Ok(false);
+    }
+    Ok(true)
+}
+
 /// walk through an [UnaryExpression].
-fn walk_unary_expression<'a, WalkT>(node: &'a UnaryExpression, f: &WalkT) -> Result<bool>
+fn walk_unary_expression<'a, WalkT>(node: NodeRef<'a, UnaryExpression>, f: &WalkT) -> Result<bool>
 where
     WalkT: Walker<'a>,
 {
@@ -235,6 +277,12 @@ where
     // We don't walk a BodyItem since it's an enum itself.
 
     match node {
+        BodyItem::ImportStatement(xs) => {
+            if !f.walk(xs.as_ref().into())? {
+                return Ok(false);
+            }
+            Ok(true)
+        }
         BodyItem::ExpressionStatement(xs) => {
             if !f.walk(xs.into())? {
                 return Ok(false);
@@ -242,7 +290,7 @@ where
             walk_value(&xs.expression, f)
         }
         BodyItem::VariableDeclaration(vd) => {
-            if !f.walk(vd.into())? {
+            if !f.walk(vd.as_ref().into())? {
                 return Ok(false);
             }
             for dec in &vd.declarations {

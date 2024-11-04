@@ -1,15 +1,17 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { editorManager, kclManager } from 'lib/singletons'
+import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
 import { trap } from 'lib/trap'
+import { codeToIdSelections } from 'lib/selections'
+import { KclManager } from 'lang/KclSingleton'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
     // TODO maybe need to have callback to make sure it stays in sync
     kclManager.ast,
-    context.selectionRanges.codeBasedSelections?.[0]?.range
+    context.selectionRanges.graphSelections?.[0]?.codeRef?.range
   )
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
@@ -121,13 +123,25 @@ function DisplayObj({
         editorManager.setHighlightRange([[obj?.start || 0, obj.end]])
       }}
       onClick={(e) => {
+        const range: [number, number] = [obj?.start || 0, obj.end || 0]
+        const idInfo = codeToIdSelections([
+          {
+            type: 'default',
+            range,
+          },
+        ])[0]
+        const artifact = engineCommandManager.artifactGraph.get(idInfo.id)
+        if (!artifact) return
         send({
           type: 'Set selection',
           data: {
             selectionType: 'singleCodeCursor',
             selection: {
-              type: 'default',
-              range: [obj?.start || 0, obj.end || 0],
+              artifact: artifact,
+              codeRef: {
+                range,
+                pathToNode: getNodePathFromSourceRange(kclManager.ast, range),
+              },
             },
           },
         })

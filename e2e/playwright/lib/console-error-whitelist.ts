@@ -40,7 +40,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     {
       name: '',
-      message: 'sketchGroup not found',
+      message: 'sketch not found',
       stack: '',
       foundInSpec:
         'e2e/playwright/testing-selections.spec.ts Deselecting line tool should mean nothing happens on click',
@@ -206,8 +206,8 @@ export const isErrorWhitelisted = (exception: Error) => {
     },
     {
       name: 'Unhandled Promise Rejection',
-      message: 'sketchGroup not found',
-      stack: `Unhandled Promise Rejection: sketchGroup not found
+      message: 'sketch not found',
+      stack: `Unhandled Promise Rejection: sketch not found
     at unknown (http://localhost:3000/src/machines/modelingMachine.ts:911:49)`,
       foundInSpec:
         'e2e/playwright/testing-selections.spec.ts Deselecting line tool should mean nothing happens on click',

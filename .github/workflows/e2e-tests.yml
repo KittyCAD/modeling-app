@@ -1,0 +1,356 @@
+name: E2E Tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+
+jobs:
+
+  check-rust-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      rust-changed: ${{ steps.filter.outputs.rust }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            rust:
+              - 'src/wasm-lib/**'
+
+  browser:
+    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
+    name: playwright:browser:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+    runs-on: ${{ matrix.os }}
+    needs: check-rust-changes
+    steps:
+    - name: Tune GitHub-hosted runner network
+      uses: smorimoto/tune-github-hosted-runner-network@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+    - uses: KittyCAD/action-install-cli@main
+    - name: Install dependencies
+      shell: bash
+      run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright/
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+    - name: Install Playwright Browsers
+      shell: bash
+      run: yarn playwright install --with-deps
+    - name: Download Wasm Cache
+      id: download-wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      uses: dawidd6/action-download-artifact@v6
+      continue-on-error: true
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        name: wasm-bundle
+        workflow: build-and-store-wasm.yml
+        branch: main
+        path: src/wasm-lib/pkg
+    - name: copy wasm blob
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      shell: bash
+      run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+      continue-on-error: true
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    - name: Cache Wasm (because rust diff)
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+    - name: OR Cache Wasm (because wasm cache failed)
+      if: steps.download-wasm.outcome == 'failure'
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+    - name: install good sed
+      if:  ${{ startsWith(matrix.os, 'macos') }}
+      shell: bash
+      run: |
+        brew install gnu-sed
+        echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
+    - name: Install vector
+      shell: bash
+      if:  ${{ !startsWith(matrix.os, 'windows') }}
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
+        chmod +x /tmp/vector.sh
+        /tmp/vector.sh -y -no-modify-path
+        mkdir -p /tmp/vector
+        cp .github/workflows/vector.toml /tmp/vector.toml
+        sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
+        sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
+        cat /tmp/vector.toml
+        ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
+    - name: Build Wasm (because rust diff)
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      shell: bash
+      run: yarn build:wasm
+    - name: OR Build Wasm (because wasm cache failed)
+      if: steps.download-wasm.outcome == 'failure'
+      shell: bash
+      run: yarn build:wasm
+    - name: build web
+      run: yarn build:local
+      shell: bash
+    - name: Run ubuntu/chrome snapshots
+      shell: bash
+      run: |
+        yarn playwright test --project="Google Chrome" --config=playwright.ci.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      env:
+        CI: true
+        NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() && (success() || failure()) }}
+      with:
+        name: playwright-report-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: playwright-report/
+        include-hidden-files: true
+        retention-days: 30
+        overwrite: true
+    - name: Clean up test-results
+      if: ${{ !cancelled() && (success() || failure()) }}
+      continue-on-error: true
+      run: rm -r test-results
+    - name: check for changes
+      shell: bash
+      id: git-check
+      run: |
+          git add .
+          if git status | grep -q "Changes to be committed"
+          then echo "modified=true" >> $GITHUB_OUTPUT
+          else echo "modified=false" >> $GITHUB_OUTPUT
+          fi
+    - name: Commit changes, if any
+      if: steps.git-check.outputs.modified == 'true'
+      shell: bash
+      run: |
+        git add .
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git fetch origin
+        echo ${{ github.head_ref }}
+        git checkout ${{ github.head_ref }}
+        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
+        git push
+        git push origin ${{ github.head_ref }}
+    # only upload artifacts if there's actually changes
+    - uses: actions/upload-artifact@v4
+      if: steps.git-check.outputs.modified == 'true'
+      with:
+        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: playwright-report/
+        include-hidden-files: true
+        retention-days: 30
+    - uses: actions/download-artifact@v4
+      if: ${{ !cancelled() && (success() || failure()) }}
+      continue-on-error: true
+      with:
+        name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: test-results/
+    - name: Run playwright/chrome flow (with retries)
+      id: retry
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        .github/ci-cd-scripts/playwright-browser-chrome.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
+      env:
+        CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
+        NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - name: send to axiom
+      if: always()
+      shell: bash
+      run: |
+        node playwrightProcess.mjs | tee /tmp/github-actions.log
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: test-results/
+        include-hidden-files: true
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+        path: playwright-report/
+        include-hidden-files: true
+        retention-days: 30
+        overwrite: true
+
+
+  electron:
+    name: playwright:electron:${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+    timeout-minutes: 60
+    runs-on: ${{ matrix.os }}
+    needs: check-rust-changes
+    steps:
+    - name: Tune GitHub-hosted runner network
+      uses: smorimoto/tune-github-hosted-runner-network@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+    - uses: KittyCAD/action-install-cli@main
+    - name: Install dependencies
+      shell: bash
+      run: yarn
+    - name: Cache Playwright Browsers
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/ms-playwright/
+        key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+    - name: Install Playwright Browsers
+      shell: bash
+      run: yarn playwright install chromium --with-deps
+    - name: Download Wasm Cache
+      id: download-wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      uses: dawidd6/action-download-artifact@v6
+      continue-on-error: true
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        name: wasm-bundle
+        workflow: build-and-store-wasm.yml
+        branch: main
+        path: src/wasm-lib/pkg
+    - name: copy wasm blob
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      shell: bash
+      run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+      continue-on-error: true
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    - name: Cache Wasm (because rust diff)
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+    - name: OR Cache Wasm (because wasm cache failed)
+      if: steps.download-wasm.outcome == 'failure'
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+    - name: install good sed
+      if:  ${{ startsWith(matrix.os, 'macos') }}
+      shell: bash
+      run: |
+        brew install gnu-sed
+        echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
+    - name: Install vector
+      if:  ${{ !startsWith(matrix.os, 'windows') }}
+      shell: bash
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
+        chmod +x /tmp/vector.sh
+        /tmp/vector.sh -y -no-modify-path
+        mkdir -p /tmp/vector
+        cp .github/workflows/vector.toml /tmp/vector.toml
+        sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
+        sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
+        sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
+        cat /tmp/vector.toml
+        ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
+    - name: Build Wasm (because rust diff)
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
+      shell: bash
+      run: yarn build:wasm
+    - name: OR Build Wasm (because wasm cache failed)
+      if: steps.download-wasm.outcome == 'failure'
+      shell: bash
+      run: yarn build:wasm
+    - name: build electron
+      shell: bash
+      run: yarn tron:package
+    - uses: actions/download-artifact@v4
+      if: ${{ !cancelled() && (success() || failure()) }}
+      continue-on-error: true
+      with:
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
+        path: test-results/
+    - name: Run electron tests (with retries)
+      id: retry
+      if: ${{ !cancelled() && (success() || failure()) }}
+      shell: bash
+      run: |
+        .github/ci-cd-scripts/playwright-electron.sh ${{ matrix.os }}
+      env:
+        CI: true
+        FAIL_ON_CONSOLE_ERRORS: true
+        NODE_ENV: development
+        VITE_KC_DEV_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        VITE_KC_SKIP_AUTH: true
+        IS_UBUNTU: ${{ startsWith(matrix.os, 'ubuntu') && 'true' || 'false' }}
+        #DEBUG: 'pw:browser*'
+    - name: send to axiom
+      if: ${{ !cancelled() && (success() || failure()) && !startsWith(matrix.os, 'windows') }}
+      shell: bash
+      run: |
+        node playwrightProcess.mjs | tee /tmp/github-actions.log
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() && (success() || failure()) }}
+      with:
+        name: test-results-electron-${{ matrix.os }}-${{ github.sha }}
+        path: test-results/
+        include-hidden-files: true
+        retention-days: 30
+        overwrite: true
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() && (success() || failure()) }}
+      with:
+        name: playwright-report-electron-${{ matrix.os }}-${{ github.sha }}
+        path: playwright-report/
+        include-hidden-files: true
+        retention-days: 30
+        overwrite: true

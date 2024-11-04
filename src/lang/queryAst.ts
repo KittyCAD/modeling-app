@@ -4,19 +4,20 @@ import {
   ArrayExpression,
   BinaryExpression,
   CallExpression,
+  Expr,
   ExpressionStatement,
+  ObjectExpression,
+  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ProgramMemory,
   ReturnStatement,
+  sketchFromKclValue,
   SourceRange,
   SyntaxType,
-  Expr,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
-  ObjectExpression,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -27,6 +28,8 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err } from 'lib/trap'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -119,7 +122,13 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node: Expr | ExpressionStatement | VariableDeclaration | ReturnStatement,
+  node: Node<
+    | Expr
+    | ImportStatement
+    | ExpressionStatement
+    | VariableDeclaration
+    | ReturnStatement
+  >,
   sourceRange: Selection__old['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
@@ -337,15 +346,16 @@ export function getNodePathFromSourceRange(
   return path
 }
 
-type KCLNode =
+type KCLNode = Node<
   | Expr
   | ExpressionStatement
   | VariableDeclaration
   | VariableDeclarator
   | ReturnStatement
+>
 
 export function traverse(
-  node: KCLNode | Program,
+  node: KCLNode | Node<Program>,
   option: {
     enter?: (node: KCLNode, pathToNode: PathToNode) => void
     leave?: (node: KCLNode) => void
@@ -505,9 +515,9 @@ export function findAllPreviousVariables(
 }
 
 type ReplacerFn = (
-  _ast: Program,
+  _ast: Node<Program>,
   varName: string
-) => { modifiedAst: Program; pathToReplaced: PathToNode } | Error
+) => { modifiedAst: Node<Program>; pathToReplaced: PathToNode } | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
@@ -576,12 +586,12 @@ export function isNodeSafeToReplacePath(
 }
 
 export function isNodeSafeToReplace(
-  ast: Program,
+  ast: Node<Program>,
   sourceRange: [number, number]
 ):
   | {
       isSafe: boolean
-      value: Expr
+      value: Node<Expr>
       replacer: ReplacerFn
     }
   | Error {
@@ -662,7 +672,7 @@ export function isLinesParallelAndConstrained(
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const sg = sketchGroupFromKclValue(programMemory?.get(varName), varName)
+    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
@@ -710,7 +720,7 @@ export function isLinesParallelAndConstrained(
       constraintType === 'angle' || constraintLevel === 'full'
 
     // get the previous segment
-    const prevSegment = sg.value[secondaryIndex - 1]
+    const prevSegment = sg.paths[secondaryIndex - 1]
     const prevSourceRange = prevSegment.__geoMeta.sourceRange
 
     const isParallelAndConstrained =
@@ -756,7 +766,7 @@ export function doesPipeHaveCallExp({
   )
 }
 
-export function hasExtrudeSketchGroup({
+export function hasExtrudeSketch({
   ast,
   selection,
   programMemory,
@@ -780,8 +790,7 @@ export function hasExtrudeSketchGroup({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'ExtrudeGroup' ||
-    !err(sketchGroupFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
   )
 }
 
@@ -831,7 +840,7 @@ export function findUsesOfTagInPipe(
       ? String(thirdParam.value)
       : thirdParam.name
 
-  const varDec = getNodeFromPath<VariableDeclaration>(
+  const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
     pathToNode,
     'VariableDeclaration'
@@ -895,7 +904,7 @@ export function hasSketchPipeBeenExtruded(
 }
 
 /** File must contain at least one sketch that has not been extruded already */
-export function doesSceneHaveSweepableSketch(ast: Program) {
+export function doesSceneHaveSweepableSketch(ast: Node<Program>) {
   const theMap: any = {}
   traverse(ast as any, {
     enter(node) {
@@ -950,7 +959,7 @@ export function doesSceneHaveSweepableSketch(ast: Program) {
 export function getObjExprProperty(
   node: ObjectExpression,
   propName: string
-): { expr: Expr; index: number } | null {
+): { expr: ObjectProperty['value']; index: number } | null {
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }

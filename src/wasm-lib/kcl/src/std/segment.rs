@@ -2,11 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, SketchGroup, TagIdentifier},
+    executor::{ExecState, KclValue, Sketch, TagIdentifier},
     std::{utils::between, Args},
 };
 
@@ -43,7 +42,7 @@ fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.to[0])
+    Ok(path.get_base().to[0])
 }
 
 /// Returns the segment end of y.
@@ -80,13 +79,13 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.to[1])
+    Ok(path.get_to()[1])
 }
 
 /// Returns the last segment of x.
 pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_group = args.get_sketch_group()?;
-    let result = inner_last_segment_x(sketch_group, args.clone())?;
+    let sketch = args.get_sketch()?;
+    let result = inner_last_segment_x(sketch, args.clone())?;
 
     args.make_user_val_from_f64(result)
 }
@@ -108,16 +107,13 @@ pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<K
 #[stdlib {
     name = "lastSegX",
 }]
-fn inner_last_segment_x(sketch_group: SketchGroup, args: Args) -> Result<f64, KclError> {
-    let last_line = sketch_group
-        .value
+fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<f64, KclError> {
+    let last_line = sketch
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup with at least one segment, found `{:?}`",
-                    sketch_group
-                ),
+                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
                 source_ranges: vec![args.source_range],
             })
         })?
@@ -128,8 +124,8 @@ fn inner_last_segment_x(sketch_group: SketchGroup, args: Args) -> Result<f64, Kc
 
 /// Returns the last segment of y.
 pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_group = args.get_sketch_group()?;
-    let result = inner_last_segment_y(sketch_group, args.clone())?;
+    let sketch = args.get_sketch()?;
+    let result = inner_last_segment_y(sketch, args.clone())?;
 
     args.make_user_val_from_f64(result)
 }
@@ -151,16 +147,13 @@ pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<K
 #[stdlib {
     name = "lastSegY",
 }]
-fn inner_last_segment_y(sketch_group: SketchGroup, args: Args) -> Result<f64, KclError> {
-    let last_line = sketch_group
-        .value
+fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<f64, KclError> {
+    let last_line = sketch
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup with at least one segment, found `{:?}`",
-                    sketch_group
-                ),
+                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
                 source_ranges: vec![args.source_range],
             })
         })?
@@ -209,7 +202,7 @@ fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: A
         })
     })?;
 
-    let result = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let result = path.length();
 
     Ok(result)
 }
@@ -249,15 +242,15 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    let result = between(path.from.into(), path.to.into());
+    let result = between(path.get_from().into(), path.get_to().into());
 
     Ok(result.to_degrees())
 }
 
 /// Returns the angle to match the given length for x.
 pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (tag, to, sketch_group) = args.get_tag_to_number_sketch_group()?;
-    let result = inner_angle_to_match_length_x(&tag, to, sketch_group, exec_state, args.clone())?;
+    let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
+    let result = inner_angle_to_match_length_x(&tag, to, sketch, exec_state, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -281,7 +274,7 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
 fn inner_angle_to_match_length_x(
     tag: &TagIdentifier,
     to: f64,
-    sketch_group: SketchGroup,
+    sketch: Sketch,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<f64, KclError> {
@@ -293,17 +286,14 @@ fn inner_angle_to_match_length_x(
         })
     })?;
 
-    let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let length = path.length();
 
-    let last_line = sketch_group
-        .value
+    let last_line = sketch
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup with at least one segment, found `{:?}`",
-                    sketch_group
-                ),
+                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
                 source_ranges: vec![args.source_range],
             })
         })?
@@ -322,8 +312,8 @@ fn inner_angle_to_match_length_x(
 
 /// Returns the angle to match the given length for y.
 pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (tag, to, sketch_group) = args.get_tag_to_number_sketch_group()?;
-    let result = inner_angle_to_match_length_y(&tag, to, sketch_group, exec_state, args.clone())?;
+    let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
+    let result = inner_angle_to_match_length_y(&tag, to, sketch, exec_state, args.clone())?;
     args.make_user_val_from_f64(result)
 }
 
@@ -348,7 +338,7 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 fn inner_angle_to_match_length_y(
     tag: &TagIdentifier,
     to: f64,
-    sketch_group: SketchGroup,
+    sketch: Sketch,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<f64, KclError> {
@@ -360,17 +350,14 @@ fn inner_angle_to_match_length_y(
         })
     })?;
 
-    let length = ((path.from[1] - path.to[1]).powi(2) + (path.from[0] - path.to[0]).powi(2)).sqrt();
+    let length = path.length();
 
-    let last_line = sketch_group
-        .value
+    let last_line = sketch
+        .paths
         .last()
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup with at least one segment, found `{:?}`",
-                    sketch_group
-                ),
+                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
                 source_ranges: vec![args.source_range],
             })
         })?

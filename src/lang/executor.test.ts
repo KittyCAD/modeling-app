@@ -3,9 +3,9 @@ import fs from 'node:fs'
 import {
   parse,
   ProgramMemory,
-  SketchGroup,
+  Sketch,
   initPromise,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
@@ -58,7 +58,7 @@ const newVar = myVar + 1`
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
-    const minusGeo = mem.get('mySketch')?.value?.value
+    const minusGeo = mem.get('mySketch')?.value?.paths
     expect(minusGeo).toEqual([
       {
         type: 'ToPoint',
@@ -73,7 +73,6 @@ const newVar = myVar + 1`
           start: 89,
           type: 'TagDeclarator',
           value: 'myPath',
-          digest: null,
         },
       },
       {
@@ -99,7 +98,6 @@ const newVar = myVar + 1`
           start: 143,
           type: 'TagDeclarator',
           value: 'rightPath',
-          digest: null,
         },
       },
     ])
@@ -125,12 +123,12 @@ const newVar = myVar + 1`
   //   ].join('\n')
   //   const mem = await exe(code)
   //   expect(mem.get('mySk1')?.value).toHaveLength(3)
-  //   expect(mem.get('rotated')?.type).toBe('SketchGroup')
+  //   expect(mem.get('rotated')?.type).toBe('Sketch')
   //   if (
-  //     mem.get('mySk1')?.type !== 'SketchGroup' ||
-  //     mem.get('rotated')?.type !== 'SketchGroup'
+  //     mem.get('mySk1')?.type !== 'Sketch' ||
+  //     mem.get('rotated')?.type !== 'Sketch'
   //   )
-  //     throw new Error('not a sketch group')
+  //     throw new Error('not a sketch')
   //   expect(mem.get('mySk1')?.rotation).toEqual([0, 0, 0, 1])
   //   expect(mem.get('rotated')?.rotation.map((a) => a.toFixed(4))).toEqual([
   //     '0.7071',
@@ -154,7 +152,7 @@ const newVar = myVar + 1`
     expect(mem.get('mySk1')).toEqual({
       type: 'UserVal',
       value: {
-        type: 'SketchGroup',
+        type: 'Sketch',
         on: expect.any(Object),
         start: {
           to: [0, 0],
@@ -177,7 +175,7 @@ const newVar = myVar + 1`
             info: expect.any(Object),
           },
         },
-        value: [
+        paths: [
           {
             type: 'ToPoint',
             to: [1, 1],
@@ -201,7 +199,6 @@ const newVar = myVar + 1`
               start: 109,
               type: 'TagDeclarator',
               value: 'myPath',
-              digest: null,
             },
           },
           {
@@ -368,9 +365,9 @@ describe('testing math operators', () => {
       '|> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
     const mem = await exe(code)
-    const sketch = sketchGroupFromKclValue(mem.get('part001'), 'part001')
+    const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
     // result of `-legLen(5, min(3, 999))` should be -4
-    const yVal = (sketch as SketchGroup).value?.[0]?.to?.[1]
+    const yVal = (sketch as Sketch).paths?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
   })
   it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
@@ -386,24 +383,22 @@ describe('testing math operators', () => {
       ``,
     ].join('\n')
     const mem = await exe(code)
-    const sketch = sketchGroupFromKclValue(mem.get('part001'), 'part001')
+    const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
     // expect -legLen(segLen('seg01'), myVar) to equal -4 setting the y value back to 0
-    expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
-    expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
+    expect((sketch as Sketch).paths?.[1]?.from).toEqual([3, 4])
+    expect((sketch as Sketch).paths?.[1]?.to).toEqual([6, 0])
     const removedUnaryExp = code.replace(
       `-legLen(segLen(seg01), myVar)`,
       `legLen(segLen(seg01), myVar)`
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
-    const removedUnaryExpMemSketch = sketchGroupFromKclValue(
+    const removedUnaryExpMemSketch = sketchFromKclValue(
       removedUnaryExpMem.get('part001'),
       'part001'
     )
 
     // without the minus sign, the y value should be 8
-    expect((removedUnaryExpMemSketch as SketchGroup).value?.[1]?.to).toEqual([
-      6, 8,
-    ])
+    expect((removedUnaryExpMemSketch as Sketch).paths?.[1]?.to).toEqual([6, 8])
   })
   it('with nested callExpression and binaryExpression', async () => {
     const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
@@ -445,6 +440,6 @@ async function exe(
 ) {
   const ast = parse(code)
 
-  const result = await enginelessExecutor(ast, programMemory)
-  return result
+  const execState = await enginelessExecutor(ast, programMemory)
+  return execState.memory
 }

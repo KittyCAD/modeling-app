@@ -1,7 +1,7 @@
 import {
   ProgramMemory,
   Path,
-  SketchGroup,
+  Sketch,
   SourceRange,
   PathToNode,
   Program,
@@ -11,7 +11,7 @@ import {
   Expr,
   VariableDeclaration,
   Identifier,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
 } from 'lang/wasm'
 import {
   getNodeFromPath,
@@ -54,6 +54,8 @@ import { roundOff, getLength, getAngle } from 'lib/utils'
 import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
+import { EdgeCutInfo } from 'machines/modelingMachine'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -62,8 +64,8 @@ const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
 
 export type Coords2d = [number, number]
 
-export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
-  const currentPath = skGroup?.value?.[index]
+export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
+  const currentPath = skGroup?.paths?.[index]
   if (!currentPath && skGroup?.start) {
     return skGroup.start.to
   } else if (!currentPath) {
@@ -1215,7 +1217,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     const { node: varDec } = nodeMeta2
 
     const variableName = varDec.id.name
-    const sketch = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory?.get(variableName),
       variableName
     )
@@ -1330,7 +1332,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
     const { node: varDec } = nodeMeta2
     const variableName = varDec.id.name
-    const sketch = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory?.get(variableName),
       variableName
     )
@@ -1698,12 +1700,12 @@ export const angledLineThatIntersects: SketchLineHelper = {
 
     const { node: varDec } = nodeMeta2
     const varName = varDec.declarations[0].id.name
-    const sketchGroup = sketchGroupFromKclValue(
+    const sketch = sketchFromKclValue(
       previousProgramMemory.get(varName),
       varName
     )
-    if (err(sketchGroup)) return sketchGroup
-    const intersectPath = sketchGroup.value.find(
+    if (err(sketch)) return sketch
+    const intersectPath = sketch.paths.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
     )
     let offset = 0
@@ -1784,7 +1786,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
     if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value as Identifier
+      const tag = firstArg.properties[intersectTag]?.value as Node<Identifier>
       const pathToTagProp: PathToNode = [
         ...pathToObjectExp,
         [intersectTag, 'index'],
@@ -1822,11 +1824,12 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
         start: 0,
         end: 0,
         body: [],
-        digest: null,
+
         nonCodeMeta: {
-          start: [],
+          start: 0,
+          end: 0,
+          startNodes: [],
           nonCodeNodes: [],
-          digest: null,
         },
       },
       pathToNode,
@@ -1865,7 +1868,7 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
 } as const
 
 export function changeSketchArguments(
-  node: Program,
+  node: Node<Program>,
   programMemory: ProgramMemory,
   sourceRangeOrPath:
     | {
@@ -1877,7 +1880,7 @@ export function changeSketchArguments(
         pathToNode: PathToNode
       },
   input: SegmentInputs
-): { modifiedAst: Program; pathToNode: PathToNode } | Error {
+): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   const _node = { ...node }
   const thePath =
     sourceRangeOrPath.type === 'sourceRange'
@@ -1906,7 +1909,7 @@ export function changeSketchArguments(
 }
 
 export function getConstraintInfo(
-  callExpression: CallExpression,
+  callExpression: Node<CallExpression>,
   code: string,
   pathToNode: PathToNode
 ): ConstrainInfo[] {
@@ -1946,7 +1949,7 @@ export function compareVec2Epsilon2(
 }
 
 interface CreateLineFnCallArgs {
-  node: Program
+  node: Node<Program>
   programMemory: ProgramMemory
   input: SegmentInputs
   fnName: ToolTip
@@ -1963,7 +1966,7 @@ export function addNewSketchLn({
   spliceBetween = false,
 }: CreateLineFnCallArgs):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToNode: PathToNode
     }
   | Error {
@@ -1973,8 +1976,12 @@ export function addNewSketchLn({
     return new Error('not a sketch line helper')
   }
 
-  getNodeFromPath<VariableDeclarator>(node, pathToNode, 'VariableDeclarator')
-  getNodeFromPath<PipeExpression | CallExpression>(
+  getNodeFromPath<Node<VariableDeclarator>>(
+    node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  getNodeFromPath<Node<PipeExpression | CallExpression>>(
     node,
     pathToNode,
     'PipeExpression'
@@ -1993,13 +2000,13 @@ export function addCallExpressionsToPipe({
   pathToNode,
   expressions,
 }: {
-  node: Program
+  node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
-  expressions: CallExpression[]
+  expressions: Node<CallExpression>[]
 }) {
   const _node = { ...node }
-  const pipeExpression = getNodeFromPath<PipeExpression>(
+  const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
     _node,
     pathToNode,
     'PipeExpression'
@@ -2048,7 +2055,7 @@ export function replaceSketchLine({
   replaceExistingCallback,
   referencedSegment,
 }: {
-  node: Program
+  node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
   fnName: ToolTip
@@ -2057,7 +2064,7 @@ export function replaceSketchLine({
   referencedSegment?: Path
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNode: PathToNode
     }
@@ -2082,12 +2089,169 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
+/** Ostensibly  should be used to add a chamfer tag to a chamfer call expression
+ *
+ * However things get complicated in situations like:
+ * ```ts
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tag1, tagOfInterest]
+ *   }, %)
+ * ```
+ * Because tag declarator is not allowed on a chamfer with more than one tag,
+ * They must be pulled apart into separate chamfer calls:
+ * ```ts
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tag1]
+ *   }, %)
+ * |> chamfer({
+ *     length: 1,
+ *     tags: [tagOfInterest]
+ *   }, %, $newTagDeclarator)
+ * ```
+ */
+function addTagToChamfer(
+  tagInfo: AddTagInfo,
+  edgeCutMeta: EdgeCutInfo | null
+):
+  | {
+      modifiedAst: Node<Program>
+      tag: string
+    }
+  | Error {
+  const _node = structuredClone(tagInfo.node)
+  let pipeIndex = 0
+  for (let i = 0; i < tagInfo.pathToNode.length; i++) {
+    if (tagInfo.pathToNode[i][1] === 'PipeExpression') {
+      pipeIndex = Number(tagInfo.pathToNode[i + 1][0])
+      break
+    }
+  }
+  const pipeExpr = getNodeFromPath<PipeExpression>(
+    _node,
+    tagInfo.pathToNode,
+    'PipeExpression'
+  )
+  const variableDec = getNodeFromPath<VariableDeclarator>(
+    _node,
+    tagInfo.pathToNode,
+    'VariableDeclarator'
+  )
+  if (err(pipeExpr)) return pipeExpr
+  if (err(variableDec)) return variableDec
+  const isPipeExpression = pipeExpr.node.type === 'PipeExpression'
+
+  console.log('pipeExpr', pipeExpr, variableDec)
+  // const callExpr = isPipeExpression ? pipeExpr.node.body[pipeIndex] : variableDec.node.init
+  const callExpr = isPipeExpression
+    ? pipeExpr.node.body[pipeIndex]
+    : variableDec.node.init
+  if (callExpr.type !== 'CallExpression')
+    return new Error('no chamfer call Expr')
+  const chamferObjArg = callExpr.arguments[0]
+  if (chamferObjArg.type !== 'ObjectExpression')
+    return new Error('first argument should be an object expression')
+  const inputTags = getObjExprProperty(chamferObjArg, 'tags')
+  if (!inputTags) return new Error('no tags property')
+  if (inputTags.expr.type !== 'ArrayExpression')
+    return new Error('tags should be an array expression')
+
+  const isChamferBreakUpNeeded = inputTags.expr.elements.length > 1
+  if (!isChamferBreakUpNeeded) {
+    return addTag(2)(tagInfo)
+  }
+
+  // There's more than one input tag, we need to break that chamfer call into a separate chamfer call
+  // so that it can have a tag declarator added.
+  const tagIndexToPullOut = inputTags.expr.elements.findIndex((tag) => {
+    // e.g. chamfer({ tags: [tagOfInterest, tag2] }, %)
+    //                       ^^^^^^^^^^^^^
+    const elementMatchesBaseTagType =
+      edgeCutMeta?.subType === 'base' &&
+      tag.type === 'Identifier' &&
+      tag.name === edgeCutMeta.tagName
+    if (elementMatchesBaseTagType) return true
+
+    // e.g. chamfer({ tags: [getOppositeEdge(tagOfInterest), tag2] }, %)
+    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    const tagMatchesOppositeTagType =
+      edgeCutMeta?.subType === 'opposite' &&
+      tag.type === 'CallExpression' &&
+      tag.callee.name === 'getOppositeEdge' &&
+      tag.arguments[0].type === 'Identifier' &&
+      tag.arguments[0].name === edgeCutMeta.tagName
+    if (tagMatchesOppositeTagType) return true
+
+    // e.g. chamfer({ tags: [getNextAdjacentEdge(tagOfInterest), tag2] }, %)
+    //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    const tagMatchesAdjacentTagType =
+      edgeCutMeta?.subType === 'adjacent' &&
+      tag.type === 'CallExpression' &&
+      (tag.callee.name === 'getNextAdjacentEdge' ||
+        tag.callee.name === 'getPrevAdjacentEdge') &&
+      tag.arguments[0].type === 'Identifier' &&
+      tag.arguments[0].name === edgeCutMeta.tagName
+    if (tagMatchesAdjacentTagType) return true
+    return false
+  })
+  if (tagIndexToPullOut === -1) return new Error('tag not found')
+  // get the tag we're pulling out
+  const tagToPullOut = inputTags.expr.elements[tagIndexToPullOut]
+  // and remove it from the original chamfer call
+  // [pullOutTag, tag2] to [tag2]
+  inputTags.expr.elements.splice(tagIndexToPullOut, 1)
+
+  // get the length of the chamfer we're breaking up, as the new chamfer will have the same length
+  const chamferLength = getObjExprProperty(chamferObjArg, 'length')
+  if (!chamferLength) return new Error('no chamfer length')
+  const tagDec = createTagDeclarator(findUniqueName(_node, 'seg', 2))
+  const solid3dIdentifierUsedInOriginalChamfer = callExpr.arguments[1]
+  const newExpressionToInsert = createCallExpression('chamfer', [
+    createObjectExpression({
+      length: chamferLength.expr,
+      // single tag to add to the new chamfer call
+      tags: createArrayExpression([tagToPullOut]),
+    }),
+    isPipeExpression
+      ? createPipeSubstitution()
+      : solid3dIdentifierUsedInOriginalChamfer,
+    tagDec,
+  ])
+
+  // insert the new chamfer call with the tag declarator, add its above the original
+  // alternatively we could use `pipeIndex + 1` to insert it below the original
+  if (isPipeExpression) {
+    pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
+  } else {
+    console.log('yo', createPipeExpression([newExpressionToInsert, callExpr]))
+    callExpr.arguments[1] = createPipeSubstitution()
+    variableDec.node.init = createPipeExpression([
+      newExpressionToInsert,
+      callExpr,
+    ])
+  }
+  return {
+    modifiedAst: _node,
+    tag: tagDec.value,
+  }
+}
+
 export function addTagForSketchOnFace(
   tagInfo: AddTagInfo,
-  expressionName: string
-) {
+  expressionName: string,
+  edgeCutMeta: EdgeCutInfo | null
+):
+  | {
+      modifiedAst: Node<Program>
+      tag: string
+    }
+  | Error {
   if (expressionName === 'close') {
     return addTag(1)(tagInfo)
+  }
+  if (expressionName === 'chamfer') {
+    return addTagToChamfer(tagInfo, edgeCutMeta)
   }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
@@ -2117,12 +2281,14 @@ function isAngleLiteral(lineArugement: Expr): boolean {
     : false
 }
 
-type addTagFn = (a: AddTagInfo) => { modifiedAst: Program; tag: string } | Error
+type addTagFn = (
+  a: AddTagInfo
+) => { modifiedAst: Node<Program>; tag: string } | Error
 
 function addTag(tagIndex = 2): addTagFn {
   return ({ node, pathToNode }) => {
     const _node = { ...node }
-    const callExpr = getNodeFromPath<CallExpression>(
+    const callExpr = getNodeFromPath<Node<CallExpression>>(
       _node,
       pathToNode,
       'CallExpression'

@@ -8,6 +8,7 @@ import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
 import { ToastUpdate } from 'components/ToastUpdate'
+import { AUTO_UPDATER_TOAST_ID } from 'lib/constants'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -53,17 +54,35 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
 
-isDesktop() &&
-  window.electron.onUpdateDownloaded((version: string) => {
+if (isDesktop()) {
+  // Listen for update download progress to begin
+  // to show a loading toast.
+  window.electron.onUpdateDownloadStart(() => {
+    const message = `Downloading app update...`
+    console.log(message)
+    toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
+  })
+  // Listen for update download errors to show
+  // an error toast and clear the loading toast.
+  window.electron.onUpdateError(({ error }) => {
+    console.error(error)
+    toast.error('An error occurred while downloading the update.', {
+      id: AUTO_UPDATER_TOAST_ID,
+    })
+  })
+  window.electron.onUpdateDownloaded(({ version, releaseNotes }) => {
     const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
     console.log(message)
     toast.custom(
       ToastUpdate({
         version,
+        releaseNotes,
         onRestart: () => {
           window.electron.appRestart()
         },
+        onDismiss: () => {},
       }),
-      { duration: 30000 }
+      { duration: 30000, id: AUTO_UPDATER_TOAST_ID }
     )
   })
+}

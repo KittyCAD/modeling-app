@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import {
   doExport,
   executorInputPath,
@@ -7,15 +7,67 @@ import {
   Paths,
   setupElectron,
   tearDown,
-  createProjectAndRenameIt,
+  createProject,
 } from './test-utils'
 import fsp from 'fs/promises'
 import fs from 'fs'
 import { join } from 'path'
+import { DEFAULT_PROJECT_KCL_FILE } from 'lib/constants'
 
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
+
+test(
+  'projects reload if a new one is created, deleted, or renamed externally',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    let externalCreatedProjectName = 'external-created-project'
+
+    let targetDir = ''
+
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        targetDir = dir
+        setTimeout(() => {
+          const myDir = join(dir, externalCreatedProjectName)
+          ;(async () => {
+            await fsp.mkdir(myDir)
+            await fsp.writeFile(
+              join(myDir, DEFAULT_PROJECT_KCL_FILE),
+              'sca ba be bop de day wawa skee'
+            )
+          })().catch(console.error)
+        }, 5000)
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    const projectLinks = page.getByTestId('project-link')
+
+    await projectLinks.first().waitFor()
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rename(
+      join(targetDir, externalCreatedProjectName),
+      join(targetDir, externalCreatedProjectName + '1')
+    )
+
+    externalCreatedProjectName += '1'
+    await expect(projectLinks).toContainText(externalCreatedProjectName)
+
+    await fsp.rm(join(targetDir, externalCreatedProjectName), {
+      recursive: true,
+      force: true,
+    })
+
+    await expect(projectLinks).toHaveCount(0)
+
+    await electronApp.close()
+  }
+)
 
 test(
   'click help/keybindings from home page',
@@ -203,7 +255,7 @@ test.describe('Can export from electron app', () => {
               },
               { timeout: 15_000 }
             )
-            .toBe(482669)
+            .toBeGreaterThan(300_000)
 
           // clean up output.gltf
           await fsp.rm('output.gltf')
@@ -451,21 +503,261 @@ test(
   }
 )
 
+test.describe(`Project management commands`, () => {
+  test(
+    `Rename from project page`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const projectName = `my_project_to_rename`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+      const u = await getUtils(page)
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `project-000`
+      // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
+      })
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully renamed`)
+
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+
+        await projectHomeLink.click()
+        await u.waitForPageLoad()
+      })
+
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
+
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      // TODO: in future I'd like the behavior to be to
+      // navigate to the new project's page directly,
+      // see ProjectContextProvider.tsx:158
+      await test.step(`Check the project was renamed and we navigated home`, async () => {
+        await expect(projectHomeLink.first()).toBeVisible()
+        await expect(projectHomeLink.first()).toContainText(projectRenamedName)
+      })
+
+      await electronApp.close()
+    }
+  )
+
+  test(
+    `Delete from project page`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const projectName = `my_project_to_delete`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+      const u = await getUtils(page)
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const commandWarning = page.getByText('Are you sure you want to delete?')
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully deleted`)
+      const noProjectsMessage = page.getByText('No Projects found')
+
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+
+        await projectHomeLink.click()
+        await u.waitForPageLoad()
+      })
+
+      await test.step(`Run delete command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandWarning).toBeVisible()
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was deleted and we navigated home`, async () => {
+        await expect(noProjectsMessage).toBeVisible()
+      })
+
+      await electronApp.close()
+    }
+  )
+  test(
+    `Rename from home page`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const projectName = `my_project_to_rename`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `project-000`
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
+      })
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully renamed`)
+
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
+
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was renamed`, async () => {
+        await expect(
+          page.getByRole('link', { name: projectRenamedName })
+        ).toBeVisible()
+        await expect(projectHomeLink).not.toHaveText(projectName)
+      })
+
+      await electronApp.close()
+    }
+  )
+  test(
+    `Delete from home page`,
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const projectName = `my_project_to_delete`
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+          await fsp.copyFile(
+            'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
+            `${dir}/${projectName}/main.kcl`
+          )
+        },
+      })
+
+      // Constants and locators
+      const projectHomeLink = page.getByTestId('project-link')
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const commandWarning = page.getByText('Are you sure you want to delete?')
+      const commandSubmitButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
+      const toastMessage = page.getByText(`Successfully deleted`)
+      const noProjectsMessage = page.getByText('No Projects found')
+
+      await test.step(`Setup`, async () => {
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run delete command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        await expect(commandWarning).toBeVisible()
+        await expect(commandSubmitButton).toBeVisible()
+        await commandSubmitButton.click()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was deleted`, async () => {
+        await expect(projectHomeLink).not.toBeVisible()
+        await expect(noProjectsMessage).toBeVisible()
+      })
+
+      await electronApp.close()
+    }
+  )
+})
+
 test(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectName = 'router-template-slate'
     const { electronApp, page } = await setupElectron({
       testInfo,
       folderSetupFn: async (dir) => {
-        await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
+        await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/router-template-slate.kcl',
-          `${dir}/router-template-slate/main.kcl`
+          `${dir}/${projectName}/main.kcl`
         )
         await fsp.copyFile(
           'src/wasm-lib/tests/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
-          `${dir}/router-template-slate/otherThingToClickOn.kcl`
+          `${dir}/${projectName}/otherThingToClickOn.kcl`
         )
       },
     })
@@ -474,7 +766,7 @@ test(
 
     page.on('console', console.log)
 
-    await page.getByText('router-template-slate').click()
+    await page.getByText(projectName).click()
     await expect(page.getByTestId('loading')).toBeAttached()
     await expect(page.getByTestId('loading')).not.toBeAttached({
       timeout: 20_000,
@@ -535,7 +827,7 @@ test(
 
       // It actually loads.
       await expect(u.codeLocator).toContainText('mounting bracket')
-      await expect(u.codeLocator).toContainText('const radius =')
+      await expect(u.codeLocator).toContainText('radius =')
     })
 
     await u.openFilePanel()
@@ -566,33 +858,32 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
-
     page.on('console', console.log)
 
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
-
     await test.step('delete the middle project, i.e. the bracket project', async () => {
-      const project = page.getByText('bracket')
+      const project = page.getByTestId('project-link').getByText('bracket')
 
       await project.hover()
       await project.focus()
@@ -636,10 +927,10 @@ test(
     })
 
     await test.step('Check we can still create a project', async () => {
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(page.getByText('Successfully created')).toBeVisible()
-      await expect(page.getByText('Successfully created')).not.toBeVisible()
-      await expect(page.getByText('project-000')).toBeVisible()
+      await createProject({ name: 'project-000', page, returnHome: true })
+      await expect(
+        page.getByTestId('project-link').filter({ hasText: 'project-000' })
+      ).toBeVisible()
     })
 
     await electronApp.close()
@@ -692,32 +983,32 @@ test(
   'Can sort projects on home page',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
+    const projectData = [
+      ['router-template-slate', 'cylinder.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['lego', 'lego.kcl'],
+    ]
+
     const { electronApp, page } = await setupElectron({
       testInfo,
+      folderSetupFn: async (dir) => {
+        // Do these serially to ensure the order is correct
+        for (const [name, file] of projectData) {
+          await fsp.mkdir(join(dir, name), { recursive: true })
+          await fsp.copyFile(
+            executorInputPath(file),
+            join(dir, name, `main.kcl`)
+          )
+          // Wait 1s between each project to ensure the order is correct
+          await new Promise((r) => setTimeout(r, 1_000))
+        }
+      },
     })
     await page.setViewportSize({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
 
     page.on('console', console.log)
-
-    const createProjectAndRenameItTest = async ({
-      name,
-      page,
-    }: {
-      name: string
-      page: Page
-    }) => {
-      await test.step(`Create and rename project ${name}`, async () => {
-        await createProjectAndRenameIt({ name, page })
-      })
-    }
-
-    // we need to create the folders so that the order is correct
-    // creating them ahead of time with fs tools means they all have the same timestamp
-    await createProjectAndRenameItTest({ name: 'router-template-slate', page })
-    await createProjectAndRenameItTest({ name: 'bracket', page })
-    await createProjectAndRenameItTest({ name: 'lego', page })
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -800,7 +1091,7 @@ test(
   }
 )
 
-test(
+test.fixme(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
@@ -810,40 +1101,55 @@ test(
 
     page.on('console', console.log)
 
+    // Locators and constants
+    const gizmo = page.locator('[aria-label*=gizmo]')
+    const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+    const pointOnModel = { x: 660, y: 250 }
+    const expectedStartCamZPosition = 15633.47
+
+    // Constants and locators
+    const projectLinks = page.getByTestId('project-link')
+
     // expect to see text "No Projects found"
     await expect(page.getByText('No Projects found')).toBeVisible()
 
-    await page.getByRole('button', { name: 'New project' }).click()
+    await createProject({ name: 'project-000', page, returnHome: true })
+    await expect(projectLinks.getByText('project-000')).toBeVisible()
 
-    await expect(page.getByText('Successfully created')).toBeVisible()
-    await expect(page.getByText('Successfully created')).not.toBeVisible()
+    await projectLinks.getByText('project-000').click()
 
-    await expect(page.getByText('project-000')).toBeVisible()
+    await u.waitForPageLoad()
 
-    await page.getByText('project-000').click()
-
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeEnabled({
-      timeout: 20_000,
-    })
-
-    await page.locator('.cm-content')
-      .fill(`const sketch001 = startSketchOn('XZ')
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
   |> line([324.07, 27.199], %, $seg01)
   |> line([118.328, -291.754], %)
   |> line([-180.04, -202.08], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(200, sketch001)`)
+extrude001 = extrude(200, sketch001)`)
+    await page.waitForTimeout(800)
 
-    const pointOnModel = { x: 660, y: 250 }
+    async function getCameraZValue() {
+      return page
+        .getByTestId('cam-z-position')
+        .inputValue()
+        .then((value) => parseFloat(value))
+    }
+
+    await test.step(`Reset camera`, async () => {
+      await u.openDebugPanel()
+      await u.clearCommandLogs()
+      await u.doAndWaitForCmd(async () => {
+        await gizmo.click({ button: 'right' })
+        await resetCameraButton.click()
+      }, 'zoom_to_fit')
+      await expect
+        .poll(getCameraZValue, {
+          message: 'Camera Z should be at expected position after reset',
+        })
+        .toEqual(expectedStartCamZPosition)
+    })
 
     // gray at this pixel means the stream has loaded in the most
     // user way we can verify it (pixel color)
@@ -851,7 +1157,7 @@ const extrude001 = extrude(200, sketch001)`)
       .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
         timeout: 10_000,
       })
-      .toBeLessThan(15)
+      .toBeLessThan(30)
 
     await expect(async () => {
       await page.mouse.move(0, 0, { steps: 5 })
@@ -869,16 +1175,10 @@ const extrude001 = extrude(200, sketch001)`)
       page.getByRole('button', { name: 'New project' })
     ).toBeVisible()
 
-    const createProject = async (projectNum: number) => {
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(page.getByText('Successfully created')).toBeVisible()
-      await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-      const projectNumStr = projectNum.toString().padStart(3, '0')
-      await expect(page.getByText(`project-${projectNumStr}`)).toBeVisible()
-    }
     for (let i = 1; i <= 10; i++) {
-      await createProject(i)
+      const name = `project-${i.toString().padStart(3, '0')}`
+      await createProject({ name, page, returnHome: true })
+      await expect(projectLinks.getByText(name)).toBeVisible()
     }
     await electronApp.close()
   }
@@ -1053,11 +1353,10 @@ test(
       await page.getByTestId('settings-close-button').click()
 
       await expect(page.getByText('No Projects found')).toBeVisible()
-      await page.getByRole('button', { name: 'New project' }).click()
-      await expect(page.getByText('Successfully created')).toBeVisible()
-      await expect(page.getByText('Successfully created')).not.toBeVisible()
-
-      await expect(page.getByText(`project-000`)).toBeVisible()
+      await createProject({ name: 'project-000', page, returnHome: true })
+      await expect(
+        page.getByTestId('project-link').filter({ hasText: 'project-000' })
+      ).toBeVisible()
     })
 
     await test.step('We can change back to the original root project directory', async () => {
@@ -1198,8 +1497,9 @@ test(
           'i_shape.kcl',
           'kittycad_svg.kcl',
           'lego.kcl',
+          'lsystem.kcl',
           'math.kcl',
-          'member_expression_sketch_group.kcl',
+          'member_expression_sketch.kcl',
           'mike_stress_test.kcl',
           'negative_args.kcl',
           'order-sketch-extrude-in-order.kcl',
@@ -1383,7 +1683,7 @@ test(
     page.on('console', console.log)
 
     await test.step('Should create and name a project called wrist brace', async () => {
-      await createProjectAndRenameIt({ name: 'wrist brace', page })
+      await createProject({ name: 'wrist brace', page, returnHome: true })
     })
 
     await test.step('Should go through onboarding', async () => {

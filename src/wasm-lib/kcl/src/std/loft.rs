@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ExtrudeGroup, KclValue, SketchGroup},
+    executor::{ExecState, KclValue, Sketch, Solid},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -50,11 +50,11 @@ impl Default for LoftData {
 }
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
-pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (sketch_groups, data): (Vec<SketchGroup>, Option<LoftData>) = args.get_sketch_groups_and_data()?;
+pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (sketches, data): (Vec<Sketch>, Option<LoftData>) = args.get_sketches_and_data()?;
 
-    let extrude_group = inner_loft(sketch_groups, data, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_loft(sketches, data, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
@@ -136,16 +136,17 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     name = "loft",
 }]
 async fn inner_loft(
-    sketch_groups: Vec<SketchGroup>,
+    sketches: Vec<Sketch>,
     data: Option<LoftData>,
+    exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+) -> Result<Box<Solid>, KclError> {
     // Make sure we have at least two sketches.
-    if sketch_groups.len() < 2 {
+    if sketches.len() < 2 {
         return Err(KclError::Semantic(KclErrorDetails {
             message: format!(
                 "Loft requires at least two sketches, but only {} were provided.",
-                sketch_groups.len()
+                sketches.len()
             ),
             source_ranges: vec![args.source_range],
         }));
@@ -154,11 +155,11 @@ async fn inner_loft(
     // Get the loft data.
     let data = data.unwrap_or_default();
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Loft {
-            section_ids: sketch_groups.iter().map(|group| group.id).collect(),
+            section_ids: sketches.iter().map(|group| group.id).collect(),
             base_curve_index: data.base_curve_index,
             bez_approximate_rational: data.bez_approximate_rational.unwrap_or(false),
             tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
@@ -170,5 +171,5 @@ async fn inner_loft(
     .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
-    do_post_extrude(sketch_groups[0].clone(), 0.0, args).await
+    do_post_extrude(sketches[0].clone(), 0.0, exec_state, args).await
 }

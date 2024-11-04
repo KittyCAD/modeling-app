@@ -46,7 +46,7 @@ export interface PathArtifactRich extends BaseArtifact {
   codeRef: CodeRef
 }
 
-interface SegmentArtifact extends BaseArtifact {
+export interface SegmentArtifact extends BaseArtifact {
   type: 'segment'
   pathId: ArtifactId
   surfaceId: ArtifactId
@@ -454,10 +454,10 @@ export function getArtifactsToUpdate({
       response.data.modeling_response.type === 'solid3d_get_opposite_edge' &&
       response.data.modeling_response.data.edge) ||
     // or is adjacent edge
-    (cmd.type === 'solid3d_get_prev_adjacent_edge' &&
+    (cmd.type === 'solid3d_get_next_adjacent_edge' &&
       response.type === 'modeling' &&
       response.data.modeling_response.type ===
-        'solid3d_get_prev_adjacent_edge' &&
+        'solid3d_get_next_adjacent_edge' &&
       response.data.modeling_response.data.edge)
   ) {
     const wall = getArtifact(cmd.face_id)
@@ -476,7 +476,7 @@ export function getArtifactsToUpdate({
           type: 'sweepEdge',
           id: response.data.modeling_response.data.edge,
           subType:
-            cmd.type === 'solid3d_get_prev_adjacent_edge'
+            cmd.type === 'solid3d_get_next_adjacent_edge'
               ? 'adjacent'
               : 'opposite',
           segId: cmd.edge_id,
@@ -748,18 +748,52 @@ export function getSweepEdgeCodeRef(
   if (err(seg)) return seg
   return seg.codeRef
 }
+export function getEdgeCuteConsumedCodeRef(
+  edge: EdgeCut,
+  artifactGraph: ArtifactGraph
+): CodeRef | Error {
+  const seg = getArtifactOfTypes(
+    { key: edge.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    artifactGraph
+  )
+  if (err(seg)) return seg
+  if (seg.type === 'segment') return seg.codeRef
+  return getSweepEdgeCodeRef(seg, artifactGraph)
+}
 
 export function getSweepFromSuspectedSweepSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {
   const artifact = getArtifactOfTypes(
-    { key: id, types: ['wall', 'cap'] },
+    { key: id, types: ['wall', 'cap', 'edgeCut'] },
     artifactGraph
   )
   if (err(artifact)) return artifact
+  if (artifact.type === 'wall' || artifact.type === 'cap') {
+    return getArtifactOfTypes(
+      { key: artifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+  }
+  const segOrEdge = getArtifactOfTypes(
+    { key: artifact.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    artifactGraph
+  )
+  if (err(segOrEdge)) return segOrEdge
+  if (segOrEdge.type === 'segment') {
+    const path = getArtifactOfTypes(
+      { key: segOrEdge.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) return path
+    return getArtifactOfTypes(
+      { key: path.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+  }
   return getArtifactOfTypes(
-    { key: artifact.sweepId, types: ['sweep'] },
+    { key: segOrEdge.sweepId, types: ['sweep'] },
     artifactGraph
   )
 }

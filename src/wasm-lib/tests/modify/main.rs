@@ -1,51 +1,31 @@
 use anyhow::Result;
 use kcl_lib::{
-    ast::{modify::modify_ast_for_sketch, types::Program},
-    executor::{ExecutorContext, KclValue, PlaneType, SketchGroup, SourceRange},
+    ast::{
+        modify::modify_ast_for_sketch,
+        types::{Node, Program},
+    },
+    executor::{ExecutorContext, IdGenerator, KclValue, PlaneType, Sketch, SourceRange},
 };
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
-async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid::Uuid)> {
-    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-    let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60));
-    let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60))
-        .tcp_keepalive(std::time::Duration::from_secs(600))
-        .http1_only();
-
-    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-    // Create the client.
-    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    // Set a local engine address if it's set.
-    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-        client.set_base_url(addr);
-    }
-
+async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Node<Program>, uuid::Uuid)> {
     let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
-    let exec_state = ctx.run(&program, None).await?;
+    let ctx = kcl_lib::executor::ExecutorContext::new_with_default_client(Default::default()).await?;
+    let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
     // We need to get the sketch ID.
-    // Get the sketch group ID from memory.
+    // Get the sketch ID from memory.
     let KclValue::UserVal(user_val) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
         anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
     };
-    let Some((sketch_group, _meta)) = user_val.get::<SketchGroup>() else {
-        anyhow::bail!("part001 was not a SketchGroup");
+    let Some((sketch, _meta)) = user_val.get::<Sketch>() else {
+        anyhow::bail!("part001 was not a Sketch");
     };
-    let sketch_id = sketch_group.id;
+    let sketch_id = sketch.id;
 
     let plane_id = uuid::Uuid::new_v4();
     ctx.engine
@@ -87,7 +67,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
 async fn kcl_test_modify_sketch_part001() {
     let name = "part001";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
   |> line([7.37, -11.0], %)
   |> line([-8.69, -3.75], %)
@@ -112,7 +92,7 @@ async fn kcl_test_modify_sketch_part001() {
 async fn kcl_test_modify_sketch_part002() {
     let name = "part002";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -138,7 +118,7 @@ async fn kcl_test_modify_sketch_part002() {
 async fn kcl_test_modify_close_sketch() {
     let name = "part002";
     let code = format!(
-        r#"const {} = startSketchOn("XY")
+        r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -184,7 +164,7 @@ async fn kcl_test_modify_line_to_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"const {} = startSketchOn("XY")
+            r#"{} = startSketchOn("XY")
   |> startProfileAt([7.91, 3.89], %)
   |> line([7.42, -8.62], %)
   |> line([-6.38, -3.51], %)
@@ -246,7 +226,7 @@ async fn kcl_test_modify_line_should_close_sketch() {
     assert_eq!(
         new_code,
         format!(
-            r#"const {} = startSketchOn("XY")
+            r#"{} = startSketchOn("XY")
   |> startProfileAt([13.69, 3.8], %)
   |> line([4.23, -11.79], %)
   |> line([-10.7, -1.16], %)

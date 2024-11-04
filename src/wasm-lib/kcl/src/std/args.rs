@@ -4,15 +4,16 @@ use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use serde::de::DeserializeOwned;
+use serde_json::Value as JValue;
 
 use crate::{
-    ast::types::{parse_json_number_as_f64, TagDeclarator},
+    ast::types::{execute::parse_json_number_as_f64, TagNode},
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecState, ExecutorContext, ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, KclValue, Metadata, SketchGroup,
-        SketchGroupSet, SketchSurface, SourceRange, TagIdentifier,
+        ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
+        SolidSet, SourceRange, TagIdentifier, UserVal,
     },
-    std::{shapes::SketchSurfaceOrGroup, sketch::FaceTag, FnAsArg},
+    std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
 };
 
 #[derive(Debug, Clone)]
@@ -43,7 +44,7 @@ impl Args {
                 fs: Arc::new(crate::fs::FileManager::new()),
                 stdlib: Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                is_mock: true,
+                context_type: crate::executor::ContextType::Mock,
             },
         })
     }
@@ -125,35 +126,35 @@ impl Args {
         self.get_tag_info_from_memory(exec_state, tag)
     }
 
-    /// Flush just the fillets and chamfers for this specific ExtrudeGroupSet.
+    /// Flush just the fillets and chamfers for this specific SolidSet.
     #[allow(clippy::vec_box)]
-    pub(crate) async fn flush_batch_for_extrude_group_set(
+    pub(crate) async fn flush_batch_for_solid_set(
         &self,
         exec_state: &mut ExecState,
-        extrude_groups: Vec<Box<ExtrudeGroup>>,
+        solids: Vec<Box<Solid>>,
     ) -> Result<(), KclError> {
-        // Make sure we don't traverse sketch_groups more than once.
-        let mut traversed_sketch_groups = Vec::new();
+        // Make sure we don't traverse sketches more than once.
+        let mut traversed_sketches = Vec::new();
 
-        // Collect all the fillet/chamfer ids for the extrude groups.
+        // Collect all the fillet/chamfer ids for the solids.
         let mut ids = Vec::new();
-        for extrude_group in extrude_groups {
-            // We need to traverse the extrude groups that share the same sketch group.
-            let sketch_group_id = extrude_group.sketch_group.id;
-            if !traversed_sketch_groups.contains(&sketch_group_id) {
-                // Find all the extrude groups on the same shared sketch group.
+        for solid in solids {
+            // We need to traverse the solids that share the same sketch.
+            let sketch_id = solid.sketch.id;
+            if !traversed_sketches.contains(&sketch_id) {
+                // Find all the solids on the same shared sketch.
                 ids.extend(
                     exec_state
                         .memory
-                        .find_extrude_groups_on_sketch_group(extrude_group.sketch_group.id)
+                        .find_solids_on_sketch(solid.sketch.id)
                         .iter()
                         .flat_map(|eg| eg.get_all_edge_cut_ids()),
                 );
-                ids.extend(exec_state.dynamic_state.edge_cut_ids_on_sketch_group(sketch_group_id));
-                traversed_sketch_groups.push(sketch_group_id);
+                ids.extend(exec_state.dynamic_state.edge_cut_ids_on_sketch(sketch_id));
+                traversed_sketches.push(sketch_id);
             }
 
-            ids.extend(extrude_group.get_all_edge_cut_ids());
+            ids.extend(solid.get_all_edge_cut_ids());
         }
 
         // We can return early if there are no fillets or chamfers.
@@ -236,7 +237,7 @@ impl Args {
         Ok(numbers)
     }
 
-    pub(crate) fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, ExtrudeGroupSet), KclError> {
+    pub(crate) fn get_pattern_transform_args(&self) -> Result<(u32, FnAsArg<'_>, SolidSet), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -258,19 +259,19 @@ impl Args {
     ) -> Result<
         (
             crate::std::shapes::CircleData,
-            crate::std::shapes::SketchSurfaceOrGroup,
-            Option<TagDeclarator>,
+            crate::std::shapes::SketchOrSurface,
+            Option<TagNode>,
         ),
         KclError,
     > {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_groups(&self) -> Result<(SketchGroupSet, SketchGroup), KclError> {
+    pub(crate) fn get_sketches(&self) -> Result<(SketchSet, Sketch), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_group(&self) -> Result<SketchGroup, KclError> {
+    pub(crate) fn get_sketch(&self) -> Result<Sketch, KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -285,11 +286,11 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_group_and_optional_tag(&self) -> Result<(SketchGroup, Option<TagDeclarator>), KclError> {
+    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_groups_and_data<'a, T>(&'a self) -> Result<(Vec<SketchGroup>, Option<T>), KclError>
+    pub(crate) fn get_sketches_and_data<'a, T>(&'a self) -> Result<(Vec<Sketch>, Option<T>), KclError>
     where
         T: FromArgs<'a> + serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -303,62 +304,56 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_group<'a, T>(&'a self) -> Result<(T, SketchGroup), KclError>
+    pub(crate) fn get_data_and_sketch<'a, T>(&'a self) -> Result<(T, Sketch), KclError>
     where
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_group_set<'a, T>(&'a self) -> Result<(T, SketchGroupSet), KclError>
+    pub(crate) fn get_data_and_sketch_set<'a, T>(&'a self) -> Result<(T, SketchSet), KclError>
     where
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_group_and_tag<'a, T>(
-        &'a self,
-    ) -> Result<(T, SketchGroup, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(&'a self) -> Result<(T, Sketch, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_surface<'a, T>(
-        &'a self,
-    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_surface<'a, T>(&'a self) -> Result<(T, SketchSurface, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_extrude_group_set<'a, T>(&'a self) -> Result<(T, ExtrudeGroupSet), KclError>
+    pub(crate) fn get_data_and_solid_set<'a, T>(&'a self) -> Result<(T, SolidSet), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_extrude_group<'a, T>(&'a self) -> Result<(T, Box<ExtrudeGroup>), KclError>
+    pub(crate) fn get_data_and_solid<'a, T>(&'a self) -> Result<(T, Box<Solid>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_extrude_group_and_tag<'a, T>(
-        &'a self,
-    ) -> Result<(T, Box<ExtrudeGroup>, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_solid_and_tag<'a, T>(&'a self) -> Result<(T, Box<Solid>, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_tag_to_number_sketch_group(&self) -> Result<(TagIdentifier, f64, SketchGroup), KclError> {
+    pub(crate) fn get_tag_to_number_sketch(&self) -> Result<(TagIdentifier, f64, Sketch), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -369,7 +364,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_number_sketch_group_set(&self) -> Result<(f64, SketchGroupSet), KclError> {
+    pub(crate) fn get_number_sketch_set(&self) -> Result<(f64, SketchSet), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -460,6 +455,19 @@ impl Args {
             source_ranges: vec![self.source_range],
         }))
     }
+
+    pub(crate) fn get_polygon_args(
+        &self,
+    ) -> Result<
+        (
+            crate::std::shapes::PolygonData,
+            crate::std::shapes::SketchOrSurface,
+            Option<TagNode>,
+        ),
+        KclError,
+    > {
+        FromArgs::from_args(self, 0)
+    }
 }
 
 /// Types which impl this trait can be read out of the `Args` passed into a KCL function.
@@ -496,18 +504,6 @@ where
             }));
         };
         Ok(val)
-    }
-}
-
-impl<'a> FromArgs<'a> for KclValue {
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(v) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Argument at index {i} was missing",),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-        Ok(v.to_owned())
     }
 }
 
@@ -581,7 +577,29 @@ impl<'a> FromKclValue<'a> for &'a str {
     }
 }
 
-impl<'a> FromKclValue<'a> for TagDeclarator {
+impl<'a> FromKclValue<'a> for i64 {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val()
+            .and_then(|uv| uv.value.as_number())
+            .and_then(|num| num.as_i64())
+    }
+}
+
+impl<'a> FromKclValue<'a> for UserVal {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val().map(|x| x.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<JValue> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val()
+            .and_then(|uv| uv.value.as_array())
+            .map(ToOwned::to_owned)
+    }
+}
+
+impl<'a> FromKclValue<'a> for TagNode {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
     }
@@ -593,6 +611,12 @@ impl<'a> FromKclValue<'a> for TagIdentifier {
     }
 }
 
+impl<'a> FromKclValue<'a> for KclValue {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        Some(arg.clone())
+    }
+}
+
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for $typ {
@@ -601,6 +625,15 @@ macro_rules! impl_from_arg_via_json {
             }
         }
     };
+}
+
+impl<'a, T> FromKclValue<'a> for Vec<T>
+where
+    T: serde::de::DeserializeOwned + FromKclValue<'a>,
+{
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        from_user_val(arg)
+    }
 }
 
 macro_rules! impl_from_arg_for_array {
@@ -628,6 +661,7 @@ impl_from_arg_via_json!(super::sketch::AngledLineData);
 impl_from_arg_via_json!(super::sketch::AngledLineToData);
 impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
 impl_from_arg_via_json!(super::shapes::CircleData);
+impl_from_arg_via_json!(super::shapes::PolygonData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
 impl_from_arg_via_json!(super::sketch::BezierData);
@@ -645,7 +679,8 @@ impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(crate::std::loft::LoftData);
 impl_from_arg_via_json!(crate::std::planes::StandardPlane);
-impl_from_arg_via_json!(SketchGroup);
+impl_from_arg_via_json!(crate::std::mirror::Mirror2dData);
+impl_from_arg_via_json!(Sketch);
 impl_from_arg_via_json!(FaceTag);
 impl_from_arg_via_json!(String);
 impl_from_arg_via_json!(crate::ast::types::KclNone);
@@ -657,22 +692,22 @@ impl_from_arg_via_json!(bool);
 impl_from_arg_for_array!(2);
 impl_from_arg_for_array!(3);
 
-impl<'a> FromKclValue<'a> for SketchGroupSet {
+impl<'a> FromKclValue<'a> for SketchSet {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         let KclValue::UserVal(uv) = arg else {
             return None;
         };
-        if let Some((x, _meta)) = uv.get::<SketchGroup>() {
-            Some(SketchGroupSet::from(x))
+        if let Some((x, _meta)) = uv.get::<Sketch>() {
+            Some(SketchSet::from(x))
         } else {
-            uv.get::<Vec<SketchGroup>>().map(|x| x.0).map(SketchGroupSet::from)
+            uv.get::<Vec<Sketch>>().map(|x| x.0).map(SketchSet::from)
         }
     }
 }
 
-impl<'a> FromKclValue<'a> for Box<ExtrudeGroup> {
+impl<'a> FromKclValue<'a> for Box<Solid> {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::ExtrudeGroup(s) = arg else {
+        let KclValue::Solid(s) = arg else {
             return None;
         };
         Some(s.to_owned())
@@ -685,17 +720,17 @@ impl<'a> FromKclValue<'a> for FnAsArg<'a> {
     }
 }
 
-impl<'a> FromKclValue<'a> for ExtrudeGroupSet {
+impl<'a> FromKclValue<'a> for SolidSet {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        arg.get_extrude_group_set().ok()
+        arg.get_solid_set().ok()
     }
 }
-impl<'a> FromKclValue<'a> for SketchSurfaceOrGroup {
+impl<'a> FromKclValue<'a> for SketchOrSurface {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::UserVal(uv) => {
                 if let Some((sg, _meta)) = uv.get() {
-                    Some(Self::SketchGroup(sg))
+                    Some(Self::Sketch(sg))
                 } else {
                     None
                 }
@@ -713,25 +748,5 @@ impl<'a> FromKclValue<'a> for SketchSurface {
             KclValue::Face(sg) => Some(Self::Face(sg.clone())),
             _ => None,
         }
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<SketchGroup> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::UserVal(uv) = arg else {
-            return None;
-        };
-
-        uv.get::<Vec<SketchGroup>>().map(|x| x.0)
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<u64> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::UserVal(uv) = arg else {
-            return None;
-        };
-
-        uv.get::<Vec<u64>>().map(|x| x.0)
     }
 }

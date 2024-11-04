@@ -1,0 +1,7 @@
+export fn increment = (x) => {
+  return x + 1
+}
+
+export fn decrement = (x) => {
+  return x - 1
+}

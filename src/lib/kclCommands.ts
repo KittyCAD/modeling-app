@@ -2,11 +2,16 @@ import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarnin
 import { Command, CommandArgumentOption } from './commandTypes'
 import { kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
-import { FILE_EXT } from './constants'
+import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from './constants'
+import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
+import { parseProjectSettings } from 'lang/wasm'
+import { err } from './trap'
+import { projectConfigurationToSettingsPayload } from './settings/settingsUtils'
 
 interface OnSubmitProps {
   sampleName: string
   code: string
+  sampleUnits?: UnitLength_type
   method: 'overwrite' | 'newFile'
 }
 
@@ -34,7 +39,10 @@ export function kclCommands(
       icon: 'code',
       reviewMessage: ({ argumentsToSubmit }) =>
         argumentsToSubmit.method === 'newFile'
-          ? 'Create a new file with the example code?'
+          ? CommandBarOverwriteWarning({
+              heading: 'Create a new file, overwrite project units?',
+              message: `This will add the sample as a new file to your project, and replace your current project units with the sample's units.`,
+            })
           : CommandBarOverwriteWarning({}),
       groupId: 'code',
       onSubmit(data) {
@@ -44,20 +52,45 @@ export function kclCommands(
         const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
           data.sample.replace(FILE_EXT, '')
         )}/${encodeURIComponent(data.sample)}`
-        fetch(sampleCodeUrl)
-          .then(async (response) => {
-            if (!response.ok) {
-              console.error('Failed to fetch sample code:', response.statusText)
-              return
-            }
-            const code = await response.text()
+        const sampleSettingsFileUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
+          data.sample.replace(FILE_EXT, '')
+        )}/${PROJECT_SETTINGS_FILE_NAME}`
 
-            return {
-              sampleName: data.sample,
-              code,
-              method: data.method,
+        Promise.all([fetch(sampleCodeUrl), fetch(sampleSettingsFileUrl)])
+          .then(
+            async ([
+              codeResponse,
+              settingsResponse,
+            ]): Promise<OnSubmitProps> => {
+              if (!(codeResponse.ok && settingsResponse.ok)) {
+                console.error(
+                  'Failed to fetch sample code:',
+                  codeResponse.statusText
+                )
+                return Promise.reject(new Error('Failed to fetch sample code'))
+              }
+              const code = await codeResponse.text()
+              const parsedProjectSettings = parseProjectSettings(
+                await settingsResponse.text()
+              )
+              let projectSettingsPayload: ReturnType<
+                typeof projectConfigurationToSettingsPayload
+              > = {}
+              if (!err(parsedProjectSettings)) {
+                projectSettingsPayload = projectConfigurationToSettingsPayload(
+                  parsedProjectSettings
+                )
+              }
+
+              return {
+                sampleName: data.sample,
+                code,
+                method: data.method,
+                sampleUnits:
+                  projectSettingsPayload.modeling?.defaultUnit || 'mm',
+              }
             }
-          })
+          )
           .then((props) => {
             if (props?.code) {
               onSubmit(props).catch(reportError)

@@ -1,5 +1,11 @@
 import { test, expect, Page } from '@playwright/test'
-import { getUtils, setup, tearDown, setupElectron } from './test-utils'
+import {
+  getUtils,
+  setup,
+  tearDown,
+  setupElectron,
+  createProject,
+} from './test-utils'
 import { join } from 'path'
 import fs from 'fs'
 
@@ -447,125 +453,127 @@ test.describe('Text-to-CAD tests', () => {
     await expect(page.getByText(promptWithNewline)).toBeVisible()
   })
 
-  test('can do many at once and get many prompts back, and interact with many', async ({
-    page,
-  }) => {
-    // Let this test run longer since we've seen it timeout.
-    test.setTimeout(180_000)
-    // skip on windows
-    test.skip(
-      process.platform === 'win32',
-      'This test is flaky, skipping for now'
-    )
+  test(
+    'can do many at once and get many prompts back, and interact with many',
+    { tag: ['@skipWin'] },
+    async ({ page }) => {
+      // Let this test run longer since we've seen it timeout.
+      test.setTimeout(180_000)
+      // skip on windows
+      test.skip(
+        process.platform === 'win32',
+        'This test is flaky, skipping for now'
+      )
 
-    const u = await getUtils(page)
+      const u = await getUtils(page)
 
-    await page.setViewportSize({ width: 1000, height: 500 })
+      await page.setViewportSize({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+      await u.waitForAuthSkipAppStart()
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+      await sendPromptFromCommandBar(page, 'a 2x4 lego')
 
-    await sendPromptFromCommandBar(page, 'a 2x8 lego')
+      await sendPromptFromCommandBar(page, 'a 2x8 lego')
 
-    await sendPromptFromCommandBar(page, 'a 2x10 lego')
+      await sendPromptFromCommandBar(page, 'a 2x10 lego')
 
-    // Find the toast.
-    // Look out for the toast message
-    const submittingToastMessage = page.getByText(
-      `Submitting to Text-to-CAD API...`
-    )
-    await expect(submittingToastMessage.first()).toBeVisible()
+      // Find the toast.
+      // Look out for the toast message
+      const submittingToastMessage = page.getByText(
+        `Submitting to Text-to-CAD API...`
+      )
+      await expect(submittingToastMessage.first()).toBeVisible()
 
-    const generatingToastMessage = page.getByText(
-      `Generating parametric model...`
-    )
-    await expect(generatingToastMessage.first()).toBeVisible({
-      timeout: 10_000,
-    })
+      const generatingToastMessage = page.getByText(
+        `Generating parametric model...`
+      )
+      await expect(generatingToastMessage.first()).toBeVisible({
+        timeout: 10_000,
+      })
 
-    const successToastMessage = page.getByText(`Text-to-CAD successful`)
-    // We should have three success toasts.
-    await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 })
+      const successToastMessage = page.getByText(`Text-to-CAD successful`)
+      // We should have three success toasts.
+      await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 })
 
-    await expect(page.getByText('Copied')).not.toBeVisible()
+      await expect(page.getByText('Copied')).not.toBeVisible()
 
-    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
-    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
-    await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
+      await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+      await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+      await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
 
-    // Ensure if you reject one, the others stay.
-    const rejectButton = page.getByRole('button', { name: 'Reject' })
-    await expect(rejectButton.first()).toBeVisible()
-    // Click the reject button on the first toast.
-    await rejectButton.first().click()
+      // Ensure if you reject one, the others stay.
+      const rejectButton = page.getByRole('button', { name: 'Reject' })
+      await expect(rejectButton.first()).toBeVisible()
+      // Click the reject button on the first toast.
+      await rejectButton.first().click()
 
-    // The first toast should disappear, but not the others.
-    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
-    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
-    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+      // The first toast should disappear, but not the others.
+      await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
+      await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+      await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
 
-    // Ensure you can copy the code for one of the models remaining.
-    const copyToClipboardButton = page.getByRole('button', {
-      name: 'Copy to clipboard',
-    })
-    await expect(copyToClipboardButton.first()).toBeVisible()
-    // Click the button.
-    await copyToClipboardButton.first().click()
+      // Ensure you can copy the code for one of the models remaining.
+      const copyToClipboardButton = page.getByRole('button', {
+        name: 'Copy to clipboard',
+      })
+      await expect(copyToClipboardButton.first()).toBeVisible()
+      // Click the button.
+      await copyToClipboardButton.first().click()
 
-    // Expect the code to be copied.
-    await expect(page.getByText('Copied')).toBeVisible()
+      // Expect the code to be copied.
+      await expect(page.getByText('Copied')).toBeVisible()
 
-    // Click in the code editor.
-    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
+      // Click in the code editor.
+      await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
-    // Paste the code.
-    await page.keyboard.down('ControlOrMeta')
-    await page.keyboard.press('KeyV')
-    await page.keyboard.up('ControlOrMeta')
+      // Paste the code.
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('KeyV')
+      await page.keyboard.up('ControlOrMeta')
 
-    // Expect the code to be pasted.
-    await expect(page.locator('.cm-content')).toContainText(`2x8`)
+      // Expect the code to be pasted.
+      await expect(page.locator('.cm-content')).toContainText(`2x8`)
 
-    // Find the toast close button.
-    const closeButton = page.locator('[data-negative-button="close"]').first()
-    await expect(closeButton).toBeVisible()
-    await closeButton.click()
+      // Find the toast close button.
+      const closeButton = page.locator('[data-negative-button="close"]').first()
+      await expect(closeButton).toBeVisible()
+      await closeButton.click()
 
-    // Ensure the final toast remains.
-    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
-    await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible()
-    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+      // Ensure the final toast remains.
+      await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
+      await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible()
+      await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
 
-    // Ensure you can copy the code for the final model.
-    await expect(copyToClipboardButton).toBeVisible()
-    // Click the button.
-    await copyToClipboardButton.click()
+      // Ensure you can copy the code for the final model.
+      await expect(copyToClipboardButton).toBeVisible()
+      // Click the button.
+      await copyToClipboardButton.click()
 
-    // Expect the code to be copied.
-    await expect(page.getByText('Copied')).toBeVisible()
+      // Expect the code to be copied.
+      await expect(page.getByText('Copied')).toBeVisible()
 
-    // Click in the code editor.
-    await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
+      // Click in the code editor.
+      await page.locator('.cm-content').click({ position: { x: 10, y: 10 } })
 
-    // Paste the code.
-    await page.keyboard.down('ControlOrMeta')
-    await page.keyboard.press('KeyA')
-    await page.keyboard.up('ControlOrMeta')
-    await page.keyboard.press('Backspace')
-    await page.keyboard.down('ControlOrMeta')
-    await page.keyboard.press('KeyV')
-    await page.keyboard.up('ControlOrMeta')
+      // Paste the code.
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('KeyA')
+      await page.keyboard.up('ControlOrMeta')
+      await page.keyboard.press('Backspace')
+      await page.keyboard.down('ControlOrMeta')
+      await page.keyboard.press('KeyV')
+      await page.keyboard.up('ControlOrMeta')
 
-    // Expect the code to be pasted.
-    await expect(page.locator('.cm-content')).toContainText(`2x4`)
+      // Expect the code to be pasted.
+      await expect(page.locator('.cm-content')).toContainText(`2x4`)
 
-    // Expect the toast to disappear.
-    // Find the toast close button.
-    await expect(closeButton).toBeVisible()
-    await closeButton.click()
-    await expect(successToastMessage).not.toBeVisible()
-  })
+      // Expect the toast to disappear.
+      // Find the toast close button.
+      await expect(closeButton).toBeVisible()
+      await closeButton.click()
+      await expect(successToastMessage).not.toBeVisible()
+    }
+  )
 
   test('can do many at once with errors, clicking dismiss error does not dismiss all', async ({
     page,
@@ -698,17 +706,17 @@ test(
     const fileExists = () =>
       fs.existsSync(join(dir, projectName, textToCadFileName))
 
-    const {
-      createAndSelectProject,
-      openFilePanel,
-      openKclCodePanel,
-      waitForPageLoad,
-    } = await getUtils(page, test)
+    const { openFilePanel, openKclCodePanel, waitForPageLoad } = await getUtils(
+      page,
+      test
+    )
 
     await page.setViewportSize({ width: 1200, height: 500 })
 
     // Locators
-    const projectMenuButton = page.getByRole('button', { name: projectName })
+    const projectMenuButton = page
+      .getByTestId('project-sidebar-toggle')
+      .filter({ hasText: projectName })
     const textToCadFileButton = page.getByRole('listitem').filter({
       has: page.getByRole('button', { name: textToCadFileName }),
     })
@@ -717,7 +725,7 @@ test(
     )
 
     // Create and navigate to the project
-    await createAndSelectProject('project-000')
+    await createProject({ name: 'project-000', page })
 
     // Wait for Start Sketch otherwise you will not have access Text-to-CAD command
     await waitForPageLoad()

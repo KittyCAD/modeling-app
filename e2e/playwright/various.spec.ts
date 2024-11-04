@@ -49,14 +49,14 @@ test('Successful export shows a success toast', async ({ page }) => {
     ;(window as any).playwrightSkipFilePicker = true
     localStorage.setItem(
       'persistCode',
-      `const topAng = 25
-const bottomAng = 35
-const baseLen = 3.5
-const baseHeight = 1
-const totalHeightHalf = 2
-const armThick = 0.5
-const totalLen = 9.5
-const part001 = startSketchOn('-XZ')
+      `topAng = 25
+bottomAng = 35
+baseLen = 3.5
+baseHeight = 1
+totalHeightHalf = 2
+armThick = 0.5
+totalLen = 9.5
+part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> yLine(baseHeight, %)
   |> xLine(baseLen, %)
@@ -407,8 +407,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
     await page.waitForTimeout(500)
     await page.mouse.move(800, 200, { steps: 5 })
     await page.mouse.click(800, 200)
-    await page.waitForTimeout(500)
-    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible({
+      timeout: 20_000,
+    })
     await page.getByRole('button', { name: 'Continue' }).click()
     await expect(
       page.getByRole('button', { name: 'Submit command' })
@@ -462,7 +463,7 @@ test('Sketch on face', async ({ page }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const sketch001 = startSketchOn('XZ')
+      `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
@@ -475,7 +476,7 @@ test('Sketch on face', async ({ page }) => {
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-  const extrude001 = extrude(5 + 7, sketch001)`
+  extrude001 = extrude(5 + 7, sketch001)`
     )
   })
 
@@ -530,7 +531,7 @@ test('Sketch on face', async ({ page }) => {
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await expect.poll(u.normalisedEditorCode).toContain(
-    u.normalisedCode(`const sketch002 = startSketchOn(extrude001, seg01)
+    u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2.6, -1.25], %)
@@ -567,7 +568,7 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const result = makeTemplate`const sketch002 = startSketchOn(extrude001, seg01)
+  const result = makeTemplate`sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.83, 6.7], %)
   |> line([${[2.28, 2.35]}, -${0.07}], %)
   |> line([-3.05, -1.47], %)
@@ -596,6 +597,6 @@ test('Sketch on face', async ({ page }) => {
   await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
   const result2 = result.genNext`
-const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
+  const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })

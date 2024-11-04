@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ExtrudeGroup, ExtrudeGroupSet, KclValue},
+    executor::{ExecState, KclValue, Solid, SolidSet},
     std::{sketch::FaceTag, Args},
 };
 
@@ -26,9 +26,9 @@ pub struct ShellData {
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group_set): (ShellData, ExtrudeGroupSet) = args.get_data_and_extrude_group_set()?;
+    let (data, solid_set): (ShellData, SolidSet) = args.get_data_and_solid_set()?;
 
-    let result = inner_shell(data, extrude_group_set, exec_state, args).await?;
+    let result = inner_shell(data, solid_set, exec_state, args).await?;
     Ok(result.into())
 }
 
@@ -179,10 +179,10 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 }]
 async fn inner_shell(
     data: ShellData,
-    extrude_group_set: ExtrudeGroupSet,
+    solid_set: SolidSet,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<ExtrudeGroupSet, KclError> {
+) -> Result<SolidSet, KclError> {
     if data.faces.is_empty() {
         return Err(KclError::Type(KclErrorDetails {
             message: "Expected at least one face".to_string(),
@@ -190,23 +190,22 @@ async fn inner_shell(
         }));
     }
 
-    let extrude_groups: Vec<Box<ExtrudeGroup>> = extrude_group_set.clone().into();
-    if extrude_groups.is_empty() {
+    let solids: Vec<Box<Solid>> = solid_set.clone().into();
+    if solids.is_empty() {
         return Err(KclError::Type(KclErrorDetails {
-            message: "Expected at least one extrude group".to_string(),
+            message: "Expected at least one solid".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
     let mut face_ids = Vec::new();
-    for extrude_group in &extrude_groups {
+    for solid in &solids {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_extrude_group_set(exec_state, extrude_group.clone().into())
-            .await?;
+        args.flush_batch_for_solid_set(exec_state, solid.clone().into()).await?;
 
         for tag in &data.faces {
-            let extrude_plane_id = tag.get_face_id(extrude_group, exec_state, &args, false).await?;
+            let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false).await?;
 
             face_ids.push(extrude_plane_id);
         }
@@ -219,36 +218,36 @@ async fn inner_shell(
         }));
     }
 
-    // Make sure all the extrude groups have the same id, as we are going to shell them all at
+    // Make sure all the solids have the same id, as we are going to shell them all at
     // once.
-    if !extrude_groups.iter().all(|eg| eg.id == extrude_groups[0].id) {
+    if !solids.iter().all(|eg| eg.id == solids[0].id) {
         return Err(KclError::Type(KclErrorDetails {
-            message: "All extrude groups stem from the same root object, like multiple sketch on face extrusions, etc."
+            message: "All solids stem from the same root object, like multiple sketch on face extrusions, etc."
                 .to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
 
     args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
+        exec_state.id_generator.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: false,
             face_ids,
-            object_id: extrude_groups[0].id,
+            object_id: solids[0].id,
             shell_thickness: LengthUnit(data.thickness),
         }),
     )
     .await?;
 
-    Ok(extrude_group_set)
+    Ok(solid_set)
 }
 
 /// Make the inside of a 3D object hollow.
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (thickness, extrude_group): (f64, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (thickness, solid): (f64, Box<Solid>) = args.get_data_and_solid()?;
 
-    let extrude_group = inner_hollow(thickness, extrude_group, exec_state, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_hollow(thickness, solid, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Make the inside of a 3D object hollow.
@@ -306,25 +305,24 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 async fn inner_hollow(
     thickness: f64,
-    extrude_group: Box<ExtrudeGroup>,
+    solid: Box<Solid>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+) -> Result<Box<Solid>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_extrude_group_set(exec_state, extrude_group.clone().into())
-        .await?;
+    args.flush_batch_for_solid_set(exec_state, solid.clone().into()).await?;
 
     args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
+        exec_state.id_generator.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: true,
             face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
-            object_id: extrude_group.id,
+            object_id: solid.id,
             shell_thickness: LengthUnit(thickness),
         }),
     )
     .await?;
 
-    Ok(extrude_group)
+    Ok(solid)
 }

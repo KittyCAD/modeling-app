@@ -6,6 +6,7 @@ mod test_examples_line_to {
             crate::token::lexer("This is another code block.\nyes sirrr.\nlineTo").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
+        let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -15,9 +16,9 @@ mod test_examples_line_to {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: true,
+            context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -39,6 +40,7 @@ mod test_examples_line_to {
         let tokens = crate::token::lexer("This is code.\nIt does other shit.\nlineTo").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
+        let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -48,9 +50,9 @@ mod test_examples_line_to {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: true,
+            context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -108,34 +110,35 @@ impl crate::docs::StdLibFn for LineTo {
         vec![]
     }
 
-    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+    fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![
             crate::docs::StdLibFnArg {
                 name: "data".to_string(),
                 type_: "LineToData".to_string(),
-                schema: LineToData::json_schema(&mut generator),
+                schema: generator.root_schema_for::<LineToData>(),
                 required: true,
             },
             crate::docs::StdLibFnArg {
-                name: "sketch_group".to_string(),
-                type_: "SketchGroup".to_string(),
-                schema: SketchGroup::json_schema(&mut generator),
+                name: "sketch".to_string(),
+                type_: "Sketch".to_string(),
+                schema: generator.root_schema_for::<Sketch>(),
                 required: true,
             },
         ]
     }
 
-    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
+    fn return_value(&self, inline_subschemas: bool) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
+        settings.inline_subschemas = inline_subschemas;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let schema = generator.root_schema_for::<Sketch>();
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "SketchGroup".to_string(),
-            schema: <SketchGroup>::json_schema(&mut generator),
+            type_: "Sketch".to_string(),
+            schema,
             required: true,
         })
     }
@@ -187,10 +190,6 @@ impl crate::docs::StdLibFn for LineTo {
 #[doc = r" yes sirrr."]
 #[doc = r" lineTo"]
 #[doc = r" ```"]
-fn inner_line_to(
-    data: LineToData,
-    sketch_group: SketchGroup,
-    args: &Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_line_to(data: LineToData, sketch: Sketch, args: &Args) -> Result<Sketch, KclError> {
     Ok(())
 }

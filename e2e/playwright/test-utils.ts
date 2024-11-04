@@ -47,6 +47,14 @@ export const commonPoints = {
   num2: 14.44,
 }
 
+/** A semi-reliable color to check the default XZ plane on
+ * in dark mode in the default camera position
+ */
+export const darkModePlaneColorXZ: [number, number, number] = [50, 50, 99]
+
+/** A semi-reliable color to check the default dark mode bg color against */
+export const darkModeBgColor: [number, number, number] = [27, 27, 27]
+
 export const editorSelector = '[role="textbox"][data-language="kcl"]'
 type PaneId = 'variables' | 'code' | 'files' | 'logs'
 
@@ -87,7 +95,7 @@ async function removeCurrentCode(page: Page) {
   await expect(page.locator('.cm-content')).toHaveText('')
 }
 
-async function sendCustomCmd(page: Page, cmd: EngineCommand) {
+export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
   await page.getByTestId('custom-cmd-send-button').click()
 }
@@ -140,7 +148,7 @@ async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
 }
 
-async function closeDebugPanel(page: Page) {
+export async function closeDebugPanel(page: Page) {
   const debugLocator = page.getByTestId('debug-pane-button')
   await expect(debugLocator).toBeVisible()
   const isOpen = (await debugLocator?.getAttribute('aria-pressed')) === 'true'
@@ -355,10 +363,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     closeFilePanel: () => closeFilePanel(page),
     openVariablesPane: () => openVariablesPane(page),
     openLogsPane: () => openLogsPane(page),
-    openAndClearDebugPanel: async () => {
-      await openDebugPanel(page)
-      return clearCommandLogs(page)
-    },
+    openAndClearDebugPanel: () => openAndClearDebugPanel(page),
     clearAndCloseDebugPanel: async () => {
       await clearCommandLogs(page)
       return closeDebugPanel(page)
@@ -441,79 +446,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
       }
       return maxDiff
     },
-    getPixelRGBs: async (
-      coords: { x: number; y: number },
-      radius: number
-    ): Promise<[number, number, number][]> => {
-      const buffer = await page.screenshot({
-        fullPage: true,
-      })
-      const screenshot = await PNG.sync.read(buffer)
-      const pixMultiplier: number = await page.evaluate(
-        'window.devicePixelRatio'
-      )
-      const allCords: [number, number][] = [[coords.x, coords.y]]
-      for (let i = 1; i < radius; i++) {
-        allCords.push([coords.x + i, coords.y])
-        allCords.push([coords.x - i, coords.y])
-        allCords.push([coords.x, coords.y + i])
-        allCords.push([coords.x, coords.y - i])
-      }
-      return allCords.map(([x, y]) => {
-        const index =
-          (screenshot.width * y * pixMultiplier + x * pixMultiplier) * 4 // rbga is 4 channels
-        return [
-          screenshot.data[index],
-          screenshot.data[index + 1],
-          screenshot.data[index + 2],
-        ]
-      })
-    },
+    getPixelRGBs: getPixelRGBs(page),
     doAndWaitForImageDiff: (fn: () => Promise<unknown>, diffCount = 200) =>
-      new Promise<boolean>((resolve) => {
-        ;(async () => {
-          await page.screenshot({
-            path: './e2e/playwright/temp1.png',
-            fullPage: true,
-          })
-          await fn()
-          const isImageDiff = async () => {
-            await page.screenshot({
-              path: './e2e/playwright/temp2.png',
-              fullPage: true,
-            })
-            const screenshot1 = PNG.sync.read(
-              await fsp.readFile('./e2e/playwright/temp1.png')
-            )
-            const screenshot2 = PNG.sync.read(
-              await fsp.readFile('./e2e/playwright/temp2.png')
-            )
-            const actualDiffCount = pixelMatch(
-              screenshot1.data,
-              screenshot2.data,
-              null,
-              screenshot1.width,
-              screenshot2.height
-            )
-            return actualDiffCount > diffCount
-          }
-
-          // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-          let count = 0
-          const interval = setInterval(() => {
-            ;(async () => {
-              count++
-              if (await isImageDiff()) {
-                clearInterval(interval)
-                resolve(true)
-              } else if (count > 100) {
-                clearInterval(interval)
-                resolve(false)
-              }
-            })().catch(reportRejection)
-          }, 50)
-        })().catch(reportRejection)
-      }),
+      doAndWaitForImageDiff(page, fn, diffCount),
     emulateNetworkConditions: async (
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
@@ -530,17 +465,6 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     toNormalizedCode: (text: string) => {
       return text.replace(/\s+/g, '')
-    },
-
-    createAndSelectProject: async (hasText: string) => {
-      return test_?.step(
-        `Create and select project with text "${hasText}"`,
-        async () => {
-          await page.getByTestId('home-new-file').click()
-          const projectLinksPost = page.getByTestId('project-link')
-          await projectLinksPost.filter({ hasText }).click()
-        }
-      )
     },
 
     editorTextMatches: async (code: string) => {
@@ -565,6 +489,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     createNewFile: async (name: string) => {
       return test?.step(`Create a file named ${name}`, async () => {
+        // If the application is in the middle of connecting a stream
+        // then creating a new file won't work in the end.
+        await expect(
+          page.getByRole('button', { name: 'Start Sketch' })
+        ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
         await page.getByTestId('file-rename-field').fill(name)
         await page.keyboard.press('Enter')
@@ -577,6 +506,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
           .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
           .click()
+        await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
+          name
+        )
       })
     },
 
@@ -945,10 +877,20 @@ export async function setupElectron({
     const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
     const settingsOverrides = TOML.stringify(
       appSettings
-        ? { settings: appSettings }
-        : {
-            ...TEST_SETTINGS,
+        ? {
             settings: {
+              ...TEST_SETTINGS,
+              ...appSettings,
+              app: {
+                ...TEST_SETTINGS.app,
+                projectDirectory: projectDirName,
+                ...appSettings.app,
+              },
+            },
+          }
+        : {
+            settings: {
+              ...TEST_SETTINGS,
               app: {
                 ...TEST_SETTINGS.app,
                 projectDirectory: projectDirName,
@@ -1027,32 +969,116 @@ export async function isOutOfViewInScrollContainer(
   return isOutOfView
 }
 
-export async function createProjectAndRenameIt({
+export async function createProject({
   name,
   page,
+  returnHome = false,
 }: {
   name: string
   page: Page
+  returnHome?: boolean
 }) {
-  await page.getByRole('button', { name: 'New project' }).click()
-  await expect(page.getByText('Successfully created')).toBeVisible()
-  await expect(page.getByText('Successfully created')).not.toBeVisible()
+  await test.step(`Create project and navigate to it`, async () => {
+    await page.getByRole('button', { name: 'New project' }).click()
+    await page.getByRole('textbox', { name: 'Name' }).fill(name)
+    await page.getByRole('button', { name: 'Continue' }).click()
 
-  await expect(page.getByText(`project-000`)).toBeVisible()
-  await page.getByText(`project-000`).hover()
-  await page.getByText(`project-000`).focus()
-
-  await page.getByLabel('sketch').first().click()
-
-  await page.waitForTimeout(100)
-
-  // type the name passed in
-  await page.keyboard.press('Backspace')
-  await page.keyboard.type(name)
-
-  await page.getByLabel('checkmark').last().click()
+    if (returnHome) {
+      await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+      await page.getByTestId('app-logo').click()
+    }
+  })
 }
 
 export function executorInputPath(fileName: string): string {
   return join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+}
+
+export async function doAndWaitForImageDiff(
+  page: Page,
+  fn: () => Promise<unknown>,
+  diffCount = 200
+) {
+  return new Promise<boolean>((resolve) => {
+    ;(async () => {
+      await page.screenshot({
+        path: './e2e/playwright/temp1.png',
+        fullPage: true,
+      })
+      await fn()
+      const isImageDiff = async () => {
+        await page.screenshot({
+          path: './e2e/playwright/temp2.png',
+          fullPage: true,
+        })
+        const screenshot1 = PNG.sync.read(
+          await fsp.readFile('./e2e/playwright/temp1.png')
+        )
+        const screenshot2 = PNG.sync.read(
+          await fsp.readFile('./e2e/playwright/temp2.png')
+        )
+        const actualDiffCount = pixelMatch(
+          screenshot1.data,
+          screenshot2.data,
+          null,
+          screenshot1.width,
+          screenshot2.height
+        )
+        return actualDiffCount > diffCount
+      }
+
+      // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
+      let count = 0
+      const interval = setInterval(() => {
+        ;(async () => {
+          count++
+          if (await isImageDiff()) {
+            clearInterval(interval)
+            resolve(true)
+          } else if (count > 100) {
+            clearInterval(interval)
+            resolve(false)
+          }
+        })().catch(reportRejection)
+      }, 50)
+    })().catch(reportRejection)
+  })
+}
+
+export async function openAndClearDebugPanel(page: Page) {
+  await openDebugPanel(page)
+  return clearCommandLogs(page)
+}
+
+export function sansWhitespace(str: string) {
+  return str.replace(/\s+/g, '').trim()
+}
+
+export function getPixelRGBs(page: Page) {
+  return async (
+    coords: { x: number; y: number },
+    radius: number
+  ): Promise<[number, number, number][]> => {
+    const buffer = await page.screenshot({
+      fullPage: true,
+    })
+    const screenshot = await PNG.sync.read(buffer)
+    const pixMultiplier: number = await page.evaluate('window.devicePixelRatio')
+    const allCords: [number, number][] = [[coords.x, coords.y]]
+    for (let i = 1; i < radius; i++) {
+      allCords.push([coords.x + i, coords.y])
+      allCords.push([coords.x - i, coords.y])
+      allCords.push([coords.x, coords.y + i])
+      allCords.push([coords.x, coords.y - i])
+    }
+    return allCords.map(([x, y]) => {
+      const index =
+        (screenshot.width * y * pixMultiplier + x * pixMultiplier) * 4 // rbga is 4 channels
+      return [
+        screenshot.data[index],
+        screenshot.data[index + 1],
+        screenshot.data[index + 2],
+      ]
+    })
+  }
 }

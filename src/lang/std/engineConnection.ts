@@ -3,7 +3,12 @@ import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
-import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
+import {
+  Themes,
+  getThemeColorForEngine,
+  getOppositeTheme,
+  darkModeMatcher,
+} from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
   ArtifactGraph,
@@ -23,6 +28,7 @@ import {
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -43,6 +49,11 @@ interface NewTrackArgs {
 export enum ExportIntent {
   Save = 'save',
   Make = 'make',
+}
+
+export interface ExportInfo {
+  intent: ExportIntent
+  name: string
 }
 
 type ClientMetrics = Models['ClientMetrics_type']
@@ -1349,7 +1360,7 @@ export class EngineCommandManager extends EventTarget {
    * export in progress. Otherwise it is an enum value of the intent.
    * Another export cannot be started if one is already in progress.
    */
-  private _exportIntent: ExportIntent | null = null
+  private _exportInfo: ExportInfo | null = null
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
 
   subscriptions: {
@@ -1375,6 +1386,7 @@ export class EngineCommandManager extends EventTarget {
           highlightEdges: true,
           enableSSAO: true,
           showScaleGrid: false,
+          cameraProjection: 'perspective',
         }
   }
 
@@ -1393,6 +1405,9 @@ export class EngineCommandManager extends EventTarget {
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
+  private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
+    this.setTheme(e.matches ? Themes.Dark : Themes.Light).catch(reportRejection)
+  }
   private onEngineConnectionStarted = ({ detail: engineConnection }: any) => {}
   private onEngineConnectionNewTrack = ({
     detail,
@@ -1401,12 +1416,15 @@ export class EngineCommandManager extends EventTarget {
     (() => {}) as any
   kclManager: null | KclManager = null
 
-  set exportIntent(intent: ExportIntent | null) {
-    this._exportIntent = intent
+  // The current "manufacturing machine" aka 3D printer, CNC, etc.
+  public machineManager: MachineManager | null = null
+
+  set exportInfo(info: ExportInfo | null) {
+    this._exportInfo = info
   }
 
-  get exportIntent() {
-    return this._exportIntent
+  get exportInfo() {
+    return this._exportInfo
   }
 
   start({
@@ -1423,6 +1441,7 @@ export class EngineCommandManager extends EventTarget {
       highlightEdges: true,
       enableSSAO: true,
       showScaleGrid: false,
+      cameraProjection: 'orthographic',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
@@ -1479,30 +1498,26 @@ export class EngineCommandManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
-      // Set the stream background color
-      // This takes RGBA values from 0-1
-      // So we convert from the conventional 0-255 found in Figma
+      // Set the stream's camera projection type
+      // We don't send a command to the engine if in perspective mode because
+      // for now it's the engine's default.
+      if (settings.cameraProjection === 'orthographic') {
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_set_orthographic',
+          },
+        }).catch(reportRejection)
+      }
 
-      void this.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'set_background_color',
-          color: getThemeColorForEngine(this.settings.theme),
-        },
-      })
-
-      // Sets the default line colors
-      const opposingTheme = getOppositeTheme(this.settings.theme)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.sendSceneCommand({
-        cmd_id: uuidv4(),
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'set_default_system_properties',
-          color: getThemeColorForEngine(opposingTheme),
-        },
-      })
+      // Set the theme
+      this.setTheme(this.settings.theme).catch(reportRejection)
+      // Set up a listener for the dark theme media query
+      darkModeMatcher?.addEventListener(
+        'change',
+        this.onDarkThemeMediaQueryChange
+      )
 
       // Set the edge lines visibility
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1601,7 +1616,7 @@ export class EngineCommandManager extends EventTarget {
           // because in all other cases we send JSON strings. But in the case of
           // export we send a binary blob.
           // Pass this to our export function.
-          if (this.exportIntent === null || this.pendingExport === undefined) {
+          if (this.exportInfo === null || this.pendingExport === undefined) {
             toast.error(
               'Export intent was not set, but export data was received'
             )
@@ -1611,7 +1626,7 @@ export class EngineCommandManager extends EventTarget {
             return
           }
 
-          switch (this.exportIntent) {
+          switch (this.exportInfo.intent) {
             case ExportIntent.Save: {
               exportSave(event.data, this.pendingExport.toastId).then(() => {
                 this.pendingExport?.resolve(null)
@@ -1619,21 +1634,28 @@ export class EngineCommandManager extends EventTarget {
               break
             }
             case ExportIntent.Make: {
-              exportMake(event.data, this.pendingExport.toastId).then(
-                (result) => {
-                  if (result) {
-                    this.pendingExport?.resolve(null)
-                  } else {
-                    this.pendingExport?.reject('Failed to make export')
-                  }
-                },
-                this.pendingExport?.reject
-              )
+              if (!this.machineManager) {
+                console.warn('Some how, no manufacturing machine is selected.')
+                break
+              }
+
+              exportMake(
+                event.data,
+                this.exportInfo.name,
+                this.pendingExport.toastId,
+                this.machineManager
+              ).then((result) => {
+                if (result) {
+                  this.pendingExport?.resolve(null)
+                } else {
+                  this.pendingExport?.reject('Failed to make export')
+                }
+              }, this.pendingExport?.reject)
               break
             }
           }
           // Set the export intent back to null.
-          this.exportIntent = null
+          this.exportInfo = null
           return
         }
 
@@ -1793,6 +1815,10 @@ export class EngineCommandManager extends EventTarget {
         EngineConnectionEvents.NewTrack,
         this.onEngineConnectionNewTrack as EventListener
       )
+      darkModeMatcher?.removeEventListener(
+        'change',
+        this.onDarkThemeMediaQueryChange
+      )
 
       this.engineConnection?.tearDown(opts)
 
@@ -1943,15 +1969,15 @@ export class EngineCommandManager extends EventTarget {
       return Promise.resolve(null)
     } else if (cmd.type === 'export') {
       const promise = new Promise<null>((resolve, reject) => {
-        if (this.exportIntent === null) {
-          if (this.exportIntent === null) {
+        if (this.exportInfo === null) {
+          if (this.exportInfo === null) {
             toast.error('Export intent was not set, but export is being sent')
             console.error('Export intent was not set, but export is being sent')
             return
           }
         }
         const toastId = toast.loading(
-          this.exportIntent === ExportIntent.Save
+          this.exportInfo.intent === ExportIntent.Save
             ? EXPORT_TOAST_MESSAGES.START
             : MAKE_TOAST_MESSAGES.START
         )
@@ -1965,7 +1991,7 @@ export class EngineCommandManager extends EventTarget {
             resolve(passThrough)
           },
           reject: (reason: string) => {
-            this.exportIntent = null
+            this.exportInfo = null
             reject(reason)
           },
           commandId: command.cmd_id,
@@ -2153,6 +2179,34 @@ export class EngineCommandManager extends EventTarget {
         hidden: hidden,
       },
     })
+  }
+
+  /**
+   * Set the engine's theme
+   */
+  async setTheme(theme: Themes) {
+    // Set the stream background color
+    // This takes RGBA values from 0-1
+    // So we convert from the conventional 0-255 found in Figma
+    this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_background_color',
+        color: getThemeColorForEngine(theme),
+      },
+    }).catch(reportRejection)
+
+    // Sets the default line colors
+    const opposingTheme = getOppositeTheme(theme)
+    this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'set_default_system_properties',
+        color: getThemeColorForEngine(opposingTheme),
+      },
+    }).catch(reportRejection)
   }
 
   /**

@@ -7,7 +7,7 @@ import {
 } from 'lib/singletons'
 import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { uuidv4 } from 'lib/utils'
+import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
@@ -37,7 +37,9 @@ import {
   getWallCodeRef,
   CodeRef,
   getCodeRefsByArtifactId,
+  ArtifactId,
 } from 'lang/std/artifactGraph'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -45,23 +47,30 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
 /** @deprecated Use {@link Artifact} instead. */
-export type Selection__old = {
-  type:
-    | 'default'
-    | 'line-end'
-    | 'line-mid'
-    | 'extrude-wall'
-    | 'solid2D'
-    | 'start-cap'
-    | 'end-cap'
-    | 'point'
-    | 'edge'
-    | 'adjacent-edge'
-    | 'line'
-    | 'arc'
-    | 'all'
-  range: SourceRange
-}
+export type Selection__old =
+  | {
+      type:
+        | 'default'
+        | 'line-end'
+        | 'line-mid'
+        | 'extrude-wall'
+        | 'solid2D'
+        | 'start-cap'
+        | 'end-cap'
+        | 'point'
+        | 'edge'
+        | 'adjacent-edge'
+        | 'line'
+        | 'arc'
+        | 'all'
+      range: SourceRange
+    }
+  | {
+      type: 'opposite-edgeCut' | 'adjacent-edgeCut' | 'base-edgeCut'
+      range: SourceRange
+      // TODO this is a temporary measure that well be made redundant with: https://github.com/KittyCAD/modeling-app/pull/3836
+      secondaryRange: SourceRange
+    }
 /** @deprecated Use {@link Selection} instead. */
 export type Selections__old = {
   otherSelections: Axis[]
@@ -225,40 +234,6 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
-  // if (!_artifact)
-  //   return {
-  //     type: 'Set selection',
-  //     data: { selectionType: 'singleCodeCursor' },
-  //   }
-  // if (_artifact.type === 'solid2D') {
-  //   const codeRef = getSolid2dCodeRef(
-  //     _artifact,
-  //     engineCommandManager.artifactGraph
-  //   )
-  //   if (err(codeRef)) return null
-  //   return {
-  //     type: 'Set selection',
-  //     data: {
-  //       selectionType: 'singleCodeCursor',
-
-  //       // selection: { range: codeRef.range, type: 'solid2D' },
-  //     },
-  //   }
-  // }
-  // if (_artifact.type === 'cap') {
-  //   const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
-  //   if (err(codeRef)) return null
-  //   return {
-  //     type: 'Set selection',
-  //     data: {
-  //       selectionType: 'singleCodeCursor',
-  //       selection: {
-  //         range: codeRef.range,
-  //         type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
-  //       },
-  //     },
-  //   }
-  // }
   // if (_artifact.type === 'wall') {
   //   const codeRef = getWallCodeRef(
   //     _artifact,
@@ -302,6 +277,52 @@ export async function getEventForSelectWithPoint({
   //     data: {
   //       selectionType: 'singleCodeCursor',
   //       selection: { range: codeRef.range, type: 'edge' },
+  //     },
+  //   }
+  // }
+  // if (_artifact.type === 'edgeCut') {
+  //   const consumedEdge = getArtifactOfTypes(
+  //     { key: _artifact.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+  //     engineCommandManager.artifactGraph
+  //   )
+  //   if (err(consumedEdge))
+  //     return {
+  //       type: 'Set selection',
+  //       data: {
+  //         selectionType: 'singleCodeCursor',
+  //         selection: { range: _artifact.codeRef.range, type: 'default' },
+  //       },
+  //     }
+  //   if (consumedEdge.type === 'segment') {
+  //     return {
+  //       type: 'Set selection',
+  //       data: {
+  //         selectionType: 'singleCodeCursor',
+  //         selection: {
+  //           range: _artifact.codeRef.range,
+  //           type: 'base-edgeCut',
+  //           secondaryRange: consumedEdge.codeRef.range,
+  //         },
+  //       },
+  //     }
+  //   }
+  //   const segment = getArtifactOfTypes(
+  //     { key: consumedEdge.segId, types: ['segment'] },
+  //     engineCommandManager.artifactGraph
+  //   )
+  //   if (err(segment)) return null
+  //   return {
+  //     type: 'Set selection',
+  //     data: {
+  //       selectionType: 'singleCodeCursor',
+  //       selection: {
+  //         range: _artifact.codeRef.range,
+  //         type:
+  //           consumedEdge.subType === 'adjacent'
+  //             ? 'adjacent-edgeCut'
+  //             : 'opposite-edgeCut',
+  //         secondaryRange: segment.codeRef.range,
+  //       },
   //     },
   //   }
   // }
@@ -479,7 +500,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection__old[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<CallExpression>(
+    const nodeMeta = getNodeFromPath<Node<CallExpression>>(
       updated,
       segmentGroup.userData.pathToNode,
       'CallExpression'
@@ -691,24 +712,25 @@ export function canSubmitSelectionArg(
   )
 }
 
-function codeToIdSelections(
+export function codeToIdSelections(
   codeBasedSelections: Selection__old[]
 ): SelectionToEngine[] {
   return codeBasedSelections
-    .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
+    .flatMap((selection): null | SelectionToEngine[] => {
+      const { type } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact)) return false
-          return isOverlap(artifact.codeRef.range, range)
+          if (!('codeRef' in artifact)) return null
+          return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
-                selection: { type, range, ...rest },
+                selection,
                 id,
               }
-            : false
+            : null
         })
-        .filter(Boolean)
+        .filter(isNonNullable)
 
       /** TODO refactor
        * selections in our app is a sourceRange plus some metadata
@@ -721,9 +743,14 @@ function codeToIdSelections(
        * In the case of a user moving the cursor them, we will still need to figure out what artifact from the graph matches best, but we will just need sane defaults
        * and most of the time we can expect the user to be clicking in the 3d scene instead.
        */
-      let bestCandidate
+      let bestCandidate:
+        | {
+            id: ArtifactId
+            artifact: unknown
+            selection: Selection__old
+          }
+        | undefined
       overlappingEntries.forEach((entry) => {
-        if (!entry) return
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
@@ -733,9 +760,15 @@ function codeToIdSelections(
             entry.artifact.solid2dId || ''
           )
           if (solid?.type !== 'solid2D') return
+          if (!entry.artifact.solid2dId) {
+            console.error(
+              'Expected PathArtifact to have solid2dId, but none found'
+            )
+            return
+          }
           bestCandidate = {
             artifact: solid,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.solid2dId,
           }
         }
@@ -746,7 +779,7 @@ function codeToIdSelections(
           if (wall?.type !== 'wall') return
           bestCandidate = {
             artifact: wall,
-            selection: { type, range, ...rest },
+            selection,
             id: entry.artifact.surfaceId,
           }
           return
@@ -760,7 +793,7 @@ function codeToIdSelections(
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
-            selection: { type, range, ...rest },
+            selection,
             id: edge[0],
           }
         }
@@ -776,7 +809,7 @@ function codeToIdSelections(
           if (!edge) return
           bestCandidate = {
             artifact: edge[1],
-            selection: { type, range, ...rest },
+            selection,
             id: edge[0],
           }
         }
@@ -802,29 +835,69 @@ function codeToIdSelections(
           if (!cap) return
           bestCandidate = {
             artifact: entry.artifact,
-            selection: { type, range, ...rest },
+            selection,
             id: cap[0],
           }
           return
         }
+        if (entry.artifact.type === 'edgeCut') {
+          const consumedEdge = getArtifactOfTypes(
+            {
+              key: entry.artifact.consumedEdgeId,
+              types: ['segment', 'sweepEdge'],
+            },
+            engineCommandManager.artifactGraph
+          )
+          if (err(consumedEdge)) return
+          if (
+            consumedEdge.type === 'segment' &&
+            type === 'base-edgeCut' &&
+            isOverlap(
+              consumedEdge.codeRef.range,
+              selection.secondaryRange || [0, 0]
+            )
+          ) {
+            bestCandidate = {
+              artifact: entry.artifact,
+              selection,
+              id: entry.id,
+            }
+          } else if (
+            consumedEdge.type === 'sweepEdge' &&
+            ((type === 'adjacent-edgeCut' &&
+              consumedEdge.subType === 'adjacent') ||
+              (type === 'opposite-edgeCut' &&
+                consumedEdge.subType === 'opposite'))
+          ) {
+            const seg = getArtifactOfTypes(
+              { key: consumedEdge.segId, types: ['segment'] },
+              engineCommandManager.artifactGraph
+            )
+            if (err(seg)) return
+            if (
+              isOverlap(seg.codeRef.range, selection.secondaryRange || [0, 0])
+            ) {
+              bestCandidate = {
+                artifact: entry.artifact,
+                selection,
+                id: entry.id,
+              }
+            }
+          }
+        }
       })
 
       if (bestCandidate) {
-        const _bestCandidate = bestCandidate as {
-          artifact: any
-          selection: any
-          id: string
-        }
         return [
           {
             type,
-            id: _bestCandidate.id,
+            id: bestCandidate.id,
           },
         ]
       }
       return null
     })
-    .filter(Boolean) as any
+    .filter(isNonNullable)
 }
 
 export async function sendSelectEventToEngine(
@@ -868,9 +941,20 @@ export function updateSelections(
       const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
+      const selection = prevSelectionRanges.codeBasedSelections[Number(index)]
+      if (
+        selection?.type === 'base-edgeCut' ||
+        selection?.type === 'adjacent-edgeCut' ||
+        selection?.type === 'opposite-edgeCut'
+      )
+        return {
+          range: [node.start, node.end],
+          type: selection?.type,
+          secondaryRange: selection?.secondaryRange,
+        }
       return {
         range: [node.start, node.end],
-        type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
+        type: selection?.type,
       }
     })
     .filter((x?: Selection__old) => x !== undefined) as Selection__old[]

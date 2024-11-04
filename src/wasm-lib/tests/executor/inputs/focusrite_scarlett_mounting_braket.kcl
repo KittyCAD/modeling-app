@@ -97,7 +97,7 @@ const tabsR = startSketchOn(tabPlane)
      }, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
-       repetitions: 1,
+       instances: 2,
        distance: length + 2 * thk - (tabLength * 4 / 3)
      }, %)
 
@@ -125,7 +125,7 @@ const tabsL = startSketchOn(tabPlane)
      }, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
-       repetitions: 1,
+       instances: 2,
        distance: length + 2 * thk - (tabLength * 4 / 3)
      }, %)
 

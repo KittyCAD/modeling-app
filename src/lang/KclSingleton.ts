@@ -8,6 +8,8 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  emptyExecState,
+  ExecState,
   initPromise,
   parse,
   PathToNode,
@@ -19,9 +21,10 @@ import {
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 interface ExecuteArgs {
-  ast?: Program
+  ast?: Node<Program>
   zoomToFit?: boolean
   executionId?: number
   zoomOnRangeAndType?: {
@@ -31,18 +34,18 @@ interface ExecuteArgs {
 }
 
 export class KclManager {
-  private _ast: Program = {
+  private _ast: Node<Program> = {
     body: [],
     start: 0,
     end: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
-      start: [],
-      digest: null,
+      startNodes: [],
     },
-    digest: null,
   }
+  private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
+  lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
   private _lints: Diagnostic[] = []
   private _kclErrors: KCLError[] = []
@@ -53,7 +56,7 @@ export class KclManager {
   engineCommandManager: EngineCommandManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
-  private _astCallBack: (arg: Program) => void = () => {}
+  private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
@@ -71,9 +74,19 @@ export class KclManager {
   get programMemory() {
     return this._programMemory
   }
-  set programMemory(programMemory) {
+  // This is private because callers should be setting the entire execState.
+  private set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
+  }
+
+  set execState(execState) {
+    this._execState = execState
+    this.programMemory = execState.memory
+  }
+
+  get execState() {
+    return this._execState
   }
 
   get logs() {
@@ -169,7 +182,7 @@ export class KclManager {
     setWasmInitFailed,
   }: {
     setProgramMemory: (arg: ProgramMemory) => void
-    setAst: (arg: Program) => void
+    setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
     setKclErrors: (arg: KCLError[]) => void
     setIsExecuting: (arg: boolean) => void
@@ -193,14 +206,12 @@ export class KclManager {
       end: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
-        start: [],
-        digest: null,
+        startNodes: [],
       },
-      digest: null,
     }
   }
 
-  safeParse(code: string): Program | null {
+  safeParse(code: string): Node<Program> | null {
     const ast = parse(code)
     this.lints = []
     this.kclErrors = []
@@ -252,8 +263,9 @@ export class KclManager {
     // Make sure we clear before starting again. End session will do this.
     this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
-    const { logs, errors, programMemory, isInterrupted } = await executeAst({
+    const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
     })
 
@@ -263,7 +275,7 @@ export class KclManager {
       this.lints = await lintAst({ ast: ast })
 
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
-      defaultSelectionFilter(programMemory, this.engineCommandManager)
+      defaultSelectionFilter(execState.memory, this.engineCommandManager)
 
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
@@ -281,6 +293,7 @@ export class KclManager {
             type: 'zoom_to_fit',
             object_ids: zoomObjectId ? [zoomObjectId] : [], // leave empty to zoom to all objects
             padding: 0.1, // padding around the objects
+            animated: false, // don't animate the zoom for now
           },
         })
       }
@@ -293,10 +306,21 @@ export class KclManager {
       this._cancelTokens.delete(currentExecutionId)
       return
     }
+
+    // Exit sketch mode if the AST is empty
+    if (this._isAstEmpty(ast)) {
+      await this.disableSketchMode()
+    }
+
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addKclErrors(isInterrupted ? [] : errors)
-    this.programMemory = programMemory
+    // Reset the next ID index so that we reuse the previous IDs next time.
+    execState.idGenerator.nextId = 0
+    this.execState = execState
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = execState.memory
+    }
     this.ast = { ...ast }
     this._executeCallback()
     this.engineCommandManager.addCommandLog({
@@ -333,15 +357,20 @@ export class KclManager {
     await codeManager.writeToFile()
     this._ast = { ...newAst }
 
-    const { logs, errors, programMemory } = await executeAst({
+    const { logs, errors, execState } = await executeAst({
       ast: newAst,
+      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
       useFakeExecutor: true,
     })
 
     this._logs = logs
     this._kclErrors = errors
-    this._programMemory = programMemory
+    this._execState = execState
+    this._programMemory = execState.memory
+    if (!errors.length) {
+      this.lastSuccessfulProgramMemory = execState.memory
+    }
     if (updates !== 'artifactRanges') return
 
     // TODO the below seems like a work around, I wish there's a comment explaining exactly what
@@ -349,7 +378,7 @@ export class KclManager {
     Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
         if (!('codeRef' in artifact)) return
-        const _node1 = getNodeFromPath<CallExpression>(
+        const _node1 = getNodeFromPath<Node<CallExpression>>(
           this.ast,
           artifact.codeRef.pathToNode,
           'CallExpression'
@@ -413,7 +442,7 @@ export class KclManager {
   // but should probably have think about which of the function to keep
   // This always updates the code state and editor and writes to the file system.
   async updateAst(
-    ast: Program,
+    ast: Node<Program>,
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
@@ -424,7 +453,7 @@ export class KclManager {
       }
     }
   ): Promise<{
-    newAst: Program
+    newAst: Node<Program>
     selections?: Selections__old
   }> {
     const newCode = recast(ast)
@@ -545,6 +574,24 @@ export class KclManager {
   defaultSelectionFilter() {
     defaultSelectionFilter(this.programMemory, this.engineCommandManager)
   }
+
+  /**
+   * We can send a single command of 'enable_sketch_mode' or send this in a batched request.
+   * When there is no code in the KCL editor we should be sending 'sketch_mode_disable' since any previous half finished
+   * code could leave the state of the application in sketch mode on the engine side.
+   */
+  async disableSketchMode() {
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'sketch_mode_disable' },
+    })
+  }
+
+  // Determines if there is no KCL code which means it is executing a blank KCL file
+  _isAstEmpty(ast: Node<Program>) {
+    return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
 }
 
 function defaultSelectionFilter(
@@ -552,7 +599,7 @@ function defaultSelectionFilter(
   engineCommandManager: EngineCommandManager
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  programMemory.hasSketchOrExtrudeGroup() &&
+  programMemory.hasSketchOrSolid() &&
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

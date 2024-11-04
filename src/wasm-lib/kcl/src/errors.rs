@@ -14,6 +14,8 @@ pub enum KclError {
     Syntax(KclErrorDetails),
     #[error("semantic: {0:?}")]
     Semantic(KclErrorDetails),
+    #[error("import cycle: {0:?}")]
+    ImportCycle(KclErrorDetails),
     #[error("type: {0:?}")]
     Type(KclErrorDetails),
     #[error("unimplemented: {0:?}")]
@@ -52,6 +54,7 @@ impl KclError {
             KclError::Lexical(_) => "lexical",
             KclError::Syntax(_) => "syntax",
             KclError::Semantic(_) => "semantic",
+            KclError::ImportCycle(_) => "import cycle",
             KclError::Type(_) => "type",
             KclError::Unimplemented(_) => "unimplemented",
             KclError::Unexpected(_) => "unexpected",
@@ -68,6 +71,7 @@ impl KclError {
             KclError::Lexical(e) => e.source_ranges.clone(),
             KclError::Syntax(e) => e.source_ranges.clone(),
             KclError::Semantic(e) => e.source_ranges.clone(),
+            KclError::ImportCycle(e) => e.source_ranges.clone(),
             KclError::Type(e) => e.source_ranges.clone(),
             KclError::Unimplemented(e) => e.source_ranges.clone(),
             KclError::Unexpected(e) => e.source_ranges.clone(),
@@ -85,6 +89,7 @@ impl KclError {
             KclError::Lexical(e) => &e.message,
             KclError::Syntax(e) => &e.message,
             KclError::Semantic(e) => &e.message,
+            KclError::ImportCycle(e) => &e.message,
             KclError::Type(e) => &e.message,
             KclError::Unimplemented(e) => &e.message,
             KclError::Unexpected(e) => &e.message,
@@ -102,6 +107,7 @@ impl KclError {
             KclError::Lexical(e) => e.source_ranges = source_ranges,
             KclError::Syntax(e) => e.source_ranges = source_ranges,
             KclError::Semantic(e) => e.source_ranges = source_ranges,
+            KclError::ImportCycle(e) => e.source_ranges = source_ranges,
             KclError::Type(e) => e.source_ranges = source_ranges,
             KclError::Unimplemented(e) => e.source_ranges = source_ranges,
             KclError::Unexpected(e) => e.source_ranges = source_ranges,
@@ -121,6 +127,7 @@ impl KclError {
             KclError::Lexical(e) => e.source_ranges.extend(source_ranges),
             KclError::Syntax(e) => e.source_ranges.extend(source_ranges),
             KclError::Semantic(e) => e.source_ranges.extend(source_ranges),
+            KclError::ImportCycle(e) => e.source_ranges.extend(source_ranges),
             KclError::Type(e) => e.source_ranges.extend(source_ranges),
             KclError::Unimplemented(e) => e.source_ranges.extend(source_ranges),
             KclError::Unexpected(e) => e.source_ranges.extend(source_ranges),

@@ -3,155 +3,131 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 59,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 26,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 26,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 9,
             "name": "obj",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 12,
             "end": 26,
             "properties": [
               {
-                "type": "ObjectProperty",
-                "start": 14,
                 "end": 18,
                 "key": {
-                  "type": "Identifier",
-                  "start": 14,
                   "end": 15,
                   "name": "a",
-                  "digest": null
+                  "start": 14,
+                  "type": "Identifier"
                 },
+                "start": 14,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 17,
                   "end": 18,
-                  "value": 1,
                   "raw": "1",
-                  "digest": null
-                },
-                "digest": null
+                  "start": 17,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 1
+                }
               },
               {
-                "type": "ObjectProperty",
-                "start": 20,
                 "end": 24,
                 "key": {
-                  "type": "Identifier",
-                  "start": 20,
                   "end": 21,
                   "name": "b",
-                  "digest": null
+                  "start": 20,
+                  "type": "Identifier"
                 },
+                "start": 20,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 23,
                   "end": 24,
-                  "value": 2,
                   "raw": "2",
-                  "digest": null
-                },
-                "digest": null
+                  "start": 23,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 2
+                }
               }
             ],
-            "digest": null
+            "start": 12,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 26,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     },
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 32,
-      "end": 59,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 38,
           "end": 59,
           "id": {
-            "type": "Identifier",
-            "start": 38,
             "end": 44,
             "name": "height",
-            "digest": null
+            "start": 38,
+            "type": "Identifier"
           },
           "init": {
-            "type": "BinaryExpression",
-            "type": "BinaryExpression",
-            "start": 47,
             "end": 59,
-            "operator": "-",
             "left": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 47,
               "end": 48,
-              "value": 1,
               "raw": "1",
-              "digest": null
+              "start": 47,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 1
             },
+            "operator": "-",
             "right": {
-              "type": "MemberExpression",
-              "type": "MemberExpression",
-              "start": 51,
+              "computed": false,
               "end": 59,
               "object": {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 51,
                 "end": 54,
                 "name": "obj",
-                "digest": null
+                "start": 51,
+                "type": "Identifier",
+                "type": "Identifier"
               },
               "property": {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 55,
                 "end": 58,
-                "value": "a",
                 "raw": "\"a\"",
-                "digest": null
+                "start": 55,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "a"
               },
-              "computed": false,
-              "digest": null
+              "start": 51,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
             },
-            "digest": null
+            "start": 47,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
           },
-          "digest": null
+          "start": 38,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 59,
       "kind": "const",
-      "digest": null
+      "start": 32,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 59,
+  "start": 0
 }

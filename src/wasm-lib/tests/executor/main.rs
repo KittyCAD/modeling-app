@@ -1,4 +1,7 @@
-use kcl_lib::{settings::types::UnitLength, test_server::execute_and_snapshot};
+use kcl_lib::{
+    settings::types::UnitLength,
+    test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
+};
 
 /// The minimum permissible difference between asserted twenty-twenty images.
 /// i.e. how different the current model snapshot can be from the previous saved one.
@@ -67,7 +70,7 @@ async fn kcl_test_execute_parametric_with_tan_arc_example() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_engine_error_return() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
   |> line([10.50433, -1.19122], %)
   |> line([8.01362, -5.48731], %)
@@ -80,7 +83,7 @@ async fn kcl_test_execute_engine_error_return() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([222, 235])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([216, 229])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
     );
 }
 
@@ -119,11 +122,19 @@ async fn kcl_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_member_expression_sketch_group() {
-    let code = kcl_input!("member_expression_sketch_group");
+async fn kcl_test_execute_lsystem() {
+    let code = kcl_input!("lsystem");
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("member_expression_sketch_group", &result);
+    assert_out("lsystem", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_member_expression_sketch() {
+    let code = kcl_input!("member_expression_sketch");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("member_expression_sketch", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -184,7 +195,7 @@ async fn kcl_test_negative_args() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_with_point() {
-    let code = r#"const boxSketch = startSketchAt([0, 0])
+    let code = r#"boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArcToRelative([-5, 5], %)
     |> line([5, -15], %)
@@ -197,7 +208,7 @@ async fn kcl_test_basic_tangential_arc_with_point() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_tangential_arc_to() {
-    let code = r#"const boxSketch = startSketchAt([0, 0])
+    let code = r#"boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArcTo([-5, 15], %)
     |> line([5, -15], %)
@@ -210,12 +221,12 @@ async fn kcl_test_basic_tangential_arc_to() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_different_planes_same_drawing() {
-    let code = r#"const width = 5
-const height = 10
-const length = 12
+    let code = r#"width = 5
+height = 10
+length = 12
 
 fn box = (sk1, sk2, scale, plane) => {
-  const boxsketch = startSketchOn(plane)
+  boxsketch = startSketchOn(plane)
     |> startProfileAt([sk1, sk2], %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -237,17 +248,17 @@ box(-20, -5, 10, 'xy')"#;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_lots_of_planes() {
-    let code = r#"const sigmaAllow = 15000 // psi
-const width = 11 // inch
-const p = 150 // Force on shelf - lbs
-const distance = 12 // inches
-const FOS = 2
-const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))
-const filletR = thickness * 2
-const shelfMountL = 9
-const wallMountL = 8
+    let code = r#"sigmaAllow = 15000 // psi
+width = 11 // inch
+p = 150 // Force on shelf - lbs
+distance = 12 // inches
+FOS = 2
+thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))
+filletR = thickness * 2
+shelfMountL = 9
+wallMountL = 8
 
-const bracket = startSketchOn('XY')
+bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, wallMountL], %)
   |> tangentialArc({ radius: filletR, offset: 90 }, %)
@@ -262,7 +273,7 @@ const bracket = startSketchOn('XY')
   |> close(%)
   |> extrude(width, %)
 
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-15.53, -10.28], %)
   |> line([10.49, -2.08], %)
   |> line([10.42, 8.47], %)
@@ -270,19 +281,19 @@ const part001 = startSketchOn('XY')
   |> close(%)
   |> extrude(4, %)
 
-const part002 = startSketchOn('-XZ')
+part002 = startSketchOn('-XZ')
   |> startProfileAt([-9.35, 19.18], %)
   |> line([32.14, -2.47], %)
   |> line([8.39, -3.73], %)
   |> close(%)
 
-const part003 = startSketchOn('-XZ')
+part003 = startSketchOn('-XZ')
   |> startProfileAt([13.82, 16.51], %)
   |> line([-6.24, -30.82], %)
   |> line([8.39, -3.73], %)
   |> close(%)
 
-const part004 = startSketchOn('YZ')
+part004 = startSketchOn('YZ')
   |> startProfileAt([19.04, 20.22], %)
   |> line([9.44, -30.16], %)
   |> line([8.39, -3.73], %)
@@ -295,7 +306,7 @@ const part004 = startSketchOn('YZ')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_holes() {
-    let code = r#"const square = startSketchOn('XY')
+    let code = r#"square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -314,7 +325,7 @@ async fn kcl_test_holes() {
 async fn optional_params() {
     let code = r#"
     fn other_circle = (pos, radius, tag?) => {
-      const sg = startSketchOn('XY')
+      sg = startSketchOn('XY')
         |> startProfileAt(pos, %)
         |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
         |> close(%)
@@ -323,7 +334,7 @@ async fn optional_params() {
       return sg
   }
 
-const thing = other_circle([2, 2], 20)
+thing = other_circle([2, 2], 20)
 "#;
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("optional_params", &result);
@@ -331,12 +342,12 @@ const thing = other_circle([2, 2], 20)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_rounded_with_holes() {
-    let code = r#"fn tarc = (to, sketchGroup, tag?) => {
-  return tangentialArcTo(to, sketchGroup, tag)
+    let code = r#"fn tarc = (to, sktch, tag?) => {
+  return tangentialArcTo(to, sktch, tag)
 }
 
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
-  const rr = startSketchOn('XY')
+  rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
     |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
     |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, $arc0)
@@ -350,10 +361,10 @@ fn roundedRectangle = (pos, w, l, cornerRadius) => {
   return rr
 }
 
-const holeRadius = 1
-const holeIndex = 6
+holeRadius = 1
+holeIndex = 6
 
-const part = roundedRectangle([0, 0], 20, 20, 4)
+part = roundedRectangle([0, 0], 20, 20, 4)
   |> hole(circle({ center: [-holeIndex, holeIndex], radius: holeRadius }, %), %)
   |> hole(circle({ center: [holeIndex, holeIndex], radius: holeRadius }, %), %)
   |> hole(circle({ center: [-holeIndex, -holeIndex], radius: holeRadius }, %), %)
@@ -375,11 +386,11 @@ async fn kcl_test_top_level_expression() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_with_math() {
-    let code = r#"const num = 12
-const distance = 5
-const part =  startSketchOn('XY')
+    let code = r#"num = 12
+distance = 5
+part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: num -1, distance: distance - 1}, %)
+    |> patternLinear2d({axis: [0,1], instances: num, distance: distance - 1}, %)
     |> extrude(1, %)
 "#;
 
@@ -389,9 +400,9 @@ const part =  startSketchOn('XY')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic() {
-    let code = r#"const part =  startSketchOn('XY')
+    let code = r#"part =  startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
+    |> patternLinear2d({axis: [0,1], instances: 13, distance: 4}, %)
     |> extrude(1, %)
 "#;
 
@@ -401,14 +412,14 @@ async fn kcl_test_patterns_linear_basic() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_3d() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
     |> line([1, 0], %)
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternLinear3d({axis: [1, 0, 1], repetitions: 3, distance: 6}, %)
+    |> patternLinear3d({axis: [1, 0, 1], instances: 4, distance: 6}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -417,9 +428,9 @@ async fn kcl_test_patterns_linear_basic_3d() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_negative_distance() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
+    |> patternLinear2d({axis: [0,1], instances: 13, distance: -2}, %)
     |> extrude(1, %)
 "#;
 
@@ -429,9 +440,9 @@ async fn kcl_test_patterns_linear_basic_negative_distance() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_negative_axis() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,-1], instances: 13, distance: 2}, %)
     |> extrude(1, %)
 "#;
 
@@ -441,11 +452,11 @@ async fn kcl_test_patterns_linear_basic_negative_axis() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_linear_basic_holes() {
-    let code = r#"const circles = startSketchOn('XY')
+    let code = r#"circles = startSketchOn('XY')
     |> circle({ center: [5, 5], radius: 1 }, %)
-    |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
+    |> patternLinear2d({axis: [1,1], instances: 13, distance: 3}, %)
 
-const rectangle = startSketchOn('XY')
+rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 50], %)
   |> line([50, 0], %)
@@ -462,9 +473,9 @@ const rectangle = startSketchOn('XY')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_basic_2d() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"part = startSketchOn('XY')
     |> circle({ center: [0,0], radius: 2 }, %)
-    |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular2d({center: [20, 20], instances: 13, arcDegrees: 210, rotateDuplicates: true}, %)
     |> extrude(1, %)
 "#;
 
@@ -474,14 +485,14 @@ async fn kcl_test_patterns_circular_basic_2d() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_basic_3d() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
     |> line([1, 0], %)
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -490,14 +501,14 @@ async fn kcl_test_patterns_circular_basic_3d() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_patterns_circular_3d_tilted_axis() {
-    let code = r#"const part = startSketchOn('XY')
+    let code = r#"part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0,1], %)
     |> line([1, 0], %)
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], instances: 11, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -506,19 +517,19 @@ async fn kcl_test_patterns_circular_3d_tilted_axis() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_file_doesnt_exist() {
-    let code = r#"const model = import("thing.obj")"#;
+    let code = r#"model = import("thing.obj")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 33])], message: "File `thing.obj` does not exist." }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 27])], message: "File `thing.obj` does not exist." }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_obj_with_mtl() {
-    let code = r#"const model = import("tests/executor/inputs/cube.obj")"#;
+    let code = r#"model = import("tests/executor/inputs/cube.obj")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("import_obj_with_mtl", &result);
@@ -526,7 +537,7 @@ async fn kcl_test_import_obj_with_mtl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_obj_with_mtl_units() {
-    let code = r#"const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
+    let code = r#"model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("import_obj_with_mtl_units", &result);
@@ -534,7 +545,7 @@ async fn kcl_test_import_obj_with_mtl_units() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_stl() {
-    let code = r#"const model = import("tests/executor/inputs/2-5-long-m8-chc-screw.stl")"#;
+    let code = r#"model = import("tests/executor/inputs/2-5-long-m8-chc-screw.stl")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("import_stl", &result);
@@ -542,7 +553,7 @@ async fn kcl_test_import_stl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_gltf_with_bin() {
-    let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
+    let code = r#"model = import("tests/executor/inputs/cube.gltf")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("import_gltf_with_bin", &result);
@@ -550,7 +561,7 @@ async fn kcl_test_import_gltf_with_bin() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_gltf_embedded() {
-    let code = r#"const model = import("tests/executor/inputs/cube-embedded.gltf")"#;
+    let code = r#"model = import("tests/executor/inputs/cube-embedded.gltf")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("import_gltf_embedded", &result);
@@ -558,7 +569,7 @@ async fn kcl_test_import_gltf_embedded() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_glb() {
-    let code = r#"const model = import("tests/executor/inputs/cube.glb")"#;
+    let code = r#"model = import("tests/executor/inputs/cube.glb")"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("import_glb", &result);
@@ -574,20 +585,20 @@ async fn kcl_test_import_glb_no_assign() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_ext_doesnt_match() {
-    let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
+    let code = r#"model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 82])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 76])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_mm() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -598,7 +609,7 @@ async fn kcl_test_cube_mm() {
   return sg
 }
 
-const myCube = cube([0,0], 10)
+myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
@@ -608,7 +619,7 @@ const myCube = cube([0,0], 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_cm() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -619,7 +630,7 @@ async fn kcl_test_cube_cm() {
   return sg
 }
 
-const myCube = cube([0,0], 10)
+myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Cm).await.unwrap();
@@ -629,7 +640,7 @@ const myCube = cube([0,0], 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_m() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -640,7 +651,7 @@ async fn kcl_test_cube_m() {
   return sg
 }
 
-const myCube = cube([0,0], 10)
+myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::M).await.unwrap();
@@ -650,7 +661,7 @@ const myCube = cube([0,0], 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_in() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -661,7 +672,7 @@ async fn kcl_test_cube_in() {
   return sg
 }
 
-const myCube = cube([0,0], 10)
+myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::In).await.unwrap();
@@ -671,7 +682,7 @@ const myCube = cube([0,0], 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_ft() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -682,7 +693,7 @@ async fn kcl_test_cube_ft() {
   return sg
 }
 
-const myCube = cube([0,0], 10)
+myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Ft).await.unwrap();
@@ -692,7 +703,7 @@ const myCube = cube([0,0], 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cube_yd() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -703,7 +714,7 @@ async fn kcl_test_cube_yd() {
   return sg
 }
 
-const myCube = cube([0,0], 10)
+myCube = cube([0,0], 10)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Yd).await.unwrap();
@@ -713,7 +724,7 @@ const myCube = cube([0,0], 10)
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
   |> tangentialArcToRelative([0, scale], %, $here)
   |> line([scale, 0], %)
@@ -721,11 +732,11 @@ async fn kcl_test_error_sketch_on_arc_face() {
 
   return sg
 }
-const part001 = cube([0, 0], 20)
+part001 = cube([0, 0], 20)
   |> close(%)
   |> extrude(20, %)
 
-const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
+part002 = startSketchOn(part001, part001.sketch.tags.here)
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([5, 5], %)
@@ -739,14 +750,14 @@ const part002 = startSketchOn(part001, part001.sketchGroup.tags.here)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([94, 139]), SourceRange([222, 238])], message: "could not sketch tangential arc, because its center would be infinitely far away in the X direction" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([88, 133]), SourceRange([210, 226])], message: "could not sketch tangential arc, because its center would be infinitely far away in the X direction" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_sketch_on_face_of_face() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -754,11 +765,11 @@ async fn kcl_test_sketch_on_face_of_face() {
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube([0,0], 20)
     |> close(%)
     |> extrude(20, %)
 
-const part002 = startSketchOn(part001, "end")
+part002 = startSketchOn(part001, "end")
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -766,7 +777,7 @@ const part002 = startSketchOn(part001, "end")
   |> close(%)
   |> extrude(5, %)
 
-const part003 = startSketchOn(part002, "end")
+part003 = startSketchOn(part002, "end")
   |> startProfileAt([0, 0], %)
   |> line([0, 5], %)
   |> line([5, 0], %)
@@ -781,7 +792,7 @@ const part003 = startSketchOn(part002, "end")
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_stdlib_kcl_error_right_code_path() {
-    let code = r#"const square = startSketchOn('XY')
+    let code = r#"square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -796,14 +807,14 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 195])], message: "Expected an argument at index 1" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([151, 189])], message: "Expected an argument at index 1" }"#,
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_sketch_on_face_circle() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -811,11 +822,11 @@ async fn kcl_test_sketch_on_face_circle() {
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube([0,0], 20)
     |> close(%)
     |> extrude(20, %)
 
-const part002 = startSketchOn(part001, "end")
+part002 = startSketchOn(part001, "end")
   |> circle({ center: [0, 0], radius: 5 }, %) 
   |> extrude(5, %)
 "#;
@@ -831,7 +842,7 @@ async fn kcl_test_stdlib_kcl_error_circle() {
 
 // Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
 fn rectShape = (pos, w, l) => {
-  const rr = startSketchOn('XY')
+  rr = startSketchOn('XY')
   |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
   |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
   |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, $edge2)
@@ -841,11 +852,11 @@ fn rectShape = (pos, w, l) => {
 }
 
 // Define the hole radius and x, y location constants
-const holeRadius = 1
-const holeIndex = 6
+holeRadius = 1
+holeIndex = 6
 
 // Create the mounting plate extrusion, holes, and fillets
-const part = rectShape([0, 0], 20, 20)
+part = rectShape([0, 0], 20, 20)
   |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
   |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
   |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
@@ -866,13 +877,13 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([887, 936])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([863, 912])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -892,7 +903,7 @@ async fn kcl_test_simple_revolve() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_uppercase() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -912,7 +923,7 @@ async fn kcl_test_simple_revolve_uppercase() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_negative() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -932,7 +943,7 @@ async fn kcl_test_simple_revolve_negative() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_bad_angle_low() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -951,13 +962,13 @@ async fn kcl_test_revolve_bad_angle_low() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 314])], message: "Expected angle to be between -360 and 360, found `-455`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 308])], message: "Expected angle to be between -360 and 360 and not 0, found `-455`" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_bad_angle_high() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -976,13 +987,13 @@ async fn kcl_test_revolve_bad_angle_high() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 313])], message: "Expected angle to be between -360 and 360, found `455`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 307])], message: "Expected angle to be between -360 and 360 and not 0, found `455`" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_custom_angle() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -1002,7 +1013,7 @@ async fn kcl_test_simple_revolve_custom_angle() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_custom_axis() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -1012,7 +1023,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
      |> line([0, -5.5], %)
      |> line([-2, 0], %)
      |> close(%)
-     |> revolve({axis: {custom: {axis: [0, -1, 0], origin: [0,0,0]}}, angle: 180}, %)
+     |> revolve({axis: {custom: {axis: [0, -1], origin: [0,0]}}, angle: 180}, %)
 
 "#;
 
@@ -1022,7 +1033,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_edge() {
-    let code = r#"const box = startSketchOn('XY')
+    let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -1030,7 +1041,7 @@ async fn kcl_test_revolve_on_edge() {
   |> close(%)
   |> extrude(10, %)
 
-const sketch001 = startSketchOn(box, "end")
+sketch001 = startSketchOn(box, "end")
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
@@ -1046,7 +1057,7 @@ const sketch001 = startSketchOn(box, "end")
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_edge_get_edge() {
-    let code = r#"const box = startSketchOn('XY')
+    let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -1054,7 +1065,7 @@ async fn kcl_test_revolve_on_edge_get_edge() {
   |> close(%)
   |> extrude(10, %)
 
-const sketch001 = startSketchOn(box, revolveAxis)
+sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
@@ -1076,7 +1087,7 @@ const sketch001 = startSketchOn(box, revolveAxis)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_face_circle_edge() {
-    let code = r#"const box = startSketchOn('XY')
+    let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 20], %)
   |> line([20, 0], %)
@@ -1084,7 +1095,7 @@ async fn kcl_test_revolve_on_face_circle_edge() {
   |> close(%)
   |> extrude(20, %)
 
-const sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, "END")
   |> circle({ center: [10,10], radius: 4 }, %)
   |> revolve({
     angle: 90, 
@@ -1098,7 +1109,7 @@ const sketch001 = startSketchOn(box, "END")
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_face_circle() {
-    let code = r#"const box = startSketchOn('XY')
+    let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 20], %)
   |> line([20, 0], %, $revolveAxis)
@@ -1106,7 +1117,7 @@ async fn kcl_test_revolve_on_face_circle() {
   |> close(%)
   |> extrude(20, %)
 
-const sketch001 = startSketchOn(box, "END")
+sketch001 = startSketchOn(box, "END")
   |> circle({ center: [10,10], radius: 4 }, %)
   |> revolve({
     angle: -90, 
@@ -1120,7 +1131,7 @@ const sketch001 = startSketchOn(box, "END")
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_revolve_on_face() {
-    let code = r#"const box = startSketchOn('XY')
+    let code = r#"box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -1128,7 +1139,7 @@ async fn kcl_test_revolve_on_face() {
   |> close(%, $revolveAxis)
   |> extrude(10, %)
 
-const sketch001 = startSketchOn(box, "end")
+sketch001 = startSketchOn(box, "end")
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
@@ -1146,7 +1157,7 @@ const sketch001 = startSketchOn(box, "end")
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_basic_revolve_circle() {
-    let code = r#"const sketch001 = startSketchOn('XY')
+    let code = r#"sketch001 = startSketchOn('XY')
   |> circle({ center: [15, 0], radius: 5 }, %)
   |> revolve({
     angle: 360, 
@@ -1160,7 +1171,7 @@ async fn kcl_test_basic_revolve_circle() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_sketch_on_edge() {
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
      |> line([2, 0], %)
      |> line([0, -6], %)
@@ -1172,7 +1183,7 @@ async fn kcl_test_simple_revolve_sketch_on_edge() {
      |> close(%)
      |> revolve({axis: 'y', angle: 180}, %)
 
-const part002 = startSketchOn(part001, 'end')
+part002 = startSketchOn(part001, 'end')
     |> startProfileAt([4.5, -5], %)
     |> line([0, 5], %)
     |> line([5, 0], %)
@@ -1188,7 +1199,7 @@ const part002 = startSketchOn(part001, 'end')
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_plumbus_fillets() {
     let code = r#"fn make_circle = (ext, face, pos, radius) => {
-  const sg = startSketchOn(ext, face)
+  sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
        angle_end: 360,
@@ -1201,7 +1212,7 @@ async fn kcl_test_plumbus_fillets() {
 }
 
 fn pentagon = (len) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
   |> angledLine({ angle: 0, length: len }, %, $a)
   |> angledLine({
@@ -1224,19 +1235,19 @@ fn pentagon = (len) => {
   return sg
 }
 
-const p = pentagon(32)
+p = pentagon(32)
   |> extrude(10, %)
 
-const circle0 = make_circle(p, p.sketchGroup.tags.a, [0, 0], 2.5)
-const plumbus0 = circle0
+circle0 = make_circle(p, p.sketch.tags.a, [0, 0], 2.5)
+plumbus0 = circle0
   |> extrude(10, %)
   |> fillet({
        radius: 0.5,
        tags: [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
      }, %)
 
-const circle1 = make_circle(p, p.sketchGroup.tags.b, [0, 0], 2.5)
-const plumbus1 = circle1
+circle1 = make_circle(p, p.sketch.tags.b, [0, 0], 2.5)
+plumbus1 = circle1
    |> extrude(10, %)
    |> fillet({
         radius: 0.5,
@@ -1259,7 +1270,7 @@ async fn kcl_test_empty_file_is_ok() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_member_expression_in_params() {
     let code = r#"fn capScrew = (originStart, length, dia, capDia, capHeadLength) => {
-  const screwHead = startSketchOn({
+  screwHead = startSketchOn({
        plane: {
          origin: {
           x: originStart[0],
@@ -1273,7 +1284,7 @@ async fn kcl_test_member_expression_in_params() {
   })
     |> circle({ center: [0, 0], radius: capDia / 2 }, %)
     |> extrude(capHeadLength, %)
-  const screw = startSketchOn(screwHead, "start")
+  screw = startSketchOn(screwHead, "start")
     |> circle({ center: [0, 0], radius: dia / 2 }, %)
     |> extrude(length, %)
   return screw
@@ -1291,24 +1302,24 @@ async fn kcl_test_bracket_with_fillets() {
     let code = r#"// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
-const sigmaAllow = 35000 // psi
-const width = 6 // inch
-const p = 300 // Force on shelf - lbs
-const distance = 12 // inches
-const M = 12 * 300 / 2 // Moment experienced at fixed end of bracket
-const FOS = 2 // Factor of safety of 2
-const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
-const wallMountL = 8 // the length of the bracket
+sigmaAllow = 35000 // psi
+width = 6 // inch
+p = 300 // Force on shelf - lbs
+distance = 12 // inches
+M = 12 * 300 / 2 // Moment experienced at fixed end of bracket
+FOS = 2 // Factor of safety of 2
+shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
+wallMountL = 8 // the length of the bracket
 
 
 // Calculate the thickness off the allowable bending stress and factor of safety
-const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
+thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
 
 // 0.25 inch fillet radius
-const filletR = 0.25
+filletR = 0.25
 
 // Sketch the bracket and extrude with fillets
-const bracket = startSketchOn('XY')
+bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, wallMountL], %, $outerEdge)
   |> line([-shelfMountL, 0], %)
@@ -1333,7 +1344,7 @@ const bracket = startSketchOn('XY')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_empty_start_sketch_on_string() {
-    let code = r#"const part001 = startSketchOn('-XZ')
+    let code = r#"part001 = startSketchOn('-XZ')
   |> startProfileAt([75.75, 184.25], %)
   |> line([190.03, -118.13], %)
   |> line([-33.38, -202.86], %)
@@ -1342,7 +1353,7 @@ async fn kcl_test_error_empty_start_sketch_on_string() {
   |> close(%)
   |> extrude(100, %)
 
-const secondSketch = startSketchOn(part001, '')
+secondSketch = startSketchOn(part001, '')
   |> circle({ center: [-20, 50], radius: 40 }, %)
   |> extrude(20, %)
 "#;
@@ -1351,19 +1362,19 @@ const secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([260, 286])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found string (text)" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_user_function_wrong_args() {
-    let code = r#"const length = .750
-const width = 0.500
-const height = 0.500
-const dia = 4
+    let code = r#"length = .750
+width = 0.500
+height = 0.500
+dia = 4
 
 fn squareHole = (l, w) => {
-  const squareHoleSketch = startSketchOn('XY')
+  squareHoleSketch = startSketchOn('XY')
   |> startProfileAt([-width / 2, -length / 2], %)
   |> lineTo([width / 2, -length / 2], %)
   |> lineTo([width / 2, length / 2], %)
@@ -1372,7 +1383,7 @@ fn squareHole = (l, w) => {
   return squareHoleSketch
 }
 
-const extrusion = startSketchOn('XY')
+extrusion = startSketchOn('XY')
   |> circle({ center: [0, 0], radius: dia/2 }, %)
   |> hole(squareHole(length, width, height), %)
   |> extrude(height, %)
@@ -1382,93 +1393,15 @@ const extrusion = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([464, 497])], message: "Expected 2 arguments, got 3" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 334]), SourceRange([428, 461])], message: "Expected 2 arguments, got 3" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_xz_plane() {
-    let code = r#"const part001 = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_neg_xz_plane() {
-    let code = r#"const part001 = startSketchOn('-XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("neg_xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_linear_pattern3d_a_pattern() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-const pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       repetitions: 6,
-       distance: 6
-     }, exampleSketch)
-
-const pattn2 = patternLinear3d({
-       axis: [0, 0, 1],
-       distance: 1,
-       repetitions: 6
-     }, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("linear_pattern3d_a_pattern", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_circular_pattern3d_a_pattern() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-const pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       repetitions: 6,
-       distance: 6
-     }, exampleSketch)
-
-const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("circular_pattern3d_a_pattern", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_array_of_sketches() {
-    let code = r#"const plane001 = startSketchOn('XZ')
+    let code = r#"plane001 = startSketchOn('XZ')
 
-const profile001 = plane001
+profile001 = plane001
   |> startProfileAt([40.82, 240.82], %)
   |> line([235.72, -8.16], %)
   |> line([13.27, -253.07], %)
@@ -1476,7 +1409,7 @@ const profile001 = plane001
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 
-const profile002 = plane001
+profile002 = plane001
   |> startProfileAt([47.17, -71.91], %)
   |> line([247.96, -4.03], %)
   |> line([-17.26, -116.79], %)
@@ -1484,7 +1417,7 @@ const profile002 = plane001
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 
-const sketch001 = [profile001, profile002]
+sketch001 = [profile001, profile002]
 
 extrude(10, sketch001)
 "#;
@@ -1494,73 +1427,10 @@ extrude(10, sketch001)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_after_fillets_referencing_face() {
-    let code = r#"// Shelf Bracket
-// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
-
-
-// Define our bracket feet lengths
-const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
-const wallMountL = 6 // the length of the bracket
-
-
-// Define constants required to calculate the thickness needed to support 300 lbs
-const sigmaAllow = 35000 // psi
-const width = 6 // inch
-const p = 300 // Force on shelf - lbs
-const L = 12 // inches
-const M = L * p / 2 // Moment experienced at fixed end of bracket
-const FOS = 2 // Factor of safety of 2 to be conservative
-
-
-// Calculate the thickness off the bending stress and factor of safety
-const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
-
-// 0.25 inch fillet radius
-const filletR = 0.25
-
-// Sketch the bracket and extrude with fillets
-const bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, $outerEdge)
-  |> line([-shelfMountL, 0], %, $seg01)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, $innerEdge)
-  |> line([0, -wallMountL + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [
-         getNextAdjacentEdge(innerEdge)
-       ]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [
-         getNextAdjacentEdge(outerEdge)
-       ]
-     }, %)
-
-const sketch001 = startSketchOn(bracket, seg01)
-  |> startProfileAt([4.28, 3.83], %)
-  |> line([2.17, -0.03], %)
-  |> line([-0.07, -1.8], %)
-  |> line([-2.07, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_after_fillets_referencing_face", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_circular_pattern3d_array_of_extrudes() {
-    let code = r#"const plane001 = startSketchOn('XZ')
+    let code = r#"plane001 = startSketchOn('XZ')
 
-const sketch001 = plane001
+sketch001 = plane001
   |> startProfileAt([40.82, 240.82], %)
   |> line([235.72, -8.16], %)
   |> line([13.27, -253.07], %)
@@ -1569,7 +1439,7 @@ const sketch001 = plane001
   |> close(%)
   |> extrude(10, %)
 
-const sketch002 = plane001
+sketch002 = plane001
   |> startProfileAt([47.17, -71.91], %)
   |> line([247.96, -4.03], %)
   |> line([-17.26, -116.79], %)
@@ -1581,9 +1451,9 @@ const sketch002 = plane001
 
 let extrudes = [sketch001, sketch002] 
 
-const pattn1 = patternLinear3d({
+pattn1 = patternLinear3d({
        axis: [0, 1, 0],
-       repetitions: 2,
+       instances: 3,
        distance: 20
      }, extrudes)
 "#;
@@ -1599,18 +1469,18 @@ async fn kcl_test_fillets_referencing_other_fillets() {
 // Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
 
 // Define constants
-const foot1Length = 4
-const height = 4
-const foot2Length = 5
-const width = 4
-const filletRad = 0.25
-const thickness = 0.125
+foot1Length = 4
+height = 4
+foot2Length = 5
+width = 4
+filletRad = 0.25
+thickness = 0.125
 
-const cornerFilletRad = 0.5
+cornerFilletRad = 0.5
 
-const holeDia = 0.5
+holeDia = 0.5
 
-const sketch001 = startSketchOn("XZ")
+sketch001 = startSketchOn("XZ")
   |> startProfileAt([-foot1Length, 0], %)
   |> line([0, thickness], %, $cornerFillet1)
   |> line([foot1Length, 0], %)
@@ -1621,7 +1491,7 @@ const sketch001 = startSketchOn("XZ")
   |> line([0, -height], %, $fillet2)
   |> close(%)
 
-const baseExtrusion = extrude(width, sketch001)
+baseExtrusion = extrude(width, sketch001)
   |> fillet({
     radius: cornerFilletRad,
     tags: [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
@@ -1647,18 +1517,18 @@ async fn kcl_test_chamfers_referencing_other_chamfers() {
 // Z-brackets are designed to affix or hang objects from a wall by securing them to the wall's studs. These brackets offer support and mounting solutions for bulky or heavy items that may be challenging to attach directly. Serving as a protective feature, Z-brackets help prevent heavy loads from moving or toppling, enhancing safety in the environment where they are used.
 
 // Define constants
-const foot1Length = 4
-const height = 4
-const foot2Length = 5
-const width = 4
-const chamferRad = 0.25
-const thickness = 0.125
+foot1Length = 4
+height = 4
+foot2Length = 5
+width = 4
+chamferRad = 0.25
+thickness = 0.125
 
-const cornerChamferRad = 0.5
+cornerChamferRad = 0.5
 
-const holeDia = 0.5
+holeDia = 0.5
 
-const sketch001 = startSketchOn("XZ")
+sketch001 = startSketchOn("XZ")
   |> startProfileAt([-foot1Length, 0], %)
   |> line([0, thickness], %, $cornerChamfer1)
   |> line([foot1Length, 0], %)
@@ -1669,7 +1539,7 @@ const sketch001 = startSketchOn("XZ")
   |> line([0, -height], %, $chamfer2)
   |> close(%)
 
-const baseExtrusion = extrude(width, sketch001)
+baseExtrusion = extrude(width, sketch001)
   |> chamfer({
     length: cornerChamferRad,
     tags: [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1), getOppositeEdge(cornerChamfer2)],
@@ -1690,7 +1560,7 @@ const baseExtrusion = extrude(width, sketch001)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_shell_with_tag() {
-    let code = r#"const sketch001 = startSketchOn('XZ')
+    let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
@@ -1711,7 +1581,7 @@ async fn kcl_test_shell_with_tag() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_linear_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -1719,7 +1589,7 @@ async fn kcl_test_linear_pattern3d_filleted_sketch() {
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube([0,0], 20)
     |> close(%, $line1)
     |> extrude(20, %)
   |> fillet({
@@ -1727,9 +1597,9 @@ const part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-const pattn1 = patternLinear3d({
+pattn1 = patternLinear3d({
        axis: [1, 0, 0],
-       repetitions: 3,
+       instances: 4,
        distance: 40
      }, part001)
 
@@ -1742,7 +1612,7 @@ const pattn1 = patternLinear3d({
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_circular_pattern3d_filleted_sketch() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -1750,7 +1620,7 @@ async fn kcl_test_circular_pattern3d_filleted_sketch() {
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube([0,0], 20)
     |> close(%, $line1)
     |> extrude(20, %)
   |> fillet({
@@ -1758,7 +1628,7 @@ const part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
 
 "#;
 
@@ -1769,7 +1639,7 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_circular_pattern3d_chamfered_sketch() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -1777,7 +1647,7 @@ async fn kcl_test_circular_pattern3d_chamfered_sketch() {
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube([0,0], 20)
     |> close(%, $line1)
     |> extrude(20, %)
   |> chamfer({
@@ -1785,7 +1655,7 @@ const part001 = cube([0,0], 20)
     tags: [getOppositeEdge(line1)]
   }, %)
 
-const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 4, arcDegrees: 360, rotateDuplicates: false}, part001) 
+pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 5, arcDegrees: 360, rotateDuplicates: false}, part001) 
 
 "#;
 
@@ -1796,7 +1666,7 @@ const pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repet
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -1804,7 +1674,7 @@ async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube([0,0], 20)
     |> close(%, $line1)
     |> extrude(20, %)
   |> chamfer({
@@ -1819,7 +1689,7 @@ const part001 = cube([0,0], 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([271, 357])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([259, 345])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
     );
 }
 
@@ -1912,7 +1782,7 @@ async fn kcl_test_arc_error_same_start_end() {
   |> patternCircular2d({
        arcDegrees: 360,
        center: [0, 0],
-       repetitions: 5,
+       instances: 6,
        rotateDuplicates: true
      }, %)
 "#;
@@ -1927,127 +1797,127 @@ async fn kcl_test_arc_error_same_start_end() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_x_90() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
+    let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 90, to: 10 }, %)
   |> line([0, 10], %)
   |> line([-10, 0], %)
   |> close(%)
 
-const example = extrude(10, exampleSketch)
+example = extrude(10, exampleSketch)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 117])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 111])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_x_270() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
+    let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 270, to: 10 }, %)
   |> line([0, 10], %)
   |> line([-10, 0], %)
   |> close(%)
 
-const example = extrude(10, exampleSketch)
+example = extrude(10, exampleSketch)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have an x constrained angle of 270 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 112])], message: "Cannot have an x constrained angle of 270 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_y_0() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
+    let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 0, to: 20 }, %)
   |> line([-20, 0], %)
   |> angledLineToY({ angle: 70, to: 10 }, %)
   |> close(%)
 
-const example = extrude(10, exampleSketch)
+example = extrude(10, exampleSketch)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 116])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 110])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_to_y_180() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
+    let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 180, to: 20 }, %)
   |> line([-20, 0], %)
   |> angledLineToY({ angle: 70, to: 10 }, %)
   |> close(%)
 
-const example = extrude(10, exampleSketch)
+example = extrude(10, exampleSketch)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([78, 118])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 112])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_x_length_90() {
-    let code = r#"const sketch001 = startSketchOn('XZ')
+    let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
   |> line([0, -5], %)
   |> close(%, $edge3)
 
-const extrusion = extrude(10, sketch001)
+extrusion = extrude(10, sketch001)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_x_length_270() {
-    let code = r#"const sketch001 = startSketchOn('XZ')
+    let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfXLength({ angle: 90, length: 10 }, %, $edge1)
   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
   |> line([0, -5], %)
   |> close(%, $edge3)
 
-const extrusion = extrude(10, sketch001)
+extrusion = extrude(10, sketch001)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([74, 131])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_y_length_0() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
+    let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> angledLineOfYLength({ angle: 0, length: 10 }, %)
@@ -2056,20 +1926,20 @@ async fn kcl_test_angled_line_of_y_length_0() {
   |> line([-10, 0], %)
   |> line([0, -30], %)
 
-const example = extrude(10, exampleSketch)
+example = extrude(10, exampleSketch)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 148])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 142])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_y_length_180() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
+    let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> angledLineOfYLength({ angle: 180, length: 10 }, %)
@@ -2078,20 +1948,20 @@ async fn kcl_test_angled_line_of_y_length_180() {
   |> line([-10, 0], %)
   |> line([0, -30], %)
 
-const example = extrude(10, exampleSketch)
+example = extrude(10, exampleSketch)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 150])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 144])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_angled_line_of_y_length_negative_180() {
-    let code = r#"const exampleSketch = startSketchOn('XZ')
+    let code = r#"exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> angledLineOfYLength({ angle: -180, length: 10 }, %)
@@ -2100,14 +1970,14 @@ async fn kcl_test_angled_line_of_y_length_negative_180() {
   |> line([-10, 0], %)
   |> line([0, -30], %)
 
-const example = extrude(10, exampleSketch)
+example = extrude(10, exampleSketch)
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([100, 151])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 145])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -2147,4 +2017,29 @@ someFunction('INVALID')
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_error_no_auth_websocket() {
+    let code = r#"const sketch001 = startSketchOn('XZ')
+  |> startProfileAt([61.74, 206.13], %)
+  |> xLine(305.11, %, $seg01)
+  |> yLine(-291.85, %)
+  |> xLine(-segLen(seg01), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(40.14, %)
+  |> shell({
+    faces: [seg01],
+    thickness: 3.14,
+  }, %)
+"#;
+
+    let result = execute_and_snapshot_no_auth(code, UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert!(result
+        .err()
+        .unwrap()
+        .to_string()
+        .contains("Please send the following object over this websocket"));
 }

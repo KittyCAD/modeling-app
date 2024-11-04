@@ -18,6 +18,7 @@ import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 
 /**
  * A setting that can be set at the user or project level
@@ -99,6 +100,18 @@ export class Setting<T = unknown> {
         ? this._user
         : this._default
       : this._default
+  }
+  /**
+   * For the purposes of showing the `current` label in the command bar,
+   * is this setting at the given level the same as the given value?
+   */
+  public shouldShowCurrentLabel(
+    level: SettingsLevel | 'default',
+    valueToMatch: T
+  ): boolean {
+    return this[`_${level}`] === undefined
+      ? this.getFallback(level) === valueToMatch
+      : this[`_${level}`] === valueToMatch
   }
   public getParentLevel(level: SettingsLevel): SettingsLevel | 'default' {
     return level === 'project' ? 'user' : 'default'
@@ -284,9 +297,9 @@ export function createSettings() {
               value: v,
               isCurrent:
                 v ===
-                settingsContext.modeling.mouseControls[
+                settingsContext.modeling.mouseControls.shouldShowCurrentLabel(
                   cmdContext.argumentsToSubmit.level as SettingsLevel
-                ],
+                ),
             })),
         },
         Component: ({ value, updateValue }) => (
@@ -325,6 +338,36 @@ export function createSettings() {
             </ul>
           </>
         ),
+      }),
+      /**
+       * Projection method applied to the 3D view, perspective or orthographic
+       */
+      cameraProjection: new Setting<CameraProjectionType>({
+        defaultValue: 'orthographic',
+        hideOnLevel: 'project',
+        description:
+          'Projection method applied to the 3D view, perspective or orthographic',
+        validate: (v) => ['perspective', 'orthographic'].includes(v),
+        commandConfig: {
+          inputType: 'options',
+          // This is how we could have toggling behavior for a non-boolean argument:
+          // Set it to "skippable", and make the default value the opposite of the current value
+          // skip: true,
+          defaultValueFromContext: (context) =>
+            context.modeling.cameraProjection.current === 'perspective'
+              ? 'orthographic'
+              : 'perspective',
+          options: (cmdContext, settingsContext) =>
+            (['perspective', 'orthographic'] as const).map((v) => ({
+              name: v.charAt(0).toUpperCase() + v.slice(1),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
       }),
       /**
        * Whether to highlight edges of 3D objects

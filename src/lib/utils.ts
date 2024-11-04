@@ -14,6 +14,39 @@ export function isArray(val: any): val is unknown[] {
   return Array.isArray(val)
 }
 
+/**
+ * An alternative to `Object.keys()` that returns an array of keys with types.
+ *
+ * It's UNSAFE because because of TS's structural subtyping and how at runtime, you can
+ * extend a JS object with whatever keys you want.
+ *
+ * Why we shouldn't be extending objects with arbitrary keys at run time, the structural subtyping
+ * issue could be a confusing bug, for example, in the below snippet `myKeys` is typed as
+ * `('x' | 'y')[]` but is really `('x' | 'y' | 'name')[]`
+ * ```ts
+ * interface Point { x: number; y: number }
+ * interface NamedPoint { x: number; y: number; name: string }
+ *
+ * let point: Point = { x: 1, y: 2 }
+ * let namedPoint: NamedPoint = { x: 1, y: 2, name: 'A' }
+ *
+ * // Structural subtyping allows this assignment
+ * point = namedPoint  // This is allowed because NamedPoint has all properties of Point
+ * const myKeys = unsafeTypedKeys(point) // typed as ('x' | 'y')[] but is really ('x' | 'y' | 'name')[]
+ * ```
+ */
+export function unsafeTypedKeys<T extends object>(obj: T): Array<keyof T> {
+  return Object.keys(obj) as Array<keyof T>
+}
+/*
+ * Predicate that checks if a value is not null and not undefined.  This is
+ * useful for functions like Array::filter() and Array::find() that have
+ * overloads that accept a type guard.
+ */
+export function isNonNullable<T>(val: T): val is NonNullable<T> {
+  return val !== null && val !== undefined
+}
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]

@@ -1,6 +1,9 @@
 //! The executor for the AST.
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -23,12 +26,12 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, ExpressionStatement, FunctionExpression, KclNone, Program,
-        ReturnStatement, TagDeclarator,
+        human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, Program,
+        TagDeclarator, TagNode,
     },
-    engine::EngineManager,
+    engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
-    fs::FileManager,
+    fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{FnAsArg, StdLib},
 };
@@ -40,11 +43,21 @@ use crate::{
 pub struct ExecState {
     /// Program variable bindings.
     pub memory: ProgramMemory,
+    /// The stable artifact ID generator.
+    pub id_generator: IdGenerator,
     /// Dynamic state that follows dynamic flow of the program.
     pub dynamic_state: DynamicState,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
+    /// Identifiers that have been exported from the current module.
+    pub module_exports: HashSet<String>,
+    /// The stack of import statements for detecting circular module imports.
+    /// If this is empty, we're not currently executing an import statement.
+    pub import_stack: Vec<std::path::PathBuf>,
+    /// The directory of the current project.  This is used for resolving import
+    /// paths.  If None is given, the current working directory is used.
+    pub project_directory: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -115,17 +128,17 @@ impl ProgramMemory {
         }))
     }
 
-    /// Find all extrude groups in the memory that are on a specific sketch group id.
+    /// Find all solids in the memory that are on a specific sketch id.
     /// This does not look inside closures.  But as long as we do not allow
     /// mutation of variables in KCL, closure memory should be a subset of this.
-    pub fn find_extrude_groups_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<Box<ExtrudeGroup>> {
+    pub fn find_solids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<Box<Solid>> {
         self.environments
             .iter()
             .flat_map(|env| {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        KclValue::ExtrudeGroup(eg) if eg.sketch_group.id == sketch_group_id => Some(eg.clone()),
+                        KclValue::Solid(eg) if eg.sketch.id == sketch_id => Some(eg.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -142,6 +155,7 @@ impl Default for ProgramMemory {
 
 /// An index pointing to an environment.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[schemars(transparent)]
 pub struct EnvironmentRef(usize);
 
 impl EnvironmentRef {
@@ -222,7 +236,7 @@ impl Environment {
         self.bindings.contains_key(key)
     }
 
-    pub fn update_sketch_group_tags(&mut self, sg: &SketchGroup) {
+    pub fn update_sketch_tags(&mut self, sg: &Sketch) {
         if sg.tags.is_empty() {
             return;
         }
@@ -230,19 +244,19 @@ impl Environment {
         for (_, val) in self.bindings.iter_mut() {
             let KclValue::UserVal(v) = val else { continue };
             let meta = v.meta.clone();
-            let maybe_sg: Result<SketchGroup, _> = serde_json::from_value(v.value.clone());
-            let Ok(mut sketch_group) = maybe_sg else {
+            let maybe_sg: Result<Sketch, _> = serde_json::from_value(v.value.clone());
+            let Ok(mut sketch) = maybe_sg else {
                 continue;
             };
 
-            if sketch_group.original_id == sg.original_id {
+            if sketch.original_id == sg.original_id {
                 for tag in sg.tags.iter() {
-                    sketch_group.tags.insert(tag.0.clone(), tag.1.clone());
+                    sketch.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
             *val = KclValue::UserVal(UserVal {
                 meta,
-                value: serde_json::to_value(sketch_group).expect("can always turn SketchGroup into JSON"),
+                value: serde_json::to_value(sketch).expect("can always turn Sketch into JSON"),
             });
         }
     }
@@ -253,7 +267,7 @@ impl Environment {
 /// stack of exception handlers here.
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 pub struct DynamicState {
-    pub extrude_group_ids: Vec<ExtrudeGroupLazyIds>,
+    pub solid_ids: Vec<SolidLazyIds>,
 }
 
 impl DynamicState {
@@ -271,18 +285,18 @@ impl DynamicState {
     pub fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let KclValue::ExtrudeGroup(eg) = item {
-                    self.extrude_group_ids.push(ExtrudeGroupLazyIds::from(eg.as_ref()));
+                if let KclValue::Solid(eg) = item {
+                    self.solid_ids.push(SolidLazyIds::from(eg.as_ref()));
                 }
             }
         }
     }
 
-    pub fn edge_cut_ids_on_sketch_group(&self, sketch_group_id: uuid::Uuid) -> Vec<uuid::Uuid> {
-        self.extrude_group_ids
+    pub fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
+        self.solid_ids
             .iter()
             .flat_map(|eg| {
-                if eg.sketch_group_id == sketch_group_id {
+                if eg.sketch_id == sketch_id {
                     eg.edge_cuts.clone()
                 } else {
                     Vec::new()
@@ -292,27 +306,54 @@ impl DynamicState {
     }
 }
 
-/// A memory item.
+/// A generator for ArtifactIds that can be stable across executions.
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct IdGenerator {
+    next_id: usize,
+    ids: Vec<uuid::Uuid>,
+}
+
+impl IdGenerator {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn next_uuid(&mut self) -> uuid::Uuid {
+        if let Some(id) = self.ids.get(self.next_id) {
+            self.next_id += 1;
+            *id
+        } else {
+            let id = uuid::Uuid::new_v4();
+            self.ids.push(id);
+            self.next_id += 1;
+            id
+        }
+    }
+}
+
+/// Any KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
     UserVal(UserVal),
     TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(Box<TagDeclarator>),
+    TagDeclarator(crate::ast::types::BoxNode<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
 
-    ExtrudeGroup(Box<ExtrudeGroup>),
-    ExtrudeGroups {
-        value: Vec<Box<ExtrudeGroup>>,
+    Solid(Box<Solid>),
+    Solids {
+        value: Vec<Box<Solid>>,
     },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
-        expression: Box<FunctionExpression>,
+        expression: crate::ast::types::BoxNode<FunctionExpression>,
         memory: Box<ProgramMemory>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
@@ -324,26 +365,26 @@ impl KclValue {
         Self::UserVal(UserVal::new(meta, val))
     }
 
-    pub(crate) fn get_extrude_group_set(&self) -> Result<ExtrudeGroupSet> {
+    pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
-            KclValue::ExtrudeGroup(e) => Ok(ExtrudeGroupSet::ExtrudeGroup(e.clone())),
-            KclValue::ExtrudeGroups { value } => Ok(ExtrudeGroupSet::ExtrudeGroups(value.clone())),
+            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
+            KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
             KclValue::UserVal(value) => {
                 let value = value.value.clone();
                 match value {
                     JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => Err(anyhow::anyhow!(
-                        "Failed to deserialize extrude group set from JSON {}",
+                        "Failed to deserialize solid set from JSON {}",
                         human_friendly_type(&value)
                     )),
-                    JValue::Array(_) => serde_json::from_value::<Vec<Box<ExtrudeGroup>>>(value)
-                        .map(ExtrudeGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of extrude groups from JSON: {}", e)),
-                    JValue::Object(_) => serde_json::from_value::<Box<ExtrudeGroup>>(value)
-                        .map(ExtrudeGroupSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize extrude group from JSON: {}", e)),
+                    JValue::Array(_) => serde_json::from_value::<Vec<Box<Solid>>>(value)
+                        .map(SolidSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of solids from JSON: {}", e)),
+                    JValue::Object(_) => serde_json::from_value::<Box<Solid>>(value)
+                        .map(SolidSet::from)
+                        .map_err(|e| anyhow::anyhow!("Failed to deserialize solid from JSON: {}", e)),
                 }
             }
-            _ => anyhow::bail!("Not a extrude group or extrude groups: {:?}", self),
+            _ => anyhow::bail!("Not a solid or solids: {:?}", self),
         }
     }
 
@@ -354,44 +395,58 @@ impl KclValue {
             KclValue::UserVal(u) => human_friendly_type(&u.value),
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::ExtrudeGroup(_) => "ExtrudeGroup",
-            KclValue::ExtrudeGroups { .. } => "ExtrudeGroups",
+            KclValue::Solid(_) => "Solid",
+            KclValue::Solids { .. } => "Solids",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
             KclValue::Face(_) => "Face",
         }
     }
+
+    pub(crate) fn is_function(&self) -> bool {
+        match self {
+            KclValue::UserVal(..)
+            | KclValue::TagIdentifier(..)
+            | KclValue::TagDeclarator(..)
+            | KclValue::Plane(..)
+            | KclValue::Face(..)
+            | KclValue::Solid(..)
+            | KclValue::Solids { .. }
+            | KclValue::ImportedGeometry(..) => false,
+            KclValue::Function { .. } => true,
+        }
+    }
 }
 
-impl From<SketchGroupSet> for KclValue {
-    fn from(sg: SketchGroupSet) -> Self {
+impl From<SketchSet> for KclValue {
+    fn from(sg: SketchSet) -> Self {
         KclValue::UserVal(UserVal::new(sg.meta(), sg))
     }
 }
 
-impl From<Vec<Box<SketchGroup>>> for KclValue {
-    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+impl From<Vec<Box<Sketch>>> for KclValue {
+    fn from(sg: Vec<Box<Sketch>>) -> Self {
         let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
         KclValue::UserVal(UserVal::new(meta, sg))
     }
 }
 
-impl From<ExtrudeGroupSet> for KclValue {
-    fn from(eg: ExtrudeGroupSet) -> Self {
+impl From<SolidSet> for KclValue {
+    fn from(eg: SolidSet) -> Self {
         match eg {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => KclValue::ExtrudeGroup(eg),
-            ExtrudeGroupSet::ExtrudeGroups(egs) => KclValue::ExtrudeGroups { value: egs },
+            SolidSet::Solid(eg) => KclValue::Solid(eg),
+            SolidSet::Solids(egs) => KclValue::Solids { value: egs },
         }
     }
 }
 
-impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
-    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+impl From<Vec<Box<Solid>>> for KclValue {
+    fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            KclValue::ExtrudeGroup(eg[0].clone())
+            KclValue::Solid(eg[0].clone())
         } else {
-            KclValue::ExtrudeGroups { value: eg }
+            KclValue::Solids { value: eg }
         }
     }
 }
@@ -401,15 +456,15 @@ impl From<Vec<Box<ExtrudeGroup>>> for KclValue {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometry {
-    SketchGroup(Box<SketchGroup>),
-    ExtrudeGroup(Box<ExtrudeGroup>),
+    Sketch(Box<Sketch>),
+    Solid(Box<Solid>),
 }
 
 impl Geometry {
     pub fn id(&self) -> uuid::Uuid {
         match self {
-            Geometry::SketchGroup(s) => s.id,
-            Geometry::ExtrudeGroup(e) => e.id,
+            Geometry::Sketch(s) => s.id,
+            Geometry::Solid(e) => e.id,
         }
     }
 }
@@ -419,148 +474,157 @@ impl Geometry {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometries {
-    SketchGroups(Vec<Box<SketchGroup>>),
-    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+    Sketches(Vec<Box<Sketch>>),
+    Solids(Vec<Box<Solid>>),
 }
 
-/// A sketch group or a group of sketch groups.
+impl From<Geometry> for Geometries {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketches(vec![x]),
+            Geometry::Solid(x) => Self::Solids(vec![x]),
+        }
+    }
+}
+
+/// A sketch or a group of sketches.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum SketchGroupSet {
-    SketchGroup(Box<SketchGroup>),
-    SketchGroups(Vec<Box<SketchGroup>>),
+pub enum SketchSet {
+    Sketch(Box<Sketch>),
+    Sketches(Vec<Box<Sketch>>),
 }
 
-impl SketchGroupSet {
+impl SketchSet {
     pub fn meta(&self) -> Vec<Metadata> {
         match self {
-            SketchGroupSet::SketchGroup(sg) => sg.meta.clone(),
-            SketchGroupSet::SketchGroups(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
+            SketchSet::Sketch(sg) => sg.meta.clone(),
+            SketchSet::Sketches(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
         }
     }
 }
 
-impl From<SketchGroupSet> for Vec<SketchGroup> {
-    fn from(value: SketchGroupSet) -> Self {
+impl From<SketchSet> for Vec<Sketch> {
+    fn from(value: SketchSet) -> Self {
         match value {
-            SketchGroupSet::SketchGroup(sg) => vec![*sg],
-            SketchGroupSet::SketchGroups(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
+            SketchSet::Sketch(sg) => vec![*sg],
+            SketchSet::Sketches(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
         }
     }
 }
 
-impl From<SketchGroup> for SketchGroupSet {
-    fn from(sg: SketchGroup) -> Self {
-        SketchGroupSet::SketchGroup(Box::new(sg))
+impl From<Sketch> for SketchSet {
+    fn from(sg: Sketch) -> Self {
+        SketchSet::Sketch(Box::new(sg))
     }
 }
 
-impl From<Box<SketchGroup>> for SketchGroupSet {
-    fn from(sg: Box<SketchGroup>) -> Self {
-        SketchGroupSet::SketchGroup(sg)
+impl From<Box<Sketch>> for SketchSet {
+    fn from(sg: Box<Sketch>) -> Self {
+        SketchSet::Sketch(sg)
     }
 }
 
-impl From<Vec<SketchGroup>> for SketchGroupSet {
-    fn from(sg: Vec<SketchGroup>) -> Self {
+impl From<Vec<Sketch>> for SketchSet {
+    fn from(sg: Vec<Sketch>) -> Self {
         if sg.len() == 1 {
-            SketchGroupSet::SketchGroup(Box::new(sg[0].clone()))
+            SketchSet::Sketch(Box::new(sg[0].clone()))
         } else {
-            SketchGroupSet::SketchGroups(sg.into_iter().map(Box::new).collect())
+            SketchSet::Sketches(sg.into_iter().map(Box::new).collect())
         }
     }
 }
 
-impl From<Vec<Box<SketchGroup>>> for SketchGroupSet {
-    fn from(sg: Vec<Box<SketchGroup>>) -> Self {
+impl From<Vec<Box<Sketch>>> for SketchSet {
+    fn from(sg: Vec<Box<Sketch>>) -> Self {
         if sg.len() == 1 {
-            SketchGroupSet::SketchGroup(sg[0].clone())
+            SketchSet::Sketch(sg[0].clone())
         } else {
-            SketchGroupSet::SketchGroups(sg)
+            SketchSet::Sketches(sg)
         }
     }
 }
 
-impl From<SketchGroupSet> for Vec<Box<SketchGroup>> {
-    fn from(sg: SketchGroupSet) -> Self {
+impl From<SketchSet> for Vec<Box<Sketch>> {
+    fn from(sg: SketchSet) -> Self {
         match sg {
-            SketchGroupSet::SketchGroup(sg) => vec![sg],
-            SketchGroupSet::SketchGroups(sgs) => sgs,
+            SketchSet::Sketch(sg) => vec![sg],
+            SketchSet::Sketches(sgs) => sgs,
         }
     }
 }
 
-impl From<&SketchGroup> for Vec<Box<SketchGroup>> {
-    fn from(sg: &SketchGroup) -> Self {
+impl From<&Sketch> for Vec<Box<Sketch>> {
+    fn from(sg: &Sketch) -> Self {
         vec![Box::new(sg.clone())]
     }
 }
 
-impl From<Box<SketchGroup>> for Vec<Box<SketchGroup>> {
-    fn from(sg: Box<SketchGroup>) -> Self {
+impl From<Box<Sketch>> for Vec<Box<Sketch>> {
+    fn from(sg: Box<Sketch>) -> Self {
         vec![sg]
     }
 }
 
-/// A extrude group or a group of extrude groups.
+/// A solid or a group of solids.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum ExtrudeGroupSet {
-    ExtrudeGroup(Box<ExtrudeGroup>),
-    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+pub enum SolidSet {
+    Solid(Box<Solid>),
+    Solids(Vec<Box<Solid>>),
 }
 
-impl From<ExtrudeGroup> for ExtrudeGroupSet {
-    fn from(eg: ExtrudeGroup) -> Self {
-        ExtrudeGroupSet::ExtrudeGroup(Box::new(eg))
+impl From<Solid> for SolidSet {
+    fn from(eg: Solid) -> Self {
+        SolidSet::Solid(Box::new(eg))
     }
 }
 
-impl From<Box<ExtrudeGroup>> for ExtrudeGroupSet {
-    fn from(eg: Box<ExtrudeGroup>) -> Self {
-        ExtrudeGroupSet::ExtrudeGroup(eg)
+impl From<Box<Solid>> for SolidSet {
+    fn from(eg: Box<Solid>) -> Self {
+        SolidSet::Solid(eg)
     }
 }
 
-impl From<Vec<ExtrudeGroup>> for ExtrudeGroupSet {
-    fn from(eg: Vec<ExtrudeGroup>) -> Self {
+impl From<Vec<Solid>> for SolidSet {
+    fn from(eg: Vec<Solid>) -> Self {
         if eg.len() == 1 {
-            ExtrudeGroupSet::ExtrudeGroup(Box::new(eg[0].clone()))
+            SolidSet::Solid(Box::new(eg[0].clone()))
         } else {
-            ExtrudeGroupSet::ExtrudeGroups(eg.into_iter().map(Box::new).collect())
+            SolidSet::Solids(eg.into_iter().map(Box::new).collect())
         }
     }
 }
 
-impl From<Vec<Box<ExtrudeGroup>>> for ExtrudeGroupSet {
-    fn from(eg: Vec<Box<ExtrudeGroup>>) -> Self {
+impl From<Vec<Box<Solid>>> for SolidSet {
+    fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            ExtrudeGroupSet::ExtrudeGroup(eg[0].clone())
+            SolidSet::Solid(eg[0].clone())
         } else {
-            ExtrudeGroupSet::ExtrudeGroups(eg)
+            SolidSet::Solids(eg)
         }
     }
 }
 
-impl From<ExtrudeGroupSet> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: ExtrudeGroupSet) -> Self {
+impl From<SolidSet> for Vec<Box<Solid>> {
+    fn from(eg: SolidSet) -> Self {
         match eg {
-            ExtrudeGroupSet::ExtrudeGroup(eg) => vec![eg],
-            ExtrudeGroupSet::ExtrudeGroups(egs) => egs,
+            SolidSet::Solid(eg) => vec![eg],
+            SolidSet::Solids(egs) => egs,
         }
     }
 }
 
-impl From<&ExtrudeGroup> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: &ExtrudeGroup) -> Self {
+impl From<&Solid> for Vec<Box<Solid>> {
+    fn from(eg: &Solid) -> Self {
         vec![Box::new(eg.clone())]
     }
 }
 
-impl From<Box<ExtrudeGroup>> for Vec<Box<ExtrudeGroup>> {
-    fn from(eg: Box<ExtrudeGroup>) -> Self {
+impl From<Box<Solid>> for Vec<Box<Solid>> {
+    fn from(eg: Box<Solid>) -> Self {
         vec![eg]
     }
 }
@@ -599,6 +663,82 @@ pub struct Plane {
     pub meta: Vec<Metadata>,
 }
 
+impl Plane {
+    pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
+        let id = exec_state.id_generator.next_uuid();
+        match value {
+            crate::std::sketch::PlaneData::XY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, 1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, -1.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::XZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, -1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegXZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 1.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::YZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::NegYZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(-1.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            crate::std::sketch::PlaneData::Plane {
+                origin,
+                x_axis,
+                y_axis,
+                z_axis,
+            } => Plane {
+                id,
+                origin: *origin,
+                x_axis: *x_axis,
+                y_axis: *y_axis,
+                z_axis: *z_axis,
+                value: PlaneType::Custom,
+                meta: vec![],
+            },
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -626,8 +766,8 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
-    /// The extrude group the face is on.
-    pub extrude_group: Box<ExtrudeGroup>,
+    /// The solid the face is on.
+    pub solid: Box<Solid>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -751,7 +891,7 @@ pub type MemoryFunction =
     fn(
         s: Vec<KclValue>,
         memory: ProgramMemory,
-        expression: Box<FunctionExpression>,
+        expression: crate::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
         ctx: ExecutorContext,
@@ -761,10 +901,29 @@ impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
             KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::TagDeclarator(t) => t.into(),
+            KclValue::TagDeclarator(t) => vec![(&t).into()],
             KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            KclValue::ExtrudeGroups { value } => value
+            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solids { value } => value
+                .iter()
+                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
+                .collect(),
+            KclValue::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
+        }
+    }
+}
+
+impl From<&KclValue> for Vec<SourceRange> {
+    fn from(item: &KclValue) -> Self {
+        match item {
+            KclValue::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::TagDeclarator(ref t) => vec![t.into()],
+            KclValue::TagIdentifier(t) => t.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solid(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            KclValue::Solids { value } => value
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
@@ -885,9 +1044,9 @@ impl KclValue {
     }
 
     /// Get a tag declarator from a memory item.
-    pub fn get_tag_declarator(&self) -> Result<TagDeclarator, KclError> {
+    pub fn get_tag_declarator(&self) -> Result<TagNode, KclError> {
         match self {
-            KclValue::TagDeclarator(t) => Ok(*t.clone()),
+            KclValue::TagDeclarator(t) => Ok((**t).clone()),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
@@ -896,14 +1055,31 @@ impl KclValue {
     }
 
     /// Get an optional tag from a memory item.
-    pub fn get_tag_declarator_opt(&self) -> Result<Option<TagDeclarator>, KclError> {
+    pub fn get_tag_declarator_opt(&self) -> Result<Option<TagNode>, KclError> {
         match self {
-            KclValue::TagDeclarator(t) => Ok(Some(*t.clone())),
+            KclValue::TagDeclarator(t) => Ok(Some((**t).clone())),
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag declarator: {:?}", self),
                 source_ranges: self.clone().into(),
             })),
         }
+    }
+
+    /// If this KCL value is a bool, retrieve it.
+    pub fn get_bool(&self) -> Result<bool, KclError> {
+        let Self::UserVal(uv) = self else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", self.human_friendly_type()),
+            }));
+        };
+        let JValue::Bool(b) = uv.value else {
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: self.into(),
+                message: format!("Expected bool, found {}", human_friendly_type(&uv.value)),
+            }));
+        };
+        Ok(b)
     }
 
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
@@ -949,31 +1125,31 @@ impl KclValue {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch group the tag is on.
-    pub sketch_group: uuid::Uuid,
+    /// The sketch the tag is on.
+    pub sketch: uuid::Uuid,
     /// The path the tag is on.
-    pub path: Option<BasePath>,
+    pub path: Option<Path>,
     /// The surface information for the tag.
     pub surface: Option<ExtrudeSurface>,
 }
 
-/// A sketch group is a collection of paths.
+/// A sketch is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub struct SketchGroup {
-    /// The id of the sketch group (this will change when the engine's reference to it changes.
+pub struct Sketch {
+    /// The id of the sketch (this will change when the engine's reference to it changes).
     pub id: uuid::Uuid,
-    /// The paths in the sketch group.
-    pub value: Vec<Path>,
+    /// The paths in the sketch.
+    pub paths: Vec<Path>,
     /// What the sketch is on (can be a plane or a face).
     pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
-    /// Tag identifiers that have been declared in this sketch group.
+    /// Tag identifiers that have been declared in this sketch.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub tags: HashMap<String, TagIdentifier>,
-    /// The original id of the sketch group. This stays the same even if the sketch group is
+    /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
     #[serde(skip)]
     pub original_id: uuid::Uuid,
@@ -982,7 +1158,7 @@ pub struct SketchGroup {
     pub meta: Vec<Metadata>,
 }
 
-/// A sketch group type.
+/// A sketch type.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -1024,14 +1200,14 @@ pub struct GetTangentialInfoFromPathsResult {
     pub ccw: bool,
 }
 
-impl SketchGroup {
-    pub(crate) fn add_tag(&mut self, tag: &TagDeclarator, current_path: &Path) {
+impl Sketch {
+    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
-            sketch_group: self.id,
-            path: Some(base.clone()),
+            sketch: self.id,
+            path: Some(current_path.clone()),
             surface: None,
         });
 
@@ -1040,7 +1216,7 @@ impl SketchGroup {
 
     /// Get the path most recently sketched.
     pub(crate) fn latest_path(&self) -> Option<&Path> {
-        self.value.last()
+        self.paths.last()
     }
 
     /// The "pen" is an imaginary pen drawing the path.
@@ -1086,24 +1262,24 @@ impl SketchGroup {
     }
 }
 
-/// An extrude group is a collection of extrude surfaces.
+/// An solid is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub struct ExtrudeGroup {
-    /// The id of the extrude group.
+pub struct Solid {
+    /// The id of the solid.
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// The sketch group.
-    pub sketch_group: SketchGroup,
-    /// The height of the extrude group.
+    /// The sketch.
+    pub sketch: Sketch,
+    /// The height of the solid.
     pub height: f64,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
     pub end_cap_id: Option<uuid::Uuid>,
-    /// Chamfers or fillets on this extrude group.
+    /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
     /// Metadata.
@@ -1111,28 +1287,28 @@ pub struct ExtrudeGroup {
     pub meta: Vec<Metadata>,
 }
 
-impl ExtrudeGroup {
+impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> Vec<uuid::Uuid> {
         self.edge_cuts.iter().map(|foc| foc.id()).collect()
     }
 }
 
-/// An extrude group ID and its fillet and chamfer IDs.  This is needed for lazy
+/// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
 /// fillet evaluation.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-pub struct ExtrudeGroupLazyIds {
-    pub extrude_group_id: uuid::Uuid,
-    pub sketch_group_id: uuid::Uuid,
-    /// Chamfers or fillets on this extrude group.
+pub struct SolidLazyIds {
+    pub solid_id: uuid::Uuid,
+    pub sketch_id: uuid::Uuid,
+    /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<uuid::Uuid>,
 }
 
-impl From<&ExtrudeGroup> for ExtrudeGroupLazyIds {
-    fn from(eg: &ExtrudeGroup) -> Self {
+impl From<&Solid> for SolidLazyIds {
+    fn from(eg: &Solid) -> Self {
         Self {
-            extrude_group_id: eg.id,
-            sketch_group_id: eg.sketch_group.id,
+            solid_id: eg.id,
+            sketch_id: eg.sketch.id,
             edge_cuts: eg.edge_cuts.iter().map(|foc| foc.id()).collect(),
         }
     }
@@ -1151,7 +1327,7 @@ pub enum EdgeCut {
         /// The engine id of the edge to fillet.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
-        tag: Box<Option<TagDeclarator>>,
+        tag: Box<Option<TagNode>>,
     },
     /// A chamfer.
     Chamfer {
@@ -1161,7 +1337,7 @@ pub enum EdgeCut {
         /// The engine id of the edge to chamfer.
         #[serde(rename = "edgeId")]
         edge_id: uuid::Uuid,
-        tag: Box<Option<TagDeclarator>>,
+        tag: Box<Option<TagNode>>,
     },
 }
 
@@ -1180,7 +1356,7 @@ impl EdgeCut {
         }
     }
 
-    pub fn tag(&self) -> Option<TagDeclarator> {
+    pub fn tag(&self) -> Option<TagNode> {
         match self {
             EdgeCut::Fillet { tag, .. } => *tag.clone(),
             EdgeCut::Chamfer { tag, .. } => *tag.clone(),
@@ -1354,18 +1530,10 @@ impl From<SourceRange> for Metadata {
     }
 }
 
-impl From<&ExpressionStatement> for Metadata {
-    fn from(exp_statement: &ExpressionStatement) -> Self {
+impl<T> From<NodeRef<'_, T>> for Metadata {
+    fn from(node: NodeRef<'_, T>) -> Self {
         Self {
-            source_range: SourceRange::new(exp_statement.start, exp_statement.end),
-        }
-    }
-}
-
-impl From<&ReturnStatement> for Metadata {
-    fn from(return_statement: &ReturnStatement) -> Self {
-        Self {
-            source_range: SourceRange::new(return_statement.start, return_statement.end),
+            source_range: SourceRange::new(node.start, node.end),
         }
     }
 }
@@ -1390,7 +1558,7 @@ pub struct BasePath {
     #[ts(type = "[number, number]")]
     pub to: [f64; 2],
     /// The tag of the path.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<TagNode>,
     /// Metadata.
     #[serde(rename = "__geoMeta")]
     pub geo_meta: GeoMeta,
@@ -1473,6 +1641,43 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A circular arc, not necessarily tangential to the current point.
+    Arc {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Center of the circle that this arc is drawn on.
+        center: [f64; 2],
+        /// Radius of the circle that this arc is drawn on.
+        radius: f64,
+    },
+}
+
+/// What kind of path is this?
+#[derive(Display)]
+enum PathType {
+    ToPoint,
+    Base,
+    TangentialArc,
+    TangentialArcTo,
+    Circle,
+    Horizontal,
+    AngledLineTo,
+    Arc,
+}
+
+impl From<&Path> for PathType {
+    fn from(value: &Path) -> Self {
+        match value {
+            Path::ToPoint { .. } => Self::ToPoint,
+            Path::TangentialArcTo { .. } => Self::TangentialArcTo,
+            Path::TangentialArc { .. } => Self::TangentialArc,
+            Path::Circle { .. } => Self::Circle,
+            Path::Horizontal { .. } => Self::Horizontal,
+            Path::AngledLineTo { .. } => Self::AngledLineTo,
+            Path::Base { .. } => Self::Base,
+            Path::Arc { .. } => Self::Arc,
+        }
+    }
 }
 
 impl Path {
@@ -1485,10 +1690,11 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
 
-    pub fn get_tag(&self) -> Option<TagDeclarator> {
+    pub fn get_tag(&self) -> Option<TagNode> {
         match self {
             Path::ToPoint { base } => base.tag.clone(),
             Path::Horizontal { base, .. } => base.tag.clone(),
@@ -1497,6 +1703,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::Arc { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1509,6 +1716,47 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::Arc { base, .. } => base,
+        }
+    }
+
+    /// Where does this path segment start?
+    pub fn get_from(&self) -> &[f64; 2] {
+        &self.get_base().from
+    }
+    /// Where does this path segment end?
+    pub fn get_to(&self) -> &[f64; 2] {
+        &self.get_base().to
+    }
+
+    /// Length of this path segment, in cartesian plane.
+    pub fn length(&self) -> f64 {
+        match self {
+            Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::TangentialArc {
+                base: _,
+                center,
+                ccw: _,
+            }
+            | Self::TangentialArcTo {
+                base: _,
+                center,
+                ccw: _,
+            } => {
+                // The radius can be calculated as the linear distance between `to` and `center`,
+                // or between `from` and `center`. They should be the same.
+                let radius = linear_distance(self.get_from(), center);
+                debug_assert_eq!(radius, linear_distance(self.get_to(), center));
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
+            Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::Arc { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
         }
     }
 
@@ -1521,8 +1769,20 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::Arc { base, .. } => Some(base),
         }
     }
+}
+
+/// Compute the straight-line distance between a pair of (2D) points.
+#[rustfmt::skip]
+fn linear_distance(
+    [x0, y0]: &[f64; 2],
+    [x1, y1]: &[f64; 2]
+) -> f64 {
+    let y_sq = (y1 - y0).powi(2);
+    let x_sq = (x1 - x0).powi(2);
+    (y_sq + x_sq).sqrt()
 }
 
 /// An extrude surface.
@@ -1545,7 +1805,7 @@ pub struct ChamferSurface {
     /// The id for the chamfer surface.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1559,7 +1819,7 @@ pub struct FilletSurface {
     /// The id for the fillet surface.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1573,7 +1833,7 @@ pub struct ExtrudePlane {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1587,7 +1847,7 @@ pub struct ExtrudeArc {
     /// The face id for the extrude plane.
     pub face_id: uuid::Uuid,
     /// The tag.
-    pub tag: Option<TagDeclarator>,
+    pub tag: Option<Node<TagDeclarator>>,
     /// Metadata.
     #[serde(flatten)]
     pub geo_meta: GeoMeta,
@@ -1603,7 +1863,7 @@ impl ExtrudeSurface {
         }
     }
 
-    pub fn get_tag(&self) -> Option<TagDeclarator> {
+    pub fn get_tag(&self) -> Option<Node<TagDeclarator>> {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.tag.clone(),
             ExtrudeSurface::ExtrudeArc(ea) => ea.tag.clone(),
@@ -1611,6 +1871,22 @@ impl ExtrudeSurface {
             ExtrudeSurface::Chamfer(c) => c.tag.clone(),
         }
     }
+}
+
+/// The type of ExecutorContext being used
+#[derive(PartialEq, Debug, Default, Clone)]
+pub enum ContextType {
+    /// Live engine connection
+    #[default]
+    Live,
+
+    /// Completely mocked connection
+    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
+    /// actually make them.
+    Mock,
+
+    /// Handled by some other interpreter/conversion system
+    MockCustomForwarded,
 }
 
 /// The executor context.
@@ -1622,9 +1898,7 @@ pub struct ExecutorContext {
     pub fs: Arc<FileManager>,
     pub stdlib: Arc<StdLib>,
     pub settings: ExecutorSettings,
-    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
-    /// actually make them.
-    pub is_mock: bool,
+    pub context_type: ContextType,
 }
 
 /// The executor settings.
@@ -1691,9 +1965,73 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     }
 }
 
+/// Create a new zoo api client.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let zoo_token_env = std::env::var("ZOO_API_TOKEN");
+
+    let token = if let Some(token) = token {
+        token
+    } else if let Ok(token) = std::env::var("KITTYCAD_API_TOKEN") {
+        if let Ok(zoo_token) = zoo_token_env {
+            if zoo_token != token {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_API_TOKEN=`{}` and ZOO_API_TOKEN=`{}` are set. Use only one.",
+                    token,
+                    zoo_token
+                ));
+            }
+        }
+        token
+    } else if let Ok(token) = zoo_token_env {
+        token
+    } else {
+        return Err(anyhow::anyhow!(
+            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+        ));
+    };
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set an engine address if it's set.
+    let kittycad_host_env = std::env::var("KITTYCAD_HOST");
+    if let Some(addr) = engine_addr {
+        client.set_base_url(addr);
+    } else if let Ok(addr) = std::env::var("ZOO_HOST") {
+        if let Ok(kittycad_host) = kittycad_host_env {
+            if kittycad_host != addr {
+                return Err(anyhow::anyhow!(
+                    "Both environment variables KITTYCAD_HOST=`{}` and ZOO_HOST=`{}` are set. Use only one.",
+                    kittycad_host,
+                    addr
+                ));
+            }
+        }
+        client.set_base_url(addr);
+    } else if let Ok(addr) = kittycad_host_env {
+        client.set_base_url(addr);
+    }
+
+    Ok(client)
+}
+
 impl ExecutorContext {
     /// Create a new default executor context.
-    /// Also returns the response HTTP headers from the server.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
@@ -1734,42 +2072,47 @@ impl ExecutorContext {
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
             settings,
-            is_mock: false,
+            context_type: ContextType::Live,
         })
+    }
+
+    /// Create a new default executor context.
+    /// With a kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+    ) -> Result<Self> {
+        // Create the client.
+        let client = new_zoo_client(token, engine_addr)?;
+
+        let ctx = Self::new(&client, settings).await?;
+        Ok(ctx)
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_default_client(settings: ExecutorSettings) -> Result<Self> {
+        // Create the client.
+        let ctx = Self::new_with_client(settings, None, None).await?;
+        Ok(ctx)
+    }
+
+    pub fn is_mock(&self) -> bool {
+        self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
-        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"));
-        let http_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60));
-        let ws_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            // For file conversions we need this to be long.
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60))
-            .connection_verbose(true)
-            .tcp_keepalive(std::time::Duration::from_secs(600))
-            .http1_only();
-
-        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-        // Create the client.
-        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-        // Set a local engine address if it's set.
-        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-            client.set_base_url(addr);
-        }
-        if let Some(addr) = engine_addr {
-            client.set_base_url(addr);
-        }
-
-        let ctx = ExecutorContext::new(
-            &client,
+        let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 units,
                 highlight_edges: true,
@@ -1777,13 +2120,19 @@ impl ExecutorContext {
                 show_grid: false,
                 replay: None,
             },
+            None,
+            engine_addr,
         )
         .await?;
         Ok(ctx)
     }
 
-    pub async fn reset_scene(&self, source_range: crate::executor::SourceRange) -> Result<()> {
-        self.engine.clear_scene(source_range).await?;
+    pub async fn reset_scene(
+        &self,
+        id_generator: &mut IdGenerator,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<()> {
+        self.engine.clear_scene(id_generator, source_range).await?;
         Ok(())
     }
 
@@ -1792,23 +2141,40 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run(
         &self,
-        program: &crate::ast::types::Program,
+        program: NodeRef<'_, crate::ast::types::Program>,
         memory: Option<ProgramMemory>,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory).await.map(|x| x.0)
+        self.run_with_session_data(program, memory, id_generator, project_directory)
+            .await
+            .map(|x| x.0)
     }
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
     /// Kurt uses this for partial execution.
     pub async fn run_with_session_data(
         &self,
-        program: &crate::ast::types::Program,
+        program: NodeRef<'_, crate::ast::types::Program>,
         memory: Option<ProgramMemory>,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
     ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
+        let memory = if let Some(memory) = memory {
+            memory.clone()
+        } else {
+            Default::default()
+        };
+        let mut exec_state = ExecState {
+            memory,
+            id_generator,
+            project_directory,
+            ..Default::default()
+        };
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
+                exec_state.id_generator.next_uuid(),
                 SourceRange::default(),
                 &ModelingCmd::from(mcmd::SetSceneUnits {
                     unit: match self.settings.units {
@@ -1822,15 +2188,7 @@ impl ExecutorContext {
                 }),
             )
             .await?;
-        let memory = if let Some(memory) = memory {
-            memory.clone()
-        } else {
-            Default::default()
-        };
-        let mut exec_state = ExecState {
-            memory,
-            ..Default::default()
-        };
+
         self.inner_execute(program, &mut exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
@@ -1839,25 +2197,112 @@ impl ExecutorContext {
 
     /// Execute an AST's program.
     #[async_recursion]
-    pub(crate) async fn inner_execute(
-        &self,
-        program: &crate::ast::types::Program,
+    pub(crate) async fn inner_execute<'a>(
+        &'a self,
+        program: NodeRef<'a, crate::ast::types::Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<(), KclError> {
+    ) -> Result<Option<KclValue>, KclError> {
+        let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
+                BodyItem::ImportStatement(import_stmt) => {
+                    let source_range = SourceRange::from(import_stmt);
+                    let path = import_stmt.path.clone();
+                    let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
+                        std::path::PathBuf::from(project_dir).join(&path)
+                    } else {
+                        std::path::PathBuf::from(&path)
+                    };
+                    if exec_state.import_stack.contains(&resolved_path) {
+                        return Err(KclError::ImportCycle(KclErrorDetails {
+                            message: format!(
+                                "circular import of modules is not allowed: {} -> {}",
+                                exec_state
+                                    .import_stack
+                                    .iter()
+                                    .map(|p| p.as_path().to_string_lossy())
+                                    .collect::<Vec<_>>()
+                                    .join(" -> "),
+                                resolved_path.to_string_lossy()
+                            ),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
+                    }
+                    let source = self.fs.read_to_string(&resolved_path, source_range).await?;
+                    let program = crate::parser::parse(&source)?;
+                    let (module_memory, module_exports) = {
+                        exec_state.import_stack.push(resolved_path.clone());
+                        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
+                        let original_memory = std::mem::take(&mut exec_state.memory);
+                        let original_exports = std::mem::take(&mut exec_state.module_exports);
+                        let result = self
+                            .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
+                            .await;
+                        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
+                        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
+                        self.engine.replace_execution_kind(original_execution);
+                        exec_state.import_stack.pop();
+
+                        result.map_err(|err| {
+                            if let KclError::ImportCycle(_) = err {
+                                // It was an import cycle.  Keep the original message.
+                                err.override_source_ranges(vec![source_range])
+                            } else {
+                                KclError::Semantic(KclErrorDetails {
+                                    message: format!(
+                                        "Error loading imported file. Open it to view more details. {path}: {}",
+                                        err.message()
+                                    ),
+                                    source_ranges: vec![source_range],
+                                })
+                            }
+                        })?;
+
+                        (module_memory, module_exports)
+                    };
+                    for import_item in &import_stmt.items {
+                        // Extract the item from the module.
+                        let item = module_memory
+                            .get(&import_item.name.name, import_item.into())
+                            .map_err(|_err| {
+                                KclError::UndefinedValue(KclErrorDetails {
+                                    message: format!("{} is not defined in module", import_item.name.name),
+                                    source_ranges: vec![SourceRange::from(&import_item.name)],
+                                })
+                            })?;
+                        // Check that the item is allowed to be imported.
+                        if !module_exports.contains(&import_item.name.name) {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: format!(
+                                    "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                    import_item.name.name
+                                ),
+                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                            }));
+                        }
+
+                        // Add the item to the current module.
+                        exec_state.memory.add(
+                            import_item.identifier(),
+                            item.clone(),
+                            SourceRange::from(&import_item.name),
+                        )?;
+                    }
+                    last_expr = None;
+                }
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
-                    // Discard return value.
-                    self.execute_expr(
-                        &expression_statement.expression,
-                        exec_state,
-                        &metadata,
-                        StatementKind::Expression,
-                    )
-                    .await?;
+                    last_expr = Some(
+                        self.execute_expr(
+                            &expression_statement.expression,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Expression,
+                        )
+                        .await?,
+                    );
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     for declaration in &variable_declaration.declarations {
@@ -1873,8 +2318,23 @@ impl ExecutorContext {
                                 StatementKind::Declaration { name: &var_name },
                             )
                             .await?;
+                        let is_function = memory_item.is_function();
                         exec_state.memory.add(&var_name, memory_item, source_range)?;
+                        // Track exports.
+                        match variable_declaration.visibility {
+                            ItemVisibility::Export => {
+                                if !is_function {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "Only functions can be exported".to_owned(),
+                                        source_ranges: vec![source_range],
+                                    }));
+                                }
+                                exec_state.module_exports.insert(var_name);
+                            }
+                            ItemVisibility::Default => {}
+                        }
                     }
+                    last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
                     let metadata = Metadata::from(return_statement);
@@ -1887,6 +2347,7 @@ impl ExecutorContext {
                         )
                         .await?;
                     exec_state.memory.return_ = Some(value);
+                    last_expr = None;
                 }
             }
         }
@@ -1903,7 +2364,7 @@ impl ExecutorContext {
                 .await?;
         }
 
-        Ok(())
+        Ok(last_expr)
     }
 
     pub async fn execute_expr<'a>(
@@ -1957,9 +2418,11 @@ impl ExecutorContext {
                 },
             },
             Expr::ArrayExpression(array_expression) => array_expression.execute(exec_state, self).await?,
+            Expr::ArrayRangeExpression(range_expression) => range_expression.execute(exec_state, self).await?,
             Expr::ObjectExpression(object_expression) => object_expression.execute(exec_state, self).await?,
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
+            Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -1970,8 +2433,25 @@ impl ExecutorContext {
     }
 
     /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(&self, program: &Program) -> Result<TakeSnapshot> {
-        let _ = self.run(program, None).await?;
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        program: NodeRef<'_, Program>,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
+    ) -> Result<TakeSnapshot> {
+        self.execute_and_prepare(program, id_generator, project_directory)
+            .await
+            .map(|(_state, snap)| snap)
+    }
+
+    /// Execute the program, return the interpreter and outputs.
+    pub async fn execute_and_prepare(
+        &self,
+        program: NodeRef<'_, Program>,
+        id_generator: IdGenerator,
+        project_directory: Option<String>,
+    ) -> Result<(ExecState, TakeSnapshot)> {
+        let state = self.run(program, None, id_generator, project_directory).await?;
 
         // Zoom to fit.
         self.engine
@@ -2004,7 +2484,7 @@ impl ExecutorContext {
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok(contents)
+        Ok((state, contents))
     }
 }
 
@@ -2012,7 +2492,7 @@ impl ExecutorContext {
 /// assign it to a parameter of the function, in the given block of function memory.
 /// Returns Err if too few/too many arguments were given for the function.
 fn assign_args_to_params(
-    function_expression: &FunctionExpression,
+    function_expression: NodeRef<'_, FunctionExpression>,
     args: Vec<KclValue>,
     mut fn_memory: ProgramMemory,
 ) -> Result<ProgramMemory, KclError> {
@@ -2064,7 +2544,7 @@ fn assign_args_to_params(
 pub(crate) async fn call_user_defined_function(
     args: Vec<KclValue>,
     memory: &ProgramMemory,
-    function_expression: &FunctionExpression,
+    function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
 ) -> Result<Option<KclValue>, KclError> {
@@ -2088,7 +2568,7 @@ pub(crate) async fn call_user_defined_function(
         (result, fn_memory)
     };
 
-    result.map(|()| fn_memory.return_)
+    result.map(|_| fn_memory.return_)
 }
 
 pub enum StatementKind<'a> {
@@ -2103,7 +2583,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::ast::types::{Identifier, Parameter};
+    use crate::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::token::lexer(code)?;
@@ -2114,9 +2594,9 @@ mod tests {
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: true,
+            context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None).await?;
+        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
         Ok(exec_state.memory)
     }
@@ -3075,13 +3555,11 @@ let w = f() + f()
                 meta: Default::default(),
             })
         }
-        fn ident(s: &'static str) -> Identifier {
-            Identifier {
-                start: 0,
-                end: 0,
+        fn ident(s: &'static str) -> Node<Identifier> {
+            Node::no_src(Identifier {
                 name: s.to_owned(),
                 digest: None,
-            }
+            })
         }
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
@@ -3173,20 +3651,20 @@ let w = f() + f()
             ),
         ] {
             // Run each test.
-            let func_expr = &FunctionExpression {
-                start: 0,
-                end: 0,
+            let func_expr = &Node::no_src(FunctionExpression {
                 params,
-                body: crate::ast::types::Program {
+                body: Node {
+                    inner: crate::ast::types::Program {
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                        digest: None,
+                    },
                     start: 0,
                     end: 0,
-                    body: Vec::new(),
-                    non_code_meta: Default::default(),
-                    digest: None,
                 },
                 return_type: None,
                 digest: None,
-            };
+            });
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(
                 actual, expected,
@@ -3197,10 +3675,10 @@ let w = f() + f()
 
     #[test]
     fn test_serialize_memory_item() {
-        let mem = KclValue::ExtrudeGroups {
+        let mem = KclValue::Solids {
             value: Default::default(),
         };
         let json = serde_json::to_string(&mem).unwrap();
-        assert_eq!(json, r#"{"type":"ExtrudeGroups","value":[]}"#);
+        assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
     }
 }

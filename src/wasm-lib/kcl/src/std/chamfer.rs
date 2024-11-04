@@ -8,9 +8,9 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagDeclarator,
+    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
-    executor::{ChamferSurface, EdgeCut, ExecState, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
+    executor::{ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
     std::{fillet::EdgeReference, Args},
 };
 
@@ -29,11 +29,10 @@ pub struct ChamferData {
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
-        args.get_data_and_extrude_group_and_tag()?;
+    let (data, solid, tag): (ChamferData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
-    let extrude_group = inner_chamfer(data, extrude_group, tag, exec_state, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_chamfer(data, solid, tag, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Cut a straight transitional edge along a tagged path.
@@ -102,11 +101,11 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 }]
 async fn inner_chamfer(
     data: ChamferData,
-    extrude_group: Box<ExtrudeGroup>,
-    tag: Option<TagDeclarator>,
+    solid: Box<Solid>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
     let mut tags = data.tags.clone();
     tags.sort();
@@ -127,19 +126,19 @@ async fn inner_chamfer(
         }));
     }
 
-    let mut extrude_group = extrude_group.clone();
+    let mut solid = solid.clone();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
             EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
-        let id = uuid::Uuid::new_v4();
+        let id = exec_state.id_generator.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
-                object_id: extrude_group.id,
+                object_id: solid.id,
                 radius: LengthUnit(data.length),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                 cut_type: CutType::Chamfer,
@@ -151,7 +150,7 @@ async fn inner_chamfer(
         )
         .await?;
 
-        extrude_group.edge_cuts.push(EdgeCut::Chamfer {
+        solid.edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
             length: data.length,
@@ -159,7 +158,7 @@ async fn inner_chamfer(
         });
 
         if let Some(ref tag) = tag {
-            extrude_group.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+            solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
                 face_id: id,
                 tag: Some(tag.clone()),
                 geo_meta: GeoMeta {
@@ -170,5 +169,5 @@ async fn inner_chamfer(
         }
     }
 
-    Ok(extrude_group)
+    Ok(solid)
 }

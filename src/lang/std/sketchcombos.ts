@@ -17,7 +17,7 @@ import {
   VariableDeclarator,
   PathToNode,
   ProgramMemory,
-  sketchGroupFromKclValue,
+  sketchFromKclValue,
   Literal,
 } from '../wasm'
 import {
@@ -49,6 +49,7 @@ import {
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -325,7 +326,7 @@ const setHorzVertDistanceCreateNode =
     if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
 
     const valueUsedInTransform = roundOff(literalArg - refNum, 2)
-    let finalValue: Expr = createBinaryExpressionWithUnary([
+    let finalValue: Node<Expr> = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, !index),
       forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
@@ -1541,7 +1542,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceSegName,
   forceValueUsedInTransform,
 }: {
-  ast: Program
+  ast: Node<Program>
   selectionRanges: Selections__old
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
@@ -1549,7 +1550,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceValueUsedInTransform?: BinaryPart
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNodeMap: PathToNodeMap
       tagInfo: {
@@ -1559,7 +1560,15 @@ export function transformSecondarySketchLinesTagFirst({
     }
   | Error {
   // let node = structuredClone(ast)
-  const primarySelection = selectionRanges.codeBasedSelections[0].range
+
+  // We need to sort the selections by their start position
+  // so that we can process them in dependency order and not write invalid KCL.
+  const sortedCodeBasedSelections =
+    selectionRanges.codeBasedSelections.toSorted(
+      (a, b) => a.range[0] - b.range[0]
+    )
+  const primarySelection = sortedCodeBasedSelections[0].range
+  const secondarySelections = sortedCodeBasedSelections.slice(1)
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
   if (err(_tag)) return _tag
@@ -1569,7 +1578,7 @@ export function transformSecondarySketchLinesTagFirst({
     ast: modifiedAst,
     selectionRanges: {
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+      codeBasedSelections: secondarySelections,
     },
     referencedSegmentRange: primarySelection,
     transformInfos,
@@ -1612,7 +1621,7 @@ export function transformAstSketchLines({
   forceValueUsedInTransform,
   referencedSegmentRange,
 }: {
-  ast: Program
+  ast: Node<Program>
   selectionRanges: Selections__old | PathToNode[]
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
@@ -1621,7 +1630,7 @@ export function transformAstSketchLines({
   forceValueUsedInTransform?: BinaryPart
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNodeMap: PathToNodeMap
     }
@@ -1639,7 +1648,7 @@ export function transformAstSketchLines({
 
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
-    const callExp = getNode<CallExpression>('CallExpression')
+    const callExp = getNode<Node<CallExpression>>('CallExpression')
     if (err(callExp)) return callExp
     const varDec = getNode<VariableDeclarator>('VariableDeclarator')
     if (err(varDec)) return varDec
@@ -1703,33 +1712,29 @@ export function transformAstSketchLines({
 
     const varName = varDec.node.id.name
     let kclVal = programMemory.get(varName)
-    let sketchGroup
-    if (kclVal?.type === 'ExtrudeGroup') {
-      sketchGroup = kclVal.sketchGroup
+    let sketch
+    if (kclVal?.type === 'Solid') {
+      sketch = kclVal.sketch
     } else {
-      sketchGroup = sketchGroupFromKclValue(kclVal, varName)
-      if (err(sketchGroup)) {
+      sketch = sketchFromKclValue(kclVal, varName)
+      if (err(sketch)) {
         return
       }
     }
-    const segMeta = getSketchSegmentFromPathToNode(
-      sketchGroup,
-      ast,
-      _pathToNode
-    )
+    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode)
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
     let referencedSegment
     if (referencedSegmentRange) {
       const _segment = getSketchSegmentFromSourceRange(
-        sketchGroup,
+        sketch,
         referencedSegmentRange
       )
       if (err(_segment)) return _segment
       referencedSegment = _segment.segment
     } else {
-      referencedSegment = sketchGroup.value.find(
+      referencedSegment = sketch.paths.find(
         (path) => path.tag?.value === _referencedSegmentName
       )
     }
@@ -1803,13 +1808,16 @@ function createSegAngle(referenceSegName: string): BinaryPart {
   return createCallExpression('segAng', [createIdentifier(referenceSegName)])
 }
 
-function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
+function createSegEnd(
+  referenceSegName: string,
+  isX: boolean
+): Node<CallExpression> {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
     createIdentifier(referenceSegName),
   ])
 }
 
-function createLastSeg(isX: boolean): CallExpression {
+function createLastSeg(isX: boolean): Node<CallExpression> {
   return createCallExpression(isX ? 'lastSegX' : 'lastSegY', [
     createPipeSubstitution(),
   ])
@@ -1827,7 +1835,7 @@ export function getConstraintLevelFromSourceRange(
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
-  const nodeMeta = getNodeFromPath<CallExpression>(
+  const nodeMeta = getNodeFromPath<Node<CallExpression>>(
     ast,
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'

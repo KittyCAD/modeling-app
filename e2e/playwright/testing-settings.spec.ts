@@ -7,12 +7,15 @@ import {
   setupElectron,
   tearDown,
   executorInputPath,
+  createProject,
 } from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
+import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import {
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS,
+  TEST_SETTINGS_DEFAULT_THEME,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 
@@ -257,16 +260,21 @@ test.describe('Testing settings', () => {
 
   test(
     `Project settings override user settings on desktop`,
-    { tag: '@electron' },
+    { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
       test.skip(
         process.platform === 'win32',
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
-      const { electronApp, page } = await setupElectron({
+      const projectName = 'bracket'
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          const bracketDir = join(dir, 'bracket')
+          const bracketDir = join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
             executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
@@ -278,6 +286,12 @@ test.describe('Testing settings', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
 
       // Selectors and constants
+      const tempProjectSettingsFilePath = join(
+        projectDirName,
+        projectName,
+        PROJECT_SETTINGS_FILE_NAME
+      )
+      const tempUserSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
       const userThemeColor = '120'
       const projectThemeColor = '50'
       const settingsOpenButton = page.getByRole('link', {
@@ -298,6 +312,12 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(userThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
         await settingsCloseButton.click()
+        await expect
+          .poll(async () => fsp.readFile(tempUserSettingsFilePath, 'utf-8'), {
+            message: 'Setting should now be written to the file',
+            timeout: 5_000,
+          })
+          .toContain(`themeColor = "${userThemeColor}"`)
       })
 
       await test.step('Set project theme color', async () => {
@@ -309,6 +329,16 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         await settingsCloseButton.click()
+        // Make sure that the project settings file has been written to before continuing
+        await expect
+          .poll(
+            async () => fsp.readFile(tempProjectSettingsFilePath, 'utf-8'),
+            {
+              message: 'Setting should now be written to the file',
+              timeout: 5_000,
+            }
+          )
+          .toContain(`themeColor = "${projectThemeColor}"`)
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
@@ -321,6 +351,7 @@ test.describe('Testing settings', () => {
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
         await logoLink.click()
+        await page.screenshot({ path: 'out.png' })
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
       })
 
@@ -342,7 +373,7 @@ test.describe('Testing settings', () => {
 
       // Selectors and constants
       const errorHeading = page.getByRole('heading', {
-        name: 'An unextected error occurred',
+        name: 'An unexpected error occurred',
       })
       const projectDirLink = page.getByText('Loaded from')
 
@@ -371,13 +402,119 @@ test.describe('Testing settings', () => {
 
       // Selectors and constants
       const errorHeading = page.getByRole('heading', {
-        name: 'An unextected error occurred',
+        name: 'An unexpected error occurred',
       })
       const projectDirLink = page.getByText('Loaded from')
 
       // If the app loads without exploding we're in the clear
       await expect(errorHeading).not.toBeVisible()
       await expect(projectDirLink).toBeVisible()
+
+      await electronApp.close()
+    }
+  )
+
+  // It was much easier to test the logo color than the background stream color.
+  test(
+    'user settings reload on external change, on project and modeling view',
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
+        testInfo,
+        appSettings: {
+          app: {
+            // Doesn't matter what you set it to. It will
+            // default to 264.5
+            themeColor: '0',
+          },
+        },
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const logoLink = page.getByTestId('app-logo')
+      const projectDirLink = page.getByText('Loaded from')
+
+      await test.step('Wait for project view', async () => {
+        await expect(projectDirLink).toBeVisible()
+        await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
+      })
+
+      const changeColor = async (color: string) => {
+        const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
+        let tomlStr = await fsp.readFile(tempSettingsFilePath, 'utf-8')
+        tomlStr = tomlStr.replace(/(themeColor = ")[0-9]+(")/, `$1${color}$2`)
+        await fsp.writeFile(tempSettingsFilePath, tomlStr)
+      }
+
+      await test.step('Check color of logo changed', async () => {
+        await changeColor('99')
+        await expect(logoLink).toHaveCSS('--primary-hue', '99')
+      })
+
+      await test.step('Check color of logo changed when in modeling view', async () => {
+        await createProject({ name: 'project-000', page })
+        await changeColor('58')
+        await expect(logoLink).toHaveCSS('--primary-hue', '58')
+      })
+
+      await test.step('Check going back to projects view still changes the color', async () => {
+        await logoLink.click()
+        await expect(projectDirLink).toBeVisible()
+        await changeColor('21')
+        await expect(logoLink).toHaveCSS('--primary-hue', '21')
+      })
+      await electronApp.close()
+    }
+  )
+
+  test(
+    'project settings reload on external change',
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
+        testInfo,
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const logoLink = page.getByTestId('app-logo')
+      const projectDirLink = page.getByText('Loaded from')
+
+      await test.step('Wait for project view', async () => {
+        await expect(projectDirLink).toBeVisible()
+      })
+
+      await createProject({ name: 'project-000', page })
+
+      const changeColorFs = async (color: string) => {
+        const tempSettingsFilePath = join(
+          projectDirName,
+          'project-000',
+          PROJECT_SETTINGS_FILE_NAME
+        )
+        await fsp.writeFile(
+          tempSettingsFilePath,
+          `[settings.app]\nthemeColor = "${color}"`
+        )
+      }
+
+      await test.step('Check the color is first starting as we expect', async () => {
+        await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
+      })
+
+      await test.step('Check color of logo changed', async () => {
+        await changeColorFs('99')
+        await expect(logoLink).toHaveCSS('--primary-hue', '99')
+      })
 
       await electronApp.close()
     }
@@ -595,14 +732,14 @@ test.describe('Testing settings', () => {
     await page.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([0, 5], %)
   |> line([-5, 0], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(5, sketch001)
+extrude001 = extrude(5, sketch001)
 `
       )
     })
@@ -652,6 +789,60 @@ const extrude001 = extrude(5, sketch001)
         .poll(() =>
           u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
         )
+        .toBeLessThan(15)
+    })
+  })
+
+  test(`Changing system theme preferences (via media query) should update UI and stream`, async ({
+    page,
+  }) => {
+    // Override the settings so that the theme is set to `system`
+    await page.addInitScript(
+      ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: TEST_SETTINGS_DEFAULT_THEME,
+        }),
+      }
+    )
+    const u = await getUtils(page)
+
+    // Selectors and constants
+    const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
+    const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
+    const darkBackgroundColor: [number, number, number] = [27, 27, 27]
+    const lightBackgroundColor: [number, number, number] = [245, 245, 245]
+    const streamBackgroundPixelIsColor = async (
+      color: [number, number, number]
+    ) => {
+      return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+    }
+    const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
+
+    await test.step(`Test setup`, async () => {
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await u.waitForAuthSkipAppStart()
+      await expect(toolbar).toBeVisible()
+    })
+
+    await test.step(`Check the background color is light before`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', lightBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+        .toBeLessThan(15)
+    })
+
+    await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
+      await page.emulateMedia({ colorScheme: 'dark' })
+    })
+
+    await test.step(`Check the background color is dark after`, async () => {
+      await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
+      await expect
+        .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
         .toBeLessThan(15)
     })
   })
