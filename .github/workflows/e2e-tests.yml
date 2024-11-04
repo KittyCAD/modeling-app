@@ -287,7 +287,7 @@ jobs:
         brew install gnu-sed
         echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
     - name: Install vector
-      if:  ${{ !startsWith(matrix.os, 'windows') }}
+      if:  ${{ startsWith(matrix.os, 'ubuntu') }}
       shell: bash
       run: |
         curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
