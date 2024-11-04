@@ -134,7 +134,7 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         vector_to_letter(y_vec.0, y_vec.1, y_vec.2).unwrap_or(""),
     );
 
-    if allowed_planes.contains_key(&plane_name) {
+    if !allowed_planes.contains_key(&plane_name) {
         return Ok(vec![]);
     };
 
