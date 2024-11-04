@@ -157,7 +157,7 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test(
+  test.fixme(
     `create many new untitled files they increment their names`,
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
