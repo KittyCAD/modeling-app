@@ -128,6 +128,124 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     Ok(path.get_to()[1])
 }
 
+/// Returns the point at the start of the given segment.
+pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let tag: TagIdentifier = args.get_data()?;
+    let result = inner_segment_start(&tag, exec_state, args.clone())?;
+
+    args.make_user_val_from_point(result)
+}
+
+/// Compute the starting point of the provided line segment.
+///
+/// ```no_run
+/// w = 15
+/// cube = startSketchAt([0, 0])
+///   |> line([w, 0], %, $line1)
+///   |> line([0, w], %, $line2)
+///   |> line([-w, 0], %, $line3)
+///   |> line([0, -w], %, $line4)
+///   |> close(%)
+///   |> extrude(5, %)
+///
+/// fn cylinder = (radius, tag) => {
+///   return startSketchAt([0, 0])
+///   |> circle({ radius: radius, center: segStart(tag) }, %)
+///   |> extrude(radius, %)
+/// }
+///
+/// cylinder(1, line1)
+/// cylinder(2, line2)
+/// cylinder(3, line3)
+/// cylinder(4, line4)
+/// ```
+#[stdlib {
+    name = "segStart",
+}]
+fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[f64; 2], KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
+    let path = line.path.clone().ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Expected a line segment with a path, found `{:?}`", line),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+
+    Ok(path.get_base().to)
+}
+
+/// Returns the segment start of x.
+pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let tag: TagIdentifier = args.get_data()?;
+    let result = inner_segment_start_x(&tag, exec_state, args.clone())?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Compute the starting point of the provided line segment along the 'x' axis.
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([20, 0], %, $thing)
+///   |> line([0, 5], %)
+///   |> line([segStartX(thing), 0], %)
+///   |> line([-20, 10], %)
+///   |> close(%)
+///  
+/// const example = extrude(5, exampleSketch)
+/// ```
+#[stdlib {
+    name = "segStartX",
+}]
+fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
+    let path = line.path.clone().ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Expected a line segment with a path, found `{:?}`", line),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+
+    Ok(path.get_base().to[0])
+}
+
+/// Returns the segment start of y.
+pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let tag: TagIdentifier = args.get_data()?;
+    let result = inner_segment_start_y(&tag, exec_state, args.clone())?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Compute the starting point of the provided line segment along the 'y' axis.
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([20, 0], %)
+///   |> line([0, 3], %, $thing)
+///   |> line([-10, 0], %)
+///   |> line([0, segStartY(thing)], %)
+///   |> line([-10, 0], %)
+///   |> close(%)
+///  
+/// const example = extrude(5, exampleSketch)
+/// ```
+#[stdlib {
+    name = "segStartY",
+}]
+fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
+    let path = line.path.clone().ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Expected a line segment with a path, found `{:?}`", line),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+
+    Ok(path.get_to()[1])
+}
 /// Returns the last segment of x.
 pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_sketch()?;
