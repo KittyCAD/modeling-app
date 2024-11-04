@@ -1915,11 +1915,13 @@ export function getConstraintInfo(
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
   if (!(fnName in sketchLineHelperMap)) return []
-  return sketchLineHelperMap[fnName].getConstraintInfo(
+  const result = sketchLineHelperMap[fnName].getConstraintInfo(
     callExpression,
     code,
     pathToNode
   )
+  // console.log('result path', result[0].pathToNode)
+  return result
 }
 
 export function compareVec2Epsilon(

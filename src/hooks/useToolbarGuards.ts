@@ -11,6 +11,7 @@ import { useModelingContext } from './useModelingContext'
 import { PathToNode, SourceRange } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { toSync } from 'lib/utils'
+import { convertSelectionsToOld } from 'lib/selections'
 
 export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 
@@ -28,14 +29,19 @@ export function useConvertToVariable(range?: SourceRange) {
 
     const meta = isNodeSafeToReplace(
       parsed,
-      range || context.selectionRanges.codeBasedSelections?.[0]?.range || []
+      range ||
+        convertSelectionsToOld(context.selectionRanges).codeBasedSelections?.[0]
+          ?.range ||
+        []
     )
     if (trap(meta)) return
 
     const { isSafe, value } = meta
     const canReplace = isSafe && value.type !== 'Identifier'
     const isOnlyOneSelection =
-      !!range || context.selectionRanges.codeBasedSelections.length === 1
+      !!range ||
+      convertSelectionsToOld(context.selectionRanges).codeBasedSelections
+        .length === 1
 
     setEnabled(canReplace && isOnlyOneSelection)
   }, [context.selectionRanges])
@@ -52,7 +58,9 @@ export function useConvertToVariable(range?: SourceRange) {
         moveValueIntoNewVariable(
           ast,
           kclManager.programMemory,
-          range || context.selectionRanges.codeBasedSelections[0].range,
+          range ||
+            convertSelectionsToOld(context.selectionRanges)
+              .codeBasedSelections[0].range,
           variableName
         )
 

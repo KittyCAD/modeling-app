@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -19,7 +19,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 export function setEqualLengthInfo({
   selectionRanges,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 }):
   | {
       transforms: TransformInfo[]
@@ -84,7 +84,7 @@ export function setEqualLengthInfo({
 export function applyConstraintEqualLength({
   selectionRanges,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 }):
   | {
       modifiedAst: Node<Program>

@@ -1,5 +1,5 @@
 import { ToolTip } from 'lang/langHelpers'
-import { Selection, Selections } from 'lib/selections'
+import { Selection__old, Selections__old } from 'lib/selections'
 import {
   ArrayExpression,
   BinaryExpression,
@@ -129,7 +129,7 @@ function moreNodePathFromSourceRange(
     | VariableDeclaration
     | ReturnStatement
   >,
-  sourceRange: Selection['range'],
+  sourceRange: Selection__old['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange
@@ -324,7 +324,7 @@ function moreNodePathFromSourceRange(
 
 export function getNodePathFromSourceRange(
   node: Program,
-  sourceRange: Selection['range'],
+  sourceRange: Selection__old['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange || []
@@ -503,7 +503,7 @@ export function findAllPreviousVariablesPath(
 export function findAllPreviousVariables(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: Selection__old['range'],
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
@@ -649,8 +649,8 @@ export function isValueZero(val?: Expr): boolean {
 export function isLinesParallelAndConstrained(
   ast: Program,
   programMemory: ProgramMemory,
-  primaryLine: Selection,
-  secondaryLine: Selection
+  primaryLine: Selection__old,
+  secondaryLine: Selection__old
 ):
   | {
       isParallelAndConstrained: boolean
@@ -745,7 +745,7 @@ export function doesPipeHaveCallExp({
 }: {
   calleeName: string
   ast: Program
-  selection: Selection
+  selection: Selection__old
 }): boolean {
   const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const pipeExpressionMeta = getNodeFromPath<PipeExpression>(
@@ -772,7 +772,7 @@ export function hasExtrudeSketch({
   programMemory,
 }: {
   ast: Program
-  selection: Selection
+  selection: Selection__old
   programMemory: ProgramMemory
 }): boolean {
   const pathToNode = getNodePathFromSourceRange(ast, selection.range)
@@ -795,7 +795,7 @@ export function hasExtrudeSketch({
 }
 
 export function isSingleCursorInPipe(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   ast: Program
 ) {
   if (selectionRanges.codeBasedSelections.length !== 1) return false
@@ -869,7 +869,10 @@ export function findUsesOfTagInPipe(
   return dependentRanges
 }
 
-export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
+export function hasSketchPipeBeenExtruded(
+  selection: Selection__old,
+  ast: Program
+) {
   const path = getNodePathFromSourceRange(ast, selection.range)
   const _node = getNodeFromPath<PipeExpression>(ast, path, 'PipeExpression')
   if (err(_node)) return false

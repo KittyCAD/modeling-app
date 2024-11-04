@@ -1,7 +1,7 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
 import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Selection } from './selections'
+import { Selection__old } from './selections'
 import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
@@ -144,7 +144,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Selection['type'][]
+      selectionTypes: Selection__old['type'][]
       multiple: boolean
     }
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
@@ -218,7 +218,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Selection['type'][]
+      selectionTypes: Selection__old['type'][]
       multiple: boolean
     }
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value

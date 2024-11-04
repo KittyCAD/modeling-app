@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr } from '../../lang/wasm'
+import { Selections__old } from 'lib/selections'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -33,7 +33,7 @@ export function absDistanceInfo({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   constraint: Constraint
 }):
   | {
@@ -94,7 +94,7 @@ export async function applyConstraintAbsDistance({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   constraint: 'xAbs' | 'yAbs'
 }): Promise<{
   modifiedAst: Program
@@ -158,7 +158,7 @@ export function applyConstraintAxisAlign({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   constraint: 'snapToYAxis' | 'snapToXAxis'
 }):
   | {

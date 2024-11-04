@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { Program, ProgramMemory, Expr } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -16,7 +16,7 @@ import { err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export function horzVertInfo(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   horOrVert: 'vertical' | 'horizontal'
 ):
   | {
@@ -54,7 +54,7 @@ export function horzVertInfo(
 }
 
 export function applyConstraintHorzVert(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   horOrVert: 'vertical' | 'horizontal',
   ast: Node<Program>,
   programMemory: ProgramMemory

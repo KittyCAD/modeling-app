@@ -5,7 +5,7 @@ import {
   transformAstSketchLines,
 } from './sketchcombos'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { Selection } from 'lib/selections'
+import { Selection__old } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
 
@@ -27,7 +27,7 @@ async function testingSwapSketchFnCall({
   originalRange: [number, number]
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: Selection = {
+  const range: Selection__old = {
     type: 'default',
     range: [startIndex, startIndex + callToSwap.length],
   }

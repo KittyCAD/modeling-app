@@ -13,12 +13,12 @@ import {
   getPathToExtrudeForSegmentSelection,
   hasValidFilletSelection,
   isTagUsedInFillet,
-  modifyAstCloneWithFilletAndTag,
+  modifyAstWithFilletAndTag,
 } from './addFillet'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { KclCommandValue } from 'lib/commandTypes'
@@ -105,7 +105,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     code.indexOf(selectedSegmentSnippet),
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
   ]
-  const selection: Selections = {
+  const selection: Selections__old = {
     codeBasedSelections: [
       {
         range: segmentRange,
@@ -247,7 +247,7 @@ const runModifyAstCloneWithFilletAndTag = async (
       code.indexOf(selectionSnippet) + selectionSnippet.length,
     ]
   )
-  const selection: Selections = {
+  const selection: Selections__old = {
     codeBasedSelections: segmentRanges.map((segmentRange) => ({
       range: segmentRange,
       type: 'default',
@@ -266,7 +266,7 @@ const runModifyAstCloneWithFilletAndTag = async (
   await kclManager.executeAst({ ast })
 
   // apply fillet to selection
-  const result = modifyAstCloneWithFilletAndTag(ast, selection, radius)
+  const result = modifyAstWithFilletAndTag(ast, selection, radius)
   if (err(result)) {
     return result
   }
@@ -567,7 +567,7 @@ describe('Testing button states', () => {
         ]
       : [ast.end, ast.end] // empty line in the end of the code
 
-    const selectionRanges: Selections = {
+    const selectionRanges: Selections__old = {
       codeBasedSelections: [
         {
           range,

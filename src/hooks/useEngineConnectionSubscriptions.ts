@@ -9,11 +9,9 @@ import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   getCapCodeRef,
-  getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
-  getEdgeCuteConsumedCodeRef,
-  getSolid2dCodeRef,
   getWallCodeRef,
+  getCodeRefsByArtifactId,
   getArtifactOfTypes,
   SegmentArtifact,
 } from 'lang/std/artifactGraph'
@@ -34,63 +32,14 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
-          const artifact = engineCommandManager.artifactGraph.get(
-            data.entity_id
+          const codeRefs = getCodeRefsByArtifactId(
+            data.entity_id,
+            engineCommandManager.artifactGraph
           )
-          if (artifact?.type === 'solid2D') {
-            const codeRef = getSolid2dCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'cap') {
-            const codeRef = getCapCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'wall') {
-            const extrusion = getSweepFromSuspectedSweepSurface(
-              data.entity_id,
-              engineCommandManager.artifactGraph
-            )
-            const codeRef = getWallCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange(
-              err(extrusion)
-                ? [codeRef.range]
-                : [codeRef.range, extrusion.codeRef.range]
-            )
-          } else if (artifact?.type === 'sweepEdge') {
-            const codeRef = getSweepEdgeCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'segment') {
-            editorManager.setHighlightRange([
-              artifact?.codeRef?.range || [0, 0],
-            ])
-          } else if (artifact?.type === 'edgeCut') {
-            const codeRef = artifact.codeRef
-            const consumedCodeRef = getEdgeCuteConsumedCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            editorManager.setHighlightRange(
-              err(consumedCodeRef)
-                ? [codeRef.range]
-                : [codeRef.range, consumedCodeRef.range]
-            )
-          } else {
-            editorManager.setHighlightRange([[0, 0]])
+          if (codeRefs) {
+            editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
           }
+          editorManager.setHighlightRange([[0, 0]])
         } else if (
           !editorManager.highlightRange ||
           (editorManager.highlightRange[0][0] !== 0 &&

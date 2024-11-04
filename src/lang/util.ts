@@ -1,4 +1,4 @@
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
 import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
@@ -7,10 +7,10 @@ import { err } from 'lib/trap'
 
 export function pathMapToSelections(
   ast: Program,
-  prevSelections: Selections,
+  prevSelections: Selections__old,
   pathToNodeMap: { [key: number]: PathToNode }
-): Selections {
-  const newSelections: Selections = {
+): Selections__old {
+  const newSelections: Selections__old = {
     ...prevSelections,
     codeBasedSelections: [],
   }
@@ -59,7 +59,7 @@ export function updatePathToNodeFromMap(
 
 export function isCursorInSketchCommandRange(
   artifactGraph: ArtifactGraph,
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 ): string | false {
   const overlappingEntries = filterArtifacts(
     {

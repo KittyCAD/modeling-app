@@ -9,7 +9,7 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from 'lang/langHelpers'
-import { Selection, Selections } from 'lib/selections'
+import { Selections__old, Selections, Selection__old } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
@@ -87,8 +87,8 @@ function getConstraintTypeFromSourceHelper2(
 }
 
 function makeSelections(
-  codeBaseSelections: Selections['codeBasedSelections']
-): Selections {
+  codeBaseSelections: Selections__old['codeBasedSelections']
+): Selections__old {
   return {
     codeBasedSelections: codeBaseSelections,
     otherSelections: [],
@@ -112,7 +112,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
   |> close(%)
 `
 
-    const selectLine = (script: string, lineNumber: number): Selection => {
+    const selectLine = (script: string, lineNumber: number): Selection__old => {
       const lines = script.split('\n')
       const codeBeforeLine = lines.slice(0, lineNumber).join('\n').length
       const line = lines.find((_, i) => i === lineNumber)
@@ -131,7 +131,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
 
     async function applyTransformation(
       inputCode: string,
-      selectionRanges: Selections['codeBasedSelections']
+      selectionRanges: Selections__old['codeBasedSelections']
     ) {
       const ast = parse(inputCode)
       if (err(ast)) return Promise.reject(ast)
@@ -157,7 +157,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     }
 
     it(`Should reorder when user selects first-to-last`, async () => {
-      const selectionRanges: Selections['codeBasedSelections'] = [
+      const selectionRanges: Selections__old['codeBasedSelections'] = [
         selectLine(inputScript, 3),
         selectLine(inputScript, 4),
       ]
@@ -167,7 +167,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     })
 
     it(`Should reorder when user selects last-to-first`, async () => {
-      const selectionRanges: Selections['codeBasedSelections'] = [
+      const selectionRanges: Selections__old['codeBasedSelections'] = [
         selectLine(inputScript, 4),
         selectLine(inputScript, 3),
       ]
@@ -288,7 +288,7 @@ part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
       .map((ln) => {
@@ -379,7 +379,7 @@ part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
       .map((ln) => {
@@ -441,7 +441,7 @@ part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
       .map((ln) => {
@@ -514,7 +514,7 @@ part001 = startSketchOn('XY')
        segEndY(seg01) + 2.93
      ], %) // xRelative`)
     })
-    it('testing for yRelative to horizontal distance', async () => {
+    it.only('testing for yRelative to horizontal distance', async () => {
       const expectedCode = await helperThing(
         inputScript,
         ['// base selection', '// yRelative'],
@@ -536,7 +536,7 @@ async function helperThing(
   const ast = parse(inputScript)
   if (err(ast)) return Promise.reject(ast)
 
-  const selectionRanges: Selections['codeBasedSelections'] = inputScript
+  const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
       linesOfInterest.some((lineOfInterest) => ln.includes(lineOfInterest))

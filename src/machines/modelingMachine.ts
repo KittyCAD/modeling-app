@@ -5,7 +5,14 @@ import {
   parse,
   recast,
 } from 'lang/wasm'
-import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
+import {
+  Axis,
+  convertSelectionsToOld,
+  convertSelectionToOld,
+  Selections,
+  Selection,
+  updateSelections,
+} from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
@@ -327,7 +334,7 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   selection: [],
   selectionRanges: {
     otherSelections: [],
-    codeBasedSelections: [],
+    graphSelections: [],
   },
   sketchDetails: {
     sketchPathToNode: [],
@@ -378,18 +385,24 @@ export const modelingMachine = setup({
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(selectionRanges, 'horizontal')
+      const info = horzVertInfo(
+        convertSelectionsToOld(selectionRanges),
+        'horizontal'
+      )
       if (trap(info)) return false
       return info.enabled
     },
     'Can make selection vertical': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(selectionRanges, 'vertical')
+      const info = horzVertInfo(
+        convertSelectionsToOld(selectionRanges),
+        'vertical'
+      )
       if (trap(info)) return false
       return info.enabled
     },
     'Can constrain horizontal distance': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         constraint: 'setHorzDistance',
       })
       if (trap(info)) return false
@@ -397,47 +410,59 @@ export const modelingMachine = setup({
     },
     'Can constrain vertical distance': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         constraint: 'setVertDistance',
       })
       if (trap(info)) return false
       return info.enabled
     },
     'Can constrain ABS X': ({ context: { selectionRanges } }) => {
-      const info = absDistanceInfo({ selectionRanges, constraint: 'xAbs' })
+      const info = absDistanceInfo({
+        selectionRanges: convertSelectionsToOld(selectionRanges),
+        constraint: 'xAbs',
+      })
       if (trap(info)) return false
       return info.enabled
     },
     'Can constrain ABS Y': ({ context: { selectionRanges } }) => {
-      const info = absDistanceInfo({ selectionRanges, constraint: 'yAbs' })
+      const info = absDistanceInfo({
+        selectionRanges: convertSelectionsToOld(selectionRanges),
+        constraint: 'yAbs',
+      })
       if (trap(info)) return false
       return info.enabled
     },
     'Can constrain angle': ({ context: { selectionRanges } }) => {
-      const angleBetween = angleBetweenInfo({ selectionRanges })
+      const angleBetween = angleBetweenInfo({
+        selectionRanges: convertSelectionsToOld(selectionRanges),
+      })
       if (trap(angleBetween)) return false
       const angleLength = angleLengthInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         angleOrLength: 'setAngle',
       })
       if (trap(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
     },
     'Can constrain length': ({ context: { selectionRanges } }) => {
-      const angleLength = angleLengthInfo({ selectionRanges })
+      const angleLength = angleLengthInfo({
+        selectionRanges: convertSelectionsToOld(selectionRanges),
+      })
       if (trap(angleLength)) return false
       return angleLength.enabled
     },
     'Can constrain perpendicular distance': ({
       context: { selectionRanges },
     }) => {
-      const info = intersectInfo({ selectionRanges })
+      const info = intersectInfo({
+        selectionRanges: convertSelectionsToOld(selectionRanges),
+      })
       if (trap(info)) return false
       return info.enabled
     },
     'Can constrain horizontally align': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         constraint: 'setHorzDistance',
       })
       if (trap(info)) return false
@@ -445,7 +470,7 @@ export const modelingMachine = setup({
     },
     'Can constrain vertically align': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         constraint: 'setHorzDistance',
       })
       if (trap(info)) return false
@@ -453,7 +478,7 @@ export const modelingMachine = setup({
     },
     'Can constrain snap to X': ({ context: { selectionRanges } }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         constraint: 'snapToXAxis',
       })
       if (trap(info)) return false
@@ -461,19 +486,23 @@ export const modelingMachine = setup({
     },
     'Can constrain snap to Y': ({ context: { selectionRanges } }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         constraint: 'snapToYAxis',
       })
       if (trap(info)) return false
       return info.enabled
     },
     'Can constrain equal length': ({ context: { selectionRanges } }) => {
-      const info = setEqualLengthInfo({ selectionRanges })
+      const info = setEqualLengthInfo({
+        selectionRanges: convertSelectionsToOld(selectionRanges),
+      })
       if (trap(info)) return false
       return info.enabled
     },
     'Can canstrain parallel': ({ context: { selectionRanges } }) => {
-      const info = equalAngleInfo({ selectionRanges })
+      const info = equalAngleInfo({
+        selectionRanges: convertSelectionsToOld(selectionRanges),
+      })
       if (err(info)) return false
       return info.enabled
     },
@@ -483,7 +512,7 @@ export const modelingMachine = setup({
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
       const info = removeConstrainingValuesInfo({
-        selectionRanges,
+        selectionRanges: convertSelectionsToOld(selectionRanges),
         pathToNodes: event.data && [event.data],
       })
       if (trap(info)) return false
@@ -610,7 +639,7 @@ export const modelingMachine = setup({
           })
         }
         if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
+          editorManager._selectRange(updatedAst?.selections)
         }
       })().catch(reportRejection)
     },
@@ -657,17 +686,21 @@ export const modelingMachine = setup({
           })
         }
         if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
+          editorManager._selectRange(updatedAst?.selections)
         }
       })().catch(reportRejection)
     },
     'AST delete selection': ({ context: { selectionRanges } }) => {
       ;(async () => {
         let ast = kclManager.ast
+        const oldSelection = convertSelectionToOld(
+          selectionRanges.graphSelections[0]
+        )
+        if (!oldSelection) return
 
         const modifiedAst = await deleteFromSelection(
           ast,
-          selectionRanges.codeBasedSelections[0],
+          oldSelection,
           kclManager.programMemory,
           getFaceDetails
         )
@@ -738,7 +771,7 @@ export const modelingMachine = setup({
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
           maybeModdedAst: kclManager.ast,
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
         })
         sceneInfra.resetMouseListeners()
         sceneEntitiesManager.setupSketchIdleCallbacks({
@@ -969,7 +1002,7 @@ export const modelingMachine = setup({
         > & { data?: PathToNode }
       }) => {
         const constraint = applyRemoveConstrainingValues({
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
           pathToNodes: data && [data],
         })
         if (trap(constraint)) return
@@ -988,7 +1021,7 @@ export const modelingMachine = setup({
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
-            selectionRanges,
+            convertSelectionsToOld(selectionRanges),
             updatedAst.newAst
           ),
         }
@@ -1001,7 +1034,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVert(
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           'horizontal',
           kclManager.ast,
           kclManager.programMemory
@@ -1022,7 +1055,7 @@ export const modelingMachine = setup({
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
-            selectionRanges,
+            convertSelectionsToOld(selectionRanges),
             updatedAst.newAst
           ),
         }
@@ -1035,7 +1068,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVert(
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           'vertical',
           kclManager.ast,
           kclManager.programMemory
@@ -1056,7 +1089,7 @@ export const modelingMachine = setup({
           selectionType: 'completeSelection',
           selection: updateSelections(
             pathToNodeMap,
-            selectionRanges,
+            convertSelectionsToOld(selectionRanges),
             updatedAst.newAst
           ),
         }
@@ -1069,7 +1102,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
           constraint: 'setVertDistance',
         })
         if (trap(constraint)) return
@@ -1086,7 +1119,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           updatedAst.newAst
         )
         return {
@@ -1102,7 +1135,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
           constraint: 'setHorzDistance',
         })
         if (trap(constraint)) return
@@ -1119,7 +1152,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           updatedAst.newAst
         )
         return {
@@ -1135,7 +1168,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintAxisAlign({
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
           constraint: 'snapToXAxis',
         })
         if (err(constraint)) return false
@@ -1152,7 +1185,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           updatedAst.newAst
         )
         return {
@@ -1168,7 +1201,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintAxisAlign({
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
           constraint: 'snapToYAxis',
         })
         if (trap(constraint)) return false
@@ -1185,7 +1218,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           updatedAst.newAst
         )
         return {
@@ -1201,7 +1234,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintEqualAngle({
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1222,7 +1255,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           updatedAst.newAst
         )
         return {
@@ -1238,7 +1271,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintEqualLength({
-          selectionRanges,
+          selectionRanges: convertSelectionsToOld(selectionRanges),
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1254,7 +1287,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
-          selectionRanges,
+          convertSelectionsToOld(selectionRanges),
           updatedAst.newAst
         )
         return {

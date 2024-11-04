@@ -3,12 +3,13 @@ import { kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findAllPreviousVariables } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
+import { convertSelectionsToOld } from './selections'
 
 export function usePreviousVariables() {
   const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.codeBasedSelections[0]
-    ?.range || [code.length, code.length]
+  const selectionRange = convertSelectionsToOld(context.selectionRanges)
+    .codeBasedSelections[0]?.range || [code.length, code.length]
   const [previousVariablesInfo, setPreviousVariablesInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
   >({

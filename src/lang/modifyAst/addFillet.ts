@@ -29,7 +29,7 @@ import {
   sketchLineHelperMap,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
   ArtifactGraph,
@@ -42,11 +42,11 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export function applyFilletToSelection(
   ast: Node<Program>,
-  selection: Selections,
+  selection: Selections__old,
   radius: KclCommandValue
 ): void | Error {
   // 1. clone and modify with fillet and tag
-  const result = modifyAstCloneWithFilletAndTag(ast, selection, radius)
+  const result = modifyAstWithFilletAndTag(ast, selection, radius)
   if (err(result)) return result
   const { modifiedAst, pathToFilletNode } = result
 
@@ -55,9 +55,9 @@ export function applyFilletToSelection(
   updateAstAndFocus(modifiedAst, pathToFilletNode)
 }
 
-export function modifyAstCloneWithFilletAndTag(
+export function modifyAstWithFilletAndTag(
   ast: Node<Program>,
-  selection: Selections,
+  selection: Selections__old,
   radius: KclCommandValue
 ): { modifiedAst: Node<Program>; pathToFilletNode: Array<PathToNode> } | Error {
   let clonedAst = structuredClone(ast)
@@ -212,7 +212,7 @@ function insertRadiusIntoAst(
 
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
-  selection: Selections,
+  selection: Selections__old,
   artifactGraph: ArtifactGraph
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
   const pathToSegmentNode = getNodePathFromSourceRange(
@@ -254,7 +254,7 @@ async function updateAstAndFocus(
     focusPath: pathToFilletNode,
   })
   if (updatedAst?.selections) {
-    editorManager.selectRange(updatedAst?.selections)
+    editorManager._selectRange(updatedAst?.selections)
   }
 }
 
@@ -426,7 +426,7 @@ export const hasValidFilletSelection = ({
   ast,
   code,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   ast: Node<Program>
   code: string
 }) => {

@@ -7,7 +7,7 @@ import {
   TransformInfo,
 } from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Selections, Selection } from 'lib/selections'
+import { Selections__old, Selection__old } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
@@ -1479,7 +1479,7 @@ export function getConstraintType(
 }
 
 export function getTransformInfos(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   ast: Program,
   constraintType: ConstraintType
 ): TransformInfo[] {
@@ -1511,7 +1511,7 @@ export function getTransformInfos(
 }
 
 export function getRemoveConstraintsTransforms(
-  selectionRanges: Selections,
+  selectionRanges: Selections__old,
   ast: Program,
   constraintType: ConstraintType
 ): TransformInfo[] | Error {
@@ -1551,7 +1551,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceValueUsedInTransform,
 }: {
   ast: Node<Program>
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   forceSegName?: string
@@ -1630,12 +1630,12 @@ export function transformAstSketchLines({
   referencedSegmentRange,
 }: {
   ast: Node<Program>
-  selectionRanges: Selections | PathToNode[]
+  selectionRanges: Selections__old | PathToNode[]
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
+  referencedSegmentRange?: Selection__old['range']
   forceValueUsedInTransform?: BinaryPart
-  referencedSegmentRange?: Selection['range']
 }):
   | {
       modifiedAst: Node<Program>
@@ -1675,6 +1675,7 @@ export function transformAstSketchLines({
       ''
     const inputs: InputArgs = []
 
+    console.log('getConstraintInfo', callExp.node, _pathToNode)
     getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||
@@ -1838,7 +1839,7 @@ function getArgLiteralVal(arg: Literal): number | Error {
 export type ConstraintLevel = 'free' | 'partial' | 'full'
 
 export function getConstraintLevelFromSourceRange(
-  cursorRange: Selection['range'],
+  cursorRange: Selection__old['range'],
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast

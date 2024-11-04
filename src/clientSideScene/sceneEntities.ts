@@ -79,7 +79,7 @@ import {
   createPipeSubstitution,
   findUniqueName,
 } from 'lang/modifyAst'
-import { Selections, getEventForSegmentSelection } from 'lib/selections'
+import { Selections__old, getEventForSegmentSelection } from 'lib/selections'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
@@ -475,7 +475,7 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
-    selectionRanges?: Selections
+    selectionRanges?: Selections__old
   }): Promise<{
     truncatedAst: Node<Program>
     programMemoryOverride: ProgramMemory
@@ -1291,6 +1291,7 @@ export class SceneEntities {
       },
       onMove: () => {},
       onClick: (args) => {
+        console.log('onClick', args)
         // If there is a valid camera interaction that matches, do that instead
         const interaction = sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -1308,6 +1309,7 @@ export class SceneEntities {
         }
         const { selected } = args
         const event = getEventForSegmentSelection(selected)
+        console.log('event', event)
         if (!event) return
         sceneInfra.modelingSend(event)
       },

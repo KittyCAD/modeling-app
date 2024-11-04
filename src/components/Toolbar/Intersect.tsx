@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
+import { Selections__old } from 'lib/selections'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -26,12 +26,12 @@ const getModalInfo = createInfoModal(GetInfoModal)
 export function intersectInfo({
   selectionRanges,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 }):
   | {
       transforms: TransformInfo[]
       enabled: boolean
-      forcedSelectionRanges: Selections
+      forcedSelectionRanges: Selections__old
     }
   | Error {
   if (selectionRanges.codeBasedSelections.length < 2) {
@@ -135,7 +135,7 @@ export function intersectInfo({
 export async function applyConstraintIntersect({
   selectionRanges,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
 }): Promise<{
   modifiedAst: Node<Program>
   pathToNodeMap: PathToNodeMap

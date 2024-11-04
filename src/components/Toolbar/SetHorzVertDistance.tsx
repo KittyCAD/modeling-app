@@ -16,7 +16,7 @@ import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
@@ -26,7 +26,7 @@ export function horzVertDistanceInfo({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   constraint: 'setHorzDistance' | 'setVertDistance'
 }):
   | {
@@ -96,7 +96,7 @@ export async function applyConstraintHorzVertDistance({
   // TODO align will always be false (covered by synconous applyConstraintHorzVertAlign), remove it
   isAlign = false,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   constraint: 'setHorzDistance' | 'setVertDistance'
   isAlign?: false
 }): Promise<{
@@ -182,7 +182,7 @@ export function applyConstraintHorzVertAlign({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   constraint: 'setHorzDistance' | 'setVertDistance'
 }):
   | {

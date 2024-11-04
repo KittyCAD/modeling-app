@@ -3,8 +3,10 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useKclContext } from 'lang/KclProvider'
 import { CommandArgument } from 'lib/commandTypes'
 import {
-  Selection,
+  Selection__old,
   canSubmitSelectionArg,
+  convertSelectionToOld,
+  convertSelectionsToOld,
   getSelectionType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
@@ -12,13 +14,15 @@ import { modelingMachine } from 'machines/modelingMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
-const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
+const semanticEntityNames: { [key: string]: Array<Selection__old['type']> } = {
   face: ['extrude-wall', 'start-cap', 'end-cap'],
   edge: ['edge', 'line', 'arc'],
   point: ['point', 'line-end', 'line-mid'],
 }
 
-function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
+function getSemanticSelectionType(
+  selectionType: Array<Selection__old['type']>
+) {
   const semanticSelectionType = new Set()
   selectionType.forEach((type) => {
     Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {
@@ -49,10 +53,14 @@ function CommandBarSelectionInput({
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    const selectionRangeEnd = selection?.codeBasedSelections[0]?.range[1]
-    return !selectionRangeEnd || selectionRangeEnd === code.length
+    const selectionRangeEnd = !selection
+      ? null
+      : convertSelectionsToOld(selection)?.codeBasedSelections[0]?.range[1]
+    return !selectionRangeEnd || selectionRangeEnd === code.length || !selection
       ? 'none'
-      : getSelectionType(selection)
+      : !selection
+      ? 'none'
+      : getSelectionType(convertSelectionsToOld(selection))
   }, [selection, code])
   const canSubmitSelection = useMemo<boolean>(
     () => canSubmitSelectionArg(selectionsByType, arg),
@@ -87,6 +95,8 @@ function CommandBarSelectionInput({
     onSubmit(selection)
   }
 
+  const selectionOld = selection && convertSelectionsToOld(selection)
+
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
       <label
@@ -96,7 +106,7 @@ function CommandBarSelectionInput({
         }
       >
         {canSubmitSelection
-          ? getSelectionTypeDisplayText(selection) + ' selected'
+          ? getSelectionTypeDisplayText(selectionOld) + ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
