@@ -34,13 +34,7 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    let Some(plane) = arg
-        .inner
-        .properties
-        .iter()
-        .filter(|v| v.key.inner.name == "plane")
-        .next()
-    else {
+    let Some(plane) = arg.inner.properties.iter().find(|v| v.key.inner.name == "plane") else {
         return Ok(vec![]);
     };
 
@@ -140,7 +134,7 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         vector_to_letter(y_vec.0, y_vec.1, y_vec.2).unwrap_or(""),
     );
 
-    if allowed_planes.get(&plane_name).is_none() {
+    if allowed_planes.contains_key(&plane_name) {
         return Ok(vec![]);
     };
 
