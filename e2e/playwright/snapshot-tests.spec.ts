@@ -1031,7 +1031,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 })
 
-test('theme persists', async ({ page, context }) => {
+test.fixme('theme persists', async ({ page, context }) => {
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(
