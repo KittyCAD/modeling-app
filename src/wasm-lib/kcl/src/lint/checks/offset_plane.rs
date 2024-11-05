@@ -15,7 +15,7 @@ startSketchOn should be an offsetPlane call in this case ✏️
 
 The startSketchOn stdlib function has the ability to define a custom Plane
 to begin the sketch on (outside of the built in XY, -YZ planes). There also
-exists the offsetPlane stdlib funciton to create a new Plane offset by some
+exists the offsetPlane stdlib function to create a new Plane offset by some
 fixed amount from an existing plane.
 
 This lint rule triggers when a startSketchOn's provided plane is recognized as
