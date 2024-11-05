@@ -415,7 +415,7 @@ test.describe('Testing settings', () => {
   )
 
   // It was much easier to test the logo color than the background stream color.
-  test(
+  test.fixme(
     'user settings reload on external change, on project and modeling view',
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {

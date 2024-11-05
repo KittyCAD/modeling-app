@@ -1,18 +1,21 @@
 // This tests indexing an array.
 
-const array = [90, 91, 92]
+
+array = [90, 91, 92]
 
 // Test: literal index.
 
-const result0 = array[1]
+
+result0 = array[1]
 
 assertLessThanOrEq(result0, 91, "Literal property lookup")
 assertGreaterThanOrEq(result0, 91, "Literal property lookup")
 
 // Test: computed index.
 
-const i = int(1 + 0)
-const result1 = array[i]
+
+i = int(1 + 0)
+result1 = array[i]
 
 assertLessThanOrEq(result1, 91, "Computed property lookup")
 assertGreaterThanOrEq(result1, 91, "Computed property lookup")

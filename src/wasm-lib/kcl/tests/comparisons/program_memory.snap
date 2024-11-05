@@ -1,0 +1,40 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing comparisons.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 180,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 90,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 270,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 0,
+          "__meta": []
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

@@ -1,0 +1,94 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing array_elem_push.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 180,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 90,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 270,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 0,
+          "__meta": []
+        },
+        "arr": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            1,
+            2,
+            3
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                6,
+                15
+              ]
+            }
+          ]
+        },
+        "new_arr1": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                27,
+                39
+              ]
+            }
+          ]
+        },
+        "new_arr2": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                51,
+                68
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

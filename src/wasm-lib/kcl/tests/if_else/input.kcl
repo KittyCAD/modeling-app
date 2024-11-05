@@ -1,6 +1,7 @@
 // This tests evaluating if-else expressions.
 
-let a = if true {
+
+a = if true {
   3
 } else if true {
   4
@@ -9,7 +10,7 @@ let a = if true {
 }
 assertEqual(a, 3, 0.001, "the 'if' branch gets returned")
 
-let b = if false {
+b = if false {
   3
 } else if true {
   4
@@ -18,7 +19,7 @@ let b = if false {
 }
 assertEqual(b, 4, 0.001, "the 'else if' branch gets returned")
 
-let c = if false {
+c = if false {
   3
 } else if false {
   4

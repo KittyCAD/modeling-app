@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest-8-cores, windows-latest-8-cores]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     runs-on: ${{ matrix.os }}
@@ -227,7 +227,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-14]
+        os: [ubuntu-latest-8-cores, windows-latest-8-cores, macos-14-large]
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
@@ -287,7 +287,7 @@ jobs:
         brew install gnu-sed
         echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
     - name: Install vector
-      if:  ${{ !startsWith(matrix.os, 'windows') }}
+      if:  ${{ startsWith(matrix.os, 'ubuntu') }}
       shell: bash
       run: |
         curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh

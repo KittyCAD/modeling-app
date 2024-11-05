@@ -1,0 +1,139 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing property_of_object.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 180,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 90,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 270,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 0,
+          "__meta": []
+        },
+        "obj": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": {
+            "bar": 0,
+            "foo": 1
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                56,
+                74
+              ]
+            }
+          ]
+        },
+        "obj2": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": {
+            "inner": {
+              "bar": 0,
+              "foo": 1
+            }
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                529,
+                543
+              ]
+            }
+          ]
+        },
+        "one_a": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                122,
+                132
+              ]
+            }
+          ]
+        },
+        "one_b": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                356,
+                362
+              ]
+            }
+          ]
+        },
+        "one_c": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                553,
+                570
+              ]
+            }
+          ]
+        },
+        "one_d": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                757,
+                770
+              ]
+            }
+          ]
+        },
+        "p": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": "foo",
+          "__meta": [
+            {
+              "sourceRange": [
+                342,
+                347
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

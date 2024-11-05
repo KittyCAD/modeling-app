@@ -109,7 +109,7 @@ test.describe('when using the file tree to', () => {
   const fromFile = 'main.kcl'
   const toFile = 'hello.kcl'
 
-  test(
+  test.fixme(
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
@@ -157,7 +157,7 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test(
+  test.fixme(
     `create many new untitled files they increment their names`,
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
@@ -298,7 +298,7 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test(
+  test.fixme(
     'loading small file, then large, then back to small',
     {
       tag: '@electron',

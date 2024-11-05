@@ -1,0 +1,213 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing array_range_negative_expr.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "word",
+      "start": 0,
+      "end": 2,
+      "value": "xs"
+    },
+    {
+      "type": "whitespace",
+      "start": 2,
+      "end": 3,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 3,
+      "end": 4,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 4,
+      "end": 5,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 5,
+      "end": 6,
+      "value": "["
+    },
+    {
+      "type": "word",
+      "start": 6,
+      "end": 9,
+      "value": "int"
+    },
+    {
+      "type": "brace",
+      "start": 9,
+      "end": 10,
+      "value": "("
+    },
+    {
+      "type": "operator",
+      "start": 10,
+      "end": 11,
+      "value": "-"
+    },
+    {
+      "type": "number",
+      "start": 11,
+      "end": 12,
+      "value": "5"
+    },
+    {
+      "type": "brace",
+      "start": 12,
+      "end": 13,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 13,
+      "end": 14,
+      "value": " "
+    },
+    {
+      "type": "doublePeriod",
+      "start": 14,
+      "end": 16,
+      "value": ".."
+    },
+    {
+      "type": "whitespace",
+      "start": 16,
+      "end": 17,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 17,
+      "end": 18,
+      "value": "5"
+    },
+    {
+      "type": "brace",
+      "start": 18,
+      "end": 19,
+      "value": "]"
+    },
+    {
+      "type": "whitespace",
+      "start": 19,
+      "end": 20,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 20,
+      "end": 31,
+      "value": "assertEqual"
+    },
+    {
+      "type": "brace",
+      "start": 31,
+      "end": 32,
+      "value": "("
+    },
+    {
+      "type": "word",
+      "start": 32,
+      "end": 34,
+      "value": "xs"
+    },
+    {
+      "type": "brace",
+      "start": 34,
+      "end": 35,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 35,
+      "end": 36,
+      "value": "0"
+    },
+    {
+      "type": "brace",
+      "start": 36,
+      "end": 37,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 37,
+      "end": 38,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 38,
+      "end": 39,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 39,
+      "end": 40,
+      "value": "-"
+    },
+    {
+      "type": "number",
+      "start": 40,
+      "end": 41,
+      "value": "5"
+    },
+    {
+      "type": "comma",
+      "start": 41,
+      "end": 42,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 42,
+      "end": 43,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 43,
+      "end": 48,
+      "value": "0.001"
+    },
+    {
+      "type": "comma",
+      "start": 48,
+      "end": 49,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 49,
+      "end": 50,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 50,
+      "end": 71,
+      "value": "\"first element is -5\""
+    },
+    {
+      "type": "brace",
+      "start": 71,
+      "end": 72,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 72,
+      "end": 73,
+      "value": "\n"
+    }
+  ]
+}
