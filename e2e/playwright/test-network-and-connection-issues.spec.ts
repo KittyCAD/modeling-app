@@ -219,7 +219,7 @@ test.describe('Test network and connection issues', () => {
   |> startProfileAt([12.34, -12.34], %)
   |> line([12.34, 0], %)
   |> line([-12.34, 12.34], %)
-  |> line([-12.34, 0], %)
+  |> lineTo([0, -12.34], %)
 
 `)
 

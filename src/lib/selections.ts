@@ -36,6 +36,7 @@ import {
   getWallCodeRef,
   ArtifactId,
 } from 'lang/std/artifactGraph'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -244,7 +245,7 @@ export function getEventForSegmentSelection(
   const updatedAst = parse(codeManager.code)
   if (err(updatedAst)) return null
 
-  const nodeMeta = getNodeFromPath<CallExpression>(
+  const nodeMeta = getNodeFromPath<Node<CallExpression>>(
     updatedAst,
     pathToNode,
     'CallExpression'
@@ -362,7 +363,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<CallExpression>(
+    const nodeMeta = getNodeFromPath<Node<CallExpression>>(
       updated,
       segmentGroup.userData.pathToNode,
       'CallExpression'

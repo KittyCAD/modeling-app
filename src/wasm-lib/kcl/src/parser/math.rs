@@ -1,18 +1,18 @@
 use crate::{
-    ast::types::{BinaryExpression, BinaryOperator, BinaryPart},
+    ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
 };
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
 /// into a binary expression tree.
-pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<BinaryExpression, KclError> {
+pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, KclError> {
     let rpn = postfix(infix_tokens);
     evaluate(rpn)
 }
 
 /// Parses a list of tokens (in postfix order) into a binary expression tree.
-fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<BinaryExpression, KclError> {
+fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, KclError> {
     let source_ranges = source_range(&rpn);
     let mut operand_stack: Vec<BinaryPart> = Vec::new();
     let e = KclError::Internal(KclErrorDetails {
@@ -28,14 +28,19 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<BinaryExpression, KclErro
                 let Some(left) = operand_stack.pop() else {
                     return Err(e);
                 };
-                BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-                    start: left.start(),
-                    end: right.end(),
-                    operator,
-                    left,
-                    right,
-                    digest: None,
-                }))
+                let start = left.start();
+                let end = right.end();
+
+                BinaryPart::BinaryExpression(Node::boxed(
+                    BinaryExpression {
+                        operator,
+                        left,
+                        right,
+                        digest: None,
+                    },
+                    start,
+                    end,
+                ))
             }
             BinaryExpressionToken::Operand(o) => o,
         };
@@ -125,13 +130,15 @@ mod tests {
     fn parse_and_evaluate() {
         /// Make a literal
         fn lit(n: u8) -> BinaryPart {
-            BinaryPart::Literal(Box::new(Literal {
-                start: 0,
-                end: 0,
-                value: n.into(),
-                raw: n.to_string(),
-                digest: None,
-            }))
+            BinaryPart::Literal(Box::new(Node::new(
+                Literal {
+                    value: n.into(),
+                    raw: n.to_string(),
+                    digest: None,
+                },
+                0,
+                0,
+            )))
         }
         let tests: Vec<Vec<BinaryExpressionToken>> = vec![
             // 3 + 4 × 2 ÷ ( 1 − 5 ) ^ 2 ^ 3
@@ -142,14 +149,16 @@ mod tests {
                 BinaryOperator::Mul.into(),
                 lit(2).into(),
                 BinaryOperator::Div.into(),
-                BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-                    start: 0,
-                    end: 0,
-                    operator: BinaryOperator::Sub,
-                    left: lit(1),
-                    right: lit(5),
-                    digest: None,
-                }))
+                BinaryPart::BinaryExpression(Node::boxed(
+                    BinaryExpression {
+                        operator: BinaryOperator::Sub,
+                        left: lit(1),
+                        right: lit(5),
+                        digest: None,
+                    },
+                    0,
+                    0,
+                ))
                 .into(),
                 BinaryOperator::Pow.into(),
                 lit(2).into(),
