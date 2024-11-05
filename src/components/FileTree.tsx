@@ -6,10 +6,10 @@ import { Dispatch, useCallback, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight, faPencil } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import styles from './FileTree.module.css'
-import { sortProject } from 'lib/desktopFS'
+import { sortFilesAndDirectories } from 'lib/desktopFS'
 import { FILE_EXT } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { codeManager, kclManager } from 'lib/singletons'
@@ -25,6 +25,36 @@ import { normalizeLineEndings } from 'lib/codeEditor'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
+}
+
+function TreeEntryInput(props: {
+  level: number
+  onSubmit: (value: string) => void
+}) {
+  const [value, setValue] = useState('')
+  const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') return
+    props.onSubmit(value)
+  }
+
+  return (
+    <label>
+      <span className="sr-only">Entry input</span>
+      <input
+        data-testid="tree-input-field"
+        type="text"
+        autoFocus
+        autoCapitalize="off"
+        autoCorrect="off"
+        className="w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
+        onBlur={() => props.onSubmit(value)}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyPress={onKeyPress}
+        style={{ paddingInlineStart: getIndentationCSS(props.level) }}
+        value={value}
+      />
+    </label>
+  )
 }
 
 function RenameForm({
@@ -113,16 +143,32 @@ function DeleteFileTreeItemDialog({
 }
 
 const FileTreeItem = ({
+  parentDir,
   project,
   currentFile,
+  lastDirectoryClicked,
   fileOrDir,
   onNavigateToFile,
+  onClickDirectory,
+  onCreateFile,
+  onCreateFolder,
+  newTreeEntry,
   level = 0,
 }: {
+  parentDir: FileEntry | undefined
   project?: IndexLoaderData['project']
   currentFile?: IndexLoaderData['file']
+  lastDirectoryClicked?: FileEntry
   fileOrDir: FileEntry
   onNavigateToFile?: () => void
+  onClickDirectory: (
+    open: boolean,
+    path: FileEntry,
+    parentDir: FileEntry | undefined
+  ) => void
+  onCreateFile: (name: string) => void
+  onCreateFolder: (name: string) => void
+  newTreeEntry: TreeEntry
   level?: number
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
@@ -156,6 +202,10 @@ const FileTreeItem = ({
     [fileOrDir.path]
   )
 
+  const showNewTreeEntry =
+    newTreeEntry !== undefined &&
+    fileOrDir.path === fileContext.selectedDirectory.path
+
   const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
   const removeCurrentItemFromRenaming = useCallback(
     () =>
@@ -178,13 +228,6 @@ const FileTreeItem = ({
       },
     })
   }, [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend])
-
-  const clickDirectory = () => {
-    fileSend({
-      type: 'Set selected directory',
-      directory: fileOrDir,
-    })
-  }
 
   function handleKeyUp(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (e.metaKey && e.key === 'Backspace') {
@@ -223,6 +266,8 @@ const FileTreeItem = ({
     onNavigateToFile?.()
   }
 
+  // The below handles both the "root" of all directories and all subs. It's
+  // why some code is duplicated.
   return (
     <div className="contents" data-testid="file-tree-item" ref={itemRef}>
       {fileOrDir.children === null ? (
@@ -266,14 +311,15 @@ const FileTreeItem = ({
                 <Disclosure.Button
                   className={
                     ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 hover:text-primary hover:bg-primary/5 dark:hover:text-inherit dark:hover:bg-primary/10' +
-                    (fileContext.selectedDirectory.path.includes(fileOrDir.path)
+                    (lastDirectoryClicked?.path === fileOrDir.path
                       ? ' ui-open:bg-primary/10'
                       : '')
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
-                  onClick={(e) => e.currentTarget.focus()}
-                  onClickCapture={clickDirectory}
-                  onFocusCapture={clickDirectory}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onClickDirectory(open, fileOrDir, parentDir)
+                  }}
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   onKeyUp={handleKeyUp}
                 >
@@ -315,35 +361,67 @@ const FileTreeItem = ({
               >
                 <ul
                   className="m-0 p-0"
-                  onClickCapture={(e) => {
-                    fileSend({
-                      type: 'Set selected directory',
-                      directory: fileOrDir,
-                    })
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onClickDirectory(open, fileOrDir, parentDir)
                   }}
-                  onFocusCapture={(e) =>
-                    fileSend({
-                      type: 'Set selected directory',
-                      directory: fileOrDir,
-                    })
-                  }
                 >
-                  {fileOrDir.children?.map((child) => (
-                    <FileTreeItem
-                      fileOrDir={child}
-                      project={project}
-                      currentFile={currentFile}
-                      onNavigateToFile={onNavigateToFile}
-                      level={level + 1}
-                      key={level + '-' + child.path}
-                    />
-                  ))}
+                  {showNewTreeEntry && (
+                    <div
+                      className="flex items-center"
+                      style={{
+                        paddingInlineStart: getIndentationCSS(level + 1),
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faPencil}
+                        className="inline-block mr-2 m-0 p-0 w-2 h-2"
+                      />
+                      <TreeEntryInput
+                        level={-1}
+                        onSubmit={(value: string) =>
+                          newTreeEntry === 'file'
+                            ? onCreateFile(value)
+                            : onCreateFolder(value)
+                        }
+                      />
+                    </div>
+                  )}
+                  {sortFilesAndDirectories(fileOrDir.children || []).map(
+                    (child) => (
+                      <FileTreeItem
+                        parentDir={fileOrDir}
+                        fileOrDir={child}
+                        project={project}
+                        currentFile={currentFile}
+                        onCreateFile={onCreateFile}
+                        onCreateFolder={onCreateFolder}
+                        newTreeEntry={newTreeEntry}
+                        lastDirectoryClicked={lastDirectoryClicked}
+                        onClickDirectory={onClickDirectory}
+                        onNavigateToFile={onNavigateToFile}
+                        level={level + 1}
+                        key={level + '-' + child.path}
+                      />
+                    )
+                  )}
+                  {!showNewTreeEntry && fileOrDir.children?.length === 0 && (
+                    <div
+                      className="flex items-center text-chalkboard-50"
+                      style={{
+                        paddingInlineStart: getIndentationCSS(level + 1),
+                      }}
+                    >
+                      <div>No files</div>
+                    </div>
+                  )}
                 </ul>
               </Disclosure.Panel>
             </div>
           )}
         </Disclosure>
       )}
+
       {isConfirmingDelete && (
         <DeleteFileTreeItemDialog
           fileOrDir={fileOrDir}
@@ -407,27 +485,15 @@ interface FileTreeProps {
   ) => void
 }
 
-export const FileTreeMenu = () => {
-  const { send } = useFileContext()
-  const { send: modelingSend } = useModelingContext()
-
-  function createFile() {
-    send({
-      type: 'Create file',
-      data: { name: '', makeDir: false, shouldSetToRename: true },
-    })
-    modelingSend({ type: 'Cancel' })
-  }
-
-  function createFolder() {
-    send({
-      type: 'Create file',
-      data: { name: '', makeDir: true, shouldSetToRename: true },
-    })
-  }
-
-  useHotkeyWrapper(['mod + n'], createFile)
-  useHotkeyWrapper(['mod + shift + n'], createFolder)
+export const FileTreeMenu = ({
+  onCreateFile,
+  onCreateFolder,
+}: {
+  onCreateFile: () => void
+  onCreateFolder: () => void
+}) => {
+  useHotkeyWrapper(['mod + n'], onCreateFile)
+  useHotkeyWrapper(['mod + shift + n'], onCreateFolder)
 
   return (
     <>
@@ -440,7 +506,7 @@ export const FileTreeMenu = () => {
           bgClassName: 'bg-transparent',
         }}
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
-        onClick={createFile}
+        onClick={onCreateFile}
       >
         <Tooltip position="bottom-right" delay={750}>
           Create file
@@ -456,7 +522,7 @@ export const FileTreeMenu = () => {
           bgClassName: 'bg-transparent',
         }}
         className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
-        onClick={createFolder}
+        onClick={onCreateFolder}
       >
         <Tooltip position="bottom-right" delay={750}>
           Create folder
@@ -466,29 +532,99 @@ export const FileTreeMenu = () => {
   )
 }
 
+type TreeEntry = 'file' | 'folder' | undefined
+
+export const useFileTreeOperations = () => {
+  const { send } = useFileContext()
+  const { send: modelingSend } = useModelingContext()
+
+  // As long as this is undefined, a new "file tree entry prompt" is not shown.
+  const [newTreeEntry, setNewTreeEntry] = useState<TreeEntry>(undefined)
+
+  function createFile(args: { dryRun: boolean; name?: string }) {
+    if (args.dryRun) {
+      setNewTreeEntry('file')
+      return
+    }
+
+    // Clear so that the entry prompt goes away.
+    setNewTreeEntry(undefined)
+
+    if (!args.name) return
+
+    send({
+      type: 'Create file',
+      data: { name: args.name, makeDir: false, shouldSetToRename: false },
+    })
+    modelingSend({ type: 'Cancel' })
+  }
+
+  function createFolder(args: { dryRun: boolean; name?: string }) {
+    if (args.dryRun) {
+      setNewTreeEntry('folder')
+      return
+    }
+
+    setNewTreeEntry(undefined)
+
+    if (!args.name) return
+
+    send({
+      type: 'Create file',
+      data: { name: args.name, makeDir: true, shouldSetToRename: false },
+    })
+  }
+
+  return {
+    createFile,
+    createFolder,
+    newTreeEntry,
+  }
+}
+
 export const FileTree = ({
   className = '',
   onNavigateToFile: closePanel,
 }: FileTreeProps) => {
+  const { createFile, createFolder, newTreeEntry } = useFileTreeOperations()
+
   return (
     <div className={className}>
       <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/40 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
         <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
-        <FileTreeMenu />
+        <FileTreeMenu
+          onCreateFile={() => createFile({ dryRun: true })}
+          onCreateFolder={() => createFolder({ dryRun: true })}
+        />
       </div>
-      <FileTreeInner onNavigateToFile={closePanel} />
+      <FileTreeInner
+        onNavigateToFile={closePanel}
+        newTreeEntry={newTreeEntry}
+        onCreateFile={(name: string) => createFile({ dryRun: false, name })}
+        onCreateFolder={(name: string) => createFolder({ dryRun: false, name })}
+      />
     </div>
   )
 }
 
 export const FileTreeInner = ({
   onNavigateToFile,
+  onCreateFile,
+  onCreateFolder,
+  newTreeEntry,
 }: {
+  onCreateFile: (name: string) => void
+  onCreateFolder: (name: string) => void
+  newTreeEntry: TreeEntry
   onNavigateToFile?: () => void
 }) => {
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { send: fileSend, context: fileContext } = useFileContext()
   const { send: modelingSend } = useModelingContext()
+
+  const [lastDirectoryClicked, setLastDirectoryClicked] = useState<
+    FileEntry | undefined
+  >(undefined)
 
   // Refresh the file tree when there are changes.
   useFileSystemWatcher(
@@ -513,33 +649,83 @@ export const FileTreeInner = ({
     )
   )
 
-  const clickDirectory = () => {
+  const onTreeEntryInputSubmit = (value: string) => {
+    if (newTreeEntry === 'file') {
+      onCreateFile(value)
+      modelingSend({ type: 'Cancel' })
+      onNavigateToFile?.()
+    } else {
+      onCreateFolder(value)
+    }
+  }
+
+  const onClickDirectory = (
+    open_: boolean,
+    fileOrDir: FileEntry,
+    parentDir: FileEntry | undefined
+  ) => {
+    // open true is closed... it's broken. Save me. I've inverted it here for
+    // sanity.
+    const open = !open_
+
+    const target = open ? fileOrDir : parentDir
+
+    // We're at the root, can't select anything further
+    if (!target) return
+
+    setLastDirectoryClicked(target)
     fileSend({
       type: 'Set selected directory',
-      directory: fileContext.project,
+      directory: target,
     })
   }
 
+  const showNewTreeEntry =
+    newTreeEntry !== undefined &&
+    fileContext.selectedDirectory.path === loaderData.project?.path
+
   return (
-    <div
-      className="overflow-auto pb-12 absolute inset-0"
-      data-testid="file-pane-scroll-container"
-    >
-      <ul className="m-0 p-0 text-sm" onClickCapture={clickDirectory}>
-        {sortProject(fileContext.project?.children || []).map((fileOrDir) => (
-          <FileTreeItem
-            project={fileContext.project}
-            currentFile={loaderData?.file}
-            fileOrDir={fileOrDir}
-            onNavigateToFile={() => {
-              // Reset modeling state when navigating to a new file
-              modelingSend({ type: 'Cancel' })
-              onNavigateToFile?.()
-            }}
-            key={fileOrDir.path}
-          />
-        ))}
-      </ul>
+    <div className="relative">
+      <div
+        className="overflow-auto pb-12 absolute inset-0"
+        data-testid="file-pane-scroll-container"
+      >
+        <ul className="m-0 p-0 text-sm">
+          {showNewTreeEntry && (
+            <div
+              className="flex items-center"
+              style={{ paddingInlineStart: getIndentationCSS(0) }}
+            >
+              <FontAwesomeIcon
+                icon={faPencil}
+                className="inline-block mr-2 m-0 p-0 w-2 h-2"
+              />
+              <TreeEntryInput level={-1} onSubmit={onTreeEntryInputSubmit} />
+            </div>
+          )}
+          {sortFilesAndDirectories(fileContext.project?.children || []).map(
+            (fileOrDir) => (
+              <FileTreeItem
+                parentDir={fileContext.project}
+                project={fileContext.project}
+                currentFile={loaderData?.file}
+                lastDirectoryClicked={lastDirectoryClicked}
+                fileOrDir={fileOrDir}
+                onCreateFile={onCreateFile}
+                onCreateFolder={onCreateFolder}
+                newTreeEntry={newTreeEntry}
+                onClickDirectory={onClickDirectory}
+                onNavigateToFile={() => {
+                  // Reset modeling state when navigating to a new file
+                  modelingSend({ type: 'Cancel' })
+                  onNavigateToFile?.()
+                }}
+                key={fileOrDir.path}
+              />
+            )
+          )}
+        </ul>
+      </div>
     </div>
   )
 }
