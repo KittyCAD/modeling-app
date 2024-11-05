@@ -51,7 +51,6 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await tronApp.page.screenshot({ path: 'screenshot.png' })
         await scene.waitForExecutionDone()
       })
       await test.step('enter sketch mode', async () => {
