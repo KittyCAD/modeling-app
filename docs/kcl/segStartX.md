@@ -31,7 +31,7 @@ exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([20, 0], %, $thing)
   |> line([0, 5], %)
-  |> line([segStartX(thing), 0], %)
+  |> line([20 - segStartX(thing), 0], %)
   |> line([-20, 10], %)
   |> close(%)
 

@@ -171,7 +171,7 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.get_base().to)
+    Ok(path.get_from().to_owned())
 }
 
 /// Returns the segment start of x.
@@ -189,7 +189,7 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %, $thing)
 ///   |> line([0, 5], %)
-///   |> line([segStartX(thing), 0], %)
+///   |> line([20 - segStartX(thing), 0], %)
 ///   |> line([-20, 10], %)
 ///   |> close(%)
 ///  
@@ -207,7 +207,7 @@ fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
         })
     })?;
 
-    Ok(path.get_base().to[0])
+    Ok(path.get_from()[0])
 }
 
 /// Returns the segment start of y.
@@ -226,7 +226,7 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line([20, 0], %)
 ///   |> line([0, 3], %, $thing)
 ///   |> line([-10, 0], %)
-///   |> line([0, segStartY(thing)], %)
+///   |> line([0, 20-segStartY(thing)], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///  
@@ -244,7 +244,7 @@ fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: 
         })
     })?;
 
-    Ok(path.get_to()[1])
+    Ok(path.get_from()[1])
 }
 /// Returns the last segment of x.
 pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
