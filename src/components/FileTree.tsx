@@ -626,6 +626,12 @@ export const FileTreeInner = ({
     FileEntry | undefined
   >(undefined)
 
+  const onNavigateToFile_ = () => {
+    // Reset modeling state when navigating to a new file
+    onNavigateToFile?.()
+    modelingSend({ type: 'Cancel' })
+  }
+
   // Refresh the file tree when there are changes.
   useFileSystemWatcher(
     async (eventType, path) => {
@@ -652,8 +658,7 @@ export const FileTreeInner = ({
   const onTreeEntryInputSubmit = (value: string) => {
     if (newTreeEntry === 'file') {
       onCreateFile(value)
-      modelingSend({ type: 'Cancel' })
-      onNavigateToFile?.()
+      onNavigateToFile_()
     } else {
       onCreateFolder(value)
     }
@@ -715,11 +720,7 @@ export const FileTreeInner = ({
                 onCreateFolder={onCreateFolder}
                 newTreeEntry={newTreeEntry}
                 onClickDirectory={onClickDirectory}
-                onNavigateToFile={() => {
-                  // Reset modeling state when navigating to a new file
-                  modelingSend({ type: 'Cancel' })
-                  onNavigateToFile?.()
-                }}
+                onNavigateToFile={onNavigateToFile_}
                 key={fileOrDir.path}
               />
             )

@@ -26,10 +26,6 @@ test.describe('integrations tests', () => {
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
     async ({ tronApp, homePage, scene, editor, toolbar }) => {
-      test.skip(
-        process.platform === 'win32',
-        'windows times out will waiting for the execution indicator?'
-      )
       await tronApp.initialise({
         fixtures: { homePage, scene, editor, toolbar },
         folderSetupFn: async (dir) => {
@@ -55,7 +51,7 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        // windows times out here, hence the skip above
+        await tronApp.page.screenshot({ path: 'screenshot.png' })
         await scene.waitForExecutionDone()
       })
       await test.step('enter sketch mode', async () => {
@@ -71,10 +67,13 @@ test.describe('integrations tests', () => {
         await toolbar.editSketch()
         await expect(toolbar.exitSketchBtn).toBeVisible()
       })
+
+      const fileName = 'Untitled.kcl'
       await test.step('check sketch mode is exited when creating new file', async () => {
         await toolbar.fileTreeBtn.click()
         await toolbar.expectFileTreeState(['main.kcl'])
-        await toolbar.createFile({ wait: true })
+
+        await toolbar.createFile({ fileName, waitForToastToDisappear: true })
 
         // check we're out of sketch mode
         await expect(toolbar.exitSketchBtn).not.toBeVisible()
@@ -93,10 +92,10 @@ test.describe('integrations tests', () => {
         })
         await toolbar.editSketch()
         await expect(toolbar.exitSketchBtn).toBeVisible()
-        await toolbar.expectFileTreeState(['main.kcl', 'Untitled.kcl'])
+        await toolbar.expectFileTreeState(['main.kcl', fileName])
       })
       await test.step('check sketch mode is exited when opening a different file', async () => {
-        await toolbar.openFile('untitled.kcl', { wait: false })
+        await toolbar.openFile(fileName, { wait: false })
 
         // check we're out of sketch mode
         await expect(toolbar.exitSketchBtn).not.toBeVisible()
