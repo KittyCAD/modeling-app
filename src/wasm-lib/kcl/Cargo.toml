@@ -11,7 +11,7 @@ keywords = ["kcl", "KittyCAD", "CAD"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = { version = "1.0.91", features = ["backtrace"] }
+anyhow = { version = "1.0.92", features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = "0.1.83"
 base64 = "0.22.1"
@@ -38,7 +38,7 @@ pyo3 = { version = "0.22.5", optional = true }
 reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = ["impl_json_schema", "url", "uuid1", "preserve_order"] }
-serde = { version = "1.0.213", features = ["derive"] }
+serde = { version = "1.0.214", features = ["derive"] }
 serde_json = "1.0.128"
 sha2 = "0.10.8"
 tabled = { version = "0.15.0", optional = true }
@@ -77,24 +77,16 @@ engine = []
 pyo3 = ["dep:pyo3"]
 # Helper functions also used in benchmarks.
 lsp-test-util = []
-
 tabled = ["dep:tabled"]
-
-[profile.release]
-panic = "abort"
-debug = true
-
-[profile.bench]
-debug = true # Flamegraphs of benchmarks require accurate debug symbols
 
 [dev-dependencies]
 base64 = "0.22.1"
 criterion = { version = "0.5.1", features = ["async_tokio"] }
 expectorate = "1.1.0"
-handlebars = "6.1.0"
+handlebars = "6.2.0"
 iai = "0.1"
 image = { version = "0.25.3", default-features = false, features = ["png"] }
-insta = { version = "1.41.0", features = ["json"] }
+insta = { version = "1.41.0", features = ["json", "filters"] }
 itertools = "0.13.0"
 pretty_assertions = "1.4.1"
 tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros", "time"] }

@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ast::types::TagDeclarator,
+    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier, UserVal},
     settings::types::UnitLength,
@@ -55,7 +55,7 @@ impl EdgeReference {
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagDeclarator>) = args.get_data_and_solid_and_tag()?;
+    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
     let solid = inner_fillet(data, solid, tag, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
@@ -123,7 +123,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_fillet(
     data: FilletData,
     solid: Box<Solid>,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {

@@ -2,7 +2,8 @@
 
 use std::{
     collections::HashMap,
-    ops::RangeInclusive,
+    fmt,
+    ops::{Deref, DerefMut, RangeInclusive},
     sync::{Arc, Mutex},
 };
 
@@ -41,8 +42,104 @@ use digest::Digest;
 
 pub enum Definition<'a> {
     Variable(&'a VariableDeclarator),
-    Import(&'a ImportStatement),
+    Import(NodeRef<'a, ImportStatement>),
 }
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+pub struct Node<T> {
+    #[serde(flatten)]
+    pub inner: T,
+    pub start: usize,
+    pub end: usize,
+}
+
+impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
+    fn schema_name() -> String {
+        T::schema_name()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        let mut child = T::json_schema(gen).into_object();
+        // We want to add the start and end fields to the schema.
+        // Ideally we would add _any_ extra fields from the Node type automatically
+        // but this is a bit hard since this isn't a macro.
+        let Some(ref mut object) = &mut child.object else {
+            // This should never happen. But it will panic at compile time of docs if it does.
+            // Which is better than runtime.
+            panic!("Expected object schema for {}", T::schema_name());
+        };
+        object.properties.insert("start".to_string(), usize::json_schema(gen));
+        object.properties.insert("end".to_string(), usize::json_schema(gen));
+
+        schemars::schema::Schema::Object(child.clone())
+    }
+}
+
+impl<T> Node<T> {
+    pub fn new(inner: T, start: usize, end: usize) -> Self {
+        Self { inner, start, end }
+    }
+
+    pub fn no_src(inner: T) -> Self {
+        Self {
+            inner,
+            start: 0,
+            end: 0,
+        }
+    }
+
+    pub fn boxed(inner: T, start: usize, end: usize) -> BoxNode<T> {
+        Box::new(Node { inner, start, end })
+    }
+
+    pub fn as_source_ranges(&self) -> Vec<SourceRange> {
+        vec![SourceRange([self.start, self.end])]
+    }
+}
+
+impl<T> Deref for Node<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl<T> DerefMut for Node<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
+}
+
+impl<T: fmt::Display> fmt::Display for Node<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.inner.fmt(f)
+    }
+}
+
+impl<T> From<Node<T>> for crate::executor::SourceRange {
+    fn from(v: Node<T>) -> Self {
+        Self([v.start, v.end])
+    }
+}
+
+impl<T> From<&Node<T>> for crate::executor::SourceRange {
+    fn from(v: &Node<T>) -> Self {
+        Self([v.start, v.end])
+    }
+}
+
+impl<T> From<&BoxNode<T>> for crate::executor::SourceRange {
+    fn from(v: &BoxNode<T>) -> Self {
+        Self([v.start, v.end])
+    }
+}
+
+pub type BoxNode<T> = Box<Node<T>>;
+pub type NodeList<T> = Vec<Node<T>>;
+pub type NodeRef<'a, T> = &'a Node<T>;
 
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
@@ -50,8 +147,6 @@ pub enum Definition<'a> {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
-    pub start: usize,
-    pub end: usize,
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
@@ -61,35 +156,45 @@ pub struct Program {
     pub digest: Option<Digest>,
 }
 
-impl Program {
-    /// Is the last body item an expression?
-    pub fn ends_with_expr(&self) -> bool {
-        let Some(ref last) = self.body.last() else {
-            return false;
-        };
-        matches!(last, BodyItem::ExpressionStatement(_))
+impl Node<Program> {
+    /// Walk the ast and get all the variables and tags as completion items.
+    pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
+        let completions = Arc::new(Mutex::new(vec![]));
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::walk::Node::TagDeclarator(tag) => {
+                    findings.push(tag.into());
+                }
+                crate::walk::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<CompletionItem>>(variable.into());
+                }
+                _ => {}
+            }
+            Ok(true)
+        })?;
+        let x = completions.lock().unwrap();
+        Ok(x.clone())
     }
 
-    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        // Check if we are in the non code meta.
-        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
-            for node in &meta.start {
-                if node.contains(pos) {
-                    // We only care about the shebang.
-                    if let NonCodeValue::Shebang { value: _ } = &node.value {
-                        let source_range: SourceRange = node.into();
-                        return Some(Hover::Comment {
-                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
-                            range: source_range.to_lsp_range(code),
-                        });
-                    }
+    /// Returns all the lsp symbols in the program.
+    pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
+        let symbols = Arc::new(Mutex::new(vec![]));
+        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+            let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            match node {
+                crate::walk::Node::TagDeclarator(tag) => {
+                    findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
                 }
+                crate::walk::Node::VariableDeclaration(variable) => {
+                    findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
+                }
+                _ => {}
             }
-        }
-
-        let value = self.get_expr_for_position(pos)?;
-
-        value.get_hover_value_for_position(pos, code)
+            Ok(true)
+        })?;
+        let x = symbols.lock().unwrap();
+        Ok(x.clone())
     }
 
     /// Check the provided Program for any lint findings.
@@ -120,25 +225,37 @@ impl Program {
         }
         Ok(findings)
     }
+}
 
-    /// Walk the ast and get all the variables and tags as completion items.
-    pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
-        let completions = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
-            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-            match node {
-                crate::walk::Node::TagDeclarator(tag) => {
-                    findings.push(tag.into());
+impl Program {
+    /// Is the last body item an expression?
+    pub fn ends_with_expr(&self) -> bool {
+        let Some(ref last) = self.body.last() else {
+            return false;
+        };
+        matches!(last, BodyItem::ExpressionStatement(_))
+    }
+
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        // Check if we are in the non code meta.
+        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
+            for node in &meta.start_nodes {
+                if node.contains(pos) {
+                    // We only care about the shebang.
+                    if let NonCodeValue::Shebang { value: _ } = &node.value {
+                        let source_range: SourceRange = node.into();
+                        return Some(Hover::Comment {
+                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
+                            range: source_range.to_lsp_range(code),
+                        });
+                    }
                 }
-                crate::walk::Node::VariableDeclaration(variable) => {
-                    findings.extend::<Vec<CompletionItem>>(variable.into());
-                }
-                _ => {}
             }
-            Ok(true)
-        })?;
-        let x = completions.lock().unwrap();
-        Ok(x.clone())
+        }
+
+        let value = self.get_expr_for_position(pos)?;
+
+        value.get_hover_value_for_position(pos, code)
     }
 
     /// Returns the body item that includes the given character position.
@@ -205,26 +322,6 @@ impl Program {
         }
 
         None
-    }
-
-    /// Returns all the lsp symbols in the program.
-    pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
-        let symbols = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
-            let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-            match node {
-                crate::walk::Node::TagDeclarator(tag) => {
-                    findings.extend::<Vec<DocumentSymbol>>(tag.get_lsp_symbols(code));
-                }
-                crate::walk::Node::VariableDeclaration(variable) => {
-                    findings.extend::<Vec<DocumentSymbol>>(variable.get_lsp_symbols(code));
-                }
-                _ => {}
-            }
-            Ok(true)
-        })?;
-        let x = symbols.lock().unwrap();
-        Ok(x.clone())
     }
 
     // Return all the lsp folding ranges in the program.
@@ -338,7 +435,7 @@ impl Program {
     }
 
     /// Replace a variable declaration with the given name with a new one.
-    pub fn replace_variable(&mut self, name: &str, declarator: VariableDeclarator) {
+    pub fn replace_variable(&mut self, name: &str, declarator: Node<VariableDeclarator>) {
         for item in &mut self.body {
             match item {
                 BodyItem::ImportStatement(_) => {
@@ -407,73 +504,33 @@ impl Program {
     }
 }
 
-pub trait ValueMeta {
-    fn start(&self) -> usize;
-
-    fn end(&self) -> usize;
-}
-
-macro_rules! impl_value_meta {
-    {$name:ident} => {
-        impl crate::ast::types::ValueMeta for $name {
-            fn start(&self) -> usize {
-                self.start
-            }
-
-            fn end(&self) -> usize {
-                self.end
-            }
-        }
-
-        impl From<$name> for crate::executor::SourceRange {
-            fn from(v: $name) -> Self {
-                Self([v.start, v.end])
-            }
-        }
-
-        impl From<&$name> for crate::executor::SourceRange {
-            fn from(v: &$name) -> Self {
-                Self([v.start, v.end])
-            }
-        }
-
-        impl From<&Box<$name>> for crate::executor::SourceRange {
-            fn from(v: &Box<$name>) -> Self {
-                Self([v.start, v.end])
-            }
-        }
-    };
-}
-
-pub(crate) use impl_value_meta;
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
-    ImportStatement(Box<ImportStatement>),
-    ExpressionStatement(ExpressionStatement),
-    VariableDeclaration(Box<VariableDeclaration>),
-    ReturnStatement(ReturnStatement),
+    ImportStatement(BoxNode<ImportStatement>),
+    ExpressionStatement(Node<ExpressionStatement>),
+    VariableDeclaration(BoxNode<VariableDeclaration>),
+    ReturnStatement(Node<ReturnStatement>),
 }
 
 impl BodyItem {
     pub fn start(&self) -> usize {
         match self {
-            BodyItem::ImportStatement(stmt) => stmt.start(),
-            BodyItem::ExpressionStatement(expression_statement) => expression_statement.start(),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.start(),
-            BodyItem::ReturnStatement(return_statement) => return_statement.start(),
+            BodyItem::ImportStatement(stmt) => stmt.start,
+            BodyItem::ExpressionStatement(expression_statement) => expression_statement.start,
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.start,
+            BodyItem::ReturnStatement(return_statement) => return_statement.start,
         }
     }
 
     pub fn end(&self) -> usize {
         match self {
-            BodyItem::ImportStatement(stmt) => stmt.end(),
-            BodyItem::ExpressionStatement(expression_statement) => expression_statement.end(),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end(),
-            BodyItem::ReturnStatement(return_statement) => return_statement.end(),
+            BodyItem::ImportStatement(stmt) => stmt.end,
+            BodyItem::ExpressionStatement(expression_statement) => expression_statement.end,
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.end,
+            BodyItem::ReturnStatement(return_statement) => return_statement.end,
         }
     }
 }
@@ -496,20 +553,20 @@ impl From<&BodyItem> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Expr {
-    Literal(Box<Literal>),
-    Identifier(Box<Identifier>),
-    TagDeclarator(Box<TagDeclarator>),
-    BinaryExpression(Box<BinaryExpression>),
-    FunctionExpression(Box<FunctionExpression>),
-    CallExpression(Box<CallExpression>),
-    PipeExpression(Box<PipeExpression>),
-    PipeSubstitution(Box<PipeSubstitution>),
-    ArrayExpression(Box<ArrayExpression>),
-    ArrayRangeExpression(Box<ArrayRangeExpression>),
-    ObjectExpression(Box<ObjectExpression>),
-    MemberExpression(Box<MemberExpression>),
-    UnaryExpression(Box<UnaryExpression>),
-    IfExpression(Box<IfExpression>),
+    Literal(BoxNode<Literal>),
+    Identifier(BoxNode<Identifier>),
+    TagDeclarator(BoxNode<TagDeclarator>),
+    BinaryExpression(BoxNode<BinaryExpression>),
+    FunctionExpression(BoxNode<FunctionExpression>),
+    CallExpression(BoxNode<CallExpression>),
+    PipeExpression(BoxNode<PipeExpression>),
+    PipeSubstitution(BoxNode<PipeSubstitution>),
+    ArrayExpression(BoxNode<ArrayExpression>),
+    ArrayRangeExpression(BoxNode<ArrayRangeExpression>),
+    ObjectExpression(BoxNode<ObjectExpression>),
+    MemberExpression(BoxNode<MemberExpression>),
+    UnaryExpression(BoxNode<UnaryExpression>),
+    IfExpression(BoxNode<IfExpression>),
     None(KclNone),
 }
 
@@ -582,40 +639,40 @@ impl Expr {
 
     pub fn start(&self) -> usize {
         match self {
-            Expr::Literal(literal) => literal.start(),
-            Expr::Identifier(identifier) => identifier.start(),
-            Expr::TagDeclarator(tag) => tag.start(),
-            Expr::BinaryExpression(binary_expression) => binary_expression.start(),
-            Expr::FunctionExpression(function_expression) => function_expression.start(),
-            Expr::CallExpression(call_expression) => call_expression.start(),
-            Expr::PipeExpression(pipe_expression) => pipe_expression.start(),
-            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start(),
-            Expr::ArrayExpression(array_expression) => array_expression.start(),
-            Expr::ArrayRangeExpression(array_range) => array_range.start(),
-            Expr::ObjectExpression(object_expression) => object_expression.start(),
-            Expr::MemberExpression(member_expression) => member_expression.start(),
-            Expr::UnaryExpression(unary_expression) => unary_expression.start(),
-            Expr::IfExpression(expr) => expr.start(),
+            Expr::Literal(literal) => literal.start,
+            Expr::Identifier(identifier) => identifier.start,
+            Expr::TagDeclarator(tag) => tag.start,
+            Expr::BinaryExpression(binary_expression) => binary_expression.start,
+            Expr::FunctionExpression(function_expression) => function_expression.start,
+            Expr::CallExpression(call_expression) => call_expression.start,
+            Expr::PipeExpression(pipe_expression) => pipe_expression.start,
+            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start,
+            Expr::ArrayExpression(array_expression) => array_expression.start,
+            Expr::ArrayRangeExpression(array_range) => array_range.start,
+            Expr::ObjectExpression(object_expression) => object_expression.start,
+            Expr::MemberExpression(member_expression) => member_expression.start,
+            Expr::UnaryExpression(unary_expression) => unary_expression.start,
+            Expr::IfExpression(expr) => expr.start,
             Expr::None(none) => none.start,
         }
     }
 
     pub fn end(&self) -> usize {
         match self {
-            Expr::Literal(literal) => literal.end(),
-            Expr::Identifier(identifier) => identifier.end(),
-            Expr::TagDeclarator(tag) => tag.end(),
-            Expr::BinaryExpression(binary_expression) => binary_expression.end(),
-            Expr::FunctionExpression(function_expression) => function_expression.end(),
-            Expr::CallExpression(call_expression) => call_expression.end(),
-            Expr::PipeExpression(pipe_expression) => pipe_expression.end(),
-            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end(),
-            Expr::ArrayExpression(array_expression) => array_expression.end(),
-            Expr::ArrayRangeExpression(array_range) => array_range.end(),
-            Expr::ObjectExpression(object_expression) => object_expression.end(),
-            Expr::MemberExpression(member_expression) => member_expression.end(),
-            Expr::UnaryExpression(unary_expression) => unary_expression.end(),
-            Expr::IfExpression(expr) => expr.end(),
+            Expr::Literal(literal) => literal.end,
+            Expr::Identifier(identifier) => identifier.end,
+            Expr::TagDeclarator(tag) => tag.end,
+            Expr::BinaryExpression(binary_expression) => binary_expression.end,
+            Expr::FunctionExpression(function_expression) => function_expression.end,
+            Expr::CallExpression(call_expression) => call_expression.end,
+            Expr::PipeExpression(pipe_expression) => pipe_expression.end,
+            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end,
+            Expr::ArrayExpression(array_expression) => array_expression.end,
+            Expr::ArrayRangeExpression(array_range) => array_range.end,
+            Expr::ObjectExpression(object_expression) => object_expression.end,
+            Expr::MemberExpression(member_expression) => member_expression.end,
+            Expr::UnaryExpression(unary_expression) => unary_expression.end,
+            Expr::IfExpression(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -715,13 +772,13 @@ impl From<&Expr> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
-    Literal(Box<Literal>),
-    Identifier(Box<Identifier>),
-    BinaryExpression(Box<BinaryExpression>),
-    CallExpression(Box<CallExpression>),
-    UnaryExpression(Box<UnaryExpression>),
-    MemberExpression(Box<MemberExpression>),
-    IfExpression(Box<IfExpression>),
+    Literal(BoxNode<Literal>),
+    Identifier(BoxNode<Identifier>),
+    BinaryExpression(BoxNode<BinaryExpression>),
+    CallExpression(BoxNode<CallExpression>),
+    UnaryExpression(BoxNode<UnaryExpression>),
+    MemberExpression(BoxNode<MemberExpression>),
+    IfExpression(BoxNode<IfExpression>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -770,25 +827,25 @@ impl BinaryPart {
 
     pub fn start(&self) -> usize {
         match self {
-            BinaryPart::Literal(literal) => literal.start(),
-            BinaryPart::Identifier(identifier) => identifier.start(),
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.start(),
-            BinaryPart::CallExpression(call_expression) => call_expression.start(),
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.start(),
-            BinaryPart::MemberExpression(member_expression) => member_expression.start(),
-            BinaryPart::IfExpression(e) => e.start(),
+            BinaryPart::Literal(literal) => literal.start,
+            BinaryPart::Identifier(identifier) => identifier.start,
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
+            BinaryPart::CallExpression(call_expression) => call_expression.start,
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
+            BinaryPart::MemberExpression(member_expression) => member_expression.start,
+            BinaryPart::IfExpression(e) => e.start,
         }
     }
 
     pub fn end(&self) -> usize {
         match self {
-            BinaryPart::Literal(literal) => literal.end(),
-            BinaryPart::Identifier(identifier) => identifier.end(),
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.end(),
-            BinaryPart::CallExpression(call_expression) => call_expression.end(),
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.end(),
-            BinaryPart::MemberExpression(member_expression) => member_expression.end(),
-            BinaryPart::IfExpression(e) => e.end(),
+            BinaryPart::Literal(literal) => literal.end,
+            BinaryPart::Identifier(identifier) => identifier.end,
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
+            BinaryPart::CallExpression(call_expression) => call_expression.end,
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
+            BinaryPart::MemberExpression(member_expression) => member_expression.end,
+            BinaryPart::IfExpression(e) => e.end,
         }
     }
 
@@ -836,8 +893,6 @@ impl BinaryPart {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NonCodeNode {
-    pub start: usize,
-    pub end: usize,
     pub value: NonCodeValue,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -845,31 +900,9 @@ pub struct NonCodeNode {
     pub digest: Option<Digest>,
 }
 
-impl From<NonCodeNode> for SourceRange {
-    fn from(value: NonCodeNode) -> Self {
-        Self([value.start, value.end])
-    }
-}
-
-impl From<&NonCodeNode> for SourceRange {
-    fn from(value: &NonCodeNode) -> Self {
-        Self([value.start, value.end])
-    }
-}
-
-impl NonCodeNode {
+impl Node<NonCodeNode> {
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
-    }
-
-    pub fn value(&self) -> String {
-        match &self.value {
-            NonCodeValue::Shebang { value } => value.clone(),
-            NonCodeValue::InlineComment { value, style: _ } => value.clone(),
-            NonCodeValue::BlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
-            NonCodeValue::NewLine => "\n\n".to_string(),
-        }
     }
 
     pub fn format(&self, indentation: &str) -> String {
@@ -906,6 +939,18 @@ impl NonCodeNode {
                     }
                 }
             }
+            NonCodeValue::NewLine => "\n\n".to_string(),
+        }
+    }
+}
+
+impl NonCodeNode {
+    pub fn value(&self) -> String {
+        match &self.value {
+            NonCodeValue::Shebang { value } => value.clone(),
+            NonCodeValue::InlineComment { value, style: _ } => value.clone(),
+            NonCodeValue::BlockComment { value, style: _ } => value.clone(),
+            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
@@ -983,8 +1028,8 @@ pub enum NonCodeValue {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
-    pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
-    pub start: Vec<NonCodeNode>,
+    pub non_code_nodes: HashMap<usize, NodeList<NonCodeNode>>,
+    pub start_nodes: NodeList<NonCodeNode>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -994,7 +1039,7 @@ pub struct NonCodeMeta {
 impl NonCodeMeta {
     /// Does this contain anything?
     pub fn is_empty(&self) -> bool {
-        self.non_code_nodes.is_empty() && self.start.is_empty()
+        self.non_code_nodes.is_empty() && self.start_nodes.is_empty()
     }
 
     /// How many non-code values does this have?
@@ -1013,8 +1058,8 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         #[derive(Deserialize)]
         #[serde(rename_all = "camelCase")]
         struct NonCodeMetaHelper {
-            non_code_nodes: HashMap<String, Vec<NonCodeNode>>,
-            start: Vec<NonCodeNode>,
+            non_code_nodes: HashMap<String, NodeList<NonCodeNode>>,
+            start_nodes: NodeList<NonCodeNode>,
         }
 
         let helper = NonCodeMetaHelper::deserialize(deserializer)?;
@@ -1025,19 +1070,19 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             .collect::<Result<HashMap<_, _>, _>>()?;
         Ok(NonCodeMeta {
             non_code_nodes,
-            start: helper.start,
+            start_nodes: helper.start_nodes,
             digest: None,
         })
     }
 }
 
 impl NonCodeMeta {
-    pub fn insert(&mut self, i: usize, new: NonCodeNode) {
+    pub fn insert(&mut self, i: usize, new: Node<NonCodeNode>) {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
 
     pub fn contains(&self, pos: usize) -> bool {
-        if self.start.iter().any(|node| node.contains(pos)) {
+        if self.start_nodes.iter().any(|node| node.contains(pos)) {
             return true;
         }
 
@@ -1053,28 +1098,16 @@ impl NonCodeMeta {
 #[serde(tag = "type")]
 pub struct ImportItem {
     /// Name of the item to import.
-    pub name: Identifier,
+    pub name: Node<Identifier>,
     /// Rename the item using an identifier after "as".
-    pub alias: Option<Identifier>,
-
-    pub start: usize,
-    pub end: usize,
+    pub alias: Option<Node<Identifier>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(ImportItem);
-
-impl ImportItem {
-    pub fn identifier(&self) -> &str {
-        match &self.alias {
-            Some(alias) => &alias.name,
-            None => &self.name.name,
-        }
-    }
-
+impl Node<ImportItem> {
     pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
         match &mut self.alias {
             Some(alias) => {
@@ -1095,6 +1128,15 @@ impl ImportItem {
             }
         }
     }
+}
+
+impl ImportItem {
+    pub fn identifier(&self) -> &str {
+        match &self.alias {
+            Some(alias) => &alias.name,
+            None => &self.name.name,
+        }
+    }
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         if let Some(alias) = &mut self.alias {
@@ -1108,9 +1150,7 @@ impl ImportItem {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportStatement {
-    pub start: usize,
-    pub end: usize,
-    pub items: Vec<ImportItem>,
+    pub items: NodeList<ImportItem>,
     pub path: String,
     pub raw_path: String,
 
@@ -1119,9 +1159,7 @@ pub struct ImportStatement {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(ImportStatement);
-
-impl ImportStatement {
+impl Node<ImportStatement> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
@@ -1140,7 +1178,9 @@ impl ImportStatement {
         }
         None
     }
+}
 
+impl ImportStatement {
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         for item in &mut self.items {
             item.rename_identifiers(old_name, new_name);
@@ -1153,8 +1193,6 @@ impl ImportStatement {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
-    pub start: usize,
-    pub end: usize,
     pub expression: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1162,16 +1200,12 @@ pub struct ExpressionStatement {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(ExpressionStatement);
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
-    pub start: usize,
-    pub end: usize,
-    pub callee: Identifier,
+    pub callee: Node<Identifier>,
     pub arguments: Vec<Expr>,
     pub optional: bool,
 
@@ -1180,24 +1214,39 @@ pub struct CallExpression {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(CallExpression);
-
-impl From<CallExpression> for Expr {
-    fn from(call_expression: CallExpression) -> Self {
+impl From<Node<CallExpression>> for Expr {
+    fn from(call_expression: Node<CallExpression>) -> Self {
         Expr::CallExpression(Box::new(call_expression))
     }
 }
 
+impl Node<CallExpression> {
+    /// Return the constraint level for this call expression.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.arguments.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
+        }
+
+        // Iterate over the arguments and get the constraint level for each one.
+        let mut constraint_levels = ConstraintLevels::new();
+        for arg in &self.arguments {
+            constraint_levels.push(arg.get_constraint_level());
+        }
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+}
+
 impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Self, KclError> {
-        Ok(Self {
-            start: 0,
-            end: 0,
+    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
+        Ok(Node::no_src(Self {
             callee: Identifier::new(name),
             arguments,
             optional: false,
             digest: None,
-        })
+        }))
     }
 
     /// Is at least one argument the '%' i.e. the substitution operator?
@@ -1205,10 +1254,6 @@ impl CallExpression {
         self.arguments
             .iter()
             .any(|arg| matches!(arg, Expr::PipeSubstitution(_)))
-    }
-
-    pub fn as_source_ranges(&self) -> Vec<SourceRange> {
-        vec![SourceRange([self.start, self.end])]
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -1248,23 +1293,6 @@ impl CallExpression {
         for arg in &mut self.arguments {
             arg.rename_identifiers(old_name, new_name);
         }
-    }
-
-    /// Return the constraint level for this call expression.
-    pub fn get_constraint_level(&self) -> ConstraintLevel {
-        if self.arguments.is_empty() {
-            return ConstraintLevel::Ignore {
-                source_ranges: vec![self.into()],
-            };
-        }
-
-        // Iterate over the arguments and get the constraint level for each one.
-        let mut constraint_levels = ConstraintLevels::new();
-        for arg in &self.arguments {
-            constraint_levels.push(arg.get_constraint_level());
-        }
-
-        constraint_levels.get_constraint_level(self.into())
     }
 }
 
@@ -1329,9 +1357,7 @@ impl ItemVisibility {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
-    pub start: usize,
-    pub end: usize,
-    pub declarations: Vec<VariableDeclarator>,
+    pub declarations: NodeList<VariableDeclarator>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
@@ -1341,18 +1367,18 @@ pub struct VariableDeclaration {
     pub digest: Option<Digest>,
 }
 
-impl From<&VariableDeclaration> for Vec<CompletionItem> {
-    fn from(declaration: &VariableDeclaration) -> Self {
+impl From<&Node<VariableDeclaration>> for Vec<CompletionItem> {
+    fn from(declaration: &Node<VariableDeclaration>) -> Self {
         let mut completions = vec![];
         for variable in &declaration.declarations {
             completions.push(CompletionItem {
                 label: variable.id.name.to_string(),
                 label_details: None,
-                kind: Some(match declaration.kind {
+                kind: Some(match declaration.inner.kind {
                     VariableKind::Const => CompletionItemKind::CONSTANT,
                     VariableKind::Fn => CompletionItemKind::FUNCTION,
                 }),
-                detail: Some(declaration.kind.to_string()),
+                detail: Some(declaration.inner.kind.to_string()),
                 documentation: None,
                 deprecated: None,
                 preselect: None,
@@ -1373,19 +1399,7 @@ impl From<&VariableDeclaration> for Vec<CompletionItem> {
     }
 }
 
-impl_value_meta!(VariableDeclaration);
-
-impl VariableDeclaration {
-    pub fn new(declarations: Vec<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            declarations,
-            visibility,
-            kind,
-            digest: None,
-        }
-    }
+impl Node<VariableDeclaration> {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
         let recasted = self.recast(&FormatOptions::default(), 0);
         // If the recasted value only has one line, don't fold it.
@@ -1397,13 +1411,45 @@ impl VariableDeclaration {
         let first_line = recasted.lines().next().unwrap().to_string();
 
         Some(FoldingRange {
-            start_line: (self.start() + first_line.len()) as u32,
+            start_line: (self.start + first_line.len()) as u32,
             start_character: None,
-            end_line: self.end() as u32,
+            end_line: self.end as u32,
             end_character: None,
             kind: Some(FoldingRangeKind::Region),
             collapsed_text: Some(first_line),
         })
+    }
+
+    /// Rename the variable declaration at the given position.
+    /// This returns the old name of the variable, if it found one.
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        // The position must be within the variable declaration.
+        let source_range: SourceRange = self.clone().into();
+        if !source_range.contains(pos) {
+            return None;
+        }
+
+        for declaration in &mut self.declarations {
+            let declaration_source_range: SourceRange = declaration.id.clone().into();
+            if declaration_source_range.contains(pos) {
+                let old_name = declaration.id.name.clone();
+                declaration.id.name = new_name.to_string();
+                return Some(old_name);
+            }
+        }
+
+        None
+    }
+}
+
+impl VariableDeclaration {
+    pub fn new(declarations: NodeList<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
+        Self {
+            declarations,
+            visibility,
+            kind,
+            digest: None,
+        }
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -1430,27 +1476,6 @@ impl VariableDeclaration {
             let source_range: SourceRange = declaration.clone().into();
             if source_range.contains(pos) {
                 return Some(&mut declaration.init);
-            }
-        }
-
-        None
-    }
-
-    /// Rename the variable declaration at the given position.
-    /// This returns the old name of the variable, if it found one.
-    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
-        // The position must be within the variable declaration.
-        let source_range: SourceRange = self.clone().into();
-        if !source_range.contains(pos) {
-            return None;
-        }
-
-        for declaration in &mut self.declarations {
-            let declaration_source_range: SourceRange = declaration.id.clone().into();
-            if declaration_source_range.contains(pos) {
-                let old_name = declaration.id.name.clone();
-                declaration.id.name = new_name.to_string();
-                return Some(old_name);
             }
         }
 
@@ -1585,10 +1610,8 @@ impl VariableKind {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
-    pub start: usize,
-    pub end: usize,
     /// The identifier of the variable.
-    pub id: Identifier,
+    pub id: Node<Identifier>,
     /// The value of the variable.
     pub init: Expr,
 
@@ -1597,17 +1620,13 @@ pub struct VariableDeclarator {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(VariableDeclarator);
-
 impl VariableDeclarator {
-    pub fn new(name: &str, init: Expr) -> Self {
-        Self {
-            start: 0,
-            end: 0,
+    pub fn new(name: &str, init: Expr) -> Node<Self> {
+        Node::no_src(Self {
             id: Identifier::new(name),
             init,
             digest: None,
-        }
+        })
     }
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1620,8 +1639,6 @@ impl VariableDeclarator {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
-    pub start: usize,
-    pub end: usize,
     pub value: LiteralValue,
     pub raw: String,
 
@@ -1630,19 +1647,7 @@ pub struct Literal {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(Literal);
-
-impl Literal {
-    pub fn new(value: LiteralValue) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            raw: JValue::from(value.clone()).to_string(),
-            value,
-            digest: None,
-        }
-    }
-
+impl Node<Literal> {
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1652,8 +1657,18 @@ impl Literal {
     }
 }
 
-impl From<Literal> for KclValue {
-    fn from(literal: Literal) -> Self {
+impl Literal {
+    pub fn new(value: LiteralValue) -> Node<Self> {
+        Node::no_src(Self {
+            raw: JValue::from(value.clone()).to_string(),
+            value,
+            digest: None,
+        })
+    }
+}
+
+impl From<Node<Literal>> for KclValue {
+    fn from(literal: Node<Literal>) -> Self {
         KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
@@ -1663,8 +1678,19 @@ impl From<Literal> for KclValue {
     }
 }
 
-impl From<&Box<Literal>> for KclValue {
-    fn from(literal: &Box<Literal>) -> Self {
+impl From<&Node<Literal>> for KclValue {
+    fn from(literal: &Node<Literal>) -> Self {
+        KclValue::UserVal(UserVal {
+            value: JValue::from(literal.value.clone()),
+            meta: vec![Metadata {
+                source_range: literal.into(),
+            }],
+        })
+    }
+}
+
+impl From<&BoxNode<Literal>> for KclValue {
+    fn from(literal: &BoxNode<Literal>) -> Self {
         KclValue::UserVal(UserVal {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
@@ -1679,8 +1705,6 @@ impl From<&Box<Literal>> for KclValue {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
-    pub start: usize,
-    pub end: usize,
     pub name: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1688,24 +1712,22 @@ pub struct Identifier {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(Identifier);
-
-impl Identifier {
-    pub fn new(name: &str) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            name: name.to_string(),
-            digest: None,
-        }
-    }
-
+impl Node<Identifier> {
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
         }
+    }
+}
+
+impl Identifier {
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Self {
+            name: name.to_string(),
+            digest: None,
+        })
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1721,8 +1743,6 @@ impl Identifier {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct TagDeclarator {
-    pub start: usize,
-    pub end: usize,
     #[serde(rename = "value")]
     pub name: String,
 
@@ -1731,34 +1751,22 @@ pub struct TagDeclarator {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(TagDeclarator);
+pub type TagNode = Node<TagDeclarator>;
 
-impl From<Box<TagDeclarator>> for SourceRange {
-    fn from(tag: Box<TagDeclarator>) -> Self {
-        Self([tag.start, tag.end])
-    }
-}
-
-impl From<Box<TagDeclarator>> for Vec<SourceRange> {
-    fn from(tag: Box<TagDeclarator>) -> Self {
-        vec![tag.into()]
-    }
-}
-
-impl From<&Box<TagDeclarator>> for KclValue {
-    fn from(tag: &Box<TagDeclarator>) -> Self {
+impl From<&BoxNode<TagDeclarator>> for KclValue {
+    fn from(tag: &BoxNode<TagDeclarator>) -> Self {
         KclValue::TagDeclarator(tag.clone())
     }
 }
 
-impl From<&TagDeclarator> for KclValue {
-    fn from(tag: &TagDeclarator) -> Self {
+impl From<&Node<TagDeclarator>> for KclValue {
+    fn from(tag: &Node<TagDeclarator>) -> Self {
         KclValue::TagDeclarator(Box::new(tag.clone()))
     }
 }
 
-impl From<&TagDeclarator> for TagIdentifier {
-    fn from(tag: &TagDeclarator) -> Self {
+impl From<&Node<TagDeclarator>> for TagIdentifier {
+    fn from(tag: &Node<TagDeclarator>) -> Self {
         TagIdentifier {
             value: tag.name.clone(),
             info: None,
@@ -1769,8 +1777,8 @@ impl From<&TagDeclarator> for TagIdentifier {
     }
 }
 
-impl From<&TagDeclarator> for CompletionItem {
-    fn from(tag: &TagDeclarator) -> Self {
+impl From<&Node<TagDeclarator>> for CompletionItem {
+    fn from(tag: &Node<TagDeclarator>) -> Self {
         CompletionItem {
             label: tag.name.to_string(),
             label_details: None,
@@ -1794,28 +1802,12 @@ impl From<&TagDeclarator> for CompletionItem {
     }
 }
 
-impl TagDeclarator {
-    pub fn new(name: &str) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            name: name.to_string(),
-            digest: None,
-        }
-    }
-
+impl Node<TagDeclarator> {
     /// Get the constraint level for this identifier.
     /// TagDeclarator are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
-        }
-    }
-
-    /// Rename all identifiers that have the old name to the new given name.
-    fn rename(&mut self, old_name: &str, new_name: &str) {
-        if self.name == old_name {
-            self.name = new_name.to_string();
         }
     }
 
@@ -1838,39 +1830,40 @@ impl TagDeclarator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+impl TagDeclarator {
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Self {
+            name: name.to_string(),
+            digest: None,
+        })
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if self.name == old_name {
+            self.name = new_name.to_string();
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
-    pub start: usize,
-    pub end: usize,
-
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(PipeSubstitution);
-
 impl PipeSubstitution {
-    pub fn new() -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            digest: None,
-        }
+    pub fn new() -> Node<Self> {
+        Node::no_src(Self { digest: None })
     }
 }
 
-impl Default for PipeSubstitution {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl From<PipeSubstitution> for Expr {
-    fn from(pipe_substitution: PipeSubstitution) -> Self {
+impl From<Node<PipeSubstitution>> for Expr {
+    fn from(pipe_substitution: Node<PipeSubstitution>) -> Self {
         Expr::PipeSubstitution(Box::new(pipe_substitution))
     }
 }
@@ -1880,8 +1873,6 @@ impl From<PipeSubstitution> for Expr {
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayExpression {
-    pub start: usize,
-    pub end: usize,
     pub elements: Vec<Expr>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
@@ -1891,31 +1882,13 @@ pub struct ArrayExpression {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(ArrayExpression);
-
-impl From<ArrayExpression> for Expr {
-    fn from(array_expression: ArrayExpression) -> Self {
+impl From<Node<ArrayExpression>> for Expr {
+    fn from(array_expression: Node<ArrayExpression>) -> Self {
         Expr::ArrayExpression(Box::new(array_expression))
     }
 }
 
-impl ArrayExpression {
-    pub fn new(elements: Vec<Expr>) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            elements,
-            non_code_meta: Default::default(),
-            digest: None,
-        }
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for element in &mut self.elements {
-            element.replace_value(source_range, new_value.clone());
-        }
-    }
-
+impl Node<ArrayExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.elements.is_empty() {
             return ConstraintLevel::Ignore {
@@ -1929,6 +1902,22 @@ impl ArrayExpression {
         }
 
         constraint_levels.get_constraint_level(self.into())
+    }
+}
+
+impl ArrayExpression {
+    pub fn new(elements: Vec<Expr>) -> Node<Self> {
+        Node::no_src(Self {
+            elements,
+            non_code_meta: Default::default(),
+            digest: None,
+        })
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for element in &mut self.elements {
+            element.replace_value(source_range, new_value.clone());
+        }
     }
 
     /// Returns a hover value that includes the given character position.
@@ -1956,10 +1945,8 @@ impl ArrayExpression {
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayRangeExpression {
-    pub start: usize,
-    pub end: usize,
-    pub start_element: Box<Expr>,
-    pub end_element: Box<Expr>,
+    pub start_element: Expr,
+    pub end_element: Expr,
     /// Is the `end_element` included in the range?
     pub end_inclusive: bool,
     // TODO (maybe) comments on range components?
@@ -1968,31 +1955,13 @@ pub struct ArrayRangeExpression {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(ArrayRangeExpression);
-
-impl From<ArrayRangeExpression> for Expr {
-    fn from(array_expression: ArrayRangeExpression) -> Self {
+impl From<Node<ArrayRangeExpression>> for Expr {
+    fn from(array_expression: Node<ArrayRangeExpression>) -> Self {
         Expr::ArrayRangeExpression(Box::new(array_expression))
     }
 }
 
-impl ArrayRangeExpression {
-    pub fn new(start_element: Box<Expr>, end_element: Box<Expr>) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            start_element,
-            end_element,
-            end_inclusive: true,
-            digest: None,
-        }
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        self.start_element.replace_value(source_range, new_value.clone());
-        self.end_element.replace_value(source_range, new_value.clone());
-    }
-
+impl Node<ArrayRangeExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         let mut constraint_levels = ConstraintLevels::new();
         constraint_levels.push(self.start_element.get_constraint_level());
@@ -2000,10 +1969,26 @@ impl ArrayRangeExpression {
 
         constraint_levels.get_constraint_level(self.into())
     }
+}
+
+impl ArrayRangeExpression {
+    pub fn new(start_element: Expr, end_element: Expr) -> Node<Self> {
+        Node::no_src(Self {
+            start_element,
+            end_element,
+            end_inclusive: true,
+            digest: None,
+        })
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.start_element.replace_value(source_range, new_value.clone());
+        self.end_element.replace_value(source_range, new_value.clone());
+    }
 
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        for element in [&*self.start_element, &*self.end_element] {
+        for element in [&self.start_element, &self.end_element] {
             let element_source_range: SourceRange = element.into();
             if element_source_range.contains(pos) {
                 return element.get_hover_value_for_position(pos, code);
@@ -2025,9 +2010,7 @@ impl ArrayRangeExpression {
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ObjectExpression {
-    pub start: usize,
-    pub end: usize,
-    pub properties: Vec<ObjectProperty>,
+    pub properties: NodeList<ObjectProperty>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 
@@ -2036,23 +2019,7 @@ pub struct ObjectExpression {
     pub digest: Option<Digest>,
 }
 
-impl ObjectExpression {
-    pub fn new(properties: Vec<ObjectProperty>) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            properties,
-            non_code_meta: Default::default(),
-            digest: None,
-        }
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for property in &mut self.properties {
-            property.value.replace_value(source_range, new_value.clone());
-        }
-    }
-
+impl Node<ObjectExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.properties.is_empty() {
             return ConstraintLevel::Ignore {
@@ -2066,6 +2033,22 @@ impl ObjectExpression {
         }
 
         constraint_levels.get_constraint_level(self.into())
+    }
+}
+
+impl ObjectExpression {
+    pub fn new(properties: NodeList<ObjectProperty>) -> Node<Self> {
+        Node::no_src(Self {
+            properties,
+            non_code_meta: Default::default(),
+            digest: None,
+        })
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for property in &mut self.properties {
+            property.value.replace_value(source_range, new_value.clone());
+        }
     }
 
     /// Returns a hover value that includes the given character position.
@@ -2088,16 +2071,12 @@ impl ObjectExpression {
     }
 }
 
-impl_value_meta!(ObjectExpression);
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
-    pub start: usize,
-    pub end: usize,
-    pub key: Identifier,
+    pub key: Node<Identifier>,
     pub value: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2105,9 +2084,7 @@ pub struct ObjectProperty {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(ObjectProperty);
-
-impl ObjectProperty {
+impl Node<ObjectProperty> {
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
         let source_range: SourceRange = self.clone().into();
         let inner_source_range: SourceRange = self.key.clone().into();
@@ -2125,7 +2102,9 @@ impl ObjectProperty {
             },
         ]
     }
+}
 
+impl ObjectProperty {
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         let value_source_range: SourceRange = self.value.clone().into();
@@ -2142,8 +2121,8 @@ impl ObjectProperty {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
-    MemberExpression(Box<MemberExpression>),
-    Identifier(Box<Identifier>),
+    MemberExpression(BoxNode<MemberExpression>),
+    Identifier(BoxNode<Identifier>),
 }
 
 impl MemberObject {
@@ -2189,8 +2168,8 @@ impl From<&MemberObject> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
-    Identifier(Box<Identifier>),
-    Literal(Box<Literal>),
+    Identifier(BoxNode<Identifier>),
+    Literal(BoxNode<Literal>),
 }
 
 impl LiteralIdentifier {
@@ -2226,8 +2205,6 @@ impl From<&LiteralIdentifier> for SourceRange {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
-    pub start: usize,
-    pub end: usize,
     pub object: MemberObject,
     pub property: LiteralIdentifier,
     pub computed: bool,
@@ -2237,9 +2214,7 @@ pub struct MemberExpression {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(MemberExpression);
-
-impl MemberExpression {
+impl Node<MemberExpression> {
     /// Get the constraint level for a member expression.
     /// This is always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -2247,7 +2222,9 @@ impl MemberExpression {
             source_ranges: vec![self.into()],
         }
     }
+}
 
+impl MemberExpression {
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         let object_source_range: SourceRange = self.object.clone().into();
@@ -2287,8 +2264,6 @@ pub struct ObjectKeyInfo {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
-    pub start: usize,
-    pub end: usize,
     pub operator: BinaryOperator,
     pub left: BinaryPart,
     pub right: BinaryPart,
@@ -2298,25 +2273,7 @@ pub struct BinaryExpression {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(BinaryExpression);
-
-impl BinaryExpression {
-    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Self {
-        Self {
-            start: left.start(),
-            end: right.end(),
-            operator,
-            left,
-            right,
-            digest: None,
-        }
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        self.left.replace_value(source_range, new_value.clone());
-        self.right.replace_value(source_range, new_value);
-    }
-
+impl Node<BinaryExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         let left_constraint_level = self.left.get_constraint_level();
         let right_constraint_level = self.right.get_constraint_level();
@@ -2325,6 +2282,22 @@ impl BinaryExpression {
         constraint_levels.push(left_constraint_level);
         constraint_levels.push(right_constraint_level);
         constraint_levels.get_constraint_level(self.into())
+    }
+}
+
+impl BinaryExpression {
+    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Node<Self> {
+        Node::no_src(Self {
+            operator,
+            left,
+            right,
+            digest: None,
+        })
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        self.left.replace_value(source_range, new_value.clone());
+        self.right.replace_value(source_range, new_value);
     }
 
     pub fn precedence(&self) -> u8 {
@@ -2472,8 +2445,6 @@ impl BinaryOperator {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
-    pub start: usize,
-    pub end: usize,
     pub operator: UnaryOperator,
     pub argument: BinaryPart,
 
@@ -2482,17 +2453,13 @@ pub struct UnaryExpression {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(UnaryExpression);
-
 impl UnaryExpression {
-    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Self {
-        Self {
-            start: 0,
-            end: argument.end(),
+    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Node<Self> {
+        Node::no_src(Self {
             operator,
             argument,
             digest: None,
-        }
+        })
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -2549,8 +2516,6 @@ impl UnaryOperator {
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
-    pub start: usize,
-    pub end: usize,
     // TODO: Only the first body expression can be any Value.
     // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Expr>,
@@ -2562,31 +2527,13 @@ pub struct PipeExpression {
     pub digest: Option<Digest>,
 }
 
-impl_value_meta!(PipeExpression);
-
-impl From<PipeExpression> for Expr {
-    fn from(pipe_expression: PipeExpression) -> Self {
+impl From<Node<PipeExpression>> for Expr {
+    fn from(pipe_expression: Node<PipeExpression>) -> Self {
         Expr::PipeExpression(Box::new(pipe_expression))
     }
 }
 
-impl PipeExpression {
-    pub fn new(body: Vec<Expr>) -> Self {
-        Self {
-            start: 0,
-            end: 0,
-            body,
-            non_code_meta: Default::default(),
-            digest: None,
-        }
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for value in &mut self.body {
-            value.replace_value(source_range, new_value.clone());
-        }
-    }
-
+impl Node<PipeExpression> {
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.body.is_empty() {
             return ConstraintLevel::Ignore {
@@ -2603,6 +2550,27 @@ impl PipeExpression {
         constraint_levels.get_constraint_level(self.into())
     }
 
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
+    }
+}
+
+impl PipeExpression {
+    pub fn new(body: Vec<Expr>) -> Node<Self> {
+        Node::no_src(Self {
+            body,
+            non_code_meta: Default::default(),
+            digest: None,
+        })
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for value in &mut self.body {
+            value.replace_value(source_range, new_value.clone());
+        }
+    }
+
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         for b in &self.body {
@@ -2613,11 +2581,6 @@ impl PipeExpression {
         }
 
         None
-    }
-
-    #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2686,7 +2649,7 @@ pub enum FnArgType {
 #[serde(tag = "type")]
 pub struct Parameter {
     /// The parameter's label or name.
-    pub identifier: Identifier,
+    pub identifier: Node<Identifier>,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
     #[serde(skip)]
@@ -2704,10 +2667,8 @@ pub struct Parameter {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
-    pub start: usize,
-    pub end: usize,
     pub params: Vec<Parameter>,
-    pub body: Program,
+    pub body: Node<Program>,
     #[serde(skip)]
     pub return_type: Option<FnArgType>,
 
@@ -2715,8 +2676,6 @@ pub struct FunctionExpression {
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
-
-impl_value_meta!(FunctionExpression);
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RequiredParamAfterOptionalParam(pub Box<Parameter>);
@@ -2727,20 +2686,20 @@ impl std::fmt::Display for RequiredParamAfterOptionalParam {
     }
 }
 
-impl FunctionExpression {
+impl Node<FunctionExpression> {
     /// Function expressions don't really apply.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Ignore {
             source_ranges: vec![self.into()],
         }
     }
+}
 
+impl FunctionExpression {
     pub fn required_and_optional_params(
         &self,
     ) -> Result<(&[Parameter], &[Parameter]), RequiredParamAfterOptionalParam> {
         let Self {
-            start: _,
-            end: _,
             params,
             body: _,
             digest: _,
@@ -2795,16 +2754,12 @@ impl FunctionExpression {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {
-    pub start: usize,
-    pub end: usize,
     pub argument: Expr,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
-
-impl_value_meta!(ReturnStatement);
 
 /// Describes information about a hover.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -3244,34 +3199,40 @@ const cylinder = startSketchOn('-XZ')
             Some(FnArgType::Object {
                 properties: vec![
                     Parameter {
-                        identifier: Identifier {
-                            start: 35,
-                            end: 40,
-                            name: "thing".to_owned(),
-                            digest: None,
-                        },
+                        identifier: Node::new(
+                            Identifier {
+                                name: "thing".to_owned(),
+                                digest: None,
+                            },
+                            35,
+                            40,
+                        ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
-                        identifier: Identifier {
-                            start: 50,
-                            end: 56,
-                            name: "things".to_owned(),
-                            digest: None,
-                        },
+                        identifier: Node::new(
+                            Identifier {
+                                name: "things".to_owned(),
+                                digest: None,
+                            },
+                            50,
+                            56,
+                        ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
-                        identifier: Identifier {
-                            start: 68,
-                            end: 72,
-                            name: "more".to_owned(),
-                            digest: None
-                        },
+                        identifier: Node::new(
+                            Identifier {
+                                name: "more".to_owned(),
+                                digest: None
+                            },
+                            68,
+                            72,
+                        ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
                         digest: None
@@ -3306,34 +3267,40 @@ const cylinder = startSketchOn('-XZ')
             Some(FnArgType::Object {
                 properties: vec![
                     Parameter {
-                        identifier: Identifier {
-                            start: 18,
-                            end: 23,
-                            name: "thing".to_owned(),
-                            digest: None
-                        },
+                        identifier: Node::new(
+                            Identifier {
+                                name: "thing".to_owned(),
+                                digest: None
+                            },
+                            18,
+                            23,
+                        ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
-                        identifier: Identifier {
-                            start: 33,
-                            end: 39,
-                            name: "things".to_owned(),
-                            digest: None
-                        },
+                        identifier: Node::new(
+                            Identifier {
+                                name: "things".to_owned(),
+                                digest: None
+                            },
+                            33,
+                            39,
+                        ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
                         optional: false,
                         digest: None
                     },
                     Parameter {
-                        identifier: Identifier {
-                            start: 51,
-                            end: 55,
-                            name: "more".to_owned(),
-                            digest: None
-                        },
+                        identifier: Node::new(
+                            Identifier {
+                                name: "more".to_owned(),
+                                digest: None
+                            },
+                            51,
+                            55,
+                        ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
                         optional: true,
                         digest: None
@@ -3349,117 +3316,105 @@ const cylinder = startSketchOn('-XZ')
             (
                 "no params",
                 (0..=0),
-                FunctionExpression {
-                    start: 0,
-                    end: 0,
+                Node::no_src(FunctionExpression {
                     params: vec![],
-                    body: Program {
-                        start: 0,
-                        end: 0,
+                    body: Node::no_src(Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         digest: None,
-                    },
+                    }),
                     return_type: None,
                     digest: None,
-                },
+                }),
             ),
             (
                 "all required params",
                 (1..=1),
-                FunctionExpression {
-                    start: 0,
-                    end: 0,
+                Node::no_src(FunctionExpression {
                     params: vec![Parameter {
-                        identifier: Identifier {
-                            start: 0,
-                            end: 0,
+                        identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
-                        },
+                        }),
                         type_: None,
                         optional: false,
                         digest: None,
                     }],
-                    body: Program {
+                    body: Node {
+                        inner: Program {
+                            body: Vec::new(),
+                            non_code_meta: Default::default(),
+                            digest: None,
+                        },
                         start: 0,
                         end: 0,
-                        body: Vec::new(),
-                        non_code_meta: Default::default(),
-                        digest: None,
                     },
                     return_type: None,
                     digest: None,
-                },
+                }),
             ),
             (
                 "all optional params",
                 (0..=1),
-                FunctionExpression {
-                    start: 0,
-                    end: 0,
+                Node::no_src(FunctionExpression {
                     params: vec![Parameter {
-                        identifier: Identifier {
-                            start: 0,
-                            end: 0,
+                        identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
-                        },
+                        }),
                         type_: None,
                         optional: true,
                         digest: None,
                     }],
-                    body: Program {
+                    body: Node {
+                        inner: Program {
+                            body: Vec::new(),
+                            non_code_meta: Default::default(),
+                            digest: None,
+                        },
                         start: 0,
                         end: 0,
-                        body: Vec::new(),
-                        non_code_meta: Default::default(),
-                        digest: None,
                     },
                     return_type: None,
                     digest: None,
-                },
+                }),
             ),
             (
                 "mixed params",
                 (1..=2),
-                FunctionExpression {
-                    start: 0,
-                    end: 0,
+                Node::no_src(FunctionExpression {
                     params: vec![
                         Parameter {
-                            identifier: Identifier {
-                                start: 0,
-                                end: 0,
+                            identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
-                            },
+                            }),
                             type_: None,
                             optional: false,
                             digest: None,
                         },
                         Parameter {
-                            identifier: Identifier {
-                                start: 0,
-                                end: 0,
+                            identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,
-                            },
+                            }),
                             type_: None,
                             optional: true,
                             digest: None,
                         },
                     ],
-                    body: Program {
+                    body: Node {
+                        inner: Program {
+                            body: Vec::new(),
+                            non_code_meta: Default::default(),
+                            digest: None,
+                        },
                         start: 0,
                         end: 0,
-                        body: Vec::new(),
-                        non_code_meta: Default::default(),
-                        digest: None,
                     },
                     return_type: None,
                     digest: None,
-                },
+                }),
             ),
         ]
         .into_iter()
@@ -3479,11 +3434,14 @@ const cylinder = startSketchOn('-XZ')
 
         // We want to get the bool and verify it is a bool.
 
-        let BodyItem::ExpressionStatement(ExpressionStatement {
-            expression,
-            start: _,
-            end: _,
-            digest: None,
+        let BodyItem::ExpressionStatement(Node {
+            inner:
+                ExpressionStatement {
+                    expression,
+                    digest: None,
+                    ..
+                },
+            ..
         }) = program.body.first().unwrap()
         else {
             panic!("expected a function!");
