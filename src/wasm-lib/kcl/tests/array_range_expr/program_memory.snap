@@ -1,0 +1,155 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing array_range_expr.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 180,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 90,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 270,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 0,
+          "__meta": []
+        },
+        "five": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 5,
+          "__meta": [
+            {
+              "sourceRange": [
+                175,
+                188
+              ]
+            }
+          ]
+        },
+        "four": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 4,
+          "__meta": [
+            {
+              "sourceRange": [
+                79,
+                80
+              ]
+            }
+          ]
+        },
+        "r1": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                5,
+                11
+              ]
+            }
+          ]
+        },
+        "r2": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                95,
+                107
+              ]
+            }
+          ]
+        },
+        "r3": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                194,
+                206
+              ]
+            }
+          ]
+        },
+        "r4": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                341,
+                373
+              ]
+            }
+          ]
+        },
+        "zero": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 0,
+          "__meta": [
+            {
+              "sourceRange": [
+                88,
+                89
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

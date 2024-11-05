@@ -20,6 +20,7 @@ export class AuthenticatedApp {
   public readonly page: Page
   public readonly context: BrowserContext
   public readonly testInfo: TestInfo
+  public readonly viewPortSize = { width: 1000, height: 500 }
 
   constructor(context: BrowserContext, page: Page, testInfo: TestInfo) {
     this.page = page
@@ -36,7 +37,7 @@ export class AuthenticatedApp {
       ;(window as any).playwrightSkipFilePicker = true
     }, code)
 
-    await this.page.setViewportSize({ width: 1000, height: 500 })
+    await this.page.setViewportSize(this.viewPortSize)
 
     await u.waitForAuthSkipAppStart()
   }

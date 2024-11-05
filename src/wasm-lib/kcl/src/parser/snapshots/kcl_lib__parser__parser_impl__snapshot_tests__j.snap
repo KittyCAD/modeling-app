@@ -3,131 +3,131 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 58,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 26,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 26,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 9,
-            "name": "obj"
+            "name": "obj",
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 12,
             "end": 26,
             "properties": [
               {
-                "type": "ObjectProperty",
-                "start": 14,
                 "end": 18,
                 "key": {
-                  "type": "Identifier",
-                  "start": 14,
                   "end": 15,
-                  "name": "a"
+                  "name": "a",
+                  "start": 14,
+                  "type": "Identifier"
                 },
+                "start": 14,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 17,
                   "end": 18,
-                  "value": 1,
-                  "raw": "1"
+                  "raw": "1",
+                  "start": 17,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 1
                 }
               },
               {
-                "type": "ObjectProperty",
-                "start": 20,
                 "end": 24,
                 "key": {
-                  "type": "Identifier",
-                  "start": 20,
                   "end": 21,
-                  "name": "b"
+                  "name": "b",
+                  "start": 20,
+                  "type": "Identifier"
                 },
+                "start": 20,
+                "type": "ObjectProperty",
                 "value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 23,
                   "end": 24,
-                  "value": 2,
-                  "raw": "2"
+                  "raw": "2",
+                  "start": 23,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 2
                 }
               }
-            ]
-          }
+            ],
+            "start": 12,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 26,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     },
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 31,
-      "end": 58,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 37,
           "end": 58,
           "id": {
-            "type": "Identifier",
-            "start": 37,
             "end": 43,
-            "name": "height"
+            "name": "height",
+            "start": 37,
+            "type": "Identifier"
           },
           "init": {
-            "type": "BinaryExpression",
-            "type": "BinaryExpression",
-            "start": 46,
             "end": 58,
-            "operator": "-",
             "left": {
-              "type": "MemberExpression",
-              "type": "MemberExpression",
-              "start": 46,
+              "computed": false,
               "end": 54,
               "object": {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 46,
                 "end": 49,
-                "name": "obj"
+                "name": "obj",
+                "start": 46,
+                "type": "Identifier",
+                "type": "Identifier"
               },
               "property": {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 50,
                 "end": 53,
-                "value": "a",
-                "raw": "\"a\""
+                "raw": "\"a\"",
+                "start": 50,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "a"
               },
-              "computed": false
+              "start": 46,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
             },
+            "operator": "-",
             "right": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 57,
               "end": 58,
-              "value": 1,
-              "raw": "1"
-            }
-          }
+              "raw": "1",
+              "start": 57,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 1
+            },
+            "start": 46,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 37,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 58,
+      "kind": "const",
+      "start": 31,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
-  ]
+  ],
+  "end": 58,
+  "start": 0
 }
