@@ -7,7 +7,7 @@ use serde::de::DeserializeOwned;
 use serde_json::Value as JValue;
 
 use crate::{
-    ast::types::{execute::parse_json_number_as_f64, TagDeclarator},
+    ast::types::{execute::parse_json_number_as_f64, TagNode},
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
@@ -181,47 +181,39 @@ impl Args {
         Ok(())
     }
 
-    fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<KclValue, KclError> {
-        Ok(KclValue::UserVal(crate::executor::UserVal {
+    fn make_user_val_from_json(&self, j: serde_json::Value) -> KclValue {
+        KclValue::UserVal(crate::executor::UserVal {
             value: j,
             meta: vec![Metadata {
                 source_range: self.source_range,
             }],
-        }))
+        })
     }
 
-    pub(crate) fn make_null_user_val(&self) -> Result<KclValue, KclError> {
+    pub(crate) fn make_null_user_val(&self) -> KclValue {
         self.make_user_val_from_json(serde_json::Value::Null)
     }
 
-    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> Result<KclValue, KclError> {
+    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> KclValue {
         self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from(n)))
     }
 
     pub(crate) fn make_user_val_from_f64(&self, f: f64) -> Result<KclValue, KclError> {
-        self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from_f64(f).ok_or_else(
-            || {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Failed to convert `{}` to a number", f),
-                    source_ranges: vec![self.source_range],
-                })
-            },
-        )?))
+        f64_to_jnum(f, vec![self.source_range]).map(|x| self.make_user_val_from_json(x))
+    }
+
+    pub(crate) fn make_user_val_from_point(&self, p: [f64; 2]) -> Result<KclValue, KclError> {
+        let x = f64_to_jnum(p[0], vec![self.source_range])?;
+        let y = f64_to_jnum(p[1], vec![self.source_range])?;
+        let array = serde_json::Value::Array(vec![x, y]);
+        Ok(self.make_user_val_from_json(array))
     }
 
     pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
-        let mut arr = Vec::new();
-        for n in f {
-            arr.push(serde_json::Value::Number(serde_json::Number::from_f64(n).ok_or_else(
-                || {
-                    KclError::Type(KclErrorDetails {
-                        message: format!("Failed to convert `{}` to a number", n),
-                        source_ranges: vec![self.source_range],
-                    })
-                },
-            )?));
-        }
-        self.make_user_val_from_json(serde_json::Value::Array(arr))
+        f.into_iter()
+            .map(|n| f64_to_jnum(n, vec![self.source_range]))
+            .collect::<Result<Vec<_>, _>>()
+            .map(|arr| self.make_user_val_from_json(serde_json::Value::Array(arr)))
     }
 
     pub(crate) fn get_number(&self) -> Result<f64, KclError> {
@@ -260,7 +252,7 @@ impl Args {
         (
             crate::std::shapes::CircleData,
             crate::std::shapes::SketchOrSurface,
-            Option<TagDeclarator>,
+            Option<TagNode>,
         ),
         KclError,
     > {
@@ -286,7 +278,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagDeclarator>), KclError> {
+    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -318,16 +310,14 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(&'a self) -> Result<(T, Sketch, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(&'a self) -> Result<(T, Sketch, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_surface<'a, T>(
-        &'a self,
-    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_surface<'a, T>(&'a self) -> Result<(T, SketchSurface, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -348,9 +338,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_solid_and_tag<'a, T>(
-        &'a self,
-    ) -> Result<(T, Box<Solid>, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_solid_and_tag<'a, T>(&'a self) -> Result<(T, Box<Solid>, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -466,7 +454,7 @@ impl Args {
         (
             crate::std::shapes::PolygonData,
             crate::std::shapes::SketchOrSurface,
-            Option<TagDeclarator>,
+            Option<TagNode>,
         ),
         KclError,
     > {
@@ -603,7 +591,7 @@ impl<'a> FromKclValue<'a> for Vec<JValue> {
     }
 }
 
-impl<'a> FromKclValue<'a> for TagDeclarator {
+impl<'a> FromKclValue<'a> for TagNode {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
     }
@@ -753,4 +741,15 @@ impl<'a> FromKclValue<'a> for SketchSurface {
             _ => None,
         }
     }
+}
+
+fn f64_to_jnum(f: f64, source_ranges: Vec<SourceRange>) -> Result<serde_json::Value, KclError> {
+    serde_json::Number::from_f64(f)
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert `{f}` to a number"),
+                source_ranges,
+            })
+        })
+        .map(serde_json::Value::Number)
 }

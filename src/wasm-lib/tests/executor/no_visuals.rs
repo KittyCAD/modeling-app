@@ -1,19 +1,9 @@
 use kcl_lib::{
-    ast::types::Program,
+    ast::types::{Node, Program},
     errors::KclError,
     executor::{ExecutorContext, IdGenerator},
     parser,
 };
-
-macro_rules! gen_test {
-    ($file:ident) => {
-        #[tokio::test]
-        async fn $file() {
-            let code = include_str!(concat!("inputs/no_visuals/", stringify!($file), ".kcl"));
-            run(&code).await;
-        }
-    };
-}
 
 macro_rules! gen_test_fail {
     ($file:ident, $expected:literal) => {
@@ -37,28 +27,7 @@ macro_rules! gen_test_parse_fail {
     };
 }
 
-async fn run(code: &str) {
-    let (ctx, program, id_generator) = setup(code).await;
-
-    let res = ctx
-        .run(
-            &program,
-            None,
-            id_generator,
-            Some("tests/executor/inputs/no_visuals/".to_owned()),
-        )
-        .await;
-    match res {
-        Ok(state) => {
-            println!("{:#?}", state.memory);
-        }
-        Err(e) => {
-            panic!("{e}");
-        }
-    }
-}
-
-async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
+async fn setup(program: &str) -> (ExecutorContext, Node<Program>, IdGenerator) {
     let tokens = kcl_lib::token::lexer(program).unwrap();
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().unwrap();
@@ -97,11 +66,6 @@ async fn run_parse_fail(code: &str) -> KclError {
     e
 }
 
-gen_test!(property_of_object);
-gen_test!(index_of_array);
-gen_test!(comparisons);
-gen_test!(array_range_expr);
-gen_test!(array_range_negative_expr);
 gen_test_fail!(
     invalid_index_str,
     "semantic: Only integers >= 0 can be used as the index of an array, but you're using a string"
@@ -138,14 +102,11 @@ gen_test_fail!(
     pipe_substitution_inside_function_called_from_pipeline,
     "semantic: cannot use % outside a pipe expression"
 );
-gen_test!(sketch_in_object);
-gen_test!(if_else);
 // gen_test_fail!(
 //     if_else_no_expr,
 //     "syntax: blocks inside an if/else expression must end in an expression"
 // );
 gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
-gen_test!(import_simple);
 gen_test_fail!(
     import_cycle1,
     "import cycle: circular import of modules is not allowed: tests/executor/inputs/no_visuals/import_cycle2.kcl -> tests/executor/inputs/no_visuals/import_cycle3.kcl -> tests/executor/inputs/no_visuals/import_cycle1.kcl -> tests/executor/inputs/no_visuals/import_cycle2.kcl"
@@ -171,6 +132,7 @@ gen_test_parse_fail!(
 //     import_in_function,
 //     "syntax: Can import only import at the top level"
 // );
-gen_test!(add_lots);
-gen_test!(double_map);
-gen_test!(array_elem_push);
+gen_test_fail!(
+    array_elem_push_fail,
+    "undefined value: The array doesn't have any item at index 3"
+);

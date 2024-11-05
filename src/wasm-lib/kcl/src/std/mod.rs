@@ -57,8 +57,12 @@ lazy_static! {
         Box::new(LegAngY),
         Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
+        Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
+        Box::new(crate::std::segment::SegStart),
+        Box::new(crate::std::segment::SegStartX),
+        Box::new(crate::std::segment::SegStartY),
         Box::new(crate::std::segment::LastSegX),
         Box::new(crate::std::segment::LastSegY),
         Box::new(crate::std::segment::SegLen),
@@ -314,6 +318,6 @@ pub enum Primitive {
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
     pub func: Option<&'a crate::executor::MemoryFunction>,
-    pub expr: Box<FunctionExpression>,
+    pub expr: crate::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }

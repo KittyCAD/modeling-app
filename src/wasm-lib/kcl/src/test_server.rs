@@ -1,7 +1,7 @@
 //! Types used to send data to the test server.
 
 use crate::{
-    ast::types::Program,
+    ast::types::{Node, Program},
     executor::{new_zoo_client, ExecutorContext, ExecutorSettings, IdGenerator, ProgramMemory},
     settings::types::UnitLength,
 };
@@ -26,7 +26,7 @@ pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> anyhow::Resu
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 pub async fn execute_and_snapshot_ast(
-    ast: Program,
+    ast: Node<Program>,
     units: UnitLength,
 ) -> anyhow::Result<(ProgramMemory, image::DynamicImage)> {
     let ctx = new_context(units, true).await?;
@@ -45,7 +45,7 @@ pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> anyh
 
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
-    program: Program,
+    program: Node<Program>,
 ) -> anyhow::Result<(crate::executor::ExecState, image::DynamicImage)> {
     let (exec_state, snapshot) = ctx.execute_and_prepare(&program, IdGenerator::default(), None).await?;
 
