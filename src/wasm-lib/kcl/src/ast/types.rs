@@ -217,6 +217,7 @@ impl Node<Program> {
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_call_expressions,
+            crate::lint::checks::lint_should_be_offset_plane,
         ];
 
         let mut findings = vec![];
