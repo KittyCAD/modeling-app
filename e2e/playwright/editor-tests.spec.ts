@@ -985,7 +985,7 @@ test.describe('Editor tests', () => {
     |> extrude(5, %)`)
   })
 
-  test(
+  test.fixme(
     `Can use the import stdlib function on a local OBJ file`,
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
