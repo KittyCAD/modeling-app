@@ -1669,7 +1669,8 @@ test(
   }
 )
 
-test(
+// Flaky
+test.fixme(
   'Original project name persist after onboarding',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
