@@ -1,15 +1,15 @@
+import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import { DefaultPlanesKclManager, FrontPlane } from 'lang/KclSingleton'
-import { computeFeatureTree, createFeatureTree } from 'lang/std/artifactGraph'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { FrontPlane } from 'lang/KclSingleton'
+import { createFeatureTree } from 'lang/std/artifactGraph'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
-import { useEffect, useMemo, useState } from 'react'
+import { ComponentProps, useMemo, useRef, useState } from 'react'
 
 export const FeatureTreePane = () => {
-  const [selectedItem, setSelectedItem] = useState<
-    ReturnType<typeof createFeatureTree>[number] | null
-  >(null)
+
   const defaultPlanes = useMemo(() => {
     return kclManager?.defaultPlanes
   }, [kclManager.defaultPlanes])
@@ -40,7 +40,11 @@ export const FeatureTreePane = () => {
             .filter((feature) => feature.type !== 'defaultPlane')
             .map((feature) => (
               <FeatureTreeCreatedItem
-                key={feature.id instanceof Array ? feature.id[0] : feature.id}
+                key={
+                  feature.type +
+                  '-' +
+                  (feature.id instanceof Array ? feature.id[0] : feature.id)
+                }
                 item={feature}
               />
             ))}
@@ -56,7 +60,9 @@ const FeatureTreeItem = (props: {
   handleSelect: () => void
   visible?: boolean
   onVisibilityChange?: () => void
+  menuItems?: ComponentProps<typeof ContextMenu>['items']
 }) => {
+  const menuRef = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(props.visible ?? true)
   function handleToggleVisible() {
     console.log('toggling visibility', visible)
@@ -65,7 +71,10 @@ const FeatureTreeItem = (props: {
   }
 
   return (
-    <div className="flex select-none items-center group/item py-0.5 px-1 focus-within:bg-primary/10 hover:bg-primary/5">
+    <div
+      ref={menuRef}
+      className="flex select-none items-center group/item py-0.5 px-1 focus-within:bg-primary/10 hover:bg-primary/5"
+    >
       <button
         onClick={props.handleSelect}
         className="reset flex-1 flex items-center gap-2 border-transparent text-left text-base"
@@ -86,6 +95,9 @@ const FeatureTreeItem = (props: {
           }`}
         />
       </button>
+      {props.menuItems && (
+        <ContextMenu menuTargetElement={menuRef} items={props.menuItems} />
+      )}
     </div>
   )
 }
@@ -133,6 +145,7 @@ const FeatureTreeDefaultPlaneItem = (props: {
 const FeatureTreeCreatedItem = (props: {
   item: ReturnType<typeof createFeatureTree>[0]
 }) => {
+  const { send: modelingSend } = useModelingContext()
   const [visible, setVisible] = useState(true)
 
   async function handleToggleVisible() {
@@ -161,19 +174,44 @@ const FeatureTreeCreatedItem = (props: {
     }
   }
 
+  const menuItems = useMemo(
+    () => [
+      <ContextMenuItem
+        onClick={() => {
+          modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+              selection: {
+                type: 'default',
+                range: props.item.codeRef?.range || [0, 0],
+              },
+            },
+          })
+          modelingSend({ type: 'Delete selection' })
+        }}
+      >
+        Delete
+      </ContextMenuItem>,
+    ],
+    [modelingSend, props.item.codeRef]
+  )
+
   return (
     <FeatureTreeItem
       icon={getIcon()}
       name={props.item.name}
+      menuItems={menuItems}
       handleSelect={() => {
-        editorManager.selectRange({
-          otherSelections: [],
-          codeBasedSelections: [
-            {
+        modelingSend({
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: {
               type: 'default',
               range: props.item.codeRef?.range || [0, 0],
             },
-          ],
+          },
         })
       }}
       visible={visible}
@@ -181,9 +219,3 @@ const FeatureTreeCreatedItem = (props: {
     />
   )
 }
-
-type FeatureDependencies = {
-  type: 'upstream' | 'downstream'
-  subType: 'final' | 'skip' | 'intermediate'
-}
-type FeatureDependencyMap = Map<string, FeatureDependencies>

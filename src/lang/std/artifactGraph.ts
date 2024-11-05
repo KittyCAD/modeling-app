@@ -872,7 +872,7 @@ export function createFeatureTree({
             variableDeclaratorNode.node[variableDeclaratorNode.node.length - 1]
               .declarations as VariableDeclarator[]
           )[0].id.name || ''
-        : variableDeclaratorNode.node.id.name || ''
+        : variableDeclaratorNode.node?.id?.name || ''
 
     return variableDeclarationName
   }
@@ -948,7 +948,7 @@ export function createFeatureTree({
             `${expandedSweep.subType
               .charAt(0)
               .toUpperCase()}${expandedSweep.subType.slice(1)} ${pathId}`,
-          id: expandedSweep.subType,
+          id: path.sweepId,
           codeRef: expandedSweep.codeRef,
           dependencies: [planeId, pathId],
         })
