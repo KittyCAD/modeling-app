@@ -85,7 +85,7 @@ jobs:
       - name: Prepare electron-builder.yml file for updater test
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
-          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test-release-notes"' electron-builder.yml
+          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test"' electron-builder.yml
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
