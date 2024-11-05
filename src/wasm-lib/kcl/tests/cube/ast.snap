@@ -1,0 +1,795 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing cube.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declarations": [
+          {
+            "end": 316,
+            "id": {
+              "end": 7,
+              "name": "cube",
+              "start": 3,
+              "type": "Identifier"
+            },
+            "init": {
+              "body": {
+                "body": [
+                  {
+                    "declarations": [
+                      {
+                        "end": 48,
+                        "id": {
+                          "end": 35,
+                          "name": "l",
+                          "start": 34,
+                          "type": "Identifier"
+                        },
+                        "init": {
+                          "end": 48,
+                          "left": {
+                            "end": 44,
+                            "name": "length",
+                            "start": 38,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "/",
+                          "right": {
+                            "end": 48,
+                            "raw": "2",
+                            "start": 47,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": 2
+                          },
+                          "start": 38,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 34,
+                        "type": "VariableDeclarator"
+                      }
+                    ],
+                    "end": 48,
+                    "kind": "const",
+                    "start": 34,
+                    "type": "VariableDeclaration",
+                    "type": "VariableDeclaration"
+                  },
+                  {
+                    "declarations": [
+                      {
+                        "end": 64,
+                        "id": {
+                          "end": 52,
+                          "name": "x",
+                          "start": 51,
+                          "type": "Identifier"
+                        },
+                        "init": {
+                          "computed": false,
+                          "end": 64,
+                          "object": {
+                            "end": 61,
+                            "name": "center",
+                            "start": 55,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "property": {
+                            "end": 63,
+                            "raw": "0",
+                            "start": 62,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": 0
+                          },
+                          "start": 55,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        "start": 51,
+                        "type": "VariableDeclarator"
+                      }
+                    ],
+                    "end": 64,
+                    "kind": "const",
+                    "start": 51,
+                    "type": "VariableDeclaration",
+                    "type": "VariableDeclaration"
+                  },
+                  {
+                    "declarations": [
+                      {
+                        "end": 80,
+                        "id": {
+                          "end": 68,
+                          "name": "y",
+                          "start": 67,
+                          "type": "Identifier"
+                        },
+                        "init": {
+                          "computed": false,
+                          "end": 80,
+                          "object": {
+                            "end": 77,
+                            "name": "center",
+                            "start": 71,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "property": {
+                            "end": 79,
+                            "raw": "1",
+                            "start": 78,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": 1
+                          },
+                          "start": 71,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        "start": 67,
+                        "type": "VariableDeclarator"
+                      }
+                    ],
+                    "end": 80,
+                    "kind": "const",
+                    "start": 67,
+                    "type": "VariableDeclaration",
+                    "type": "VariableDeclaration"
+                  },
+                  {
+                    "declarations": [
+                      {
+                        "end": 104,
+                        "id": {
+                          "end": 85,
+                          "name": "p0",
+                          "start": 83,
+                          "type": "Identifier"
+                        },
+                        "init": {
+                          "elements": [
+                            {
+                              "end": 95,
+                              "left": {
+                                "argument": {
+                                  "end": 91,
+                                  "name": "l",
+                                  "start": 90,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "end": 91,
+                                "operator": "-",
+                                "start": 89,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 95,
+                                "name": "x",
+                                "start": 94,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 89,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 103,
+                              "left": {
+                                "argument": {
+                                  "end": 99,
+                                  "name": "l",
+                                  "start": 98,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "end": 99,
+                                "operator": "-",
+                                "start": 97,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 103,
+                                "name": "y",
+                                "start": 102,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 97,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 104,
+                          "start": 88,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        },
+                        "start": 83,
+                        "type": "VariableDeclarator"
+                      }
+                    ],
+                    "end": 104,
+                    "kind": "const",
+                    "start": 83,
+                    "type": "VariableDeclaration",
+                    "type": "VariableDeclaration"
+                  },
+                  {
+                    "declarations": [
+                      {
+                        "end": 127,
+                        "id": {
+                          "end": 109,
+                          "name": "p1",
+                          "start": 107,
+                          "type": "Identifier"
+                        },
+                        "init": {
+                          "elements": [
+                            {
+                              "end": 119,
+                              "left": {
+                                "argument": {
+                                  "end": 115,
+                                  "name": "l",
+                                  "start": 114,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "end": 115,
+                                "operator": "-",
+                                "start": 113,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 119,
+                                "name": "x",
+                                "start": 118,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 113,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 126,
+                              "left": {
+                                "end": 122,
+                                "name": "l",
+                                "start": 121,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 126,
+                                "name": "y",
+                                "start": 125,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 121,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 127,
+                          "start": 112,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        },
+                        "start": 107,
+                        "type": "VariableDeclarator"
+                      }
+                    ],
+                    "end": 127,
+                    "kind": "const",
+                    "start": 107,
+                    "type": "VariableDeclaration",
+                    "type": "VariableDeclaration"
+                  },
+                  {
+                    "declarations": [
+                      {
+                        "end": 149,
+                        "id": {
+                          "end": 132,
+                          "name": "p2",
+                          "start": 130,
+                          "type": "Identifier"
+                        },
+                        "init": {
+                          "elements": [
+                            {
+                              "end": 141,
+                              "left": {
+                                "end": 137,
+                                "name": "l",
+                                "start": 136,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 141,
+                                "name": "x",
+                                "start": 140,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 136,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 148,
+                              "left": {
+                                "end": 144,
+                                "name": "l",
+                                "start": 143,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 148,
+                                "name": "y",
+                                "start": 147,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 143,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 149,
+                          "start": 135,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        },
+                        "start": 130,
+                        "type": "VariableDeclarator"
+                      }
+                    ],
+                    "end": 149,
+                    "kind": "const",
+                    "start": 130,
+                    "type": "VariableDeclaration",
+                    "type": "VariableDeclaration"
+                  },
+                  {
+                    "declarations": [
+                      {
+                        "end": 172,
+                        "id": {
+                          "end": 154,
+                          "name": "p3",
+                          "start": 152,
+                          "type": "Identifier"
+                        },
+                        "init": {
+                          "elements": [
+                            {
+                              "end": 163,
+                              "left": {
+                                "end": 159,
+                                "name": "l",
+                                "start": 158,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 163,
+                                "name": "x",
+                                "start": 162,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 158,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            },
+                            {
+                              "end": 171,
+                              "left": {
+                                "argument": {
+                                  "end": 167,
+                                  "name": "l",
+                                  "start": 166,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "end": 167,
+                                "operator": "-",
+                                "start": 165,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              },
+                              "operator": "+",
+                              "right": {
+                                "end": 171,
+                                "name": "y",
+                                "start": 170,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 165,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          ],
+                          "end": 172,
+                          "start": 157,
+                          "type": "ArrayExpression",
+                          "type": "ArrayExpression"
+                        },
+                        "start": 152,
+                        "type": "VariableDeclarator"
+                      }
+                    ],
+                    "end": 172,
+                    "kind": "const",
+                    "start": 152,
+                    "type": "VariableDeclaration",
+                    "type": "VariableDeclaration"
+                  },
+                  {
+                    "argument": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 199,
+                              "name": "p0",
+                              "start": 197,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 196,
+                            "name": "startSketchAt",
+                            "start": 183,
+                            "type": "Identifier"
+                          },
+                          "end": 200,
+                          "optional": false,
+                          "start": 183,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 215,
+                              "name": "p1",
+                              "start": 213,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 218,
+                              "start": 217,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 212,
+                            "name": "lineTo",
+                            "start": 206,
+                            "type": "Identifier"
+                          },
+                          "end": 219,
+                          "optional": false,
+                          "start": 206,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 234,
+                              "name": "p2",
+                              "start": 232,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 237,
+                              "start": 236,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 231,
+                            "name": "lineTo",
+                            "start": 225,
+                            "type": "Identifier"
+                          },
+                          "end": 238,
+                          "optional": false,
+                          "start": 225,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 253,
+                              "name": "p3",
+                              "start": 251,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 256,
+                              "start": 255,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 250,
+                            "name": "lineTo",
+                            "start": 244,
+                            "type": "Identifier"
+                          },
+                          "end": 257,
+                          "optional": false,
+                          "start": 244,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 272,
+                              "name": "p0",
+                              "start": 270,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 275,
+                              "start": 274,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 269,
+                            "name": "lineTo",
+                            "start": 263,
+                            "type": "Identifier"
+                          },
+                          "end": 276,
+                          "optional": false,
+                          "start": 263,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 289,
+                              "start": 288,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 287,
+                            "name": "close",
+                            "start": 282,
+                            "type": "Identifier"
+                          },
+                          "end": 290,
+                          "optional": false,
+                          "start": 282,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 310,
+                              "name": "length",
+                              "start": 304,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 313,
+                              "start": 312,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 303,
+                            "name": "extrude",
+                            "start": 296,
+                            "type": "Identifier"
+                          },
+                          "end": 314,
+                          "optional": false,
+                          "start": 296,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 314,
+                      "start": 183,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "end": 314,
+                    "start": 176,
+                    "type": "ReturnStatement",
+                    "type": "ReturnStatement"
+                  }
+                ],
+                "end": 316,
+                "nonCodeMeta": {
+                  "nonCodeNodes": {
+                    "6": [
+                      {
+                        "end": 176,
+                        "start": 172,
+                        "type": "NonCodeNode",
+                        "value": {
+                          "type": "newLine"
+                        }
+                      }
+                    ]
+                  },
+                  "startNodes": []
+                },
+                "start": 30
+              },
+              "end": 316,
+              "params": [
+                {
+                  "type": "Parameter",
+                  "identifier": {
+                    "end": 17,
+                    "name": "length",
+                    "start": 11,
+                    "type": "Identifier"
+                  },
+                  "optional": false
+                },
+                {
+                  "type": "Parameter",
+                  "identifier": {
+                    "end": 25,
+                    "name": "center",
+                    "start": 19,
+                    "type": "Identifier"
+                  },
+                  "optional": false
+                }
+              ],
+              "start": 10,
+              "type": "FunctionExpression",
+              "type": "FunctionExpression"
+            },
+            "start": 3,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 316,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declarations": [
+          {
+            "end": 343,
+            "id": {
+              "end": 324,
+              "name": "myCube",
+              "start": 318,
+              "type": "Identifier"
+            },
+            "init": {
+              "arguments": [
+                {
+                  "end": 334,
+                  "raw": "40",
+                  "start": 332,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 40
+                },
+                {
+                  "elements": [
+                    {
+                      "end": 338,
+                      "raw": "0",
+                      "start": 337,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 0
+                    },
+                    {
+                      "end": 341,
+                      "raw": "0",
+                      "start": 340,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 0
+                    }
+                  ],
+                  "end": 342,
+                  "start": 336,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              ],
+              "callee": {
+                "end": 331,
+                "name": "cube",
+                "start": 327,
+                "type": "Identifier"
+              },
+              "end": 343,
+              "optional": false,
+              "start": 327,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            "start": 318,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 343,
+        "kind": "const",
+        "start": 318,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 344,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 318,
+            "start": 316,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

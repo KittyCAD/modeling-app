@@ -23,10 +23,10 @@ layout: manual
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Identifier`](/docs/kcl/types/Identifier)|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `name` |`string`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 
 ----
@@ -42,11 +42,11 @@ layout: manual
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Literal`|  | No |
-| `start` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
-| `end` |[`EnvironmentRef`](/docs/kcl/types/EnvironmentRef)|  | No |
 | `value` |[`LiteralValue`](/docs/kcl/types/LiteralValue)|  | No |
 | `raw` |`string`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
+| `start` |`integer`|  | No |
+| `end` |`integer`|  | No |
 
 
 ----

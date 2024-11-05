@@ -5,6 +5,8 @@ use serde_json::Value as JValue;
 
 use crate::ast::types::{Expr, Literal};
 
+use super::Node;
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -33,8 +35,8 @@ impl LiteralValue {
     }
 }
 
-impl From<Literal> for Expr {
-    fn from(literal: Literal) -> Self {
+impl From<Node<Literal>> for Expr {
+    fn from(literal: Node<Literal>) -> Self {
         Expr::Literal(Box::new(literal))
     }
 }
