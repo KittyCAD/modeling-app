@@ -459,13 +459,34 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'center-rectangle',
-          onClick: () => console.error('Center rectangle not yet implemented'),
-          icon: 'rectangle',
-          status: 'unavailable',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({
+                  Sketch: 'Center Rectangle tool',
+                })
+                  ? 'center rectangle'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: 'available',
+          disabled: (state) =>
+            !canRectangleOrCircleTool(state.context) &&
+            !state.matches({ Sketch: 'Center Rectangle tool' }),
           title: 'Center rectangle',
-          showTitle: false,
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Center Rectangle tool' })
+              ? ['Esc', 'C']
+              : 'C',
           description: 'Start drawing a rectangle from its center',
           links: [],
+          isActive: (state) => {
+            const b = state.matches({ Sketch: 'Center Rectangle tool' })
+            console.log('active', b)
+            return b
+          },
         },
       ],
       {
