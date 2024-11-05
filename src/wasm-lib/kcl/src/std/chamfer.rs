@@ -8,7 +8,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagDeclarator,
+    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
     std::{fillet::EdgeReference, Args},
@@ -29,7 +29,7 @@ pub struct ChamferData {
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid, tag): (ChamferData, Box<Solid>, Option<TagDeclarator>) = args.get_data_and_solid_and_tag()?;
+    let (data, solid, tag): (ChamferData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
     let solid = inner_chamfer(data, solid, tag, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
@@ -102,7 +102,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 async fn inner_chamfer(
     data: ChamferData,
     solid: Box<Solid>,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -133,7 +133,7 @@ async fn inner_chamfer(
             EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
-        let id = uuid::Uuid::new_v4();
+        let id = exec_state.id_generator.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {

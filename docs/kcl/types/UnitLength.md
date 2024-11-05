@@ -12,7 +12,7 @@ The valid types of length units.
 
 **This schema accepts exactly one of the following:**
 
-Centimeters &lt;https://en.wikipedia.org/wiki/Centimeter&gt;
+Centimeters <https://en.wikipedia.org/wiki/Centimeter>
 
 **enum:** `cm`
 
@@ -24,7 +24,7 @@ Centimeters &lt;https://en.wikipedia.org/wiki/Centimeter&gt;
 
 
 ----
-Feet &lt;https://en.wikipedia.org/wiki/Foot_(unit)&gt;
+Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
 
 **enum:** `ft`
 
@@ -36,7 +36,7 @@ Feet &lt;https://en.wikipedia.org/wiki/Foot_(unit)&gt;
 
 
 ----
-Inches &lt;https://en.wikipedia.org/wiki/Inch&gt;
+Inches <https://en.wikipedia.org/wiki/Inch>
 
 **enum:** `in`
 
@@ -48,7 +48,7 @@ Inches &lt;https://en.wikipedia.org/wiki/Inch&gt;
 
 
 ----
-Meters &lt;https://en.wikipedia.org/wiki/Meter&gt;
+Meters <https://en.wikipedia.org/wiki/Meter>
 
 **enum:** `m`
 
@@ -60,7 +60,7 @@ Meters &lt;https://en.wikipedia.org/wiki/Meter&gt;
 
 
 ----
-Millimeters &lt;https://en.wikipedia.org/wiki/Millimeter&gt;
+Millimeters <https://en.wikipedia.org/wiki/Millimeter>
 
 **enum:** `mm`
 
@@ -72,7 +72,7 @@ Millimeters &lt;https://en.wikipedia.org/wiki/Millimeter&gt;
 
 
 ----
-Yards &lt;https://en.wikipedia.org/wiki/Yard&gt;
+Yards <https://en.wikipedia.org/wiki/Yard>
 
 **enum:** `yd`
 

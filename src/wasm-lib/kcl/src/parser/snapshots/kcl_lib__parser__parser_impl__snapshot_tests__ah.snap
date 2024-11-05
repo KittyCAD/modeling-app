@@ -3,62 +3,50 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 30,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 30,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 30,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 11,
             "name": "myBox",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "CallExpression",
-            "type": "CallExpression",
-            "start": 14,
-            "end": 30,
-            "callee": {
-              "type": "Identifier",
-              "start": 14,
-              "end": 27,
-              "name": "startSketchAt",
-              "digest": null
-            },
             "arguments": [
               {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 28,
                 "end": 29,
                 "name": "p",
-                "digest": null
+                "start": 28,
+                "type": "Identifier",
+                "type": "Identifier"
               }
             ],
+            "callee": {
+              "end": 27,
+              "name": "startSketchAt",
+              "start": 14,
+              "type": "Identifier"
+            },
+            "end": 30,
             "optional": false,
-            "digest": null
+            "start": 14,
+            "type": "CallExpression",
+            "type": "CallExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 30,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 30,
+  "start": 0
 }

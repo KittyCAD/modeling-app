@@ -15,6 +15,7 @@ export const TEST_SETTINGS = {
   modeling: {
     defaultUnit: 'in',
     mouseControls: 'KittyCAD',
+    cameraProjection: 'perspective',
     showDebugPanel: true,
   },
   projects: {
@@ -62,6 +63,7 @@ export const TEST_SETTINGS_CORRUPTED = {
   modeling: {
     defaultUnit: 'invalid' as any,
     mouseControls: `() => alert('hack the planet')` as any,
+    cameraProjection: 'perspective',
     showDebugPanel: true,
   },
   projects: {
@@ -72,7 +74,7 @@ export const TEST_SETTINGS_CORRUPTED = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
-export const TEST_CODE_GIZMO = `const part001 = startSketchOn('XZ')
+export const TEST_CODE_GIZMO = `part001 = startSketchOn('XZ')
 |> startProfileAt([20, 0], %)
 |> line([7.13, 4 + 0], %)
 |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
@@ -94,12 +96,12 @@ export const TEST_CODE_GIZMO = `const part001 = startSketchOn('XZ')
 |> extrude(5 + 7, %)
 `
 
-export const TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW = `const width = 50.8
-const height = 30
-const thickness = 2
-const keychainHoleSize = 3
+export const TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW = `width = 50.8
+height = 30
+thickness = 2
+keychainHoleSize = 3
 
-const keychain = startSketchOn("XY")
+keychain = startSketchOn("XY")
   |> startProfileAt([0, 0], %)
   |> lineTo([width, 0], %)
   |> lineTo([width, height], %)
@@ -344,7 +346,7 @@ fn svg = (surface, origin, depth) => {
     |> close(%)
     |> extrude(depth, %)
 
-const box = startSketchOn('XY')
+box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
@@ -352,7 +354,7 @@ const box = startSketchOn('XY')
   |> close(%)
   |> extrude(10, %)
 
-  const sketch001 = startSketchOn(box, revolveAxis)
+  sketch001 = startSketchOn(box, revolveAxis)
   |> startProfileAt([5, 10], %)
   |> line([0, -10], %)
   |> line([2, 0], %)
@@ -376,4 +378,4 @@ startSketchOn(keychain, 'end')
      ], radius: keychainHoleSize }, %)
   |> extrude(-thickness, %)`
 
-export const TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR = `const thing = 1`
+export const TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR = `thing = 1`

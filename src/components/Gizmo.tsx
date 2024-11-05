@@ -28,6 +28,7 @@ import {
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from './CustomIcon'
 import { reportRejection } from 'lib/trap'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
@@ -62,6 +63,7 @@ export default function Gizmo() {
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const raycasterPassiveUpdateTimer = useRef(0)
+  const { send: modelingSend } = useModelingContext()
   const menuItems = useMemo(
     () => [
       ...Object.entries(axisNamesSemantic).map(([axisName, axisSemantic]) => (
@@ -76,12 +78,20 @@ export default function Gizmo() {
           {axisSemantic} view
         </ContextMenuItem>
       )),
+      <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
           sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
         }}
       >
         Reset view
+      </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
+          modelingSend({ type: 'Center camera on selection' })
+        }}
+      >
+        Center view on selection
       </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItemRefresh />,

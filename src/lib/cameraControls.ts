@@ -87,7 +87,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     zoom: {
       description: 'Scroll or Ctrl + Right click drag',
       dragCallback: (e) => !!(e.buttons & 2) && e.ctrlKey,
-      scrollCallback: () => true,
+      scrollCallback: (e) => e.buttons === 0,
     },
     rotate: {
       description: 'Right click drag',
@@ -104,7 +104,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     zoom: {
       description: 'Scroll',
       dragCallback: () => false,
-      scrollCallback: () => true,
+      scrollCallback: (e) => e.buttons === 0,
     },
     rotate: {
       description: 'Right click drag',
@@ -121,7 +121,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     zoom: {
       description: `Scroll or ${ALT} + ${META} + Left click drag`,
       dragCallback: (e) => btnName(e).left && e.altKey && e.metaKey,
-      scrollCallback: () => true,
+      scrollCallback: (e) => e.buttons === 0,
     },
     rotate: {
       description: `${ALT} + Left click drag`,
@@ -138,7 +138,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     zoom: {
       description: 'Scroll or Shift + Middle click drag',
       dragCallback: (e) => btnName(e).middle && e.shiftKey,
-      scrollCallback: () => true,
+      scrollCallback: (e) => e.buttons === 0,
     },
     rotate: {
       description: 'Middle click drag',
@@ -153,7 +153,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     zoom: {
       description: 'Scroll or Ctrl + Middle click drag',
       dragCallback: (e) => btnName(e).middle && e.ctrlKey,
-      scrollCallback: () => true,
+      scrollCallback: (e) => e.buttons === 0,
     },
     rotate: {
       description: 'Middle click drag',
@@ -168,7 +168,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     zoom: {
       description: 'Scroll or Ctrl + Right click drag',
       dragCallback: (e) => btnName(e).right && !btnName(e).left && e.ctrlKey,
-      scrollCallback: () => true,
+      scrollCallback: (e) => e.buttons === 0,
     },
     rotate: {
       description: 'Ctrl + Middle (or Left + Right) click drag',
@@ -186,7 +186,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     zoom: {
       description: 'Scroll',
       dragCallback: () => false,
-      scrollCallback: () => true,
+      scrollCallback: (e) => e.buttons === 0,
     },
     rotate: {
       description: 'Shift + Middle click drag',

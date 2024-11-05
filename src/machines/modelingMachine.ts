@@ -64,6 +64,7 @@ import toast from 'react-hot-toast'
 import { ToolbarModeName } from 'lib/toolbar'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { Vector3 } from 'three'
+import { MachineManager } from 'components/MachineManagerProvider'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -253,6 +254,9 @@ export type ModelingMachineEvent =
       data: SegmentOverlayPayload
     }
   | {
+      type: 'Center camera on selection'
+    }
+  | {
       type: 'Delete segment'
       data: PathToNode
     }
@@ -298,6 +302,7 @@ export const getPersistedContext = (): Partial<PersistedModelingContext> => {
 export interface ModelingMachineContext {
   currentMode: ToolbarModeName
   currentTool: SketchTool
+  machineManager: MachineManager
   selection: string[]
   selectionRanges: Selections
   sketchDetails: SketchDetails | null
@@ -312,6 +317,13 @@ export interface ModelingMachineContext {
 export const modelingMachineDefaultContext: ModelingMachineContext = {
   currentMode: 'modeling',
   currentTool: 'none',
+  machineManager: {
+    machines: [],
+    machineApiIp: null,
+    currentMachine: null,
+    setCurrentMachine: () => {},
+    noMachinesReason: () => undefined,
+  },
   selection: [],
   selectionRanges: {
     otherSelections: [],
@@ -663,6 +675,7 @@ export const modelingMachine = setup({
 
         const testExecute = await executeAst({
           ast: modifiedAst,
+          idGenerator: kclManager.execState.idGenerator,
           useFakeExecutor: true,
           engineCommandManager,
         })
@@ -938,6 +951,7 @@ export const modelingMachine = setup({
     'Set selection': () => {},
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
+    'Center camera on selection': () => {},
     'Engine export': () => {},
     'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
@@ -2104,6 +2118,10 @@ export const modelingMachine = setup({
     'Set Segment Overlays': {
       reenter: false,
       actions: 'Set Segment Overlays',
+    },
+    'Center camera on selection': {
+      reenter: false,
+      actions: 'Center camera on selection',
     },
   },
 })

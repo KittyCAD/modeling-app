@@ -29,8 +29,8 @@ test.describe('Regression tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch2 = startSketchOn("XY")
-const sketch001 = startSketchAt([-0, -0])
+        `sketch2 = startSketchOn("XY")
+sketch001 = startSketchAt([-0, -0])
   |> line([0, 0], %)
   |> line([-4.84, -5.29], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -64,8 +64,8 @@ const sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch2 = startSketchOn("XY")
-const sketch001 = startSketchAt([-0, -0])
+        `sketch2 = startSketchOn("XY")
+sketch001 = startSketchAt([-0, -0])
   |> line([0, 0], %)
   |> line([-4.84, -5.29], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -120,7 +120,7 @@ const sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('-XZ')
+        `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([-6.95, 4.98], %)
     |> line([25.1, 0.41], %)
     |> line([0.73, -14.93], %)
@@ -151,7 +151,7 @@ const sketch001 = startSketchAt([-0, -0])
   test('re-executes', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
-      localStorage.setItem('persistCode', `const myVar = 5`)
+      localStorage.setItem('persistCode', `myVar = 5`)
     })
     await page.setViewportSize({ width: 1000, height: 500 })
 
@@ -165,7 +165,7 @@ const sketch001 = startSketchAt([-0, -0])
     ).toBeVisible()
 
     // change 5 to 67
-    await page.getByText('const myVar').click()
+    await page.locator('#code-mirror-override').getByText('myVar').click()
     await page.keyboard.press('End')
     await page.keyboard.press('Backspace')
     await page.keyboard.type('67')
@@ -179,7 +179,7 @@ const sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const part = startSketchOn('XY')
+        `part = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0, 1], %)
     |> line([1, 0], %)
@@ -221,75 +221,78 @@ const sketch001 = startSketchAt([-0, -0])
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
-  test('Position _ Is Out Of Range... regression test', async ({ page }) => {
-    // SKip on windows, its being weird.
-    test.skip(
-      process.platform === 'win32',
-      'This test is being weird on windows'
-    )
+  test(
+    'Position _ Is Out Of Range... regression test',
+    { tag: ['@skipWin'] },
+    async ({ page }) => {
+      // SKip on windows, its being weird.
+      test.skip(
+        process.platform === 'win32',
+        'This test is being weird on windows'
+      )
 
-    const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `const exampleSketch = startSketchOn("XZ")
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
     |> close(%)
     |>
 
-  const example = extrude(5, exampleSketch)
+  example = extrude(5, exampleSketch)
   shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
-      )
-    })
-
-    await expect(async () => {
-      await page.goto('/')
-      await u.waitForPageLoad()
-      // error in guter
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-        timeout: 1_000,
+        )
       })
-      await page.waitForTimeout(200)
-      // expect it still to be there (sometimes it just clears for a bit?)
-      await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-        timeout: 1_000,
-      })
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
+      await expect(async () => {
+        await page.goto('/')
+        await u.waitForPageLoad()
+        // error in guter
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+          timeout: 1_000,
+        })
+        await page.waitForTimeout(200)
+        // expect it still to be there (sometimes it just clears for a bit?)
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+          timeout: 1_000,
+        })
+      }).toPass({ timeout: 40_000, intervals: [1_000] })
 
-    // Okay execution finished, let's start editing text below the error.
-    await u.codeLocator.click()
-    // Go to the end of the editor
-    // This bug happens when there is a diagnostic in the editor and you try to
-    // edit text below it.
-    // Or delete a huge chunk of text and then try to edit below it.
-    await page.keyboard.press('End')
-    await page.keyboard.down('Shift')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('End')
-    await page.keyboard.up('Shift')
-    await page.keyboard.press('Backspace')
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      await expect(page.getByText('Unexpected token: |').first()).toBeVisible()
 
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('thing: "blah"', { delay: 100 })
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('ArrowLeft')
+      // Okay execution finished, let's start editing text below the error.
+      await u.codeLocator.click()
+      // Go to the end of the editor
+      // This bug happens when there is a diagnostic in the editor and you try to
+      // edit text below it.
+      // Or delete a huge chunk of text and then try to edit below it.
+      await page.keyboard.press('End')
+      await page.keyboard.down('Shift')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('ArrowUp')
+      await page.keyboard.press('End')
+      await page.keyboard.up('Shift')
+      await page.keyboard.press('Backspace')
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    await expect(page.locator('.cm-content'))
-      .toContainText(`const exampleSketch = startSketchOn("XZ")
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('thing: "blah"', { delay: 100 })
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('ArrowLeft')
+
+      await expect(page.locator('.cm-content'))
+        .toContainText(`exampleSketch = startSketchOn("XZ")
     |> startProfileAt([0, 0], %)
     |> angledLine({ angle: 50, length: 45 }, %)
     |> yLineTo(0, %)
@@ -297,8 +300,9 @@ const sketch001 = startSketchAt([-0, -0])
 
     thing: "blah"`)
 
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-  })
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+    }
+  )
 
   test('when engine fails export we handle the failure and alert the user', async ({
     page,
@@ -401,95 +405,97 @@ const sketch001 = startSketchAt([-0, -0])
     const successToastMessage = page.getByText(`Exported successfully`)
     await expect(successToastMessage).toBeVisible()
   })
-  test('ensure you can not export while an export is already going', async ({
-    page,
-  }) => {
-    // This is being weird on ubuntu and windows.
-    test.skip(
-      // eslint-disable-next-line jest/valid-title
-      process.platform === 'linux' || process.platform === 'win32',
-      'This test is being weird on ubuntu'
-    )
-
-    const u = await getUtils(page)
-    await test.step('Set up the code and durations', async () => {
-      await page.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-          ;(window as any).playwrightSkipFilePicker = true
-        },
-        {
-          code: bracket,
-        }
+  test(
+    'ensure you can not export while an export is already going',
+    { tag: ['@skipLinux', '@skipWin'] },
+    async ({ page }) => {
+      // This is being weird on ubuntu and windows.
+      test.skip(
+        // eslint-disable-next-line jest/valid-title
+        process.platform === 'linux' || process.platform === 'win32',
+        'This test is being weird on ubuntu'
       )
 
-      await page.setViewportSize({ width: 1000, height: 500 })
+      const u = await getUtils(page)
+      await test.step('Set up the code and durations', async () => {
+        await page.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+            ;(window as any).playwrightSkipFilePicker = true
+          },
+          {
+            code: bracket,
+          }
+        )
 
-      await u.waitForAuthSkipAppStart()
+        await page.setViewportSize({ width: 1000, height: 500 })
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+        await u.waitForAuthSkipAppStart()
 
-      // expect zero errors in guter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-    })
+        // wait for execution done
+        await u.openDebugPanel()
+        await u.expectCmdLog('[data-message-type="execution-done"]')
+        await u.closeDebugPanel()
 
-    const errorToastMessage = page.getByText(`Error while exporting`)
-    const exportingToastMessage = page.getByText(`Exporting...`)
-    const engineErrorToastMessage = page.getByText(`Nothing to export`)
-    const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-    const successToastMessage = page.getByText(`Exported successfully`)
+        // expect zero errors in guter
+        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      })
 
-    await test.step('Blocked second export', async () => {
-      await clickExportButton(page)
+      const errorToastMessage = page.getByText(`Error while exporting`)
+      const exportingToastMessage = page.getByText(`Exporting...`)
+      const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      const successToastMessage = page.getByText(`Exported successfully`)
 
-      await expect(exportingToastMessage).toBeVisible()
+      await test.step('Blocked second export', async () => {
+        await clickExportButton(page)
 
-      await clickExportButton(page)
+        await expect(exportingToastMessage).toBeVisible()
 
-      await test.step('The second export is blocked', async () => {
+        await clickExportButton(page)
+
+        await test.step('The second export is blocked', async () => {
+          // Find the toast.
+          // Look out for the toast message
+          await Promise.all([
+            expect(exportingToastMessage.first()).toBeVisible(),
+            expect(alreadyExportingToastMessage).toBeVisible(),
+          ])
+        })
+
+        await test.step('The first export still succeeds', async () => {
+          await Promise.all([
+            expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+            expect(errorToastMessage).not.toBeVisible(),
+            expect(engineErrorToastMessage).not.toBeVisible(),
+            expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
+            expect(alreadyExportingToastMessage).not.toBeVisible({
+              timeout: 15_000,
+            }),
+          ])
+        })
+      })
+
+      await test.step('Successful, unblocked export', async () => {
+        // Try exporting again.
+        await clickExportButton(page)
+
         // Find the toast.
         // Look out for the toast message
-        await Promise.all([
-          expect(exportingToastMessage.first()).toBeVisible(),
-          expect(alreadyExportingToastMessage).toBeVisible(),
-        ])
-      })
+        await expect(exportingToastMessage).toBeVisible()
 
-      await test.step('The first export still succeeds', async () => {
+        // Expect it to succeed.
         await Promise.all([
-          expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+          expect(exportingToastMessage).not.toBeVisible(),
           expect(errorToastMessage).not.toBeVisible(),
           expect(engineErrorToastMessage).not.toBeVisible(),
-          expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
-          expect(alreadyExportingToastMessage).not.toBeVisible({
-            timeout: 15_000,
-          }),
+          expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
+
+        await expect(successToastMessage).toBeVisible()
       })
-    })
-
-    await test.step('Successful, unblocked export', async () => {
-      // Try exporting again.
-      await clickExportButton(page)
-
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-
-      // Expect it to succeed.
-      await Promise.all([
-        expect(exportingToastMessage).not.toBeVisible(),
-        expect(errorToastMessage).not.toBeVisible(),
-        expect(engineErrorToastMessage).not.toBeVisible(),
-        expect(alreadyExportingToastMessage).not.toBeVisible(),
-      ])
-
-      await expect(successToastMessage).toBeVisible()
-    })
-  })
+    }
+  )
 
   test(
     `Network health indicator only appears in modeling view`,

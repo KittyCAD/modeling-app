@@ -1,6 +1,13 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
-import { MouseEventHandler, useCallback, useEffect, useMemo } from 'react'
+import {
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  ReactNode,
+  useContext,
+} from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
@@ -13,7 +20,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
-import { machineManager } from 'lib/machineManager'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -29,6 +36,7 @@ function getPlatformString(): 'web' | 'desktop' {
 }
 
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
+  const machineManager = useContext(MachineManagerContext)
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
@@ -263,7 +271,8 @@ interface ModelingPaneButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
   paneConfig: {
     id: string
-    title: string
+    title: ReactNode
+    sidebarName?: string
     icon: CustomIconName | IconDefinition
     keybinding: string
     iconClassName?: string
@@ -292,7 +301,10 @@ function ModelingPaneButton({
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
-        name={paneConfig.title}
+        name={
+          paneConfig.sidebarName ??
+          (typeof paneConfig.title === 'string' ? paneConfig.title : '')
+        }
         data-testid={paneConfig.id + '-pane-button'}
         disabled={disabledText !== undefined}
         aria-disabled={disabledText !== undefined}
@@ -308,7 +320,7 @@ function ModelingPaneButton({
           }
         />
         <span className="sr-only">
-          {paneConfig.title}
+          {paneConfig.sidebarName ?? paneConfig.title}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
         <Tooltip
@@ -317,7 +329,7 @@ function ModelingPaneButton({
           hoverOnly
         >
           <span className="flex-1">
-            {paneConfig.title}
+            {paneConfig.sidebarName ?? paneConfig.title}
             {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>

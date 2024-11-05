@@ -50,10 +50,10 @@ impl Default for LoftData {
 }
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
-pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (sketches, data): (Vec<Sketch>, Option<LoftData>) = args.get_sketches_and_data()?;
 
-    let solid = inner_loft(sketches, data, args).await?;
+    let solid = inner_loft(sketches, data, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
 }
 
@@ -135,7 +135,12 @@ pub async fn loft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 #[stdlib {
     name = "loft",
 }]
-async fn inner_loft(sketches: Vec<Sketch>, data: Option<LoftData>, args: Args) -> Result<Box<Solid>, KclError> {
+async fn inner_loft(
+    sketches: Vec<Sketch>,
+    data: Option<LoftData>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
     // Make sure we have at least two sketches.
     if sketches.len() < 2 {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -150,7 +155,7 @@ async fn inner_loft(sketches: Vec<Sketch>, data: Option<LoftData>, args: Args) -
     // Get the loft data.
     let data = data.unwrap_or_default();
 
-    let id = uuid::Uuid::new_v4();
+    let id = exec_state.id_generator.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Loft {
@@ -166,5 +171,5 @@ async fn inner_loft(sketches: Vec<Sketch>, data: Option<LoftData>, args: Args) -
     .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
-    do_post_extrude(sketches[0].clone(), 0.0, args).await
+    do_post_extrude(sketches[0].clone(), 0.0, exec_state, args).await
 }

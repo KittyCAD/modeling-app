@@ -19,6 +19,16 @@ macro_rules! kcl_test {
 }
 
 kcl_test!("sketch_on_face", kcl_test_sketch_on_face);
+kcl_test!("poop_chute", kcl_test_poop_chute);
+kcl_test!("neg_xz_plane", kcl_test_neg_xz_plane);
+kcl_test!("xz_plane", kcl_test_xz_plane);
+kcl_test!(
+    "sketch_on_face_after_fillets_referencing_face",
+    kcl_test_sketch_on_face_after_fillets_referencing_face
+);
+kcl_test!("circular_pattern3d_a_pattern", kcl_test_circular_pattern3d_a_pattern);
+kcl_test!("linear_pattern3d_a_pattern", kcl_test_linear_pattern3d_a_pattern);
+
 kcl_test!("tangential_arc", kcl_test_tangential_arc);
 kcl_test!(
     "big_number_angle_to_match_length_x",

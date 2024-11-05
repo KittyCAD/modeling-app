@@ -7,6 +7,7 @@ import {
   setupElectron,
   tearDown,
   executorInputPath,
+  createProject,
 } from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { onboardingPaths } from 'routes/Onboarding/paths'
@@ -55,8 +56,50 @@ test.describe('Onboarding tests', () => {
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
   })
 
+  test(
+    'Desktop: fresh onboarding executes and loads',
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        appSettings: {
+          app: {
+            onboardingStatus: 'incomplete',
+          },
+        },
+        cleanProjectDir: true,
+      })
+
+      const u = await getUtils(page)
+
+      const viewportSize = { width: 1200, height: 500 }
+      await page.setViewportSize(viewportSize)
+
+      await test.step(`Create a project and open to the onboarding`, async () => {
+        await createProject({ name: 'project-link', page })
+        await test.step(`Ensure the engine connection works by testing the sketch button`, async () => {
+          await u.waitForPageLoad()
+        })
+      })
+
+      await test.step(`Ensure we see the onboarding stuff`, async () => {
+        // Test that the onboarding pane loaded
+        await expect(
+          page.getByText('Welcome to Modeling App! This')
+        ).toBeVisible()
+
+        // *and* that the code is shown in the editor
+        await expect(page.locator('.cm-content')).toContainText(
+          '// Shelf Bracket'
+        )
+      })
+
+      await electronApp.close()
+    }
+  )
+
   test('Code resets after confirmation', async ({ page }) => {
-    const initialCode = `const sketch001 = startSketchOn('XZ')`
+    const initialCode = `sketch001 = startSketchOn('XZ')`
 
     // Load the page up with some code so we see the confirmation warning
     // when we go to replay onboarding
@@ -145,7 +188,7 @@ test.describe('Onboarding tests', () => {
     await page.addInitScript(
       async ({ settingsKey, settings }) => {
         // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+        localStorage.setItem('persistCode', 'sigmaAllow = 15000')
         localStorage.setItem(settingsKey, settings)
       },
       {
@@ -378,7 +421,9 @@ test(
     const restartConfirmationButton = page.getByRole('button', {
       name: 'Make a new project',
     })
-    const tutorialProjectIndicator = page.getByText('Tutorial Project 00')
+    const tutorialProjectIndicator = page
+      .getByTestId('project-sidebar-toggle')
+      .filter({ hasText: 'Tutorial Project 00' })
     const tutorialModalText = page.getByText('Welcome to Modeling App!')
     const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
     const userMenuButton = page.getByTestId('user-sidebar-toggle')

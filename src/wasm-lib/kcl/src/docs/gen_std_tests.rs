@@ -234,6 +234,31 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
         ),
     );
 
+    // Register a helper to do safe YAML new lines.
+    hbs.register_helper(
+        "safe_yaml",
+        Box::new(
+            |h: &handlebars::Helper,
+             _: &handlebars::Handlebars,
+             _: &handlebars::Context,
+             _: &mut handlebars::RenderContext,
+             out: &mut dyn handlebars::Output|
+             -> handlebars::HelperResult {
+                if let Some(param) = h.param(0) {
+                    if let Some(string) = param.value().as_str() {
+                        // Only get the first part before the newline.
+                        // This is to prevent the YAML from breaking.
+                        let string = string.split('\n').next().unwrap_or("");
+                        out.write(string)?;
+                        return Ok(());
+                    }
+                }
+                out.write("")?;
+                Ok(())
+            },
+        ),
+    );
+
     hbs.register_template_string("schemaType", include_str!("templates/schemaType.hbs"))?;
     hbs.register_template_string("properties", include_str!("templates/properties.hbs"))?;
     hbs.register_template_string("array", include_str!("templates/array.hbs"))?;
@@ -316,9 +341,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     let mut types = BTreeMap::new();
     for arg in internal_fn.args(false) {
         if !arg.is_primitive()? {
-            add_to_types(&arg.type_, &arg.schema, &mut types)?;
+            add_to_types(&arg.type_, &arg.schema.schema.into(), &mut types)?;
             // Add each definition as well.
-            for (name, definition) in &arg.schema_definitions {
+            for (name, definition) in &arg.schema.definitions {
                 add_to_types(name, definition, &mut types)?;
             }
         }
@@ -327,8 +352,8 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     // Generate the type markdown for the return value.
     if let Some(ret) = internal_fn.return_value(false) {
         if !ret.is_primitive()? {
-            add_to_types(&ret.type_, &ret.schema, &mut types)?;
-            for (name, definition) in &ret.schema_definitions {
+            add_to_types(&ret.type_, &ret.schema.schema.into(), &mut types)?;
+            for (name, definition) in &ret.schema.definitions {
                 add_to_types(name, definition, &mut types)?;
             }
         }
@@ -371,6 +396,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
 fn cleanup_static_links(output: &str) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
+    // Gross hack for the stupid alias types.
+    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
+
     let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
     cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
     let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
@@ -384,7 +412,7 @@ fn cleanup_type_links(output: &str, types: Vec<String>) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
     for type_name in types {
-        if type_name == "TagDeclarator" || type_name == "TagIdentifier" {
+        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" {
             continue;
         } else {
             let link = format!("(/docs/kcl/types/{})", type_name);
@@ -461,7 +489,7 @@ fn generate_type(
     }
 
     // Skip over TagDeclarator and TagIdentifier since they have custom docs.
-    if name == "TagDeclarator" || name == "TagIdentifier" {
+    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" {
         return Ok(());
     }
 
@@ -674,6 +702,18 @@ fn recurse_and_create_references(
     if let Some(subschema) = &mut obj.subschemas {
         // Do anyOf.
         if let Some(any_of) = &mut subschema.any_of {
+            // If we only have one item in anyOf we can just return that item.
+            if any_of.len() == 1 {
+                let mut new_item = recurse_and_create_references(name, &any_of[0], types)?;
+                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
+                    if let Some(metadata) = new_obj.metadata.as_mut() {
+                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
+                    } else {
+                        new_obj.metadata = obj.metadata.clone();
+                    }
+                }
+                return Ok(new_item);
+            }
             for item in any_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;
@@ -682,6 +722,18 @@ fn recurse_and_create_references(
 
         // Do allOf.
         if let Some(all_of) = &mut subschema.all_of {
+            // If we only have one item in allOf we can just return that item.
+            if all_of.len() == 1 {
+                let mut new_item = recurse_and_create_references(name, &all_of[0], types)?;
+                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
+                    if let Some(metadata) = new_obj.metadata.as_mut() {
+                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
+                    } else {
+                        new_obj.metadata = obj.metadata.clone();
+                    }
+                }
+                return Ok(new_item);
+            }
             for item in all_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;
@@ -690,6 +742,18 @@ fn recurse_and_create_references(
 
         // Do oneOf.
         if let Some(one_of) = &mut subschema.one_of {
+            // If we only have one item in oneOf we can just return that item.
+            if one_of.len() == 1 {
+                let mut new_item = recurse_and_create_references(name, &one_of[0], types)?;
+                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
+                    if let Some(metadata) = new_obj.metadata.as_mut() {
+                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
+                    } else {
+                        new_obj.metadata = obj.metadata.clone();
+                    }
+                }
+                return Ok(new_item);
+            }
             for item in one_of {
                 let new_item = recurse_and_create_references(name, item, types)?;
                 *item = new_item;
@@ -723,15 +787,20 @@ fn test_generate_stdlib_markdown_docs() {
 
 #[test]
 fn test_generate_stdlib_json_schema() {
+    // If this test fails and you've modified the AST or something else which affects the json repr
+    // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
+    // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 
-    let mut json_data = vec![];
-
-    for key in combined.keys().sorted() {
-        let internal_fn = combined.get(key).unwrap();
-        json_data.push(internal_fn.to_json().unwrap());
-    }
+    let json_data: Vec<_> = combined
+        .keys()
+        .sorted()
+        .map(|key| {
+            let internal_fn = combined.get(key).unwrap();
+            internal_fn.to_json().unwrap()
+        })
+        .collect();
     expectorate::assert_contents(
         "../../../docs/kcl/std.json",
         &serde_json::to_string_pretty(&json_data).unwrap(),

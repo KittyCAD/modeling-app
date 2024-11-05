@@ -28,6 +28,7 @@ import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
 import { isQuaternionVertical } from './helpers'
 import { reportRejection } from 'lib/trap'
+import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -63,6 +64,27 @@ export type ReactCameraProperties =
 
 const lastCmdDelay = 50
 
+class CameraRateLimiter {
+  lastSend?: Date = undefined
+  rateLimitMs: number = 16 //60 FPS
+
+  send = (f: () => void) => {
+    let now = new Date()
+
+    if (
+      this.lastSend === undefined ||
+      now.getTime() - this.lastSend.getTime() > this.rateLimitMs
+    ) {
+      f()
+      this.lastSend = now
+    }
+  }
+
+  reset = () => {
+    this.lastSend = undefined
+  }
+}
+
 export class CameraControls {
   engineCommandManager: EngineCommandManager
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
@@ -70,15 +92,15 @@ export class CameraControls {
   target: Vector3
   domElement: HTMLCanvasElement
   isDragging: boolean
+  wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
   enableZoom = true
-  zoomDataFromLastFrame?: number = undefined
-  // holds coordinates, and interaction
-  moveDataFromLastFrame?: [number, number, string] = undefined
+  moveSender: CameraRateLimiter = new CameraRateLimiter()
+  zoomSender: CameraRateLimiter = new CameraRateLimiter()
   lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -88,6 +110,14 @@ export class CameraControls {
   perspectiveFovBeforeOrtho = 45
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
+  }
+
+  setEngineCameraProjection(projection: CameraProjectionType) {
+    if (projection === 'orthographic') {
+      this.useOrthographicCamera()
+    } else {
+      this.usePerspectiveCamera(true).catch(reportRejection)
+    }
   }
 
   handleStart = () => {
@@ -162,6 +192,36 @@ export class CameraControls {
     }
   }
 
+  doMove = (interaction: any, coordinates: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'camera_drag_move',
+        interaction: interaction,
+        window: {
+          x: coordinates[0],
+          y: coordinates[1],
+        },
+      },
+      cmd_id: uuidv4(),
+    })
+  }
+
+  doZoom = (zoom: number) => {
+    this.handleStart()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'default_camera_zoom',
+        magnitude: (-1 * zoom) / window.devicePixelRatio,
+      },
+      cmd_id: uuidv4(),
+    })
+    this.handleEnd()
+  }
+
   constructor(
     isOrtho = false,
     domElement: HTMLCanvasElement,
@@ -174,6 +234,7 @@ export class CameraControls {
     this.target = new Vector3()
     this.domElement = domElement
     this.isDragging = false
+    this.wasDragging = false
     this.mouseDownPosition = new Vector2()
     this.mouseNewPosition = new Vector2()
 
@@ -249,49 +310,6 @@ export class CameraControls {
       this.onCameraChange()
     }
 
-    // Our stream is never more than 60fps.
-    // We can get away with capping our "virtual fps" to 60 then.
-    const FPS_VIRTUAL = 60
-
-    const doZoom = () => {
-      if (this.zoomDataFromLastFrame !== undefined) {
-        this.handleStart()
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'default_camera_zoom',
-            magnitude:
-              (-1 * this.zoomDataFromLastFrame) / window.devicePixelRatio,
-          },
-          cmd_id: uuidv4(),
-        })
-        this.handleEnd()
-      }
-      this.zoomDataFromLastFrame = undefined
-    }
-    setInterval(doZoom, 1000 / FPS_VIRTUAL)
-
-    const doMove = () => {
-      if (this.moveDataFromLastFrame !== undefined) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'camera_drag_move',
-            interaction: this.moveDataFromLastFrame[2] as any,
-            window: {
-              x: this.moveDataFromLastFrame[0],
-              y: this.moveDataFromLastFrame[1],
-            },
-          },
-          cmd_id: uuidv4(),
-        })
-      }
-      this.moveDataFromLastFrame = undefined
-    }
-    setInterval(doMove, 1000 / FPS_VIRTUAL)
-
     setTimeout(() => {
       this.engineCommandManager.subscribeTo({
         event: 'camera_drag_end',
@@ -347,6 +365,8 @@ export class CameraControls {
   onMouseDown = (event: PointerEvent) => {
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
+    // Reset the wasDragging flag to false when starting a new drag
+    this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
@@ -376,11 +396,18 @@ export class CameraControls {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
 
+      // If there's a valid interaction and the mouse is moving,
+      // our past (and current) interaction was a drag.
+      this.wasDragging = true
+
       if (this.syncDirection === 'engineToClient') {
-        this.moveDataFromLastFrame = [event.clientX, event.clientY, interaction]
+        this.moveSender.send(() => {
+          this.doMove(interaction, [event.clientX, event.clientY])
+        })
         return
       }
 
+      // else "clientToEngine" (Sketch Mode) or forceUpdate
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
       if (interaction === 'rotate') {
@@ -409,6 +436,9 @@ export class CameraControls {
        * under the cursor. This recently moved from being handled in App.tsx.
        * This might not be the right spot, but it is more consolidated.
        */
+
+      // Clear any previous drag state
+      this.wasDragging = false
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
@@ -450,7 +480,9 @@ export class CameraControls {
 
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
-        this.zoomDataFromLastFrame = event.deltaY
+        this.zoomSender.send(() => {
+          this.doZoom(event.deltaY)
+        })
       } else {
         // This case will get handled when we add pan and rotate using Apple trackpad.
         console.error(
@@ -884,6 +916,7 @@ export class CameraControls {
         type: 'zoom_to_fit',
         object_ids: [], // leave empty to zoom to all objects
         padding: 0.2, // padding around the objects
+        animated: false, // don't animate the zoom for now
       },
     })
   }

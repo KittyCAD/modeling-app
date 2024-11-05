@@ -1,7 +1,6 @@
 //! Conversions between types.
 
 use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},

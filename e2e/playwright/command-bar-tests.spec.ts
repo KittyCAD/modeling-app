@@ -18,7 +18,7 @@ test.describe('Command bar tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
@@ -48,7 +48,7 @@ test.describe('Command bar tests', () => {
     await page.keyboard.press('Enter')
     await page.waitForTimeout(200)
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
+      `extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
     )
   })
 
@@ -56,14 +56,14 @@ test.describe('Command bar tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn('XY')
   |> startProfileAt([-5, -5], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const extrude001 = extrude(-10, sketch001)`
+extrude001 = extrude(-10, sketch001)`
       )
     })
 
@@ -80,9 +80,11 @@ const extrude001 = extrude(-10, sketch001)`
     await page.waitForTimeout(100)
     await page.getByRole('button', { name: 'Fillet' }).click()
     await page.waitForTimeout(100)
-    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter') // skip selection
     await page.waitForTimeout(100)
-    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter') // accept default radius
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // submit
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toContainText(
       `fillet({ radius: ${KCL_DEFAULT_LENGTH}, tags: [seg01] }, %)`
@@ -223,8 +225,8 @@ const extrude001 = extrude(-10, sketch001)`
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `const distance = sqrt(20)
-      const sketch001 = startSketchOn('XZ')
+        `distance = sqrt(20)
+      sketch001 = startSketchOn('XZ')
       |> startProfileAt([-6.95, 10.98], %)
       |> line([25.1, 0.41], %)
       |> line([0.73, -20.93], %)
@@ -295,18 +297,15 @@ const extrude001 = extrude(-10, sketch001)`
     await u.waitForCmdReceive('extrude')
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
-      `const distance = sqrt(20)
-const distance001 = ${KCL_DEFAULT_LENGTH}
-const sketch001 = startSketchOn('XZ')
+      `distance = sqrt(20)
+distance001 = ${KCL_DEFAULT_LENGTH}
+sketch001 = startSketchOn('XZ')
     |> startProfileAt([-6.95, 10.98], %)
     |> line([25.1, 0.41], %)
     |> line([0.73, -20.93], %)
     |> line([-23.44, 0.52], %)
     |> close(%)
-const extrude001 = extrude(distance001, sketch001)`.replace(
-        /(\r\n|\n|\r)/gm,
-        ''
-      ) // remove newlines
+extrude001 = extrude(distance001, sketch001)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
     )
   })
 

@@ -4,13 +4,14 @@ use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use serde::de::DeserializeOwned;
+use serde_json::Value as JValue;
 
 use crate::{
-    ast::types::{parse_json_number_as_f64, TagDeclarator},
+    ast::types::{execute::parse_json_number_as_f64, TagNode},
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet, SourceRange, TagIdentifier,
+        SolidSet, SourceRange, TagIdentifier, UserVal,
     },
     std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
 };
@@ -43,7 +44,7 @@ impl Args {
                 fs: Arc::new(crate::fs::FileManager::new()),
                 stdlib: Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                is_mock: true,
+                context_type: crate::executor::ContextType::Mock,
             },
         })
     }
@@ -259,7 +260,7 @@ impl Args {
         (
             crate::std::shapes::CircleData,
             crate::std::shapes::SketchOrSurface,
-            Option<TagDeclarator>,
+            Option<TagNode>,
         ),
         KclError,
     > {
@@ -285,7 +286,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagDeclarator>), KclError> {
+    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
         FromArgs::from_args(self, 0)
     }
 
@@ -317,16 +318,14 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(&'a self) -> Result<(T, Sketch, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_and_tag<'a, T>(&'a self) -> Result<(T, Sketch, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_sketch_surface<'a, T>(
-        &'a self,
-    ) -> Result<(T, SketchSurface, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_sketch_surface<'a, T>(&'a self) -> Result<(T, SketchSurface, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -347,9 +346,7 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_data_and_solid_and_tag<'a, T>(
-        &'a self,
-    ) -> Result<(T, Box<Solid>, Option<TagDeclarator>), KclError>
+    pub(crate) fn get_data_and_solid_and_tag<'a, T>(&'a self) -> Result<(T, Box<Solid>, Option<TagNode>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
@@ -458,6 +455,19 @@ impl Args {
             source_ranges: vec![self.source_range],
         }))
     }
+
+    pub(crate) fn get_polygon_args(
+        &self,
+    ) -> Result<
+        (
+            crate::std::shapes::PolygonData,
+            crate::std::shapes::SketchOrSurface,
+            Option<TagNode>,
+        ),
+        KclError,
+    > {
+        FromArgs::from_args(self, 0)
+    }
 }
 
 /// Types which impl this trait can be read out of the `Args` passed into a KCL function.
@@ -494,18 +504,6 @@ where
             }));
         };
         Ok(val)
-    }
-}
-
-impl<'a> FromArgs<'a> for KclValue {
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(v) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Argument at index {i} was missing",),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-        Ok(v.to_owned())
     }
 }
 
@@ -587,7 +585,21 @@ impl<'a> FromKclValue<'a> for i64 {
     }
 }
 
-impl<'a> FromKclValue<'a> for TagDeclarator {
+impl<'a> FromKclValue<'a> for UserVal {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val().map(|x| x.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<JValue> {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        arg.as_user_val()
+            .and_then(|uv| uv.value.as_array())
+            .map(ToOwned::to_owned)
+    }
+}
+
+impl<'a> FromKclValue<'a> for TagNode {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
     }
@@ -599,6 +611,12 @@ impl<'a> FromKclValue<'a> for TagIdentifier {
     }
 }
 
+impl<'a> FromKclValue<'a> for KclValue {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        Some(arg.clone())
+    }
+}
+
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for $typ {
@@ -607,6 +625,15 @@ macro_rules! impl_from_arg_via_json {
             }
         }
     };
+}
+
+impl<'a, T> FromKclValue<'a> for Vec<T>
+where
+    T: serde::de::DeserializeOwned + FromKclValue<'a>,
+{
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        from_user_val(arg)
+    }
 }
 
 macro_rules! impl_from_arg_for_array {
@@ -634,6 +661,7 @@ impl_from_arg_via_json!(super::sketch::AngledLineData);
 impl_from_arg_via_json!(super::sketch::AngledLineToData);
 impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
 impl_from_arg_via_json!(super::shapes::CircleData);
+impl_from_arg_via_json!(super::shapes::PolygonData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
 impl_from_arg_via_json!(super::sketch::BezierData);
@@ -720,25 +748,5 @@ impl<'a> FromKclValue<'a> for SketchSurface {
             KclValue::Face(sg) => Some(Self::Face(sg.clone())),
             _ => None,
         }
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<Sketch> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::UserVal(uv) = arg else {
-            return None;
-        };
-
-        uv.get::<Vec<Sketch>>().map(|x| x.0)
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<u64> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::UserVal(uv) = arg else {
-            return None;
-        };
-
-        uv.get::<Vec<u64>>().map(|x| x.0)
     }
 }

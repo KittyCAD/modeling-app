@@ -21,6 +21,7 @@ import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 beforeAll(async () => {
   await initPromise
@@ -100,16 +101,16 @@ describe('Testing findUniqueName', () => {
   it('should find a unique name', () => {
     const result = findUniqueName(
       JSON.stringify([
-        { type: 'Identifier', name: 'yo01', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo02', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo03', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo04', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo05', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo06', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo07', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo08', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo09', start: 0, end: 0, digest: null },
-      ] satisfies Identifier[]),
+        { type: 'Identifier', name: 'yo01', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo02', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo03', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo04', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo05', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo06', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo07', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo08', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo09', start: 0, end: 0 },
+      ] satisfies Node<Identifier>[]),
       'yo',
       2
     )
@@ -123,13 +124,12 @@ describe('Testing addSketchTo', () => {
         body: [],
         start: 0,
         end: 0,
-        nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
-        digest: null,
+        nonCodeMeta: { nonCodeNodes: {}, startNodes: [] },
       },
       'yz'
     )
     const str = recast(result.modifiedAst)
-    expect(str).toBe(`const sketch001 = startSketchOn('YZ')
+    expect(str).toBe(`sketch001 = startSketchOn('YZ')
   |> startProfileAt('default', %)
   |> line('default', %)
 `)
@@ -156,7 +156,7 @@ function giveSketchFnCallTagTestHelper(
 }
 
 describe('Testing giveSketchFnCallTag', () => {
-  const code = `const part001 = startSketchOn('XY')
+  const code = `part001 = startSketchOn('XY')
 |> startProfileAt([0, 0], %)
 |> line([-2.57, -0.13], %)
 |> line([0, 0.83], %)
@@ -207,8 +207,8 @@ fn ghi = (x) => {
 }
 const abc = 3
 const identifierGuy = 5
-const yo = 5 + 6
-const part001 = startSketchOn('XY')
+yo = 5 + 6
+part001 = startSketchOn('XY')
 |> startProfileAt([-1.2, 4.83], %)
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.09], %)
@@ -216,87 +216,87 @@ const part001 = startSketchOn('XY')
 |> angledLine([def(yo), 3.09], %)
 |> angledLine([ghi(%), 3.09], %)
 |> angledLine([jkl(yo) + 2, 3.09], %)
-const yo2 = hmm([identifierGuy + 5])`
+yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const newVar = 100 + 100`)
+    expect(newCode).toContain(`newVar = 100 + 100`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a value into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const newVar = 2.8`)
+    expect(newCode).toContain(`newVar = 2.8`)
     expect(newCode).toContain(`line([newVar, 0], %)`)
   })
   it('should move a callExpression into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const newVar = def(yo)`)
+    expect(newCode).toContain(`newVar = def(yo)`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a binary expression with call expression into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const newVar = jkl(yo) + 2`)
+    expect(newCode).toContain(`newVar = jkl(yo) + 2`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a identifier into a new variable', async () => {
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
-      programMemory,
+      execState.memory,
       [startIndex, startIndex],
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const newVar = identifierGuy + 5`)
-    expect(newCode).toContain(`const yo2 = hmm([newVar])`)
+    expect(newCode).toContain(`newVar = identifierGuy + 5`)
+    expect(newCode).toContain(`yo2 = hmm([newVar])`)
   })
 })
 
 describe('testing sketchOnExtrudedFace', () => {
   test('it should be able to extrude on regular segments', async () => {
-    const code = `const part001 = startSketchOn('-XZ')
+    const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
   |> line([9.7, 9.19], %)
   |> line([8.62, -9.57], %)
@@ -327,16 +327,16 @@ describe('testing sketchOnExtrudedFace', () => {
     const { modifiedAst } = extruded
 
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
+    expect(newCode).toContain(`part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
   |> line([9.7, 9.19], %, $seg01)
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)
-const sketch001 = startSketchOn(part001, seg01)`)
+sketch001 = startSketchOn(part001, seg01)`)
   })
   test('it should be able to extrude on close segments', async () => {
-    const code = `const part001 = startSketchOn('-XZ')
+    const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
   |> line([9.7, 9.19], %)
   |> line([8.62, -9.57], %)
@@ -366,16 +366,16 @@ const sketch001 = startSketchOn(part001, seg01)`)
     const { modifiedAst } = extruded
 
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
+    expect(newCode).toContain(`part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
   |> line([9.7, 9.19], %)
   |> line([8.62, -9.57], %)
   |> close(%, $seg01)
   |> extrude(5 + 7, %)
-const sketch001 = startSketchOn(part001, seg01)`)
+sketch001 = startSketchOn(part001, seg01)`)
   })
   test('it should be able to extrude on start-end caps', async () => {
-    const code = `const part001 = startSketchOn('-XZ')
+    const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
   |> line([9.7, 9.19], %)
   |> line([8.62, -9.57], %)
@@ -406,16 +406,16 @@ const sketch001 = startSketchOn(part001, seg01)`)
     const { modifiedAst } = extruded
 
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
+    expect(newCode).toContain(`part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
   |> line([9.7, 9.19], %)
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)
-const sketch001 = startSketchOn(part001, 'END')`)
+sketch001 = startSketchOn(part001, 'END')`)
   })
   test('it should ensure that the new sketch is inserted after the extrude', async () => {
-    const code = `const sketch001 = startSketchOn('-XZ')
+    const code = `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([3.29, 7.86], %)
     |> line([2.48, 2.44], %)
     |> line([2.66, 1.17], %)
@@ -428,7 +428,7 @@ const sketch001 = startSketchOn(part001, 'END')`)
     |> line([-3.86, -2.73], %)
     |> line([-17.67, 0.85], %)
     |> close(%)
-    const part001 = extrude(5 + 7, sketch001)`
+    part001 = extrude(5 + 7, sketch001)`
     const ast = parse(code)
     if (err(ast)) throw ast
     const segmentSnippet = `line([4.99, -0.46], %)`
@@ -451,21 +451,21 @@ const sketch001 = startSketchOn(part001, 'END')`)
     )
     if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst)
-    expect(newCode).toContain(`const part001 = extrude(5 + 7, sketch001)
-const sketch002 = startSketchOn(part001, seg01)`)
+    expect(newCode).toContain(`part001 = extrude(5 + 7, sketch001)
+sketch002 = startSketchOn(part001, seg01)`)
   })
 })
 
 describe('Testing deleteSegmentFromPipeExpression', () => {
   it('Should delete a segment withOUT any dependent segments', async () => {
-    const code = `const part001 = startSketchOn('-XZ')
+    const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %)
   |> line([306.21, 198.85], %, $a)
   |> line([306.21, 198.87], %)`
     const ast = parse(code)
     if (err(ast)) throw ast
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const lineOfInterest = 'line([306.21, 198.85], %, $a)'
     const range: [number, number] = [
       code.indexOf(lineOfInterest),
@@ -475,13 +475,13 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const modifiedAst = deleteSegmentFromPipeExpression(
       [],
       ast,
-      programMemory,
+      execState.memory,
       code,
       pathToNode
     )
     if (err(modifiedAst)) throw modifiedAst
     const newCode = recast(modifiedAst)
-    expect(newCode).toBe(`const part001 = startSketchOn('-XZ')
+    expect(newCode).toBe(`part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %)
   |> line([306.21, 198.87], %)
@@ -492,7 +492,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       line: string,
       replace1 = '',
       replace2 = ''
-    ) => `const part001 = startSketchOn('-XZ')
+    ) => `part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
   |> line([306.21, 198.82], %, $b)
 ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
@@ -543,7 +543,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const code = makeCode(line)
       const ast = parse(code)
       if (err(ast)) throw ast
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
       const range: [number, number] = [
         code.indexOf(lineOfInterest),
@@ -554,7 +554,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const modifiedAst = deleteSegmentFromPipeExpression(
         dependentSegments,
         ast,
-        programMemory,
+        execState.memory,
         code,
         pathToNode
       )
@@ -567,7 +567,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
 
 describe('Testing removeSingleConstraintInfo', () => {
   describe('with mostly object notation', () => {
-    const code = `const part001 = startSketchOn('-XZ')
+    const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> line([3 + 0, 4 + 0], %)
   |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
@@ -632,7 +632,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       const ast = parse(code)
       if (err(ast)) throw ast
 
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
       const range: [number, number] = [
         code.indexOf(lineOfInterest) + 1,
@@ -661,7 +661,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        programMemory
+        execState.memory
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -669,7 +669,7 @@ describe('Testing removeSingleConstraintInfo', () => {
     })
   })
   describe('with array notation', () => {
-    const code = `const part001 = startSketchOn('-XZ')
+    const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine([3.14 + 0, 3.14 + 0], %)
   |> angledLineOfXLength([3 + 0, 3.14 + 0], %)
@@ -686,7 +686,7 @@ describe('Testing removeSingleConstraintInfo', () => {
       const ast = parse(code)
       if (err(ast)) throw ast
 
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
       const range: [number, number] = [
         code.indexOf(lineOfInterest) + 1,
@@ -711,7 +711,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         pathToNode,
         argPosition,
         ast,
-        programMemory
+        execState.memory
       )
       if (!mod) return new Error('mod is undefined')
       const recastCode = recast(mod.modifiedAst)
@@ -725,14 +725,14 @@ describe('Testing deleteFromSelection', () => {
     [
       'basicCase',
       {
-        codeBefore: `const myVar = 5
-const sketch003 = startSketchOn('XZ')
+        codeBefore: `myVar = 5
+sketch003 = startSketchOn('XZ')
   |> startProfileAt([3.82, 13.6], %)
   |> line([-2.94, 2.7], %)
   |> line([7.7, 0.16], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`,
-        codeAfter: `const myVar = 5\n`,
+        codeAfter: `myVar = 5\n`,
         lineOfInterest: 'line([-2.94, 2.7], %)',
         type: 'default',
       },
@@ -740,7 +740,7 @@ const sketch003 = startSketchOn('XZ')
     [
       'delete extrude',
       {
-        codeBefore: `const sketch001 = startSketchOn('XZ')
+        codeBefore: `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
@@ -750,7 +750,7 @@ const sketch003 = startSketchOn('XZ')
   |> line([-17.67, 0.85], %)
   |> close(%)
 const extrude001 = extrude(10, sketch001)`,
-        codeAfter: `const sketch001 = startSketchOn('XZ')
+        codeAfter: `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
@@ -766,8 +766,8 @@ const extrude001 = extrude(10, sketch001)`,
     [
       'delete extrude with sketch on it',
       {
-        codeBefore: `const myVar = 5
-const sketch001 = startSketchOn('XZ')
+        codeBefore: `myVar = 5
+sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.46, 5.12], %, $tag)
   |> line([0.08, myVar], %)
   |> line([13.03, 2.02], %, $seg01)
@@ -778,7 +778,7 @@ const sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 const extrude001 = extrude(5, sketch001)
-const sketch002 = startSketchOn(extrude001, seg01)
+sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
@@ -787,8 +787,8 @@ const sketch002 = startSketchOn(extrude001, seg01)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`,
-        codeAfter: `const myVar = 5
-const sketch001 = startSketchOn('XZ')
+        codeAfter: `myVar = 5
+sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.46, 5.12], %, $tag)
   |> line([0.08, myVar], %)
   |> line([13.03, 2.02], %, $seg01)
@@ -798,7 +798,7 @@ const sketch001 = startSketchOn('XZ')
   |> line([-8.54, -2.51], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const sketch002 = startSketchOn({
+sketch002 = startSketchOn({
        plane: {
          origin: { x: 1, y: 2, z: 3 },
          x_axis: { x: 4, y: 5, z: 6 },
@@ -822,8 +822,8 @@ const sketch002 = startSketchOn({
     [
       'delete extrude with sketch on it',
       {
-        codeBefore: `const myVar = 5
-const sketch001 = startSketchOn('XZ')
+        codeBefore: `myVar = 5
+sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.46, 5.12], %, $tag)
   |> line([0.08, myVar], %)
   |> line([13.03, 2.02], %, $seg01)
@@ -834,7 +834,7 @@ const sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 const extrude001 = extrude(5, sketch001)
-const sketch002 = startSketchOn(extrude001, seg01)
+sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.55, 2.89], %)
   |> line([3.02, 1.9], %)
   |> line([1.82, -1.49], %, $seg02)
@@ -843,8 +843,8 @@ const sketch002 = startSketchOn(extrude001, seg01)
   |> line([0.3, 0.84], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`,
-        codeAfter: `const myVar = 5
-const sketch001 = startSketchOn('XZ')
+        codeAfter: `myVar = 5
+sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.46, 5.12], %, $tag)
   |> line([0.08, myVar], %)
   |> line([13.03, 2.02], %, $seg01)
@@ -854,7 +854,7 @@ const sketch001 = startSketchOn('XZ')
   |> line([-8.54, -2.51], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-const sketch002 = startSketchOn({
+sketch002 = startSketchOn({
        plane: {
          origin: { x: 1, y: 2, z: 3 },
          x_axis: { x: 4, y: 5, z: 6 },
@@ -882,7 +882,7 @@ const sketch002 = startSketchOn({
       // const lineOfInterest = 'line([-2.94, 2.7], %)'
       const ast = parse(codeBefore)
       if (err(ast)) throw ast
-      const programMemory = await enginelessExecutor(ast)
+      const execState = await enginelessExecutor(ast)
 
       // deleteFromSelection
       const range: [number, number] = [
@@ -895,7 +895,7 @@ const sketch002 = startSketchOn({
           range,
           type,
         },
-        programMemory,
+        execState.memory,
         async () => {
           await new Promise((resolve) => setTimeout(resolve, 100))
           return {

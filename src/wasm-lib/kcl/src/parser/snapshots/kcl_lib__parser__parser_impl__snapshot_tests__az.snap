@@ -3,109 +3,91 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 79,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 79,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 4,
           "end": 79,
           "id": {
-            "type": "Identifier",
-            "start": 4,
             "end": 9,
             "name": "props",
-            "digest": null
+            "start": 4,
+            "type": "Identifier"
           },
           "init": {
-            "type": "ObjectExpression",
-            "type": "ObjectExpression",
-            "start": 12,
             "end": 79,
-            "properties": [
-              {
-                "type": "ObjectProperty",
-                "start": 26,
-                "end": 30,
-                "key": {
-                  "type": "Identifier",
-                  "start": 26,
-                  "end": 27,
-                  "name": "a",
-                  "digest": null
-                },
-                "value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 29,
-                  "end": 30,
-                  "value": 1,
-                  "raw": "1",
-                  "digest": null
-                },
-                "digest": null
-              },
-              {
-                "type": "ObjectProperty",
-                "start": 65,
-                "end": 69,
-                "key": {
-                  "type": "Identifier",
-                  "start": 65,
-                  "end": 66,
-                  "name": "c",
-                  "digest": null
-                },
-                "value": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 68,
-                  "end": 69,
-                  "value": 3,
-                  "raw": "3",
-                  "digest": null
-                },
-                "digest": null
-              }
-            ],
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "type": "NonCodeNode",
-                    "start": 44,
                     "end": 52,
+                    "start": 44,
+                    "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
                       "value": "b: 2,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ]
               },
-              "start": [],
-              "digest": null
+              "startNodes": []
             },
-            "digest": null
+            "properties": [
+              {
+                "end": 30,
+                "key": {
+                  "end": 27,
+                  "name": "a",
+                  "start": 26,
+                  "type": "Identifier"
+                },
+                "start": 26,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 30,
+                  "raw": "1",
+                  "start": 29,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 1
+                }
+              },
+              {
+                "end": 69,
+                "key": {
+                  "end": 66,
+                  "name": "c",
+                  "start": 65,
+                  "type": "Identifier"
+                },
+                "start": 65,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 69,
+                  "raw": "3",
+                  "start": 68,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 3
+                }
+              }
+            ],
+            "start": 12,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
           },
-          "digest": null
+          "start": 4,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "let",
-      "digest": null
+      "end": 79,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 79,
+  "start": 0
 }

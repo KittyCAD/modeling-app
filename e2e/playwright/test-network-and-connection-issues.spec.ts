@@ -122,7 +122,7 @@ test.describe('Test network and connection issues', () => {
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn('XZ')`
     )
     await u.closeDebugPanel()
 
@@ -131,7 +131,7 @@ test.describe('Test network and connection issues', () => {
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)`)
     await page.waitForTimeout(100)
 
@@ -139,7 +139,7 @@ test.describe('Test network and connection issues', () => {
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
     |> line([${commonPoints.num1}, 0], %)`)
 
@@ -205,7 +205,7 @@ test.describe('Test network and connection issues', () => {
     // Ensure we can continue sketching
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
     await expect.poll(u.normalisedEditorCode)
-      .toBe(`const sketch001 = startSketchOn('XZ')
+      .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> line([12.34, 0], %)
   |> line([-12.34, 12.34], %)
@@ -215,11 +215,11 @@ test.describe('Test network and connection issues', () => {
     await page.mouse.click(startXPx, 500 - PUR * 20)
 
     await expect.poll(u.normalisedEditorCode)
-      .toBe(`const sketch001 = startSketchOn('XZ')
+      .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> line([12.34, 0], %)
   |> line([-12.34, 12.34], %)
-  |> line([-12.34, 0], %)
+  |> lineTo([0, -12.34], %)
 
 `)
 

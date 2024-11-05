@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ast::types::TagDeclarator,
+    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier, UserVal},
     settings::types::UnitLength,
@@ -55,7 +55,7 @@ impl EdgeReference {
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagDeclarator>) = args.get_data_and_solid_and_tag()?;
+    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
     let solid = inner_fillet(data, solid, tag, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
@@ -123,7 +123,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_fillet(
     data: FilletData,
     solid: Box<Solid>,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -142,7 +142,7 @@ async fn inner_fillet(
     for edge_tag in data.tags {
         let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
-        let id = uuid::Uuid::new_v4();
+        let id = exec_state.id_generator.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
@@ -228,16 +228,17 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     name = "getOppositeEdge",
 }]
 async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
-    if args.ctx.is_mock {
-        return Ok(Uuid::new_v4());
+    if args.ctx.is_mock() {
+        return Ok(exec_state.id_generator.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
+    let id = exec_state.id_generator.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
         .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id,
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: tagged_path.id,
                 object_id: tagged_path.sketch,
@@ -309,16 +310,17 @@ async fn inner_get_next_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
-    if args.ctx.is_mock {
-        return Ok(Uuid::new_v4());
+    if args.ctx.is_mock() {
+        return Ok(exec_state.id_generator.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
+    let id = exec_state.id_generator.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
         .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id,
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: tagged_path.id,
                 object_id: tagged_path.sketch,
@@ -398,16 +400,17 @@ async fn inner_get_previous_adjacent_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
-    if args.ctx.is_mock {
-        return Ok(Uuid::new_v4());
+    if args.ctx.is_mock() {
+        return Ok(exec_state.id_generator.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
+    let id = exec_state.id_generator.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
         .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            id,
             ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
                 edge_id: tagged_path.id,
                 object_id: tagged_path.sketch,

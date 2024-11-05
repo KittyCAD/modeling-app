@@ -34,7 +34,7 @@ async function testingSwapSketchFnCall({
   const ast = parse(inputCode)
   if (err(ast)) return Promise.reject(ast)
 
-  const programMemory = await enginelessExecutor(ast)
+  const execState = await enginelessExecutor(ast)
   const selections = {
     codeBasedSelections: [range],
     otherSelections: [],
@@ -45,7 +45,7 @@ async function testingSwapSketchFnCall({
     return Promise.reject(new Error('transformInfos undefined'))
   const ast2 = transformAstSketchLines({
     ast,
-    programMemory,
+    programMemory: execState.memory,
     selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
@@ -63,7 +63,7 @@ async function testingSwapSketchFnCall({
 
 describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   const bigExampleArr = [
-    `const part001 = startSketchOn('XY')`,
+    `part001 = startSketchOn('XY')`,
     `  |> startProfileAt([0, 0], %)`,
     `  |> lineTo([1, 1], %, $abc1)`,
     `  |> line([-2.04, -0.7], %, $abc2)`,
@@ -252,14 +252,14 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
 describe('testing swapping out sketch calls with xLine/xLineTo while keeping variable/identifiers intact', () => {
   // Enable rotations #152
   const variablesExampleArr = [
-    `const lineX = -1`,
-    `const lineToX = -1.3`,
-    `const angledLineAngle = 207`,
-    `const angledLineOfXLengthX = 0.8`,
-    `const angledLineOfYLengthY = 0.89`,
-    `const angledLineToXx = -1.86`,
-    `const angledLineToYy = -0.76`,
-    `const part001 = startSketchOn('XY')`,
+    `lineX = -1`,
+    `lineToX = -1.3`,
+    `angledLineAngle = 207`,
+    `angledLineOfXLengthX = 0.8`,
+    `angledLineOfYLengthY = 0.89`,
+    `angledLineToXx = -1.86`,
+    `angledLineToYy = -0.76`,
+    `part001 = startSketchOn('XY')`,
     `  |> startProfileAt([0, 0], %)`,
     // `  |> rx(90, %)`,
     `  |> lineTo([1, 1], %)`,
@@ -353,17 +353,17 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
 
 describe('testing getSketchSegmentIndexFromSourceRange', () => {
   const code = `
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0.04], %) // segment-in-start
   |> line([0, 0.4], %)
   |> xLine(3.48, %)
   |> line([2.14, 1.35], %) // normal-segment
   |> xLine(3.54, %)`
   it('normal case works', async () => {
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
     const sg = sketchFromKclValue(
-      programMemory.get('part001'),
+      execState.memory.get('part001'),
       'part001'
     ) as Sketch
     const _segment = getSketchSegmentFromSourceRange(sg, [index, index])
@@ -377,10 +377,10 @@ const part001 = startSketchOn('XY')
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(parse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
-      sketchFromKclValue(programMemory.get('part001'), 'part001') as Sketch,
+      sketchFromKclValue(execState.memory.get('part001'), 'part001') as Sketch,
       [index, index]
     )
     if (err(_segment)) throw _segment

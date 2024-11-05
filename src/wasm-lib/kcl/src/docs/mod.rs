@@ -52,10 +52,7 @@ pub struct StdLibFnArg {
     pub type_: String,
     /// The schema of the argument.
     #[ts(type = "any")]
-    pub schema: schemars::schema::Schema,
-    /// The schema definitions for the argument.
-    #[ts(type = "any")]
-    pub schema_definitions: schemars::Map<String, schemars::schema::Schema>,
+    pub schema: schemars::schema::RootSchema,
     /// If the argument is required.
     pub required: bool,
 }
@@ -63,11 +60,11 @@ pub struct StdLibFnArg {
 impl StdLibFnArg {
     /// If the argument is a primitive.
     pub fn is_primitive(&self) -> Result<bool> {
-        is_primitive(&self.schema).map(|r| r.is_some())
+        is_primitive(&self.schema.schema.clone().into()).map(|r| r.is_some())
     }
 
     pub fn get_autocomplete_string(&self) -> Result<String> {
-        get_autocomplete_string_from_schema(&self.schema.clone())
+        get_autocomplete_string_from_schema(&self.schema.schema.clone().into())
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
@@ -79,17 +76,21 @@ impl StdLibFnArg {
             || self.type_ == "SketchOrSurface"
         {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
-        } else if self.type_ == "TagDeclarator" && self.required {
+        } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {
             return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
         } else if self.type_ == "TagIdentifier" && self.required {
             // TODO: actually use the ast to populate this.
             return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
+        } else if self.type_ == "[KclValue]" && self.required {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "[0..9]"))));
+        } else if self.type_ == "KclValue" && self.required {
+            return Ok(Some((index, format!("${{{}:{}}}", index, "3"))));
         }
-        get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
+        get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
     }
 
     pub fn description(&self) -> Option<String> {
-        get_description_string_from_schema(&self.schema.clone(), &self.schema_definitions)
+        get_description_string_from_schema(&self.schema.clone())
     }
 }
 
@@ -311,20 +312,55 @@ impl Clone for Box<dyn StdLibFn> {
     }
 }
 
-pub fn get_description_string_from_schema(
-    schema: &schemars::schema::Schema,
-    definitions: &schemars::Map<String, schemars::schema::Schema>,
-) -> Option<String> {
-    if let schemars::schema::Schema::Object(o) = schema {
-        if let Some(metadata) = &o.metadata {
-            if let Some(description) = &metadata.description {
-                return Some(description.to_string());
+pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema) -> Option<String> {
+    if let Some(metadata) = &schema.schema.metadata {
+        if let Some(description) = &metadata.description {
+            return Some(description.to_string());
+        }
+    }
+
+    if let Some(reference) = &schema.schema.reference {
+        if let Some(definition) = schema.definitions.get(reference.split('/').last().unwrap_or("")) {
+            let schemars::schema::Schema::Object(definition) = definition else {
+                return None;
+            };
+            if let Some(metadata) = &definition.metadata {
+                if let Some(description) = &metadata.description {
+                    return Some(description.to_string());
+                }
+            }
+        }
+    }
+
+    // If we have subschemas iterate over them and recursively create references.
+    if let Some(subschema) = &schema.schema.subschemas {
+        if let Some(one_of) = &subschema.one_of {
+            if one_of.len() == 1 {
+                return get_description_string_from_schema(&schemars::schema::RootSchema {
+                    meta_schema: schema.meta_schema.clone(),
+                    schema: one_of[0].clone().into(),
+                    definitions: schema.definitions.clone(),
+                });
             }
         }
 
-        if let Some(reference) = &o.reference {
-            if let Some(definition) = definitions.get(reference.split('/').last().unwrap_or("")) {
-                return get_description_string_from_schema(definition, definitions);
+        if let Some(all_of) = &subschema.all_of {
+            if all_of.len() == 1 {
+                return get_description_string_from_schema(&schemars::schema::RootSchema {
+                    meta_schema: schema.meta_schema.clone(),
+                    schema: all_of[0].clone().into(),
+                    definitions: schema.definitions.clone(),
+                });
+            }
+        }
+
+        if let Some(any_of) = &subschema.any_of {
+            if any_of.len() == 1 {
+                return get_description_string_from_schema(&schemars::schema::RootSchema {
+                    meta_schema: schema.meta_schema.clone(),
+                    schema: any_of[0].clone().into(),
+                    definitions: schema.definitions.clone(),
+                });
             }
         }
     }
@@ -704,10 +740,14 @@ pub fn completion_item_from_enum_schema(
     kind: CompletionItemKind,
 ) -> Result<CompletionItem> {
     // Get the docs for the schema.
-    let description = get_description_string_from_schema(schema, &Default::default()).unwrap_or_default();
     let schemars::schema::Schema::Object(o) = schema else {
         anyhow::bail!("expected object schema: {:#?}", schema);
     };
+    let description = get_description_string_from_schema(&schemars::schema::RootSchema {
+        schema: o.clone(),
+        ..Default::default()
+    })
+    .unwrap_or_default();
     let Some(enum_values) = o.enum_values.as_ref() else {
         anyhow::bail!("expected enum values: {:#?}", o);
     };
@@ -819,7 +859,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternCircular3d({
-	repetitions: ${0:10},
+	instances: ${0:10},
 	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
 	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
 	arcDegrees: ${7:3.14},
@@ -868,16 +908,37 @@ mod tests {
     }
 
     #[test]
+    fn get_autocomplete_snippet_map() {
+        let map_fn: Box<dyn StdLibFn> = Box::new(crate::std::array::Map);
+        let snippet = map_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"map(${0:[0..9]})${}"#);
+    }
+
+    #[test]
     fn get_autocomplete_snippet_pattern_linear_2d() {
         let pattern_fn: Box<dyn StdLibFn> = Box::new(crate::std::patterns::PatternLinear2D);
         let snippet = pattern_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
             r#"patternLinear2d({
-	repetitions: ${0:10},
+	instances: ${0:10},
 	distance: ${1:3.14},
 	axis: [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
+    }
+
+    // We want to test the snippets we compile at lsp start.
+    #[test]
+    fn get_all_stdlib_autocomplete_snippets() {
+        let stdlib = crate::std::StdLib::new();
+        crate::lsp::kcl::get_completions_from_stdlib(&stdlib).unwrap();
+    }
+
+    // We want to test the signatures we compile at lsp start.
+    #[test]
+    fn get_all_stdlib_signatures() {
+        let stdlib = crate::std::StdLib::new();
+        crate::lsp::kcl::get_signatures_from_stdlib(&stdlib).unwrap();
     }
 }

@@ -3,96 +3,81 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 91,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 91,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 4,
           "end": 91,
           "id": {
-            "type": "Identifier",
-            "start": 4,
             "end": 11,
             "name": "numbers",
-            "digest": null
+            "start": 4,
+            "type": "Identifier"
           },
           "init": {
-            "type": "ArrayExpression",
-            "type": "ArrayExpression",
-            "start": 14,
-            "end": 91,
             "elements": [
               {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 28,
                 "end": 29,
-                "value": 1,
                 "raw": "1",
-                "digest": null
+                "start": 28,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1
               },
               {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 79,
                 "end": 80,
-                "value": 3,
                 "raw": "3",
-                "digest": null
+                "start": 79,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 3
               }
             ],
+            "end": 91,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "type": "NonCodeNode",
-                    "start": 43,
                     "end": 48,
+                    "start": 43,
+                    "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
                       "value": "A,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ],
                 "2": [
                   {
-                    "type": "NonCodeNode",
-                    "start": 61,
                     "end": 66,
+                    "start": 61,
+                    "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
                       "value": "B,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ]
               },
-              "start": [],
-              "digest": null
+              "startNodes": []
             },
-            "digest": null
+            "start": 14,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
           },
-          "digest": null
+          "start": 4,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "let",
-      "digest": null
+      "end": 91,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 91,
+  "start": 0
 }

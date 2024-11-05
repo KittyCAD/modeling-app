@@ -40,8 +40,8 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Expr, VariableKind},
-    executor::SourceRange,
+    ast::types::{Expr, Node, NodeRef, VariableKind},
+    executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
@@ -99,7 +99,7 @@ pub struct Backend {
     /// Token maps.
     pub token_map: DashMap<String, Vec<crate::token::Token>>,
     /// AST maps.
-    pub ast_map: DashMap<String, crate::ast::types::Program>,
+    pub ast_map: DashMap<String, Node<crate::ast::types::Program>>,
     /// Memory maps.
     pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
     /// Current code.
@@ -571,7 +571,7 @@ impl Backend {
         self.client.publish_diagnostics(params.uri.clone(), items, None).await;
     }
 
-    async fn execute(&self, params: &TextDocumentItem, ast: &crate::ast::types::Program) -> Result<()> {
+    async fn execute(&self, params: &TextDocumentItem, ast: NodeRef<'_, crate::ast::types::Program>) -> Result<()> {
         // Check if we can execute.
         if !self.can_execute().await {
             return Ok(());
@@ -588,10 +588,15 @@ impl Backend {
             return Ok(());
         }
 
-        // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx.engine.clear_scene(SourceRange::default()).await?;
+        let mut id_generator = IdGenerator::default();
 
-        let exec_state = match executor_ctx.run(ast, None).await {
+        // Clear the scene, before we execute so it's not fugly as shit.
+        executor_ctx
+            .engine
+            .clear_scene(&mut id_generator, SourceRange::default())
+            .await?;
+
+        let exec_state = match executor_ctx.run(ast, None, id_generator, None).await {
             Ok(exec_state) => exec_state,
             Err(err) => {
                 self.memory_map.remove(params.uri.as_str());
@@ -1036,6 +1041,38 @@ impl LanguageServer for Backend {
             tags: None,
         }];
 
+        // Get the current line up to cursor
+        let Some(current_code) = self
+            .code_map
+            .get(params.text_document_position.text_document.uri.as_ref())
+        else {
+            return Ok(Some(CompletionResponse::Array(completions)));
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(Some(CompletionResponse::Array(completions)));
+        };
+
+        // Get the current line up to cursor, with bounds checking
+        if let Some(line) = current_code
+            .lines()
+            .nth(params.text_document_position.position.line as usize)
+        {
+            let char_pos = params.text_document_position.position.character as usize;
+            if char_pos <= line.len() {
+                let line_prefix = &line[..char_pos];
+                // Get last word
+                let last_word = line_prefix
+                    .split(|c: char| c.is_whitespace() || c.is_ascii_punctuation())
+                    .last()
+                    .unwrap_or("");
+
+                // If the last word starts with a digit, return no completions
+                if !last_word.is_empty() && last_word.chars().next().unwrap().is_ascii_digit() {
+                    return Ok(None);
+                }
+            }
+        }
+
         completions.extend(self.stdlib_completions.values().cloned());
 
         // Add more to the completions if we have more.
@@ -1118,7 +1155,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(value) = ast.get_value_for_position(pos) else {
+        let Some(value) = ast.get_expr_for_position(pos) else {
             return Ok(None);
         };
 

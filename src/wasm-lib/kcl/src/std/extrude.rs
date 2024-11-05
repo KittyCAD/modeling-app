@@ -9,7 +9,6 @@ use kcmc::{
     shared::ExtrusionFaceCapType, websocket::OkWebSocketResponseData, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 use uuid::Uuid;
 
 use crate::{
@@ -19,10 +18,10 @@ use crate::{
 };
 
 /// Extrudes by a given amount.
-pub async fn extrude(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (length, sketch_set) = args.get_number_sketch_set()?;
 
-    let result = inner_extrude(length, sketch_set, args).await?;
+    let result = inner_extrude(length, sketch_set, exec_state, args).await?;
 
     Ok(result.into())
 }
@@ -76,8 +75,13 @@ pub async fn extrude(_exec_state: &mut ExecState, args: Args) -> Result<KclValue
 #[stdlib {
     name = "extrude"
 }]
-async fn inner_extrude(length: f64, sketch_set: SketchSet, args: Args) -> Result<SolidSet, KclError> {
-    let id = uuid::Uuid::new_v4();
+async fn inner_extrude(
+    length: f64,
+    sketch_set: SketchSet,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<SolidSet, KclError> {
+    let id = exec_state.id_generator.next_uuid();
 
     // Extrude the element(s).
     let sketches: Vec<Sketch> = sketch_set.into();
@@ -86,7 +90,7 @@ async fn inner_extrude(length: f64, sketch_set: SketchSet, args: Args) -> Result
         // Before we extrude, we need to enable the sketch mode.
         // We do this here in case extrude is called out of order.
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: false,
@@ -113,40 +117,35 @@ async fn inner_extrude(length: f64, sketch_set: SketchSet, args: Args) -> Result
 
         // Disable the sketch mode.
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
-        solids.push(do_post_extrude(sketch.clone(), length, args.clone()).await?);
+        solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
     }
 
     Ok(solids.into())
 }
 
-pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> Result<Box<Solid>, KclError> {
+pub(crate) async fn do_post_extrude(
+    sketch: Sketch,
+    length: f64,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
-        uuid::Uuid::new_v4(),
+        exec_state.id_generator.next_uuid(),
         ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
     )
     .await?;
 
-    if sketch.value.is_empty() {
+    // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+    // So, let's just use the first one.
+    let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
         return Err(KclError::Type(KclErrorDetails {
             message: "Expected a non-empty sketch".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
-    let edge_id = sketch.value.iter().find_map(|segment| match segment {
-        Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
-        _ => None,
-    });
-
-    let Some(edge_id) = edge_id else {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Expected a Path::ToPoint variant".to_string(),
             source_ranges: vec![args.source_range],
         }));
     };
@@ -160,9 +159,9 @@ pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> 
 
     let solid3d_info = args
         .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                edge_id,
+                edge_id: any_edge_id,
                 object_id: sketch.id,
             }),
         )
@@ -193,7 +192,7 @@ pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> 
         // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
         // uses this to build the artifact graph, which the UI needs.
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
@@ -203,7 +202,7 @@ pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> 
         .await?;
 
         args.batch_modeling_cmd(
-            uuid::Uuid::new_v4(),
+            exec_state.id_generator.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
@@ -217,15 +216,18 @@ pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> 
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(&args, face_infos);
+    } = analyze_faces(exec_state, &args, face_infos);
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let new_value = sketch
-        .value
+        .paths
         .iter()
         .flat_map(|path| {
             if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
                 match path {
-                    Path::TangentialArc { .. } | Path::TangentialArcTo { .. } | Path::Circle { .. } => {
+                    Path::Arc { .. }
+                    | Path::TangentialArc { .. }
+                    | Path::TangentialArcTo { .. }
+                    | Path::Circle { .. } => {
                         let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
@@ -248,12 +250,12 @@ pub(crate) async fn do_post_extrude(sketch: Sketch, length: f64, args: Args) -> 
                         Some(extrude_surface)
                     }
                 }
-            } else if args.ctx.is_mock {
+            } else if args.ctx.is_mock() {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
                 let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                     // pushing this values with a fake face_id to make extrudes mock-execute safe
-                    face_id: Uuid::new_v4(),
+                    face_id: exec_state.id_generator.next_uuid(),
                     tag: path.get_base().tag.clone(),
                     geo_meta: GeoMeta {
                         id: path.get_base().geo_meta.id,
@@ -292,15 +294,15 @@ struct Faces {
     start_cap_id: Option<Uuid>,
 }
 
-fn analyze_faces(args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
+fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<ExtrusionFaceInfo>) -> Faces {
     let mut faces = Faces {
         sides: HashMap::with_capacity(face_infos.len()),
         ..Default::default()
     };
-    if args.ctx.is_mock {
+    if args.ctx.is_mock() {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
-        faces.start_cap_id = Some(Uuid::new_v4());
-        faces.end_cap_id = Some(Uuid::new_v4());
+        faces.start_cap_id = Some(exec_state.id_generator.next_uuid());
+        faces.end_cap_id = Some(exec_state.id_generator.next_uuid());
     }
     for face_info in face_infos {
         match face_info.cap {

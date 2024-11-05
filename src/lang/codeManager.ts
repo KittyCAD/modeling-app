@@ -18,6 +18,9 @@ export default class CodeManager {
   #updateState: (arg: string) => void = () => {}
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
+  private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+
+  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
 
   constructor() {
     if (isDesktop()) {
@@ -115,17 +118,30 @@ export default class CodeManager {
 
   async writeToFile() {
     if (isDesktop()) {
-      setTimeout(() => {
-        // Wait one event loop to give a chance for params to be set
-        // Save the file to disk
-        this._currentFilePath &&
+      // Only write our buffer contents to file once per second. Any faster
+      // and file-system watchers which read, will receive empty data during
+      // writes.
+
+      clearTimeout(this.timeoutWriter)
+      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+
+      return new Promise((resolve, reject) => {
+        this.timeoutWriter = setTimeout(() => {
+          if (!this._currentFilePath)
+            return reject(new Error('currentFilePath not set'))
+
+          // Wait one event loop to give a chance for params to be set
+          // Save the file to disk
           window.electron
             .writeFile(this._currentFilePath, this.code ?? '')
+            .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
               console.error('error saving file', err)
               toast.error('Error saving file, please check file permissions')
+              reject(err)
             })
+        }, 1000)
       })
     } else {
       safeLSSetItem(PERSIST_CODE_KEY, this.code)

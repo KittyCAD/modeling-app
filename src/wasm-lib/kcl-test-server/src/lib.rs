@@ -31,7 +31,7 @@ pub struct ServerArgs {
     /// Where to find the engine.
     /// If none, uses the prod engine.
     /// This is useful for testing a local engine instance.
-    /// Overridden by the $LOCAL_ENGINE_ADDR environment variable.
+    /// Overridden by the $ZOO_HOST environment variable.
     pub engine_address: Option<String>,
 }
 
@@ -44,8 +44,8 @@ impl ServerArgs {
             num_engine_conns: pargs.opt_value_from_str("--num-engine-conns")?.unwrap_or(1),
             engine_address: pargs.opt_value_from_str("--engine-address")?,
         };
-        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-            println!("Overriding engine address via $LOCAL_ENGINE_ADDR");
+        if let Ok(addr) = std::env::var("ZOO_HOST") {
+            println!("Overriding engine address via $ZOO_HOST");
             args.engine_address = Some(addr);
         }
         println!("Config is {args:?}");
@@ -166,15 +166,19 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
     eprintln!("Executing {test_name}");
+    let mut id_generator = kcl_lib::executor::IdGenerator::default();
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
-    if let Err(e) = state.reset_scene(kcl_lib::executor::SourceRange::default()).await {
+    if let Err(e) = state
+        .reset_scene(&mut id_generator, kcl_lib::executor::SourceRange::default())
+        .await
+    {
         return kcl_err(e);
     }
     // Let users know if the test is taking a long time.
     let (done_tx, done_rx) = oneshot::channel::<()>();
     let timer = time_until(done_rx);
-    let snapshot = match state.execute_and_prepare_snapshot(&program).await {
+    let snapshot = match state.execute_and_prepare_snapshot(&program, id_generator, None).await {
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };

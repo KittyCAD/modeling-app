@@ -18,32 +18,31 @@ kittycad.workspace = true
 serde_json = "1.0.128"
 tokio = { version = "1.40.0", features = ["sync"] }
 toml = "0.8.19"
-uuid = { version = "1.10.0", features = ["v4", "js", "serde"] }
+uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.91"
-wasm-bindgen-futures = "0.4.42"
+wasm-bindgen-futures = "0.4.44"
 
 [dev-dependencies]
 anyhow = "1"
-hyper = { version = "0.14.29", features = ["server", "http1"] }
-image = { version = "0.25.1", default-features = false, features = ["png"] }
+image = { version = "0.25.3", default-features = false, features = ["png"] }
 kittycad = { workspace = true, default-features = true }
 kittycad-modeling-cmds = { workspace = true }
 pretty_assertions = "1.4.1"
-reqwest = { version = "0.11.26", default-features = false }
+reqwest = { version = "0.12", default-features = false }
 tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8"
-uuid = { version = "1.10.0", features = ["v4", "js", "serde"] }
+uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.7"
-futures = "0.3.30"
-js-sys = "0.3.69"
+futures = "0.3.31"
+js-sys = "0.3.72"
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
-wasm-bindgen-futures = { version = "0.4.41", features = ["futures-core-03-stream"] }
-wasm-streams = "0.4.0"
+wasm-bindgen-futures = { version = "0.4.44", features = ["futures-core-03-stream"] }
+wasm-streams = "0.4.1"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
-version = "0.3.69"
+version = "0.3.72"
 features = [
   "console",
   "HtmlTextAreaElement",
@@ -58,6 +57,10 @@ debug = true
 [profile.dev]
 debug = 0
 
+[profile.dev.package]
+insta.opt-level = 3
+similar.opt-level = 3
+
 [profile.test]
 debug = "line-tables-only"
 
@@ -67,13 +70,13 @@ members = [
 	"kcl",
 	"kcl-macros",
 	"kcl-test-server",
+	"kcl-to-core",
 ]
 
 [workspace.dependencies]
-http = "0.2.12"
-kittycad = { version = "0.3.20", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-session = "0.1.4"
-kittycad-modeling-cmds = { version = "0.2.64", features = ["websocket"] }
+http = "1"
+kittycad = { version = "0.3.25", default-features = false, features = ["js", "requests"] }
+kittycad-modeling-cmds = { version = "0.2.71", features = ["websocket"] }
 
 [[test]]
 name = "executor"
@@ -84,6 +87,6 @@ name = "modify"
 path = "tests/modify/main.rs"
 
 # Example: how to point modeling-api at a different repo (e.g. a branch or a local clone)
-#[patch."https://github.com/KittyCAD/modeling-api"]
+#[patch.crates-io]
 #kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
 #kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }

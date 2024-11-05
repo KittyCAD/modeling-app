@@ -1,5 +1,11 @@
 import { useMachine } from '@xstate/react'
-import React, { createContext, useEffect, useMemo, useRef } from 'react'
+import React, {
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useContext,
+} from 'react'
 import {
   Actor,
   AnyStateMachine,
@@ -28,7 +34,7 @@ import {
   editorManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { machineManager } from 'lib/machineManager'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -69,7 +75,7 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
@@ -83,6 +89,9 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
+import { uuidv4 } from 'lib/utils'
+import { IndexLoaderData } from 'lib/types'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -104,12 +113,18 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme, enableSSAO },
-        modeling: { defaultUnit, highlightEdges, showScaleGrid },
+        modeling: {
+          defaultUnit,
+          cameraProjection,
+          highlightEdges,
+          showScaleGrid,
+        },
       },
     },
   } = useSettingsAuthContext()
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
+  const { file } = useLoaderData() as IndexLoaderData
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -132,6 +147,8 @@ export const ModelingMachineProvider = ({
   //   >
   // )
 
+  const machineManager = useContext(MachineManagerContext)
+
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine.provide({
       actions: {
@@ -143,9 +160,18 @@ export const ModelingMachineProvider = ({
         },
         'sketch exit execute': ({ context: { store } }) => {
           ;(async () => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
+            })
+
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
@@ -236,6 +262,17 @@ export const ModelingMachineProvider = ({
             return {}
           },
         }),
+        'Center camera on selection': () => {
+          engineCommandManager
+            .sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_center_to_selection',
+              },
+            })
+            .catch(reportRejection)
+        },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
           if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
@@ -380,18 +417,35 @@ export const ModelingMachineProvider = ({
             return {}
           }
         ),
-        Make: ({ event }) => {
+        Make: ({ context, event }) => {
           if (event.type !== 'Make') return
           // Check if we already have an export intent.
-          if (engineCommandManager.exportIntent) {
+          if (engineCommandManager.exportInfo) {
             toast.error('Already exporting')
             return
           }
           // Set the export intent.
-          engineCommandManager.exportIntent = ExportIntent.Make
+          engineCommandManager.exportInfo = {
+            intent: ExportIntent.Make,
+            name: file?.name || '',
+          }
 
           // Set the current machine.
-          machineManager.currentMachine = event.data.machine
+          // Due to our use of singeton pattern, we need to do this to reliably
+          // update this object across React and non-React boundary.
+          // We need to do this eagerly because of the exportToEngine call below.
+          if (engineCommandManager.machineManager === null) {
+            console.warn(
+              "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+            )
+            return
+          } else {
+            engineCommandManager.machineManager.currentMachine =
+              event.data.machine
+          }
+
+          // Update the rest of the UI that needs to know the current machine
+          context.machineManager.setCurrentMachine(event.data.machine)
 
           const format: Models['OutputFormat_type'] = {
             type: 'stl',
@@ -417,12 +471,16 @@ export const ModelingMachineProvider = ({
         },
         'Engine export': ({ event }) => {
           if (event.type !== 'Export') return
-          if (engineCommandManager.exportIntent) {
+          if (engineCommandManager.exportInfo) {
             toast.error('Already exporting')
             return
           }
           // Set the export intent.
-          engineCommandManager.exportIntent = ExportIntent.Save
+          engineCommandManager.exportInfo = {
+            intent: ExportIntent.Save,
+            // This never gets used its only for make.
+            name: '',
+          }
 
           const format = {
             ...event.data,
@@ -609,6 +667,7 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
+          sceneInfra.camControls.enableRotate = false
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
           await letEngineAnimateAndSyncCamAfter(
@@ -913,7 +972,7 @@ export const ModelingMachineProvider = ({
             })
             let parsed = parse(recast(kclManager.ast))
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Program
+            parsed = parsed as Node<Program>
 
             const { modifiedAst: _modifiedAst, pathToReplacedNode } =
               moveValueIntoNewVariablePath(
@@ -924,7 +983,7 @@ export const ModelingMachineProvider = ({
               )
             parsed = parse(recast(_modifiedAst))
             if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Program
+            parsed = parsed as Node<Program>
             if (!pathToReplacedNode)
               return Promise.reject(new Error('No path to replaced node'))
 
@@ -959,6 +1018,7 @@ export const ModelingMachineProvider = ({
           ...modelingMachineDefaultContext.store,
           ...persistedContext,
         },
+        machineManager,
       },
       // devTools: true,
     }
@@ -974,6 +1034,7 @@ export const ModelingMachineProvider = ({
       highlightEdges: highlightEdges.current,
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
+      cameraProjection: cameraProjection.current,
     },
     token
   )
@@ -1027,6 +1088,11 @@ export const ModelingMachineProvider = ({
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {
     modelingSend({ type: 'Delete selection' })
+  })
+
+  // Allow ctrl+alt+c to center to selection
+  useHotkeys(['mod + alt + c'], () => {
+    modelingSend({ type: 'Center camera on selection' })
   })
 
   useStateMachineCommands({

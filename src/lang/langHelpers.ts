@@ -4,11 +4,15 @@ import {
   ProgramMemory,
   programMemoryInit,
   kclLint,
+  emptyExecState,
+  ExecState,
 } from 'lang/wasm'
 import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
+import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type ToolTip =
   | 'lineTo'
@@ -47,16 +51,18 @@ export async function executeAst({
   engineCommandManager,
   useFakeExecutor = false,
   programMemoryOverride,
+  idGenerator,
 }: {
-  ast: Program
+  ast: Node<Program>
   engineCommandManager: EngineCommandManager
   useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
+  idGenerator?: IdGenerator
   isInterrupted?: boolean
 }): Promise<{
   logs: string[]
   errors: KCLError[]
-  programMemory: ProgramMemory
+  execState: ExecState
   isInterrupted: boolean
 }> {
   try {
@@ -65,15 +71,21 @@ export async function executeAst({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.startNewSession()
     }
-    const programMemory = await (useFakeExecutor
+    const execState = await (useFakeExecutor
       ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
-      : _executor(ast, programMemoryInit(), engineCommandManager, false))
+      : _executor(
+          ast,
+          programMemoryInit(),
+          idGenerator,
+          engineCommandManager,
+          false
+        ))
 
     await engineCommandManager.waitForAllCommands()
     return {
       logs: [],
       errors: [],
-      programMemory,
+      execState,
       isInterrupted: false,
     }
   } catch (e: any) {
@@ -89,7 +101,7 @@ export async function executeAst({
       return {
         errors: [e],
         logs: [],
-        programMemory: ProgramMemory.empty(),
+        execState: emptyExecState(),
         isInterrupted,
       }
     } else {
@@ -97,7 +109,7 @@ export async function executeAst({
       return {
         logs: [e],
         errors: [],
-        programMemory: ProgramMemory.empty(),
+        execState: emptyExecState(),
         isInterrupted,
       }
     }
