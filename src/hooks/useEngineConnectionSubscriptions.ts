@@ -124,21 +124,23 @@ export function useEngineConnectionSubscriptions() {
               let planeOrFaceId = data.entity_id
               if (!planeOrFaceId) return
               if (
-                engineCommandManager.defaultPlanes?.xy === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.xz === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.yz === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.negXy === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.negXz === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.negYz === planeOrFaceId
+                engineCommandManager.defaultPlaneIdMap?.xy === planeOrFaceId ||
+                engineCommandManager.defaultPlaneIdMap?.xz === planeOrFaceId ||
+                engineCommandManager.defaultPlaneIdMap?.yz === planeOrFaceId ||
+                engineCommandManager.defaultPlaneIdMap?.negXy ===
+                  planeOrFaceId ||
+                engineCommandManager.defaultPlaneIdMap?.negXz ===
+                  planeOrFaceId ||
+                engineCommandManager.defaultPlaneIdMap?.negYz === planeOrFaceId
               ) {
                 let planeId = planeOrFaceId
                 const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-                  [engineCommandManager.defaultPlanes.xy]: 'XY',
-                  [engineCommandManager.defaultPlanes.xz]: 'XZ',
-                  [engineCommandManager.defaultPlanes.yz]: 'YZ',
-                  [engineCommandManager.defaultPlanes.negXy]: '-XY',
-                  [engineCommandManager.defaultPlanes.negXz]: '-XZ',
-                  [engineCommandManager.defaultPlanes.negYz]: '-YZ',
+                  [engineCommandManager.defaultPlaneIdMap.xy]: 'XY',
+                  [engineCommandManager.defaultPlaneIdMap.xz]: 'XZ',
+                  [engineCommandManager.defaultPlaneIdMap.yz]: 'YZ',
+                  [engineCommandManager.defaultPlaneIdMap.negXy]: '-XY',
+                  [engineCommandManager.defaultPlaneIdMap.negXz]: '-XZ',
+                  [engineCommandManager.defaultPlaneIdMap.negYz]: '-YZ',
                 }
                 // TODO can we get this information from rust land when it creates the default planes?
                 // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
@@ -150,27 +152,33 @@ export function useEngineConnectionSubscriptions() {
                   .clone()
                   .sub(sceneInfra.camControls.target)
 
-                if (engineCommandManager.defaultPlanes?.xy === planeId) {
+                if (engineCommandManager.defaultPlaneIdMap?.xy === planeId) {
                   zAxis = [0, 0, 1]
                   yAxis = [0, 1, 0]
                   if (camVector.z < 0) {
                     zAxis = [0, 0, -1]
-                    planeId = engineCommandManager.defaultPlanes?.negXy || ''
+                    planeId =
+                      engineCommandManager.defaultPlaneIdMap?.negXy || ''
                   }
-                } else if (engineCommandManager.defaultPlanes?.yz === planeId) {
+                } else if (
+                  engineCommandManager.defaultPlaneIdMap?.yz === planeId
+                ) {
                   zAxis = [1, 0, 0]
                   yAxis = [0, 0, 1]
                   if (camVector.x < 0) {
                     zAxis = [-1, 0, 0]
-                    planeId = engineCommandManager.defaultPlanes?.negYz || ''
+                    planeId =
+                      engineCommandManager.defaultPlaneIdMap?.negYz || ''
                   }
-                } else if (engineCommandManager.defaultPlanes?.xz === planeId) {
+                } else if (
+                  engineCommandManager.defaultPlaneIdMap?.xz === planeId
+                ) {
                   zAxis = [0, 1, 0]
                   yAxis = [0, 0, 1]
-                  planeId = engineCommandManager.defaultPlanes?.negXz || ''
+                  planeId = engineCommandManager.defaultPlaneIdMap?.negXz || ''
                   if (camVector.y < 0) {
                     zAxis = [0, -1, 0]
-                    planeId = engineCommandManager.defaultPlanes?.xz || ''
+                    planeId = engineCommandManager.defaultPlaneIdMap?.xz || ''
                   }
                 }
 

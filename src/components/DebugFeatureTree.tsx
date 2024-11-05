@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { engineCommandManager } from 'lib/singletons'
 import { DebugDisplayArray } from './DebugDisplayObj'
-import { computeFeatureTree } from 'lib/computeFeatureTree'
+import { computeFeatureTree } from 'lang/std/artifactGraph'
 
 export function DebugFeatureTree() {
   const featureTree = useMemo(() => {

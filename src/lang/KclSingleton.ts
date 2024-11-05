@@ -535,16 +535,16 @@ export class KclManager {
   }
 
   get defaultPlanes(): DefaultPlanesKclManager | null {
-    if (this.engineCommandManager.defaultPlanes === null) return null
+    if (this.engineCommandManager.defaultPlaneIdMap === null) return null
     const newPlanes = ['xy', 'yz', 'xz'].reduce((acc, plane) => {
       const frontPlaneName = plane as FrontPlane
       const backPlaneName = `neg${
         plane.charAt(0).toUpperCase() + plane.slice(1)
       }` as BackPlane
       const frontId =
-        this.engineCommandManager.defaultPlanes![frontPlaneName] || ''
+        this.engineCommandManager.defaultPlaneIdMap![frontPlaneName] || ''
       const backId =
-        this.engineCommandManager.defaultPlanes![backPlaneName] || ''
+        this.engineCommandManager.defaultPlaneIdMap![backPlaneName] || ''
       const newPlane = {
         ...acc,
         [plane]: {
@@ -559,7 +559,14 @@ export class KclManager {
   }
 
   showPlanes() {
-    if (!this.defaultPlanes) return Promise.all([])
+    if (!this.defaultPlanes) {
+      this._defaultPlanesVisibility = {
+        xy: true,
+        yz: true,
+        xz: true,
+      }
+      return Promise.all([])
+    }
     const thePromises = [
       this.setPlaneVisibility('xy', true),
       this.setPlaneVisibility('yz', true),
@@ -569,7 +576,15 @@ export class KclManager {
   }
 
   hidePlanes() {
-    if (!this.defaultPlanes) return Promise.all([])
+    console.log('hiding planes')
+    if (!this.defaultPlanes) {
+      this._defaultPlanesVisibility = {
+        xy: false,
+        yz: false,
+        xz: false,
+      }
+      return Promise.all([])
+    }
     const thePromises = [
       this.setPlaneVisibility('xy', false),
       this.setPlaneVisibility('yz', false),
@@ -577,7 +592,15 @@ export class KclManager {
     ]
     return Promise.all(thePromises)
   }
-  setPlaneVisibility(plane: keyof DefaultPlanesKclManager, visible: boolean) {
+  async setPlaneVisibility(
+    plane: keyof DefaultPlanesKclManager,
+    visible: boolean
+  ) {
+    console.log('setting plane visibility initial check', {
+      plane,
+      visible,
+      defaultPlanes: this.defaultPlanes,
+    })
     if (!this.defaultPlanes) return Promise.resolve(false)
     const basePlane = plane.toLowerCase().replace('neg', '') as FrontPlane
 
@@ -591,7 +614,7 @@ export class KclManager {
       return Promise.resolve(false)
 
     return Promise.all([
-      this.engineCommandManager.setPlaneHidden(
+      this.engineCommandManager.setObjectVisibility(
         this.defaultPlanes![basePlane].frontId,
         !visible
       ),

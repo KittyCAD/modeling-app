@@ -219,13 +219,13 @@ export class CoreDumpManager {
       }
 
       // default planes - this.engineCommandManager.defaultPlanes
-      if (this.engineCommandManager?.defaultPlanes) {
+      if (this.engineCommandManager?.defaultPlaneIdMap) {
         debugLog(
           'CoreDump: Engine Command Manager default planes',
-          this.engineCommandManager.defaultPlanes
+          this.engineCommandManager.defaultPlaneIdMap
         )
         clientState.engine_command_manager.default_planes = structuredClone(
-          this.engineCommandManager.defaultPlanes
+          this.engineCommandManager.defaultPlaneIdMap
         )
       }
 

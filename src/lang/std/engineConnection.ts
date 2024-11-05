@@ -1341,7 +1341,16 @@ export class EngineCommandManager extends EventTarget {
    */
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes | null = null
+  defaultPlaneIdMap: DefaultPlanes | null = null
+  defaultPlanes:
+    | {
+        [Plane in keyof DefaultPlanes]: {
+          id: string
+          name: string
+          visible: boolean
+        }
+      }
+    | null = null
   commandLogs: CommandLog[] = []
   pendingExport?: {
     /** The id of the shared loading/success/error toast for export */
@@ -1869,13 +1878,13 @@ export class EngineCommandManager extends EventTarget {
   }
   // We make this a separate function so we can call it from wasm.
   clearDefaultPlanes() {
-    this.defaultPlanes = null
+    this.defaultPlaneIdMap = null
   }
   async wasmGetDefaultPlanes(): Promise<string> {
-    if (this.defaultPlanes === null) {
+    if (this.defaultPlaneIdMap === null) {
       await this.initPlanes()
     }
-    return JSON.stringify(this.defaultPlanes)
+    return JSON.stringify(this.defaultPlaneIdMap)
   }
   endSession() {
     const deleteCmd: EngineCommand = {
@@ -2147,18 +2156,24 @@ export class EngineCommandManager extends EventTarget {
   async initPlanes() {
     if (this.planesInitialized()) return
     const planes = await this.makeDefaultPlanes()
-    this.defaultPlanes = planes
+    this.defaultPlaneIdMap = planes
   }
   planesInitialized(): boolean {
     return (
-      !!this.defaultPlanes &&
-      this.defaultPlanes.xy !== '' &&
-      this.defaultPlanes.yz !== '' &&
-      this.defaultPlanes.xz !== ''
+      !!this.defaultPlaneIdMap &&
+      this.defaultPlaneIdMap.xy !== '' &&
+      this.defaultPlaneIdMap.yz !== '' &&
+      this.defaultPlaneIdMap.xz !== ''
     )
   }
 
-  async setPlaneHidden(id: string, hidden: boolean) {
+  /**
+   * Mark an engine-side object as hidden or visible.
+   * @param id Object's entity UUID
+   * @param shouldHide Whether to hide or show the object
+   * @returns
+   */
+  async setObjectVisibility(id: string, shouldHide: boolean) {
     if (this.engineConnection === undefined) return
 
     // Can't send commands if there's no connection
@@ -2176,7 +2191,7 @@ export class EngineCommandManager extends EventTarget {
       cmd: {
         type: 'object_visible',
         object_id: id,
-        hidden: hidden,
+        hidden: shouldHide,
       },
     })
   }
