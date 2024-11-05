@@ -1,0 +1,879 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing comparisons.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "word",
+      "start": 0,
+      "end": 6,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 6,
+      "end": 7,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 7,
+      "end": 8,
+      "value": "3"
+    },
+    {
+      "type": "whitespace",
+      "start": 8,
+      "end": 9,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 9,
+      "end": 11,
+      "value": "=="
+    },
+    {
+      "type": "whitespace",
+      "start": 11,
+      "end": 12,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 12,
+      "end": 13,
+      "value": "3"
+    },
+    {
+      "type": "comma",
+      "start": 13,
+      "end": 14,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 14,
+      "end": 15,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 15,
+      "end": 25,
+      "value": "\"equality\""
+    },
+    {
+      "type": "brace",
+      "start": 25,
+      "end": 26,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 26,
+      "end": 27,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 27,
+      "end": 33,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 33,
+      "end": 34,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 34,
+      "end": 37,
+      "value": "3.0"
+    },
+    {
+      "type": "whitespace",
+      "start": 37,
+      "end": 38,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 38,
+      "end": 40,
+      "value": "=="
+    },
+    {
+      "type": "whitespace",
+      "start": 40,
+      "end": 41,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 41,
+      "end": 44,
+      "value": "3.0"
+    },
+    {
+      "type": "comma",
+      "start": 44,
+      "end": 45,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 45,
+      "end": 46,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 46,
+      "end": 66,
+      "value": "\"equality of floats\""
+    },
+    {
+      "type": "brace",
+      "start": 66,
+      "end": 67,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 67,
+      "end": 68,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 68,
+      "end": 74,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 74,
+      "end": 75,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 75,
+      "end": 76,
+      "value": "3"
+    },
+    {
+      "type": "whitespace",
+      "start": 76,
+      "end": 77,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 77,
+      "end": 79,
+      "value": "!="
+    },
+    {
+      "type": "whitespace",
+      "start": 79,
+      "end": 80,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 80,
+      "end": 81,
+      "value": "4"
+    },
+    {
+      "type": "comma",
+      "start": 81,
+      "end": 82,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 82,
+      "end": 83,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 83,
+      "end": 97,
+      "value": "\"non-equality\""
+    },
+    {
+      "type": "brace",
+      "start": 97,
+      "end": 98,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 98,
+      "end": 99,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 99,
+      "end": 105,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 105,
+      "end": 106,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 106,
+      "end": 109,
+      "value": "3.0"
+    },
+    {
+      "type": "whitespace",
+      "start": 109,
+      "end": 110,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 110,
+      "end": 112,
+      "value": "!="
+    },
+    {
+      "type": "whitespace",
+      "start": 112,
+      "end": 113,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 113,
+      "end": 116,
+      "value": "4.0"
+    },
+    {
+      "type": "comma",
+      "start": 116,
+      "end": 117,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 117,
+      "end": 118,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 118,
+      "end": 142,
+      "value": "\"non-equality of floats\""
+    },
+    {
+      "type": "brace",
+      "start": 142,
+      "end": 143,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 143,
+      "end": 144,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 144,
+      "end": 150,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 150,
+      "end": 151,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 151,
+      "end": 152,
+      "value": "3"
+    },
+    {
+      "type": "whitespace",
+      "start": 152,
+      "end": 153,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 153,
+      "end": 154,
+      "value": "<"
+    },
+    {
+      "type": "whitespace",
+      "start": 154,
+      "end": 155,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 155,
+      "end": 156,
+      "value": "4"
+    },
+    {
+      "type": "comma",
+      "start": 156,
+      "end": 157,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 157,
+      "end": 158,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 158,
+      "end": 162,
+      "value": "\"lt\""
+    },
+    {
+      "type": "brace",
+      "start": 162,
+      "end": 163,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 163,
+      "end": 164,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 164,
+      "end": 170,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 170,
+      "end": 171,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 171,
+      "end": 172,
+      "value": "3"
+    },
+    {
+      "type": "whitespace",
+      "start": 172,
+      "end": 173,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 173,
+      "end": 175,
+      "value": "<="
+    },
+    {
+      "type": "whitespace",
+      "start": 175,
+      "end": 176,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 176,
+      "end": 177,
+      "value": "4"
+    },
+    {
+      "type": "comma",
+      "start": 177,
+      "end": 178,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 178,
+      "end": 179,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 179,
+      "end": 200,
+      "value": "\"lte but actually lt\""
+    },
+    {
+      "type": "brace",
+      "start": 200,
+      "end": 201,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 201,
+      "end": 202,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 202,
+      "end": 208,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 208,
+      "end": 209,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 209,
+      "end": 210,
+      "value": "4"
+    },
+    {
+      "type": "whitespace",
+      "start": 210,
+      "end": 211,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 211,
+      "end": 213,
+      "value": "<="
+    },
+    {
+      "type": "whitespace",
+      "start": 213,
+      "end": 214,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 214,
+      "end": 215,
+      "value": "4"
+    },
+    {
+      "type": "comma",
+      "start": 215,
+      "end": 216,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 216,
+      "end": 217,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 217,
+      "end": 238,
+      "value": "\"lte but actually eq\""
+    },
+    {
+      "type": "brace",
+      "start": 238,
+      "end": 239,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 239,
+      "end": 240,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 240,
+      "end": 246,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 246,
+      "end": 247,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 247,
+      "end": 248,
+      "value": "4"
+    },
+    {
+      "type": "whitespace",
+      "start": 248,
+      "end": 249,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 249,
+      "end": 250,
+      "value": ">"
+    },
+    {
+      "type": "whitespace",
+      "start": 250,
+      "end": 251,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 251,
+      "end": 252,
+      "value": "3"
+    },
+    {
+      "type": "comma",
+      "start": 252,
+      "end": 253,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 253,
+      "end": 254,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 254,
+      "end": 258,
+      "value": "\"gt\""
+    },
+    {
+      "type": "brace",
+      "start": 258,
+      "end": 259,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 259,
+      "end": 260,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 260,
+      "end": 266,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 266,
+      "end": 267,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 267,
+      "end": 268,
+      "value": "4"
+    },
+    {
+      "type": "whitespace",
+      "start": 268,
+      "end": 269,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 269,
+      "end": 271,
+      "value": ">="
+    },
+    {
+      "type": "whitespace",
+      "start": 271,
+      "end": 272,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 272,
+      "end": 273,
+      "value": "3"
+    },
+    {
+      "type": "comma",
+      "start": 273,
+      "end": 274,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 274,
+      "end": 275,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 275,
+      "end": 296,
+      "value": "\"gte but actually gt\""
+    },
+    {
+      "type": "brace",
+      "start": 296,
+      "end": 297,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 297,
+      "end": 298,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 298,
+      "end": 304,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 304,
+      "end": 305,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 305,
+      "end": 306,
+      "value": "3"
+    },
+    {
+      "type": "whitespace",
+      "start": 306,
+      "end": 307,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 307,
+      "end": 309,
+      "value": ">="
+    },
+    {
+      "type": "whitespace",
+      "start": 309,
+      "end": 310,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 310,
+      "end": 311,
+      "value": "3"
+    },
+    {
+      "type": "comma",
+      "start": 311,
+      "end": 312,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 312,
+      "end": 313,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 313,
+      "end": 334,
+      "value": "\"gte but actually eq\""
+    },
+    {
+      "type": "brace",
+      "start": 334,
+      "end": 335,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 335,
+      "end": 337,
+      "value": "\n\n"
+    },
+    {
+      "type": "word",
+      "start": 337,
+      "end": 343,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 343,
+      "end": 344,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 344,
+      "end": 347,
+      "value": "0.0"
+    },
+    {
+      "type": "whitespace",
+      "start": 347,
+      "end": 348,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 348,
+      "end": 350,
+      "value": "=="
+    },
+    {
+      "type": "whitespace",
+      "start": 350,
+      "end": 351,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 351,
+      "end": 354,
+      "value": "0.0"
+    },
+    {
+      "type": "comma",
+      "start": 354,
+      "end": 355,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 355,
+      "end": 356,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 356,
+      "end": 374,
+      "value": "\"equality of zero\""
+    },
+    {
+      "type": "brace",
+      "start": 374,
+      "end": 375,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 375,
+      "end": 376,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 376,
+      "end": 382,
+      "value": "assert"
+    },
+    {
+      "type": "brace",
+      "start": 382,
+      "end": 383,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 383,
+      "end": 386,
+      "value": "0.0"
+    },
+    {
+      "type": "whitespace",
+      "start": 386,
+      "end": 387,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 387,
+      "end": 389,
+      "value": "=="
+    },
+    {
+      "type": "whitespace",
+      "start": 389,
+      "end": 390,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 390,
+      "end": 391,
+      "value": "-"
+    },
+    {
+      "type": "number",
+      "start": 391,
+      "end": 394,
+      "value": "0.0"
+    },
+    {
+      "type": "comma",
+      "start": 394,
+      "end": 395,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 395,
+      "end": 396,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 396,
+      "end": 427,
+      "value": "\"equality of zero and neg zero\""
+    },
+    {
+      "type": "brace",
+      "start": 427,
+      "end": 428,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 428,
+      "end": 429,
+      "value": "\n"
+    }
+  ]
+}
