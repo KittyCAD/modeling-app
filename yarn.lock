@@ -1493,13 +1493,13 @@
     fs-extra "^10.0.0"
     got "^11.8.5"
 
-"@electron-forge/plugin-auto-unpack-natives@^7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@electron-forge/plugin-auto-unpack-natives/-/plugin-auto-unpack-natives-7.4.0.tgz#34382b91d45691824f26503af7b5f585af7ee3f1"
-  integrity sha512-jJ/v2blH32bcvdlJbeeW/yO99K9SduW8yrS7zuFN6y+B1cmzLd+S7L8oCcOghFDMAlYjQaBlnCe/nMJbT9mN4g==
+"@electron-forge/plugin-auto-unpack-natives@^7.5.0":
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/@electron-forge/plugin-auto-unpack-natives/-/plugin-auto-unpack-natives-7.5.0.tgz#cea6a845a5c367c2579dffc05ecf3aa3d1d9ecb5"
+  integrity sha512-cT/yTAr5Zd81HANi5bdyCoSG9nzIrB1WIEkFA7sWuyATiOjk9SGKn1aM543XWJ/TFkTg0800JpyocsSC9wOzEg==
   dependencies:
-    "@electron-forge/plugin-base" "7.4.0"
-    "@electron-forge/shared-types" "7.4.0"
+    "@electron-forge/plugin-base" "7.5.0"
+    "@electron-forge/shared-types" "7.5.0"
 
 "@electron-forge/plugin-base@7.4.0":
   version "7.4.0"
@@ -1507,6 +1507,13 @@
   integrity sha512-LcTNtEc2YaWvhhqWVIfdJ+J0/krSgc2dqYAHhOH2aLUSm9End3dKO/PZ1Y6DPsiPiJKHnSLBJ/XBN/16NY4Sjw==
   dependencies:
     "@electron-forge/shared-types" "7.4.0"
+
+"@electron-forge/plugin-base@7.5.0":
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/@electron-forge/plugin-base/-/plugin-base-7.5.0.tgz#f98bbe2d3d52c197fa7bf5c3fea0714776de4b0c"
+  integrity sha512-44AbXSb5lDY8uHIo0mJ91atOSWgxv3iuECk07/gDBiuMPX62dwHnLteEjQF4GBXJZTpnV7SxhD+d2AUBQmoojw==
+  dependencies:
+    "@electron-forge/shared-types" "7.5.0"
 
 "@electron-forge/plugin-fuses@^7.4.0":
   version "7.4.0"
