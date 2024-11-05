@@ -1,0 +1,466 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing index_of_array.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declarations": [
+          {
+            "end": 55,
+            "id": {
+              "end": 40,
+              "name": "array",
+              "start": 35,
+              "type": "Identifier"
+            },
+            "init": {
+              "elements": [
+                {
+                  "end": 46,
+                  "raw": "90",
+                  "start": 44,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 90
+                },
+                {
+                  "end": 50,
+                  "raw": "91",
+                  "start": 48,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 91
+                },
+                {
+                  "end": 54,
+                  "raw": "92",
+                  "start": 52,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 92
+                }
+              ],
+              "end": 55,
+              "start": 43,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            },
+            "start": 35,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 55,
+        "kind": "const",
+        "start": 35,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declarations": [
+          {
+            "end": 101,
+            "id": {
+              "end": 90,
+              "name": "result0",
+              "start": 83,
+              "type": "Identifier"
+            },
+            "init": {
+              "computed": false,
+              "end": 101,
+              "object": {
+                "end": 98,
+                "name": "array",
+                "start": 93,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "end": 100,
+                "raw": "1",
+                "start": 99,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1
+              },
+              "start": 93,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "start": 83,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 101,
+        "kind": "const",
+        "start": 83,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 161,
+        "expression": {
+          "arguments": [
+            {
+              "end": 129,
+              "name": "result0",
+              "start": 122,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 133,
+              "raw": "91",
+              "start": 131,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 91
+            },
+            {
+              "end": 160,
+              "raw": "\"Literal property lookup\"",
+              "start": 135,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "end": 121,
+            "name": "assertLessThanOrEq",
+            "start": 103,
+            "type": "Identifier"
+          },
+          "end": 161,
+          "optional": false,
+          "start": 103,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 103,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 223,
+        "expression": {
+          "arguments": [
+            {
+              "end": 191,
+              "name": "result0",
+              "start": 184,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 195,
+              "raw": "91",
+              "start": 193,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 91
+            },
+            {
+              "end": 222,
+              "raw": "\"Literal property lookup\"",
+              "start": 197,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Literal property lookup"
+            }
+          ],
+          "callee": {
+            "end": 183,
+            "name": "assertGreaterThanOrEq",
+            "start": 162,
+            "type": "Identifier"
+          },
+          "end": 223,
+          "optional": false,
+          "start": 162,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 162,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "declarations": [
+          {
+            "end": 266,
+            "id": {
+              "end": 253,
+              "name": "i",
+              "start": 252,
+              "type": "Identifier"
+            },
+            "init": {
+              "arguments": [
+                {
+                  "end": 265,
+                  "left": {
+                    "end": 261,
+                    "raw": "1",
+                    "start": 260,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 1
+                  },
+                  "operator": "+",
+                  "right": {
+                    "end": 265,
+                    "raw": "0",
+                    "start": 264,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 0
+                  },
+                  "start": 260,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              ],
+              "callee": {
+                "end": 259,
+                "name": "int",
+                "start": 256,
+                "type": "Identifier"
+              },
+              "end": 266,
+              "optional": false,
+              "start": 256,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            "start": 252,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 266,
+        "kind": "const",
+        "start": 252,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declarations": [
+          {
+            "end": 285,
+            "id": {
+              "end": 274,
+              "name": "result1",
+              "start": 267,
+              "type": "Identifier"
+            },
+            "init": {
+              "computed": true,
+              "end": 285,
+              "object": {
+                "end": 282,
+                "name": "array",
+                "start": 277,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "end": 284,
+                "name": "i",
+                "start": 283,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 277,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "start": 267,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 285,
+        "kind": "const",
+        "start": 267,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 346,
+        "expression": {
+          "arguments": [
+            {
+              "end": 313,
+              "name": "result1",
+              "start": 306,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 317,
+              "raw": "91",
+              "start": 315,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 91
+            },
+            {
+              "end": 345,
+              "raw": "\"Computed property lookup\"",
+              "start": 319,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "end": 305,
+            "name": "assertLessThanOrEq",
+            "start": 287,
+            "type": "Identifier"
+          },
+          "end": 346,
+          "optional": false,
+          "start": 287,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 287,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 409,
+        "expression": {
+          "arguments": [
+            {
+              "end": 376,
+              "name": "result1",
+              "start": 369,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 380,
+              "raw": "91",
+              "start": 378,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 91
+            },
+            {
+              "end": 408,
+              "raw": "\"Computed property lookup\"",
+              "start": 382,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Computed property lookup"
+            }
+          ],
+          "callee": {
+            "end": 368,
+            "name": "assertGreaterThanOrEq",
+            "start": 347,
+            "type": "Identifier"
+          },
+          "end": 409,
+          "optional": false,
+          "start": 347,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 347,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 410,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 80,
+            "start": 55,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: literal index.",
+              "style": "line"
+            }
+          },
+          {
+            "end": 83,
+            "start": 80,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "end": 103,
+            "start": 101,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "3": [
+          {
+            "end": 249,
+            "start": 223,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Test: computed index.",
+              "style": "line"
+            }
+          },
+          {
+            "end": 252,
+            "start": 249,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "end": 287,
+            "start": 285,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 32,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "This tests indexing an array.",
+            "style": "line"
+          }
+        },
+        {
+          "end": 35,
+          "start": 32,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

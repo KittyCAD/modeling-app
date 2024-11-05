@@ -85,7 +85,7 @@ jobs:
       - name: Prepare electron-builder.yml file for updater test
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
         run: |
-          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test-release-notes"' electron-builder.yml
+          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test"' electron-builder.yml
 
       - uses: actions/upload-artifact@v3
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
@@ -360,12 +360,12 @@ jobs:
         run: "ls -R out"
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.6'
+        uses: 'google-github-actions/auth@v2.1.7'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.0
+        uses: google-github-actions/setup-gcloud@v2.1.2
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 

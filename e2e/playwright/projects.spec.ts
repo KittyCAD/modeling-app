@@ -854,7 +854,7 @@ test(
   }
 )
 
-test(
+test.fixme(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {

@@ -4,9 +4,9 @@ set -euo pipefail
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"
-    if [[ "$3" == "ubuntu-latest" ]]; then
+    if [[ "$3" == ubuntu-latest* ]]; then
         yarn test:playwright:browser:chrome:ubuntu -- --shard=$1/$2 || true
-    elif [[ "$3" == "windows-latest" ]]; then
+    elif [[ "$3" == windows-latest* ]]; then
         yarn test:playwright:browser:chrome:windows -- --shard=$1/$2 || true
     else
         echo "Do not run playwright. Unable to detect os runtime."
@@ -26,9 +26,9 @@ while [[ $retry -le $max_retrys ]]; do
         if [[ $failed_tests -gt 0 ]]; then
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
-            if [[ "$3" == "ubuntu-latest" ]]; then
+            if [[ "$3" == ubuntu-latest* ]]; then
                 yarn test:playwright:browser:chrome:ubuntu -- --last-failed || true
-            elif [[ "$3" == "windows-latest" ]]; then
+            elif [[ "$3" == windows-latest* ]]; then
                 yarn test:playwright:browser:chrome:windows -- --last-failed || true
             else
                 echo "Do not run playwright. Unable to detect os runtime."
