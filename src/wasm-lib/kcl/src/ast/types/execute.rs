@@ -6,7 +6,7 @@ use super::{
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, Sketch, SourceRange, StatementKind, TagEngineInfo,
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, SourceRange, StatementKind, TagEngineInfo,
         TagIdentifier, UserVal,
     },
     std::FunctionKind,
@@ -325,13 +325,10 @@ impl Node<CallExpression> {
                 // TODO: This could probably be done in a better way, but as of now this was my only idea
                 // and it works.
                 match result {
-                    KclValue::UserVal(ref mut uval) => {
-                        uval.mutate(|sketch: &mut Sketch| {
-                            for (_, tag) in sketch.tags.iter() {
-                                exec_state.memory.update_tag(&tag.value, tag.clone())?;
-                            }
-                            Ok::<_, KclError>(())
-                        })?;
+                    KclValue::Sketch(ref mut sketch) => {
+                        for (_, tag) in sketch.tags.iter() {
+                            exec_state.memory.update_tag(&tag.value, tag.clone())?;
+                        }
                     }
                     KclValue::Solid(ref mut solid) => {
                         for value in &solid.value {

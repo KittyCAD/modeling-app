@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, Metadata, Plane, UserVal},
+    executor::{ExecState, KclValue, Plane},
     std::{sketch::PlaneData, Args},
 };
 
@@ -50,15 +50,9 @@ impl From<StandardPlane> for PlaneData {
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
-
-    let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
-
-    Ok(KclValue::UserVal(UserVal::new(
-        vec![Metadata {
-            source_range: args.source_range,
-        }],
-        plane,
-    )))
+    let plane_data = inner_offset_plane(std_plane, offset, exec_state).await?;
+    let plane = Plane::from_plane_data(plane_data, exec_state);
+    Ok(KclValue::Plane(Box::new(plane)))
 }
 
 /// Offset a plane by a distance along its normal.

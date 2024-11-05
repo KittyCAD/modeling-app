@@ -411,10 +411,6 @@ pub enum KclValue {
 }
 
 impl KclValue {
-    pub(crate) fn new_user_val<T: Serialize>(meta: Vec<Metadata>, val: T) -> Self {
-        Self::UserVal(UserVal::new(meta, val))
-    }
-
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
             KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
@@ -469,14 +465,16 @@ impl KclValue {
 
 impl From<SketchSet> for KclValue {
     fn from(sg: SketchSet) -> Self {
-        KclValue::UserVal(UserVal::new(sg.meta(), sg))
+        match sg {
+            SketchSet::Sketch(sketch) => KclValue::Sketch(sketch),
+            SketchSet::Sketches(value) => KclValue::Sketches { value },
+        }
     }
 }
 
 impl From<Vec<Box<Sketch>>> for KclValue {
     fn from(sg: Vec<Box<Sketch>>) -> Self {
-        let meta = sg.iter().flat_map(|sg| sg.meta.clone()).collect();
-        KclValue::UserVal(UserVal::new(meta, sg))
+        KclValue::Sketches { value: sg }
     }
 }
 
@@ -849,42 +847,6 @@ pub struct UserVal {
     pub value: serde_json::Value,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
-}
-
-impl UserVal {
-    pub fn new<T: serde::Serialize>(meta: Vec<Metadata>, val: T) -> Self {
-        Self {
-            meta,
-            value: serde_json::to_value(val).expect("all KCL values should be compatible with JSON"),
-        }
-    }
-
-    /// If the UserVal matches the type `T`, return it.
-    pub fn get<T: serde::de::DeserializeOwned>(&self) -> Option<(T, Vec<Metadata>)> {
-        let meta = self.meta.clone();
-        // TODO: This clone might cause performance problems, it'll happen a lot.
-        let res: Result<T, _> = serde_json::from_value(self.value.clone());
-        if let Ok(t) = res {
-            Some((t, meta))
-        } else {
-            None
-        }
-    }
-
-    /// If the UserVal matches the type `T`, then mutate it via the given closure.
-    /// If the closure returns Err, the mutation won't be applied.
-    pub fn mutate<T, F, E>(&mut self, mutate: F) -> Result<(), E>
-    where
-        T: serde::de::DeserializeOwned + Serialize,
-        F: FnOnce(&mut T) -> Result<(), E>,
-    {
-        let Some((mut val, meta)) = self.get::<T>() else {
-            return Ok(());
-        };
-        mutate(&mut val)?;
-        *self = Self::new(meta, val);
-        Ok(())
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
