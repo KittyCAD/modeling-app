@@ -370,7 +370,7 @@ jobs:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
       - name: Upload release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.0
+        uses: google-github-actions/upload-cloud-storage@v2.2.1
         with:
           path: out
           glob: 'Zoo*'
@@ -378,7 +378,7 @@ jobs:
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload update endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.0
+        uses: google-github-actions/upload-cloud-storage@v2.2.1
         with:
           path: out
           glob: 'latest*'
@@ -386,7 +386,7 @@ jobs:
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.0
+        uses: google-github-actions/upload-cloud-storage@v2.2.1
         with:
           path: last_download.json
           destination: ${{ env.BUCKET_DIR }}

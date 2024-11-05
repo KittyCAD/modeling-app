@@ -76,7 +76,7 @@ members = [
 [workspace.dependencies]
 http = "1"
 kittycad = { version = "0.3.25", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.71", features = ["websocket"] }
+kittycad-modeling-cmds = { version = "0.2.72", features = ["websocket"] }
 
 [[test]]
 name = "executor"
