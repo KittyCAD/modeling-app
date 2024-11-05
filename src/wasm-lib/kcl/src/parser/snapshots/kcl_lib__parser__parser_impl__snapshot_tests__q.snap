@@ -3,66 +3,66 @@ source: kcl/src/parser/parser_impl.rs
 expression: actual
 ---
 {
-  "start": 0,
-  "end": 30,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 30,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 30,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 12,
-            "name": "height"
+            "name": "height",
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "ArrayExpression",
-            "type": "ArrayExpression",
-            "start": 15,
-            "end": 30,
             "elements": [
               {
-                "type": "MemberExpression",
-                "type": "MemberExpression",
-                "start": 17,
+                "computed": false,
                 "end": 25,
                 "object": {
-                  "type": "Identifier",
-                  "type": "Identifier",
-                  "start": 17,
                   "end": 20,
-                  "name": "obj"
+                  "name": "obj",
+                  "start": 17,
+                  "type": "Identifier",
+                  "type": "Identifier"
                 },
                 "property": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 21,
                   "end": 24,
-                  "value": "a",
-                  "raw": "\"a\""
+                  "raw": "\"a\"",
+                  "start": 21,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "a"
                 },
-                "computed": false
+                "start": 17,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
               {
-                "type": "Literal",
-                "type": "Literal",
-                "start": 27,
                 "end": 28,
-                "value": 0,
-                "raw": "0"
+                "raw": "0",
+                "start": 27,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 0
               }
-            ]
-          }
+            ],
+            "end": 30,
+            "start": 15,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
-      "kind": "const"
+      "end": 30,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
-  ]
+  ],
+  "end": 30,
+  "start": 0
 }
