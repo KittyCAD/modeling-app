@@ -54,7 +54,6 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
     let mut origin: Option<(f64, f64, f64)> = None;
     let mut x_vec: Option<(f64, f64, f64)> = None;
     let mut y_vec: Option<(f64, f64, f64)> = None;
-    // let mut z_vec: Option<(f64, f64, f64)> = None;
 
     for property in &plane.inner.properties {
         let Expr::ObjectExpression(ref point) = property.inner.value else {
@@ -71,7 +70,6 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
             "origin" => origin = Some((x, y, z)),
             "xAxis" => x_vec = Some((x, y, z)),
             "yAxis" => y_vec = Some((x, y, z)),
-            // "zAxis" => z_vec = Some((x, y, z)),
             _ => {
                 continue;
             }
@@ -81,7 +79,6 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
     let Some(origin) = origin else { return Ok(vec![]) };
     let Some(x_vec) = x_vec else { return Ok(vec![]) };
     let Some(y_vec) = y_vec else { return Ok(vec![]) };
-    // let Some(z_vec) = z_vec else { return Ok(vec![]) };
 
     if [origin.0, origin.1, origin.2].iter().filter(|v| **v == 0.0).count() < 2 {
         return Ok(vec![]);
