@@ -174,27 +174,31 @@ export const KclEditorPane = () => {
   const initialCode = useRef(codeManager.code)
 
   return (
-    <div
-      id="code-mirror-override"
-      className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
-    >
-      <CodeEditor
-        initialDocValue={initialCode.current}
-        extensions={editorExtensions}
-        theme={theme}
-        onCreateEditor={(_editorView) => {
-          if (_editorView === null) return
+    <div className="relative">
+      <div
+        id="code-mirror-override"
+        className={
+          'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')
+        }
+      >
+        <CodeEditor
+          initialDocValue={initialCode.current}
+          extensions={editorExtensions}
+          theme={theme}
+          onCreateEditor={(_editorView) => {
+            if (_editorView === null) return
 
-          editorManager.setEditorView(_editorView)
+            editorManager.setEditorView(_editorView)
 
-          // On first load of this component, ensure we show the current errors
-          // in the editor.
-          // Make sure we don't add them twice.
-          if (diagnosticCount(_editorView.state) === 0) {
-            kclManager.setDiagnosticsForCurrentErrors()
-          }
-        }}
-      />
+            // On first load of this component, ensure we show the current errors
+            // in the editor.
+            // Make sure we don't add them twice.
+            if (diagnosticCount(_editorView.state) === 0) {
+              kclManager.setDiagnosticsForCurrentErrors()
+            }
+          }}
+        />
+      </div>
     </div>
   )
 }

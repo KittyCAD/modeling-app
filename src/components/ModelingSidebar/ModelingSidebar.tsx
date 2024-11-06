@@ -5,7 +5,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  ReactNode,
   useContext,
   MutableRefObject,
   forwardRef,
@@ -17,7 +16,6 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
 import { ActionIcon } from 'components/ActionIcon'
-import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
 import { isDesktop } from 'lib/isDesktop'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -85,6 +83,7 @@ export const ModelingSidebar = forwardRef<
     {
       id: 'export',
       title: 'Export part',
+      sidebarName: 'Export part',
       icon: 'floppyDiskArrow',
       keybinding: 'Ctrl + Shift + E',
       action: () =>
@@ -96,6 +95,7 @@ export const ModelingSidebar = forwardRef<
     {
       id: 'make',
       title: 'Make part',
+      sidebarName: 'Make part',
       icon: 'printer3d',
       keybinding: 'Ctrl + Shift + M',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -234,7 +234,7 @@ export const ModelingSidebar = forwardRef<
         bottomRight: 'hidden',
       }}
     >
-      <div id="app-sidebar" className={styles.grid + ' flex-1'}>
+      <div id="app-sidebar" className="flex flex-row h-full">
         <ul
           className={
             (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
@@ -273,7 +273,7 @@ export const ModelingSidebar = forwardRef<
                     key={action.id}
                     paneConfig={{
                       id: action.id,
-                      title: action.title,
+                      sidebarName: action.sidebarName,
                       icon: action.icon,
                       keybinding: action.keybinding,
                       iconClassName: action.iconClassName,
@@ -292,10 +292,8 @@ export const ModelingSidebar = forwardRef<
           data-testid="pane-section"
           ref={innerRef}
           className={
-            'ml-[-1px] col-start-2 col-span-1 flex flex-col gap-2 ' +
-            (context.store?.openPanes.length >= 1
-              ? `row-start-1 row-end-3`
-              : `hidden`)
+            'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch gap-2 ' +
+            (context.store?.openPanes.length >= 1 ? `w-full` : `hidden`)
           }
         >
           {filteredPanes
@@ -304,13 +302,15 @@ export const ModelingSidebar = forwardRef<
               <ModelingPane
                 key={pane.id}
                 icon={pane.icon}
+                title={pane.sidebarName}
+                onClose={() => {}}
                 id={`${pane.id}-pane`}
-                title={pane.title}
-                Menu={pane.Menu}
-                onClose={() => togglePane(pane.id)}
               >
                 {pane.Content instanceof Function ? (
-                  <pane.Content />
+                  <pane.Content
+                    id={pane.id}
+                    onClose={() => togglePane(pane.id)}
+                  />
                 ) : (
                   pane.Content
                 )}
@@ -326,8 +326,7 @@ interface ModelingPaneButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
   paneConfig: {
     id: string
-    title: ReactNode
-    sidebarName?: string
+    sidebarName: string
     icon: CustomIconName | IconDefinition
     keybinding: string
     iconClassName?: string
@@ -356,10 +355,7 @@ function ModelingPaneButton({
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
-        name={
-          paneConfig.sidebarName ??
-          (typeof paneConfig.title === 'string' ? paneConfig.title : '')
-        }
+        name={paneConfig.sidebarName}
         data-testid={paneConfig.id + '-pane-button'}
         disabled={disabledText !== undefined}
         aria-disabled={disabledText !== undefined}
@@ -375,7 +371,7 @@ function ModelingPaneButton({
           }
         />
         <span className="sr-only">
-          {paneConfig.sidebarName ?? paneConfig.title}
+          {paneConfig.sidebarName}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
         <Tooltip
@@ -384,7 +380,7 @@ function ModelingPaneButton({
           hoverOnly
         >
           <span className="flex-1">
-            {paneConfig.sidebarName ?? paneConfig.title}
+            {paneConfig.sidebarName}
             {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
