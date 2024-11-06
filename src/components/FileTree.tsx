@@ -282,7 +282,7 @@ const FileTreeItem = ({
         <li
           className={
             'group m-0 p-0 border-solid border-0 hover:bg-primary/5 focus-within:bg-primary/5 dark:hover:bg-primary/20 dark:focus-within:bg-primary/20 ' +
-            (isFileOrDirHighlighted
+            (isFileOrDirHighlighted || isCurrentFile
               ? '!bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-inherit'
               : '')
           }
