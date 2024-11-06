@@ -120,8 +120,8 @@ const initialise = async () => {
 
 export const initPromise = initialise()
 
-export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
-  ranges.map(([start, end]) => [start, end])
+export const rangeTypeFix = (ranges: number[][]): [number, number, number][] =>
+  ranges.map(([start, end, moduleId]) => [start, end, moduleId])
 
 export const parse = (code: string | Error): Node<Program> | Error => {
   if (err(code)) return code
