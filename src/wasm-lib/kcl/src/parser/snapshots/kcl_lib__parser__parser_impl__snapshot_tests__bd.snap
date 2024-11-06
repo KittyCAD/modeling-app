@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -23,7 +24,6 @@ expression: actual
               "type": "Literal",
               "value": true
             },
-            "digest": null,
             "else_ifs": [
               {
                 "cond": {
@@ -48,7 +48,6 @@ expression: actual
                   "type": "CallExpression",
                   "type": "CallExpression"
                 },
-                "digest": null,
                 "end": 90,
                 "start": 44,
                 "then_val": {

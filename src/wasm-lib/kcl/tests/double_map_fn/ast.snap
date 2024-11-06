@@ -226,8 +226,7 @@ snapshot_kind: text
             }
           }
         ]
-      },
-      "startNodes": []
+      }
     },
     "start": 0
   }

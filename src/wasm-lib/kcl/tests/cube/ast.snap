@@ -664,8 +664,7 @@ snapshot_kind: text
                         }
                       }
                     ]
-                  },
-                  "startNodes": []
+                  }
                 },
                 "start": 30
               },
@@ -787,8 +786,7 @@ snapshot_kind: text
             }
           }
         ]
-      },
-      "startNodes": []
+      }
     },
     "start": 0
   }
