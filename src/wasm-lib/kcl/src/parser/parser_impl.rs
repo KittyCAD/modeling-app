@@ -966,7 +966,12 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
                 };
-                Node::new(NonCodeNode { value, ..nc.inner }, nc.start.saturating_sub(1), nc.end, nc.module_id)
+                Node::new(
+                    NonCodeNode { value, ..nc.inner },
+                    nc.start.saturating_sub(1),
+                    nc.end,
+                    nc.module_id,
+                )
             } else if has_newline {
                 // Nothing has to change, a single newline does not need preserving.
                 nc
@@ -3139,7 +3144,7 @@ const bracket = [-leg2 + thickness, 0]
         let tokens = crate::token::lexer(
             r#"
 z(-[["#,
-            module_id
+            module_id,
         )
         .unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -3153,7 +3158,7 @@ z(-[["#,
         let tokens = crate::token::lexer(
             r#"z
  (--#"#,
-            module_id
+            module_id,
         )
         .unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -3185,7 +3190,7 @@ z(-[["#,
             r#"fn)n
 e
 ["#,
-            module_id
+            module_id,
         )
         .unwrap();
         let parser = crate::parser::Parser::new(tokens);
@@ -3218,7 +3223,7 @@ e
         let tokens = crate::token::lexer(
             r#"J///////////o//+///////////P++++*++++++P///////˟
 ++4"#,
-            module_id
+            module_id,
         )
         .unwrap();
         let parser = crate::parser::Parser::new(tokens);
