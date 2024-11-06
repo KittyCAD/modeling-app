@@ -107,9 +107,14 @@ export function lspDiagnosticsToKclErrors(
         ])
     )
     .filter(({ sourceRanges }) => {
-      const [from, to] = sourceRanges[0]
+      const [from, to, moduleId] = sourceRanges[0]
       return (
-        from !== null && to !== null && from !== undefined && to !== undefined
+        from !== null &&
+        to !== null &&
+        from !== undefined &&
+        to !== undefined &&
+        // Filter out errors that are not from the top-level module.
+        moduleId === TOP_LEVEL_MODULE_ID
       )
     })
     .sort((a, b) => {
@@ -133,8 +138,16 @@ export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
   return errors?.flatMap((err) => {
-    return err.sourceRanges.map(([from, to]) => {
-      return { from, to, message: err.msg, severity: 'error' }
-    })
+    const sourceRanges: CodeMirrorDiagnostic[] = err.sourceRanges
+      // Filter out errors that are not from the top-level module.
+      .filter(([_start, _end, moduleId]) => moduleId === TOP_LEVEL_MODULE_ID)
+      .map(([from, to]) => {
+        return { from, to, message: err.msg, severity: 'error' }
+      })
+    // Make sure we didn't filter out all the source ranges.
+    if (sourceRanges.length === 0) {
+      sourceRanges.push({ from: 0, to: 0, message: err.msg, severity: 'error' })
+    }
+    return sourceRanges
   })
 }
