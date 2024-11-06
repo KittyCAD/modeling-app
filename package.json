@@ -174,7 +174,7 @@
     "@types/ua-parser-js": "^0.7.39",
     "@types/uuid": "^9.0.8",
     "@types/wicg-file-system-access": "^2023.10.5",
-    "@types/ws": "^8.5.10",
+    "@types/ws": "^8.5.13",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "@vitejs/plugin-react": "^4.3.0",
