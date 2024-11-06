@@ -2203,6 +2203,8 @@ impl ExecutorContext {
             project_directory,
             ..Default::default()
         };
+        // TODO: Use the top-level file's path.
+        exec_state.add_new_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(

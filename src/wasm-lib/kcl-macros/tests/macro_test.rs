@@ -1,6 +1,7 @@
 extern crate alloc;
 use kcl_lib::ast::types::{
-    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, ModuleId, Node, Program, VariableDeclaration, VariableDeclarator, VariableKind
+    BodyItem, Expr, Identifier, ItemVisibility, Literal, LiteralValue, ModuleId, Node, Program, VariableDeclaration,
+    VariableDeclarator, VariableKind,
 };
 use kcl_macros::parse;
 use pretty_assertions::assert_eq;
