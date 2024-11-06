@@ -48,6 +48,7 @@ pub enum Definition<'a> {
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub struct Node<T> {
     #[serde(flatten)]
     pub inner: T,

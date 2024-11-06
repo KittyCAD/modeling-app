@@ -4,15 +4,17 @@ import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
 
+const TOP_LEVEL_MODULE_ID = 0
+
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
   kind: ExtractKind<RustKclError> | 'name'
-  sourceRanges: [number, number][]
+  sourceRanges: [number, number, number][]
   msg: string
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
-    sourceRanges: [number, number][]
+    sourceRanges: [number, number, number][]
   ) {
     super()
     this.kind = kind
@@ -23,63 +25,63 @@ export class KCLError extends Error {
 }
 
 export class KCLLexicalError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
+  constructor(msg: string, sourceRanges: [number, number, number][]) {
     super('lexical', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLInternalError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
+  constructor(msg: string, sourceRanges: [number, number, number][]) {
     super('internal', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSyntaxError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
+  constructor(msg: string, sourceRanges: [number, number, number][]) {
     super('syntax', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSemanticError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
+  constructor(msg: string, sourceRanges: [number, number, number][]) {
     super('semantic', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLSemanticError.prototype)
   }
 }
 
 export class KCLTypeError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
+  constructor(msg: string, sourceRanges: [number, number, number][]) {
     super('type', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLTypeError.prototype)
   }
 }
 
 export class KCLUnimplementedError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
+  constructor(msg: string, sourceRanges: [number, number, number][]) {
     super('unimplemented', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
   }
 }
 
 export class KCLUnexpectedError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
+  constructor(msg: string, sourceRanges: [number, number, number][]) {
     super('unexpected', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
 }
 
 export class KCLValueAlreadyDefined extends KCLError {
-  constructor(key: string, sourceRanges: [number, number][]) {
+  constructor(key: string, sourceRanges: [number, number, number][]) {
     super('name', `Key ${key} was already defined elsewhere`, sourceRanges)
     Object.setPrototypeOf(this, KCLValueAlreadyDefined.prototype)
   }
 }
 
 export class KCLUndefinedValueError extends KCLError {
-  constructor(key: string, sourceRanges: [number, number][]) {
+  constructor(key: string, sourceRanges: [number, number, number][]) {
     super('name', `Key ${key} has not been defined`, sourceRanges)
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
@@ -97,7 +99,11 @@ export function lspDiagnosticsToKclErrors(
     .flatMap(
       ({ range, message }) =>
         new KCLError('unexpected', message, [
-          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!],
+          [
+            posToOffset(doc, range.start)!,
+            posToOffset(doc, range.end)!,
+            TOP_LEVEL_MODULE_ID,
+          ],
         ])
     )
     .filter(({ sourceRanges }) => {
