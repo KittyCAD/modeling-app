@@ -9,6 +9,9 @@ new-test name:
 lint:
     cargo clippy --workspace --all-targets -- -D warnings
 
+test:
+    export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
+
 redo-kcl-stdlib-docs:
     EXPECTORATE=overwrite {{cnr}} -p kcl-lib docs::gen_std_tests::test_generate_stdlib
 
@@ -26,4 +29,3 @@ new-sim-test test_name kcl_program render_to_png="true":
     {{cita}} -p kcl-lib -- tests::{{test_name}}::parse
     {{cita}} -p kcl-lib -- tests::{{test_name}}::unparse
     TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
-    
