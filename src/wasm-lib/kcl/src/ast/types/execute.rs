@@ -42,25 +42,19 @@ impl Node<MemberExpression> {
             }
         };
 
-        let array_json = array.get_json_value()?;
-
-        if let serde_json::Value::Array(array) = array_json {
-            if let Some(value) = array.get(index) {
-                Ok(KclValue::UserVal(UserVal {
-                    value: value.clone(),
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }))
-            } else {
-                Err(KclError::UndefinedValue(KclErrorDetails {
-                    message: format!("index {} not found in array", index),
-                    source_ranges: vec![self.clone().into()],
-                }))
-            }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
+        // let array_json = array.get_json_value()?;
+        let KclValue::Array { value: array, meta: _ } = array else {
+            return Err(KclError::Semantic(KclErrorDetails {
                 message: format!("MemberExpression array is not an array: {:?}", array),
+                source_ranges: vec![self.clone().into()],
+            }));
+        };
+
+        if let Some(value) = array.get(index) {
+            Ok(value.to_owned())
+        } else {
+            Err(KclError::UndefinedValue(KclErrorDetails {
+                message: format!("index {} not found in array", index),
                 source_ranges: vec![self.clone().into()],
             }))
         }
@@ -77,18 +71,11 @@ impl Node<MemberExpression> {
             }
         };
 
-        let object_json = object.get_json_value()?;
-
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
-        match (object_json, property) {
-            (JValue::Object(map), Property::String(property)) => {
+        match (object, property) {
+            (KclValue::Object { value: map, meta }, Property::String(property)) => {
                 if let Some(value) = map.get(&property) {
-                    Ok(KclValue::UserVal(UserVal {
-                        value: value.clone(),
-                        meta: vec![Metadata {
-                            source_range: self.into(),
-                        }],
-                    }))
+                    Ok(value.to_owned())
                 } else {
                     Err(KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Property '{property}' not found in object"),
@@ -96,22 +83,17 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (JValue::Object(_), p) => Err(KclError::Semantic(KclErrorDetails {
+            (KclValue::Object { .. }, p) => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Only strings can be used as the property of an object, but you're using a {}",
                     p.type_name()
                 ),
                 source_ranges: vec![self.clone().into()],
             })),
-            (JValue::Array(arr), Property::Number(index)) => {
-                let value_of_arr: Option<&JValue> = arr.get(index);
+            (KclValue::Array { value: arr, meta }, Property::Number(index)) => {
+                let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
-                    Ok(KclValue::UserVal(UserVal {
-                        value: value.clone(),
-                        meta: vec![Metadata {
-                            source_range: self.into(),
-                        }],
-                    }))
+                    Ok(value.to_owned())
                 } else {
                     Err(KclError::UndefinedValue(KclErrorDetails {
                         message: format!("The array doesn't have any item at index {index}"),
@@ -119,7 +101,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (JValue::Array(_), p) => Err(KclError::Semantic(KclErrorDetails {
+            (KclValue::Array { .. }, p) => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Only integers >= 0 can be used as the index of an array, but you're using a {}",
                     p.type_name()
@@ -127,7 +109,7 @@ impl Node<MemberExpression> {
                 source_ranges: vec![self.clone().into()],
             })),
             (being_indexed, _) => {
-                let t = human_friendly_type(&being_indexed);
+                let t = being_indexed.human_friendly_type();
                 Err(KclError::Semantic(KclErrorDetails {
                     message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
                     source_ranges: vec![self.clone().into()],
@@ -140,81 +122,134 @@ impl Node<MemberExpression> {
 impl Node<BinaryExpression> {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let left_json_value = self.left.get_result(exec_state, ctx).await?.get_json_value()?;
-        let right_json_value = self.right.get_result(exec_state, ctx).await?.get_json_value()?;
+        let left_value = self.left.get_result(exec_state, ctx).await?;
+        let right_value = self.right.get_result(exec_state, ctx).await?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
-            if let (Some(left), Some(right)) = (
-                parse_json_value_as_string(&left_json_value),
-                parse_json_value_as_string(&right_json_value),
-            ) {
-                let value = serde_json::Value::String(format!("{}{}", left, right));
-                return Ok(KclValue::UserVal(UserVal {
-                    value,
-                    meta: vec![Metadata {
-                        source_range: self.into(),
-                    }],
-                }));
+            if let (
+                KclValue::String {
+                    value: left,
+                    meta: meta_l,
+                },
+                KclValue::String {
+                    value: right,
+                    meta: meta_r,
+                },
+            ) = (left_value, right_value)
+            {
+                let mut meta = meta_l;
+                meta_l.extend(meta_r);
+                return Ok(KclValue::String {
+                    value: format!("{}{}", left, right),
+                    meta,
+                });
             }
         }
 
-        let left = parse_json_number_as_f64(&left_json_value, self.left.clone().into())?;
-        let right = parse_json_number_as_f64(&right_json_value, self.right.clone().into())?;
+        let left = parse_number_as_f64(&left_value, self.left.clone().into())?;
+        let right = parse_number_as_f64(&right_value, self.right.clone().into())?;
 
-        let value: serde_json::Value = match self.operator {
-            BinaryOperator::Add => (left + right).into(),
-            BinaryOperator::Sub => (left - right).into(),
-            BinaryOperator::Mul => (left * right).into(),
-            BinaryOperator::Div => (left / right).into(),
-            BinaryOperator::Mod => (left % right).into(),
-            BinaryOperator::Pow => (left.powf(right)).into(),
-            BinaryOperator::Eq => (left == right).into(),
-            BinaryOperator::Neq => (left != right).into(),
-            BinaryOperator::Gt => (left > right).into(),
-            BinaryOperator::Gte => (left >= right).into(),
-            BinaryOperator::Lt => (left < right).into(),
-            BinaryOperator::Lte => (left <= right).into(),
+        let mut meta = self.left.into();
+        meta.extend(self.right.into());
+        let value: f64 = match self.operator {
+            BinaryOperator::Add => KclValue::Number {
+                value: left + right,
+                meta,
+            },
+            BinaryOperator::Sub => KclValue::Number {
+                value: left - right,
+                meta,
+            },
+            BinaryOperator::Mul => KclValue::Number {
+                value: left * right,
+                meta,
+            },
+            BinaryOperator::Div => KclValue::Number {
+                value: left / right,
+                meta,
+            },
+            BinaryOperator::Mod => KclValue::Number {
+                value: left % right,
+                meta,
+            },
+            BinaryOperator::Pow => KclValue::Number {
+                value: left.powf(right),
+                meta,
+            },
+            BinaryOperator::Neq => KclValue::Bool {
+                value: left != right,
+                meta,
+            },
+            BinaryOperator::Gt => KclValue::Bool {
+                value: left > right,
+                meta,
+            },
+            BinaryOperator::Gte => KclValue::Bool {
+                value: left >= right,
+                meta,
+            },
+            BinaryOperator::Lt => KclValue::Bool {
+                value: left < right,
+                meta,
+            },
+            BinaryOperator::Lte => KclValue::Bool {
+                value: left <= right,
+                meta,
+            },
+            BinaryOperator::Eq => KclValue::Bool {
+                value: left == right,
+                meta,
+            },
         };
 
-        Ok(KclValue::UserVal(UserVal {
-            value,
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
+        Ok(value)
     }
 }
 
 impl Node<UnaryExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.operator == UnaryOperator::Not {
-            let value = self.argument.get_result(exec_state, ctx).await?.get_json_value()?;
-            let Some(bool_value) = json_as_bool(&value) else {
+            let value = self.argument.get_result(exec_state, ctx).await?;
+            let KclValue::Bool {
+                value: bool_value,
+                meta: _,
+            } = value
+            else {
                 return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Cannot apply unary operator ! to non-boolean value: {}", value),
+                    message: format!(
+                        "Cannot apply unary operator ! to non-boolean value: {}",
+                        value.human_friendly_type()
+                    ),
                     source_ranges: vec![self.into()],
                 }));
             };
-            let negated = !bool_value;
-            return Ok(KclValue::UserVal(UserVal {
-                value: serde_json::Value::Bool(negated),
-                meta: vec![Metadata {
-                    source_range: self.into(),
-                }],
-            }));
+            let meta = vec![Metadata {
+                source_range: self.into(),
+            }];
+            let negated = KclValue::Bool {
+                value: !bool_value,
+                meta,
+            };
+
+            return Ok(negated);
         }
 
-        let num = parse_json_number_as_f64(
-            &self.argument.get_result(exec_state, ctx).await?.get_json_value()?,
-            self.into(),
-        )?;
-        Ok(KclValue::UserVal(UserVal {
-            value: (-(num)).into(),
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
+        let value = &self.argument.get_result(exec_state, ctx).await?;
+        let KclValue::Number { value: num, meta: _ } = value else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!(
+                    "You can only negate numbers, but this is a {}",
+                    value.human_friendly_type()
+                ),
+                source_ranges: vec![self.into()],
+            }));
+        };
+
+        let meta = vec![Metadata {
+            source_range: self.into(),
+        }];
+        Ok(KclValue::Number { value: -num, meta })
     }
 }
 
@@ -616,18 +651,13 @@ fn parse_json_number_as_i64(j: &serde_json::Value, source_range: SourceRange) ->
     }
 }
 
-pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange) -> Result<f64, KclError> {
-    if let serde_json::Value::Number(n) = &j {
-        n.as_f64().ok_or_else(|| {
-            KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![source_range],
-                message: format!("Invalid number: {}", j),
-            })
-        })
+pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<f64, KclError> {
+    if let KclValue::Number { value: n, .. } = &v {
+        Ok(*n)
     } else {
         Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![source_range],
-            message: format!("Invalid number: {}", j),
+            message: format!("Invalid number: {}", v),
         }))
     }
 }

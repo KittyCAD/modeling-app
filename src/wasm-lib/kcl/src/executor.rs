@@ -201,33 +201,18 @@ impl Environment {
         Self {
             // Prelude
             bindings: HashMap::from([
-                (
-                    "ZERO".to_string(),
-                    KclValue::UserVal(UserVal {
-                        value: serde_json::Value::Number(serde_json::value::Number::from(0)),
-                        meta: Default::default(),
-                    }),
-                ),
+                ("ZERO".to_string(), KclValue::from_number(0.0, Default::default())),
                 (
                     "QUARTER_TURN".to_string(),
-                    KclValue::UserVal(UserVal {
-                        value: serde_json::Value::Number(serde_json::value::Number::from(90)),
-                        meta: Default::default(),
-                    }),
+                    KclValue::from_number(90.0, Default::default()),
                 ),
                 (
                     "HALF_TURN".to_string(),
-                    KclValue::UserVal(UserVal {
-                        value: serde_json::Value::Number(serde_json::value::Number::from(180)),
-                        meta: Default::default(),
-                    }),
+                    KclValue::from_number(180.0, Default::default()),
                 ),
                 (
                     "THREE_QUARTER_TURN".to_string(),
-                    KclValue::UserVal(UserVal {
-                        value: serde_json::Value::Number(serde_json::value::Number::from(270)),
-                        meta: Default::default(),
-                    }),
+                    KclValue::from_number(270.0, Default::default()),
                 ),
             ]),
             parent: None,
@@ -264,22 +249,15 @@ impl Environment {
         }
 
         for (_, val) in self.bindings.iter_mut() {
-            let KclValue::UserVal(v) = val else { continue };
-            let meta = v.meta.clone();
-            let maybe_sg: Result<Sketch, _> = serde_json::from_value(v.value.clone());
-            let Ok(mut sketch) = maybe_sg else {
-                continue;
-            };
+            let KclValue::Sketch(v) = val else { continue };
+            let mut sketch = v.to_owned();
 
             if sketch.original_id == sg.original_id {
                 for tag in sg.tags.iter() {
                     sketch.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
-            *val = KclValue::UserVal(UserVal {
-                meta,
-                value: serde_json::to_value(sketch).expect("can always turn Sketch into JSON"),
-            });
+            *val = KclValue::Sketch(sketch);
         }
     }
 }
@@ -360,7 +338,6 @@ impl IdGenerator {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
-    UserVal(UserVal),
     Bool {
         value: bool,
         meta: Vec<Metadata>,
@@ -408,6 +385,7 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+    KclNone,
 }
 
 impl KclValue {
@@ -415,21 +393,6 @@ impl KclValue {
         match self {
             KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
             KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
-            KclValue::UserVal(value) => {
-                let value = value.value.clone();
-                match value {
-                    JValue::Null | JValue::Bool(_) | JValue::Number(_) | JValue::String(_) => Err(anyhow::anyhow!(
-                        "Failed to deserialize solid set from JSON {}",
-                        human_friendly_type(&value)
-                    )),
-                    JValue::Array(_) => serde_json::from_value::<Vec<Box<Solid>>>(value)
-                        .map(SolidSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize array of solids from JSON: {}", e)),
-                    JValue::Object(_) => serde_json::from_value::<Box<Solid>>(value)
-                        .map(SolidSet::from)
-                        .map_err(|e| anyhow::anyhow!("Failed to deserialize solid from JSON: {}", e)),
-                }
-            }
             _ => anyhow::bail!("Not a solid or solids: {:?}", self),
         }
     }
@@ -438,7 +401,6 @@ impl KclValue {
     /// on for program logic.
     pub(crate) fn human_friendly_type(&self) -> &'static str {
         match self {
-            KclValue::UserVal(u) => human_friendly_type(&u.value),
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
             KclValue::Solid(_) => "Solid",
@@ -455,6 +417,7 @@ impl KclValue {
             KclValue::String { .. } => "string",
             KclValue::Array { .. } => "array",
             KclValue::Object { .. } => "object",
+            KclValue::KclNone => "None",
         }
     }
 
@@ -910,7 +873,6 @@ pub type MemoryFunction =
 impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
-            KclValue::UserVal(u) => to_vec_sr(&u.meta),
             KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end])],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
@@ -938,7 +900,6 @@ fn to_vec_sr(meta: &[Metadata]) -> Vec<SourceRange> {
 impl From<&KclValue> for Vec<SourceRange> {
     fn from(item: &KclValue) -> Self {
         match item {
-            KclValue::UserVal(u) => to_vec_sr(&u.meta),
             KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end])],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
@@ -960,72 +921,33 @@ impl From<&KclValue> for Vec<SourceRange> {
 }
 
 impl KclValue {
-    pub fn get_json_value(&self) -> Result<serde_json::Value, KclError> {
-        if let KclValue::UserVal(user_val) = self {
-            Ok(user_val.value.clone())
-        } else {
-            serde_json::to_value(self).map_err(|err| {
-                KclError::Semantic(KclErrorDetails {
-                    message: format!("Cannot convert memory item to json value: {:?}", err),
-                    source_ranges: self.clone().into(),
-                })
-            })
-        }
+    /// Put the number into a KCL value.
+    pub fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
+        Self::Number { value: f, meta }
     }
 
-    /// Get a JSON value and deserialize it into some concrete type.
-    pub fn get_json<T: serde::de::DeserializeOwned>(&self) -> Result<T, KclError> {
-        let json = self.get_json_value()?;
-
-        serde_json::from_value(json).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: self.clone().into(),
-            })
-        })
-    }
-
-    /// Get a JSON value and deserialize it into some concrete type.
-    /// If it's a KCL None, return None. Otherwise return Some.
-    pub fn get_json_opt<T: serde::de::DeserializeOwned>(&self) -> Result<Option<T>, KclError> {
-        let json = self.get_json_value()?;
-        if let JValue::Object(ref o) = json {
-            if let Some(JValue::String(s)) = o.get("type") {
-                if s == "KclNone" {
-                    return Ok(None);
-                }
-            }
-        }
-
-        serde_json::from_value(json)
-            .map_err(|e| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Failed to deserialize struct from JSON: {}", e),
-                    source_ranges: self.clone().into(),
-                })
-            })
-            .map(Some)
-    }
-
-    pub fn as_user_val(&self) -> Option<&UserVal> {
-        if let KclValue::UserVal(x) = self {
-            Some(x)
+    pub fn as_int(&self) -> Option<i64> {
+        if let KclValue::Int { value, meta } = &self {
+            Some(*value)
         } else {
             None
         }
     }
 
-    /// If this value is of type u32, return it.
+    /// If this value fits in a u32, return it.
     pub fn get_u32(&self, source_ranges: Vec<SourceRange>) -> Result<u32, KclError> {
-        let err = KclError::Semantic(KclErrorDetails {
-            message: "Expected an integer >= 0".to_owned(),
-            source_ranges,
-        });
-        self.as_user_val()
-            .and_then(|uv| uv.value.as_number())
-            .and_then(|n| n.as_u64())
-            .and_then(|n| u32::try_from(n).ok())
-            .ok_or(err)
+        let u = self.as_int().and_then(|n| u64::try_from(n).ok()).ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                message: "Expected an integer >= 0".to_owned(),
+                source_ranges: source_ranges.clone(),
+            })
+        })?;
+        u32::try_from(u).map_err(|_| {
+            KclError::Semantic(KclErrorDetails {
+                message: "Number was too big".to_owned(),
+                source_ranges,
+            })
+        })
     }
 
     /// If this value is of type function, return it.
@@ -1050,16 +972,6 @@ impl KclValue {
     pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
         match self {
             KclValue::TagIdentifier(t) => Ok(*t.clone()),
-            KclValue::UserVal(_) => {
-                if let Some(identifier) = self.get_json_opt::<TagIdentifier>()? {
-                    Ok(identifier)
-                } else {
-                    Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("Not a tag identifier: {:?}", self),
-                        source_ranges: self.clone().into(),
-                    }))
-                }
-            }
             _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a tag identifier: {:?}", self),
                 source_ranges: self.clone().into(),
