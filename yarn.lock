@@ -1482,13 +1482,13 @@
     log-symbols "^4.0.0"
     parse-author "^2.0.0"
 
-"@electron-forge/maker-zip@^7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@electron-forge/maker-zip/-/maker-zip-7.4.0.tgz#e82ab6174344c43eb9a30b2fb5e2c2e32de2113d"
-  integrity sha512-UGbMdpuK/P29x1FFRWNOs3bNz+7QNFWVWyTM5hcWqib66cNuUmoaPifQyuwW2POIrIohrxlzLK87/i9Zc8g4dA==
+"@electron-forge/maker-zip@^7.5.0":
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/@electron-forge/maker-zip/-/maker-zip-7.5.0.tgz#e0d534cc5715055b611507e3754f9b4bbe31ffef"
+  integrity sha512-gIO3bEbubOJqWV6kd0b9nBwTrFfFQv/K8PAqg6e0uSZiy7QuSCFZVAZse02gO3AzxVDSVjjTQ4nmXBXC4Glh1A==
   dependencies:
-    "@electron-forge/maker-base" "7.4.0"
-    "@electron-forge/shared-types" "7.4.0"
+    "@electron-forge/maker-base" "7.5.0"
+    "@electron-forge/shared-types" "7.5.0"
     cross-zip "^4.0.0"
     fs-extra "^10.0.0"
     got "^11.8.5"
