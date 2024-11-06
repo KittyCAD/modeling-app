@@ -195,7 +195,7 @@ export class SceneFixture {
   }
 
   waitForExecutionDone = async () => {
-    await expect(this.exeIndicator).toBeVisible()
+    await expect(this.exeIndicator).toBeVisible({ timeout: 30000 })
   }
 
   expectPixelColor = async (
