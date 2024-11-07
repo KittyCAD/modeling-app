@@ -39,7 +39,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 175,
-                188
+                188,
+                0
               ]
             }
           ]
@@ -52,7 +53,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 79,
-                80
+                80,
+                0
               ]
             }
           ]
@@ -71,7 +73,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 5,
-                11
+                11,
+                0
               ]
             }
           ]
@@ -90,7 +93,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 95,
-                107
+                107,
+                0
               ]
             }
           ]
@@ -110,7 +114,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 194,
-                206
+                206,
+                0
               ]
             }
           ]
@@ -128,7 +133,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 341,
-                373
+                373,
+                0
               ]
             }
           ]
@@ -141,7 +147,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 88,
-                89
+                89,
+                0
               ]
             }
           ]

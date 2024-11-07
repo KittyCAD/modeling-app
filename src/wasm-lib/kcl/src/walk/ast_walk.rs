@@ -315,9 +315,7 @@ mod tests {
 
     macro_rules! kcl {
         ( $kcl:expr ) => {{
-            let tokens = $crate::token::lexer($kcl).unwrap();
-            let parser = $crate::parser::Parser::new(tokens);
-            parser.ast().unwrap()
+            $crate::parser::top_level_parse($kcl).unwrap()
         }};
     }
 

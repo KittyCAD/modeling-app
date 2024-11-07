@@ -43,7 +43,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 43,
-                55
+                55,
+                0
               ]
             }
           ]
@@ -56,7 +57,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 256,
-                266
+                266,
+                0
               ]
             }
           ]
@@ -69,7 +71,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 93,
-                101
+                101,
+                0
               ]
             }
           ]
@@ -82,7 +85,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 277,
-                285
+                285,
+                0
               ]
             }
           ]
