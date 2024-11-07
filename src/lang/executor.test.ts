@@ -70,7 +70,6 @@ const newVar = myVar + 1`
         },
         tag: {
           end: 96,
-          moduleId: 0,
           start: 89,
           type: 'TagDeclarator',
           value: 'myPath',
@@ -96,7 +95,6 @@ const newVar = myVar + 1`
         },
         tag: {
           end: 153,
-          moduleId: 0,
           start: 143,
           type: 'TagDeclarator',
           value: 'rightPath',
@@ -198,7 +196,6 @@ const newVar = myVar + 1`
             },
             tag: {
               end: 116,
-              moduleId: 0,
               start: 109,
               type: 'TagDeclarator',
               value: 'myPath',
