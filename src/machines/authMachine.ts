@@ -14,6 +14,7 @@ import {
   writeTokenFile,
 } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
+import { markOnce } from 'lib/performance'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
 
@@ -156,6 +157,7 @@ async function getUser(input: { token?: string }) {
       LOCAL_USER.image = ''
     }
 
+    markOnce('code/didAuth')
     return {
       user: LOCAL_USER,
       token,
@@ -181,6 +183,7 @@ async function getUser(input: { token?: string }) {
 
   if ('error_code' in user) return Promise.reject(new Error(user.message))
 
+  markOnce('code/didAuth')
   return {
     user: user as Models['User_type'],
     token,
