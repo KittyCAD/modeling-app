@@ -2251,6 +2251,13 @@ impl ExecutorContext {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
                     let path = import_stmt.path.clone();
+                    // Empty path is used by the top-level module.
+                    if path.is_empty() {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "import path cannot be empty".to_owned(),
+                            source_ranges: vec![source_range],
+                        }));
+                    }
                     let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
                         std::path::PathBuf::from(project_dir).join(&path)
                     } else {
