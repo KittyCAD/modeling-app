@@ -1,7 +1,7 @@
 import { trap } from 'lib/trap'
 import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
+import { PATHS, BROWSER_PATH } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useState } from 'react'
@@ -42,6 +42,7 @@ import { getAppSettingsFilePath } from 'lib/desktop'
 import { isDesktop } from 'lib/isDesktop'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { codeManager } from 'lib/singletons'
+import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -272,6 +273,8 @@ export const SettingsAuthProviderBase = ({
       )
       .filter((c) => c !== null) as Command[]
 
+    // TODO Kevin: Move the create command to here and make note about the
+    // Data router HTML structure since it cannot access that data...
     commandBarSend({ type: 'Add commands', data: { commands: commands } })
 
     return () => {
@@ -287,6 +290,43 @@ export const SettingsAuthProviderBase = ({
     commandBarSend,
     settingsWithCommandConfigs,
   ])
+
+  // Add route commands
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE +
+      '/' +
+      encodeURIComponent(loadedProject?.file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarSend({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarSend({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarSend({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+  }, [location])
 
   // Listen for changes to the system theme and update the app theme accordingly
   // This is only done if the theme setting is set to 'system'.

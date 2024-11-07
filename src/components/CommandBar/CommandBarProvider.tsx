@@ -2,10 +2,6 @@ import { createActorContext } from '@xstate/react'
 import { editorManager } from 'lib/singletons'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { useEffect } from 'react'
-import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
-import { PATHS } from 'lib/paths'
 
 export const CommandsContext = createActorContext(
   commandBarMachine.provide({
@@ -38,41 +34,6 @@ export const CommandBarProvider = ({
 }
 function CommandBarProviderInner({ children }: { children: React.ReactNode }) {
   const commandBarActor = CommandsContext.useActorRef()
-  const location = useLocation()
-  const filePath = useAbsoluteFilePath()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
-      type: 'Remove commands',
-      data: {
-        commands: [
-          RouteTelemetryCommand,
-          RouteHomeCommand,
-          RouteSettingsCommand,
-        ],
-      },
-    })
-    if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: [
-            RouteTelemetryCommand,
-            RouteSettingsCommand,
-            RouteHomeCommand,
-          ],
-        },
-      })
-    }
-  }, [location])
 
   useEffect(() => {
     editorManager.setCommandBarSend(commandBarActor.send)
