@@ -65,7 +65,7 @@ const newVar = myVar + 1`
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [72, 97],
+          sourceRange: [72, 97, 0],
           id: expect.any(String),
         },
         tag: {
@@ -81,7 +81,7 @@ const newVar = myVar + 1`
         from: [0, 2],
         tag: null,
         __geoMeta: {
-          sourceRange: [103, 119],
+          sourceRange: [103, 119, 0],
           id: expect.any(String),
         },
       },
@@ -90,7 +90,7 @@ const newVar = myVar + 1`
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [125, 154],
+          sourceRange: [125, 154, 0],
           id: expect.any(String),
         },
         tag: {
@@ -160,14 +160,14 @@ const newVar = myVar + 1`
           tag: null,
           __geoMeta: {
             id: expect.any(String),
-            sourceRange: [39, 63],
+            sourceRange: [39, 63, 0],
           },
         },
         tags: {
           myPath: {
             __meta: [
               {
-                sourceRange: [109, 116],
+                sourceRange: [109, 116, 0],
               },
             ],
             type: 'TagIdentifier',
@@ -182,7 +182,7 @@ const newVar = myVar + 1`
             from: [0, 0],
             tag: null,
             __geoMeta: {
-              sourceRange: [69, 85],
+              sourceRange: [69, 85, 0],
               id: expect.any(String),
             },
           },
@@ -191,7 +191,7 @@ const newVar = myVar + 1`
             to: [0, 1],
             from: [1, 1],
             __geoMeta: {
-              sourceRange: [91, 117],
+              sourceRange: [91, 117, 0],
               id: expect.any(String),
             },
             tag: {
@@ -207,15 +207,15 @@ const newVar = myVar + 1`
             from: [0, 1],
             tag: null,
             __geoMeta: {
-              sourceRange: [123, 139],
+              sourceRange: [123, 139, 0],
               id: expect.any(String),
             },
           },
         ],
         id: expect.any(String),
-        __meta: [{ sourceRange: [39, 63] }],
+        __meta: [{ sourceRange: [39, 63, 0] }],
       },
-      __meta: [{ sourceRange: [39, 63] }],
+      __meta: [{ sourceRange: [39, 63, 0] }],
     })
   })
   it('execute array expression', async () => {
@@ -229,7 +229,7 @@ const newVar = myVar + 1`
       value: 3,
       __meta: [
         {
-          sourceRange: [14, 15],
+          sourceRange: [14, 15, 0],
         },
       ],
     })
@@ -238,7 +238,7 @@ const newVar = myVar + 1`
       value: [1, '2', 3, 9],
       __meta: [
         {
-          sourceRange: [27, 49],
+          sourceRange: [27, 49, 0],
         },
       ],
     })
@@ -257,7 +257,7 @@ const newVar = myVar + 1`
       value: { aStr: 'str', anum: 2, identifier: 3, binExp: 9 },
       __meta: [
         {
-          sourceRange: [27, 83],
+          sourceRange: [27, 83, 0],
         },
       ],
     })
@@ -272,7 +272,7 @@ const newVar = myVar + 1`
       value: '123',
       __meta: [
         {
-          sourceRange: [41, 50],
+          sourceRange: [41, 50, 0],
         },
       ],
     })
@@ -426,7 +426,7 @@ const theExtrude = startSketchOn('XY')
       new KCLError(
         'undefined_value',
         'memory item key `myVarZ` is not defined',
-        [[129, 135]]
+        [[129, 135, 0]]
       )
     )
   })
