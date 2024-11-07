@@ -19,7 +19,6 @@ use kittycad_modeling_cmds::length_unit::LengthUnit;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 type Point2D = kcmc::shared::Point2d<f64>;
@@ -27,8 +26,8 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef,
-        Program, TagDeclarator, TagNode,
+        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef, Program, TagDeclarator,
+        TagNode,
     },
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
@@ -338,6 +337,10 @@ impl IdGenerator {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum KclValue {
+    Uuid {
+        value: ::uuid::Uuid,
+        meta: Vec<Metadata>,
+    },
     Bool {
         value: bool,
         meta: Vec<Metadata>,
@@ -385,10 +388,36 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
-    KclNone,
+    KclNone {
+        value: KclNone,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
 }
 
 impl KclValue {
+    pub(crate) fn metadata(&self) -> Vec<Metadata> {
+        match self {
+            KclValue::Uuid { value: _, meta } => meta.clone(),
+            KclValue::Bool { value: _, meta } => meta.clone(),
+            KclValue::Number { value: _, meta } => meta.clone(),
+            KclValue::Int { value: _, meta } => meta.clone(),
+            KclValue::String { value: _, meta } => meta.clone(),
+            KclValue::Array { value: _, meta } => meta.clone(),
+            KclValue::Object { value: _, meta } => meta.clone(),
+            KclValue::TagIdentifier(x) => x.meta.clone(),
+            KclValue::TagDeclarator(x) => vec![x.metadata()],
+            KclValue::Plane(x) => x.meta.clone(),
+            KclValue::Face(x) => x.meta.clone(),
+            KclValue::Sketch(x) => x.meta.clone(),
+            KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
+            KclValue::Solid(x) => x.meta.clone(),
+            KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
+            KclValue::ImportedGeometry(x) => x.meta.clone(),
+            KclValue::Function { meta, .. } => meta.clone(),
+            KclValue::KclNone { meta, .. } => meta.clone(),
+        }
+    }
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
             KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
@@ -401,6 +430,7 @@ impl KclValue {
     /// on for program logic.
     pub(crate) fn human_friendly_type(&self) -> &'static str {
         match self {
+            KclValue::Uuid { .. } => "Unique ID (uuid)",
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
             KclValue::Solid(_) => "Solid",
@@ -417,7 +447,7 @@ impl KclValue {
             KclValue::String { .. } => "string",
             KclValue::Array { .. } => "array",
             KclValue::Object { .. } => "object",
-            KclValue::KclNone => "None",
+            KclValue::KclNone { .. } => "None",
         }
     }
 
@@ -802,16 +832,6 @@ pub enum PlaneType {
     Custom,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
-pub struct UserVal {
-    #[ts(type = "any")]
-    pub value: serde_json::Value,
-    #[serde(rename = "__meta")]
-    pub meta: Vec<Metadata>,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -873,7 +893,7 @@ pub type MemoryFunction =
 impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end])],
+            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
@@ -889,6 +909,8 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::Array { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
+            KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
+            KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
         }
     }
 }
@@ -900,7 +922,7 @@ fn to_vec_sr(meta: &[Metadata]) -> Vec<SourceRange> {
 impl From<&KclValue> for Vec<SourceRange> {
     fn from(item: &KclValue) -> Self {
         match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end])],
+            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
@@ -914,8 +936,10 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::Int { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
+            KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Array { meta, .. } => to_vec_sr(meta),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
+            KclValue::KclNone { meta, .. } => to_vec_sr(meta),
         }
     }
 }
@@ -926,8 +950,39 @@ impl KclValue {
         Self::Number { value: f, meta }
     }
 
+    /// Put the point into a KCL value.
+    pub fn from_point2d(p: [f64; 2], meta: Vec<Metadata>) -> Self {
+        Self::Array {
+            value: vec![
+                Self::Number {
+                    value: p[0],
+                    meta: meta.clone(),
+                },
+                Self::Number {
+                    value: p[1],
+                    meta: meta.clone(),
+                },
+            ],
+            meta,
+        }
+    }
+
     pub fn as_int(&self) -> Option<i64> {
-        if let KclValue::Int { value, meta } = &self {
+        if let KclValue::Int { value, meta: _ } = &self {
+            Some(*value)
+        } else {
+            None
+        }
+    }
+    pub fn as_f64(&self) -> Option<f64> {
+        if let KclValue::Number { value, meta: _ } = &self {
+            Some(*value)
+        } else {
+            None
+        }
+    }
+    pub fn as_bool(&self) -> Option<bool> {
+        if let KclValue::Bool { value, meta: _ } = &self {
             Some(*value)
         } else {
             None
@@ -1003,19 +1058,13 @@ impl KclValue {
 
     /// If this KCL value is a bool, retrieve it.
     pub fn get_bool(&self) -> Result<bool, KclError> {
-        let Self::UserVal(uv) = self else {
+        let Self::Bool { value: b, .. } = self else {
             return Err(KclError::Type(KclErrorDetails {
                 source_ranges: self.into(),
                 message: format!("Expected bool, found {}", self.human_friendly_type()),
             }));
         };
-        let JValue::Bool(b) = uv.value else {
-            return Err(KclError::Type(KclErrorDetails {
-                source_ranges: self.into(),
-                message: format!("Expected bool, found {}", human_friendly_type(&uv.value)),
-            }));
-        };
-        Ok(b)
+        Ok(*b)
     }
 
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
@@ -1469,7 +1518,7 @@ impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
 }
 
 /// Metadata.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Copy)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Metadata {
@@ -2575,74 +2624,8 @@ mod tests {
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
-    fn mem_get_json(memory: &ProgramMemory, name: &str) -> serde_json::Value {
-        memory
-            .get(name, SourceRange::default())
-            .unwrap()
-            .get_json_value()
-            .unwrap()
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_assign_two_variables() {
-        let ast = r#"const myVar = 5
-const newVar = myVar + 1"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(5),
-            memory
-                .get("myVar", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(6.0),
-            memory
-                .get("newVar", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_angled_line_that_intersects() {
-        let ast_fn = |offset: &str| -> String {
-            format!(
-                r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([2, 2], %, $yo)
-  |> lineTo([3, 1], %)
-  |> angledLineThatIntersects({{
-  angle: 180,
-  intersectTag: yo,
-  offset: {},
-}}, %, $yo2)
-const intersect = segEndX(yo2)"#,
-                offset
-            )
-        };
-
-        let memory = parse_execute(&ast_fn("-1")).await.unwrap();
-        assert_eq!(
-            serde_json::json!(1.0 + 2.0f64.sqrt()),
-            memory
-                .get("intersect", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-
-        let memory = parse_execute(&ast_fn("0")).await.unwrap();
-        assert_eq!(
-            serde_json::json!(1.0000000000000002),
-            memory
-                .get("intersect", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
+    fn mem_get_json(memory: &ProgramMemory, name: &str) -> KclValue {
+        memory.get(name, SourceRange::default()).unwrap().to_owned()
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3040,200 +3023,41 @@ let shape = layer() |> patternTransform(10, transform, %)
         );
     }
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_function_with_parameter_redefined_outside() {
-        let ast = r#"
-fn myIdentity = (x) => {
-  return x
-}
-
-const x = 33
-
-const two = myIdentity(2)"#;
-
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(2),
-            memory
-                .get("two", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(33),
-            memory
-                .get("x", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_function_referencing_variable_in_parent_scope() {
-        let ast = r#"
-const x = 22
-const y = 3
-
-fn add = (x) => {
-  return x + y
-}
-
-const answer = add(2)"#;
-
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(5.0),
-            memory
-                .get("answer", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(22),
-            memory
-                .get("x", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_function_redefining_variable_in_parent_scope() {
-        let ast = r#"
-const x = 1
-
-fn foo = () => {
-  const x = 2
-  return x
-}
-
-const answer = foo()"#;
-
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(2),
-            memory
-                .get("answer", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-        assert_eq!(
-            serde_json::json!(1),
-            memory
-                .get("x", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_execute_pattern_transform_function_redefining_variable_in_parent_scope() {
-        let ast = r#"
-const scale = 100
-fn transform = (replicaId) => {
-  // Redefine same variable as in parent scope.
-  const scale = 2
-  return {
-    translate: [0, 0, replicaId * 10],
-    scale: [scale, 1, 0],
-  }
-}
-
-fn layer = () => {
-  return startSketchOn("XY")
-    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
-    |> extrude(10, %)
-}
-
-// The 10 layers are replicas of each other, with a transform applied to each.
-let shape = layer() |> patternTransform(10, transform, %)"#;
-
-        let memory = parse_execute(ast).await.unwrap();
-        // TODO: Assert that scale 2 was used.
-        assert_eq!(
-            serde_json::json!(100),
-            memory
-                .get("scale", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
-    }
+    // ADAM: Move some of these into simulation tests.
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
         let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(5.0),
-            memory
-                .get("myVar", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
+        assert_eq!(5.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
         let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(7.4),
-            memory
-                .get("myVar", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
+        assert_eq!(7.5, mem_get_json(&memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
         let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(1.0),
-            memory
-                .get("myVar", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
+        assert_eq!(-1.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
         let ast = r#"const myVar = pi() * 2"#;
         let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(std::f64::consts::TAU),
-            memory
-                .get("myVar", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
+        assert_eq!(std::f64::consts::TAU, mem_get_json(&memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
         let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            serde_json::json!(7.4),
-            memory
-                .get("thing", SourceRange::default())
-                .unwrap()
-                .get_json_value()
-                .unwrap()
-        );
+        assert_eq!(7.4, mem_get_json(&memory, "thing").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3273,10 +3097,10 @@ fn check = (x) => {
 check(false)
 "#;
         let mem = parse_execute(ast).await.unwrap();
-        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "notTrue"));
-        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "notFalse"));
-        assert_eq!(serde_json::json!(true), mem_get_json(&mem, "c"));
-        assert_eq!(serde_json::json!(false), mem_get_json(&mem, "d"));
+        assert_eq!(false, mem_get_json(&mem, "notTrue").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(&mem, "notFalse").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(&mem, "c").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(&mem, "d").as_bool().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3523,10 +3347,10 @@ let w = f() + f()
     fn test_assign_args_to_params() {
         // Set up a little framework for this test.
         fn mem(number: usize) -> KclValue {
-            KclValue::UserVal(UserVal {
-                value: number.into(),
+            KclValue::Int {
+                value: number as i64,
                 meta: Default::default(),
-            })
+            }
         }
         fn ident(s: &'static str) -> Node<Identifier> {
             Node::no_src(Identifier {

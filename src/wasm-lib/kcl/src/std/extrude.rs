@@ -233,7 +233,7 @@ pub(crate) async fn do_post_extrude(
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
                                 id: path.get_base().geo_meta.id,
-                                metadata: path.get_base().geo_meta.metadata.clone(),
+                                metadata: path.get_base().geo_meta.metadata,
                             },
                         });
                         Some(extrude_surface)
@@ -244,7 +244,7 @@ pub(crate) async fn do_post_extrude(
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
                                 id: path.get_base().geo_meta.id,
-                                metadata: path.get_base().geo_meta.metadata.clone(),
+                                metadata: path.get_base().geo_meta.metadata,
                             },
                         });
                         Some(extrude_surface)
@@ -259,7 +259,7 @@ pub(crate) async fn do_post_extrude(
                     tag: path.get_base().tag.clone(),
                     geo_meta: GeoMeta {
                         id: path.get_base().geo_meta.id,
-                        metadata: path.get_base().geo_meta.metadata.clone(),
+                        metadata: path.get_base().geo_meta.metadata,
                     },
                 });
                 Some(extrude_surface)

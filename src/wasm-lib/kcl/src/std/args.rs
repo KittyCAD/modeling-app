@@ -3,15 +3,13 @@ use std::any::type_name;
 use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
-use serde::de::DeserializeOwned;
-use serde_json::Value as JValue;
 
 use crate::{
-    ast::types::{execute::parse_json_number_as_f64, TagNode},
+    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet, SourceRange, TagIdentifier, UserVal,
+        SolidSet, SourceRange, TagIdentifier,
     },
     std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
 };
@@ -181,39 +179,58 @@ impl Args {
         Ok(())
     }
 
-    fn make_user_val_from_json(&self, j: serde_json::Value) -> KclValue {
-        KclValue::UserVal(crate::executor::UserVal {
-            value: j,
+    pub(crate) fn make_user_val_from_point(&self, p: [f64; 2]) -> Result<KclValue, KclError> {
+        let meta = Metadata {
+            source_range: self.source_range,
+        };
+        let x = KclValue::Number {
+            value: p[0],
+            meta: vec![meta],
+        };
+        let y = KclValue::Number {
+            value: p[1],
+            meta: vec![meta],
+        };
+        Ok(KclValue::Array {
+            value: vec![x, y],
+            meta: vec![meta],
+        })
+    }
+
+    pub(crate) fn make_user_val_from_f64(&self, f: f64) -> KclValue {
+        KclValue::from_number(
+            f,
+            vec![Metadata {
+                source_range: self.source_range,
+            }],
+        )
+    }
+
+    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> KclValue {
+        KclValue::Int {
+            value: n,
+            meta: vec![Metadata {
+                source_range: self.source_range,
+            }],
+        }
+    }
+
+    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
+        let array = f
+            .into_iter()
+            .map(|n| KclValue::Number {
+                value: n,
+                meta: vec![Metadata {
+                    source_range: self.source_range,
+                }],
+            })
+            .collect::<Vec<_>>();
+        Ok(KclValue::Array {
+            value: array,
             meta: vec![Metadata {
                 source_range: self.source_range,
             }],
         })
-    }
-
-    pub(crate) fn make_null_user_val(&self) -> KclValue {
-        self.make_user_val_from_json(serde_json::Value::Null)
-    }
-
-    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> KclValue {
-        self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from(n)))
-    }
-
-    pub(crate) fn make_user_val_from_f64(&self, f: f64) -> Result<KclValue, KclError> {
-        f64_to_jnum(f, vec![self.source_range]).map(|x| self.make_user_val_from_json(x))
-    }
-
-    pub(crate) fn make_user_val_from_point(&self, p: [f64; 2]) -> Result<KclValue, KclError> {
-        let x = f64_to_jnum(p[0], vec![self.source_range])?;
-        let y = f64_to_jnum(p[1], vec![self.source_range])?;
-        let array = serde_json::Value::Array(vec![x, y]);
-        Ok(self.make_user_val_from_json(array))
-    }
-
-    pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
-        f.into_iter()
-            .map(|n| f64_to_jnum(n, vec![self.source_range]))
-            .collect::<Result<Vec<_>, _>>()
-            .map(|arr| self.make_user_val_from_json(serde_json::Value::Array(arr)))
     }
 
     pub(crate) fn get_number(&self) -> Result<f64, KclError> {
@@ -221,11 +238,19 @@ impl Args {
     }
 
     pub(crate) fn get_number_array(&self) -> Result<Vec<f64>, KclError> {
-        let mut numbers: Vec<f64> = Vec::new();
-        for arg in &self.args {
-            let parsed = arg.get_json_value()?;
-            numbers.push(parse_json_number_as_f64(&parsed, self.source_range)?);
-        }
+        let numbers = self
+            .args
+            .iter()
+            .map(|arg| {
+                let KclValue::Number { value: num, meta: _ } = arg else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges: arg.metadata().iter().map(|x| x.source_range).collect(),
+                        message: format!("Expected a number but found {}", arg.human_friendly_type()),
+                    }));
+                };
+                Ok(*num)
+            })
+            .collect::<Result<_, _>>()?;
         Ok(numbers)
     }
 
@@ -474,6 +499,59 @@ pub trait FromKclValue<'a>: Sized {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self>;
 }
 
+impl<'a> FromArgs<'a> for Vec<KclValue> {
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let Some(arg) = args.args.get(i) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Expected an argument at index {i}"),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        let KclValue::Array { value: array, meta: _ } = arg else {
+            let message = format!("Expected an array but found {}", arg.human_friendly_type());
+            return Err(KclError::Type(KclErrorDetails {
+                source_ranges: arg.metadata().into_iter().map(|m| m.source_range).collect(),
+                message,
+            }));
+        };
+        Ok(array.to_owned())
+    }
+}
+impl<'a> FromArgs<'a> for Vec<Sketch> {
+    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
+        let Some(arg) = args.args.get(i) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Expected an argument at index {i}"),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+        let message = format!("Expected an array but found {}", arg.human_friendly_type());
+        let e = Err(KclError::Type(KclErrorDetails {
+            source_ranges: arg.metadata().into_iter().map(|m| m.source_range).collect(),
+            message,
+        }));
+        let array = match arg {
+            KclValue::Array { value, meta } => value
+                .iter()
+                .map(|val| {
+                    if let KclValue::Sketch(sk) = val {
+                        Ok(sk.as_ref().to_owned())
+                    } else {
+                        Err(KclError::Type(KclErrorDetails {
+                            source_ranges: meta.iter().map(|m| m.source_range).collect(),
+                            message: format!("Expected an array but found {}", arg.human_friendly_type()),
+                        }))
+                    }
+                })
+                .collect::<Result<_, _>>(),
+            KclValue::Sketch(sk) => Ok(vec![sk.as_ref().to_owned()]),
+            KclValue::Sketches { value } => Ok(value.iter().map(|sk| sk.as_ref().to_owned()).collect()),
+            _ => e,
+        }?;
+        Ok(array)
+    }
+}
+
 impl<'a, T> FromArgs<'a> for T
 where
     T: FromKclValue<'a> + Sized,
@@ -563,31 +641,18 @@ where
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a str {
+impl<'a> FromKclValue<'a> for [f64; 2] {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        arg.as_user_val().and_then(|uv| uv.value.as_str())
-    }
-}
-
-impl<'a> FromKclValue<'a> for i64 {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        arg.as_user_val()
-            .and_then(|uv| uv.value.as_number())
-            .and_then(|num| num.as_i64())
-    }
-}
-
-impl<'a> FromKclValue<'a> for UserVal {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        arg.as_user_val().map(|x| x.to_owned())
-    }
-}
-
-impl<'a> FromKclValue<'a> for Vec<JValue> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        arg.as_user_val()
-            .and_then(|uv| uv.value.as_array())
-            .map(ToOwned::to_owned)
+        let KclValue::Array { value, meta: _ } = arg else {
+            return None;
+        };
+        if value.len() != 2 {
+            return None;
+        }
+        let v0 = value.first()?;
+        let v1 = value.get(1)?;
+        let array = [v0.as_f64()?, v1.as_f64()?];
+        Some(array)
     }
 }
 
@@ -612,41 +677,11 @@ impl<'a> FromKclValue<'a> for KclValue {
 macro_rules! impl_from_arg_via_json {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for $typ {
-            fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-                from_user_val(arg)
+            fn from_mem_item(_arg: &'a KclValue) -> Option<Self> {
+                todo!("Deserialize Rust types from KCL objects")
             }
         }
     };
-}
-
-impl<'a, T> FromKclValue<'a> for Vec<T>
-where
-    T: serde::de::DeserializeOwned + FromKclValue<'a>,
-{
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        from_user_val(arg)
-    }
-}
-
-macro_rules! impl_from_arg_for_array {
-    ($n:literal) => {
-        impl<'a, T> FromKclValue<'a> for [T; $n]
-        where
-            T: serde::de::DeserializeOwned + FromKclValue<'a>,
-        {
-            fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-                from_user_val(arg)
-            }
-        }
-    };
-}
-
-fn from_user_val<T: DeserializeOwned>(arg: &KclValue) -> Option<T> {
-    let v = match arg {
-        KclValue::UserVal(v) => v.value.clone(),
-        other => serde_json::to_value(other).ok()?,
-    };
-    serde_json::from_value(v).ok()
 }
 
 impl_from_arg_via_json!(super::sketch::AngledLineData);
@@ -672,17 +707,72 @@ impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(crate::std::loft::LoftData);
 impl_from_arg_via_json!(crate::std::planes::StandardPlane);
 impl_from_arg_via_json!(crate::std::mirror::Mirror2dData);
-impl_from_arg_via_json!(Sketch);
 impl_from_arg_via_json!(FaceTag);
-impl_from_arg_via_json!(String);
-impl_from_arg_via_json!(crate::ast::types::KclNone);
-impl_from_arg_via_json!(u32);
-impl_from_arg_via_json!(u64);
-impl_from_arg_via_json!(f64);
-impl_from_arg_via_json!(bool);
 
-impl_from_arg_for_array!(2);
-impl_from_arg_for_array!(3);
+impl<'a> FromKclValue<'a> for i64 {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Int { value, meta: _ } = arg else {
+            return None;
+        };
+        Some(*value)
+    }
+}
+impl<'a> FromKclValue<'a> for u32 {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Int { value, meta: _ } = arg else {
+            return None;
+        };
+        Some(*value as u32)
+    }
+}
+impl<'a> FromKclValue<'a> for u64 {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Int { value, meta: _ } = arg else {
+            return None;
+        };
+        Some(*value as u64)
+    }
+}
+impl<'a> FromKclValue<'a> for f64 {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Number { value, meta: _ } = arg else {
+            return None;
+        };
+        Some(*value)
+    }
+}
+impl<'a> FromKclValue<'a> for Sketch {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Sketch(value) = arg else {
+            return None;
+        };
+        Some(value.as_ref().to_owned())
+    }
+}
+impl<'a> FromKclValue<'a> for String {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::String { value, meta: _ } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+impl<'a> FromKclValue<'a> for crate::ast::types::KclNone {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::KclNone { value, meta: _ } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+impl<'a> FromKclValue<'a> for bool {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Bool { value, meta: _ } = arg else {
+            return None;
+        };
+        Some(*value)
+    }
+}
 
 impl<'a> FromKclValue<'a> for SketchSet {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
@@ -734,13 +824,18 @@ impl<'a> FromKclValue<'a> for SketchSurface {
     }
 }
 
-fn f64_to_jnum(f: f64, source_ranges: Vec<SourceRange>) -> Result<serde_json::Value, KclError> {
-    serde_json::Number::from_f64(f)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert `{f}` to a number"),
-                source_ranges,
-            })
-        })
-        .map(serde_json::Value::Number)
+impl From<Args> for Metadata {
+    fn from(value: Args) -> Self {
+        Self {
+            source_range: value.source_range,
+        }
+    }
+}
+
+impl From<Args> for Vec<Metadata> {
+    fn from(value: Args) -> Self {
+        vec![Metadata {
+            source_range: value.source_range,
+        }]
+    }
 }

@@ -17,7 +17,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
-        Solid, TagEngineInfo, TagIdentifier, UserVal,
+        Solid, TagEngineInfo, TagIdentifier,
     },
     std::{
         utils::{
@@ -1262,7 +1262,7 @@ pub(crate) async fn inner_start_profile_at(
 pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
     let x = inner_profile_start_x(sketch)?;
-    args.make_user_val_from_f64(x)
+    Ok(args.make_user_val_from_f64(x))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x'
@@ -1286,7 +1286,7 @@ pub(crate) fn inner_profile_start_x(sketch: Sketch) -> Result<f64, KclError> {
 pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
     let x = inner_profile_start_y(sketch)?;
-    args.make_user_val_from_f64(x)
+    Ok(args.make_user_val_from_f64(x))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y'
@@ -1309,15 +1309,7 @@ pub(crate) fn inner_profile_start_y(sketch: Sketch) -> Result<f64, KclError> {
 pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
     let point = inner_profile_start(sketch)?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(point).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert point to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
-        meta: Default::default(),
-    }))
+    Ok(KclValue::from_point2d(point, args.into()))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin

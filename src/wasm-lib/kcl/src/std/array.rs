@@ -1,37 +1,25 @@
 use derive_docs::stdlib;
-use serde_json::Value as JValue;
 
 use super::{args::FromArgs, Args, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, SourceRange, UserVal},
+    executor::{ExecState, KclValue, SourceRange},
     function_param::FunctionParam,
 };
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, f): (Vec<JValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
-    let array: Vec<KclValue> = array
-        .into_iter()
-        .map(|jval| {
-            KclValue::UserVal(UserVal {
-                value: jval,
-                meta: vec![args.source_range.into()],
-            })
-        })
-        .collect();
+    let (array, f): (Vec<KclValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let meta = vec![args.source_range.into()];
     let map_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
-        meta: vec![args.source_range.into()],
+        meta: meta.clone(),
         ctx: args.ctx.clone(),
         memory: *f.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
-    Ok(KclValue::Array {
-        value: new_array,
-        meta: vec![args.source_range.into()],
-    })
+    Ok(KclValue::Array { value: new_array, meta })
 }
 
 /// Apply a function to every element of a list.
@@ -100,16 +88,7 @@ async fn call_map_closure<'a>(
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<JValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
-    let array: Vec<KclValue> = array
-        .into_iter()
-        .map(|jval| {
-            KclValue::UserVal(UserVal {
-                value: jval,
-                meta: vec![args.source_range.into()],
-            })
-        })
-        .collect();
+    let (array, start, f): (Vec<KclValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
     let reduce_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,

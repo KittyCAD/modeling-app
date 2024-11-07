@@ -1,18 +1,21 @@
+use std::collections::HashMap;
+
 use super::{
-    human_friendly_type, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart,
-    CallExpression, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-    ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Expr,
+    IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, ObjectExpression,
+    TagDeclarator, UnaryExpression, UnaryOperator,
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BodyType, ExecState, ExecutorContext, KclValue, Metadata, SourceRange, StatementKind, TagEngineInfo,
-        TagIdentifier, UserVal,
+        TagIdentifier,
     },
     std::FunctionKind,
 };
 use async_recursion::async_recursion;
-use serde_json::Value as JValue;
+
+const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
 
 impl BinaryPart {
     #[async_recursion]
@@ -73,7 +76,7 @@ impl Node<MemberExpression> {
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property) {
-            (KclValue::Object { value: map, meta }, Property::String(property)) => {
+            (KclValue::Object { value: map, meta: _ }, Property::String(property)) => {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
@@ -90,7 +93,7 @@ impl Node<MemberExpression> {
                 ),
                 source_ranges: vec![self.clone().into()],
             })),
-            (KclValue::Array { value: arr, meta }, Property::Number(index)) => {
+            (KclValue::Array { value: arr, meta: _ }, Property::Number(index)) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -124,22 +127,14 @@ impl Node<BinaryExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let left_value = self.left.get_result(exec_state, ctx).await?;
         let right_value = self.right.get_result(exec_state, ctx).await?;
+        let mut meta = left_value.metadata();
+        meta.extend(right_value.metadata());
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
-            if let (
-                KclValue::String {
-                    value: left,
-                    meta: meta_l,
-                },
-                KclValue::String {
-                    value: right,
-                    meta: meta_r,
-                },
-            ) = (left_value, right_value)
+            if let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
+                (&left_value, &right_value)
             {
-                let mut meta = meta_l;
-                meta_l.extend(meta_r);
                 return Ok(KclValue::String {
                     value: format!("{}{}", left, right),
                     meta,
@@ -150,9 +145,7 @@ impl Node<BinaryExpression> {
         let left = parse_number_as_f64(&left_value, self.left.clone().into())?;
         let right = parse_number_as_f64(&right_value, self.right.clone().into())?;
 
-        let mut meta = self.left.into();
-        meta.extend(self.right.into());
-        let value: f64 = match self.operator {
+        let value = match self.operator {
             BinaryOperator::Add => KclValue::Number {
                 value: left + right,
                 meta,
@@ -457,10 +450,10 @@ impl Node<CallExpression> {
                     } else {
                         fn_memory.add(
                             &param.identifier.name,
-                            KclValue::UserVal(UserVal {
-                                value: serde_json::value::Value::Null,
-                                meta: Default::default(),
-                            }),
+                            KclValue::KclNone {
+                                value: KclNone::new(),
+                                meta: vec![self.into()],
+                            },
                             param.identifier.clone().into(),
                         )?;
                     }
@@ -563,15 +556,13 @@ impl Node<ArrayExpression> {
                 .execute_expr(element, exec_state, &metadata, StatementKind::Expression)
                 .await?;
 
-            results.push(value.get_json_value()?);
+            results.push(value);
         }
 
-        Ok(KclValue::UserVal(UserVal {
-            value: results.into(),
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
+        Ok(KclValue::Array {
+            value: results,
+            meta: vec![self.into()],
+        })
     }
 }
 
@@ -581,15 +572,19 @@ impl Node<ArrayRangeExpression> {
         let metadata = Metadata::from(&self.start_element);
         let start = ctx
             .execute_expr(&self.start_element, exec_state, &metadata, StatementKind::Expression)
-            .await?
-            .get_json_value()?;
-        let start = parse_json_number_as_i64(&start, (&self.start_element).into())?;
+            .await?;
+        let start = start.as_int().ok_or(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![self.into()],
+            message: format!("Expected int but found {}", start.human_friendly_type()),
+        }))?;
         let metadata = Metadata::from(&self.end_element);
         let end = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, StatementKind::Expression)
-            .await?
-            .get_json_value()?;
-        let end = parse_json_number_as_i64(&end, (&self.end_element).into())?;
+            .await?;
+        let end = end.as_int().ok_or(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![self.into()],
+            message: format!("Expected int but found {}", end.human_friendly_type()),
+        }))?;
 
         if end < start {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -599,55 +594,46 @@ impl Node<ArrayRangeExpression> {
         }
 
         let range: Vec<_> = if self.end_inclusive {
-            (start..=end).map(JValue::from).collect()
+            (start..=end).collect()
         } else {
-            (start..end).map(JValue::from).collect()
+            (start..end).collect()
         };
 
-        Ok(KclValue::UserVal(UserVal {
-            value: range.into(),
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }))
+        let meta = vec![Metadata {
+            source_range: self.into(),
+        }];
+        Ok(KclValue::Array {
+            value: range
+                .into_iter()
+                .map(|num| KclValue::Int {
+                    value: num,
+                    meta: meta.clone(),
+                })
+                .collect(),
+            meta,
+        })
     }
 }
 
 impl Node<ObjectExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let mut object = serde_json::Map::new();
+        let mut object = HashMap::with_capacity(self.properties.len());
         for property in &self.properties {
             let metadata = Metadata::from(&property.value);
             let result = ctx
                 .execute_expr(&property.value, exec_state, &metadata, StatementKind::Expression)
                 .await?;
 
-            object.insert(property.key.name.clone(), result.get_json_value()?);
+            object.insert(property.key.name.clone(), result);
         }
 
-        Ok(KclValue::UserVal(UserVal {
-            value: object.into(),
+        Ok(KclValue::Object {
+            value: object,
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        }))
-    }
-}
-
-fn parse_json_number_as_i64(j: &serde_json::Value, source_range: SourceRange) -> Result<i64, KclError> {
-    if let serde_json::Value::Number(n) = &j {
-        n.as_i64().ok_or_else(|| {
-            KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![source_range],
-                message: format!("Invalid integer: {}", j),
-            })
         })
-    } else {
-        Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: vec![source_range],
-            message: format!("Invalid integer: {}", j),
-        }))
     }
 }
 
@@ -657,28 +643,8 @@ pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<f6
     } else {
         Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![source_range],
-            message: format!("Invalid number: {}", v),
+            message: format!("Invalid number: {}", v.human_friendly_type()),
         }))
-    }
-}
-
-pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
-    if let serde_json::Value::String(n) = &j {
-        Some(n.clone())
-    } else {
-        None
-    }
-}
-
-/// JSON value as bool.  If it isn't a bool, returns None.
-pub fn json_as_bool(j: &serde_json::Value) -> Option<bool> {
-    match j {
-        JValue::Null => None,
-        JValue::Bool(b) => Some(*b),
-        JValue::Number(_) => None,
-        JValue::String(_) => None,
-        JValue::Array(_) => None,
-        JValue::Object(_) => None,
     }
 }
 
@@ -751,15 +717,7 @@ impl Property {
                 } else {
                     // Actually evaluate memory to compute the property.
                     let prop = exec_state.memory.get(name, property_src)?;
-                    let KclValue::UserVal(prop) = prop else {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            source_ranges: property_sr,
-                            message: format!(
-                                "{name} is not a valid property/index, you can only use a string or int (>= 0) here",
-                            ),
-                        }));
-                    };
-                    jvalue_to_prop(&prop.value, property_sr, name)
+                    jvalue_to_prop(prop, property_sr, name)
                 }
             }
             LiteralIdentifier::Literal(literal) => {
@@ -786,35 +744,37 @@ impl Property {
     }
 }
 
-fn jvalue_to_prop(value: &JValue, property_sr: Vec<SourceRange>, name: &str) -> Result<Property, KclError> {
+fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -> Result<Property, KclError> {
     let make_err = |message: String| {
         Err::<Property, _>(KclError::Semantic(KclErrorDetails {
             source_ranges: property_sr,
             message,
         }))
     };
-    const MUST_BE_POSINT: &str = "indices must be whole positive numbers";
-    const TRY_INT: &str = "try using the int() function to make this a whole number";
     match value {
-        JValue::Number(ref num) => {
-            let maybe_uint = num.as_u64().and_then(|x| usize::try_from(x).ok());
-            if let Some(uint) = maybe_uint {
+        KclValue::Int { value:num, meta: _ } => {
+            let maybe_int: Result<usize, _> = (*num).try_into();
+            if let Ok(uint) = maybe_int {
                 Ok(Property::Number(uint))
-            } else if let Some(iint) = num.as_i64() {
-                make_err(format!("'{iint}' is not a valid index, {MUST_BE_POSINT}"))
-            } else if let Some(fnum) = num.as_f64() {
-                if fnum < 0.0 {
-                    make_err(format!("'{fnum}' is not a valid index, {MUST_BE_POSINT}"))
-                } else if fnum.fract() == 0.0 {
-                    make_err(format!("'{fnum:.1}' is stored as a fractional number but indices must be whole numbers, {TRY_INT}"))
-                } else {
-                    make_err(format!("'{fnum}' is not a valid index, {MUST_BE_POSINT}, {TRY_INT}"))
-                }
-            } else {
-                make_err(format!("'{num}' is not a valid index, {MUST_BE_POSINT}"))
+            }
+            else {
+                make_err(format!("'{num}' is negative, so you can't index an array with it"))
             }
         }
-        JValue::String(ref x) => Ok(Property::String(x.to_owned())),
+        KclValue::Number{value: num, meta:_} => {
+            let num = *num;
+            if num < 0.0 {
+                return make_err(format!("'{num}' is negative, so you can't index an array with it"))
+            }
+            let nearest_int = num.round();
+            let delta = num-nearest_int;
+            if delta < FLOAT_TO_INT_MAX_DELTA {
+                Ok(Property::Number(nearest_int as usize))
+            } else {
+                make_err(format!("'{num}' is not an integer, so you can't index an array with it"))
+            }
+        }
+        KclValue::String{value: x, meta:_} => Ok(Property::String(x.to_owned())),
         _ => {
             make_err(format!("{name} is not a valid property/index, you can only use a string to get the property of an object, or an int (>= 0) to get an item in an array"))
         }
