@@ -39,6 +39,7 @@ export class KclManager {
     body: [],
     start: 0,
     end: 0,
+    moduleId: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
       startNodes: [],
@@ -205,6 +206,7 @@ export class KclManager {
       body: [],
       start: 0,
       end: 0,
+      moduleId: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
         startNodes: [],

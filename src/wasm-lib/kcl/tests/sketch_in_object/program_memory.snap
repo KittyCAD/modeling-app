@@ -329,7 +329,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 10,
-                157
+                157,
+                0
               ]
             }
           ]
@@ -957,7 +958,8 @@ snapshot_kind: text
                       {
                         "sourceRange": [
                           10,
-                          157
+                          157,
+                          0
                         ]
                       }
                     ]
@@ -973,7 +975,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 170,
-                369
+                369,
+                0
               ]
             }
           ]
@@ -986,7 +989,8 @@ snapshot_kind: text
               {
                 "sourceRange": [
                   52,
-                  77
+                  77,
+                  0
                 ]
               }
             ],
@@ -1023,7 +1027,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     83,
-                    98
+                    98,
+                    0
                   ]
                 },
                 "from": [
@@ -1042,7 +1047,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     104,
-                    119
+                    119,
+                    0
                   ]
                 },
                 "from": [
@@ -1061,7 +1067,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     125,
-                    141
+                    141,
+                    0
                   ]
                 },
                 "from": [
@@ -1080,7 +1087,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     147,
-                    155
+                    155,
+                    0
                   ]
                 },
                 "from": [
@@ -1100,7 +1108,8 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   52,
-                  77
+                  77,
+                  0
                 ]
               },
               "from": [
@@ -1119,7 +1128,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 52,
-                77
+                77,
+                0
               ]
             }
           ]
@@ -1134,7 +1144,8 @@ snapshot_kind: text
                   {
                     "sourceRange": [
                       242,
-                      267
+                      267,
+                      0
                     ]
                   }
                 ],
@@ -1171,7 +1182,8 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         277,
-                        292
+                        292,
+                        0
                       ]
                     },
                     "from": [
@@ -1190,7 +1202,8 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         302,
-                        317
+                        317,
+                        0
                       ]
                     },
                     "from": [
@@ -1209,7 +1222,8 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         327,
-                        343
+                        343,
+                        0
                       ]
                     },
                     "from": [
@@ -1228,7 +1242,8 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         353,
-                        361
+                        361,
+                        0
                       ]
                     },
                     "from": [
@@ -1248,7 +1263,8 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       242,
-                      267
+                      267,
+                      0
                     ]
                   },
                   "from": [
@@ -1269,7 +1285,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 187,
-                367
+                367,
+                0
               ]
             }
           ]
