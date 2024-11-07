@@ -37,6 +37,7 @@ pub(crate) mod digest;
 pub(crate) mod execute;
 mod literal_value;
 mod none;
+pub(crate) mod source_range;
 
 use digest::Digest;
 
@@ -569,15 +570,6 @@ impl BodyItem {
             BodyItem::ReturnStatement(return_statement) => return_statement.end,
         }
     }
-
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            BodyItem::ImportStatement(stmt) => stmt.module_id,
-            BodyItem::ExpressionStatement(expression_statement) => expression_statement.module_id,
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.module_id,
-            BodyItem::ReturnStatement(return_statement) => return_statement.module_id,
-        }
-    }
 }
 
 impl From<BodyItem> for SourceRange {
@@ -719,26 +711,6 @@ impl Expr {
             Expr::UnaryExpression(unary_expression) => unary_expression.end,
             Expr::IfExpression(expr) => expr.end,
             Expr::None(none) => none.end,
-        }
-    }
-
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            Expr::Literal(literal) => literal.module_id,
-            Expr::Identifier(identifier) => identifier.module_id,
-            Expr::TagDeclarator(tag) => tag.module_id,
-            Expr::BinaryExpression(binary_expression) => binary_expression.module_id,
-            Expr::FunctionExpression(function_expression) => function_expression.module_id,
-            Expr::CallExpression(call_expression) => call_expression.module_id,
-            Expr::PipeExpression(pipe_expression) => pipe_expression.module_id,
-            Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.module_id,
-            Expr::ArrayExpression(array_expression) => array_expression.module_id,
-            Expr::ArrayRangeExpression(array_range) => array_range.module_id,
-            Expr::ObjectExpression(object_expression) => object_expression.module_id,
-            Expr::MemberExpression(member_expression) => member_expression.module_id,
-            Expr::UnaryExpression(unary_expression) => unary_expression.module_id,
-            Expr::IfExpression(expr) => expr.module_id,
-            Expr::None(none) => none.module_id,
         }
     }
 
@@ -911,18 +883,6 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
-        }
-    }
-
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            BinaryPart::Literal(literal) => literal.module_id,
-            BinaryPart::Identifier(identifier) => identifier.module_id,
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.module_id,
-            BinaryPart::CallExpression(call_expression) => call_expression.module_id,
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.module_id,
-            BinaryPart::MemberExpression(member_expression) => member_expression.module_id,
-            BinaryPart::IfExpression(e) => e.module_id,
         }
     }
 
@@ -2226,13 +2186,6 @@ impl MemberObject {
             MemberObject::Identifier(identifier) => identifier.end,
         }
     }
-
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            MemberObject::MemberExpression(member_expression) => member_expression.module_id,
-            MemberObject::Identifier(identifier) => identifier.module_id,
-        }
-    }
 }
 
 impl From<MemberObject> for SourceRange {
@@ -2268,13 +2221,6 @@ impl LiteralIdentifier {
         match self {
             LiteralIdentifier::Identifier(identifier) => identifier.end,
             LiteralIdentifier::Literal(literal) => literal.end,
-        }
-    }
-
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.module_id,
-            LiteralIdentifier::Literal(literal) => literal.module_id,
         }
     }
 }
