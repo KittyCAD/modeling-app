@@ -11,7 +11,6 @@ snapshot_kind: text
           "end": 49,
           "id": {
             "end": 8,
-            "moduleId": 0,
             "name": "thing",
             "start": 3,
             "type": "Identifier"
@@ -22,7 +21,6 @@ snapshot_kind: text
                 {
                   "argument": {
                     "end": 43,
-                    "moduleId": 0,
                     "raw": "true",
                     "start": 39,
                     "type": "Literal",
@@ -30,24 +28,20 @@ snapshot_kind: text
                     "value": true
                   },
                   "end": 43,
-                  "moduleId": 0,
                   "start": 32,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
               "end": 49,
-              "moduleId": 0,
               "start": 22
             },
             "end": 49,
-            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "end": 17,
-                  "moduleId": 0,
                   "name": "param",
                   "start": 12,
                   "type": "Identifier"
@@ -59,14 +53,12 @@ snapshot_kind: text
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "moduleId": 0,
           "start": 3,
           "type": "VariableDeclarator"
         }
       ],
       "end": 49,
       "kind": "fn",
-      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -77,7 +69,6 @@ snapshot_kind: text
         "arguments": [
           {
             "end": 65,
-            "moduleId": 0,
             "raw": "false",
             "start": 60,
             "type": "Literal",
@@ -87,25 +78,21 @@ snapshot_kind: text
         ],
         "callee": {
           "end": 59,
-          "moduleId": 0,
           "name": "thing",
           "start": 54,
           "type": "Identifier"
         },
         "end": 66,
-        "moduleId": 0,
         "optional": false,
         "start": 54,
         "type": "CallExpression",
         "type": "CallExpression"
       },
-      "moduleId": 0,
       "start": 54,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
     }
   ],
   "end": 66,
-  "moduleId": 0,
   "start": 0
 }

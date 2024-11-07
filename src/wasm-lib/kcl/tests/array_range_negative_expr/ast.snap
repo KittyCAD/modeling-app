@@ -12,7 +12,6 @@ snapshot_kind: text
             "end": 19,
             "id": {
               "end": 2,
-              "moduleId": 0,
               "name": "xs",
               "start": 0,
               "type": "Identifier"
@@ -21,7 +20,6 @@ snapshot_kind: text
               "end": 19,
               "endElement": {
                 "end": 18,
-                "moduleId": 0,
                 "raw": "5",
                 "start": 17,
                 "type": "Literal",
@@ -29,14 +27,12 @@ snapshot_kind: text
                 "value": 5
               },
               "endInclusive": true,
-              "moduleId": 0,
               "start": 5,
               "startElement": {
                 "arguments": [
                   {
                     "argument": {
                       "end": 12,
-                      "moduleId": 0,
                       "raw": "5",
                       "start": 11,
                       "type": "Literal",
@@ -44,7 +40,6 @@ snapshot_kind: text
                       "value": 5
                     },
                     "end": 12,
-                    "moduleId": 0,
                     "operator": "-",
                     "start": 10,
                     "type": "UnaryExpression",
@@ -53,13 +48,11 @@ snapshot_kind: text
                 ],
                 "callee": {
                   "end": 9,
-                  "moduleId": 0,
                   "name": "int",
                   "start": 6,
                   "type": "Identifier"
                 },
                 "end": 13,
-                "moduleId": 0,
                 "optional": false,
                 "start": 6,
                 "type": "CallExpression",
@@ -68,14 +61,12 @@ snapshot_kind: text
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
             },
-            "moduleId": 0,
             "start": 0,
             "type": "VariableDeclarator"
           }
         ],
         "end": 19,
         "kind": "const",
-        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -87,10 +78,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 37,
-              "moduleId": 0,
               "object": {
                 "end": 34,
-                "moduleId": 0,
                 "name": "xs",
                 "start": 32,
                 "type": "Identifier",
@@ -98,7 +87,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 36,
-                "moduleId": 0,
                 "raw": "0",
                 "start": 35,
                 "type": "Literal",
@@ -112,7 +100,6 @@ snapshot_kind: text
             {
               "argument": {
                 "end": 41,
-                "moduleId": 0,
                 "raw": "5",
                 "start": 40,
                 "type": "Literal",
@@ -120,7 +107,6 @@ snapshot_kind: text
                 "value": 5
               },
               "end": 41,
-              "moduleId": 0,
               "operator": "-",
               "start": 39,
               "type": "UnaryExpression",
@@ -128,7 +114,6 @@ snapshot_kind: text
             },
             {
               "end": 48,
-              "moduleId": 0,
               "raw": "0.001",
               "start": 43,
               "type": "Literal",
@@ -137,7 +122,6 @@ snapshot_kind: text
             },
             {
               "end": 71,
-              "moduleId": 0,
               "raw": "\"first element is -5\"",
               "start": 50,
               "type": "Literal",
@@ -147,26 +131,22 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 31,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 20,
             "type": "Identifier"
           },
           "end": 72,
-          "moduleId": 0,
           "optional": false,
           "start": 20,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 20,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
     "end": 73,
-    "moduleId": 0,
     "start": 0
   }
 }

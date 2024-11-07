@@ -11,7 +11,6 @@ snapshot_kind: text
           "end": 34,
           "id": {
             "end": 10,
-            "moduleId": 0,
             "name": "prop",
             "start": 6,
             "type": "Identifier"
@@ -19,22 +18,17 @@ snapshot_kind: text
           "init": {
             "computed": false,
             "end": 34,
-            "moduleId": 0,
             "object": {
               "computed": false,
               "end": 29,
-              "moduleId": 0,
               "object": {
                 "computed": false,
                 "end": 23,
-                "moduleId": 0,
                 "object": {
                   "computed": false,
                   "end": 19,
-                  "moduleId": 0,
                   "object": {
                     "end": 15,
-                    "moduleId": 0,
                     "name": "yo",
                     "start": 13,
                     "type": "Identifier",
@@ -42,7 +36,6 @@ snapshot_kind: text
                   },
                   "property": {
                     "end": 19,
-                    "moduleId": 0,
                     "name": "one",
                     "start": 16,
                     "type": "Identifier",
@@ -54,7 +47,6 @@ snapshot_kind: text
                 },
                 "property": {
                   "end": 23,
-                  "moduleId": 0,
                   "name": "two",
                   "start": 20,
                   "type": "Identifier",
@@ -66,7 +58,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 29,
-                "moduleId": 0,
                 "name": "three",
                 "start": 24,
                 "type": "Identifier",
@@ -78,7 +69,6 @@ snapshot_kind: text
             },
             "property": {
               "end": 34,
-              "moduleId": 0,
               "name": "four",
               "start": 30,
               "type": "Identifier",
@@ -88,20 +78,17 @@ snapshot_kind: text
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 34,
       "kind": "const",
-      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 34,
-  "moduleId": 0,
   "start": 0
 }

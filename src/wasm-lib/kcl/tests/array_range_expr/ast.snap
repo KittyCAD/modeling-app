@@ -12,7 +12,6 @@ snapshot_kind: text
             "end": 11,
             "id": {
               "end": 2,
-              "moduleId": 0,
               "name": "r1",
               "start": 0,
               "type": "Identifier"
@@ -21,7 +20,6 @@ snapshot_kind: text
               "end": 11,
               "endElement": {
                 "end": 10,
-                "moduleId": 0,
                 "raw": "4",
                 "start": 9,
                 "type": "Literal",
@@ -29,11 +27,9 @@ snapshot_kind: text
                 "value": 4
               },
               "endInclusive": true,
-              "moduleId": 0,
               "start": 5,
               "startElement": {
                 "end": 7,
-                "moduleId": 0,
                 "raw": "0",
                 "start": 6,
                 "type": "Literal",
@@ -43,14 +39,12 @@ snapshot_kind: text
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
             },
-            "moduleId": 0,
             "start": 0,
             "type": "VariableDeclarator"
           }
         ],
         "end": 11,
         "kind": "const",
-        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -62,10 +56,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 29,
-              "moduleId": 0,
               "object": {
                 "end": 26,
-                "moduleId": 0,
                 "name": "r1",
                 "start": 24,
                 "type": "Identifier",
@@ -73,7 +65,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 28,
-                "moduleId": 0,
                 "raw": "4",
                 "start": 27,
                 "type": "Literal",
@@ -86,7 +77,6 @@ snapshot_kind: text
             },
             {
               "end": 32,
-              "moduleId": 0,
               "raw": "4",
               "start": 31,
               "type": "Literal",
@@ -95,7 +85,6 @@ snapshot_kind: text
             },
             {
               "end": 41,
-              "moduleId": 0,
               "raw": "0.00001",
               "start": 34,
               "type": "Literal",
@@ -104,7 +93,6 @@ snapshot_kind: text
             },
             {
               "end": 69,
-              "moduleId": 0,
               "raw": "\"last element is included\"",
               "start": 43,
               "type": "Literal",
@@ -114,19 +102,16 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 23,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 12,
             "type": "Identifier"
           },
           "end": 70,
-          "moduleId": 0,
           "optional": false,
           "start": 12,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 12,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -137,28 +122,24 @@ snapshot_kind: text
             "end": 80,
             "id": {
               "end": 76,
-              "moduleId": 0,
               "name": "four",
               "start": 72,
               "type": "Identifier"
             },
             "init": {
               "end": 80,
-              "moduleId": 0,
               "raw": "4",
               "start": 79,
               "type": "Literal",
               "type": "Literal",
               "value": 4
             },
-            "moduleId": 0,
             "start": 72,
             "type": "VariableDeclarator"
           }
         ],
         "end": 80,
         "kind": "const",
-        "moduleId": 0,
         "start": 72,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -169,28 +150,24 @@ snapshot_kind: text
             "end": 89,
             "id": {
               "end": 85,
-              "moduleId": 0,
               "name": "zero",
               "start": 81,
               "type": "Identifier"
             },
             "init": {
               "end": 89,
-              "moduleId": 0,
               "raw": "0",
               "start": 88,
               "type": "Literal",
               "type": "Literal",
               "value": 0
             },
-            "moduleId": 0,
             "start": 81,
             "type": "VariableDeclarator"
           }
         ],
         "end": 89,
         "kind": "const",
-        "moduleId": 0,
         "start": 81,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -201,7 +178,6 @@ snapshot_kind: text
             "end": 107,
             "id": {
               "end": 92,
-              "moduleId": 0,
               "name": "r2",
               "start": 90,
               "type": "Identifier"
@@ -210,18 +186,15 @@ snapshot_kind: text
               "end": 107,
               "endElement": {
                 "end": 106,
-                "moduleId": 0,
                 "name": "four",
                 "start": 102,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "endInclusive": true,
-              "moduleId": 0,
               "start": 95,
               "startElement": {
                 "end": 100,
-                "moduleId": 0,
                 "name": "zero",
                 "start": 96,
                 "type": "Identifier",
@@ -230,14 +203,12 @@ snapshot_kind: text
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
             },
-            "moduleId": 0,
             "start": 90,
             "type": "VariableDeclarator"
           }
         ],
         "end": 107,
         "kind": "const",
-        "moduleId": 0,
         "start": 90,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -249,10 +220,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 125,
-              "moduleId": 0,
               "object": {
                 "end": 122,
-                "moduleId": 0,
                 "name": "r2",
                 "start": 120,
                 "type": "Identifier",
@@ -260,7 +229,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 124,
-                "moduleId": 0,
                 "raw": "4",
                 "start": 123,
                 "type": "Literal",
@@ -273,7 +241,6 @@ snapshot_kind: text
             },
             {
               "end": 128,
-              "moduleId": 0,
               "raw": "4",
               "start": 127,
               "type": "Literal",
@@ -282,7 +249,6 @@ snapshot_kind: text
             },
             {
               "end": 137,
-              "moduleId": 0,
               "raw": "0.00001",
               "start": 130,
               "type": "Literal",
@@ -291,7 +257,6 @@ snapshot_kind: text
             },
             {
               "end": 165,
-              "moduleId": 0,
               "raw": "\"last element is included\"",
               "start": 139,
               "type": "Literal",
@@ -301,19 +266,16 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 119,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 108,
             "type": "Identifier"
           },
           "end": 166,
-          "moduleId": 0,
           "optional": false,
           "start": 108,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 108,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -324,7 +286,6 @@ snapshot_kind: text
             "end": 188,
             "id": {
               "end": 172,
-              "moduleId": 0,
               "name": "five",
               "start": 168,
               "type": "Identifier"
@@ -335,17 +296,14 @@ snapshot_kind: text
                   "end": 187,
                   "left": {
                     "end": 183,
-                    "moduleId": 0,
                     "name": "four",
                     "start": 179,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "moduleId": 0,
                   "operator": "+",
                   "right": {
                     "end": 187,
-                    "moduleId": 0,
                     "raw": "1",
                     "start": 186,
                     "type": "Literal",
@@ -359,26 +317,22 @@ snapshot_kind: text
               ],
               "callee": {
                 "end": 178,
-                "moduleId": 0,
                 "name": "int",
                 "start": 175,
                 "type": "Identifier"
               },
               "end": 188,
-              "moduleId": 0,
               "optional": false,
               "start": 175,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "moduleId": 0,
             "start": 168,
             "type": "VariableDeclarator"
           }
         ],
         "end": 188,
         "kind": "const",
-        "moduleId": 0,
         "start": 168,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -389,7 +343,6 @@ snapshot_kind: text
             "end": 206,
             "id": {
               "end": 191,
-              "moduleId": 0,
               "name": "r3",
               "start": 189,
               "type": "Identifier"
@@ -398,18 +351,15 @@ snapshot_kind: text
               "end": 206,
               "endElement": {
                 "end": 205,
-                "moduleId": 0,
                 "name": "five",
                 "start": 201,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "endInclusive": true,
-              "moduleId": 0,
               "start": 194,
               "startElement": {
                 "end": 199,
-                "moduleId": 0,
                 "name": "zero",
                 "start": 195,
                 "type": "Identifier",
@@ -418,14 +368,12 @@ snapshot_kind: text
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
             },
-            "moduleId": 0,
             "start": 189,
             "type": "VariableDeclarator"
           }
         ],
         "end": 206,
         "kind": "const",
-        "moduleId": 0,
         "start": 189,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -437,10 +385,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 224,
-              "moduleId": 0,
               "object": {
                 "end": 221,
-                "moduleId": 0,
                 "name": "r3",
                 "start": 219,
                 "type": "Identifier",
@@ -448,7 +394,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 223,
-                "moduleId": 0,
                 "raw": "4",
                 "start": 222,
                 "type": "Literal",
@@ -461,7 +406,6 @@ snapshot_kind: text
             },
             {
               "end": 227,
-              "moduleId": 0,
               "raw": "4",
               "start": 226,
               "type": "Literal",
@@ -470,7 +414,6 @@ snapshot_kind: text
             },
             {
               "end": 236,
-              "moduleId": 0,
               "raw": "0.00001",
               "start": 229,
               "type": "Literal",
@@ -479,7 +422,6 @@ snapshot_kind: text
             },
             {
               "end": 274,
-              "moduleId": 0,
               "raw": "\"second-to-last element is included\"",
               "start": 238,
               "type": "Literal",
@@ -489,19 +431,16 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 218,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 207,
             "type": "Identifier"
           },
           "end": 275,
-          "moduleId": 0,
           "optional": false,
           "start": 207,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 207,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -513,10 +452,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 293,
-              "moduleId": 0,
               "object": {
                 "end": 290,
-                "moduleId": 0,
                 "name": "r3",
                 "start": 288,
                 "type": "Identifier",
@@ -524,7 +461,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 292,
-                "moduleId": 0,
                 "raw": "5",
                 "start": 291,
                 "type": "Literal",
@@ -537,7 +473,6 @@ snapshot_kind: text
             },
             {
               "end": 296,
-              "moduleId": 0,
               "raw": "5",
               "start": 295,
               "type": "Literal",
@@ -546,7 +481,6 @@ snapshot_kind: text
             },
             {
               "end": 305,
-              "moduleId": 0,
               "raw": "0.00001",
               "start": 298,
               "type": "Literal",
@@ -555,7 +489,6 @@ snapshot_kind: text
             },
             {
               "end": 333,
-              "moduleId": 0,
               "raw": "\"last element is included\"",
               "start": 307,
               "type": "Literal",
@@ -565,19 +498,16 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 287,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 276,
             "type": "Identifier"
           },
           "end": 334,
-          "moduleId": 0,
           "optional": false,
           "start": 276,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 276,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -588,7 +518,6 @@ snapshot_kind: text
             "end": 373,
             "id": {
               "end": 338,
-              "moduleId": 0,
               "name": "r4",
               "start": 336,
               "type": "Identifier"
@@ -601,17 +530,14 @@ snapshot_kind: text
                     "end": 371,
                     "left": {
                       "end": 367,
-                      "moduleId": 0,
                       "name": "five",
                       "start": 363,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "moduleId": 0,
                     "operator": "-",
                     "right": {
                       "end": 371,
-                      "moduleId": 0,
                       "raw": "1",
                       "start": 370,
                       "type": "Literal",
@@ -625,20 +551,17 @@ snapshot_kind: text
                 ],
                 "callee": {
                   "end": 362,
-                  "moduleId": 0,
                   "name": "int",
                   "start": 359,
                   "type": "Identifier"
                 },
                 "end": 372,
-                "moduleId": 0,
                 "optional": false,
                 "start": 359,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               "endInclusive": true,
-              "moduleId": 0,
               "start": 341,
               "startElement": {
                 "arguments": [
@@ -646,17 +569,14 @@ snapshot_kind: text
                     "end": 354,
                     "left": {
                       "end": 350,
-                      "moduleId": 0,
                       "name": "zero",
                       "start": 346,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "moduleId": 0,
                     "operator": "+",
                     "right": {
                       "end": 354,
-                      "moduleId": 0,
                       "raw": "1",
                       "start": 353,
                       "type": "Literal",
@@ -670,13 +590,11 @@ snapshot_kind: text
                 ],
                 "callee": {
                   "end": 345,
-                  "moduleId": 0,
                   "name": "int",
                   "start": 342,
                   "type": "Identifier"
                 },
                 "end": 355,
-                "moduleId": 0,
                 "optional": false,
                 "start": 342,
                 "type": "CallExpression",
@@ -685,14 +603,12 @@ snapshot_kind: text
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
             },
-            "moduleId": 0,
             "start": 336,
             "type": "VariableDeclarator"
           }
         ],
         "end": 373,
         "kind": "const",
-        "moduleId": 0,
         "start": 336,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -704,10 +620,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 391,
-              "moduleId": 0,
               "object": {
                 "end": 388,
-                "moduleId": 0,
                 "name": "r4",
                 "start": 386,
                 "type": "Identifier",
@@ -715,7 +629,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 390,
-                "moduleId": 0,
                 "raw": "0",
                 "start": 389,
                 "type": "Literal",
@@ -728,7 +641,6 @@ snapshot_kind: text
             },
             {
               "end": 394,
-              "moduleId": 0,
               "raw": "1",
               "start": 393,
               "type": "Literal",
@@ -737,7 +649,6 @@ snapshot_kind: text
             },
             {
               "end": 403,
-              "moduleId": 0,
               "raw": "0.00001",
               "start": 396,
               "type": "Literal",
@@ -746,7 +657,6 @@ snapshot_kind: text
             },
             {
               "end": 425,
-              "moduleId": 0,
               "raw": "\"first element is 1\"",
               "start": 405,
               "type": "Literal",
@@ -756,19 +666,16 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 385,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 374,
             "type": "Identifier"
           },
           "end": 426,
-          "moduleId": 0,
           "optional": false,
           "start": 374,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 374,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -780,10 +687,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 444,
-              "moduleId": 0,
               "object": {
                 "end": 441,
-                "moduleId": 0,
                 "name": "r4",
                 "start": 439,
                 "type": "Identifier",
@@ -791,7 +696,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 443,
-                "moduleId": 0,
                 "raw": "2",
                 "start": 442,
                 "type": "Literal",
@@ -804,7 +708,6 @@ snapshot_kind: text
             },
             {
               "end": 447,
-              "moduleId": 0,
               "raw": "3",
               "start": 446,
               "type": "Literal",
@@ -813,7 +716,6 @@ snapshot_kind: text
             },
             {
               "end": 456,
-              "moduleId": 0,
               "raw": "0.00001",
               "start": 449,
               "type": "Literal",
@@ -822,7 +724,6 @@ snapshot_kind: text
             },
             {
               "end": 487,
-              "moduleId": 0,
               "raw": "\"second-to-last element is 3\"",
               "start": 458,
               "type": "Literal",
@@ -832,19 +733,16 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 438,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 427,
             "type": "Identifier"
           },
           "end": 488,
-          "moduleId": 0,
           "optional": false,
           "start": 427,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 427,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -856,10 +754,8 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 506,
-              "moduleId": 0,
               "object": {
                 "end": 503,
-                "moduleId": 0,
                 "name": "r4",
                 "start": 501,
                 "type": "Identifier",
@@ -867,7 +763,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 505,
-                "moduleId": 0,
                 "raw": "3",
                 "start": 504,
                 "type": "Literal",
@@ -880,7 +775,6 @@ snapshot_kind: text
             },
             {
               "end": 509,
-              "moduleId": 0,
               "raw": "4",
               "start": 508,
               "type": "Literal",
@@ -889,7 +783,6 @@ snapshot_kind: text
             },
             {
               "end": 518,
-              "moduleId": 0,
               "raw": "0.00001",
               "start": 511,
               "type": "Literal",
@@ -898,7 +791,6 @@ snapshot_kind: text
             },
             {
               "end": 539,
-              "moduleId": 0,
               "raw": "\"last element is 4\"",
               "start": 520,
               "type": "Literal",
@@ -908,32 +800,27 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 500,
-            "moduleId": 0,
             "name": "assertEqual",
             "start": 489,
             "type": "Identifier"
           },
           "end": 540,
-          "moduleId": 0,
           "optional": false,
           "start": 489,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "moduleId": 0,
         "start": 489,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
     "end": 541,
-    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
             "end": 72,
-            "moduleId": 0,
             "start": 70,
             "type": "NonCodeNode",
             "value": {
@@ -944,7 +831,6 @@ snapshot_kind: text
         "5": [
           {
             "end": 168,
-            "moduleId": 0,
             "start": 166,
             "type": "NonCodeNode",
             "value": {
@@ -955,7 +841,6 @@ snapshot_kind: text
         "9": [
           {
             "end": 336,
-            "moduleId": 0,
             "start": 334,
             "type": "NonCodeNode",
             "value": {
