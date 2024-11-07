@@ -55,7 +55,7 @@ pub struct Node<T> {
     pub inner: T,
     pub start: usize,
     pub end: usize,
-    #[serde(default, skip_serializing_if = "ModuleId::is_default")]
+    #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
     pub module_id: ModuleId,
 }
 
@@ -536,7 +536,9 @@ impl ModuleId {
         usize::try_from(self.0).expect("module ID should fit in a usize")
     }
 
-    fn is_default(&self) -> bool {
+    /// Top-level file is the one being executed.
+    /// Represented by module ID of 0, i.e. the default value.
+    pub fn is_top_level(&self) -> bool {
         *self == Self::default()
     }
 }
