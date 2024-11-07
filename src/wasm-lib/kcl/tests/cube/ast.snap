@@ -12,7 +12,6 @@ snapshot_kind: text
             "end": 316,
             "id": {
               "end": 7,
-              "moduleId": 0,
               "name": "cube",
               "start": 3,
               "type": "Identifier"
@@ -26,7 +25,6 @@ snapshot_kind: text
                         "end": 48,
                         "id": {
                           "end": 35,
-                          "moduleId": 0,
                           "name": "l",
                           "start": 34,
                           "type": "Identifier"
@@ -35,17 +33,14 @@ snapshot_kind: text
                           "end": 48,
                           "left": {
                             "end": 44,
-                            "moduleId": 0,
                             "name": "length",
                             "start": 38,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "moduleId": 0,
                           "operator": "/",
                           "right": {
                             "end": 48,
-                            "moduleId": 0,
                             "raw": "2",
                             "start": 47,
                             "type": "Literal",
@@ -56,14 +51,12 @@ snapshot_kind: text
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "moduleId": 0,
                         "start": 34,
                         "type": "VariableDeclarator"
                       }
                     ],
                     "end": 48,
                     "kind": "const",
-                    "moduleId": 0,
                     "start": 34,
                     "type": "VariableDeclaration",
                     "type": "VariableDeclaration"
@@ -74,7 +67,6 @@ snapshot_kind: text
                         "end": 64,
                         "id": {
                           "end": 52,
-                          "moduleId": 0,
                           "name": "x",
                           "start": 51,
                           "type": "Identifier"
@@ -82,10 +74,8 @@ snapshot_kind: text
                         "init": {
                           "computed": false,
                           "end": 64,
-                          "moduleId": 0,
                           "object": {
                             "end": 61,
-                            "moduleId": 0,
                             "name": "center",
                             "start": 55,
                             "type": "Identifier",
@@ -93,7 +83,6 @@ snapshot_kind: text
                           },
                           "property": {
                             "end": 63,
-                            "moduleId": 0,
                             "raw": "0",
                             "start": 62,
                             "type": "Literal",
@@ -104,14 +93,12 @@ snapshot_kind: text
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
-                        "moduleId": 0,
                         "start": 51,
                         "type": "VariableDeclarator"
                       }
                     ],
                     "end": 64,
                     "kind": "const",
-                    "moduleId": 0,
                     "start": 51,
                     "type": "VariableDeclaration",
                     "type": "VariableDeclaration"
@@ -122,7 +109,6 @@ snapshot_kind: text
                         "end": 80,
                         "id": {
                           "end": 68,
-                          "moduleId": 0,
                           "name": "y",
                           "start": 67,
                           "type": "Identifier"
@@ -130,10 +116,8 @@ snapshot_kind: text
                         "init": {
                           "computed": false,
                           "end": 80,
-                          "moduleId": 0,
                           "object": {
                             "end": 77,
-                            "moduleId": 0,
                             "name": "center",
                             "start": 71,
                             "type": "Identifier",
@@ -141,7 +125,6 @@ snapshot_kind: text
                           },
                           "property": {
                             "end": 79,
-                            "moduleId": 0,
                             "raw": "1",
                             "start": 78,
                             "type": "Literal",
@@ -152,14 +135,12 @@ snapshot_kind: text
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
-                        "moduleId": 0,
                         "start": 67,
                         "type": "VariableDeclarator"
                       }
                     ],
                     "end": 80,
                     "kind": "const",
-                    "moduleId": 0,
                     "start": 67,
                     "type": "VariableDeclaration",
                     "type": "VariableDeclaration"
@@ -170,7 +151,6 @@ snapshot_kind: text
                         "end": 104,
                         "id": {
                           "end": 85,
-                          "moduleId": 0,
                           "name": "p0",
                           "start": 83,
                           "type": "Identifier"
@@ -182,24 +162,20 @@ snapshot_kind: text
                               "left": {
                                 "argument": {
                                   "end": 91,
-                                  "moduleId": 0,
                                   "name": "l",
                                   "start": 90,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "end": 91,
-                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 89,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 95,
-                                "moduleId": 0,
                                 "name": "x",
                                 "start": 94,
                                 "type": "Identifier",
@@ -214,24 +190,20 @@ snapshot_kind: text
                               "left": {
                                 "argument": {
                                   "end": 99,
-                                  "moduleId": 0,
                                   "name": "l",
                                   "start": 98,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "end": 99,
-                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 97,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 103,
-                                "moduleId": 0,
                                 "name": "y",
                                 "start": 102,
                                 "type": "Identifier",
@@ -243,19 +215,16 @@ snapshot_kind: text
                             }
                           ],
                           "end": 104,
-                          "moduleId": 0,
                           "start": 88,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         },
-                        "moduleId": 0,
                         "start": 83,
                         "type": "VariableDeclarator"
                       }
                     ],
                     "end": 104,
                     "kind": "const",
-                    "moduleId": 0,
                     "start": 83,
                     "type": "VariableDeclaration",
                     "type": "VariableDeclaration"
@@ -266,7 +235,6 @@ snapshot_kind: text
                         "end": 127,
                         "id": {
                           "end": 109,
-                          "moduleId": 0,
                           "name": "p1",
                           "start": 107,
                           "type": "Identifier"
@@ -278,24 +246,20 @@ snapshot_kind: text
                               "left": {
                                 "argument": {
                                   "end": 115,
-                                  "moduleId": 0,
                                   "name": "l",
                                   "start": 114,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "end": 115,
-                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 113,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 119,
-                                "moduleId": 0,
                                 "name": "x",
                                 "start": 118,
                                 "type": "Identifier",
@@ -309,17 +273,14 @@ snapshot_kind: text
                               "end": 126,
                               "left": {
                                 "end": 122,
-                                "moduleId": 0,
                                 "name": "l",
                                 "start": 121,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 126,
-                                "moduleId": 0,
                                 "name": "y",
                                 "start": 125,
                                 "type": "Identifier",
@@ -331,19 +292,16 @@ snapshot_kind: text
                             }
                           ],
                           "end": 127,
-                          "moduleId": 0,
                           "start": 112,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         },
-                        "moduleId": 0,
                         "start": 107,
                         "type": "VariableDeclarator"
                       }
                     ],
                     "end": 127,
                     "kind": "const",
-                    "moduleId": 0,
                     "start": 107,
                     "type": "VariableDeclaration",
                     "type": "VariableDeclaration"
@@ -354,7 +312,6 @@ snapshot_kind: text
                         "end": 149,
                         "id": {
                           "end": 132,
-                          "moduleId": 0,
                           "name": "p2",
                           "start": 130,
                           "type": "Identifier"
@@ -365,17 +322,14 @@ snapshot_kind: text
                               "end": 141,
                               "left": {
                                 "end": 137,
-                                "moduleId": 0,
                                 "name": "l",
                                 "start": 136,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 141,
-                                "moduleId": 0,
                                 "name": "x",
                                 "start": 140,
                                 "type": "Identifier",
@@ -389,17 +343,14 @@ snapshot_kind: text
                               "end": 148,
                               "left": {
                                 "end": 144,
-                                "moduleId": 0,
                                 "name": "l",
                                 "start": 143,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 148,
-                                "moduleId": 0,
                                 "name": "y",
                                 "start": 147,
                                 "type": "Identifier",
@@ -411,19 +362,16 @@ snapshot_kind: text
                             }
                           ],
                           "end": 149,
-                          "moduleId": 0,
                           "start": 135,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         },
-                        "moduleId": 0,
                         "start": 130,
                         "type": "VariableDeclarator"
                       }
                     ],
                     "end": 149,
                     "kind": "const",
-                    "moduleId": 0,
                     "start": 130,
                     "type": "VariableDeclaration",
                     "type": "VariableDeclaration"
@@ -434,7 +382,6 @@ snapshot_kind: text
                         "end": 172,
                         "id": {
                           "end": 154,
-                          "moduleId": 0,
                           "name": "p3",
                           "start": 152,
                           "type": "Identifier"
@@ -445,17 +392,14 @@ snapshot_kind: text
                               "end": 163,
                               "left": {
                                 "end": 159,
-                                "moduleId": 0,
                                 "name": "l",
                                 "start": 158,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 163,
-                                "moduleId": 0,
                                 "name": "x",
                                 "start": 162,
                                 "type": "Identifier",
@@ -470,24 +414,20 @@ snapshot_kind: text
                               "left": {
                                 "argument": {
                                   "end": 167,
-                                  "moduleId": 0,
                                   "name": "l",
                                   "start": 166,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "end": 167,
-                                "moduleId": 0,
                                 "operator": "-",
                                 "start": 165,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               },
-                              "moduleId": 0,
                               "operator": "+",
                               "right": {
                                 "end": 171,
-                                "moduleId": 0,
                                 "name": "y",
                                 "start": 170,
                                 "type": "Identifier",
@@ -499,19 +439,16 @@ snapshot_kind: text
                             }
                           ],
                           "end": 172,
-                          "moduleId": 0,
                           "start": 157,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         },
-                        "moduleId": 0,
                         "start": 152,
                         "type": "VariableDeclarator"
                       }
                     ],
                     "end": 172,
                     "kind": "const",
-                    "moduleId": 0,
                     "start": 152,
                     "type": "VariableDeclaration",
                     "type": "VariableDeclaration"
@@ -523,7 +460,6 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 199,
-                              "moduleId": 0,
                               "name": "p0",
                               "start": 197,
                               "type": "Identifier",
@@ -532,13 +468,11 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 196,
-                            "moduleId": 0,
                             "name": "startSketchAt",
                             "start": 183,
                             "type": "Identifier"
                           },
                           "end": 200,
-                          "moduleId": 0,
                           "optional": false,
                           "start": 183,
                           "type": "CallExpression",
@@ -548,7 +482,6 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 215,
-                              "moduleId": 0,
                               "name": "p1",
                               "start": 213,
                               "type": "Identifier",
@@ -556,7 +489,6 @@ snapshot_kind: text
                             },
                             {
                               "end": 218,
-                              "moduleId": 0,
                               "start": 217,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -564,13 +496,11 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 212,
-                            "moduleId": 0,
                             "name": "lineTo",
                             "start": 206,
                             "type": "Identifier"
                           },
                           "end": 219,
-                          "moduleId": 0,
                           "optional": false,
                           "start": 206,
                           "type": "CallExpression",
@@ -580,7 +510,6 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 234,
-                              "moduleId": 0,
                               "name": "p2",
                               "start": 232,
                               "type": "Identifier",
@@ -588,7 +517,6 @@ snapshot_kind: text
                             },
                             {
                               "end": 237,
-                              "moduleId": 0,
                               "start": 236,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -596,13 +524,11 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 231,
-                            "moduleId": 0,
                             "name": "lineTo",
                             "start": 225,
                             "type": "Identifier"
                           },
                           "end": 238,
-                          "moduleId": 0,
                           "optional": false,
                           "start": 225,
                           "type": "CallExpression",
@@ -612,7 +538,6 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 253,
-                              "moduleId": 0,
                               "name": "p3",
                               "start": 251,
                               "type": "Identifier",
@@ -620,7 +545,6 @@ snapshot_kind: text
                             },
                             {
                               "end": 256,
-                              "moduleId": 0,
                               "start": 255,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -628,13 +552,11 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 250,
-                            "moduleId": 0,
                             "name": "lineTo",
                             "start": 244,
                             "type": "Identifier"
                           },
                           "end": 257,
-                          "moduleId": 0,
                           "optional": false,
                           "start": 244,
                           "type": "CallExpression",
@@ -644,7 +566,6 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 272,
-                              "moduleId": 0,
                               "name": "p0",
                               "start": 270,
                               "type": "Identifier",
@@ -652,7 +573,6 @@ snapshot_kind: text
                             },
                             {
                               "end": 275,
-                              "moduleId": 0,
                               "start": 274,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -660,13 +580,11 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 269,
-                            "moduleId": 0,
                             "name": "lineTo",
                             "start": 263,
                             "type": "Identifier"
                           },
                           "end": 276,
-                          "moduleId": 0,
                           "optional": false,
                           "start": 263,
                           "type": "CallExpression",
@@ -676,7 +594,6 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 289,
-                              "moduleId": 0,
                               "start": 288,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -684,13 +601,11 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 287,
-                            "moduleId": 0,
                             "name": "close",
                             "start": 282,
                             "type": "Identifier"
                           },
                           "end": 290,
-                          "moduleId": 0,
                           "optional": false,
                           "start": 282,
                           "type": "CallExpression",
@@ -700,7 +615,6 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 310,
-                              "moduleId": 0,
                               "name": "length",
                               "start": 304,
                               "type": "Identifier",
@@ -708,7 +622,6 @@ snapshot_kind: text
                             },
                             {
                               "end": 313,
-                              "moduleId": 0,
                               "start": 312,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -716,13 +629,11 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 303,
-                            "moduleId": 0,
                             "name": "extrude",
                             "start": 296,
                             "type": "Identifier"
                           },
                           "end": 314,
-                          "moduleId": 0,
                           "optional": false,
                           "start": 296,
                           "type": "CallExpression",
@@ -730,26 +641,22 @@ snapshot_kind: text
                         }
                       ],
                       "end": 314,
-                      "moduleId": 0,
                       "start": 183,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
                     "end": 314,
-                    "moduleId": 0,
                     "start": 176,
                     "type": "ReturnStatement",
                     "type": "ReturnStatement"
                   }
                 ],
                 "end": 316,
-                "moduleId": 0,
                 "nonCodeMeta": {
                   "nonCodeNodes": {
                     "6": [
                       {
                         "end": 176,
-                        "moduleId": 0,
                         "start": 172,
                         "type": "NonCodeNode",
                         "value": {
@@ -763,13 +670,11 @@ snapshot_kind: text
                 "start": 30
               },
               "end": 316,
-              "moduleId": 0,
               "params": [
                 {
                   "type": "Parameter",
                   "identifier": {
                     "end": 17,
-                    "moduleId": 0,
                     "name": "length",
                     "start": 11,
                     "type": "Identifier"
@@ -780,7 +685,6 @@ snapshot_kind: text
                   "type": "Parameter",
                   "identifier": {
                     "end": 25,
-                    "moduleId": 0,
                     "name": "center",
                     "start": 19,
                     "type": "Identifier"
@@ -792,14 +696,12 @@ snapshot_kind: text
               "type": "FunctionExpression",
               "type": "FunctionExpression"
             },
-            "moduleId": 0,
             "start": 3,
             "type": "VariableDeclarator"
           }
         ],
         "end": 316,
         "kind": "fn",
-        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -810,7 +712,6 @@ snapshot_kind: text
             "end": 343,
             "id": {
               "end": 324,
-              "moduleId": 0,
               "name": "myCube",
               "start": 318,
               "type": "Identifier"
@@ -819,7 +720,6 @@ snapshot_kind: text
               "arguments": [
                 {
                   "end": 334,
-                  "moduleId": 0,
                   "raw": "40",
                   "start": 332,
                   "type": "Literal",
@@ -830,7 +730,6 @@ snapshot_kind: text
                   "elements": [
                     {
                       "end": 338,
-                      "moduleId": 0,
                       "raw": "0",
                       "start": 337,
                       "type": "Literal",
@@ -839,7 +738,6 @@ snapshot_kind: text
                     },
                     {
                       "end": 341,
-                      "moduleId": 0,
                       "raw": "0",
                       "start": 340,
                       "type": "Literal",
@@ -848,7 +746,6 @@ snapshot_kind: text
                     }
                   ],
                   "end": 342,
-                  "moduleId": 0,
                   "start": 336,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -856,39 +753,33 @@ snapshot_kind: text
               ],
               "callee": {
                 "end": 331,
-                "moduleId": 0,
                 "name": "cube",
                 "start": 327,
                 "type": "Identifier"
               },
               "end": 343,
-              "moduleId": 0,
               "optional": false,
               "start": 327,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "moduleId": 0,
             "start": 318,
             "type": "VariableDeclarator"
           }
         ],
         "end": 343,
         "kind": "const",
-        "moduleId": 0,
         "start": 318,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
     "end": 344,
-    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "end": 318,
-            "moduleId": 0,
             "start": 316,
             "type": "NonCodeNode",
             "value": {

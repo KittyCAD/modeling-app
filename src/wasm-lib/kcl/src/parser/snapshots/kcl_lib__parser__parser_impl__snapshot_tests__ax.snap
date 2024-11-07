@@ -11,7 +11,6 @@ snapshot_kind: text
           "end": 91,
           "id": {
             "end": 11,
-            "moduleId": 0,
             "name": "numbers",
             "start": 4,
             "type": "Identifier"
@@ -20,7 +19,6 @@ snapshot_kind: text
             "elements": [
               {
                 "end": 29,
-                "moduleId": 0,
                 "raw": "1",
                 "start": 28,
                 "type": "Literal",
@@ -29,7 +27,6 @@ snapshot_kind: text
               },
               {
                 "end": 44,
-                "moduleId": 0,
                 "raw": "2",
                 "start": 43,
                 "type": "Literal",
@@ -38,13 +35,11 @@ snapshot_kind: text
               }
             ],
             "end": 91,
-            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
                     "end": 63,
-                    "moduleId": 0,
                     "start": 58,
                     "type": "NonCodeNode",
                     "value": {
@@ -57,7 +52,6 @@ snapshot_kind: text
                 "3": [
                   {
                     "end": 81,
-                    "moduleId": 0,
                     "start": 76,
                     "type": "NonCodeNode",
                     "value": {
@@ -74,20 +68,17 @@ snapshot_kind: text
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
-          "moduleId": 0,
           "start": 4,
           "type": "VariableDeclarator"
         }
       ],
       "end": 91,
       "kind": "const",
-      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 91,
-  "moduleId": 0,
   "start": 0
 }

@@ -11,7 +11,6 @@ snapshot_kind: text
           "end": 27,
           "id": {
             "end": 10,
-            "moduleId": 0,
             "name": "prop",
             "start": 6,
             "type": "Identifier"
@@ -19,14 +18,11 @@ snapshot_kind: text
           "init": {
             "computed": true,
             "end": 27,
-            "moduleId": 0,
             "object": {
               "computed": false,
               "end": 22,
-              "moduleId": 0,
               "object": {
                 "end": 15,
-                "moduleId": 0,
                 "name": "yo",
                 "start": 13,
                 "type": "Identifier",
@@ -34,7 +30,6 @@ snapshot_kind: text
               },
               "property": {
                 "end": 21,
-                "moduleId": 0,
                 "raw": "\"one\"",
                 "start": 16,
                 "type": "Literal",
@@ -47,7 +42,6 @@ snapshot_kind: text
             },
             "property": {
               "end": 26,
-              "moduleId": 0,
               "name": "two",
               "start": 23,
               "type": "Identifier",
@@ -57,20 +51,17 @@ snapshot_kind: text
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 27,
       "kind": "const",
-      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 27,
-  "moduleId": 0,
   "start": 0
 }

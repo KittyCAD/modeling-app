@@ -11,41 +11,35 @@ snapshot_kind: text
           "end": 11,
           "id": {
             "end": 7,
-            "moduleId": 0,
             "name": "x",
             "start": 6,
             "type": "Identifier"
           },
           "init": {
             "end": 11,
-            "moduleId": 0,
             "raw": "1",
             "start": 10,
             "type": "Literal",
             "type": "Literal",
             "value": 1
           },
-          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 11,
       "kind": "const",
-      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 40,
-  "moduleId": 0,
   "nonCodeMeta": {
     "nonCodeNodes": {
       "0": [
         {
           "end": 40,
-          "moduleId": 0,
           "start": 11,
           "type": "NonCodeNode",
           "value": {

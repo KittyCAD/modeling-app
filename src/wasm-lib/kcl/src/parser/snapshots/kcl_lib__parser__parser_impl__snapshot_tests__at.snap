@@ -13,7 +13,6 @@ snapshot_kind: text
             "elements": [
               {
                 "end": 7,
-                "moduleId": 0,
                 "raw": "0",
                 "start": 6,
                 "type": "Literal",
@@ -22,7 +21,6 @@ snapshot_kind: text
               },
               {
                 "end": 10,
-                "moduleId": 0,
                 "name": "l",
                 "start": 9,
                 "type": "Identifier",
@@ -30,14 +28,12 @@ snapshot_kind: text
               }
             ],
             "end": 11,
-            "moduleId": 0,
             "start": 5,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           {
             "end": 14,
-            "moduleId": 0,
             "start": 13,
             "type": "PipeSubstitution",
             "type": "PipeSubstitution"
@@ -45,25 +41,21 @@ snapshot_kind: text
         ],
         "callee": {
           "end": 4,
-          "moduleId": 0,
           "name": "line",
           "start": 0,
           "type": "Identifier"
         },
         "end": 15,
-        "moduleId": 0,
         "optional": false,
         "start": 0,
         "type": "CallExpression",
         "type": "CallExpression"
       },
-      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
     }
   ],
   "end": 15,
-  "moduleId": 0,
   "start": 0
 }

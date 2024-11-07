@@ -11,7 +11,6 @@ snapshot_kind: text
         "arguments": [
           {
             "end": 5,
-            "moduleId": 0,
             "raw": "5",
             "start": 4,
             "type": "Literal",
@@ -20,7 +19,6 @@ snapshot_kind: text
           },
           {
             "end": 14,
-            "moduleId": 0,
             "raw": "\"hello\"",
             "start": 7,
             "type": "Literal",
@@ -29,7 +27,6 @@ snapshot_kind: text
           },
           {
             "end": 27,
-            "moduleId": 0,
             "name": "aIdentifier",
             "start": 16,
             "type": "Identifier",
@@ -38,25 +35,21 @@ snapshot_kind: text
         ],
         "callee": {
           "end": 3,
-          "moduleId": 0,
           "name": "log",
           "start": 0,
           "type": "Identifier"
         },
         "end": 28,
-        "moduleId": 0,
         "optional": false,
         "start": 0,
         "type": "CallExpression",
         "type": "CallExpression"
       },
-      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
     }
   ],
   "end": 28,
-  "moduleId": 0,
   "start": 0
 }

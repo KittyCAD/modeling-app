@@ -12,7 +12,6 @@ snapshot_kind: text
             "end": 40,
             "id": {
               "end": 12,
-              "moduleId": 0,
               "name": "increment",
               "start": 3,
               "type": "Identifier"
@@ -25,17 +24,14 @@ snapshot_kind: text
                       "end": 38,
                       "left": {
                         "end": 34,
-                        "moduleId": 0,
                         "name": "i",
                         "start": 33,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "moduleId": 0,
                       "operator": "+",
                       "right": {
                         "end": 38,
-                        "moduleId": 0,
                         "raw": "1",
                         "start": 37,
                         "type": "Literal",
@@ -47,24 +43,20 @@ snapshot_kind: text
                       "type": "BinaryExpression"
                     },
                     "end": 38,
-                    "moduleId": 0,
                     "start": 26,
                     "type": "ReturnStatement",
                     "type": "ReturnStatement"
                   }
                 ],
                 "end": 40,
-                "moduleId": 0,
                 "start": 22
               },
               "end": 40,
-              "moduleId": 0,
               "params": [
                 {
                   "type": "Parameter",
                   "identifier": {
                     "end": 17,
-                    "moduleId": 0,
                     "name": "i",
                     "start": 16,
                     "type": "Identifier"
@@ -76,14 +68,12 @@ snapshot_kind: text
               "type": "FunctionExpression",
               "type": "FunctionExpression"
             },
-            "moduleId": 0,
             "start": 3,
             "type": "VariableDeclarator"
           }
         ],
         "end": 40,
         "kind": "fn",
-        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -94,7 +84,6 @@ snapshot_kind: text
             "end": 53,
             "id": {
               "end": 44,
-              "moduleId": 0,
               "name": "xs",
               "start": 42,
               "type": "Identifier"
@@ -103,7 +92,6 @@ snapshot_kind: text
               "end": 53,
               "endElement": {
                 "end": 52,
-                "moduleId": 0,
                 "raw": "2",
                 "start": 51,
                 "type": "Literal",
@@ -111,11 +99,9 @@ snapshot_kind: text
                 "value": 2
               },
               "endInclusive": true,
-              "moduleId": 0,
               "start": 47,
               "startElement": {
                 "end": 49,
-                "moduleId": 0,
                 "raw": "0",
                 "start": 48,
                 "type": "Literal",
@@ -125,14 +111,12 @@ snapshot_kind: text
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
             },
-            "moduleId": 0,
             "start": 42,
             "type": "VariableDeclarator"
           }
         ],
         "end": 53,
         "kind": "const",
-        "moduleId": 0,
         "start": 42,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -143,7 +127,6 @@ snapshot_kind: text
             "end": 107,
             "id": {
               "end": 56,
-              "moduleId": 0,
               "name": "ys",
               "start": 54,
               "type": "Identifier"
@@ -152,7 +135,6 @@ snapshot_kind: text
               "body": [
                 {
                   "end": 61,
-                  "moduleId": 0,
                   "name": "xs",
                   "start": 59,
                   "type": "Identifier",
@@ -162,14 +144,12 @@ snapshot_kind: text
                   "arguments": [
                     {
                       "end": 72,
-                      "moduleId": 0,
                       "start": 71,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     },
                     {
                       "end": 83,
-                      "moduleId": 0,
                       "name": "increment",
                       "start": 74,
                       "type": "Identifier",
@@ -178,13 +158,11 @@ snapshot_kind: text
                   ],
                   "callee": {
                     "end": 70,
-                    "moduleId": 0,
                     "name": "map",
                     "start": 67,
                     "type": "Identifier"
                   },
                   "end": 84,
-                  "moduleId": 0,
                   "optional": false,
                   "start": 67,
                   "type": "CallExpression",
@@ -194,14 +172,12 @@ snapshot_kind: text
                   "arguments": [
                     {
                       "end": 95,
-                      "moduleId": 0,
                       "start": 94,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     },
                     {
                       "end": 106,
-                      "moduleId": 0,
                       "name": "increment",
                       "start": 97,
                       "type": "Identifier",
@@ -210,13 +186,11 @@ snapshot_kind: text
                   ],
                   "callee": {
                     "end": 93,
-                    "moduleId": 0,
                     "name": "map",
                     "start": 90,
                     "type": "Identifier"
                   },
                   "end": 107,
-                  "moduleId": 0,
                   "optional": false,
                   "start": 90,
                   "type": "CallExpression",
@@ -224,32 +198,27 @@ snapshot_kind: text
                 }
               ],
               "end": 107,
-              "moduleId": 0,
               "start": 59,
               "type": "PipeExpression",
               "type": "PipeExpression"
             },
-            "moduleId": 0,
             "start": 54,
             "type": "VariableDeclarator"
           }
         ],
         "end": 107,
         "kind": "const",
-        "moduleId": 0,
         "start": 54,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
     "end": 108,
-    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "end": 42,
-            "moduleId": 0,
             "start": 40,
             "type": "NonCodeNode",
             "value": {

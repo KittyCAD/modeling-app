@@ -11,30 +11,25 @@ snapshot_kind: text
           "end": 26,
           "id": {
             "end": 9,
-            "moduleId": 0,
             "name": "obj",
             "start": 6,
             "type": "Identifier"
           },
           "init": {
             "end": 26,
-            "moduleId": 0,
             "properties": [
               {
                 "end": 18,
                 "key": {
                   "end": 15,
-                  "moduleId": 0,
                   "name": "a",
                   "start": 14,
                   "type": "Identifier"
                 },
-                "moduleId": 0,
                 "start": 14,
                 "type": "ObjectProperty",
                 "value": {
                   "end": 18,
-                  "moduleId": 0,
                   "raw": "1",
                   "start": 17,
                   "type": "Literal",
@@ -46,17 +41,14 @@ snapshot_kind: text
                 "end": 24,
                 "key": {
                   "end": 21,
-                  "moduleId": 0,
                   "name": "b",
                   "start": 20,
                   "type": "Identifier"
                 },
-                "moduleId": 0,
                 "start": 20,
                 "type": "ObjectProperty",
                 "value": {
                   "end": 24,
-                  "moduleId": 0,
                   "raw": "2",
                   "start": 23,
                   "type": "Literal",
@@ -69,14 +61,12 @@ snapshot_kind: text
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 26,
       "kind": "const",
-      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -87,7 +77,6 @@ snapshot_kind: text
           "end": 54,
           "id": {
             "end": 43,
-            "moduleId": 0,
             "name": "height",
             "start": 37,
             "type": "Identifier"
@@ -95,10 +84,8 @@ snapshot_kind: text
           "init": {
             "computed": false,
             "end": 54,
-            "moduleId": 0,
             "object": {
               "end": 49,
-              "moduleId": 0,
               "name": "obj",
               "start": 46,
               "type": "Identifier",
@@ -106,7 +93,6 @@ snapshot_kind: text
             },
             "property": {
               "end": 53,
-              "moduleId": 0,
               "raw": "\"a\"",
               "start": 50,
               "type": "Literal",
@@ -117,20 +103,17 @@ snapshot_kind: text
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "moduleId": 0,
           "start": 37,
           "type": "VariableDeclarator"
         }
       ],
       "end": 54,
       "kind": "const",
-      "moduleId": 0,
       "start": 31,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 54,
-  "moduleId": 0,
   "start": 0
 }
