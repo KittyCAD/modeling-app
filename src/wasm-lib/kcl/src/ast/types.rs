@@ -54,6 +54,7 @@ pub struct Node<T> {
     pub inner: T,
     pub start: usize,
     pub end: usize,
+    #[serde(default, skip_serializing_if = "ModuleId::is_default")]
     pub module_id: ModuleId,
 }
 
@@ -532,6 +533,10 @@ impl ModuleId {
 
     pub fn as_usize(&self) -> usize {
         usize::try_from(self.0).expect("module ID should fit in a usize")
+    }
+
+    fn is_default(&self) -> bool {
+        *self == Self::default()
     }
 }
 

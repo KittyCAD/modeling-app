@@ -169,7 +169,6 @@ const sk2 = startSketchOn('XY')
             faceId: expect.any(String),
             tag: {
               end: 116,
-              moduleId: 0,
               start: 114,
               type: 'TagDeclarator',
               value: 'p',
@@ -220,7 +219,6 @@ const sk2 = startSketchOn('XY')
               to: [0, 10],
               tag: {
                 end: 116,
-                moduleId: 0,
                 start: 114,
                 type: 'TagDeclarator',
                 value: 'p',
@@ -263,7 +261,6 @@ const sk2 = startSketchOn('XY')
             faceId: expect.any(String),
             tag: {
               end: 419,
-              moduleId: 0,
               start: 417,
               type: 'TagDeclarator',
               value: 'o',
@@ -314,7 +311,6 @@ const sk2 = startSketchOn('XY')
               to: [0, 3],
               tag: {
                 end: 419,
-                moduleId: 0,
                 start: 417,
                 type: 'TagDeclarator',
                 value: 'o',
