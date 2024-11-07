@@ -49,6 +49,26 @@ sketch002 = startSketchOn(extrude001, seg02)
 extrude002 = extrude(5, sketch002)
 `
 
+const exampleCodeNo3D = `sketch003 = startSketchOn('YZ')
+  |> startProfileAt([5.82, 0], %)
+  |> angledLine([180, 11.54], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       8.21
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch004 = startSketchOn('-XZ')
+  |> startProfileAt([0, 14.36], %)
+  |> line([15.49, 0.05], %)
+  |> tangentialArcTo([0, 0], %)
+  |> tangentialArcTo([-6.8, 8.17], %)
+`
+
 const sketchOnFaceOnFaceEtc = `sketch001 = startSketchOn('XZ')
 |> startProfileAt([0, 0], %)
 |> line([4, 8], %)
@@ -83,6 +103,7 @@ extrude004 = extrude(3, sketch004)
 const codeToWriteCacheFor = {
   exampleCode1,
   sketchOnFaceOnFaceEtc,
+  exampleCodeNo3D,
 } as const
 
 type CodeKey = keyof typeof codeToWriteCacheFor
@@ -234,6 +255,69 @@ describe('testing createArtifactGraph', () => {
       // further more we can check that each edge is bi-directional, if it's not
       // by checking the arrow heads going both ways, on the graph.
       await GraphTheGraph(theMap, 2000, 2000, 'exampleCode1.png')
+    }, 20000)
+  })
+
+  describe(`code with sketches but no extrusions or other 3D elements`, () => {
+    let ast: Program
+    let theMap: ReturnType<typeof createArtifactGraph>
+    it(`setup`, () => {
+      // putting this logic in here because describe blocks runs before beforeAll has finished
+      const {
+        orderedCommands,
+        responseMap,
+        ast: _ast,
+      } = getCommands('exampleCodeNo3D')
+      ast = _ast
+      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+    })
+
+    it('there should be two planes, one for each sketch path', () => {
+      const planes = [...filterArtifacts({ types: ['plane'] }, theMap)].map(
+        (plane) => expandPlane(plane[1], theMap)
+      )
+      expect(planes).toHaveLength(2)
+      planes.forEach((path) => {
+        expect(path.type).toBe('plane')
+      })
+    })
+    it('there should be two paths, one on each plane', () => {
+      const paths = [...filterArtifacts({ types: ['path'] }, theMap)].map(
+        (path) => expandPath(path[1], theMap)
+      )
+      expect(paths).toHaveLength(2)
+      paths.forEach((path) => {
+        if (err(path)) throw path
+        expect(path.type).toBe('path')
+      })
+    })
+
+    it(`there should be 1 solid2D, just for the first closed path`, () => {
+      const solid2Ds = [...filterArtifacts({ types: ['solid2D'] }, theMap)]
+      expect(solid2Ds).toHaveLength(1)
+    })
+
+    it('there should be no extrusions', () => {
+      const extrusions = [...filterArtifacts({ types: ['sweep'] }, theMap)].map(
+        (extrusion) => expandSweep(extrusion[1], theMap)
+      )
+      expect(extrusions).toHaveLength(0)
+    })
+
+    it('there should be 8 segments, 4 + 1 (close) from the first sketch and 3 from the second', () => {
+      const segments = [...filterArtifacts({ types: ['segment'] }, theMap)].map(
+        (segment) => expandSegment(segment[1], theMap)
+      )
+      expect(segments).toHaveLength(8)
+    })
+
+    it('screenshot graph', async () => {
+      // Ostensibly this takes a screen shot of the graph of the artifactGraph
+      // but it's it also tests that all of the id links are correct because if one
+      // of the edges refers to a non-existent node, the graph will throw.
+      // further more we can check that each edge is bi-directional, if it's not
+      // by checking the arrow heads going both ways, on the graph.
+      await GraphTheGraph(theMap, 2000, 2000, 'exampleCodeNo3D.png')
     }, 20000)
   })
 })
@@ -457,7 +541,10 @@ async function GraphTheGraph(
     `./src/lang/std/artifactMapGraphs/${imageName}`
   )
   // chop the top 30 pixels off the image
-  const originalImg = PNG.sync.read(fs.readFileSync(originalImgPath))
+  const originalImgExists = fs.existsSync(originalImgPath)
+  const originalImg = originalImgExists
+    ? PNG.sync.read(fs.readFileSync(originalImgPath))
+    : null
   // const img1Data = new Uint8Array(img1.data)
   // const img1DataChopped = img1Data.slice(30 * img1.width * 4)
   // img1.data = Buffer.from(img1DataChopped)
@@ -468,10 +555,10 @@ async function GraphTheGraph(
   const newImageDataChopped = newImageData.slice(30 * newImage.width * 4)
   newImage.data = Buffer.from(newImageDataChopped)
 
-  const { width, height } = originalImg
+  const { width, height } = originalImg ?? newImage
   const diff = new PNG({ width, height })
 
-  const imageSizeDifferent = originalImg.data.length !== newImage.data.length
+  const imageSizeDifferent = originalImg?.data.length !== newImage.data.length
   let numDiffPixels = 0
   if (!imageSizeDifferent) {
     numDiffPixels = pixelmatch(
@@ -523,7 +610,7 @@ describe('testing getArtifactsToUpdate', () => {
         sweepId: '',
         codeRef: {
           pathToNode: [['body', '']],
-          range: [37, 64],
+          range: [37, 64, 0],
         },
       },
     ])
@@ -535,7 +622,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: [],
         edgeIds: [],
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -545,7 +632,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64],
+          range: [37, 64, 0],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -558,7 +645,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: '',
         edgeIds: [],
         codeRef: {
-          range: [70, 86],
+          range: [70, 86, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -568,7 +655,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64],
+          range: [37, 64, 0],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -582,7 +669,7 @@ describe('testing getArtifactsToUpdate', () => {
         edgeIds: [],
         surfaceId: '',
         codeRef: {
-          range: [260, 299],
+          range: [260, 299, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -592,7 +679,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119],
+          range: [92, 119, 0],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -612,7 +699,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [156, 203],
+          range: [156, 203, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -623,7 +710,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -640,7 +727,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [125, 150],
+          range: [125, 150, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -651,7 +738,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -668,7 +755,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119],
+          range: [92, 119, 0],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -680,7 +767,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -697,7 +784,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [70, 86],
+          range: [70, 86, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -708,7 +795,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -726,7 +813,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -744,7 +831,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },

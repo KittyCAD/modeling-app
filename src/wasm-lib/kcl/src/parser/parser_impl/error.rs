@@ -1,13 +1,12 @@
 use winnow::{
     error::{ErrorKind, ParseError, StrContext},
     stream::Stream,
-    Located,
 };
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
-    token::Token,
+    token::{Input, Token},
 };
 
 /// Accumulate context while backtracking errors
@@ -20,9 +19,10 @@ pub struct ContextError<C = StrContext> {
     pub cause: Option<KclError>,
 }
 
-impl From<ParseError<Located<&str>, winnow::error::ContextError>> for KclError {
-    fn from(err: ParseError<Located<&str>, winnow::error::ContextError>) -> Self {
+impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
+    fn from(err: ParseError<Input<'_>, winnow::error::ContextError>) -> Self {
         let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
+        let module_id = err.input().state.module_id;
 
         if offset >= input.len() {
             // From the winnow docs:
@@ -31,7 +31,7 @@ impl From<ParseError<Located<&str>, winnow::error::ContextError>> for KclError {
             // the end of input (input.len()) on eof errors.
 
             return KclError::Lexical(KclErrorDetails {
-                source_ranges: vec![SourceRange([offset, offset])],
+                source_ranges: vec![SourceRange([offset, offset, module_id.as_usize()])],
                 message: "unexpected EOF while parsing".to_string(),
             });
         }
@@ -42,7 +42,7 @@ impl From<ParseError<Located<&str>, winnow::error::ContextError>> for KclError {
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
         KclError::Lexical(KclErrorDetails {
-            source_ranges: vec![SourceRange([offset, offset + 1])],
+            source_ranges: vec![SourceRange([offset, offset + 1, module_id.as_usize()])],
             message: format!("found unknown token '{}'", bad_token),
         })
     }

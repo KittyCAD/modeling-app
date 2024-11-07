@@ -235,7 +235,7 @@ pub(crate) async fn execute_pipe_body(
     // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
     // of its own.
     let meta = Metadata {
-        source_range: SourceRange([first.start(), first.end()]),
+        source_range: SourceRange::from(first),
     };
     let output = ctx
         .execute_expr(first, exec_state, &meta, StatementKind::Expression)
@@ -285,7 +285,7 @@ async fn inner_execute_pipe_body(
             | Expr::None(_) => {}
         };
         let metadata = Metadata {
-            source_range: SourceRange([expression.start(), expression.end()]),
+            source_range: SourceRange::from(expression),
         };
         let output = ctx
             .execute_expr(expression, exec_state, &metadata, StatementKind::Expression)
