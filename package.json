@@ -189,7 +189,7 @@
     "eslint-plugin-css-modules": "^2.12.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-suggest-no-throw": "^1.0.0",
-    "happy-dom": "^15.10.1",
+    "happy-dom": "^15.10.2",
     "http-server": "^14.1.1",
     "husky": "^9.1.5",
     "kill-port": "^2.0.1",
