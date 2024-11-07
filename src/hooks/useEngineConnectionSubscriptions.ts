@@ -39,7 +39,7 @@ export function useEngineConnectionSubscriptions() {
           if (codeRefs) {
             editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
           }
-          editorManager.setHighlightRange([[0, 0]])
+          // editorManager.setHighlightRange([[0, 0]])
         } else if (
           !editorManager.highlightRange ||
           (editorManager.highlightRange[0][0] !== 0 &&

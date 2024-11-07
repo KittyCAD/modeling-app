@@ -2,7 +2,7 @@ import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
-import { Selections__old } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
@@ -27,17 +27,17 @@ export type ModelingCommandSchema = {
     machine: components['schemas']['MachineInfoResponse']
   }
   Extrude: {
-    selection: Selections__old // & { type: 'face' } would be cool to lock that down
+    selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
   Revolve: {
-    selection: Selections__old
+    selection: Selections
     angle: KclCommandValue
   }
   Fillet: {
     // todo
-    selection: Selections__old
+    selection: Selections
     radius: KclCommandValue
   }
   'change tool': {

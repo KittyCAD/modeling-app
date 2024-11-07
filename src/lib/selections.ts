@@ -5,7 +5,7 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Expr, parse } from 'lang/wasm'
+import { CallExpression, SourceRange, Expr } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
@@ -667,6 +667,7 @@ export function getSelectionType(
   selection?: Selections__old
 ): ResolvedSelectionType[] {
   if (!selection) return []
+  // console.trace('selection', selection)
   const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
     const singleSelection = {
       ...selection,

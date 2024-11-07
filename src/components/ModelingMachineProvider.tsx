@@ -43,15 +43,12 @@ import {
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
-  Selections__old,
   canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeBetweenCharacters,
   isSketchPipe,
-  updateSelections,
   convertSelectionsToOld,
-  convertSelectionToOld,
   Selections,
   updateSelections2,
 } from 'lib/selections'

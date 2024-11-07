@@ -5,7 +5,6 @@ import { CommandArgument } from 'lib/commandTypes'
 import {
   Selection__old,
   canSubmitSelectionArg,
-  convertSelectionToOld,
   convertSelectionsToOld,
   getSelectionType,
   getSelectionTypeDisplayText,

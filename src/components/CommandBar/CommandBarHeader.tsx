@@ -2,7 +2,11 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from '../CustomIcon'
 import React, { useState } from 'react'
 import { ActionButton } from '../ActionButton'
-import { Selections__old, getSelectionTypeDisplayText } from 'lib/selections'
+import {
+  Selections,
+  convertSelectionsToOld,
+  getSelectionTypeDisplayText,
+} from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
 import Tooltip from 'components/Tooltip'
@@ -126,7 +130,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       {argValue ? (
                         arg.inputType === 'selection' ? (
                           getSelectionTypeDisplayText(
-                            argValue as Selections__old
+                            convertSelectionsToOld(argValue as Selections)
                           )
                         ) : arg.inputType === 'kcl' ? (
                           roundOff(

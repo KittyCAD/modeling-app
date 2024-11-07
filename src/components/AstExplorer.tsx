@@ -4,7 +4,6 @@ import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
 import { trap } from 'lib/trap'
 import { codeToIdSelections } from 'lib/selections'
-import { KclManager } from 'lang/KclSingleton'
 
 export function AstExplorer() {
   const { context } = useModelingContext()

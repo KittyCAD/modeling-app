@@ -611,7 +611,7 @@ export const modelingMachine = setup({
         }
         const pathToNode = getNodePathFromSourceRange(
           ast,
-          selection.codeBasedSelections[0].range
+          selection.graphSelections[0]?.codeRef.range
         )
         const extrudeSketchRes = extrudeSketch(
           ast,
@@ -629,7 +629,7 @@ export const modelingMachine = setup({
           focusPath: [pathToExtrudeArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
-            range: selection.codeBasedSelections[0].range,
+            range: selection.graphSelections[0]?.codeRef.range,
             type: 'path',
           },
         })
@@ -660,7 +660,7 @@ export const modelingMachine = setup({
         }
         const pathToNode = getNodePathFromSourceRange(
           ast,
-          selection.codeBasedSelections[0].range
+          selection.graphSelections[0]?.codeRef.range
         )
         const revolveSketchRes = revolveSketch(
           ast,
@@ -676,7 +676,7 @@ export const modelingMachine = setup({
           focusPath: [pathToRevolveArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
-            range: selection.codeBasedSelections[0].range,
+            range: selection.graphSelections[0]?.codeRef.range,
             type: 'path',
           },
         })
@@ -731,7 +731,7 @@ export const modelingMachine = setup({
       // Apply fillet to selection
       const applyFilletToSelectionResult = applyFilletToSelection(
         ast,
-        selection,
+        convertSelectionsToOld(selection),
         radius
       )
       if (err(applyFilletToSelectionResult)) return applyFilletToSelectionResult
