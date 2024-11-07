@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{executor::SourceRange, lsp::IntoDiagnostic};
+use crate::{ast::types::ModuleId, executor::SourceRange, lsp::IntoDiagnostic};
 
 #[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
@@ -146,6 +146,13 @@ impl IntoDiagnostic for KclError {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         let message = self.get_message();
         let source_ranges = self.source_ranges();
+
+        // Limit to only errors in the top-level file.
+        let module_id = ModuleId::default();
+        let source_ranges = source_ranges
+            .iter()
+            .filter(|r| r.module_id() == module_id)
+            .collect::<Vec<_>>();
 
         Diagnostic {
             range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),
