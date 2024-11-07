@@ -8,8 +8,10 @@ import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
 import { ToastUpdate } from 'components/ToastUpdate'
+import { markOnce } from 'lib/performance'
 import { AUTO_UPDATER_TOAST_ID } from 'lib/constants'
 
+markOnce('code/willAuth')
 // uncomment for xstate inspector
 // import { DEV } from 'env'
 // import { inspect } from '@xstate/inspect'

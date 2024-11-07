@@ -65,7 +65,8 @@
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.0.8",
     "web-vitals": "^3.5.2",
-    "xstate": "^5.17.4"
+    "xstate": "^5.17.4",
+    "yargs": "^17.7.2"
   },
   "scripts": {
     "start": "vite",
