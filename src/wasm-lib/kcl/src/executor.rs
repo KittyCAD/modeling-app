@@ -66,11 +66,18 @@ pub struct ExecState {
 }
 
 impl ExecState {
-    pub fn add_new_module(&mut self, path: std::path::PathBuf) -> ModuleId {
-        let id = ModuleId::from_usize(self.path_to_source_id.len());
-        let source_info = ModuleInfo { id, path: path.clone() };
-        self.path_to_source_id.insert(path, id);
-        self.source_infos.insert(id, source_info);
+    pub fn add_module(&mut self, path: std::path::PathBuf) -> ModuleId {
+        // Need to avoid borrowing self in the closure.
+        let new_module_id = ModuleId::from_usize(self.path_to_source_id.len());
+        let mut is_new = false;
+        let id = *self.path_to_source_id.entry(path.clone()).or_insert_with(|| {
+            is_new = true;
+            new_module_id
+        });
+        if is_new {
+            let module_info = ModuleInfo { id, path };
+            self.source_infos.insert(id, module_info);
+        }
         id
     }
 }
@@ -2204,7 +2211,7 @@ impl ExecutorContext {
             ..Default::default()
         };
         // TODO: Use the top-level file's path.
-        exec_state.add_new_module(std::path::PathBuf::from(""));
+        exec_state.add_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.
         self.engine
             .batch_modeling_cmd(
@@ -2264,7 +2271,7 @@ impl ExecutorContext {
                             source_ranges: vec![import_stmt.into()],
                         }));
                     }
-                    let module_id = exec_state.add_new_module(resolved_path.clone());
+                    let module_id = exec_state.add_module(resolved_path.clone());
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
                     let program = crate::parser::parse(&source, module_id)?;
                     let (module_memory, module_exports) = {
