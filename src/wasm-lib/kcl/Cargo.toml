@@ -37,14 +37,14 @@ parse-display = "0.9.1"
 pyo3 = { version = "0.22.6", optional = true }
 reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
-schemars = { version = "0.8.17", features = ["impl_json_schema", "url", "uuid1", "preserve_order"] }
+schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
 serde = { version = "1.0.214", features = ["derive"] }
 serde_json = "1.0.128"
 sha2 = "0.10.8"
 tabled = { version = "0.15.0", optional = true }
 thiserror = "2.0.0"
 toml = "0.8.19"
-ts-rs = { version = "10.0.0", features = ["uuid-impl", "url-impl", "chrono-impl", "no-serde-warnings", "serde-json-impl"] }
+ts-rs = { version = "10.0.0", features = ["uuid-impl", "url-impl", "chrono-impl", "indexmap-impl", "no-serde-warnings", "serde-json-impl"] }
 url = { version = "2.5.3", features = ["serde"] }
 urlencoding = "2.1.3"
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }

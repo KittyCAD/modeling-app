@@ -144,7 +144,7 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    let call_source_range = SourceRange::new(call.start, call.end);
+    let call_source_range = SourceRange::new(call.start, call.end, call.module_id);
     Ok(vec![Z0003.at(
         format!(
             "custom plane in startSketchOn; offsetPlane from {} would work here",

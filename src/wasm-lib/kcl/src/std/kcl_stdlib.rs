@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::{BodyItem, Expr, FunctionExpression, Node, Program},
     docs::{StdLibFn, StdLibFnData},
-    token::lexer,
 };
 
 pub trait KclStdLibFn: StdLibFn {
@@ -83,8 +82,7 @@ impl Serialize for Box<dyn KclStdLibFn> {
 /// Return the program and its single function.
 /// Return None if those expectations aren't met.
 pub fn extract_function(source: &str) -> Option<(Node<Program>, crate::ast::types::BoxNode<FunctionExpression>)> {
-    let tokens = lexer(source).unwrap();
-    let src = crate::parser::Parser::new(tokens).ast().ok()?;
+    let src = crate::parser::top_level_parse(source).ok()?;
     assert_eq!(src.body.len(), 1);
     let BodyItem::ExpressionStatement(expr) = src.body.last()? else {
         panic!("expected expression statement");
