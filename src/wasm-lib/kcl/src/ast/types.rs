@@ -817,13 +817,13 @@ impl Expr {
 
 impl From<Expr> for SourceRange {
     fn from(value: Expr) -> Self {
-        SourceRange([value.start(), value.end(), value.module_id().as_usize()])
+        Self([value.start(), value.end(), value.module_id().as_usize()])
     }
 }
 
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
-        SourceRange([value.start(), value.end(), value.module_id().as_usize()])
+        Self([value.start(), value.end(), value.module_id().as_usize()])
     }
 }
 
