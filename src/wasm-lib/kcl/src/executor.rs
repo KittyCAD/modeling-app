@@ -58,8 +58,8 @@ pub struct ExecState {
     pub import_stack: Vec<std::path::PathBuf>,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
-    /// Map from module ID to source info.
-    pub source_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Map from module ID to module info.
+    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// The directory of the current project.  This is used for resolving import
     /// paths.  If None is given, the current working directory is used.
     pub project_directory: Option<String>,
@@ -76,7 +76,7 @@ impl ExecState {
         });
         if is_new {
             let module_info = ModuleInfo { id, path };
-            self.source_infos.insert(id, module_info);
+            self.module_infos.insert(id, module_info);
         }
         id
     }
