@@ -9,1022 +9,876 @@ snapshot_kind: text
       "type": "lineComment",
       "start": 0,
       "end": 45,
-      "module_id": 0,
       "value": "// This tests evaluating if-else expressions."
     },
     {
       "type": "whitespace",
       "start": 45,
       "end": 48,
-      "module_id": 0,
       "value": "\n\n\n"
     },
     {
       "type": "word",
       "start": 48,
       "end": 49,
-      "module_id": 0,
       "value": "a"
     },
     {
       "type": "whitespace",
       "start": 49,
       "end": 50,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 50,
       "end": 51,
-      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 51,
       "end": 52,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 52,
       "end": 54,
-      "module_id": 0,
       "value": "if"
     },
     {
       "type": "whitespace",
       "start": 54,
       "end": 55,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 55,
       "end": 59,
-      "module_id": 0,
       "value": "true"
     },
     {
       "type": "whitespace",
       "start": 59,
       "end": 60,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 60,
       "end": 61,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 61,
       "end": 64,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 64,
       "end": 65,
-      "module_id": 0,
       "value": "3"
     },
     {
       "type": "whitespace",
       "start": 65,
       "end": 66,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 66,
       "end": 67,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 67,
       "end": 68,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 68,
       "end": 72,
-      "module_id": 0,
       "value": "else"
     },
     {
       "type": "whitespace",
       "start": 72,
       "end": 73,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 73,
       "end": 75,
-      "module_id": 0,
       "value": "if"
     },
     {
       "type": "whitespace",
       "start": 75,
       "end": 76,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 76,
       "end": 80,
-      "module_id": 0,
       "value": "true"
     },
     {
       "type": "whitespace",
       "start": 80,
       "end": 81,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 81,
       "end": 82,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 82,
       "end": 85,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 85,
       "end": 86,
-      "module_id": 0,
       "value": "4"
     },
     {
       "type": "whitespace",
       "start": 86,
       "end": 87,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 87,
       "end": 88,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 88,
       "end": 89,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 89,
       "end": 93,
-      "module_id": 0,
       "value": "else"
     },
     {
       "type": "whitespace",
       "start": 93,
       "end": 94,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 94,
       "end": 95,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 95,
       "end": 98,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 98,
       "end": 99,
-      "module_id": 0,
       "value": "5"
     },
     {
       "type": "whitespace",
       "start": 99,
       "end": 100,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 100,
       "end": 101,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 101,
       "end": 102,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 102,
       "end": 113,
-      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 113,
       "end": 114,
-      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 114,
       "end": 115,
-      "module_id": 0,
       "value": "a"
     },
     {
       "type": "comma",
       "start": 115,
       "end": 116,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 116,
       "end": 117,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 117,
       "end": 118,
-      "module_id": 0,
       "value": "3"
     },
     {
       "type": "comma",
       "start": 118,
       "end": 119,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 119,
       "end": 120,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 120,
       "end": 125,
-      "module_id": 0,
       "value": "0.001"
     },
     {
       "type": "comma",
       "start": 125,
       "end": 126,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 126,
       "end": 127,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 127,
       "end": 158,
-      "module_id": 0,
       "value": "\"the 'if' branch gets returned\""
     },
     {
       "type": "brace",
       "start": 158,
       "end": 159,
-      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 159,
       "end": 161,
-      "module_id": 0,
       "value": "\n\n"
     },
     {
       "type": "word",
       "start": 161,
       "end": 162,
-      "module_id": 0,
       "value": "b"
     },
     {
       "type": "whitespace",
       "start": 162,
       "end": 163,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 163,
       "end": 164,
-      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 164,
       "end": 165,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 165,
       "end": 167,
-      "module_id": 0,
       "value": "if"
     },
     {
       "type": "whitespace",
       "start": 167,
       "end": 168,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 168,
       "end": 173,
-      "module_id": 0,
       "value": "false"
     },
     {
       "type": "whitespace",
       "start": 173,
       "end": 174,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 174,
       "end": 175,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 175,
       "end": 178,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 178,
       "end": 179,
-      "module_id": 0,
       "value": "3"
     },
     {
       "type": "whitespace",
       "start": 179,
       "end": 180,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 180,
       "end": 181,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 181,
       "end": 182,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 182,
       "end": 186,
-      "module_id": 0,
       "value": "else"
     },
     {
       "type": "whitespace",
       "start": 186,
       "end": 187,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 187,
       "end": 189,
-      "module_id": 0,
       "value": "if"
     },
     {
       "type": "whitespace",
       "start": 189,
       "end": 190,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 190,
       "end": 194,
-      "module_id": 0,
       "value": "true"
     },
     {
       "type": "whitespace",
       "start": 194,
       "end": 195,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 195,
       "end": 196,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 196,
       "end": 199,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 199,
       "end": 200,
-      "module_id": 0,
       "value": "4"
     },
     {
       "type": "whitespace",
       "start": 200,
       "end": 201,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 201,
       "end": 202,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 202,
       "end": 203,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 203,
       "end": 207,
-      "module_id": 0,
       "value": "else"
     },
     {
       "type": "whitespace",
       "start": 207,
       "end": 208,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 208,
       "end": 209,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 209,
       "end": 212,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 212,
       "end": 213,
-      "module_id": 0,
       "value": "5"
     },
     {
       "type": "whitespace",
       "start": 213,
       "end": 214,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 214,
       "end": 215,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 215,
       "end": 216,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 216,
       "end": 227,
-      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 227,
       "end": 228,
-      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 228,
       "end": 229,
-      "module_id": 0,
       "value": "b"
     },
     {
       "type": "comma",
       "start": 229,
       "end": 230,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 230,
       "end": 231,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 231,
       "end": 232,
-      "module_id": 0,
       "value": "4"
     },
     {
       "type": "comma",
       "start": 232,
       "end": 233,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 233,
       "end": 234,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 234,
       "end": 239,
-      "module_id": 0,
       "value": "0.001"
     },
     {
       "type": "comma",
       "start": 239,
       "end": 240,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 240,
       "end": 241,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 241,
       "end": 277,
-      "module_id": 0,
       "value": "\"the 'else if' branch gets returned\""
     },
     {
       "type": "brace",
       "start": 277,
       "end": 278,
-      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 278,
       "end": 280,
-      "module_id": 0,
       "value": "\n\n"
     },
     {
       "type": "word",
       "start": 280,
       "end": 281,
-      "module_id": 0,
       "value": "c"
     },
     {
       "type": "whitespace",
       "start": 281,
       "end": 282,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 282,
       "end": 283,
-      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 283,
       "end": 284,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 284,
       "end": 286,
-      "module_id": 0,
       "value": "if"
     },
     {
       "type": "whitespace",
       "start": 286,
       "end": 287,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 287,
       "end": 292,
-      "module_id": 0,
       "value": "false"
     },
     {
       "type": "whitespace",
       "start": 292,
       "end": 293,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 293,
       "end": 294,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 294,
       "end": 297,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 297,
       "end": 298,
-      "module_id": 0,
       "value": "3"
     },
     {
       "type": "whitespace",
       "start": 298,
       "end": 299,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 299,
       "end": 300,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 300,
       "end": 301,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 301,
       "end": 305,
-      "module_id": 0,
       "value": "else"
     },
     {
       "type": "whitespace",
       "start": 305,
       "end": 306,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 306,
       "end": 308,
-      "module_id": 0,
       "value": "if"
     },
     {
       "type": "whitespace",
       "start": 308,
       "end": 309,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 309,
       "end": 314,
-      "module_id": 0,
       "value": "false"
     },
     {
       "type": "whitespace",
       "start": 314,
       "end": 315,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 315,
       "end": 316,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 316,
       "end": 319,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 319,
       "end": 320,
-      "module_id": 0,
       "value": "4"
     },
     {
       "type": "whitespace",
       "start": 320,
       "end": 321,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 321,
       "end": 322,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 322,
       "end": 323,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 323,
       "end": 327,
-      "module_id": 0,
       "value": "else"
     },
     {
       "type": "whitespace",
       "start": 327,
       "end": 328,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 328,
       "end": 329,
-      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 329,
       "end": 332,
-      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "number",
       "start": 332,
       "end": 333,
-      "module_id": 0,
       "value": "5"
     },
     {
       "type": "whitespace",
       "start": 333,
       "end": 334,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "brace",
       "start": 334,
       "end": 335,
-      "module_id": 0,
       "value": "}"
     },
     {
       "type": "whitespace",
       "start": 335,
       "end": 336,
-      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 336,
       "end": 347,
-      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 347,
       "end": 348,
-      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 348,
       "end": 349,
-      "module_id": 0,
       "value": "c"
     },
     {
       "type": "comma",
       "start": 349,
       "end": 350,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 350,
       "end": 351,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 351,
       "end": 352,
-      "module_id": 0,
       "value": "5"
     },
     {
       "type": "comma",
       "start": 352,
       "end": 353,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 353,
       "end": 354,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 354,
       "end": 359,
-      "module_id": 0,
       "value": "0.001"
     },
     {
       "type": "comma",
       "start": 359,
       "end": 360,
-      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 360,
       "end": 361,
-      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 361,
       "end": 394,
-      "module_id": 0,
       "value": "\"the 'else' branch gets returned\""
     },
     {
       "type": "brace",
       "start": 394,
       "end": 395,
-      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 395,
       "end": 396,
-      "module_id": 0,
       "value": "\n"
     }
   ]

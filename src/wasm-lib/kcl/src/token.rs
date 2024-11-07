@@ -164,6 +164,7 @@ pub struct Token {
     pub start: usize,
     /// Offset in the source code where this token ends.
     pub end: usize,
+    #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
     pub module_id: ModuleId,
     pub value: String,
 }
