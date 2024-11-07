@@ -154,7 +154,7 @@ export const SettingsAuthProviderBase = ({
           if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
-            string
+            string,
           ]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
           const message =
@@ -273,8 +273,6 @@ export const SettingsAuthProviderBase = ({
       )
       .filter((c) => c !== null) as Command[]
 
-    // TODO Kevin: Move the create command to here and make note about the
-    // Data router HTML structure since it cannot access that data...
     commandBarSend({ type: 'Add commands', data: { commands: commands } })
 
     return () => {
@@ -291,7 +289,8 @@ export const SettingsAuthProviderBase = ({
     settingsWithCommandConfigs,
   ])
 
-  // Add route commands
+  // Due to the route provider, i've moved this to the SettingsAuthProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
     const filePath =
       PATHS.FILE +
