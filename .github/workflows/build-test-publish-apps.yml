@@ -181,6 +181,7 @@ jobs:
       - name: Build the app (release)
         if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
+          PUBLISH_FOR_PULL_REQUEST: true
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
