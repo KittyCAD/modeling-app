@@ -23,6 +23,10 @@ import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import EngineStreamContext from 'hooks/useEngineStreamContext'
 import { EngineStream } from 'components/EngineStream'
+import { maybeWriteToDisk } from 'lib/telemetry'
+maybeWriteToDisk()
+  .then(() => {})
+  .catch(() => {})
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData

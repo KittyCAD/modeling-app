@@ -28,6 +28,7 @@ import {
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
+import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
 
 // TODO(paultag): This ought to be tweakable.
@@ -330,6 +331,7 @@ class EngineConnection extends EventTarget {
     token?: string
     callbackOnEngineLiteConnect?: () => void
   }) {
+    markOnce('code/startInitialEngineConnect')
     super()
 
     this.engineCommandManager = engineCommandManager
@@ -786,6 +788,7 @@ class EngineConnection extends EventTarget {
             this.dispatchEvent(
               new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
             )
+            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
