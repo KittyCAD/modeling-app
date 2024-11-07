@@ -121,9 +121,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.92"
+version = "1.0.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74f37166d7d48a0284b99dd824694c26119c700b53bf0d1540cdb147dbdaaf13"
+checksum = "4c95c10ba0b00a02636238b814946408b1322d5ac4760326e6fb8ec956d85775"
 dependencies = [
  "backtrace",
 ]
@@ -3083,6 +3083,7 @@ dependencies = [
  "chrono",
  "dyn-clone",
  "indexmap 1.9.3",
+ "indexmap 2.6.0",
  "schemars_derive",
  "serde",
  "serde_json",
@@ -3883,6 +3884,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a2f31991cee3dce1ca4f929a8a04fdd11fd8801aac0f2030b0fa8a0a3fef6b9"
 dependencies = [
  "chrono",
+ "indexmap 2.6.0",
  "lazy_static",
  "serde_json",
  "thiserror 1.0.68",

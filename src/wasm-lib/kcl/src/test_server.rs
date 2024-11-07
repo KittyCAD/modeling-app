@@ -17,9 +17,7 @@ pub struct RequestBody {
 /// This returns the bytes of the snapshot.
 pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> anyhow::Result<image::DynamicImage> {
     let ctx = new_context(units, true).await?;
-    let tokens = crate::token::lexer(code)?;
-    let parser = crate::parser::Parser::new(tokens);
-    let program = parser.ast()?;
+    let program = crate::parser::top_level_parse(code)?;
     do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
 }
 
@@ -37,9 +35,7 @@ pub async fn execute_and_snapshot_ast(
 
 pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> anyhow::Result<image::DynamicImage> {
     let ctx = new_context(units, false).await?;
-    let tokens = crate::token::lexer(code)?;
-    let parser = crate::parser::Parser::new(tokens);
-    let program = parser.ast()?;
+    let program = crate::parser::top_level_parse(code)?;
     do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
 }
 

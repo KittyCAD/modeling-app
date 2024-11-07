@@ -123,7 +123,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 15,
-                40
+                40,
+                0
               ]
             }
           ]
@@ -140,7 +141,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 47,
-                53
+                53,
+                0
               ]
             }
           ]
@@ -157,7 +159,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 90,
-                107
+                107,
+                0
               ]
             }
           ]
