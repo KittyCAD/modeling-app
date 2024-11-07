@@ -11,17 +11,20 @@ snapshot_kind: text
           "end": 80,
           "id": {
             "end": 9,
+            "moduleId": 0,
             "name": "props",
             "start": 4,
             "type": "Identifier"
           },
           "init": {
             "end": 80,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
                     "end": 52,
+                    "moduleId": 0,
                     "start": 44,
                     "type": "NonCodeNode",
                     "value": {
@@ -39,14 +42,17 @@ snapshot_kind: text
                 "end": 30,
                 "key": {
                   "end": 27,
+                  "moduleId": 0,
                   "name": "a",
                   "start": 26,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 26,
                 "type": "ObjectProperty",
                 "value": {
                   "end": 30,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 29,
                   "type": "Literal",
@@ -58,14 +64,17 @@ snapshot_kind: text
                 "end": 69,
                 "key": {
                   "end": 66,
+                  "moduleId": 0,
                   "name": "c",
                   "start": 65,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 65,
                 "type": "ObjectProperty",
                 "value": {
                   "end": 69,
+                  "moduleId": 0,
                   "raw": "3",
                   "start": 68,
                   "type": "Literal",
@@ -78,17 +87,20 @@ snapshot_kind: text
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
+          "moduleId": 0,
           "start": 4,
           "type": "VariableDeclarator"
         }
       ],
       "end": 80,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 80,
+  "moduleId": 0,
   "start": 0
 }

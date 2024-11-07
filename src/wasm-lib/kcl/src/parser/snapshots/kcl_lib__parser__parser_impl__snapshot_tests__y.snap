@@ -11,6 +11,7 @@ snapshot_kind: text
           "end": 29,
           "id": {
             "end": 8,
+            "moduleId": 0,
             "name": "sg",
             "start": 6,
             "type": "Identifier"
@@ -19,6 +20,7 @@ snapshot_kind: text
             "arguments": [
               {
                 "end": 28,
+                "moduleId": 0,
                 "name": "pos",
                 "start": 25,
                 "type": "Identifier",
@@ -27,27 +29,32 @@ snapshot_kind: text
             ],
             "callee": {
               "end": 24,
+              "moduleId": 0,
               "name": "startSketchAt",
               "start": 11,
               "type": "Identifier"
             },
             "end": 29,
+            "moduleId": 0,
             "optional": false,
             "start": 11,
             "type": "CallExpression",
             "type": "CallExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 29,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 29,
+  "moduleId": 0,
   "start": 0
 }

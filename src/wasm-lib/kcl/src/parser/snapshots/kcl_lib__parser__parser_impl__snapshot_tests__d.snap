@@ -11,6 +11,7 @@ snapshot_kind: text
           "end": 36,
           "id": {
             "end": 11,
+            "moduleId": 0,
             "name": "myVar",
             "start": 6,
             "type": "Identifier"
@@ -21,15 +22,18 @@ snapshot_kind: text
                 "end": 19,
                 "left": {
                   "end": 15,
+                  "moduleId": 0,
                   "raw": "5",
                   "start": 14,
                   "type": "Literal",
                   "type": "Literal",
                   "value": 5
                 },
+                "moduleId": 0,
                 "operator": "+",
                 "right": {
                   "end": 19,
+                  "moduleId": 0,
                   "raw": "6",
                   "start": 18,
                   "type": "Literal",
@@ -44,6 +48,7 @@ snapshot_kind: text
                 "arguments": [
                   {
                     "end": 32,
+                    "moduleId": 0,
                     "raw": "45",
                     "start": 30,
                     "type": "Literal",
@@ -52,6 +57,7 @@ snapshot_kind: text
                   },
                   {
                     "end": 35,
+                    "moduleId": 0,
                     "start": 34,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
@@ -59,11 +65,13 @@ snapshot_kind: text
                 ],
                 "callee": {
                   "end": 29,
+                  "moduleId": 0,
                   "name": "myFunc",
                   "start": 23,
                   "type": "Identifier"
                 },
                 "end": 36,
+                "moduleId": 0,
                 "optional": false,
                 "start": 23,
                 "type": "CallExpression",
@@ -71,21 +79,25 @@ snapshot_kind: text
               }
             ],
             "end": 36,
+            "moduleId": 0,
             "start": 14,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 36,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 36,
+  "moduleId": 0,
   "start": 0
 }

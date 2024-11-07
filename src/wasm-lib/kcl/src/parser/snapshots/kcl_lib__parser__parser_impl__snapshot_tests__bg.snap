@@ -11,29 +11,34 @@ snapshot_kind: text
           "end": 5,
           "id": {
             "end": 1,
+            "moduleId": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "end": 5,
+            "moduleId": 0,
             "raw": "4",
             "start": 4,
             "type": "Literal",
             "type": "Literal",
             "value": 4
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         }
       ],
       "end": 5,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 5,
+  "moduleId": 0,
   "start": 0
 }

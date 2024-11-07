@@ -9,1200 +9,1400 @@ snapshot_kind: text
       "type": "word",
       "start": 0,
       "end": 2,
+      "module_id": 0,
       "value": "r1"
     },
     {
       "type": "whitespace",
       "start": 2,
       "end": 3,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 3,
       "end": 4,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 4,
       "end": 5,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 5,
       "end": 6,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 6,
       "end": 7,
+      "module_id": 0,
       "value": "0"
     },
     {
       "type": "doublePeriod",
       "start": 7,
       "end": 9,
+      "module_id": 0,
       "value": ".."
     },
     {
       "type": "number",
       "start": 9,
       "end": 10,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "brace",
       "start": 10,
       "end": 11,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "whitespace",
       "start": 11,
       "end": 12,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 12,
       "end": 23,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 23,
       "end": 24,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 24,
       "end": 26,
+      "module_id": 0,
       "value": "r1"
     },
     {
       "type": "brace",
       "start": 26,
       "end": 27,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 27,
       "end": 28,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "brace",
       "start": 28,
       "end": 29,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 29,
       "end": 30,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 30,
       "end": 31,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 31,
       "end": 32,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "comma",
       "start": 32,
       "end": 33,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 33,
       "end": 34,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 34,
       "end": 41,
+      "module_id": 0,
       "value": "0.00001"
     },
     {
       "type": "comma",
       "start": 41,
       "end": 42,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 42,
       "end": 43,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 43,
       "end": 69,
+      "module_id": 0,
       "value": "\"last element is included\""
     },
     {
       "type": "brace",
       "start": 69,
       "end": 70,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 70,
       "end": 72,
+      "module_id": 0,
       "value": "\n\n"
     },
     {
       "type": "word",
       "start": 72,
       "end": 76,
+      "module_id": 0,
       "value": "four"
     },
     {
       "type": "whitespace",
       "start": 76,
       "end": 77,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 77,
       "end": 78,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 78,
       "end": 79,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 79,
       "end": 80,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "whitespace",
       "start": 80,
       "end": 81,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 81,
       "end": 85,
+      "module_id": 0,
       "value": "zero"
     },
     {
       "type": "whitespace",
       "start": 85,
       "end": 86,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 86,
       "end": 87,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 87,
       "end": 88,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 88,
       "end": 89,
+      "module_id": 0,
       "value": "0"
     },
     {
       "type": "whitespace",
       "start": 89,
       "end": 90,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 90,
       "end": 92,
+      "module_id": 0,
       "value": "r2"
     },
     {
       "type": "whitespace",
       "start": 92,
       "end": 93,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 93,
       "end": 94,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 94,
       "end": 95,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 95,
       "end": 96,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "word",
       "start": 96,
       "end": 100,
+      "module_id": 0,
       "value": "zero"
     },
     {
       "type": "doublePeriod",
       "start": 100,
       "end": 102,
+      "module_id": 0,
       "value": ".."
     },
     {
       "type": "word",
       "start": 102,
       "end": 106,
+      "module_id": 0,
       "value": "four"
     },
     {
       "type": "brace",
       "start": 106,
       "end": 107,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "whitespace",
       "start": 107,
       "end": 108,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 108,
       "end": 119,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 119,
       "end": 120,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 120,
       "end": 122,
+      "module_id": 0,
       "value": "r2"
     },
     {
       "type": "brace",
       "start": 122,
       "end": 123,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 123,
       "end": 124,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "brace",
       "start": 124,
       "end": 125,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 125,
       "end": 126,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 126,
       "end": 127,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 127,
       "end": 128,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "comma",
       "start": 128,
       "end": 129,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 129,
       "end": 130,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 130,
       "end": 137,
+      "module_id": 0,
       "value": "0.00001"
     },
     {
       "type": "comma",
       "start": 137,
       "end": 138,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 138,
       "end": 139,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 139,
       "end": 165,
+      "module_id": 0,
       "value": "\"last element is included\""
     },
     {
       "type": "brace",
       "start": 165,
       "end": 166,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 166,
       "end": 168,
+      "module_id": 0,
       "value": "\n\n"
     },
     {
       "type": "word",
       "start": 168,
       "end": 172,
+      "module_id": 0,
       "value": "five"
     },
     {
       "type": "whitespace",
       "start": 172,
       "end": 173,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 173,
       "end": 174,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 174,
       "end": 175,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 175,
       "end": 178,
+      "module_id": 0,
       "value": "int"
     },
     {
       "type": "brace",
       "start": 178,
       "end": 179,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 179,
       "end": 183,
+      "module_id": 0,
       "value": "four"
     },
     {
       "type": "whitespace",
       "start": 183,
       "end": 184,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 184,
       "end": 185,
+      "module_id": 0,
       "value": "+"
     },
     {
       "type": "whitespace",
       "start": 185,
       "end": 186,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 186,
       "end": 187,
+      "module_id": 0,
       "value": "1"
     },
     {
       "type": "brace",
       "start": 187,
       "end": 188,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 188,
       "end": 189,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 189,
       "end": 191,
+      "module_id": 0,
       "value": "r3"
     },
     {
       "type": "whitespace",
       "start": 191,
       "end": 192,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 192,
       "end": 193,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 193,
       "end": 194,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 194,
       "end": 195,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "word",
       "start": 195,
       "end": 199,
+      "module_id": 0,
       "value": "zero"
     },
     {
       "type": "doublePeriod",
       "start": 199,
       "end": 201,
+      "module_id": 0,
       "value": ".."
     },
     {
       "type": "word",
       "start": 201,
       "end": 205,
+      "module_id": 0,
       "value": "five"
     },
     {
       "type": "brace",
       "start": 205,
       "end": 206,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "whitespace",
       "start": 206,
       "end": 207,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 207,
       "end": 218,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 218,
       "end": 219,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 219,
       "end": 221,
+      "module_id": 0,
       "value": "r3"
     },
     {
       "type": "brace",
       "start": 221,
       "end": 222,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 222,
       "end": 223,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "brace",
       "start": 223,
       "end": 224,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 224,
       "end": 225,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 225,
       "end": 226,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 226,
       "end": 227,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "comma",
       "start": 227,
       "end": 228,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 228,
       "end": 229,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 229,
       "end": 236,
+      "module_id": 0,
       "value": "0.00001"
     },
     {
       "type": "comma",
       "start": 236,
       "end": 237,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 237,
       "end": 238,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 238,
       "end": 274,
+      "module_id": 0,
       "value": "\"second-to-last element is included\""
     },
     {
       "type": "brace",
       "start": 274,
       "end": 275,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 275,
       "end": 276,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 276,
       "end": 287,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 287,
       "end": 288,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 288,
       "end": 290,
+      "module_id": 0,
       "value": "r3"
     },
     {
       "type": "brace",
       "start": 290,
       "end": 291,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 291,
       "end": 292,
+      "module_id": 0,
       "value": "5"
     },
     {
       "type": "brace",
       "start": 292,
       "end": 293,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 293,
       "end": 294,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 294,
       "end": 295,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 295,
       "end": 296,
+      "module_id": 0,
       "value": "5"
     },
     {
       "type": "comma",
       "start": 296,
       "end": 297,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 297,
       "end": 298,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 298,
       "end": 305,
+      "module_id": 0,
       "value": "0.00001"
     },
     {
       "type": "comma",
       "start": 305,
       "end": 306,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 306,
       "end": 307,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 307,
       "end": 333,
+      "module_id": 0,
       "value": "\"last element is included\""
     },
     {
       "type": "brace",
       "start": 333,
       "end": 334,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 334,
       "end": 336,
+      "module_id": 0,
       "value": "\n\n"
     },
     {
       "type": "word",
       "start": 336,
       "end": 338,
+      "module_id": 0,
       "value": "r4"
     },
     {
       "type": "whitespace",
       "start": 338,
       "end": 339,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 339,
       "end": 340,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 340,
       "end": 341,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 341,
       "end": 342,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "word",
       "start": 342,
       "end": 345,
+      "module_id": 0,
       "value": "int"
     },
     {
       "type": "brace",
       "start": 345,
       "end": 346,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 346,
       "end": 350,
+      "module_id": 0,
       "value": "zero"
     },
     {
       "type": "whitespace",
       "start": 350,
       "end": 351,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 351,
       "end": 352,
+      "module_id": 0,
       "value": "+"
     },
     {
       "type": "whitespace",
       "start": 352,
       "end": 353,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 353,
       "end": 354,
+      "module_id": 0,
       "value": "1"
     },
     {
       "type": "brace",
       "start": 354,
       "end": 355,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 355,
       "end": 356,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "doublePeriod",
       "start": 356,
       "end": 358,
+      "module_id": 0,
       "value": ".."
     },
     {
       "type": "whitespace",
       "start": 358,
       "end": 359,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 359,
       "end": 362,
+      "module_id": 0,
       "value": "int"
     },
     {
       "type": "brace",
       "start": 362,
       "end": 363,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 363,
       "end": 367,
+      "module_id": 0,
       "value": "five"
     },
     {
       "type": "whitespace",
       "start": 367,
       "end": 368,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 368,
       "end": 369,
+      "module_id": 0,
       "value": "-"
     },
     {
       "type": "whitespace",
       "start": 369,
       "end": 370,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 370,
       "end": 371,
+      "module_id": 0,
       "value": "1"
     },
     {
       "type": "brace",
       "start": 371,
       "end": 372,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "brace",
       "start": 372,
       "end": 373,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "whitespace",
       "start": 373,
       "end": 374,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 374,
       "end": 385,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 385,
       "end": 386,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 386,
       "end": 388,
+      "module_id": 0,
       "value": "r4"
     },
     {
       "type": "brace",
       "start": 388,
       "end": 389,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 389,
       "end": 390,
+      "module_id": 0,
       "value": "0"
     },
     {
       "type": "brace",
       "start": 390,
       "end": 391,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 391,
       "end": 392,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 392,
       "end": 393,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 393,
       "end": 394,
+      "module_id": 0,
       "value": "1"
     },
     {
       "type": "comma",
       "start": 394,
       "end": 395,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 395,
       "end": 396,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 396,
       "end": 403,
+      "module_id": 0,
       "value": "0.00001"
     },
     {
       "type": "comma",
       "start": 403,
       "end": 404,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 404,
       "end": 405,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 405,
       "end": 425,
+      "module_id": 0,
       "value": "\"first element is 1\""
     },
     {
       "type": "brace",
       "start": 425,
       "end": 426,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 426,
       "end": 427,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 427,
       "end": 438,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 438,
       "end": 439,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 439,
       "end": 441,
+      "module_id": 0,
       "value": "r4"
     },
     {
       "type": "brace",
       "start": 441,
       "end": 442,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 442,
       "end": 443,
+      "module_id": 0,
       "value": "2"
     },
     {
       "type": "brace",
       "start": 443,
       "end": 444,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 444,
       "end": 445,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 445,
       "end": 446,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 446,
       "end": 447,
+      "module_id": 0,
       "value": "3"
     },
     {
       "type": "comma",
       "start": 447,
       "end": 448,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 448,
       "end": 449,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 449,
       "end": 456,
+      "module_id": 0,
       "value": "0.00001"
     },
     {
       "type": "comma",
       "start": 456,
       "end": 457,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 457,
       "end": 458,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 458,
       "end": 487,
+      "module_id": 0,
       "value": "\"second-to-last element is 3\""
     },
     {
       "type": "brace",
       "start": 487,
       "end": 488,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 488,
       "end": 489,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 489,
       "end": 500,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 500,
       "end": 501,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 501,
       "end": 503,
+      "module_id": 0,
       "value": "r4"
     },
     {
       "type": "brace",
       "start": 503,
       "end": 504,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 504,
       "end": 505,
+      "module_id": 0,
       "value": "3"
     },
     {
       "type": "brace",
       "start": 505,
       "end": 506,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 506,
       "end": 507,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 507,
       "end": 508,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 508,
       "end": 509,
+      "module_id": 0,
       "value": "4"
     },
     {
       "type": "comma",
       "start": 509,
       "end": 510,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 510,
       "end": 511,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 511,
       "end": 518,
+      "module_id": 0,
       "value": "0.00001"
     },
     {
       "type": "comma",
       "start": 518,
       "end": 519,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 519,
       "end": 520,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 520,
       "end": 539,
+      "module_id": 0,
       "value": "\"last element is 4\""
     },
     {
       "type": "brace",
       "start": 539,
       "end": 540,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 540,
       "end": 541,
+      "module_id": 0,
       "value": "\n"
     }
   ]

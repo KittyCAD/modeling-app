@@ -9,204 +9,238 @@ snapshot_kind: text
       "type": "word",
       "start": 0,
       "end": 2,
+      "module_id": 0,
       "value": "xs"
     },
     {
       "type": "whitespace",
       "start": 2,
       "end": 3,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 3,
       "end": 4,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 4,
       "end": 5,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 5,
       "end": 6,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "word",
       "start": 6,
       "end": 9,
+      "module_id": 0,
       "value": "int"
     },
     {
       "type": "brace",
       "start": 9,
       "end": 10,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "operator",
       "start": 10,
       "end": 11,
+      "module_id": 0,
       "value": "-"
     },
     {
       "type": "number",
       "start": 11,
       "end": 12,
+      "module_id": 0,
       "value": "5"
     },
     {
       "type": "brace",
       "start": 12,
       "end": 13,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 13,
       "end": 14,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "doublePeriod",
       "start": 14,
       "end": 16,
+      "module_id": 0,
       "value": ".."
     },
     {
       "type": "whitespace",
       "start": 16,
       "end": 17,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 17,
       "end": 18,
+      "module_id": 0,
       "value": "5"
     },
     {
       "type": "brace",
       "start": 18,
       "end": 19,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "whitespace",
       "start": 19,
       "end": 20,
+      "module_id": 0,
       "value": "\n"
     },
     {
       "type": "word",
       "start": 20,
       "end": 31,
+      "module_id": 0,
       "value": "assertEqual"
     },
     {
       "type": "brace",
       "start": 31,
       "end": 32,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "word",
       "start": 32,
       "end": 34,
+      "module_id": 0,
       "value": "xs"
     },
     {
       "type": "brace",
       "start": 34,
       "end": 35,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 35,
       "end": 36,
+      "module_id": 0,
       "value": "0"
     },
     {
       "type": "brace",
       "start": 36,
       "end": 37,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 37,
       "end": 38,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 38,
       "end": 39,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 39,
       "end": 40,
+      "module_id": 0,
       "value": "-"
     },
     {
       "type": "number",
       "start": 40,
       "end": 41,
+      "module_id": 0,
       "value": "5"
     },
     {
       "type": "comma",
       "start": 41,
       "end": 42,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 42,
       "end": 43,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 43,
       "end": 48,
+      "module_id": 0,
       "value": "0.001"
     },
     {
       "type": "comma",
       "start": 48,
       "end": 49,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 49,
       "end": 50,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "string",
       "start": 50,
       "end": 71,
+      "module_id": 0,
       "value": "\"first element is -5\""
     },
     {
       "type": "brace",
       "start": 71,
       "end": 72,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 72,
       "end": 73,
+      "module_id": 0,
       "value": "\n"
     }
   ]

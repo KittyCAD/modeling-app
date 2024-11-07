@@ -16,7 +16,8 @@ snapshot_kind: text
       "value": 1,
       "raw": "1",
       "start": 0,
-      "end": 1
+      "end": 1,
+      "moduleId": 0
     },
     "right": {
       "type": "BinaryExpression",
@@ -28,7 +29,8 @@ snapshot_kind: text
         "value": 2,
         "raw": "2",
         "start": 6,
-        "end": 7
+        "end": 7,
+        "moduleId": 0
       },
       "right": {
         "type": "Literal",
@@ -36,13 +38,16 @@ snapshot_kind: text
         "value": 3,
         "raw": "3",
         "start": 10,
-        "end": 11
+        "end": 11,
+        "moduleId": 0
       },
       "start": 6,
-      "end": 11
+      "end": 11,
+      "moduleId": 0
     },
     "start": 0,
-    "end": 11
+    "end": 11,
+    "moduleId": 0
   },
   "right": {
     "type": "Literal",
@@ -50,8 +55,10 @@ snapshot_kind: text
     "value": 4,
     "raw": "4",
     "start": 16,
-    "end": 17
+    "end": 17,
+    "moduleId": 0
   },
   "start": 0,
-  "end": 17
+  "end": 17,
+  "moduleId": 0
 }

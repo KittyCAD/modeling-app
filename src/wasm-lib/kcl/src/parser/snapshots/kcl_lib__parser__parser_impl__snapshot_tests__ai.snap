@@ -11,6 +11,7 @@ snapshot_kind: text
           "end": 29,
           "id": {
             "end": 11,
+            "moduleId": 0,
             "name": "myBox",
             "start": 6,
             "type": "Identifier"
@@ -21,6 +22,7 @@ snapshot_kind: text
                 "arguments": [
                   {
                     "end": 17,
+                    "moduleId": 0,
                     "raw": "1",
                     "start": 16,
                     "type": "Literal",
@@ -30,11 +32,13 @@ snapshot_kind: text
                 ],
                 "callee": {
                   "end": 15,
+                  "moduleId": 0,
                   "name": "f",
                   "start": 14,
                   "type": "Identifier"
                 },
                 "end": 18,
+                "moduleId": 0,
                 "optional": false,
                 "start": 14,
                 "type": "CallExpression",
@@ -44,6 +48,7 @@ snapshot_kind: text
                 "arguments": [
                   {
                     "end": 25,
+                    "moduleId": 0,
                     "raw": "2",
                     "start": 24,
                     "type": "Literal",
@@ -52,6 +57,7 @@ snapshot_kind: text
                   },
                   {
                     "end": 28,
+                    "moduleId": 0,
                     "start": 27,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
@@ -59,11 +65,13 @@ snapshot_kind: text
                 ],
                 "callee": {
                   "end": 23,
+                  "moduleId": 0,
                   "name": "g",
                   "start": 22,
                   "type": "Identifier"
                 },
                 "end": 29,
+                "moduleId": 0,
                 "optional": false,
                 "start": 22,
                 "type": "CallExpression",
@@ -71,21 +79,25 @@ snapshot_kind: text
               }
             ],
             "end": 29,
+            "moduleId": 0,
             "start": 14,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 29,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 29,
+  "moduleId": 0,
   "start": 0
 }

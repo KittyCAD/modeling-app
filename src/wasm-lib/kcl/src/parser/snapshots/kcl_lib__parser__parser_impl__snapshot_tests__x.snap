@@ -11,6 +11,7 @@ snapshot_kind: text
           "end": 19,
           "id": {
             "end": 9,
+            "moduleId": 0,
             "name": "pt1",
             "start": 6,
             "type": "Identifier"
@@ -18,8 +19,10 @@ snapshot_kind: text
           "init": {
             "computed": false,
             "end": 19,
+            "moduleId": 0,
             "object": {
               "end": 14,
+              "moduleId": 0,
               "name": "b1",
               "start": 12,
               "type": "Identifier",
@@ -27,6 +30,7 @@ snapshot_kind: text
             },
             "property": {
               "end": 19,
+              "moduleId": 0,
               "name": "zero",
               "start": 15,
               "type": "Identifier",
@@ -36,17 +40,20 @@ snapshot_kind: text
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 19,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 19,
+  "moduleId": 0,
   "start": 0
 }

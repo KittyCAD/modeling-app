@@ -11,6 +11,7 @@ snapshot_kind: text
           "end": 36,
           "id": {
             "end": 11,
+            "moduleId": 0,
             "name": "myVar",
             "start": 6,
             "type": "Identifier"
@@ -19,6 +20,7 @@ snapshot_kind: text
             "arguments": [
               {
                 "end": 19,
+                "moduleId": 0,
                 "raw": "5",
                 "start": 18,
                 "type": "Literal",
@@ -30,6 +32,7 @@ snapshot_kind: text
                   "arguments": [
                     {
                       "end": 31,
+                      "moduleId": 0,
                       "raw": "5",
                       "start": 30,
                       "type": "Literal",
@@ -38,6 +41,7 @@ snapshot_kind: text
                     },
                     {
                       "end": 34,
+                      "moduleId": 0,
                       "raw": "4",
                       "start": 33,
                       "type": "Literal",
@@ -47,17 +51,20 @@ snapshot_kind: text
                   ],
                   "callee": {
                     "end": 29,
+                    "moduleId": 0,
                     "name": "legLen",
                     "start": 23,
                     "type": "Identifier"
                   },
                   "end": 35,
+                  "moduleId": 0,
                   "optional": false,
                   "start": 23,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 },
                 "end": 35,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 22,
                 "type": "UnaryExpression",
@@ -66,27 +73,32 @@ snapshot_kind: text
             ],
             "callee": {
               "end": 17,
+              "moduleId": 0,
               "name": "min",
               "start": 14,
               "type": "Identifier"
             },
             "end": 36,
+            "moduleId": 0,
             "optional": false,
             "start": 14,
             "type": "CallExpression",
             "type": "CallExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 36,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 36,
+  "moduleId": 0,
   "start": 0
 }

@@ -41,14 +41,17 @@ snapshot_kind: text
                     "end": 38,
                     "left": {
                       "end": 34,
+                      "moduleId": 0,
                       "name": "i",
                       "start": 33,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
+                    "moduleId": 0,
                     "operator": "+",
                     "right": {
                       "end": 38,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 37,
                       "type": "Literal",
@@ -60,20 +63,24 @@ snapshot_kind: text
                     "type": "BinaryExpression"
                   },
                   "end": 38,
+                  "moduleId": 0,
                   "start": 26,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
               "end": 40,
+              "moduleId": 0,
               "start": 22
             },
             "end": 40,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "end": 17,
+                  "moduleId": 0,
                   "name": "i",
                   "start": 16,
                   "type": "Identifier"
@@ -123,7 +130,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 15,
-                40
+                40,
+                0
               ]
             }
           ]
@@ -140,7 +148,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 47,
-                53
+                53,
+                0
               ]
             }
           ]
@@ -157,7 +166,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 90,
-                107
+                107,
+                0
               ]
             }
           ]
