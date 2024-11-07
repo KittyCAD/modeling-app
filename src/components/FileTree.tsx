@@ -154,6 +154,8 @@ const FileTreeItem = ({
   onCreateFolder,
   newTreeEntry,
   level = 0,
+  treeSelection,
+  setTreeSelection,
 }: {
   parentDir: FileEntry | undefined
   project?: IndexLoaderData['project']
@@ -170,12 +172,15 @@ const FileTreeItem = ({
   onCreateFolder: (name: string) => void
   newTreeEntry: TreeEntry
   level?: number
+  treeSelection: FileEntry | undefined
+  setTreeSelection: Dispatch<React.SetStateAction<FileEntry | undefined>>
 }) => {
   const { send: fileSend, context: fileContext } = useFileContext()
   const { onFileOpen, onFileClose } = useLspContext()
   const navigate = useNavigate()
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
+  const isFileOrDirHighlighted = treeSelection?.path === fileOrDir?.path
   const itemRef = useRef(null)
 
   // Since every file or directory gets its own FileTreeItem, we can do this.
@@ -242,6 +247,8 @@ const FileTreeItem = ({
   }
 
   async function handleClick() {
+    setTreeSelection(fileOrDir)
+
     if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
@@ -263,6 +270,7 @@ const FileTreeItem = ({
       // Open kcl files
       navigate(`${PATHS.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }
+
     onNavigateToFile?.()
   }
 
@@ -274,7 +282,7 @@ const FileTreeItem = ({
         <li
           className={
             'group m-0 p-0 border-solid border-0 hover:bg-primary/5 focus-within:bg-primary/5 dark:hover:bg-primary/20 dark:focus-within:bg-primary/20 ' +
-            (isCurrentFile
+            (isFileOrDirHighlighted || isCurrentFile
               ? '!bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-inherit'
               : '')
           }
@@ -311,9 +319,7 @@ const FileTreeItem = ({
                 <Disclosure.Button
                   className={
                     ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 hover:text-primary hover:bg-primary/5 dark:hover:text-inherit dark:hover:bg-primary/10' +
-                    (lastDirectoryClicked?.path === fileOrDir.path
-                      ? ' ui-open:bg-primary/10'
-                      : '')
+                    (isFileOrDirHighlighted ? ' ui-open:bg-primary/10' : '')
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
                   onClick={(e) => {
@@ -402,6 +408,8 @@ const FileTreeItem = ({
                         onNavigateToFile={onNavigateToFile}
                         level={level + 1}
                         key={level + '-' + child.path}
+                        treeSelection={treeSelection}
+                        setTreeSelection={setTreeSelection}
                       />
                     )
                   )}
@@ -626,6 +634,10 @@ export const FileTreeInner = ({
     FileEntry | undefined
   >(undefined)
 
+  const [treeSelection, setTreeSelection] = useState<FileEntry | undefined>(
+    loaderData.file
+  )
+
   const onNavigateToFile_ = () => {
     // Reset modeling state when navigating to a new file
     onNavigateToFile?.()
@@ -678,6 +690,7 @@ export const FileTreeInner = ({
     // We're at the root, can't select anything further
     if (!target) return
 
+    setTreeSelection(target)
     setLastDirectoryClicked(target)
     fileSend({
       type: 'Set selected directory',
@@ -722,6 +735,8 @@ export const FileTreeInner = ({
                 onClickDirectory={onClickDirectory}
                 onNavigateToFile={onNavigateToFile_}
                 key={fileOrDir.path}
+                treeSelection={treeSelection}
+                setTreeSelection={setTreeSelection}
               />
             )
           )}
