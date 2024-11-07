@@ -12,6 +12,7 @@ snapshot_kind: text
             "end": 157,
             "id": {
               "end": 7,
+              "moduleId": 0,
               "name": "test",
               "start": 3,
               "type": "Identifier"
@@ -26,6 +27,7 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 45,
+                              "moduleId": 0,
                               "raw": "'XY'",
                               "start": 41,
                               "type": "Literal",
@@ -35,11 +37,13 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 40,
+                            "moduleId": 0,
                             "name": "startSketchOn",
                             "start": 27,
                             "type": "Identifier"
                           },
                           "end": 46,
+                          "moduleId": 0,
                           "optional": false,
                           "start": 27,
                           "type": "CallExpression",
@@ -51,6 +55,7 @@ snapshot_kind: text
                               "elements": [
                                 {
                                   "end": 69,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 68,
                                   "type": "Literal",
@@ -59,6 +64,7 @@ snapshot_kind: text
                                 },
                                 {
                                   "end": 72,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 71,
                                   "type": "Literal",
@@ -67,12 +73,14 @@ snapshot_kind: text
                                 }
                               ],
                               "end": 73,
+                              "moduleId": 0,
                               "start": 67,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
                               "end": 76,
+                              "moduleId": 0,
                               "start": 75,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -80,11 +88,13 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 66,
+                            "moduleId": 0,
                             "name": "startProfileAt",
                             "start": 52,
                             "type": "Identifier"
                           },
                           "end": 77,
+                          "moduleId": 0,
                           "optional": false,
                           "start": 52,
                           "type": "CallExpression",
@@ -96,6 +106,7 @@ snapshot_kind: text
                               "elements": [
                                 {
                                   "end": 90,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 89,
                                   "type": "Literal",
@@ -104,6 +115,7 @@ snapshot_kind: text
                                 },
                                 {
                                   "end": 93,
+                                  "moduleId": 0,
                                   "raw": "1",
                                   "start": 92,
                                   "type": "Literal",
@@ -112,12 +124,14 @@ snapshot_kind: text
                                 }
                               ],
                               "end": 94,
+                              "moduleId": 0,
                               "start": 88,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
                               "end": 97,
+                              "moduleId": 0,
                               "start": 96,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -125,11 +139,13 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 87,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 83,
                             "type": "Identifier"
                           },
                           "end": 98,
+                          "moduleId": 0,
                           "optional": false,
                           "start": 83,
                           "type": "CallExpression",
@@ -141,6 +157,7 @@ snapshot_kind: text
                               "elements": [
                                 {
                                   "end": 111,
+                                  "moduleId": 0,
                                   "raw": "1",
                                   "start": 110,
                                   "type": "Literal",
@@ -149,6 +166,7 @@ snapshot_kind: text
                                 },
                                 {
                                   "end": 114,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 113,
                                   "type": "Literal",
@@ -157,12 +175,14 @@ snapshot_kind: text
                                 }
                               ],
                               "end": 115,
+                              "moduleId": 0,
                               "start": 109,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
                               "end": 118,
+                              "moduleId": 0,
                               "start": 117,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -170,11 +190,13 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 108,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 104,
                             "type": "Identifier"
                           },
                           "end": 119,
+                          "moduleId": 0,
                           "optional": false,
                           "start": 104,
                           "type": "CallExpression",
@@ -186,6 +208,7 @@ snapshot_kind: text
                               "elements": [
                                 {
                                   "end": 132,
+                                  "moduleId": 0,
                                   "raw": "0",
                                   "start": 131,
                                   "type": "Literal",
@@ -195,6 +218,7 @@ snapshot_kind: text
                                 {
                                   "argument": {
                                     "end": 136,
+                                    "moduleId": 0,
                                     "raw": "1",
                                     "start": 135,
                                     "type": "Literal",
@@ -202,6 +226,7 @@ snapshot_kind: text
                                     "value": 1
                                   },
                                   "end": 136,
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "start": 134,
                                   "type": "UnaryExpression",
@@ -209,12 +234,14 @@ snapshot_kind: text
                                 }
                               ],
                               "end": 137,
+                              "moduleId": 0,
                               "start": 130,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
                               "end": 140,
+                              "moduleId": 0,
                               "start": 139,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -222,11 +249,13 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 129,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 125,
                             "type": "Identifier"
                           },
                           "end": 141,
+                          "moduleId": 0,
                           "optional": false,
                           "start": 125,
                           "type": "CallExpression",
@@ -236,6 +265,7 @@ snapshot_kind: text
                           "arguments": [
                             {
                               "end": 154,
+                              "moduleId": 0,
                               "start": 153,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
@@ -243,11 +273,13 @@ snapshot_kind: text
                           ],
                           "callee": {
                             "end": 152,
+                            "moduleId": 0,
                             "name": "close",
                             "start": 147,
                             "type": "Identifier"
                           },
                           "end": 155,
+                          "moduleId": 0,
                           "optional": false,
                           "start": 147,
                           "type": "CallExpression",
@@ -255,31 +287,37 @@ snapshot_kind: text
                         }
                       ],
                       "end": 155,
+                      "moduleId": 0,
                       "start": 27,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
                     "end": 155,
+                    "moduleId": 0,
                     "start": 20,
                     "type": "ReturnStatement",
                     "type": "ReturnStatement"
                   }
                 ],
                 "end": 157,
+                "moduleId": 0,
                 "start": 16
               },
               "end": 157,
+              "moduleId": 0,
               "params": [],
               "start": 10,
               "type": "FunctionExpression",
               "type": "FunctionExpression"
             },
+            "moduleId": 0,
             "start": 3,
             "type": "VariableDeclarator"
           }
         ],
         "end": 157,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -290,6 +328,7 @@ snapshot_kind: text
             "end": 369,
             "id": {
               "end": 167,
+              "moduleId": 0,
               "name": "test2",
               "start": 162,
               "type": "Identifier"
@@ -300,28 +339,34 @@ snapshot_kind: text
                   {
                     "argument": {
                       "end": 367,
+                      "moduleId": 0,
                       "properties": [
                         {
                           "end": 365,
                           "key": {
                             "end": 197,
+                            "moduleId": 0,
                             "name": "thing1",
                             "start": 191,
                             "type": "Identifier"
                           },
+                          "moduleId": 0,
                           "start": 191,
                           "type": "ObjectProperty",
                           "value": {
                             "end": 365,
+                            "moduleId": 0,
                             "properties": [
                               {
                                 "end": 361,
                                 "key": {
                                   "end": 211,
+                                  "moduleId": 0,
                                   "name": "thing2",
                                   "start": 205,
                                   "type": "Identifier"
                                 },
+                                "moduleId": 0,
                                 "start": 205,
                                 "type": "ObjectProperty",
                                 "value": {
@@ -330,6 +375,7 @@ snapshot_kind: text
                                       "arguments": [
                                         {
                                           "end": 231,
+                                          "moduleId": 0,
                                           "raw": "'XY'",
                                           "start": 227,
                                           "type": "Literal",
@@ -339,11 +385,13 @@ snapshot_kind: text
                                       ],
                                       "callee": {
                                         "end": 226,
+                                        "moduleId": 0,
                                         "name": "startSketchOn",
                                         "start": 213,
                                         "type": "Identifier"
                                       },
                                       "end": 232,
+                                      "moduleId": 0,
                                       "optional": false,
                                       "start": 213,
                                       "type": "CallExpression",
@@ -355,6 +403,7 @@ snapshot_kind: text
                                           "elements": [
                                             {
                                               "end": 259,
+                                              "moduleId": 0,
                                               "raw": "0",
                                               "start": 258,
                                               "type": "Literal",
@@ -363,6 +412,7 @@ snapshot_kind: text
                                             },
                                             {
                                               "end": 262,
+                                              "moduleId": 0,
                                               "raw": "0",
                                               "start": 261,
                                               "type": "Literal",
@@ -371,12 +421,14 @@ snapshot_kind: text
                                             }
                                           ],
                                           "end": 263,
+                                          "moduleId": 0,
                                           "start": 257,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         },
                                         {
                                           "end": 266,
+                                          "moduleId": 0,
                                           "start": 265,
                                           "type": "PipeSubstitution",
                                           "type": "PipeSubstitution"
@@ -384,11 +436,13 @@ snapshot_kind: text
                                       ],
                                       "callee": {
                                         "end": 256,
+                                        "moduleId": 0,
                                         "name": "startProfileAt",
                                         "start": 242,
                                         "type": "Identifier"
                                       },
                                       "end": 267,
+                                      "moduleId": 0,
                                       "optional": false,
                                       "start": 242,
                                       "type": "CallExpression",
@@ -400,6 +454,7 @@ snapshot_kind: text
                                           "elements": [
                                             {
                                               "end": 284,
+                                              "moduleId": 0,
                                               "raw": "0",
                                               "start": 283,
                                               "type": "Literal",
@@ -408,6 +463,7 @@ snapshot_kind: text
                                             },
                                             {
                                               "end": 287,
+                                              "moduleId": 0,
                                               "raw": "1",
                                               "start": 286,
                                               "type": "Literal",
@@ -416,12 +472,14 @@ snapshot_kind: text
                                             }
                                           ],
                                           "end": 288,
+                                          "moduleId": 0,
                                           "start": 282,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         },
                                         {
                                           "end": 291,
+                                          "moduleId": 0,
                                           "start": 290,
                                           "type": "PipeSubstitution",
                                           "type": "PipeSubstitution"
@@ -429,11 +487,13 @@ snapshot_kind: text
                                       ],
                                       "callee": {
                                         "end": 281,
+                                        "moduleId": 0,
                                         "name": "line",
                                         "start": 277,
                                         "type": "Identifier"
                                       },
                                       "end": 292,
+                                      "moduleId": 0,
                                       "optional": false,
                                       "start": 277,
                                       "type": "CallExpression",
@@ -445,6 +505,7 @@ snapshot_kind: text
                                           "elements": [
                                             {
                                               "end": 309,
+                                              "moduleId": 0,
                                               "raw": "1",
                                               "start": 308,
                                               "type": "Literal",
@@ -453,6 +514,7 @@ snapshot_kind: text
                                             },
                                             {
                                               "end": 312,
+                                              "moduleId": 0,
                                               "raw": "0",
                                               "start": 311,
                                               "type": "Literal",
@@ -461,12 +523,14 @@ snapshot_kind: text
                                             }
                                           ],
                                           "end": 313,
+                                          "moduleId": 0,
                                           "start": 307,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         },
                                         {
                                           "end": 316,
+                                          "moduleId": 0,
                                           "start": 315,
                                           "type": "PipeSubstitution",
                                           "type": "PipeSubstitution"
@@ -474,11 +538,13 @@ snapshot_kind: text
                                       ],
                                       "callee": {
                                         "end": 306,
+                                        "moduleId": 0,
                                         "name": "line",
                                         "start": 302,
                                         "type": "Identifier"
                                       },
                                       "end": 317,
+                                      "moduleId": 0,
                                       "optional": false,
                                       "start": 302,
                                       "type": "CallExpression",
@@ -490,6 +556,7 @@ snapshot_kind: text
                                           "elements": [
                                             {
                                               "end": 334,
+                                              "moduleId": 0,
                                               "raw": "0",
                                               "start": 333,
                                               "type": "Literal",
@@ -499,6 +566,7 @@ snapshot_kind: text
                                             {
                                               "argument": {
                                                 "end": 338,
+                                                "moduleId": 0,
                                                 "raw": "1",
                                                 "start": 337,
                                                 "type": "Literal",
@@ -506,6 +574,7 @@ snapshot_kind: text
                                                 "value": 1
                                               },
                                               "end": 338,
+                                              "moduleId": 0,
                                               "operator": "-",
                                               "start": 336,
                                               "type": "UnaryExpression",
@@ -513,12 +582,14 @@ snapshot_kind: text
                                             }
                                           ],
                                           "end": 339,
+                                          "moduleId": 0,
                                           "start": 332,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         },
                                         {
                                           "end": 342,
+                                          "moduleId": 0,
                                           "start": 341,
                                           "type": "PipeSubstitution",
                                           "type": "PipeSubstitution"
@@ -526,11 +597,13 @@ snapshot_kind: text
                                       ],
                                       "callee": {
                                         "end": 331,
+                                        "moduleId": 0,
                                         "name": "line",
                                         "start": 327,
                                         "type": "Identifier"
                                       },
                                       "end": 343,
+                                      "moduleId": 0,
                                       "optional": false,
                                       "start": 327,
                                       "type": "CallExpression",
@@ -540,6 +613,7 @@ snapshot_kind: text
                                       "arguments": [
                                         {
                                           "end": 360,
+                                          "moduleId": 0,
                                           "start": 359,
                                           "type": "PipeSubstitution",
                                           "type": "PipeSubstitution"
@@ -547,11 +621,13 @@ snapshot_kind: text
                                       ],
                                       "callee": {
                                         "end": 358,
+                                        "moduleId": 0,
                                         "name": "close",
                                         "start": 353,
                                         "type": "Identifier"
                                       },
                                       "end": 361,
+                                      "moduleId": 0,
                                       "optional": false,
                                       "start": 353,
                                       "type": "CallExpression",
@@ -559,6 +635,7 @@ snapshot_kind: text
                                     }
                                   ],
                                   "end": 361,
+                                  "moduleId": 0,
                                   "start": 213,
                                   "type": "PipeExpression",
                                   "type": "PipeExpression"
@@ -576,26 +653,31 @@ snapshot_kind: text
                       "type": "ObjectExpression"
                     },
                     "end": 367,
+                    "moduleId": 0,
                     "start": 180,
                     "type": "ReturnStatement",
                     "type": "ReturnStatement"
                   }
                 ],
                 "end": 369,
+                "moduleId": 0,
                 "start": 176
               },
               "end": 369,
+              "moduleId": 0,
               "params": [],
               "start": 170,
               "type": "FunctionExpression",
               "type": "FunctionExpression"
             },
+            "moduleId": 0,
             "start": 162,
             "type": "VariableDeclarator"
           }
         ],
         "end": 369,
         "kind": "fn",
+        "moduleId": 0,
         "start": 159,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -606,6 +688,7 @@ snapshot_kind: text
             "end": 381,
             "id": {
               "end": 372,
+              "moduleId": 0,
               "name": "x",
               "start": 371,
               "type": "Identifier"
@@ -614,22 +697,26 @@ snapshot_kind: text
               "arguments": [],
               "callee": {
                 "end": 379,
+                "moduleId": 0,
                 "name": "test",
                 "start": 375,
                 "type": "Identifier"
               },
               "end": 381,
+              "moduleId": 0,
               "optional": false,
               "start": 375,
               "type": "CallExpression",
               "type": "CallExpression"
             },
+            "moduleId": 0,
             "start": 371,
             "type": "VariableDeclarator"
           }
         ],
         "end": 381,
         "kind": "const",
+        "moduleId": 0,
         "start": 371,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -640,6 +727,7 @@ snapshot_kind: text
           "body": [
             {
               "end": 383,
+              "moduleId": 0,
               "name": "x",
               "start": 382,
               "type": "Identifier",
@@ -650,6 +738,7 @@ snapshot_kind: text
                 {
                   "argument": {
                     "end": 400,
+                    "moduleId": 0,
                     "raw": "10",
                     "start": 398,
                     "type": "Literal",
@@ -657,6 +746,7 @@ snapshot_kind: text
                     "value": 10
                   },
                   "end": 400,
+                  "moduleId": 0,
                   "operator": "-",
                   "start": 397,
                   "type": "UnaryExpression",
@@ -664,6 +754,7 @@ snapshot_kind: text
                 },
                 {
                   "end": 403,
+                  "moduleId": 0,
                   "start": 402,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -671,11 +762,13 @@ snapshot_kind: text
               ],
               "callee": {
                 "end": 396,
+                "moduleId": 0,
                 "name": "extrude",
                 "start": 389,
                 "type": "Identifier"
               },
               "end": 404,
+              "moduleId": 0,
               "optional": false,
               "start": 389,
               "type": "CallExpression",
@@ -683,10 +776,12 @@ snapshot_kind: text
             }
           ],
           "end": 404,
+          "moduleId": 0,
           "start": 382,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 382,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -697,6 +792,7 @@ snapshot_kind: text
             "end": 418,
             "id": {
               "end": 408,
+              "moduleId": 0,
               "name": "x2",
               "start": 406,
               "type": "Identifier"
@@ -705,22 +801,26 @@ snapshot_kind: text
               "arguments": [],
               "callee": {
                 "end": 416,
+                "moduleId": 0,
                 "name": "test2",
                 "start": 411,
                 "type": "Identifier"
               },
               "end": 418,
+              "moduleId": 0,
               "optional": false,
               "start": 411,
               "type": "CallExpression",
               "type": "CallExpression"
             },
+            "moduleId": 0,
             "start": 406,
             "type": "VariableDeclarator"
           }
         ],
         "end": 418,
         "kind": "const",
+        "moduleId": 0,
         "start": 406,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -732,11 +832,14 @@ snapshot_kind: text
             {
               "computed": false,
               "end": 435,
+              "moduleId": 0,
               "object": {
                 "computed": false,
                 "end": 428,
+                "moduleId": 0,
                 "object": {
                   "end": 421,
+                  "moduleId": 0,
                   "name": "x2",
                   "start": 419,
                   "type": "Identifier",
@@ -744,6 +847,7 @@ snapshot_kind: text
                 },
                 "property": {
                   "end": 428,
+                  "moduleId": 0,
                   "name": "thing1",
                   "start": 422,
                   "type": "Identifier",
@@ -755,6 +859,7 @@ snapshot_kind: text
               },
               "property": {
                 "end": 435,
+                "moduleId": 0,
                 "name": "thing2",
                 "start": 429,
                 "type": "Identifier",
@@ -768,6 +873,7 @@ snapshot_kind: text
               "arguments": [
                 {
                   "end": 451,
+                  "moduleId": 0,
                   "raw": "10",
                   "start": 449,
                   "type": "Literal",
@@ -776,6 +882,7 @@ snapshot_kind: text
                 },
                 {
                   "end": 454,
+                  "moduleId": 0,
                   "start": 453,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
@@ -783,11 +890,13 @@ snapshot_kind: text
               ],
               "callee": {
                 "end": 448,
+                "moduleId": 0,
                 "name": "extrude",
                 "start": 441,
                 "type": "Identifier"
               },
               "end": 455,
+              "moduleId": 0,
               "optional": false,
               "start": 441,
               "type": "CallExpression",
@@ -795,21 +904,25 @@ snapshot_kind: text
             }
           ],
           "end": 455,
+          "moduleId": 0,
           "start": 419,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 419,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
     "end": 456,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "end": 159,
+            "moduleId": 0,
             "start": 157,
             "type": "NonCodeNode",
             "value": {
@@ -820,6 +933,7 @@ snapshot_kind: text
         "1": [
           {
             "end": 371,
+            "moduleId": 0,
             "start": 369,
             "type": "NonCodeNode",
             "value": {
@@ -830,6 +944,7 @@ snapshot_kind: text
         "3": [
           {
             "end": 406,
+            "moduleId": 0,
             "start": 404,
             "type": "NonCodeNode",
             "value": {

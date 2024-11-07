@@ -14,15 +14,18 @@ snapshot_kind: text
               "end": 13,
               "left": {
                 "end": 8,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 7,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 3
               },
+              "moduleId": 0,
               "operator": "==",
               "right": {
                 "end": 13,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 12,
                 "type": "Literal",
@@ -35,6 +38,7 @@ snapshot_kind: text
             },
             {
               "end": 25,
+              "moduleId": 0,
               "raw": "\"equality\"",
               "start": 15,
               "type": "Literal",
@@ -44,16 +48,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 6,
+            "moduleId": 0,
             "name": "assert",
             "start": 0,
             "type": "Identifier"
           },
           "end": 26,
+          "moduleId": 0,
           "optional": false,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -66,15 +73,18 @@ snapshot_kind: text
               "end": 44,
               "left": {
                 "end": 37,
+                "moduleId": 0,
                 "raw": "3.0",
                 "start": 34,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 3.0
               },
+              "moduleId": 0,
               "operator": "==",
               "right": {
                 "end": 44,
+                "moduleId": 0,
                 "raw": "3.0",
                 "start": 41,
                 "type": "Literal",
@@ -87,6 +97,7 @@ snapshot_kind: text
             },
             {
               "end": 66,
+              "moduleId": 0,
               "raw": "\"equality of floats\"",
               "start": 46,
               "type": "Literal",
@@ -96,16 +107,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 33,
+            "moduleId": 0,
             "name": "assert",
             "start": 27,
             "type": "Identifier"
           },
           "end": 67,
+          "moduleId": 0,
           "optional": false,
           "start": 27,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 27,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -118,15 +132,18 @@ snapshot_kind: text
               "end": 81,
               "left": {
                 "end": 76,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 75,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 3
               },
+              "moduleId": 0,
               "operator": "!=",
               "right": {
                 "end": 81,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 80,
                 "type": "Literal",
@@ -139,6 +156,7 @@ snapshot_kind: text
             },
             {
               "end": 97,
+              "moduleId": 0,
               "raw": "\"non-equality\"",
               "start": 83,
               "type": "Literal",
@@ -148,16 +166,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 74,
+            "moduleId": 0,
             "name": "assert",
             "start": 68,
             "type": "Identifier"
           },
           "end": 98,
+          "moduleId": 0,
           "optional": false,
           "start": 68,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 68,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -170,15 +191,18 @@ snapshot_kind: text
               "end": 116,
               "left": {
                 "end": 109,
+                "moduleId": 0,
                 "raw": "3.0",
                 "start": 106,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 3.0
               },
+              "moduleId": 0,
               "operator": "!=",
               "right": {
                 "end": 116,
+                "moduleId": 0,
                 "raw": "4.0",
                 "start": 113,
                 "type": "Literal",
@@ -191,6 +215,7 @@ snapshot_kind: text
             },
             {
               "end": 142,
+              "moduleId": 0,
               "raw": "\"non-equality of floats\"",
               "start": 118,
               "type": "Literal",
@@ -200,16 +225,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 105,
+            "moduleId": 0,
             "name": "assert",
             "start": 99,
             "type": "Identifier"
           },
           "end": 143,
+          "moduleId": 0,
           "optional": false,
           "start": 99,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 99,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -222,15 +250,18 @@ snapshot_kind: text
               "end": 156,
               "left": {
                 "end": 152,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 151,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 3
               },
+              "moduleId": 0,
               "operator": "<",
               "right": {
                 "end": 156,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 155,
                 "type": "Literal",
@@ -243,6 +274,7 @@ snapshot_kind: text
             },
             {
               "end": 162,
+              "moduleId": 0,
               "raw": "\"lt\"",
               "start": 158,
               "type": "Literal",
@@ -252,16 +284,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 150,
+            "moduleId": 0,
             "name": "assert",
             "start": 144,
             "type": "Identifier"
           },
           "end": 163,
+          "moduleId": 0,
           "optional": false,
           "start": 144,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 144,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -274,15 +309,18 @@ snapshot_kind: text
               "end": 177,
               "left": {
                 "end": 172,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 171,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 3
               },
+              "moduleId": 0,
               "operator": "<=",
               "right": {
                 "end": 177,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 176,
                 "type": "Literal",
@@ -295,6 +333,7 @@ snapshot_kind: text
             },
             {
               "end": 200,
+              "moduleId": 0,
               "raw": "\"lte but actually lt\"",
               "start": 179,
               "type": "Literal",
@@ -304,16 +343,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 170,
+            "moduleId": 0,
             "name": "assert",
             "start": 164,
             "type": "Identifier"
           },
           "end": 201,
+          "moduleId": 0,
           "optional": false,
           "start": 164,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 164,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -326,15 +368,18 @@ snapshot_kind: text
               "end": 215,
               "left": {
                 "end": 210,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 209,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 4
               },
+              "moduleId": 0,
               "operator": "<=",
               "right": {
                 "end": 215,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 214,
                 "type": "Literal",
@@ -347,6 +392,7 @@ snapshot_kind: text
             },
             {
               "end": 238,
+              "moduleId": 0,
               "raw": "\"lte but actually eq\"",
               "start": 217,
               "type": "Literal",
@@ -356,16 +402,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 208,
+            "moduleId": 0,
             "name": "assert",
             "start": 202,
             "type": "Identifier"
           },
           "end": 239,
+          "moduleId": 0,
           "optional": false,
           "start": 202,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 202,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -378,15 +427,18 @@ snapshot_kind: text
               "end": 252,
               "left": {
                 "end": 248,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 247,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 4
               },
+              "moduleId": 0,
               "operator": ">",
               "right": {
                 "end": 252,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 251,
                 "type": "Literal",
@@ -399,6 +451,7 @@ snapshot_kind: text
             },
             {
               "end": 258,
+              "moduleId": 0,
               "raw": "\"gt\"",
               "start": 254,
               "type": "Literal",
@@ -408,16 +461,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 246,
+            "moduleId": 0,
             "name": "assert",
             "start": 240,
             "type": "Identifier"
           },
           "end": 259,
+          "moduleId": 0,
           "optional": false,
           "start": 240,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 240,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -430,15 +486,18 @@ snapshot_kind: text
               "end": 273,
               "left": {
                 "end": 268,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 267,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 4
               },
+              "moduleId": 0,
               "operator": ">=",
               "right": {
                 "end": 273,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 272,
                 "type": "Literal",
@@ -451,6 +510,7 @@ snapshot_kind: text
             },
             {
               "end": 296,
+              "moduleId": 0,
               "raw": "\"gte but actually gt\"",
               "start": 275,
               "type": "Literal",
@@ -460,16 +520,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 266,
+            "moduleId": 0,
             "name": "assert",
             "start": 260,
             "type": "Identifier"
           },
           "end": 297,
+          "moduleId": 0,
           "optional": false,
           "start": 260,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 260,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -482,15 +545,18 @@ snapshot_kind: text
               "end": 311,
               "left": {
                 "end": 306,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 305,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 3
               },
+              "moduleId": 0,
               "operator": ">=",
               "right": {
                 "end": 311,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 310,
                 "type": "Literal",
@@ -503,6 +569,7 @@ snapshot_kind: text
             },
             {
               "end": 334,
+              "moduleId": 0,
               "raw": "\"gte but actually eq\"",
               "start": 313,
               "type": "Literal",
@@ -512,16 +579,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 304,
+            "moduleId": 0,
             "name": "assert",
             "start": 298,
             "type": "Identifier"
           },
           "end": 335,
+          "moduleId": 0,
           "optional": false,
           "start": 298,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 298,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -534,15 +604,18 @@ snapshot_kind: text
               "end": 354,
               "left": {
                 "end": 347,
+                "moduleId": 0,
                 "raw": "0.0",
                 "start": 344,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 0.0
               },
+              "moduleId": 0,
               "operator": "==",
               "right": {
                 "end": 354,
+                "moduleId": 0,
                 "raw": "0.0",
                 "start": 351,
                 "type": "Literal",
@@ -555,6 +628,7 @@ snapshot_kind: text
             },
             {
               "end": 374,
+              "moduleId": 0,
               "raw": "\"equality of zero\"",
               "start": 356,
               "type": "Literal",
@@ -564,16 +638,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 343,
+            "moduleId": 0,
             "name": "assert",
             "start": 337,
             "type": "Identifier"
           },
           "end": 375,
+          "moduleId": 0,
           "optional": false,
           "start": 337,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 337,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -586,16 +663,19 @@ snapshot_kind: text
               "end": 394,
               "left": {
                 "end": 386,
+                "moduleId": 0,
                 "raw": "0.0",
                 "start": 383,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 0.0
               },
+              "moduleId": 0,
               "operator": "==",
               "right": {
                 "argument": {
                   "end": 394,
+                  "moduleId": 0,
                   "raw": "0.0",
                   "start": 391,
                   "type": "Literal",
@@ -603,6 +683,7 @@ snapshot_kind: text
                   "value": 0.0
                 },
                 "end": 394,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 390,
                 "type": "UnaryExpression",
@@ -614,6 +695,7 @@ snapshot_kind: text
             },
             {
               "end": 427,
+              "moduleId": 0,
               "raw": "\"equality of zero and neg zero\"",
               "start": 396,
               "type": "Literal",
@@ -623,27 +705,32 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 382,
+            "moduleId": 0,
             "name": "assert",
             "start": 376,
             "type": "Identifier"
           },
           "end": 428,
+          "moduleId": 0,
           "optional": false,
           "start": 376,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 376,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
     "end": 429,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "9": [
           {
             "end": 337,
+            "moduleId": 0,
             "start": 335,
             "type": "NonCodeNode",
             "value": {

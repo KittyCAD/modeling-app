@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 132,
           "id": {
             "end": 16,
+            "moduleId": 0,
             "name": "sketch001",
             "start": 7,
             "type": "Identifier"
@@ -20,6 +22,7 @@ expression: actual
                 "arguments": [
                   {
                     "end": 37,
+                    "moduleId": 0,
                     "raw": "'XY'",
                     "start": 33,
                     "type": "Literal",
@@ -29,11 +32,13 @@ expression: actual
                 ],
                 "callee": {
                   "end": 32,
+                  "moduleId": 0,
                   "name": "startSketchOn",
                   "start": 19,
                   "type": "Identifier"
                 },
                 "end": 38,
+                "moduleId": 0,
                 "optional": false,
                 "start": 19,
                 "type": "CallExpression",
@@ -43,6 +48,7 @@ expression: actual
                 "arguments": [
                   {
                     "end": 131,
+                    "moduleId": 0,
                     "start": 130,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
@@ -50,11 +56,13 @@ expression: actual
                 ],
                 "callee": {
                   "end": 129,
+                  "moduleId": 0,
                   "name": "startProfileAt",
                   "start": 115,
                   "type": "Identifier"
                 },
                 "end": 132,
+                "moduleId": 0,
                 "optional": false,
                 "start": 115,
                 "type": "CallExpression",
@@ -62,11 +70,13 @@ expression: actual
               }
             ],
             "end": 132,
+            "moduleId": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "0": [
                   {
                     "end": 52,
+                    "moduleId": 0,
                     "start": 41,
                     "type": "NonCodeNode",
                     "value": {
@@ -77,6 +87,7 @@ expression: actual
                   },
                   {
                     "end": 74,
+                    "moduleId": 0,
                     "start": 55,
                     "type": "NonCodeNode",
                     "value": {
@@ -87,6 +98,7 @@ expression: actual
                   },
                   {
                     "end": 98,
+                    "moduleId": 0,
                     "start": 77,
                     "type": "NonCodeNode",
                     "value": {
@@ -97,6 +109,7 @@ expression: actual
                   },
                   {
                     "end": 109,
+                    "moduleId": 0,
                     "start": 101,
                     "type": "NonCodeNode",
                     "value": {
@@ -113,17 +126,20 @@ expression: actual
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 7,
           "type": "VariableDeclarator"
         }
       ],
       "end": 132,
       "kind": "const",
+      "moduleId": 0,
       "start": 1,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 133,
+  "moduleId": 0,
   "start": 0
 }

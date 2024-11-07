@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 27,
           "id": {
             "end": 10,
+            "moduleId": 0,
             "name": "prop",
             "start": 6,
             "type": "Identifier"
@@ -17,11 +19,14 @@ expression: actual
           "init": {
             "computed": true,
             "end": 27,
+            "moduleId": 0,
             "object": {
               "computed": false,
               "end": 22,
+              "moduleId": 0,
               "object": {
                 "end": 15,
+                "moduleId": 0,
                 "name": "yo",
                 "start": 13,
                 "type": "Identifier",
@@ -29,6 +34,7 @@ expression: actual
               },
               "property": {
                 "end": 21,
+                "moduleId": 0,
                 "raw": "\"one\"",
                 "start": 16,
                 "type": "Literal",
@@ -41,6 +47,7 @@ expression: actual
             },
             "property": {
               "end": 26,
+              "moduleId": 0,
               "name": "two",
               "start": 23,
               "type": "Identifier",
@@ -50,17 +57,20 @@ expression: actual
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 27,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 27,
+  "moduleId": 0,
   "start": 0
 }

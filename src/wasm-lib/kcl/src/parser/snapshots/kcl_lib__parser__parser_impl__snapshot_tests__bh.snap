@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,27 +11,32 @@ expression: actual
           "end": 42,
           "id": {
             "end": 9,
+            "moduleId": 0,
             "name": "obj",
             "start": 6,
             "type": "Identifier"
           },
           "init": {
             "end": 42,
+            "moduleId": 0,
             "properties": [
               {
                 "end": 30,
                 "key": {
                   "end": 19,
+                  "moduleId": 0,
                   "name": "center",
                   "start": 13,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 13,
                 "type": "ObjectProperty",
                 "value": {
                   "elements": [
                     {
                       "end": 25,
+                      "moduleId": 0,
                       "raw": "10",
                       "start": 23,
                       "type": "Literal",
@@ -39,6 +45,7 @@ expression: actual
                     },
                     {
                       "end": 29,
+                      "moduleId": 0,
                       "raw": "10",
                       "start": 27,
                       "type": "Literal",
@@ -47,6 +54,7 @@ expression: actual
                     }
                   ],
                   "end": 30,
+                  "moduleId": 0,
                   "start": 22,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -56,14 +64,17 @@ expression: actual
                 "end": 41,
                 "key": {
                   "end": 38,
+                  "moduleId": 0,
                   "name": "radius",
                   "start": 32,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 32,
                 "type": "ObjectProperty",
                 "value": {
                   "end": 41,
+                  "moduleId": 0,
                   "raw": "5",
                   "start": 40,
                   "type": "Literal",
@@ -76,17 +87,20 @@ expression: actual
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 42,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 42,
+  "moduleId": 0,
   "start": 0
 }

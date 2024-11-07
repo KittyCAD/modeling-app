@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 58,
           "id": {
             "end": 4,
+            "moduleId": 0,
             "name": "x",
             "start": 3,
             "type": "Identifier"
@@ -20,12 +22,14 @@ expression: actual
                 {
                   "argument": {
                     "end": 32,
+                    "moduleId": 0,
                     "name": "sg",
                     "start": 30,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "end": 32,
+                  "moduleId": 0,
                   "start": 23,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -33,37 +37,44 @@ expression: actual
                 {
                   "argument": {
                     "end": 50,
+                    "moduleId": 0,
                     "name": "sg",
                     "start": 48,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "end": 50,
+                  "moduleId": 0,
                   "start": 41,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
               "end": 58,
+              "moduleId": 0,
               "start": 13
             },
             "end": 58,
+            "moduleId": 0,
             "params": [],
             "start": 7,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 3,
           "type": "VariableDeclarator"
         }
       ],
       "end": 58,
       "kind": "fn",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 58,
+  "moduleId": 0,
   "start": 0
 }

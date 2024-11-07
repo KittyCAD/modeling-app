@@ -12,6 +12,7 @@ snapshot_kind: text
             "end": 55,
             "id": {
               "end": 40,
+              "moduleId": 0,
               "name": "array",
               "start": 35,
               "type": "Identifier"
@@ -20,6 +21,7 @@ snapshot_kind: text
               "elements": [
                 {
                   "end": 46,
+                  "moduleId": 0,
                   "raw": "90",
                   "start": 44,
                   "type": "Literal",
@@ -28,6 +30,7 @@ snapshot_kind: text
                 },
                 {
                   "end": 50,
+                  "moduleId": 0,
                   "raw": "91",
                   "start": 48,
                   "type": "Literal",
@@ -36,6 +39,7 @@ snapshot_kind: text
                 },
                 {
                   "end": 54,
+                  "moduleId": 0,
                   "raw": "92",
                   "start": 52,
                   "type": "Literal",
@@ -44,16 +48,19 @@ snapshot_kind: text
                 }
               ],
               "end": 55,
+              "moduleId": 0,
               "start": 43,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             },
+            "moduleId": 0,
             "start": 35,
             "type": "VariableDeclarator"
           }
         ],
         "end": 55,
         "kind": "const",
+        "moduleId": 0,
         "start": 35,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -64,6 +71,7 @@ snapshot_kind: text
             "end": 101,
             "id": {
               "end": 90,
+              "moduleId": 0,
               "name": "result0",
               "start": 83,
               "type": "Identifier"
@@ -71,8 +79,10 @@ snapshot_kind: text
             "init": {
               "computed": false,
               "end": 101,
+              "moduleId": 0,
               "object": {
                 "end": 98,
+                "moduleId": 0,
                 "name": "array",
                 "start": 93,
                 "type": "Identifier",
@@ -80,6 +90,7 @@ snapshot_kind: text
               },
               "property": {
                 "end": 100,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 99,
                 "type": "Literal",
@@ -90,12 +101,14 @@ snapshot_kind: text
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
+            "moduleId": 0,
             "start": 83,
             "type": "VariableDeclarator"
           }
         ],
         "end": 101,
         "kind": "const",
+        "moduleId": 0,
         "start": 83,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -106,6 +119,7 @@ snapshot_kind: text
           "arguments": [
             {
               "end": 129,
+              "moduleId": 0,
               "name": "result0",
               "start": 122,
               "type": "Identifier",
@@ -113,6 +127,7 @@ snapshot_kind: text
             },
             {
               "end": 133,
+              "moduleId": 0,
               "raw": "91",
               "start": 131,
               "type": "Literal",
@@ -121,6 +136,7 @@ snapshot_kind: text
             },
             {
               "end": 160,
+              "moduleId": 0,
               "raw": "\"Literal property lookup\"",
               "start": 135,
               "type": "Literal",
@@ -130,16 +146,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 121,
+            "moduleId": 0,
             "name": "assertLessThanOrEq",
             "start": 103,
             "type": "Identifier"
           },
           "end": 161,
+          "moduleId": 0,
           "optional": false,
           "start": 103,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 103,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -150,6 +169,7 @@ snapshot_kind: text
           "arguments": [
             {
               "end": 191,
+              "moduleId": 0,
               "name": "result0",
               "start": 184,
               "type": "Identifier",
@@ -157,6 +177,7 @@ snapshot_kind: text
             },
             {
               "end": 195,
+              "moduleId": 0,
               "raw": "91",
               "start": 193,
               "type": "Literal",
@@ -165,6 +186,7 @@ snapshot_kind: text
             },
             {
               "end": 222,
+              "moduleId": 0,
               "raw": "\"Literal property lookup\"",
               "start": 197,
               "type": "Literal",
@@ -174,16 +196,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 183,
+            "moduleId": 0,
             "name": "assertGreaterThanOrEq",
             "start": 162,
             "type": "Identifier"
           },
           "end": 223,
+          "moduleId": 0,
           "optional": false,
           "start": 162,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 162,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -194,6 +219,7 @@ snapshot_kind: text
             "end": 266,
             "id": {
               "end": 253,
+              "moduleId": 0,
               "name": "i",
               "start": 252,
               "type": "Identifier"
@@ -204,15 +230,18 @@ snapshot_kind: text
                   "end": 265,
                   "left": {
                     "end": 261,
+                    "moduleId": 0,
                     "raw": "1",
                     "start": 260,
                     "type": "Literal",
                     "type": "Literal",
                     "value": 1
                   },
+                  "moduleId": 0,
                   "operator": "+",
                   "right": {
                     "end": 265,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 264,
                     "type": "Literal",
@@ -226,22 +255,26 @@ snapshot_kind: text
               ],
               "callee": {
                 "end": 259,
+                "moduleId": 0,
                 "name": "int",
                 "start": 256,
                 "type": "Identifier"
               },
               "end": 266,
+              "moduleId": 0,
               "optional": false,
               "start": 256,
               "type": "CallExpression",
               "type": "CallExpression"
             },
+            "moduleId": 0,
             "start": 252,
             "type": "VariableDeclarator"
           }
         ],
         "end": 266,
         "kind": "const",
+        "moduleId": 0,
         "start": 252,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -252,6 +285,7 @@ snapshot_kind: text
             "end": 285,
             "id": {
               "end": 274,
+              "moduleId": 0,
               "name": "result1",
               "start": 267,
               "type": "Identifier"
@@ -259,8 +293,10 @@ snapshot_kind: text
             "init": {
               "computed": true,
               "end": 285,
+              "moduleId": 0,
               "object": {
                 "end": 282,
+                "moduleId": 0,
                 "name": "array",
                 "start": 277,
                 "type": "Identifier",
@@ -268,6 +304,7 @@ snapshot_kind: text
               },
               "property": {
                 "end": 284,
+                "moduleId": 0,
                 "name": "i",
                 "start": 283,
                 "type": "Identifier",
@@ -277,12 +314,14 @@ snapshot_kind: text
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
+            "moduleId": 0,
             "start": 267,
             "type": "VariableDeclarator"
           }
         ],
         "end": 285,
         "kind": "const",
+        "moduleId": 0,
         "start": 267,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -293,6 +332,7 @@ snapshot_kind: text
           "arguments": [
             {
               "end": 313,
+              "moduleId": 0,
               "name": "result1",
               "start": 306,
               "type": "Identifier",
@@ -300,6 +340,7 @@ snapshot_kind: text
             },
             {
               "end": 317,
+              "moduleId": 0,
               "raw": "91",
               "start": 315,
               "type": "Literal",
@@ -308,6 +349,7 @@ snapshot_kind: text
             },
             {
               "end": 345,
+              "moduleId": 0,
               "raw": "\"Computed property lookup\"",
               "start": 319,
               "type": "Literal",
@@ -317,16 +359,19 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 305,
+            "moduleId": 0,
             "name": "assertLessThanOrEq",
             "start": 287,
             "type": "Identifier"
           },
           "end": 346,
+          "moduleId": 0,
           "optional": false,
           "start": 287,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 287,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -337,6 +382,7 @@ snapshot_kind: text
           "arguments": [
             {
               "end": 376,
+              "moduleId": 0,
               "name": "result1",
               "start": 369,
               "type": "Identifier",
@@ -344,6 +390,7 @@ snapshot_kind: text
             },
             {
               "end": 380,
+              "moduleId": 0,
               "raw": "91",
               "start": 378,
               "type": "Literal",
@@ -352,6 +399,7 @@ snapshot_kind: text
             },
             {
               "end": 408,
+              "moduleId": 0,
               "raw": "\"Computed property lookup\"",
               "start": 382,
               "type": "Literal",
@@ -361,27 +409,32 @@ snapshot_kind: text
           ],
           "callee": {
             "end": 368,
+            "moduleId": 0,
             "name": "assertGreaterThanOrEq",
             "start": 347,
             "type": "Identifier"
           },
           "end": 409,
+          "moduleId": 0,
           "optional": false,
           "start": 347,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "moduleId": 0,
         "start": 347,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
     "end": 410,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "end": 80,
+            "moduleId": 0,
             "start": 55,
             "type": "NonCodeNode",
             "value": {
@@ -392,6 +445,7 @@ snapshot_kind: text
           },
           {
             "end": 83,
+            "moduleId": 0,
             "start": 80,
             "type": "NonCodeNode",
             "value": {
@@ -402,6 +456,7 @@ snapshot_kind: text
         "1": [
           {
             "end": 103,
+            "moduleId": 0,
             "start": 101,
             "type": "NonCodeNode",
             "value": {
@@ -412,6 +467,7 @@ snapshot_kind: text
         "3": [
           {
             "end": 249,
+            "moduleId": 0,
             "start": 223,
             "type": "NonCodeNode",
             "value": {
@@ -422,6 +478,7 @@ snapshot_kind: text
           },
           {
             "end": 252,
+            "moduleId": 0,
             "start": 249,
             "type": "NonCodeNode",
             "value": {
@@ -432,6 +489,7 @@ snapshot_kind: text
         "5": [
           {
             "end": 287,
+            "moduleId": 0,
             "start": 285,
             "type": "NonCodeNode",
             "value": {
@@ -443,6 +501,7 @@ snapshot_kind: text
       "startNodes": [
         {
           "end": 32,
+          "moduleId": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -453,6 +512,7 @@ snapshot_kind: text
         },
         {
           "end": 35,
+          "moduleId": 0,
           "start": 32,
           "type": "NonCodeNode",
           "value": {

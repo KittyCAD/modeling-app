@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 37,
           "id": {
             "end": 14,
+            "moduleId": 0,
             "name": "mySketch",
             "start": 6,
             "type": "Identifier"
@@ -20,6 +22,7 @@ expression: actual
                 "elements": [
                   {
                     "end": 33,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 32,
                     "type": "Literal",
@@ -28,6 +31,7 @@ expression: actual
                   },
                   {
                     "end": 35,
+                    "moduleId": 0,
                     "raw": "0",
                     "start": 34,
                     "type": "Literal",
@@ -36,6 +40,7 @@ expression: actual
                   }
                 ],
                 "end": 36,
+                "moduleId": 0,
                 "start": 31,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
@@ -43,27 +48,32 @@ expression: actual
             ],
             "callee": {
               "end": 30,
+              "moduleId": 0,
               "name": "startSketchAt",
               "start": 17,
               "type": "Identifier"
             },
             "end": 37,
+            "moduleId": 0,
             "optional": false,
             "start": 17,
             "type": "CallExpression",
             "type": "CallExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 37,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 37,
+  "moduleId": 0,
   "start": 0
 }

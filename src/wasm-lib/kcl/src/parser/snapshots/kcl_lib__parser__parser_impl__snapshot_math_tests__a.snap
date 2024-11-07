@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "type": "BinaryExpression",
@@ -11,7 +12,8 @@ expression: actual
     "value": 1,
     "raw": "1",
     "start": 0,
-    "end": 1
+    "end": 1,
+    "moduleId": 0
   },
   "right": {
     "type": "Literal",
@@ -19,8 +21,10 @@ expression: actual
     "value": 2,
     "raw": "2",
     "start": 4,
-    "end": 5
+    "end": 5,
+    "moduleId": 0
   },
   "start": 0,
-  "end": 5
+  "end": 5,
+  "moduleId": 0
 }

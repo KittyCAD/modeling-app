@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 49,
           "id": {
             "end": 4,
+            "moduleId": 0,
             "name": "f",
             "start": 3,
             "type": "Identifier"
@@ -22,6 +24,7 @@ expression: actual
                     "arguments": [
                       {
                         "end": 41,
+                        "moduleId": 0,
                         "name": "angle",
                         "start": 36,
                         "type": "Identifier",
@@ -29,6 +32,7 @@ expression: actual
                       },
                       {
                         "end": 46,
+                        "moduleId": 0,
                         "raw": "360",
                         "start": 43,
                         "type": "Literal",
@@ -38,31 +42,37 @@ expression: actual
                     ],
                     "callee": {
                       "end": 35,
+                      "moduleId": 0,
                       "name": "default",
                       "start": 28,
                       "type": "Identifier"
                     },
                     "end": 47,
+                    "moduleId": 0,
                     "optional": false,
                     "start": 28,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   },
                   "end": 47,
+                  "moduleId": 0,
                   "start": 21,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
               "end": 49,
+              "moduleId": 0,
               "start": 19
             },
             "end": 49,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "end": 13,
+                  "moduleId": 0,
                   "name": "angle",
                   "start": 8,
                   "type": "Identifier"
@@ -74,17 +84,20 @@ expression: actual
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 3,
           "type": "VariableDeclarator"
         }
       ],
       "end": 49,
       "kind": "fn",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 49,
+  "moduleId": 0,
   "start": 0
 }

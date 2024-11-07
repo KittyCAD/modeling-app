@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,25 +11,30 @@ expression: actual
           "end": 26,
           "id": {
             "end": 9,
+            "moduleId": 0,
             "name": "obj",
             "start": 6,
             "type": "Identifier"
           },
           "init": {
             "end": 26,
+            "moduleId": 0,
             "properties": [
               {
                 "end": 18,
                 "key": {
                   "end": 15,
+                  "moduleId": 0,
                   "name": "a",
                   "start": 14,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 14,
                 "type": "ObjectProperty",
                 "value": {
                   "end": 18,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 17,
                   "type": "Literal",
@@ -40,14 +46,17 @@ expression: actual
                 "end": 24,
                 "key": {
                   "end": 21,
+                  "moduleId": 0,
                   "name": "b",
                   "start": 20,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 20,
                 "type": "ObjectProperty",
                 "value": {
                   "end": 24,
+                  "moduleId": 0,
                   "raw": "2",
                   "start": 23,
                   "type": "Literal",
@@ -60,12 +69,14 @@ expression: actual
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 26,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -76,6 +87,7 @@ expression: actual
           "end": 62,
           "id": {
             "end": 43,
+            "moduleId": 0,
             "name": "height",
             "start": 37,
             "type": "Identifier"
@@ -87,8 +99,10 @@ expression: actual
                 "left": {
                   "computed": false,
                   "end": 55,
+                  "moduleId": 0,
                   "object": {
                     "end": 50,
+                    "moduleId": 0,
                     "name": "obj",
                     "start": 47,
                     "type": "Identifier",
@@ -96,6 +110,7 @@ expression: actual
                   },
                   "property": {
                     "end": 54,
+                    "moduleId": 0,
                     "raw": "\"a\"",
                     "start": 51,
                     "type": "Literal",
@@ -106,9 +121,11 @@ expression: actual
                   "type": "MemberExpression",
                   "type": "MemberExpression"
                 },
+                "moduleId": 0,
                 "operator": "-",
                 "right": {
                   "end": 58,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 57,
                   "type": "Literal",
@@ -121,6 +138,7 @@ expression: actual
               },
               {
                 "end": 61,
+                "moduleId": 0,
                 "raw": "0",
                 "start": 60,
                 "type": "Literal",
@@ -129,21 +147,25 @@ expression: actual
               }
             ],
             "end": 62,
+            "moduleId": 0,
             "start": 46,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
+          "moduleId": 0,
           "start": 37,
           "type": "VariableDeclarator"
         }
       ],
       "end": 62,
       "kind": "const",
+      "moduleId": 0,
       "start": 31,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 62,
+  "moduleId": 0,
   "start": 0
 }

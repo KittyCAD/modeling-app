@@ -41,14 +41,17 @@ snapshot_kind: text
                     "end": 30,
                     "left": {
                       "end": 26,
+                      "moduleId": 0,
                       "name": "i",
                       "start": 25,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
+                    "moduleId": 0,
                     "operator": "*",
                     "right": {
                       "end": 30,
+                      "moduleId": 0,
                       "raw": "2",
                       "start": 29,
                       "type": "Literal",
@@ -60,20 +63,24 @@ snapshot_kind: text
                     "type": "BinaryExpression"
                   },
                   "end": 30,
+                  "moduleId": 0,
                   "start": 18,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
               "end": 32,
+              "moduleId": 0,
               "start": 14
             },
             "end": 32,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "end": 9,
+                  "moduleId": 0,
                   "name": "i",
                   "start": 8,
                   "type": "Identifier"
@@ -123,7 +130,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 7,
-                32
+                32,
+                0
               ]
             }
           ]
@@ -136,7 +144,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 38,
-                834
+                834,
+                0
               ]
             }
           ]

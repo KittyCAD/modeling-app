@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,21 +11,25 @@ expression: actual
         "arguments": [
           {
             "end": 22,
+            "moduleId": 0,
             "properties": [
               {
                 "end": 20,
                 "key": {
                   "end": 11,
+                  "moduleId": 0,
                   "name": "to",
                   "start": 9,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 9,
                 "type": "ObjectProperty",
                 "value": {
                   "elements": [
                     {
                       "end": 15,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 14,
                       "type": "Literal",
@@ -34,6 +39,7 @@ expression: actual
                     {
                       "argument": {
                         "end": 19,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 18,
                         "type": "Literal",
@@ -41,6 +47,7 @@ expression: actual
                         "value": 1
                       },
                       "end": 19,
+                      "moduleId": 0,
                       "operator": "-",
                       "start": 17,
                       "type": "UnaryExpression",
@@ -48,6 +55,7 @@ expression: actual
                     }
                   ],
                   "end": 20,
+                  "moduleId": 0,
                   "start": 13,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -61,21 +69,25 @@ expression: actual
         ],
         "callee": {
           "end": 6,
+          "moduleId": 0,
           "name": "lineTo",
           "start": 0,
           "type": "Identifier"
         },
         "end": 23,
+        "moduleId": 0,
         "optional": false,
         "start": 0,
         "type": "CallExpression",
         "type": "CallExpression"
       },
+      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
     }
   ],
   "end": 23,
+  "moduleId": 0,
   "start": 0
 }

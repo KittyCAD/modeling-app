@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 29,
           "id": {
             "end": 11,
+            "moduleId": 0,
             "name": "myBox",
             "start": 6,
             "type": "Identifier"
@@ -20,6 +22,7 @@ expression: actual
                 "arguments": [
                   {
                     "end": 17,
+                    "moduleId": 0,
                     "raw": "1",
                     "start": 16,
                     "type": "Literal",
@@ -29,11 +32,13 @@ expression: actual
                 ],
                 "callee": {
                   "end": 15,
+                  "moduleId": 0,
                   "name": "f",
                   "start": 14,
                   "type": "Identifier"
                 },
                 "end": 18,
+                "moduleId": 0,
                 "optional": false,
                 "start": 14,
                 "type": "CallExpression",
@@ -43,6 +48,7 @@ expression: actual
                 "arguments": [
                   {
                     "end": 25,
+                    "moduleId": 0,
                     "raw": "2",
                     "start": 24,
                     "type": "Literal",
@@ -51,6 +57,7 @@ expression: actual
                   },
                   {
                     "end": 28,
+                    "moduleId": 0,
                     "start": 27,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
@@ -58,11 +65,13 @@ expression: actual
                 ],
                 "callee": {
                   "end": 23,
+                  "moduleId": 0,
                   "name": "g",
                   "start": 22,
                   "type": "Identifier"
                 },
                 "end": 29,
+                "moduleId": 0,
                 "optional": false,
                 "start": 22,
                 "type": "CallExpression",
@@ -70,21 +79,25 @@ expression: actual
               }
             ],
             "end": 29,
+            "moduleId": 0,
             "start": 14,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 29,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 29,
+  "moduleId": 0,
   "start": 0
 }

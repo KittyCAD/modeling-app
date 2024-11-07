@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 31,
           "id": {
             "end": 11,
+            "moduleId": 0,
             "name": "my14",
             "start": 7,
             "type": "Identifier"
@@ -20,15 +22,18 @@ expression: actual
               "end": 19,
               "left": {
                 "end": 15,
+                "moduleId": 0,
                 "raw": "4",
                 "start": 14,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 4
               },
+              "moduleId": 0,
               "operator": "^",
               "right": {
                 "end": 19,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 18,
                 "type": "Literal",
@@ -39,6 +44,7 @@ expression: actual
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
               "end": 31,
@@ -46,15 +52,18 @@ expression: actual
                 "end": 27,
                 "left": {
                   "end": 23,
+                  "moduleId": 0,
                   "raw": "3",
                   "start": 22,
                   "type": "Literal",
                   "type": "Literal",
                   "value": 3
                 },
+                "moduleId": 0,
                 "operator": "^",
                 "right": {
                   "end": 27,
+                  "moduleId": 0,
                   "raw": "2",
                   "start": 26,
                   "type": "Literal",
@@ -65,9 +74,11 @@ expression: actual
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
+              "moduleId": 0,
               "operator": "*",
               "right": {
                 "end": 31,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 30,
                 "type": "Literal",
@@ -82,17 +93,20 @@ expression: actual
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
+          "moduleId": 0,
           "start": 7,
           "type": "VariableDeclarator"
         }
       ],
       "end": 31,
       "kind": "const",
+      "moduleId": 0,
       "start": 1,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 32,
+  "moduleId": 0,
   "start": 0
 }

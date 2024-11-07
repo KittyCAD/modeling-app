@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 35,
           "id": {
             "end": 11,
+            "moduleId": 0,
             "name": "myVar",
             "start": 6,
             "type": "Identifier"
@@ -21,6 +23,7 @@ expression: actual
                   "arguments": [
                     {
                       "end": 27,
+                      "moduleId": 0,
                       "raw": "5",
                       "start": 26,
                       "type": "Literal",
@@ -29,6 +32,7 @@ expression: actual
                     },
                     {
                       "end": 30,
+                      "moduleId": 0,
                       "raw": "4",
                       "start": 29,
                       "type": "Literal",
@@ -38,17 +42,20 @@ expression: actual
                   ],
                   "callee": {
                     "end": 25,
+                    "moduleId": 0,
                     "name": "legLen",
                     "start": 19,
                     "type": "Identifier"
                   },
                   "end": 31,
+                  "moduleId": 0,
                   "optional": false,
                   "start": 19,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 },
                 "end": 31,
+                "moduleId": 0,
                 "operator": "-",
                 "start": 18,
                 "type": "UnaryExpression",
@@ -56,6 +63,7 @@ expression: actual
               },
               {
                 "end": 34,
+                "moduleId": 0,
                 "raw": "5",
                 "start": 33,
                 "type": "Literal",
@@ -65,27 +73,32 @@ expression: actual
             ],
             "callee": {
               "end": 17,
+              "moduleId": 0,
               "name": "min",
               "start": 14,
               "type": "Identifier"
             },
             "end": 35,
+            "moduleId": 0,
             "optional": false,
             "start": 14,
             "type": "CallExpression",
             "type": "CallExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 35,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 35,
+  "moduleId": 0,
   "start": 0
 }

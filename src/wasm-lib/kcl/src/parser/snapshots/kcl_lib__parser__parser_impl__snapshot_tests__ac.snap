@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 23,
           "id": {
             "end": 13,
+            "moduleId": 0,
             "name": "myArray",
             "start": 6,
             "type": "Identifier"
@@ -18,6 +20,7 @@ expression: actual
             "end": 23,
             "endElement": {
               "end": 22,
+              "moduleId": 0,
               "raw": "10",
               "start": 20,
               "type": "Literal",
@@ -25,9 +28,11 @@ expression: actual
               "value": 10
             },
             "endInclusive": true,
+            "moduleId": 0,
             "start": 16,
             "startElement": {
               "end": 18,
+              "moduleId": 0,
               "raw": "0",
               "start": 17,
               "type": "Literal",
@@ -37,17 +42,20 @@ expression: actual
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 23,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 23,
+  "moduleId": 0,
   "start": 0
 }

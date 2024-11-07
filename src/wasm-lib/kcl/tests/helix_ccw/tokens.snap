@@ -9,456 +9,532 @@ snapshot_kind: text
       "type": "word",
       "start": 0,
       "end": 7,
+      "module_id": 0,
       "value": "part001"
     },
     {
       "type": "whitespace",
       "start": 7,
       "end": 8,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 8,
       "end": 9,
+      "module_id": 0,
       "value": "="
     },
     {
       "type": "whitespace",
       "start": 9,
       "end": 10,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 10,
       "end": 23,
+      "module_id": 0,
       "value": "startSketchOn"
     },
     {
       "type": "brace",
       "start": 23,
       "end": 24,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "string",
       "start": 24,
       "end": 28,
+      "module_id": 0,
       "value": "'XY'"
     },
     {
       "type": "brace",
       "start": 28,
       "end": 29,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 29,
       "end": 32,
+      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "operator",
       "start": 32,
       "end": 34,
+      "module_id": 0,
       "value": "|>"
     },
     {
       "type": "whitespace",
       "start": 34,
       "end": 35,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 35,
       "end": 41,
+      "module_id": 0,
       "value": "circle"
     },
     {
       "type": "brace",
       "start": 41,
       "end": 42,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "brace",
       "start": 42,
       "end": 43,
+      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 43,
       "end": 44,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 44,
       "end": 50,
+      "module_id": 0,
       "value": "center"
     },
     {
       "type": "colon",
       "start": 50,
       "end": 51,
+      "module_id": 0,
       "value": ":"
     },
     {
       "type": "whitespace",
       "start": 51,
       "end": 52,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 52,
       "end": 53,
+      "module_id": 0,
       "value": "["
     },
     {
       "type": "number",
       "start": 53,
       "end": 54,
+      "module_id": 0,
       "value": "5"
     },
     {
       "type": "comma",
       "start": 54,
       "end": 55,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 55,
       "end": 56,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 56,
       "end": 57,
+      "module_id": 0,
       "value": "5"
     },
     {
       "type": "brace",
       "start": 57,
       "end": 58,
+      "module_id": 0,
       "value": "]"
     },
     {
       "type": "comma",
       "start": 58,
       "end": 59,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 59,
       "end": 60,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 60,
       "end": 66,
+      "module_id": 0,
       "value": "radius"
     },
     {
       "type": "colon",
       "start": 66,
       "end": 67,
+      "module_id": 0,
       "value": ":"
     },
     {
       "type": "whitespace",
       "start": 67,
       "end": 68,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 68,
       "end": 70,
+      "module_id": 0,
       "value": "10"
     },
     {
       "type": "whitespace",
       "start": 70,
       "end": 71,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "brace",
       "start": 71,
       "end": 72,
+      "module_id": 0,
       "value": "}"
     },
     {
       "type": "comma",
       "start": 72,
       "end": 73,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 73,
       "end": 74,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 74,
       "end": 75,
+      "module_id": 0,
       "value": "%"
     },
     {
       "type": "brace",
       "start": 75,
       "end": 76,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 76,
       "end": 79,
+      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "operator",
       "start": 79,
       "end": 81,
+      "module_id": 0,
       "value": "|>"
     },
     {
       "type": "whitespace",
       "start": 81,
       "end": 82,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 82,
       "end": 89,
+      "module_id": 0,
       "value": "extrude"
     },
     {
       "type": "brace",
       "start": 89,
       "end": 90,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "number",
       "start": 90,
       "end": 92,
+      "module_id": 0,
       "value": "10"
     },
     {
       "type": "comma",
       "start": 92,
       "end": 93,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 93,
       "end": 94,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 94,
       "end": 95,
+      "module_id": 0,
       "value": "%"
     },
     {
       "type": "brace",
       "start": 95,
       "end": 96,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 96,
       "end": 99,
+      "module_id": 0,
       "value": "\n  "
     },
     {
       "type": "operator",
       "start": 99,
       "end": 101,
+      "module_id": 0,
       "value": "|>"
     },
     {
       "type": "whitespace",
       "start": 101,
       "end": 102,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "word",
       "start": 102,
       "end": 107,
+      "module_id": 0,
       "value": "helix"
     },
     {
       "type": "brace",
       "start": 107,
       "end": 108,
+      "module_id": 0,
       "value": "("
     },
     {
       "type": "brace",
       "start": 108,
       "end": 109,
+      "module_id": 0,
       "value": "{"
     },
     {
       "type": "whitespace",
       "start": 109,
       "end": 117,
+      "module_id": 0,
       "value": "\n       "
     },
     {
       "type": "word",
       "start": 117,
       "end": 128,
+      "module_id": 0,
       "value": "revolutions"
     },
     {
       "type": "colon",
       "start": 128,
       "end": 129,
+      "module_id": 0,
       "value": ":"
     },
     {
       "type": "whitespace",
       "start": 129,
       "end": 130,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 130,
       "end": 132,
+      "module_id": 0,
       "value": "16"
     },
     {
       "type": "comma",
       "start": 132,
       "end": 133,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 133,
       "end": 141,
+      "module_id": 0,
       "value": "\n       "
     },
     {
       "type": "word",
       "start": 141,
       "end": 151,
+      "module_id": 0,
       "value": "angleStart"
     },
     {
       "type": "colon",
       "start": 151,
       "end": 152,
+      "module_id": 0,
       "value": ":"
     },
     {
       "type": "whitespace",
       "start": 152,
       "end": 153,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "number",
       "start": 153,
       "end": 154,
+      "module_id": 0,
       "value": "0"
     },
     {
       "type": "comma",
       "start": 154,
       "end": 155,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 155,
       "end": 163,
+      "module_id": 0,
       "value": "\n       "
     },
     {
       "type": "word",
       "start": 163,
       "end": 166,
+      "module_id": 0,
       "value": "ccw"
     },
     {
       "type": "colon",
       "start": 166,
       "end": 167,
+      "module_id": 0,
       "value": ":"
     },
     {
       "type": "whitespace",
       "start": 167,
       "end": 168,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "keyword",
       "start": 168,
       "end": 172,
+      "module_id": 0,
       "value": "true"
     },
     {
       "type": "whitespace",
       "start": 172,
       "end": 178,
+      "module_id": 0,
       "value": "\n     "
     },
     {
       "type": "brace",
       "start": 178,
       "end": 179,
+      "module_id": 0,
       "value": "}"
     },
     {
       "type": "comma",
       "start": 179,
       "end": 180,
+      "module_id": 0,
       "value": ","
     },
     {
       "type": "whitespace",
       "start": 180,
       "end": 181,
+      "module_id": 0,
       "value": " "
     },
     {
       "type": "operator",
       "start": 181,
       "end": 182,
+      "module_id": 0,
       "value": "%"
     },
     {
       "type": "brace",
       "start": 182,
       "end": 183,
+      "module_id": 0,
       "value": ")"
     },
     {
       "type": "whitespace",
       "start": 183,
       "end": 184,
+      "module_id": 0,
       "value": "\n"
     }
   ]

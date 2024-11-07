@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,6 +11,7 @@ expression: actual
           "end": 70,
           "id": {
             "end": 14,
+            "moduleId": 0,
             "name": "mySketch",
             "start": 6,
             "type": "Identifier"
@@ -22,6 +24,7 @@ expression: actual
                     "elements": [
                       {
                         "end": 33,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 32,
                         "type": "Literal",
@@ -30,6 +33,7 @@ expression: actual
                       },
                       {
                         "end": 35,
+                        "moduleId": 0,
                         "raw": "0",
                         "start": 34,
                         "type": "Literal",
@@ -38,6 +42,7 @@ expression: actual
                       }
                     ],
                     "end": 36,
+                    "moduleId": 0,
                     "start": 31,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
@@ -45,11 +50,13 @@ expression: actual
                 ],
                 "callee": {
                   "end": 30,
+                  "moduleId": 0,
                   "name": "startSketchAt",
                   "start": 17,
                   "type": "Identifier"
                 },
                 "end": 37,
+                "moduleId": 0,
                 "optional": false,
                 "start": 17,
                 "type": "CallExpression",
@@ -61,6 +68,7 @@ expression: actual
                     "elements": [
                       {
                         "end": 50,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 49,
                         "type": "Literal",
@@ -69,6 +77,7 @@ expression: actual
                       },
                       {
                         "end": 53,
+                        "moduleId": 0,
                         "raw": "1",
                         "start": 52,
                         "type": "Literal",
@@ -77,12 +86,14 @@ expression: actual
                       }
                     ],
                     "end": 54,
+                    "moduleId": 0,
                     "start": 48,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
                     "end": 57,
+                    "moduleId": 0,
                     "start": 56,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
@@ -90,11 +101,13 @@ expression: actual
                 ],
                 "callee": {
                   "end": 47,
+                  "moduleId": 0,
                   "name": "lineTo",
                   "start": 41,
                   "type": "Identifier"
                 },
                 "end": 58,
+                "moduleId": 0,
                 "optional": false,
                 "start": 41,
                 "type": "CallExpression",
@@ -104,6 +117,7 @@ expression: actual
                 "arguments": [
                   {
                     "end": 69,
+                    "moduleId": 0,
                     "start": 68,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
@@ -111,11 +125,13 @@ expression: actual
                 ],
                 "callee": {
                   "end": 67,
+                  "moduleId": 0,
                   "name": "close",
                   "start": 62,
                   "type": "Identifier"
                 },
                 "end": 70,
+                "moduleId": 0,
                 "optional": false,
                 "start": 62,
                 "type": "CallExpression",
@@ -123,21 +139,25 @@ expression: actual
               }
             ],
             "end": 70,
+            "moduleId": 0,
             "start": 17,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 6,
           "type": "VariableDeclarator"
         }
       ],
       "end": 70,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "end": 70,
+  "moduleId": 0,
   "start": 0
 }

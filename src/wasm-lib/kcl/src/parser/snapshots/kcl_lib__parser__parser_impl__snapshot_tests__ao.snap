@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -10,21 +11,25 @@ expression: actual
         "arguments": [
           {
             "end": 34,
+            "moduleId": 0,
             "properties": [
               {
                 "end": 19,
                 "key": {
                   "end": 11,
+                  "moduleId": 0,
                   "name": "to",
                   "start": 9,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 9,
                 "type": "ObjectProperty",
                 "value": {
                   "elements": [
                     {
                       "end": 15,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 14,
                       "type": "Literal",
@@ -33,6 +38,7 @@ expression: actual
                     },
                     {
                       "end": 18,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 17,
                       "type": "Literal",
@@ -41,6 +47,7 @@ expression: actual
                     }
                   ],
                   "end": 19,
+                  "moduleId": 0,
                   "start": 13,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -50,16 +57,19 @@ expression: actual
                 "end": 32,
                 "key": {
                   "end": 24,
+                  "moduleId": 0,
                   "name": "from",
                   "start": 20,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 20,
                 "type": "ObjectProperty",
                 "value": {
                   "elements": [
                     {
                       "end": 28,
+                      "moduleId": 0,
                       "raw": "3",
                       "start": 27,
                       "type": "Literal",
@@ -68,6 +78,7 @@ expression: actual
                     },
                     {
                       "end": 31,
+                      "moduleId": 0,
                       "raw": "3",
                       "start": 30,
                       "type": "Literal",
@@ -76,6 +87,7 @@ expression: actual
                     }
                   ],
                   "end": 32,
+                  "moduleId": 0,
                   "start": 26,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -89,21 +101,25 @@ expression: actual
         ],
         "callee": {
           "end": 6,
+          "moduleId": 0,
           "name": "lineTo",
           "start": 0,
           "type": "Identifier"
         },
         "end": 35,
+        "moduleId": 0,
         "optional": false,
         "start": 0,
         "type": "CallExpression",
         "type": "CallExpression"
       },
+      "moduleId": 0,
       "start": 0,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
     }
   ],
   "end": 35,
+  "moduleId": 0,
   "start": 0
 }

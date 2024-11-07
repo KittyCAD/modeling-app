@@ -51,7 +51,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 5,
-                19
+                19,
+                0
               ]
             }
           ]
