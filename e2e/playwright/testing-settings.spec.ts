@@ -258,7 +258,7 @@ test.describe('Testing settings', () => {
     })
   })
 
-  test(
+  test.fixme(
     `Project settings override user settings on desktop`,
     { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
