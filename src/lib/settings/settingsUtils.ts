@@ -186,7 +186,6 @@ export async function loadAndValidateSettings(
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   let settingsNext = createSettings()
-
   // Because getting the default directory is async, we need to set it after
   if (onDesktop) {
     settings.app.projectDirectory.default = await getInitialDefaultDir()
