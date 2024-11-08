@@ -2,9 +2,8 @@
 mod test_examples_show {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_show0() {
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow").unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program =
+            crate::parser::top_level_parse("This is code.\nIt does other shit.\nshow").unwrap();
         let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
@@ -113,9 +112,7 @@ impl crate::docs::StdLibFn for Show {
         code_blocks
             .iter()
             .map(|cb| {
-                let tokens = crate::token::lexer(cb).unwrap();
-                let parser = crate::parser::Parser::new(tokens);
-                let program = parser.ast().unwrap();
+                let program = crate::parser::top_level_parse(cb).unwrap();
                 let mut options: crate::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.recast(&options, 0)

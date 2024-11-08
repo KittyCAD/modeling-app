@@ -1903,6 +1903,6 @@ describe('parsing errors', () => {
     const error = result as KCLError
     expect(error.kind).toBe('syntax')
     expect(error.msg).toBe('Unexpected token: (')
-    expect(error.sourceRanges).toEqual([[27, 28]])
+    expect(error.sourceRanges).toEqual([[27, 28, 0]])
   })
 })

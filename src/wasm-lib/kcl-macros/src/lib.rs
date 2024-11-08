@@ -16,8 +16,7 @@ use syn::{parse_macro_input, LitStr};
 pub fn parse(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as LitStr);
     let kcl_src = input.value();
-    let tokens = kcl_lib::token::lexer(&kcl_src).unwrap();
-    let ast = kcl_lib::parser::Parser::new(tokens).ast().unwrap();
+    let ast = kcl_lib::parser::top_level_parse(&kcl_src).unwrap();
     let ast_struct = ast.bake(&Default::default());
     quote!(#ast_struct).into()
 }

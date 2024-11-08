@@ -5,7 +5,6 @@ import {
   INDEX_IDENTIFIER,
   MAX_PADDING,
   ONBOARDING_PROJECT_NAME,
-  PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
 import { PATHS } from './paths'
@@ -22,34 +21,18 @@ export const isHidden = (fileOrDir: FileEntry) =>
 export const isDir = (fileOrDir: FileEntry) =>
   'children' in fileOrDir && fileOrDir.children !== undefined
 
-// Deeply sort the files and directories in a project like VS Code does:
-// The main.kcl file is always first, then files, then directories
+// Shallow sort the files and directories
 // Files and directories are sorted alphabetically
-export function sortProject(project: FileEntry[]): FileEntry[] {
-  const sortedProject = project.sort((a, b) => {
-    if (a.name === PROJECT_ENTRYPOINT) {
-      return -1
-    } else if (b.name === PROJECT_ENTRYPOINT) {
+export function sortFilesAndDirectories(files: FileEntry[]): FileEntry[] {
+  return files.sort((a, b) => {
+    if (a.children === null && b.children !== null) {
       return 1
-    } else if (a.children === null && b.children !== null) {
-      return -1
     } else if (a.children !== null && b.children === null) {
-      return 1
+      return -1
     } else if (a.name && b.name) {
       return a.name.localeCompare(b.name)
     } else {
       return 0
-    }
-  })
-
-  return sortedProject.map((fileOrDir: FileEntry) => {
-    if ('children' in fileOrDir && fileOrDir.children !== null) {
-      return {
-        ...fileOrDir,
-        children: sortProject(fileOrDir.children || []),
-      }
-    } else {
-      return fileOrDir
     }
   })
 }

@@ -573,7 +573,7 @@ impl FunctionExpression {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::ast::types::FormatOptions;
+    use crate::ast::types::{FormatOptions, ModuleId};
 
     #[test]
     fn test_recast_if_else_if_same() {
@@ -585,9 +585,7 @@ mod tests {
   5
 }
 "#;
-        let tokens = crate::token::lexer(input).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
         assert_eq!(output, input);
     }
@@ -600,9 +598,7 @@ mod tests {
   5
 }
 "#;
-        let tokens = crate::token::lexer(input).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
         assert_eq!(output, input);
     }
@@ -616,9 +612,7 @@ import a as aaa, b from "a.kcl"
 import a, b as bbb from "a.kcl"
 import a as aaa, b as bbb from "a.kcl"
 "#;
-        let tokens = crate::token::lexer(input).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
         assert_eq!(output, input);
     }
@@ -627,7 +621,7 @@ import a as aaa, b as bbb from "a.kcl"
     fn test_recast_import_as_same_name() {
         let input = r#"import a as a from "a.kcl"
 "#;
-        let program = crate::parser::parse(input).unwrap();
+        let program = crate::parser::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
         let expected = r#"import a from "a.kcl"
 "#;
@@ -640,9 +634,7 @@ import a as aaa, b as bbb from "a.kcl"
   return 0
 }
 "#;
-        let tokens = crate::token::lexer(input).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
         assert_eq!(output, input);
     }
@@ -765,9 +757,7 @@ fn zoo = (x0, y0) => {
 
 zoo(zoo_x, zoo_y)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
@@ -836,9 +826,7 @@ outsideRevolve = startSketchOn('XZ')
   |> line([overHangLength - thickness, 0], %)
   |> close(%)
   |> revolve({ axis: 'y' }, %)"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -914,9 +902,7 @@ outsideRevolve = startSketchOn('XZ')
         let some_program_string = r#"bing = { yo: 55 }
 myNestedVar = [{ prop: callExp(bing.yo) }]
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
@@ -927,9 +913,7 @@ myNestedVar = [{ prop: callExp(bing.yo) }]
         let some_program_string = r#"bing = { yo: 55 }
 myNestedVar = [callExp(bing.yo)]
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
@@ -941,9 +925,7 @@ myNestedVar = [callExp(bing.yo)]
 ten = 10
 bar = [0 + 1 .. ten]
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
@@ -957,9 +939,7 @@ bar = [0 + 1 .. ten]
 
 thing ( 1 )
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -982,9 +962,7 @@ myNestedVar = [
 }
 ]
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1000,9 +978,7 @@ myNestedVar = [
     #[test]
     fn test_recast_empty_file() {
         let some_program_string = r#""#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
@@ -1013,9 +989,7 @@ myNestedVar = [
     fn test_recast_empty_file_new_line() {
         let some_program_string = r#"
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
@@ -1026,14 +1000,12 @@ myNestedVar = [
     fn test_recast_shebang_only() {
         let some_program_string = r#"#!/usr/local/env zoo kcl"#;
 
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
+        let result = crate::parser::top_level_parse(some_program_string);
 
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([21, 24])], message: "Unexpected end of file. The compiler expected a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([21, 24, 0])], message: "Unexpected end of file. The compiler expected a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item" }"#
         );
     }
 
@@ -1048,9 +1020,7 @@ part001 = startSketchOn('XY')
   |> close(%)
 "#;
 
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1081,9 +1051,7 @@ part001 = startSketchOn('XY')
   |> close(%)
 "#;
 
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1113,9 +1081,7 @@ part001 = startSketchOn('XY')
   |> close(%)
 "#;
 
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1253,9 +1219,7 @@ tabs_l = startSketchOn({
        distance: length - 10
      }, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
@@ -1393,9 +1357,7 @@ tabs_l = startSketchOn({
   |> close(%)
   |> extrude(scale, %)
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1419,9 +1381,7 @@ tabs_l = startSketchOn({
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1440,9 +1400,7 @@ tabs_l = startSketchOn({
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %) // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1461,9 +1419,7 @@ tabs_l = startSketchOn({
               |> line([0.4900857016, -0.0240763666], %)
         // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1488,9 +1444,7 @@ tabs_l = startSketchOn({
   // this is also a comment
     return things
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1514,9 +1468,7 @@ tabs_l = startSketchOn({
 // this is also a comment
 thing = 'foo'
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1537,9 +1489,7 @@ key = 'c'
 // hello
 thing = 'foo'
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1567,9 +1517,7 @@ thing = 'c'
 
 foo = 'bar' //
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1595,9 +1543,7 @@ foo = 'bar' //
 // hello
 thing = 'foo'
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1616,9 +1562,7 @@ thing = 'foo'
 /* comment at start */
 
 mySk1 = startSketchAt([0, 0])"#;
-        let tokens = crate::token::lexer(test_program).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(test_program).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1648,9 +1592,7 @@ mySk1 = startSketchOn('XY')
   |> ry(45, %)
   |> rx(45, %)
 // one more for good measure"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1686,9 +1628,7 @@ mySk1 = startSketchOn('XY')
        intersectTag: seg01
      }, %)
   |> line([-0.42, -1.72], %)"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
@@ -1712,9 +1652,7 @@ yo = [
   "  hey oooooo really long long long"
 ]
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
@@ -1730,9 +1668,7 @@ key = 'c'
 things = "things"
 
 // this is also a comment"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         let expected = some_program_string.trim();
@@ -1751,9 +1687,7 @@ things = "things"
  // a comment
    "
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string.trim());
@@ -1777,9 +1711,7 @@ part001 = startSketchOn('XY')
        -angleToMatchLengthY(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
@@ -1804,9 +1736,7 @@ part001 = startSketchOn('XY')
          myVar
       ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(
             &FormatOptions {
@@ -1835,9 +1765,7 @@ fn ghi = (part001) => {
   return part001
 }
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let mut program = parser.ast().unwrap();
+        let mut program = crate::parser::top_level_parse(some_program_string).unwrap();
         program.rename_symbol("mySuperCoolPart", 6);
 
         let recasted = program.recast(&Default::default(), 0);
@@ -1865,9 +1793,7 @@ fn ghi = (part001) => {
         let some_program_string = r#"fn ghi = (x, y, z) => {
   return x
 }"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let mut program = parser.ast().unwrap();
+        let mut program = crate::parser::top_level_parse(some_program_string).unwrap();
         program.rename_symbol("newName", 10);
 
         let recasted = program.recast(&Default::default(), 0);
@@ -1889,9 +1815,7 @@ fn ghi = (part001) => {
     angle_start: 0,
     angle_end: 180,
   }, %)"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1921,9 +1845,7 @@ firstExtrude = startSketchOn('XY')
   |> close(%)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1960,9 +1882,7 @@ firstExtrude = startSketchOn('XY')
   |> close(%)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -1988,9 +1908,7 @@ firstExtrude = startSketchOn('XY')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_start_negative() {
         let some_program_string = r#"myVar = -5 + 6"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
@@ -2007,9 +1925,7 @@ startSketchOn('XY')
   |> line([0, -(5 - thickness)], %)
   |> line([0, -(5 - 1)], %)
   |> line([0, -(-5 - 1)], %)"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
@@ -2023,9 +1939,7 @@ FOS = 2
 sigmaAllow = 8
 width = 20
 thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
@@ -2034,9 +1948,7 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn no_vardec_keyword() {
         let some_program_string = r#"distance = 5"#;
-        let tokens = crate::token::lexer(some_program_string).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
@@ -2066,7 +1978,7 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::token::lexer(raw).unwrap();
+            let tokens = crate::token::lexer(raw, ModuleId::default()).unwrap();
             let literal = crate::parser::parser_impl::unsigned_number_literal
                 .parse(&tokens)
                 .unwrap();
@@ -2099,9 +2011,7 @@ sketch002 = startSketchOn({
   }
 })
 "#;
-        let tokens = crate::token::lexer(input).unwrap();
-        let p = crate::parser::Parser::new(tokens);
-        let ast = p.ast().unwrap();
+        let ast = crate::parser::top_level_parse(input).unwrap();
         let actual = ast.recast(&FormatOptions::new(), 0);
         assert_eq!(actual, expected);
     }
@@ -2127,7 +2037,7 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::token::lexer(input).unwrap();
+            let tokens = crate::token::lexer(input, ModuleId::default()).unwrap();
             crate::parser::parser_impl::print_tokens(&tokens);
             let expr = crate::parser::parser_impl::object.parse(&tokens).unwrap();
             assert_eq!(
@@ -2225,7 +2135,7 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::token::lexer(input).unwrap();
+            let tokens = crate::token::lexer(input, ModuleId::default()).unwrap();
             let expr = crate::parser::parser_impl::array_elem_by_elem.parse(&tokens).unwrap();
             assert_eq!(
                 expr.recast(&FormatOptions::new(), 0, false),

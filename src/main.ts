@@ -1,6 +1,5 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
-
 import dotenv from 'dotenv'
 import {
   app,
@@ -20,6 +19,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
+import argvFromYargs from './commandLineArgs'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -156,6 +156,10 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
 
 ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
+})
+
+ipcMain.handle('argv.parser', (event, data) => {
+  return argvFromYargs
 })
 
 ipcMain.handle('startDeviceFlow', async (_, host: string) => {

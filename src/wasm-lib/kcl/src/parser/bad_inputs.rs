@@ -5,7 +5,8 @@ mod tests {
         ($func_name:ident, $test_kcl_program:expr) => {
             #[test]
             fn $func_name() {
-                if let Ok(v) = $crate::token::lexer($test_kcl_program) {
+                let module_id = $crate::parser::ModuleId::default();
+                if let Ok(v) = $crate::token::lexer($test_kcl_program, module_id) {
                     let _ = $crate::parser::Parser::new(v).ast();
                 }
             }

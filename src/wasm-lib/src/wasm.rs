@@ -8,7 +8,7 @@ use std::{
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    ast::types::{Node, Program},
+    ast::types::{ModuleId, Node, Program},
     coredump::CoreDump,
     engine::EngineManager,
     executor::ExecutorSettings,
@@ -153,9 +153,11 @@ pub async fn modify_ast_for_sketch_wasm(
             .map_err(|e| format!("{:?}", e))?,
     ));
 
+    let module_id = ModuleId::default();
     let _ = kcl_lib::ast::modify::modify_ast_for_sketch(
         &engine,
         &mut program,
+        module_id,
         sketch_name,
         plane,
         uuid::Uuid::parse_str(sketch_id).map_err(|e| e.to_string())?,
@@ -193,7 +195,8 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 pub fn lexer_wasm(js: &str) -> Result<JsValue, JsError> {
     console_error_panic_hook::set_once();
 
-    let tokens = kcl_lib::token::lexer(js).map_err(JsError::from)?;
+    let module_id = ModuleId::default();
+    let tokens = kcl_lib::token::lexer(js, module_id).map_err(JsError::from)?;
     Ok(JsValue::from_serde(&tokens)?)
 }
 
@@ -201,7 +204,8 @@ pub fn lexer_wasm(js: &str) -> Result<JsValue, JsError> {
 pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let tokens = kcl_lib::token::lexer(js).map_err(String::from)?;
+    let module_id = ModuleId::default();
+    let tokens = kcl_lib::token::lexer(js, module_id).map_err(String::from)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the

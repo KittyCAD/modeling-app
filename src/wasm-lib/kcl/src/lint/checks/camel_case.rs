@@ -29,7 +29,10 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator) -> Result<Vec<Discovered
     let name = &ident.name;
 
     if !name.is_case(convert_case::Case::Camel) {
-        findings.push(Z0001.at(format!("found '{}'", name), SourceRange::new(ident.start, ident.end)));
+        findings.push(Z0001.at(
+            format!("found '{}'", name),
+            SourceRange::new(ident.start, ident.end, ident.module_id),
+        ));
         return Ok(findings);
     }
 
@@ -42,7 +45,10 @@ fn lint_lower_camel_case_property(decl: &ObjectProperty) -> Result<Vec<Discovere
     let name = &ident.name;
 
     if !name.is_case(convert_case::Case::Camel) {
-        findings.push(Z0001.at(format!("found '{}'", name), SourceRange::new(ident.start, ident.end)));
+        findings.push(Z0001.at(
+            format!("found '{}'", name),
+            SourceRange::new(ident.start, ident.end, ident.module_id),
+        ));
         return Ok(findings);
     }
 

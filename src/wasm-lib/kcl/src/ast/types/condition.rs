@@ -50,7 +50,7 @@ impl Node<IfExpression> {
 impl Node<ElseIf> {
     #[allow(dead_code)]
     fn source_ranges(&self) -> Vec<SourceRange> {
-        vec![SourceRange([self.start, self.end])]
+        vec![SourceRange([self.start, self.end, self.module_id.as_usize()])]
     }
 }
 

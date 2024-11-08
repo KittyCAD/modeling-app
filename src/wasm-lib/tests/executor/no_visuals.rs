@@ -1,5 +1,5 @@
 use kcl_lib::{
-    ast::types::{Node, Program},
+    ast::types::{ModuleId, Node, Program},
     errors::KclError,
     executor::{ExecutorContext, IdGenerator},
     parser,
@@ -28,7 +28,8 @@ macro_rules! gen_test_parse_fail {
 }
 
 async fn setup(program: &str) -> (ExecutorContext, Node<Program>, IdGenerator) {
-    let tokens = kcl_lib::token::lexer(program).unwrap();
+    let module_id = ModuleId::default();
+    let tokens = kcl_lib::token::lexer(program, module_id).unwrap();
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().unwrap();
     let ctx = kcl_lib::executor::ExecutorContext {
@@ -60,7 +61,7 @@ async fn run_fail(code: &str) -> KclError {
 }
 
 async fn run_parse_fail(code: &str) -> KclError {
-    let Err(e) = parser::parse(code) else {
+    let Err(e) = parser::top_level_parse(code) else {
         panic!("Expected this KCL program to fail to parse, but it (incorrectly) never threw an error.");
     };
     e

@@ -1,5 +1,5 @@
 use crate::{
-    ast::types::{Node, Program},
+    ast::types::{ModuleId, Node, Program},
     errors::KclError,
     parser::Parser,
     token::Token,
@@ -44,7 +44,7 @@ fn read(filename: &'static str, test_name: &str) -> String {
 
 fn tokenize(test_name: &str) {
     let input = read("input.kcl", test_name);
-    let token_res = crate::token::lexer(&input);
+    let token_res = crate::token::lexer(&input, ModuleId::default());
 
     assert_snapshot(test_name, "Result of tokenizing", || {
         insta::assert_json_snapshot!("tokens", token_res);

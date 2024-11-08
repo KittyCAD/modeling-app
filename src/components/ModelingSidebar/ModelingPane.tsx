@@ -48,7 +48,7 @@ export const ModelingPaneHeader = ({
           bgClassName: 'bg-transparent dark:bg-transparent',
         }}
         className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
-        onClick={onClose}
+        onClick={() => onClose()}
       >
         <Tooltip position="bottom-right" delay={750}>
           Close
@@ -59,14 +59,12 @@ export const ModelingPaneHeader = ({
 }
 
 export const ModelingPane = ({
-  title,
-  icon,
   id,
   children,
   className,
-  Menu,
   detailsTestId,
   onClose,
+  title,
   ...props
 }: ModelingPaneProps) => {
   const { settings } = useSettingsAuthContext()
@@ -78,6 +76,7 @@ export const ModelingPane = ({
   return (
     <section
       {...props}
+      title={title && typeof title === 'string' ? title : ''}
       data-testid={detailsTestId}
       id={id}
       className={
@@ -88,14 +87,7 @@ export const ModelingPane = ({
         (className || '')
       }
     >
-      <ModelingPaneHeader
-        id={id}
-        icon={icon}
-        title={title}
-        Menu={Menu}
-        onClose={onClose}
-      />
-      <div className="relative w-full">{children}</div>
+      {children}
     </section>
   )
 }

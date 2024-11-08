@@ -173,9 +173,7 @@ fn do_stdlib_inner(
         quote! {
             let code_blocks = vec![#(#cb),*];
             code_blocks.iter().map(|cb| {
-                let tokens = crate::token::lexer(cb).unwrap();
-                let parser = crate::parser::Parser::new(tokens);
-                let program = parser.ast().unwrap();
+                let program = crate::parser::top_level_parse(cb).unwrap();
 
                 let mut options: crate::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
@@ -750,9 +748,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
     quote! {
         #[tokio::test(flavor = "multi_thread")]
         async fn #test_name_mock() {
-            let tokens = crate::token::lexer(#code_block).unwrap();
-            let parser = crate::parser::Parser::new(tokens);
-            let program = parser.ast().unwrap();
+            let program = crate::parser::top_level_parse(#code_block).unwrap();
             let id_generator = crate::executor::IdGenerator::default();
             let ctx = crate::executor::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),

@@ -123,7 +123,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 7,
-                32
+                32,
+                0
               ]
             }
           ]
@@ -136,7 +137,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 38,
-                834
+                834,
+                0
               ]
             }
           ]

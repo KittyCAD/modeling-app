@@ -1,5 +1,5 @@
 use crate::{
-    ast::types::{Node, Program},
+    ast::types::{ModuleId, Node, Program},
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
     token::{Token, TokenType},
@@ -12,9 +12,15 @@ pub(crate) mod parser_impl;
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
 pub const PIPE_OPERATOR: &str = "|>";
 
+/// Parse the given KCL code into an AST.  This is the top-level.
+pub fn top_level_parse(code: &str) -> Result<Node<Program>, KclError> {
+    let module_id = ModuleId::default();
+    parse(code, module_id)
+}
+
 /// Parse the given KCL code into an AST.
-pub fn parse(code: &str) -> Result<Node<Program>, KclError> {
-    let tokens = crate::token::lexer(code)?;
+pub fn parse(code: &str, module_id: ModuleId) -> Result<Node<Program>, KclError> {
+    let tokens = crate::token::lexer(code, module_id)?;
     let parser = Parser::new(tokens);
     parser.ast()
 }

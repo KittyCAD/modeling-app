@@ -21,6 +21,7 @@ import {
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
+import { markOnce } from 'lib/performance'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 interface ExecuteArgs {
@@ -38,6 +39,7 @@ export class KclManager {
     body: [],
     start: 0,
     end: 0,
+    moduleId: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
       startNodes: [],
@@ -204,6 +206,7 @@ export class KclManager {
       body: [],
       start: 0,
       end: 0,
+      moduleId: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
         startNodes: [],
@@ -255,6 +258,7 @@ export class KclManager {
     }
 
     const ast = args.ast || this.ast
+    markOnce('code/startExecuteAst')
 
     const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
@@ -329,6 +333,7 @@ export class KclManager {
     })
 
     this._cancelTokens.delete(currentExecutionId)
+    markOnce('code/endExecuteAst')
   }
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.

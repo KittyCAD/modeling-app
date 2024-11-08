@@ -36,9 +36,12 @@ interface solid2D {
 }
 export interface PathArtifactRich {
   type: 'path'
+  /** A path must always lie on a plane */
   plane: PlaneArtifact | WallArtifact
+  /** A path must always contain 0 or more segments */
   segments: Array<SegmentArtifact>
-  sweep: SweepArtifact
+  /** A path may not result in a sweep artifact */
+  sweep?: SweepArtifact
   codeRef: CommonCommandProperties
 }
 
@@ -587,13 +590,15 @@ export function expandPath(
     { keys: path.segIds, types: ['segment'] },
     artifactGraph
   )
-  const sweep = getArtifactOfTypes(
-    {
-      key: path.sweepId,
-      types: ['sweep'],
-    },
-    artifactGraph
-  )
+  const sweep = path.sweepId
+    ? getArtifactOfTypes(
+        {
+          key: path.sweepId,
+          types: ['sweep'],
+        },
+        artifactGraph
+      )
+    : undefined
   const plane = getArtifactOfTypes(
     { key: path.planeId, types: ['plane', 'wall'] },
     artifactGraph

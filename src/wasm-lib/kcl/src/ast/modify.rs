@@ -16,7 +16,7 @@ use crate::{
     executor::{Point2d, SourceRange},
 };
 
-use super::types::Node;
+use super::types::{ModuleId, Node};
 
 type Point3d = kcmc::shared::Point3d<f64>;
 
@@ -38,6 +38,7 @@ const EPSILON: f64 = 0.015625; // or 2^-6
 pub async fn modify_ast_for_sketch(
     engine: &Arc<Box<dyn EngineManager>>,
     program: &mut Node<Program>,
+    module_id: ModuleId,
     // The name of the sketch.
     sketch_name: &str,
     // The type of plane the sketch is on. `XY` or `XZ`, etc
@@ -183,9 +184,7 @@ pub async fn modify_ast_for_sketch(
     let recasted = program.recast(&FormatOptions::default(), 0);
 
     // Re-parse the ast so we get the correct source ranges.
-    let tokens = crate::token::lexer(&recasted)?;
-    let parser = crate::parser::Parser::new(tokens);
-    *program = parser.ast()?;
+    *program = crate::parser::parse(&recasted, module_id)?;
 
     Ok(recasted)
 }

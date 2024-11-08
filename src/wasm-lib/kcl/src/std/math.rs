@@ -16,7 +16,7 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let (n, d) = FromArgs::from_args(&args, 0)?;
     let result = inner_rem(n, d)?;
 
-    args.make_user_val_from_i64(result)
+    Ok(args.make_user_val_from_i64(result))
 }
 
 /// Compute the remainder after dividing `num` by `div`.
