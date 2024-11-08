@@ -53,11 +53,6 @@ export function isOverlap(a: SourceRange, b: SourceRange) {
   return lastOfFirst >= firstOfSecond
 }
 
-export function roundOff(num: number, places: number = 2): number {
-  const x = Math.pow(10, places)
-  return Math.round(num * x) / x
-}
-
 export function getLength(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
@@ -268,4 +263,128 @@ export function XOR(bool1: boolean, bool2: boolean): boolean {
 
 export function getActorNextEvents(snapshot: AnyMachineSnapshot) {
   return [...new Set([...snapshot._nodes.flatMap((sn) => sn.ownEvents)])]
+}
+
+export const onMouseDragRegex = /-?\.?\b\d+\.?\d*\b/g
+
+export function simulateOnMouseDragMatch(text: string) {
+  return text.match(onMouseDragRegex)
+}
+
+export function roundOff(num: number, precision: number = 2): number {
+  const x = Math.pow(10, precision)
+  return Math.round(num * x) / x
+}
+
+/**
+ * Determine if the number as a string has any precision in the decimal places
+ * '1' -> 0
+ * '1.0' -> 1
+ * '1.01' -> 2
+ */
+function getPrecision(text: string): number {
+  const wholeFractionSplit = text.split('.')
+  const precision =
+    wholeFractionSplit.length === 2 ? wholeFractionSplit[1].split('').length : 0
+  return precision
+}
+
+/**
+ * Determines if a number string has a leading digit
+ * 0.1 -> yes
+ * -0.1 -> yes
+ * .1 -> no
+ * 10.1 -> no
+ * The text.split('.') should evaluate to ['','<decimals>']
+ */
+export function hasLeadingZero(text: string): boolean {
+  const wholeFractionSplit = text.split('.')
+  return wholeFractionSplit.length === 2
+    ? wholeFractionSplit[0] === '0' || wholeFractionSplit[0] === '-0'
+    : false
+}
+
+export function hasDigitsLeftOfDecimal(text: string): boolean | undefined {
+  const wholeFractionSplit = text.split('.')
+
+  if (wholeFractionSplit.length === 2) {
+    const wholeNumber = wholeFractionSplit[0]
+
+    if (wholeNumber.length === 0) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  if (wholeFractionSplit.length === 1) {
+    return true
+  }
+
+  // What if someone passes in 1..2.3.1...1.1.43
+  return undefined
+}
+
+export function onDragNumberCalculation(text: string, e: MouseEvent) {
+  const multiplier =
+    e.shiftKey && e.metaKey ? 0.01 : e.metaKey ? 0.1 : e.shiftKey ? 10 : 1
+
+  const delta = e.movementX * multiplier
+  const hasPeriod = text.includes('.')
+  const leadsWithZero = hasLeadingZero(text)
+  const addition = Number(text) + delta
+  const positiveAddition = e.movementX > 0
+  const negativeAddition = e.movementX < 0
+  const containsDigitsLeftOfDecimal = hasDigitsLeftOfDecimal(text)
+  let precision = Math.max(
+    getPrecision(text),
+    getPrecision(multiplier.toString())
+  )
+  const newVal = roundOff(addition, precision)
+
+  if (isNaN(newVal)) {
+    return
+  }
+
+  let formattedString = newVal.toString()
+  if (hasPeriod && !formattedString.includes('.')) {
+    // If the original number included a period lets add that back to the output string
+    // e.g. '1.0' add +1 then we get 2, we want to send '2.0' back since the original one had a decimal place
+    formattedString = formattedString.toString() + '.0'
+  }
+
+  /**
+   * Whenever you add two numbers you can always remove the the leading zero the result will make sense
+   * 1 + -0.01 = 0.99, the code would remove the leading 0 to make it .99 but since the number has a
+   * digit left of the decimal to begin with I want to make it 0.99.
+   * negativeAddition with fractional numbers will provide a leading 0.
+   */
+  const removeZeros =
+    positiveAddition ||
+    (negativeAddition && multiplier < 1 && !containsDigitsLeftOfDecimal)
+
+  /**
+   * If the original value has no leading 0
+   * If if the new updated value has a leading zero
+   * If the math operation means you can actually remove the zero.
+   */
+  if (!leadsWithZero && hasLeadingZero(formattedString) && removeZeros) {
+    if (formattedString[0] === '-') {
+      return ['-', formattedString.split('.')[1]].join('.')
+    } else {
+      return formattedString.substring(1)
+    }
+  }
+
+  return formattedString
+}
+
+export function onMouseDragMakeANewNumber(
+  text: string,
+  setText: (t: string) => void,
+  e: MouseEvent
+) {
+  const newVal = onDragNumberCalculation(text, e)
+  if (!newVal) return
+  setText(newVal)
 }

@@ -40,7 +40,7 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Expr, Node, NodeRef, VariableKind},
+    ast::types::{Expr, ModuleId, Node, NodeRef, VariableKind},
     executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
@@ -188,7 +188,8 @@ impl crate::lsp::backend::Backend for Backend {
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
-        let tokens = match crate::token::lexer(&params.text) {
+        let module_id = ModuleId::default();
+        let tokens = match crate::token::lexer(&params.text, module_id) {
             Ok(tokens) => tokens,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
@@ -1235,7 +1236,8 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let Ok(tokens) = crate::token::lexer(current_code) else {
+        let module_id = ModuleId::default();
+        let Ok(tokens) = crate::token::lexer(current_code, module_id) else {
             return Ok(None);
         };
         let parser = crate::parser::Parser::new(tokens);
@@ -1251,7 +1253,7 @@ impl LanguageServer for Backend {
             },
             0,
         );
-        let source_range = SourceRange([0, current_code.len()]);
+        let source_range = SourceRange::new(0, current_code.len(), module_id);
         let range = source_range.to_lsp_range(current_code);
         Ok(Some(vec![TextEdit {
             new_text: recast,
@@ -1272,7 +1274,8 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let Ok(tokens) = crate::token::lexer(current_code) else {
+        let module_id = ModuleId::default();
+        let Ok(tokens) = crate::token::lexer(current_code, module_id) else {
             return Ok(None);
         };
         let parser = crate::parser::Parser::new(tokens);
@@ -1286,7 +1289,7 @@ impl LanguageServer for Backend {
         ast.rename_symbol(&params.new_name, pos);
         // Now recast it.
         let recast = ast.recast(&Default::default(), 0);
-        let source_range = SourceRange([0, current_code.len() - 1]);
+        let source_range = SourceRange::new(0, current_code.len() - 1, module_id);
         let range = source_range.to_lsp_range(current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(

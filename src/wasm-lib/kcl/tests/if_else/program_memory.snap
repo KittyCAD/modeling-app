@@ -1,0 +1,82 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing if_else.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 180,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 90,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 270,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 0,
+          "__meta": []
+        },
+        "a": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 3,
+          "__meta": [
+            {
+              "sourceRange": [
+                64,
+                65,
+                0
+              ]
+            }
+          ]
+        },
+        "b": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 4,
+          "__meta": [
+            {
+              "sourceRange": [
+                199,
+                200,
+                0
+              ]
+            }
+          ]
+        },
+        "c": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 5,
+          "__meta": [
+            {
+              "sourceRange": [
+                332,
+                333,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

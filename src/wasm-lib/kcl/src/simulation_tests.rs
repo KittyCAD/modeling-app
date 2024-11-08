@@ -1,5 +1,5 @@
 use crate::{
-    ast::types::{Node, Program},
+    ast::types::{ModuleId, Node, Program},
     errors::KclError,
     parser::Parser,
     token::Token,
@@ -44,7 +44,7 @@ fn read(filename: &'static str, test_name: &str) -> String {
 
 fn tokenize(test_name: &str) {
     let input = read("input.kcl", test_name);
-    let token_res = crate::token::lexer(&input);
+    let token_res = crate::token::lexer(&input, ModuleId::default());
 
     assert_snapshot(test_name, "Result of tokenizing", || {
         insta::assert_json_snapshot!("tokens", token_res);
@@ -164,6 +164,249 @@ mod helix_ccw {
 }
 mod double_map_fn {
     const TEST_NAME: &str = "double_map_fn";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod property_of_object {
+    const TEST_NAME: &str = "property_of_object";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod index_of_array {
+    const TEST_NAME: &str = "index_of_array";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod comparisons {
+    const TEST_NAME: &str = "comparisons";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod array_range_expr {
+    const TEST_NAME: &str = "array_range_expr";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod array_range_negative_expr {
+    const TEST_NAME: &str = "array_range_negative_expr";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod sketch_in_object {
+    const TEST_NAME: &str = "sketch_in_object";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod if_else {
+    const TEST_NAME: &str = "if_else";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod add_lots {
+    const TEST_NAME: &str = "add_lots";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod array_elem_push {
+    const TEST_NAME: &str = "array_elem_push";
 
     /// Test tokenizing KCL.
     #[test]
