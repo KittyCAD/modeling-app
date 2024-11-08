@@ -798,7 +798,7 @@ export class SceneEntities {
           const intersectsXAxis = args.intersects.find(
             (sceneObject) => sceneObject.object.name === X_AXIS
           )
-          const ANGLE_SNAP_THRESHOLD_DEGREES = 5
+          const ANGLE_SNAP_THRESHOLD_DEGREES = 3
 
           const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
           const snappedPoint = {
@@ -813,10 +813,11 @@ export class SceneEntities {
 
           const isHorizontal =
             radToDeg(Math.abs(angle)) < ANGLE_SNAP_THRESHOLD_DEGREES ||
-            radToDeg(Math.abs(angle - Math.PI)) < ANGLE_SNAP_THRESHOLD_DEGREES
+            Math.abs(radToDeg(Math.abs(angle) - Math.PI)) < ANGLE_SNAP_THRESHOLD_DEGREES
           const isVertical =
-            radToDeg(Math.abs(angle) - Math.PI / 2) <
+            Math.abs(radToDeg(Math.abs(angle) - Math.PI / 2)) <
             ANGLE_SNAP_THRESHOLD_DEGREES
+
 
           let resolvedFunctionName: ToolTip = 'line'
 
