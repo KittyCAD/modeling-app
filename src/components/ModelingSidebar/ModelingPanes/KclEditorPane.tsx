@@ -129,7 +129,9 @@ export const KclEditorPane = () => {
         closeBrackets(),
         highlightActiveLine(),
         highlightSelectionMatches(),
-        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        syntaxHighlighting(defaultHighlightStyle, {
+          fallback: true,
+        }),
         rectangularSelection(),
         dropCursor(),
         interact({
