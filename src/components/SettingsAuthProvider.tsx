@@ -202,13 +202,13 @@ export const SettingsAuthProviderBase = ({
             console.error('Error executing AST after settings change', e)
           }
         },
-        async persistSettings({ context, event }) {
+        persistSettings: ({ context, event }) => {
           // Without this, when a user changes the file, it'd
           // create a detection loop with the file-system watcher.
           if (event.doNotPersist) return
 
-          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-          return saveSettings(context, loadedProject?.project?.path)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          saveSettings(context, loadedProject?.project?.path)
         },
       },
     }),
@@ -222,7 +222,7 @@ export const SettingsAuthProviderBase = ({
   }, [])
 
   useFileSystemWatcher(
-    async (eventType: string) => {
+    async () => {
       // If there is a projectPath but it no longer exists it means
       // it was exterally removed. If we let the code past this condition
       // execute it will recreate the directory due to code in
@@ -235,9 +235,6 @@ export const SettingsAuthProviderBase = ({
           return
         }
       }
-
-      // Only reload if there are changes. Ignore everything else.
-      if (eventType !== 'change') return
 
       const data = await loadAndValidateSettings(loadedProject?.project?.path)
       settingsSend({
