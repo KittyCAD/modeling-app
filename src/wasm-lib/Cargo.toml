@@ -65,6 +65,7 @@ similar.opt-level = 3
 debug = "line-tables-only"
 
 [workspace]
+resolver = "2"
 members = [
 	"derive-docs",
 	"kcl",
