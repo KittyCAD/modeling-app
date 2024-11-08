@@ -116,3 +116,47 @@ export function updateRectangleSketch(
     createLiteral(Math.abs(twoY)), // This will be the height of the rectangle
   ])
 }
+
+/**
+ * Mutates the pipeExpression to update the center rectangle sketch
+ * @param pipeExpression
+ * @param x
+ * @param y
+ * @param tag
+ */
+export function updateCenterRectangleSketch(
+  pipeExpression: PipeExpression,
+  deltaX: number,
+  deltaY: number,
+  tag: string,
+  originX?: number,
+  originY?: number
+) {
+  let startX = originX - Math.abs(deltaX)
+  let startY = originY - Math.abs(deltaY)
+
+  // pipeExpression.body[1] is startProfileAt
+  ;((pipeExpression.body[1] as CallExpression)
+    .arguments[0] as ArrayExpression) = createArrayExpression([
+    createLiteral(roundOff(startX)),
+    createLiteral(roundOff(startY)),
+  ])
+
+  const twoX = deltaX * 2
+  const twoY = deltaY * 2
+
+  ;((pipeExpression.body[2] as CallExpression)
+    .arguments[0] as ArrayExpression) = createArrayExpression([
+    createLiteral(pipeExpression.body[2].arguments[0].elements[0].value),
+    createLiteral(Math.abs(twoX)),
+  ])
+  ;((pipeExpression.body[3] as CallExpression)
+    .arguments[0] as ArrayExpression) = createArrayExpression([
+    createBinaryExpression([
+      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+      pipeExpression.body[3].arguments[0].elements[0].operator,
+      createLiteral(90),
+    ]), // 90 offset from the previous line
+    createLiteral(Math.abs(twoY)), // This will be the height of the rectangle
+  ])
+}

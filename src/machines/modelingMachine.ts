@@ -895,10 +895,8 @@ export const modelingMachine = setup({
       context: { sketchDetails },
       event,
     }) => {
-      console.log('trying!')
       if (event.type !== 'Add center rectangle origin') return
       if (!sketchDetails || !event.data) return
-      console.log('got em bois')
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.setupDraftCenterRectangle(
         sketchDetails.sketchPathToNode,

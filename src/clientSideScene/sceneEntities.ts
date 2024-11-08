@@ -88,6 +88,7 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
+  updateCenterRectangleSketch
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs, Themes } from 'lib/theme'
 import { err, reportRejection, trap } from 'lib/trap'
@@ -1013,7 +1014,6 @@ export class SceneEntities {
       },
     })
   }
-  // TODO Kevin
   setupDraftCenterRectangle = async (
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
@@ -1042,10 +1042,6 @@ export class SceneEntities {
       findUniqueName(_ast, 'rectangleSegmentC'),
     ]
 
-    // Create pipe expression for the startSketchOn
-    // Create pipe expression for startProfileAt
-    //   Where does this one come from?
-    // Create pipe expression for getRectangleCallExpressions
     startSketchOn[0].init = createPipeExpression([
       startSketchOnInit,
       ...getRectangleCallExpressions(rectangleOrigin, tags),
@@ -1082,8 +1078,7 @@ export class SceneEntities {
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
-          // TODO Kevin: Pass in the origin of the rectangle
-          updateRectangleSketch(
+          updateCenterRectangleSketch(
             sketchInit,
             x,
             y,
@@ -1137,7 +1132,7 @@ export class SceneEntities {
         const sketchInit = _node.node?.declarations?.[0]?.init
 
         if (sketchInit.type === 'PipeExpression') {
-          updateRectangleSketch(
+          updateCenterRectangleSketch(
             sketchInit,
             x,
             y,
