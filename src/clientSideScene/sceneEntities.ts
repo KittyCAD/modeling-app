@@ -17,6 +17,7 @@ import {
   Vector3,
 } from 'three'
 import {
+  ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
   AXIS_GROUP,
   DRAFT_POINT,
@@ -798,7 +799,6 @@ export class SceneEntities {
           const intersectsXAxis = args.intersects.find(
             (sceneObject) => sceneObject.object.name === X_AXIS
           )
-          const ANGLE_SNAP_THRESHOLD_DEGREES = 3
 
           const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
           const snappedPoint = {
