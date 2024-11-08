@@ -482,7 +482,10 @@ export class KclManager {
    *  When someone CRTL+A and deletes the code then adds the code back it zooms to the model
    *  When someone CRTL+A and copies new code into the editor it zooms to the model
    */
-  tryToZoomToFitOnCodeUpdate(ast: Program, zoomToFit: boolean | undefined) {
+  tryToZoomToFitOnCodeUpdate(
+    ast: Node<Program>,
+    zoomToFit: boolean | undefined
+  ) {
     const isAstEmpty = this._isAstEmpty(this._ast)
     const isRequestedAstEmpty = this._isAstEmpty(ast)
 
