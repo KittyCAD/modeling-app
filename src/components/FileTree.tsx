@@ -246,7 +246,7 @@ const FileTreeItem = ({
     }
   }
 
-  async function handleClick() {
+  function handleClick() {
     setTreeSelection(fileOrDir)
 
     if (fileOrDir.children !== null) return // Don't open directories

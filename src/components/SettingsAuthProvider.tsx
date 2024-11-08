@@ -41,7 +41,6 @@ import { reportRejection } from 'lib/trap'
 import { getAppSettingsFilePath } from 'lib/desktop'
 import { isDesktop } from 'lib/isDesktop'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { codeManager } from 'lib/singletons'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
