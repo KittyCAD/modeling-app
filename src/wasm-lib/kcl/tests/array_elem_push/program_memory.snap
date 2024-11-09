@@ -8,36 +8,67 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "arr": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            1,
-            2,
-            3
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    7,
+                    8,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    10,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    13,
+                    14,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
@@ -50,13 +81,60 @@ snapshot_kind: text
           ]
         },
         "new_arr1": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            1,
-            2,
-            3,
-            4
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    7,
+                    8,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    10,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    13,
+                    14,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    37,
+                    38,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
@@ -69,14 +147,73 @@ snapshot_kind: text
           ]
         },
         "new_arr2": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            1,
-            2,
-            3,
-            4,
-            5
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    7,
+                    8,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    10,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    13,
+                    14,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    37,
+                    38,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 5,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    66,
+                    67,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {

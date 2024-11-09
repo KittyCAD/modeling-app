@@ -166,7 +166,7 @@ pub struct PolygonData {
     pub center: [f64; 2],
     /// The type of the polygon (inscribed or circumscribed)
     #[serde(skip)]
-    polygon_type: PolygonType,
+    pub polygon_type: PolygonType,
     /// Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius
     #[serde(default = "default_inscribed")]
     pub inscribed: bool,

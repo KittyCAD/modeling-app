@@ -339,30 +339,37 @@ impl IdGenerator {
 pub enum KclValue {
     Uuid {
         value: ::uuid::Uuid,
+        #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
     Bool {
         value: bool,
+        #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
     Number {
         value: f64,
+        #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
     Int {
         value: i64,
+        #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
     String {
         value: String,
+        #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
     Array {
         value: Vec<KclValue>,
+        #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
     Object {
         value: HashMap<String, KclValue>,
+        #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
@@ -418,10 +425,26 @@ impl KclValue {
             KclValue::KclNone { meta, .. } => meta.clone(),
         }
     }
+
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
             KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
             KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
+            KclValue::Array { value, .. } => {
+                let solids: Vec<_> = value
+                    .iter()
+                    .enumerate()
+                    .map(|(i, v)| {
+                        v.as_solid().map(|v| v.to_owned()).map(Box::new).ok_or_else(|| {
+                            anyhow::anyhow!(
+                                "expected this array to only contain solids, but element {i} was actually {}",
+                                v.human_friendly_type()
+                            )
+                        })
+                    })
+                    .collect::<Result<_, _>>()?;
+                Ok(SolidSet::Solids(solids))
+            }
             _ => anyhow::bail!("Not a solid or solids: {:?}", self),
         }
     }
@@ -441,11 +464,11 @@ impl KclValue {
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
             KclValue::Face(_) => "Face",
-            KclValue::Bool { .. } => "bool",
+            KclValue::Bool { .. } => "boolean (true/false value)",
             KclValue::Number { .. } => "number",
             KclValue::Int { .. } => "integer",
-            KclValue::String { .. } => "string",
-            KclValue::Array { .. } => "array",
+            KclValue::String { .. } => "string (text)",
+            KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
             KclValue::KclNone { .. } => "None",
         }
@@ -967,6 +990,13 @@ impl KclValue {
         }
     }
 
+    pub(crate) fn as_usize(&self) -> Option<usize> {
+        match self {
+            KclValue::Int { value, .. } => Some(*value as usize),
+            _ => None,
+        }
+    }
+
     pub fn as_int(&self) -> Option<i64> {
         if let KclValue::Int { value, meta: _ } = &self {
             Some(*value)
@@ -974,13 +1004,67 @@ impl KclValue {
             None
         }
     }
-    pub fn as_f64(&self) -> Option<f64> {
-        if let KclValue::Number { value, meta: _ } = &self {
+
+    pub fn as_object(&self) -> Option<&HashMap<String, KclValue>> {
+        if let KclValue::Object { value, meta: _ } = &self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_str(&self) -> Option<&str> {
+        if let KclValue::String { value, meta: _ } = &self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_array(&self) -> Option<&[KclValue]> {
+        if let KclValue::Array { value, meta: _ } = &self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_point2d(&self) -> Option<[f64; 2]> {
+        let arr = self.as_array()?;
+        if arr.len() != 2 {
+            return None;
+        }
+        let x = arr[0].as_f64()?;
+        let y = arr[1].as_f64()?;
+        Some([x, y])
+    }
+
+    pub fn as_uuid(&self) -> Option<uuid::Uuid> {
+        if let KclValue::Uuid { value, meta: _ } = &self {
             Some(*value)
         } else {
             None
         }
     }
+
+    pub fn as_solid(&self) -> Option<&Solid> {
+        if let KclValue::Solid(value) = &self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_f64(&self) -> Option<f64> {
+        if let KclValue::Number { value, meta: _ } = &self {
+            Some(*value)
+        } else if let KclValue::Int { value, meta: _ } = &self {
+            Some(*value as f64)
+        } else {
+            None
+        }
+    }
+
     pub fn as_bool(&self) -> Option<bool> {
         if let KclValue::Bool { value, meta: _ } = &self {
             Some(*value)
@@ -3036,14 +3120,14 @@ let shape = layer() |> patternTransform(10, transform, %)
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
         let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(7.5, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        assert_eq!(7.4, mem_get_json(&memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
         let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(-1.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        assert_eq!(1.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3113,7 +3197,7 @@ let notNull = !myNull
         assert_eq!(
             parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: null".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange([56, 63, 0])],
             })
         );
@@ -3122,7 +3206,7 @@ let notNull = !myNull
         assert_eq!(
             parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: 0".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: integer".to_owned(),
                 source_ranges: vec![SourceRange([14, 16, 0])],
             })
         );
@@ -3133,7 +3217,7 @@ let notEmptyString = !""
         assert_eq!(
             parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: \"\"".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: string (text)".to_owned(),
                 source_ranges: vec![SourceRange([22, 25, 0])],
             })
         );
@@ -3145,7 +3229,7 @@ let notMember = !obj.a
         assert_eq!(
             parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: 1".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: integer".to_owned(),
                 source_ranges: vec![SourceRange([36, 42, 0])],
             })
         );
@@ -3156,7 +3240,7 @@ let notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: []".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: array (list)".to_owned(),
                 source_ranges: vec![SourceRange([27, 29, 0])],
             })
         );
@@ -3167,7 +3251,7 @@ let notObject = !x";
         assert_eq!(
             parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: {}".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: object".to_owned(),
                 source_ranges: vec![SourceRange([28, 30, 0])],
             })
         );
@@ -3195,7 +3279,7 @@ let notTagDeclarator = !myTagDeclarator";
         assert!(
             tag_declarator_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagDeclarator\","),
+                .starts_with("Cannot apply unary operator ! to non-boolean value: TagDeclarator"),
             "Actual error: {:?}",
             tag_declarator_err
         );
@@ -3209,7 +3293,7 @@ let notTagIdentifier = !myTag";
         assert!(
             tag_identifier_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: {\"type\":\"TagIdentifier\","),
+                .starts_with("Cannot apply unary operator ! to non-boolean value: TagIdentifier"),
             "Actual error: {:?}",
             tag_identifier_err
         );

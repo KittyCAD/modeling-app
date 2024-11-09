@@ -111,6 +111,19 @@ impl Node<MemberExpression> {
                 ),
                 source_ranges: vec![self.clone().into()],
             })),
+            (KclValue::Solid(solid), Property::String(prop)) if prop == "sketch" => {
+                Ok(KclValue::Sketch(Box::new(solid.sketch)))
+            }
+            (KclValue::Sketch(sk), Property::String(prop)) if prop == "tags" => Ok(KclValue::Object {
+                meta: vec![Metadata {
+                    source_range: SourceRange::from(self.clone()),
+                }],
+                value: sk
+                    .tags
+                    .iter()
+                    .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
+                    .collect(),
+            }),
             (being_indexed, _) => {
                 let t = being_indexed.human_friendly_type();
                 Err(KclError::Semantic(KclErrorDetails {
@@ -229,20 +242,30 @@ impl Node<UnaryExpression> {
         }
 
         let value = &self.argument.get_result(exec_state, ctx).await?;
-        let KclValue::Number { value: num, meta: _ } = value else {
-            return Err(KclError::Semantic(KclErrorDetails {
+        match value {
+            KclValue::Number { value, meta: _ } => {
+                let meta = vec![Metadata {
+                    source_range: self.into(),
+                }];
+                Ok(KclValue::Number { value: -value, meta })
+            }
+            KclValue::Int { value, meta: _ } => {
+                let meta = vec![Metadata {
+                    source_range: self.into(),
+                }];
+                Ok(KclValue::Number {
+                    value: (-value) as f64,
+                    meta,
+                })
+            }
+            _ => Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "You can only negate numbers, but this is a {}",
                     value.human_friendly_type()
                 ),
                 source_ranges: vec![self.into()],
-            }));
-        };
-
-        let meta = vec![Metadata {
-            source_range: self.into(),
-        }];
-        Ok(KclValue::Number { value: -num, meta })
+            })),
+        }
     }
 }
 
@@ -640,10 +663,18 @@ impl Node<ObjectExpression> {
 pub fn parse_number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<f64, KclError> {
     if let KclValue::Number { value: n, .. } = &v {
         Ok(*n)
+    } else if let KclValue::Int { value: n, .. } = &v {
+        Ok(*n as f64)
     } else {
-        Err(KclError::Syntax(KclErrorDetails {
+        let actual_type = v.human_friendly_type();
+        let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
+            "an"
+        } else {
+            "a"
+        };
+        Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![source_range],
-            message: format!("Invalid number: {}", v.human_friendly_type()),
+            message: format!("Expected a number, but found {article} {actual_type}",),
         }))
     }
 }

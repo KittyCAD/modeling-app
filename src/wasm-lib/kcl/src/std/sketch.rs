@@ -573,9 +573,9 @@ async fn inner_angled_line_of_x_length(
 #[serde(rename_all = "camelCase")]
 pub struct AngledLineToData {
     /// The angle of the line.
-    angle: f64,
+    pub angle: f64,
     /// The point to draw to.
-    to: f64,
+    pub to: f64,
 }
 
 /// Draw an angled line to a given x coordinate.
@@ -1865,11 +1865,11 @@ async fn inner_tangential_arc_to_relative(
 #[serde(rename_all = "camelCase")]
 pub struct BezierData {
     /// The to point.
-    to: [f64; 2],
+    pub to: [f64; 2],
     /// The first control point.
-    control1: [f64; 2],
+    pub control1: [f64; 2],
     /// The second control point.
-    control2: [f64; 2],
+    pub control2: [f64; 2],
 }
 
 /// Draw a bezier curve.

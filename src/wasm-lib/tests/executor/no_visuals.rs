@@ -73,7 +73,7 @@ gen_test_fail!(
 );
 gen_test_fail!(
     invalid_index_negative,
-    "semantic: '-1' is not a valid index, indices must be whole positive numbers"
+    "semantic: '-1' is negative, so you can't index an array with it"
 );
 gen_test_fail!(
     invalid_index_fractional,
@@ -81,7 +81,7 @@ gen_test_fail!(
 );
 gen_test_fail!(
     invalid_member_object,
-    "semantic: Only arrays and objects can be indexed, but you're trying to index a number"
+    "semantic: Only arrays and objects can be indexed, but you're trying to index a integer"
 );
 gen_test_fail!(
     invalid_member_object_prop,
@@ -107,7 +107,10 @@ gen_test_fail!(
 //     if_else_no_expr,
 //     "syntax: blocks inside an if/else expression must end in an expression"
 // );
-gen_test_fail!(comparisons_multiple, "syntax: Invalid number: true");
+gen_test_fail!(
+    comparisons_multiple,
+    "semantic: Expected a number, but found a boolean (true/false value)"
+);
 gen_test_fail!(
     import_cycle1,
     "import cycle: circular import of modules is not allowed: tests/executor/inputs/no_visuals/import_cycle2.kcl -> tests/executor/inputs/no_visuals/import_cycle3.kcl -> tests/executor/inputs/no_visuals/import_cycle1.kcl -> tests/executor/inputs/no_visuals/import_cycle2.kcl"
