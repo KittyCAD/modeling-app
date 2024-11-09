@@ -871,7 +871,7 @@ export function findUsesOfTagInPipe(
 
 export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   const path = getNodePathFromSourceRange(ast, selection.range)
-  const _node = getNodeFromPath<PipeExpression>(ast, path, 'PipeExpression')
+  const _node = getNodeFromPath<Node<PipeExpression>>(ast, path, 'PipeExpression')
   if (err(_node)) return false
   const { node: pipeExpression } = _node
   if (pipeExpression.type !== 'PipeExpression') return false
