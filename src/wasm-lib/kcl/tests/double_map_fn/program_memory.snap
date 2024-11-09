@@ -1,0 +1,174 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing double_map_fn.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 180,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 90,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 270,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": 0,
+          "__meta": []
+        },
+        "increment": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 38,
+                    "left": {
+                      "end": 34,
+                      "name": "i",
+                      "start": 33,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 38,
+                      "raw": "1",
+                      "start": 37,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 1
+                    },
+                    "start": 33,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 38,
+                  "start": 26,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 40,
+              "start": 22
+            },
+            "end": 40,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 17,
+                  "name": "i",
+                  "start": 16,
+                  "type": "Identifier"
+                },
+                "optional": false
+              }
+            ],
+            "start": 15,
+            "type": "FunctionExpression"
+          },
+          "memory": {
+            "environments": [
+              {
+                "bindings": {
+                  "HALF_TURN": {
+                    "type": "UserVal",
+                    "type": "UserVal",
+                    "value": 180,
+                    "__meta": []
+                  },
+                  "QUARTER_TURN": {
+                    "type": "UserVal",
+                    "type": "UserVal",
+                    "value": 90,
+                    "__meta": []
+                  },
+                  "THREE_QUARTER_TURN": {
+                    "type": "UserVal",
+                    "type": "UserVal",
+                    "value": 270,
+                    "__meta": []
+                  },
+                  "ZERO": {
+                    "type": "UserVal",
+                    "type": "UserVal",
+                    "value": 0,
+                    "__meta": []
+                  }
+                },
+                "parent": null
+              }
+            ],
+            "currentEnv": 0,
+            "return": null
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                15,
+                40,
+                0
+              ]
+            }
+          ]
+        },
+        "xs": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            0,
+            1,
+            2
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                47,
+                53,
+                0
+              ]
+            }
+          ]
+        },
+        "ys": {
+          "type": "UserVal",
+          "type": "UserVal",
+          "value": [
+            2.0,
+            3.0,
+            4.0
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                90,
+                107,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

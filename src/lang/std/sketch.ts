@@ -55,6 +55,7 @@ import { err } from 'lib/trap'
 import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -64,7 +65,7 @@ const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
 export type Coords2d = [number, number]
 
 export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
-  const currentPath = skGroup?.value?.[index]
+  const currentPath = skGroup?.paths?.[index]
   if (!currentPath && skGroup?.start) {
     return skGroup.start.to
   } else if (!currentPath) {
@@ -1704,7 +1705,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       varName
     )
     if (err(sketch)) return sketch
-    const intersectPath = sketch.value.find(
+    const intersectPath = sketch.paths.find(
       ({ tag }: Path) => tag && tag.value === intersectTagName
     )
     let offset = 0
@@ -1785,7 +1786,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       )
     }
     if (intersectTag !== -1) {
-      const tag = firstArg.properties[intersectTag]?.value as Identifier
+      const tag = firstArg.properties[intersectTag]?.value as Node<Identifier>
       const pathToTagProp: PathToNode = [
         ...pathToObjectExp,
         [intersectTag, 'index'],
@@ -1822,12 +1823,15 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
       modifiedAst: {
         start: 0,
         end: 0,
+        moduleId: 0,
         body: [],
-        digest: null,
+
         nonCodeMeta: {
-          start: [],
+          start: 0,
+          end: 0,
+          moduleId: 0,
+          startNodes: [],
           nonCodeNodes: [],
-          digest: null,
         },
       },
       pathToNode,
@@ -1866,7 +1870,7 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
 } as const
 
 export function changeSketchArguments(
-  node: Program,
+  node: Node<Program>,
   programMemory: ProgramMemory,
   sourceRangeOrPath:
     | {
@@ -1878,7 +1882,7 @@ export function changeSketchArguments(
         pathToNode: PathToNode
       },
   input: SegmentInputs
-): { modifiedAst: Program; pathToNode: PathToNode } | Error {
+): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   const _node = { ...node }
   const thePath =
     sourceRangeOrPath.type === 'sourceRange'
@@ -1907,7 +1911,7 @@ export function changeSketchArguments(
 }
 
 export function getConstraintInfo(
-  callExpression: CallExpression,
+  callExpression: Node<CallExpression>,
   code: string,
   pathToNode: PathToNode
 ): ConstrainInfo[] {
@@ -1945,7 +1949,7 @@ export function compareVec2Epsilon2(
 }
 
 interface CreateLineFnCallArgs {
-  node: Program
+  node: Node<Program>
   programMemory: ProgramMemory
   input: SegmentInputs
   fnName: ToolTip
@@ -1962,7 +1966,7 @@ export function addNewSketchLn({
   spliceBetween = false,
 }: CreateLineFnCallArgs):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToNode: PathToNode
     }
   | Error {
@@ -1972,8 +1976,12 @@ export function addNewSketchLn({
     return new Error('not a sketch line helper')
   }
 
-  getNodeFromPath<VariableDeclarator>(node, pathToNode, 'VariableDeclarator')
-  getNodeFromPath<PipeExpression | CallExpression>(
+  getNodeFromPath<Node<VariableDeclarator>>(
+    node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  getNodeFromPath<Node<PipeExpression | CallExpression>>(
     node,
     pathToNode,
     'PipeExpression'
@@ -1992,13 +2000,13 @@ export function addCallExpressionsToPipe({
   pathToNode,
   expressions,
 }: {
-  node: Program
+  node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
-  expressions: CallExpression[]
+  expressions: Node<CallExpression>[]
 }) {
   const _node = { ...node }
-  const pipeExpression = getNodeFromPath<PipeExpression>(
+  const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
     _node,
     pathToNode,
     'PipeExpression'
@@ -2047,7 +2055,7 @@ export function replaceSketchLine({
   replaceExistingCallback,
   referencedSegment,
 }: {
-  node: Program
+  node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
   fnName: ToolTip
@@ -2056,7 +2064,7 @@ export function replaceSketchLine({
   referencedSegment?: Path
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNode: PathToNode
     }
@@ -2108,7 +2116,7 @@ function addTagToChamfer(
   edgeCutMeta: EdgeCutInfo | null
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       tag: string
     }
   | Error {
@@ -2235,7 +2243,7 @@ export function addTagForSketchOnFace(
   edgeCutMeta: EdgeCutInfo | null
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       tag: string
     }
   | Error {
@@ -2273,12 +2281,14 @@ function isAngleLiteral(lineArugement: Expr): boolean {
     : false
 }
 
-type addTagFn = (a: AddTagInfo) => { modifiedAst: Program; tag: string } | Error
+type addTagFn = (
+  a: AddTagInfo
+) => { modifiedAst: Node<Program>; tag: string } | Error
 
 function addTag(tagIndex = 2): addTagFn {
   return ({ node, pathToNode }) => {
     const _node = { ...node }
-    const callExpr = getNodeFromPath<CallExpression>(
+    const callExpr = getNodeFromPath<Node<CallExpression>>(
       _node,
       pathToNode,
       'CallExpression'

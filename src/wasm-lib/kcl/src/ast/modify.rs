@@ -16,6 +16,8 @@ use crate::{
     executor::{Point2d, SourceRange},
 };
 
+use super::types::{ModuleId, Node};
+
 type Point3d = kcmc::shared::Point3d<f64>;
 
 #[derive(Debug)]
@@ -35,7 +37,8 @@ const EPSILON: f64 = 0.015625; // or 2^-6
 /// a move or a new line.
 pub async fn modify_ast_for_sketch(
     engine: &Arc<Box<dyn EngineManager>>,
-    program: &mut Program,
+    program: &mut Node<Program>,
+    module_id: ModuleId,
     // The name of the sketch.
     sketch_name: &str,
     // The type of plane the sketch is on. `XY` or `XZ`, etc
@@ -48,7 +51,10 @@ pub async fn modify_ast_for_sketch(
 
     // Get the information about the sketch.
     if let Some(ast_sketch) = program.get_variable(sketch_name) {
-        let constraint_level = ast_sketch.get_constraint_level();
+        let constraint_level = match ast_sketch {
+            super::types::Definition::Variable(var) => var.get_constraint_level(),
+            super::types::Definition::Import(import) => import.get_constraint_level(),
+        };
         match &constraint_level {
             ConstraintLevel::None { source_ranges: _ } => {}
             ConstraintLevel::Ignore { source_ranges: _ } => {}
@@ -178,9 +184,7 @@ pub async fn modify_ast_for_sketch(
     let recasted = program.recast(&FormatOptions::default(), 0);
 
     // Re-parse the ast so we get the correct source ranges.
-    let tokens = crate::token::lexer(&recasted)?;
-    let parser = crate::parser::Parser::new(tokens);
-    *program = parser.ast()?;
+    *program = crate::parser::parse(&recasted, module_id)?;
 
     Ok(recasted)
 }
@@ -192,7 +196,7 @@ fn create_start_sketch_on(
     end: [f64; 2],
     plane: crate::executor::PlaneType,
     additional_lines: Vec<[f64; 2]>,
-) -> Result<VariableDeclarator, KclError> {
+) -> Result<Node<VariableDeclarator>, KclError> {
     let start_sketch_on = CallExpression::new("startSketchOn", vec![Literal::new(plane.to_string().into()).into()])?;
     let start_profile_at = CallExpression::new(
         "startProfileAt",

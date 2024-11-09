@@ -1,62 +1,56 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 40,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 11,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 11,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 7,
             "name": "x",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "Literal",
-            "type": "Literal",
-            "start": 10,
             "end": 11,
-            "value": 1,
             "raw": "1",
-            "digest": null
+            "start": 10,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 1
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 11,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
+  "end": 40,
   "nonCodeMeta": {
     "nonCodeNodes": {
       "0": [
         {
-          "type": "NonCodeNode",
-          "start": 11,
           "end": 40,
+          "start": 11,
+          "type": "NonCodeNode",
           "value": {
             "type": "inlineComment",
             "value": "this is an inline comment",
             "style": "line"
-          },
-          "digest": null
+          }
         }
       ]
     },
-    "start": [],
-    "digest": null
+    "startNodes": []
   },
-  "digest": null
+  "start": 0
 }

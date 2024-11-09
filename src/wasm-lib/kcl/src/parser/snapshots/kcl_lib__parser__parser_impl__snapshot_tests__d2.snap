@@ -1,71 +1,59 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 27,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 27,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 27,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 7,
             "name": "x",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "BinaryExpression",
-            "type": "BinaryExpression",
-            "start": 10,
             "end": 27,
-            "operator": "+",
             "left": {
-              "type": "UnaryExpression",
-              "type": "UnaryExpression",
-              "start": 10,
-              "end": 15,
-              "operator": "-",
               "argument": {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 11,
                 "end": 15,
                 "name": "leg2",
-                "digest": null
+                "start": 11,
+                "type": "Identifier",
+                "type": "Identifier"
               },
-              "digest": null
+              "end": 15,
+              "operator": "-",
+              "start": 10,
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
             },
+            "operator": "+",
             "right": {
-              "type": "Identifier",
-              "type": "Identifier",
-              "start": 18,
               "end": 27,
               "name": "thickness",
-              "digest": null
+              "start": 18,
+              "type": "Identifier",
+              "type": "Identifier"
             },
-            "digest": null
+            "start": 10,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 27,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 27,
+  "start": 0
 }

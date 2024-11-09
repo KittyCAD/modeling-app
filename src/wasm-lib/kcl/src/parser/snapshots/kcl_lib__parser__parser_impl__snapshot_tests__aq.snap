@@ -1,66 +1,55 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 28,
   "body": [
     {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 0,
       "end": 28,
       "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 0,
-        "end": 28,
-        "callee": {
-          "type": "Identifier",
-          "start": 0,
-          "end": 3,
-          "name": "log",
-          "digest": null
-        },
         "arguments": [
           {
-            "type": "Literal",
-            "type": "Literal",
-            "start": 4,
             "end": 5,
-            "value": 5,
             "raw": "5",
-            "digest": null
+            "start": 4,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 5
           },
           {
-            "type": "Literal",
-            "type": "Literal",
-            "start": 7,
             "end": 14,
-            "value": "hello",
             "raw": "\"hello\"",
-            "digest": null
+            "start": 7,
+            "type": "Literal",
+            "type": "Literal",
+            "value": "hello"
           },
           {
-            "type": "Identifier",
-            "type": "Identifier",
-            "start": 16,
             "end": 27,
             "name": "aIdentifier",
-            "digest": null
+            "start": 16,
+            "type": "Identifier",
+            "type": "Identifier"
           }
         ],
+        "callee": {
+          "end": 3,
+          "name": "log",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "end": 28,
         "optional": false,
-        "digest": null
+        "start": 0,
+        "type": "CallExpression",
+        "type": "CallExpression"
       },
-      "digest": null
+      "start": 0,
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 28,
+  "start": 0
 }

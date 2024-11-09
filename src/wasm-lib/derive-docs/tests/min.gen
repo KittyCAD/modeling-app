@@ -2,9 +2,8 @@
 mod test_examples_min {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_min0() {
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nmin").unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program =
+            crate::parser::top_level_parse("This is another code block.\nyes sirrr.\nmin").unwrap();
         let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
@@ -17,7 +16,7 @@ mod test_examples_min {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -36,9 +35,8 @@ mod test_examples_min {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_min1() {
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nmin").unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
+        let program =
+            crate::parser::top_level_parse("This is code.\nIt does other shit.\nmin").unwrap();
         let id_generator = crate::executor::IdGenerator::default();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
@@ -51,7 +49,7 @@ mod test_examples_min {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator).await.unwrap();
+        ctx.run(&program, None, id_generator, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -150,9 +148,7 @@ impl crate::docs::StdLibFn for Min {
         code_blocks
             .iter()
             .map(|cb| {
-                let tokens = crate::token::lexer(cb).unwrap();
-                let parser = crate::parser::Parser::new(tokens);
-                let program = parser.ast().unwrap();
+                let program = crate::parser::top_level_parse(cb).unwrap();
                 let mut options: crate::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.recast(&options, 0)

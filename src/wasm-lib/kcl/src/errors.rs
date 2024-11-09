@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{executor::SourceRange, lsp::IntoDiagnostic};
+use crate::{ast::types::ModuleId, executor::SourceRange, lsp::IntoDiagnostic};
 
 #[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
@@ -14,6 +14,8 @@ pub enum KclError {
     Syntax(KclErrorDetails),
     #[error("semantic: {0:?}")]
     Semantic(KclErrorDetails),
+    #[error("import cycle: {0:?}")]
+    ImportCycle(KclErrorDetails),
     #[error("type: {0:?}")]
     Type(KclErrorDetails),
     #[error("unimplemented: {0:?}")]
@@ -52,6 +54,7 @@ impl KclError {
             KclError::Lexical(_) => "lexical",
             KclError::Syntax(_) => "syntax",
             KclError::Semantic(_) => "semantic",
+            KclError::ImportCycle(_) => "import cycle",
             KclError::Type(_) => "type",
             KclError::Unimplemented(_) => "unimplemented",
             KclError::Unexpected(_) => "unexpected",
@@ -68,6 +71,7 @@ impl KclError {
             KclError::Lexical(e) => e.source_ranges.clone(),
             KclError::Syntax(e) => e.source_ranges.clone(),
             KclError::Semantic(e) => e.source_ranges.clone(),
+            KclError::ImportCycle(e) => e.source_ranges.clone(),
             KclError::Type(e) => e.source_ranges.clone(),
             KclError::Unimplemented(e) => e.source_ranges.clone(),
             KclError::Unexpected(e) => e.source_ranges.clone(),
@@ -85,6 +89,7 @@ impl KclError {
             KclError::Lexical(e) => &e.message,
             KclError::Syntax(e) => &e.message,
             KclError::Semantic(e) => &e.message,
+            KclError::ImportCycle(e) => &e.message,
             KclError::Type(e) => &e.message,
             KclError::Unimplemented(e) => &e.message,
             KclError::Unexpected(e) => &e.message,
@@ -102,6 +107,7 @@ impl KclError {
             KclError::Lexical(e) => e.source_ranges = source_ranges,
             KclError::Syntax(e) => e.source_ranges = source_ranges,
             KclError::Semantic(e) => e.source_ranges = source_ranges,
+            KclError::ImportCycle(e) => e.source_ranges = source_ranges,
             KclError::Type(e) => e.source_ranges = source_ranges,
             KclError::Unimplemented(e) => e.source_ranges = source_ranges,
             KclError::Unexpected(e) => e.source_ranges = source_ranges,
@@ -121,6 +127,7 @@ impl KclError {
             KclError::Lexical(e) => e.source_ranges.extend(source_ranges),
             KclError::Syntax(e) => e.source_ranges.extend(source_ranges),
             KclError::Semantic(e) => e.source_ranges.extend(source_ranges),
+            KclError::ImportCycle(e) => e.source_ranges.extend(source_ranges),
             KclError::Type(e) => e.source_ranges.extend(source_ranges),
             KclError::Unimplemented(e) => e.source_ranges.extend(source_ranges),
             KclError::Unexpected(e) => e.source_ranges.extend(source_ranges),
@@ -139,6 +146,13 @@ impl IntoDiagnostic for KclError {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         let message = self.get_message();
         let source_ranges = self.source_ranges();
+
+        // Limit to only errors in the top-level file.
+        let module_id = ModuleId::default();
+        let source_ranges = source_ranges
+            .iter()
+            .filter(|r| r.module_id() == module_id)
+            .collect::<Vec<_>>();
 
         Diagnostic {
             range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),

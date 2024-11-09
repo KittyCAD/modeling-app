@@ -7,9 +7,9 @@ pub fn bench_digest(c: &mut Criterion) {
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
+        ("lsystem", LSYSTEM_PROGRAM),
     ] {
-        let tokens = kcl_lib::token::lexer(file).unwrap();
-        let prog = kcl_lib::parser::Parser::new(tokens).ast().unwrap();
+        let prog = kcl_lib::parser::top_level_parse(file).unwrap();
         c.bench_function(&format!("digest_{name}"), move |b| {
             let prog = prog.clone();
 
@@ -29,3 +29,4 @@ const PIPES_PROGRAM: &str = include_str!("../../tests/executor/inputs/pipes_on_p
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../tests/executor/inputs/math.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../tests/executor/inputs/mike_stress_test.kcl");
+const LSYSTEM_PROGRAM: &str = include_str!("../../tests/executor/inputs/lsystem.kcl");

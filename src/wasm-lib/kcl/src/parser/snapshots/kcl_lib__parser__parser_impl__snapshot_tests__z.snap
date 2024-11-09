@@ -1,136 +1,112 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 53,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 53,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 53,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 8,
             "name": "sg",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 11,
-            "end": 53,
             "body": [
               {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 11,
-                "end": 29,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 11,
-                  "end": 24,
-                  "name": "startSketchAt",
-                  "digest": null
-                },
                 "arguments": [
                   {
-                    "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 25,
                     "end": 28,
                     "name": "pos",
-                    "digest": null
+                    "start": 25,
+                    "type": "Identifier",
+                    "type": "Identifier"
                   }
                 ],
+                "callee": {
+                  "end": 24,
+                  "name": "startSketchAt",
+                  "start": 11,
+                  "type": "Identifier"
+                },
+                "end": 29,
                 "optional": false,
-                "digest": null
+                "start": 11,
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 33,
-                "end": 53,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 33,
-                  "end": 37,
-                  "name": "line",
-                  "digest": null
-                },
                 "arguments": [
                   {
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression",
-                    "start": 38,
-                    "end": 49,
                     "elements": [
                       {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 39,
                         "end": 40,
-                        "value": 0,
                         "raw": "0",
-                        "digest": null
+                        "start": 39,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0
                       },
                       {
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression",
-                        "start": 42,
-                        "end": 48,
-                        "operator": "-",
                         "argument": {
-                          "type": "Identifier",
-                          "type": "Identifier",
-                          "start": 43,
                           "end": 48,
                           "name": "scale",
-                          "digest": null
+                          "start": 43,
+                          "type": "Identifier",
+                          "type": "Identifier"
                         },
-                        "digest": null
+                        "end": 48,
+                        "operator": "-",
+                        "start": 42,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
                       }
                     ],
-                    "digest": null
+                    "end": 49,
+                    "start": 38,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
                   },
                   {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 51,
                     "end": 52,
-                    "digest": null
+                    "start": 51,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
                   }
                 ],
+                "callee": {
+                  "end": 37,
+                  "name": "line",
+                  "start": 33,
+                  "type": "Identifier"
+                },
+                "end": 53,
                 "optional": false,
-                "digest": null
+                "start": 33,
+                "type": "CallExpression",
+                "type": "CallExpression"
               }
             ],
-            "nonCodeMeta": {
-              "nonCodeNodes": {},
-              "start": [],
-              "digest": null
-            },
-            "digest": null
+            "end": 53,
+            "start": 11,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 53,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 53,
+  "start": 0
 }

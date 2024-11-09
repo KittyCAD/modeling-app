@@ -1,5 +1,5 @@
 import { deserialize_files } from 'wasm-lib/pkg/wasm_lib'
-import { machineManager } from './machineManager'
+import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
 import { components } from './machine-api'
 import ModelingAppFile from './modelingAppFile'
@@ -8,9 +8,17 @@ import { MAKE_TOAST_MESSAGES } from './constants'
 // Make files locally from an export call.
 export async function exportMake(
   data: ArrayBuffer,
-  toastId: string
+  name: string,
+  toastId: string,
+  machineManager: MachineManager
 ): Promise<Response | null> {
-  if (machineManager.machineCount() === 0) {
+  if (name === '') {
+    console.error(MAKE_TOAST_MESSAGES.NO_NAME)
+    toast.error(MAKE_TOAST_MESSAGES.NO_NAME, { id: toastId })
+    return null
+  }
+
+  if (machineManager.machines.length === 0) {
     console.error(MAKE_TOAST_MESSAGES.NO_MACHINES)
     toast.error(MAKE_TOAST_MESSAGES.NO_MACHINES, { id: toastId })
     return null
@@ -39,7 +47,7 @@ export async function exportMake(
 
   const params: components['schemas']['PrintParameters'] = {
     machine_id: machineId,
-    job_name: 'Exported Job', // TODO: make this the project name.
+    job_name: name,
   }
   try {
     console.log('params', params)

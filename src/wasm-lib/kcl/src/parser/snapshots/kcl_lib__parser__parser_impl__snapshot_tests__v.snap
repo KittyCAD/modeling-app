@@ -1,64 +1,53 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 17,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 17,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 17,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 9,
             "name": "pt1",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "MemberExpression",
-            "type": "MemberExpression",
-            "start": 12,
+            "computed": false,
             "end": 17,
             "object": {
-              "type": "Identifier",
-              "type": "Identifier",
-              "start": 12,
               "end": 14,
               "name": "b1",
-              "digest": null
+              "start": 12,
+              "type": "Identifier",
+              "type": "Identifier"
             },
             "property": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 15,
               "end": 16,
-              "value": 0,
               "raw": "0",
-              "digest": null
+              "start": 15,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 0
             },
-            "computed": false,
-            "digest": null
+            "start": 12,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 17,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 17,
+  "start": 0
 }

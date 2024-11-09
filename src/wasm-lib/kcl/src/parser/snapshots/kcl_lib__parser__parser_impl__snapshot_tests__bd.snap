@@ -1,172 +1,136 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 121,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 121,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 121,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 7,
             "name": "x",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "IfExpression",
-            "type": "IfExpression",
-            "start": 10,
-            "end": 121,
             "cond": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 13,
               "end": 17,
-              "value": true,
               "raw": "true",
-              "digest": null
+              "start": 13,
+              "type": "Literal",
+              "type": "Literal",
+              "value": true
             },
-            "then_val": {
-              "start": 32,
-              "end": 42,
-              "body": [
-                {
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement",
-                  "start": 32,
-                  "end": 33,
-                  "expression": {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 32,
-                    "end": 33,
-                    "value": 3,
-                    "raw": "3",
-                    "digest": null
-                  },
-                  "digest": null
-                }
-              ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
-            },
+            "digest": null,
             "else_ifs": [
               {
-                "type": "ElseIf",
-                "start": 44,
-                "end": 90,
                 "cond": {
-                  "type": "CallExpression",
-                  "type": "CallExpression",
-                  "start": 52,
-                  "end": 64,
-                  "callee": {
-                    "type": "Identifier",
-                    "start": 52,
-                    "end": 56,
-                    "name": "func",
-                    "digest": null
-                  },
                   "arguments": [
                     {
-                      "type": "Identifier",
-                      "type": "Identifier",
-                      "start": 57,
                       "end": 63,
                       "name": "radius",
-                      "digest": null
+                      "start": 57,
+                      "type": "Identifier",
+                      "type": "Identifier"
                     }
                   ],
+                  "callee": {
+                    "end": 56,
+                    "name": "func",
+                    "start": 52,
+                    "type": "Identifier"
+                  },
+                  "end": 64,
                   "optional": false,
-                  "digest": null
+                  "start": 52,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
                 },
+                "digest": null,
+                "end": 90,
+                "start": 44,
                 "then_val": {
-                  "start": 65,
-                  "end": 89,
                   "body": [
                     {
-                      "type": "ExpressionStatement",
-                      "type": "ExpressionStatement",
-                      "start": 79,
                       "end": 80,
                       "expression": {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 79,
                         "end": 80,
-                        "value": 4,
                         "raw": "4",
-                        "digest": null
+                        "start": 79,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 4
                       },
-                      "digest": null
+                      "start": 79,
+                      "type": "ExpressionStatement",
+                      "type": "ExpressionStatement"
                     }
                   ],
-                  "nonCodeMeta": {
-                    "nonCodeNodes": {},
-                    "start": [],
-                    "digest": null
-                  },
-                  "digest": null
+                  "end": 89,
+                  "start": 65
                 },
-                "digest": null
+                "type": "ElseIf"
               }
             ],
+            "end": 121,
             "final_else": {
-              "start": 110,
-              "end": 120,
               "body": [
                 {
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement",
-                  "start": 110,
                   "end": 111,
                   "expression": {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 110,
                     "end": 111,
-                    "value": 5,
                     "raw": "5",
-                    "digest": null
+                    "start": 110,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 5
                   },
-                  "digest": null
+                  "start": 110,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
               ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
+              "end": 120,
+              "start": 110
             },
-            "digest": null
+            "start": 10,
+            "then_val": {
+              "body": [
+                {
+                  "end": 33,
+                  "expression": {
+                    "end": 33,
+                    "raw": "3",
+                    "start": 32,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 3
+                  },
+                  "start": 32,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                }
+              ],
+              "end": 42,
+              "start": 32
+            },
+            "type": "IfExpression",
+            "type": "IfExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 121,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 121,
+  "start": 0
 }

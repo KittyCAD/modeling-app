@@ -28,7 +28,7 @@ async fn kcl_test_fillet_duplicate_tags() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([203, 249])], message: "Duplicate tags are not allowed." }"#,
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([203, 249, 0])], message: "Duplicate tags are not allowed." }"#,
     );
 }
 
@@ -83,7 +83,7 @@ async fn kcl_test_execute_engine_error_return() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([216, 229])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([216, 229, 0])], message: "Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]" }"#,
     );
 }
 
@@ -122,6 +122,14 @@ async fn kcl_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_execute_lsystem() {
+    let code = kcl_input!("lsystem");
+
+    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
+    assert_out("lsystem", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_member_expression_sketch() {
     let code = kcl_input!("member_expression_sketch");
 
@@ -143,14 +151,6 @@ async fn kcl_test_helix_defaults_negative_extrude() {
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("helix_defaults_negative_extrude", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_helix_ccw() {
-    let code = kcl_input!("helix_ccw");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("helix_ccw", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -515,7 +515,7 @@ async fn kcl_test_import_file_doesnt_exist() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 27])], message: "File `thing.obj` does not exist." }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 27, 0])], message: "File `thing.obj` does not exist." }"#
     );
 }
 
@@ -583,7 +583,7 @@ async fn kcl_test_import_ext_doesnt_match() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 76])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 76, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
     );
 }
 
@@ -742,7 +742,7 @@ part002 = startSketchOn(part001, part001.sketch.tags.here)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([88, 133]), SourceRange([210, 226])], message: "could not sketch tangential arc, because its center would be infinitely far away in the X direction" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([88, 133, 0]), SourceRange([210, 226, 0])], message: "could not sketch tangential arc, because its center would be infinitely far away in the X direction" }"#
     );
 }
 
@@ -799,7 +799,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([151, 189])], message: "Expected an argument at index 1" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([151, 189, 0])], message: "Expected an argument at index 1" }"#,
     );
 }
 
@@ -869,7 +869,7 @@ part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([863, 912])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([863, 912, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
     );
 }
 
@@ -954,7 +954,7 @@ async fn kcl_test_revolve_bad_angle_low() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 308])], message: "Expected angle to be between -360 and 360 and not 0, found `-455`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 308, 0])], message: "Expected angle to be between -360 and 360 and not 0, found `-455`" }"#
     );
 }
 
@@ -979,7 +979,7 @@ async fn kcl_test_revolve_bad_angle_high() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 307])], message: "Expected angle to be between -360 and 360 and not 0, found `455`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([272, 307, 0])], message: "Expected angle to be between -360 and 360 and not 0, found `455`" }"#
     );
 }
 
@@ -1073,7 +1073,7 @@ sketch001 = startSketchOn(box, revolveAxis)
     //this fails right now, but slightly differently, lets just say its enough for it to fail - mike
     //assert_eq!(
     //    result.err().unwrap().to_string(),
-    //    r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 390])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
+    //    r#"engine: KclErrorDetails { source_ranges: [SourceRange([346, 390, 0])], message: "Modeling command failed: [ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }]" }"#
     //);
 }
 
@@ -1354,7 +1354,7 @@ secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([260, 286])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([260, 286, 0])], message: "Argument at index 1 was supposed to be type kcl_lib::std::sketch::FaceTag but found string (text)" }"#
     );
 }
 
@@ -1385,86 +1385,8 @@ extrusion = startSketchOn('XY')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 334]), SourceRange([428, 461])], message: "Expected 2 arguments, got 3" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([68, 334, 0]), SourceRange([428, 461, 0])], message: "Expected 2 arguments, got 3" }"#
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_xz_plane() {
-    let code = r#"part001 = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_neg_xz_plane() {
-    let code = r#"part001 = startSketchOn('-XZ')
-  |> startProfileAt([0, 0], %)
-  |> lineTo([100, 100], %)
-  |> lineTo([100, 0], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("neg_xz_plane", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_linear_pattern3d_a_pattern() {
-    let code = r#"exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       instances: 7,
-       distance: 6
-     }, exampleSketch)
-
-pattn2 = patternLinear3d({
-       axis: [0, 0, 1],
-       distance: 1,
-       instances: 7
-     }, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("linear_pattern3d_a_pattern", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_circular_pattern3d_a_pattern() {
-    let code = r#"exampleSketch = startSketchOn('XZ')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
-  |> close(%)
-  |> extrude(1, %)
-
-pattn1 = patternLinear3d({
-       axis: [1, 0, 0],
-       instances: 7,
-       distance: 6
-     }, exampleSketch)
-
-pattn2 = patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], instances: 41, arcDegrees: 360, rotateDuplicates: false}, pattn1)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("circular_pattern3d_a_pattern", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1494,69 +1416,6 @@ extrude(10, sketch001)
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("array_of_sketches", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_sketch_on_face_after_fillets_referencing_face() {
-    let code = r#"// Shelf Bracket
-// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
-
-
-// Define our bracket feet lengths
-shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
-wallMountL = 6 // the length of the bracket
-
-
-// Define constants required to calculate the thickness needed to support 300 lbs
-sigmaAllow = 35000 // psi
-width = 6 // inch
-p = 300 // Force on shelf - lbs
-L = 12 // inches
-M = L * p / 2 // Moment experienced at fixed end of bracket
-FOS = 2 // Factor of safety of 2 to be conservative
-
-
-// Calculate the thickness off the bending stress and factor of safety
-thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
-
-// 0.25 inch fillet radius
-filletR = 0.25
-
-// Sketch the bracket and extrude with fillets
-bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, $outerEdge)
-  |> line([-shelfMountL, 0], %, $seg01)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, $innerEdge)
-  |> line([0, -wallMountL + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
-  |> fillet({
-       radius: filletR,
-       tags: [
-         getNextAdjacentEdge(innerEdge)
-       ]
-     }, %)
-  |> fillet({
-       radius: filletR + thickness,
-       tags: [
-         getNextAdjacentEdge(outerEdge)
-       ]
-     }, %)
-
-sketch001 = startSketchOn(bracket, seg01)
-  |> startProfileAt([4.28, 3.83], %)
-  |> line([2.17, -0.03], %)
-  |> line([-0.07, -1.8], %)
-  |> line([-2.07, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(10, %)
-"#;
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("sketch_on_face_after_fillets_referencing_face", &result);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1822,7 +1681,7 @@ part001 = cube([0,0], 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([259, 345])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([259, 345, 0])], message: "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag." }"#
     );
 }
 
@@ -1849,7 +1708,7 @@ let p = triangle(200)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313]), SourceRange([326, 339])], message: "Cannot redefine `a`" }"#
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313, 0]), SourceRange([326, 339, 0])], message: "Cannot redefine `a`" }"#
     );
 }
 
@@ -1924,7 +1783,7 @@ async fn kcl_test_arc_error_same_start_end() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 140])], message: "Arc start and end angles must be different" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 140, 0])], message: "Arc start and end angles must be different" }"#
     );
 }
 
@@ -1944,7 +1803,7 @@ example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 111])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 111, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -1964,7 +1823,7 @@ example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 112])], message: "Cannot have an x constrained angle of 270 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 112, 0])], message: "Cannot have an x constrained angle of 270 degrees" }"#
     );
 }
 
@@ -1984,7 +1843,7 @@ example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 110])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 110, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -2004,7 +1863,7 @@ example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 112])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([72, 112, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -2024,7 +1883,7 @@ extrusion = extrude(10, sketch001)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -2044,7 +1903,7 @@ extrusion = extrude(10, sketch001)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125])], message: "Cannot have an x constrained angle of 90 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([68, 125, 0])], message: "Cannot have an x constrained angle of 90 degrees" }"#
     );
 }
 
@@ -2066,7 +1925,7 @@ example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 142])], message: "Cannot have a y constrained angle of 0 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 142, 0])], message: "Cannot have a y constrained angle of 0 degrees" }"#
     );
 }
 
@@ -2088,7 +1947,7 @@ example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 144])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 144, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -2110,7 +1969,7 @@ example = extrude(10, exampleSketch)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 145])], message: "Cannot have a y constrained angle of 180 degrees" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([94, 145, 0])], message: "Cannot have a y constrained angle of 180 degrees" }"#
     );
 }
 
@@ -2127,7 +1986,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61]), SourceRange([65, 88])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
     );
 }
 
@@ -2148,7 +2007,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114]), SourceRange([126, 155]), SourceRange([159, 182])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
     );
 }
 

@@ -7,9 +7,16 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
 use winnow::stream::ContainsToken;
 
-use crate::{ast::types::VariableKind, errors::KclError, executor::SourceRange};
+use crate::{
+    ast::types::{ItemVisibility, ModuleId, VariableKind},
+    errors::KclError,
+    executor::SourceRange,
+};
 
 mod tokeniser;
+
+// Re-export
+pub use tokeniser::Input;
 
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
@@ -157,6 +164,8 @@ pub struct Token {
     pub start: usize,
     /// Offset in the source code where this token ends.
     pub end: usize,
+    #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
+    pub module_id: ModuleId,
     pub value: String,
 }
 
@@ -173,10 +182,16 @@ impl ContainsToken<Token> for TokenType {
 }
 
 impl Token {
-    pub fn from_range(range: std::ops::Range<usize>, token_type: TokenType, value: String) -> Self {
+    pub fn from_range(
+        range: std::ops::Range<usize>,
+        module_id: ModuleId,
+        token_type: TokenType,
+        value: String,
+    ) -> Self {
         Self {
             start: range.start,
             end: range.end,
+            module_id,
             value,
             token_type,
         }
@@ -189,11 +204,21 @@ impl Token {
     }
 
     pub fn as_source_range(&self) -> SourceRange {
-        SourceRange([self.start, self.end])
+        SourceRange([self.start, self.end, self.module_id.as_usize()])
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
         vec![self.as_source_range()]
+    }
+
+    pub fn visibility_keyword(&self) -> Option<ItemVisibility> {
+        if !matches!(self.token_type, TokenType::Keyword) {
+            return None;
+        }
+        match self.value.as_str() {
+            "export" => Some(ItemVisibility::Export),
+            _ => None,
+        }
     }
 
     /// Is this token the beginning of a variable/function declaration?
@@ -213,18 +238,18 @@ impl Token {
 
 impl From<Token> for SourceRange {
     fn from(token: Token) -> Self {
-        Self([token.start, token.end])
+        Self([token.start, token.end, token.module_id.as_usize()])
     }
 }
 
 impl From<&Token> for SourceRange {
     fn from(token: &Token) -> Self {
-        Self([token.start, token.end])
+        Self([token.start, token.end, token.module_id.as_usize()])
     }
 }
 
-pub fn lexer(s: &str) -> Result<Vec<Token>, KclError> {
-    tokeniser::lexer(s).map_err(From::from)
+pub fn lexer(s: &str, module_id: ModuleId) -> Result<Vec<Token>, KclError> {
+    tokeniser::lexer(s, module_id).map_err(From::from)
 }
 
 #[cfg(test)]

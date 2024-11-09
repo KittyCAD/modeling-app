@@ -1,89 +1,70 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 58,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 58,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 3,
           "end": 58,
           "id": {
-            "type": "Identifier",
-            "start": 3,
             "end": 4,
             "name": "x",
-            "digest": null
+            "start": 3,
+            "type": "Identifier"
           },
           "init": {
-            "type": "FunctionExpression",
-            "type": "FunctionExpression",
-            "start": 7,
-            "end": 58,
-            "params": [],
             "body": {
-              "start": 13,
-              "end": 58,
               "body": [
                 {
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement",
-                  "start": 23,
-                  "end": 32,
                   "argument": {
-                    "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 30,
                     "end": 32,
                     "name": "sg",
-                    "digest": null
+                    "start": 30,
+                    "type": "Identifier",
+                    "type": "Identifier"
                   },
-                  "digest": null
+                  "end": 32,
+                  "start": 23,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 },
                 {
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement",
-                  "start": 41,
-                  "end": 50,
                   "argument": {
-                    "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 48,
                     "end": 50,
                     "name": "sg",
-                    "digest": null
+                    "start": 48,
+                    "type": "Identifier",
+                    "type": "Identifier"
                   },
-                  "digest": null
+                  "end": 50,
+                  "start": 41,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 }
               ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
+              "end": 58,
+              "start": 13
             },
-            "digest": null
+            "end": 58,
+            "params": [],
+            "start": 7,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
           },
-          "digest": null
+          "start": 3,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 58,
       "kind": "fn",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 58,
+  "start": 0
 }

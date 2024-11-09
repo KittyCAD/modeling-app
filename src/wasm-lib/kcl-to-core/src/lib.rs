@@ -7,9 +7,7 @@ mod conn_mock_core;
 
 ///Converts the given kcl code to an engine test
 pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
-    let tokens = kcl_lib::token::lexer(code)?;
-    let parser = kcl_lib::parser::Parser::new(tokens);
-    let program = parser.ast()?;
+    let program = kcl_lib::parser::top_level_parse(code)?;
 
     let result = Arc::new(Mutex::new("".into()));
     let ref_result = Arc::clone(&result);
@@ -23,7 +21,7 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
         settings: Default::default(),
         context_type: kcl_lib::executor::ContextType::MockCustomForwarded,
     };
-    let _memory = ctx.run(&program, None, IdGenerator::default()).await?;
+    let _memory = ctx.run(&program, None, IdGenerator::default(), None).await?;
 
     let result = result.lock().expect("mutex lock").clone();
     Ok(result)

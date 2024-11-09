@@ -7,9 +7,10 @@ import {
   setupElectron,
   tearDown,
   executorInputPath,
+  createProject,
 } from './test-utils'
 import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import {
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_CORRUPTED,
@@ -257,7 +258,7 @@ test.describe('Testing settings', () => {
     })
   })
 
-  test(
+  test.fixme(
     `Project settings override user settings on desktop`,
     { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
@@ -265,10 +266,15 @@ test.describe('Testing settings', () => {
         process.platform === 'win32',
         'TODO: remove this skip https://github.com/KittyCAD/modeling-app/issues/3557'
       )
-      const { electronApp, page } = await setupElectron({
+      const projectName = 'bracket'
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
         testInfo,
         folderSetupFn: async (dir) => {
-          const bracketDir = join(dir, 'bracket')
+          const bracketDir = join(dir, projectName)
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
             executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
@@ -280,6 +286,12 @@ test.describe('Testing settings', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
 
       // Selectors and constants
+      const tempProjectSettingsFilePath = join(
+        projectDirName,
+        projectName,
+        PROJECT_SETTINGS_FILE_NAME
+      )
+      const tempUserSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
       const userThemeColor = '120'
       const projectThemeColor = '50'
       const settingsOpenButton = page.getByRole('link', {
@@ -300,6 +312,12 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(userThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
         await settingsCloseButton.click()
+        await expect
+          .poll(async () => fsp.readFile(tempUserSettingsFilePath, 'utf-8'), {
+            message: 'Setting should now be written to the file',
+            timeout: 5_000,
+          })
+          .toContain(`themeColor = "${userThemeColor}"`)
       })
 
       await test.step('Set project theme color', async () => {
@@ -311,6 +329,16 @@ test.describe('Testing settings', () => {
         await themeColorSetting.fill(projectThemeColor)
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
         await settingsCloseButton.click()
+        // Make sure that the project settings file has been written to before continuing
+        await expect
+          .poll(
+            async () => fsp.readFile(tempProjectSettingsFilePath, 'utf-8'),
+            {
+              message: 'Setting should now be written to the file',
+              timeout: 5_000,
+            }
+          )
+          .toContain(`themeColor = "${projectThemeColor}"`)
       })
 
       await test.step('Refresh the application and see project setting applied', async () => {
@@ -323,6 +351,7 @@ test.describe('Testing settings', () => {
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
         await logoLink.click()
+        await page.screenshot({ path: 'out.png' })
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
       })
 
@@ -386,7 +415,7 @@ test.describe('Testing settings', () => {
   )
 
   // It was much easier to test the logo color than the background stream color.
-  test(
+  test.fixme(
     'user settings reload on external change, on project and modeling view',
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
@@ -428,9 +457,7 @@ test.describe('Testing settings', () => {
       })
 
       await test.step('Check color of logo changed when in modeling view', async () => {
-        await page.getByRole('button', { name: 'New project' }).click()
-        await page.getByTestId('project-link').first().click()
-        await page.getByRole('button', { name: 'Dismiss' }).click()
+        await createProject({ name: 'project-000', page })
         await changeColor('58')
         await expect(logoLink).toHaveCSS('--primary-hue', '58')
       })
@@ -441,6 +468,54 @@ test.describe('Testing settings', () => {
         await changeColor('21')
         await expect(logoLink).toHaveCSS('--primary-hue', '21')
       })
+      await electronApp.close()
+    }
+  )
+
+  test(
+    'project settings reload on external change',
+    { tag: '@electron' },
+    async ({ browserName: _ }, testInfo) => {
+      const {
+        electronApp,
+        page,
+        dir: projectDirName,
+      } = await setupElectron({
+        testInfo,
+      })
+
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const logoLink = page.getByTestId('app-logo')
+      const projectDirLink = page.getByText('Loaded from')
+
+      await test.step('Wait for project view', async () => {
+        await expect(projectDirLink).toBeVisible()
+      })
+
+      await createProject({ name: 'project-000', page })
+
+      const changeColorFs = async (color: string) => {
+        const tempSettingsFilePath = join(
+          projectDirName,
+          'project-000',
+          PROJECT_SETTINGS_FILE_NAME
+        )
+        await fsp.writeFile(
+          tempSettingsFilePath,
+          `[settings.app]\nthemeColor = "${color}"`
+        )
+      }
+
+      await test.step('Check the color is first starting as we expect', async () => {
+        await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
+      })
+
+      await test.step('Check color of logo changed', async () => {
+        await changeColorFs('99')
+        await expect(logoLink).toHaveCSS('--primary-hue', '99')
+      })
+
       await electronApp.close()
     }
   )

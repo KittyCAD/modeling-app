@@ -1,63 +1,52 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 19,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 19,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 19,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 9,
             "name": "pt1",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "MemberExpression",
-            "type": "MemberExpression",
-            "start": 12,
+            "computed": false,
             "end": 19,
             "object": {
-              "type": "Identifier",
-              "type": "Identifier",
-              "start": 12,
               "end": 14,
               "name": "b1",
-              "digest": null
+              "start": 12,
+              "type": "Identifier",
+              "type": "Identifier"
             },
             "property": {
-              "type": "Identifier",
-              "type": "Identifier",
-              "start": 15,
               "end": 19,
               "name": "zero",
-              "digest": null
+              "start": 15,
+              "type": "Identifier",
+              "type": "Identifier"
             },
-            "computed": false,
-            "digest": null
+            "start": 12,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 19,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 19,
+  "start": 0
 }

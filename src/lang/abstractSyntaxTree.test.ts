@@ -16,19 +16,18 @@ describe('testing AST', () => {
         type: 'ExpressionStatement',
         start: 0,
         end: 4,
-        digest: null,
+
         expression: {
           type: 'BinaryExpression',
           start: 0,
           end: 4,
-          digest: null,
+
           left: {
             type: 'Literal',
             start: 0,
             end: 1,
             value: 5,
             raw: '5',
-            digest: null,
           },
           operator: '+',
           right: {
@@ -37,7 +36,6 @@ describe('testing AST', () => {
             end: 4,
             value: 6,
             raw: '6',
-            digest: null,
           },
         },
       },
@@ -53,19 +51,18 @@ describe('testing AST', () => {
         start: 0,
         end: 15,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 15,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 11,
               name: 'myVar',
-              digest: null,
             },
             init: {
               type: 'Literal',
@@ -73,7 +70,6 @@ describe('testing AST', () => {
               end: 15,
               value: 5,
               raw: '5',
-              digest: null,
             },
           },
         ],
@@ -93,19 +89,18 @@ const newVar = myVar + 1
         start: 0,
         end: 15,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 15,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 11,
               name: 'myVar',
-              digest: null,
             },
             init: {
               type: 'Literal',
@@ -113,7 +108,6 @@ const newVar = myVar + 1
               end: 15,
               value: 5,
               raw: '5',
-              digest: null,
             },
           },
         ],
@@ -123,19 +117,18 @@ const newVar = myVar + 1
         start: 16,
         end: 40,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 22,
             end: 40,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 22,
               end: 28,
               name: 'newVar',
-              digest: null,
             },
             init: {
               type: 'BinaryExpression',
@@ -146,7 +139,6 @@ const newVar = myVar + 1
                 start: 31,
                 end: 36,
                 name: 'myVar',
-                digest: null,
               },
               operator: '+',
               right: {
@@ -155,9 +147,7 @@ const newVar = myVar + 1
                 end: 40,
                 value: 1,
                 raw: '1',
-                digest: null,
               },
-              digest: null,
             },
           },
         ],
@@ -180,25 +170,24 @@ describe('testing function declaration', () => {
         start: 0,
         end: 39,
         kind: 'fn',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 3,
             end: 39,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 3,
               end: 8,
               name: 'funcN',
-              digest: null,
             },
             init: {
               type: 'FunctionExpression',
               start: 11,
               end: 39,
-              digest: null,
+
               params: [
                 {
                   type: 'Parameter',
@@ -207,10 +196,8 @@ describe('testing function declaration', () => {
                     start: 12,
                     end: 13,
                     name: 'a',
-                    digest: null,
                   },
                   optional: false,
-                  digest: null,
                 },
                 {
                   type: 'Parameter',
@@ -219,33 +206,30 @@ describe('testing function declaration', () => {
                     start: 15,
                     end: 16,
                     name: 'b',
-                    digest: null,
                   },
                   optional: false,
-                  digest: null,
                 },
               ],
               body: {
                 start: 21,
                 end: 39,
-                digest: null,
+
                 body: [
                   {
                     type: 'ReturnStatement',
                     start: 25,
                     end: 37,
-                    digest: null,
+
                     argument: {
                       type: 'BinaryExpression',
                       start: 32,
                       end: 37,
-                      digest: null,
+
                       left: {
                         type: 'Identifier',
                         start: 32,
                         end: 33,
                         name: 'a',
-                        digest: null,
                       },
                       operator: '+',
                       right: {
@@ -253,7 +237,6 @@ describe('testing function declaration', () => {
                         start: 36,
                         end: 37,
                         name: 'b',
-                        digest: null,
                       },
                     },
                   },
@@ -278,25 +261,24 @@ const myVar = funcN(1, 2)`
         start: 0,
         end: 37,
         kind: 'fn',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 3,
             end: 37,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 3,
               end: 8,
               name: 'funcN',
-              digest: null,
             },
             init: {
               type: 'FunctionExpression',
               start: 11,
               end: 37,
-              digest: null,
+
               params: [
                 {
                   type: 'Parameter',
@@ -305,10 +287,8 @@ const myVar = funcN(1, 2)`
                     start: 12,
                     end: 13,
                     name: 'a',
-                    digest: null,
                   },
                   optional: false,
-                  digest: null,
                 },
                 {
                   type: 'Parameter',
@@ -317,32 +297,30 @@ const myVar = funcN(1, 2)`
                     start: 15,
                     end: 16,
                     name: 'b',
-                    digest: null,
                   },
                   optional: false,
-                  digest: null,
                 },
               ],
               body: {
                 start: 21,
                 end: 37,
-                digest: null,
+
                 body: [
                   {
                     type: 'ReturnStatement',
                     start: 23,
                     end: 35,
-                    digest: null,
+
                     argument: {
                       type: 'BinaryExpression',
                       start: 30,
                       end: 35,
-                      digest: null,
+
                       left: {
                         type: 'Identifier',
                         start: 30,
                         end: 31,
-                        digest: null,
+
                         name: 'a',
                       },
                       operator: '+',
@@ -350,7 +328,7 @@ const myVar = funcN(1, 2)`
                         type: 'Identifier',
                         start: 34,
                         end: 35,
-                        digest: null,
+
                         name: 'b',
                       },
                     },
@@ -366,31 +344,29 @@ const myVar = funcN(1, 2)`
         start: 38,
         end: 63,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 44,
             end: 63,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 44,
               end: 49,
               name: 'myVar',
-              digest: null,
             },
             init: {
               type: 'CallExpression',
               start: 52,
               end: 63,
-              digest: null,
+
               callee: {
                 type: 'Identifier',
                 start: 52,
                 end: 57,
                 name: 'funcN',
-                digest: null,
               },
               arguments: [
                 {
@@ -399,7 +375,6 @@ const myVar = funcN(1, 2)`
                   end: 59,
                   value: 1,
                   raw: '1',
-                  digest: null,
                 },
                 {
                   type: 'Literal',
@@ -407,7 +382,6 @@ const myVar = funcN(1, 2)`
                   end: 62,
                   value: 2,
                   raw: '2',
-                  digest: null,
                 },
               ],
               optional: false,
@@ -437,7 +411,7 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 131,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
@@ -448,33 +422,31 @@ describe('testing pipe operator special', () => {
               start: 6,
               end: 14,
               name: 'mySketch',
-              digest: null,
             },
-            digest: null,
+
             init: {
               type: 'PipeExpression',
               start: 17,
               end: 131,
-              digest: null,
+
               body: [
                 {
                   type: 'CallExpression',
                   start: 17,
                   end: 38,
-                  digest: null,
+
                   callee: {
                     type: 'Identifier',
                     start: 17,
                     end: 30,
                     name: 'startSketchAt',
-                    digest: null,
                   },
                   arguments: [
                     {
                       type: 'ArrayExpression',
                       start: 31,
                       end: 37,
-                      digest: null,
+
                       elements: [
                         {
                           type: 'Literal',
@@ -482,7 +454,6 @@ describe('testing pipe operator special', () => {
                           end: 33,
                           value: 0,
                           raw: '0',
-                          digest: null,
                         },
                         {
                           type: 'Literal',
@@ -490,7 +461,6 @@ describe('testing pipe operator special', () => {
                           end: 36,
                           value: 0,
                           raw: '0',
-                          digest: null,
                         },
                       ],
                     },
@@ -501,12 +471,12 @@ describe('testing pipe operator special', () => {
                   type: 'CallExpression',
                   start: 44,
                   end: 61,
-                  digest: null,
+
                   callee: {
                     type: 'Identifier',
                     start: 44,
                     end: 50,
-                    digest: null,
+
                     name: 'lineTo',
                   },
                   arguments: [
@@ -514,7 +484,7 @@ describe('testing pipe operator special', () => {
                       type: 'ArrayExpression',
                       start: 51,
                       end: 57,
-                      digest: null,
+
                       elements: [
                         {
                           type: 'Literal',
@@ -522,7 +492,6 @@ describe('testing pipe operator special', () => {
                           end: 53,
                           value: 2,
                           raw: '2',
-                          digest: null,
                         },
                         {
                           type: 'Literal',
@@ -530,7 +499,6 @@ describe('testing pipe operator special', () => {
                           end: 56,
                           value: 3,
                           raw: '3',
-                          digest: null,
                         },
                       ],
                     },
@@ -538,7 +506,6 @@ describe('testing pipe operator special', () => {
                       type: 'PipeSubstitution',
                       start: 59,
                       end: 60,
-                      digest: null,
                     },
                   ],
                   optional: false,
@@ -547,20 +514,19 @@ describe('testing pipe operator special', () => {
                   type: 'CallExpression',
                   start: 67,
                   end: 93,
-                  digest: null,
+
                   callee: {
                     type: 'Identifier',
                     start: 67,
                     end: 73,
                     name: 'lineTo',
-                    digest: null,
                   },
                   arguments: [
                     {
                       type: 'ArrayExpression',
                       start: 74,
                       end: 80,
-                      digest: null,
+
                       elements: [
                         {
                           type: 'Literal',
@@ -568,7 +534,6 @@ describe('testing pipe operator special', () => {
                           end: 76,
                           value: 0,
                           raw: '0',
-                          digest: null,
                         },
                         {
                           type: 'Literal',
@@ -576,7 +541,6 @@ describe('testing pipe operator special', () => {
                           end: 79,
                           value: 1,
                           raw: '1',
-                          digest: null,
                         },
                       ],
                     },
@@ -584,14 +548,12 @@ describe('testing pipe operator special', () => {
                       type: 'PipeSubstitution',
                       start: 82,
                       end: 83,
-                      digest: null,
                     },
                     {
                       type: 'TagDeclarator',
                       start: 85,
                       end: 92,
                       value: 'myPath',
-                      digest: null,
                     },
                   ],
                   optional: false,
@@ -600,20 +562,19 @@ describe('testing pipe operator special', () => {
                   type: 'CallExpression',
                   start: 99,
                   end: 116,
-                  digest: null,
+
                   callee: {
                     type: 'Identifier',
                     start: 99,
                     end: 105,
                     name: 'lineTo',
-                    digest: null,
                   },
                   arguments: [
                     {
                       type: 'ArrayExpression',
                       start: 106,
                       end: 112,
-                      digest: null,
+
                       elements: [
                         {
                           type: 'Literal',
@@ -621,7 +582,6 @@ describe('testing pipe operator special', () => {
                           end: 108,
                           value: 1,
                           raw: '1',
-                          digest: null,
                         },
                         {
                           type: 'Literal',
@@ -629,7 +589,6 @@ describe('testing pipe operator special', () => {
                           end: 111,
                           value: 1,
                           raw: '1',
-                          digest: null,
                         },
                       ],
                     },
@@ -637,7 +596,6 @@ describe('testing pipe operator special', () => {
                       type: 'PipeSubstitution',
                       start: 114,
                       end: 115,
-                      digest: null,
                     },
                   ],
                   optional: false,
@@ -646,13 +604,12 @@ describe('testing pipe operator special', () => {
                   type: 'CallExpression',
                   start: 122,
                   end: 131,
-                  digest: null,
+
                   callee: {
                     type: 'Identifier',
                     start: 122,
                     end: 124,
                     name: 'rx',
-                    digest: null,
                   },
                   arguments: [
                     {
@@ -661,13 +618,11 @@ describe('testing pipe operator special', () => {
                       end: 127,
                       value: 45,
                       raw: '45',
-                      digest: null,
                     },
                     {
                       type: 'PipeSubstitution',
                       start: 129,
                       end: 130,
-                      digest: null,
                     },
                   ],
                   optional: false,
@@ -691,38 +646,36 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 36,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 36,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 11,
               name: 'myVar',
-              digest: null,
             },
             init: {
               type: 'PipeExpression',
               start: 14,
               end: 36,
-              digest: null,
+
               body: [
                 {
                   type: 'BinaryExpression',
                   start: 14,
                   end: 19,
-                  digest: null,
+
                   left: {
                     type: 'Literal',
                     start: 14,
                     end: 15,
                     value: 5,
                     raw: '5',
-                    digest: null,
                   },
                   operator: '+',
                   right: {
@@ -731,20 +684,18 @@ describe('testing pipe operator special', () => {
                     end: 19,
                     value: 6,
                     raw: '6',
-                    digest: null,
                   },
                 },
                 {
                   type: 'CallExpression',
                   start: 23,
                   end: 36,
-                  digest: null,
+
                   callee: {
                     type: 'Identifier',
                     start: 23,
                     end: 29,
                     name: 'myFunc',
-                    digest: null,
                   },
                   arguments: [
                     {
@@ -753,13 +704,11 @@ describe('testing pipe operator special', () => {
                       end: 32,
                       value: 45,
                       raw: '45',
-                      digest: null,
                     },
                     {
                       type: 'PipeSubstitution',
                       start: 34,
                       end: 35,
-                      digest: null,
                     },
                   ],
                   optional: false,
@@ -782,25 +731,24 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 33,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 33,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 8,
               name: 'yo',
-              digest: null,
             },
             init: {
               type: 'ArrayExpression',
               start: 11,
               end: 33,
-              digest: null,
+
               elements: [
                 {
                   type: 'Literal',
@@ -808,7 +756,6 @@ describe('testing pipe operator special', () => {
                   end: 13,
                   value: 1,
                   raw: '1',
-                  digest: null,
                 },
                 {
                   type: 'Literal',
@@ -816,27 +763,24 @@ describe('testing pipe operator special', () => {
                   end: 18,
                   value: '2',
                   raw: "'2'",
-                  digest: null,
                 },
                 {
                   type: 'Identifier',
                   start: 20,
                   end: 25,
                   name: 'three',
-                  digest: null,
                 },
                 {
                   type: 'BinaryExpression',
                   start: 27,
                   end: 32,
-                  digest: null,
+
                   left: {
                     type: 'Literal',
                     start: 27,
                     end: 28,
                     value: 4,
                     raw: '4',
-                    digest: null,
                   },
                   operator: '+',
                   right: {
@@ -845,7 +789,6 @@ describe('testing pipe operator special', () => {
                     end: 32,
                     value: 5,
                     raw: '5',
-                    digest: null,
                   },
                 },
               ],
@@ -869,19 +812,18 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 15,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 15,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 11,
               name: 'three',
-              digest: null,
             },
             init: {
               type: 'Literal',
@@ -889,7 +831,6 @@ describe('testing pipe operator special', () => {
               end: 15,
               value: 3,
               raw: '3',
-              digest: null,
             },
           },
         ],
@@ -899,37 +840,35 @@ describe('testing pipe operator special', () => {
         start: 16,
         end: 83,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 22,
             end: 83,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 22,
               end: 24,
               name: 'yo',
-              digest: null,
             },
             init: {
               type: 'ObjectExpression',
               start: 27,
               end: 83,
-              digest: null,
+
               properties: [
                 {
                   type: 'ObjectProperty',
                   start: 28,
                   end: 39,
-                  digest: null,
+
                   key: {
                     type: 'Identifier',
                     start: 28,
                     end: 32,
                     name: 'aStr',
-                    digest: null,
                   },
                   value: {
                     type: 'Literal',
@@ -937,20 +876,18 @@ describe('testing pipe operator special', () => {
                     end: 39,
                     value: 'str',
                     raw: "'str'",
-                    digest: null,
                   },
                 },
                 {
                   type: 'ObjectProperty',
                   start: 41,
                   end: 48,
-                  digest: null,
+
                   key: {
                     type: 'Identifier',
                     start: 41,
                     end: 45,
                     name: 'anum',
-                    digest: null,
                   },
                   value: {
                     type: 'Literal',
@@ -958,53 +895,48 @@ describe('testing pipe operator special', () => {
                     end: 48,
                     value: 2,
                     raw: '2',
-                    digest: null,
                   },
                 },
                 {
                   type: 'ObjectProperty',
                   start: 50,
                   end: 67,
-                  digest: null,
+
                   key: {
                     type: 'Identifier',
                     start: 50,
                     end: 60,
                     name: 'identifier',
-                    digest: null,
                   },
                   value: {
                     type: 'Identifier',
                     start: 62,
                     end: 67,
                     name: 'three',
-                    digest: null,
                   },
                 },
                 {
                   type: 'ObjectProperty',
                   start: 69,
                   end: 82,
-                  digest: null,
+
                   key: {
                     type: 'Identifier',
                     start: 69,
                     end: 75,
                     name: 'binExp',
-                    digest: null,
                   },
                   value: {
                     type: 'BinaryExpression',
                     start: 77,
                     end: 82,
-                    digest: null,
+
                     left: {
                       type: 'Literal',
                       start: 77,
                       end: 78,
                       value: 4,
                       raw: '4',
-                      digest: null,
                     },
                     operator: '+',
                     right: {
@@ -1013,7 +945,6 @@ describe('testing pipe operator special', () => {
                       end: 82,
                       value: 5,
                       raw: '5',
-                      digest: null,
                     },
                   },
                 },
@@ -1037,55 +968,52 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 37,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 37,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 8,
               name: 'yo',
-              digest: null,
             },
             init: {
               type: 'ObjectExpression',
               start: 11,
               end: 37,
-              digest: null,
+
               properties: [
                 {
                   type: 'ObjectProperty',
                   start: 12,
                   end: 36,
-                  digest: null,
+
                   key: {
                     type: 'Identifier',
                     start: 12,
                     end: 15,
                     name: 'key',
-                    digest: null,
                   },
                   value: {
                     type: 'ObjectExpression',
                     start: 17,
                     end: 36,
-                    digest: null,
+
                     properties: [
                       {
                         type: 'ObjectProperty',
                         start: 21,
                         end: 34,
-                        digest: null,
+
                         key: {
                           type: 'Identifier',
                           start: 21,
                           end: 25,
                           name: 'key2',
-                          digest: null,
                         },
                         value: {
                           type: 'Literal',
@@ -1093,7 +1021,6 @@ describe('testing pipe operator special', () => {
                           end: 34,
                           value: 'value',
                           raw: "'value'",
-                          digest: null,
                         },
                       },
                     ],
@@ -1117,43 +1044,41 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 26,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 26,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 8,
               name: 'yo',
-              digest: null,
             },
             init: {
               type: 'ObjectExpression',
               start: 11,
               end: 26,
-              digest: null,
+
               properties: [
                 {
                   type: 'ObjectProperty',
                   start: 12,
                   end: 25,
-                  digest: null,
+
                   key: {
                     type: 'Identifier',
                     start: 12,
                     end: 15,
                     name: 'key',
-                    digest: null,
                   },
                   value: {
                     type: 'ArrayExpression',
                     start: 17,
                     end: 25,
-                    digest: null,
+
                     elements: [
                       {
                         type: 'Literal',
@@ -1161,7 +1086,6 @@ describe('testing pipe operator special', () => {
                         end: 19,
                         value: 1,
                         raw: '1',
-                        digest: null,
                       },
                       {
                         type: 'Literal',
@@ -1169,7 +1093,6 @@ describe('testing pipe operator special', () => {
                         end: 24,
                         value: '2',
                         raw: "'2'",
-                        digest: null,
                       },
                     ],
                   },
@@ -1192,45 +1115,42 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 23,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 23,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 10,
               name: 'prop',
-              digest: null,
             },
             init: {
               type: 'MemberExpression',
               start: 13,
               end: 23,
               computed: false,
-              digest: null,
+
               object: {
                 type: 'MemberExpression',
                 start: 13,
                 end: 19,
-                digest: null,
+
                 computed: false,
                 object: {
                   type: 'Identifier',
                   start: 13,
                   end: 15,
                   name: 'yo',
-                  digest: null,
                 },
                 property: {
                   type: 'Identifier',
                   start: 16,
                   end: 19,
                   name: 'one',
-                  digest: null,
                 },
               },
               property: {
@@ -1238,7 +1158,6 @@ describe('testing pipe operator special', () => {
                 start: 20,
                 end: 23,
                 name: 'two',
-                digest: null,
               },
             },
           },
@@ -1257,45 +1176,42 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 26,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 26,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 10,
               name: 'prop',
-              digest: null,
             },
             init: {
               type: 'MemberExpression',
               start: 13,
               end: 26,
               computed: false,
-              digest: null,
+
               object: {
                 type: 'MemberExpression',
                 start: 13,
                 end: 19,
                 computed: false,
-                digest: null,
+
                 object: {
                   type: 'Identifier',
                   start: 13,
                   end: 15,
                   name: 'yo',
-                  digest: null,
                 },
                 property: {
                   type: 'Identifier',
                   start: 16,
                   end: 19,
                   name: 'one',
-                  digest: null,
                 },
               },
               property: {
@@ -1304,7 +1220,6 @@ describe('testing pipe operator special', () => {
                 end: 25,
                 value: 'two',
                 raw: '"two"',
-                digest: null,
               },
             },
           },
@@ -1323,38 +1238,36 @@ describe('testing pipe operator special', () => {
         start: 0,
         end: 27,
         kind: 'const',
-        digest: null,
+
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
             end: 27,
-            digest: null,
+
             id: {
               type: 'Identifier',
               start: 6,
               end: 10,
               name: 'prop',
-              digest: null,
             },
             init: {
               type: 'MemberExpression',
               start: 13,
               end: 27,
               computed: true,
-              digest: null,
+
               object: {
                 type: 'MemberExpression',
                 start: 13,
                 end: 22,
-                digest: null,
+
                 computed: false,
                 object: {
                   type: 'Identifier',
                   start: 13,
                   end: 15,
                   name: 'yo',
-                  digest: null,
                 },
                 property: {
                   type: 'Literal',
@@ -1362,7 +1275,6 @@ describe('testing pipe operator special', () => {
                   end: 21,
                   value: 'one',
                   raw: '"one"',
-                  digest: null,
                 },
               },
               property: {
@@ -1370,7 +1282,6 @@ describe('testing pipe operator special', () => {
                 start: 23,
                 end: 26,
                 name: 'two',
-                digest: null,
               },
             },
           },
@@ -1391,32 +1302,30 @@ describe('nests binary expressions correctly', () => {
       start: 0,
       end: 16,
       kind: 'const',
-      digest: null,
+
       declarations: [
         {
           type: 'VariableDeclarator',
           start: 6,
           end: 16,
-          digest: null,
+
           id: {
             type: 'Identifier',
             start: 6,
             end: 8,
             name: 'yo',
-            digest: null,
           },
           init: {
             type: 'BinaryExpression',
             start: 11,
             end: 16,
-            digest: null,
+
             left: {
               type: 'Literal',
               start: 11,
               end: 12,
               value: 1,
               raw: '1',
-              digest: null,
             },
             operator: '+',
             right: {
@@ -1425,7 +1334,6 @@ describe('nests binary expressions correctly', () => {
               end: 16,
               value: 2,
               raw: '2',
-              digest: null,
             },
           },
         },
@@ -1443,37 +1351,35 @@ describe('nests binary expressions correctly', () => {
       start: 0,
       end: 20,
       kind: 'const',
-      digest: null,
+
       declarations: [
         {
           type: 'VariableDeclarator',
           start: 6,
           end: 20,
-          digest: null,
+
           id: {
             type: 'Identifier',
             start: 6,
             end: 8,
             name: 'yo',
-            digest: null,
           },
           init: {
             type: 'BinaryExpression',
             start: 11,
             end: 20,
-            digest: null,
+
             left: {
               type: 'BinaryExpression',
               start: 11,
               end: 16,
-              digest: null,
+
               left: {
                 type: 'Literal',
                 start: 11,
                 end: 12,
                 value: 1,
                 raw: '1',
-                digest: null,
               },
               operator: '*',
               right: {
@@ -1482,7 +1388,6 @@ describe('nests binary expressions correctly', () => {
                 end: 16,
                 value: 2,
                 raw: '2',
-                digest: null,
               },
             },
             operator: '+',
@@ -1492,7 +1397,6 @@ describe('nests binary expressions correctly', () => {
               end: 20,
               value: 3,
               raw: '3',
-              digest: null,
             },
           },
         },
@@ -1510,46 +1414,43 @@ describe('nests binary expressions correctly', () => {
       start: 0,
       end: 20,
       kind: 'const',
-      digest: null,
+
       declarations: [
         {
           type: 'VariableDeclarator',
           start: 6,
           end: 20,
-          digest: null,
+
           id: {
             type: 'Identifier',
             start: 6,
             end: 8,
             name: 'yo',
-            digest: null,
           },
           init: {
             type: 'BinaryExpression',
             start: 11,
             end: 20,
-            digest: null,
+
             left: {
               type: 'Literal',
               start: 11,
               end: 12,
               value: 1,
               raw: '1',
-              digest: null,
             },
             operator: '+',
             right: {
               type: 'BinaryExpression',
               start: 15,
               end: 20,
-              digest: null,
+
               left: {
                 type: 'Literal',
                 start: 15,
                 end: 16,
                 value: 2,
                 raw: '2',
-                digest: null,
               },
               operator: '*',
               right: {
@@ -1558,7 +1459,6 @@ describe('nests binary expressions correctly', () => {
                 end: 20,
                 value: 3,
                 raw: '3',
-                digest: null,
               },
             },
           },
@@ -1575,19 +1475,18 @@ describe('nests binary expressions correctly', () => {
       type: 'BinaryExpression',
       start: 11,
       end: 20,
-      digest: null,
+
       left: {
         type: 'BinaryExpression',
         start: 11,
         end: 16,
-        digest: null,
+
         left: {
           type: 'Literal',
           start: 11,
           end: 12,
           value: 1,
           raw: '1',
-          digest: null,
         },
         operator: '+',
         right: {
@@ -1596,7 +1495,6 @@ describe('nests binary expressions correctly', () => {
           end: 16,
           value: 2,
           raw: '2',
-          digest: null,
         },
       },
       operator: '-',
@@ -1606,7 +1504,6 @@ describe('nests binary expressions correctly', () => {
         end: 20,
         value: 3,
         raw: '3',
-        digest: null,
       },
     })
   })
@@ -1619,19 +1516,18 @@ describe('nests binary expressions correctly', () => {
       type: 'BinaryExpression',
       start: 11,
       end: 20,
-      digest: null,
+
       left: {
         type: 'BinaryExpression',
         start: 11,
         end: 16,
-        digest: null,
+
         left: {
           type: 'Literal',
           start: 11,
           end: 12,
           value: 1,
           raw: '1',
-          digest: null,
         },
         operator: '*',
         right: {
@@ -1640,7 +1536,6 @@ describe('nests binary expressions correctly', () => {
           end: 16,
           value: 2,
           raw: '2',
-          digest: null,
         },
       },
       operator: '/',
@@ -1650,7 +1545,6 @@ describe('nests binary expressions correctly', () => {
         end: 20,
         value: 3,
         raw: '3',
-        digest: null,
       },
     })
   })
@@ -1665,54 +1559,51 @@ describe('nests binary expressions correctly', () => {
       operator: '+',
       start: 11,
       end: 34,
-      digest: null,
+
       left: {
         type: 'BinaryExpression',
         operator: '+',
         start: 11,
         end: 30,
-        digest: null,
+
         left: {
           type: 'Literal',
           value: 1,
           raw: '1',
           start: 11,
           end: 12,
-          digest: null,
         },
         right: {
           type: 'BinaryExpression',
           operator: '/',
           start: 15,
           end: 30,
-          digest: null,
+
           left: {
             type: 'BinaryExpression',
             operator: '*',
             start: 15,
             end: 25,
-            digest: null,
+
             left: {
               type: 'Literal',
               value: 2,
               raw: '2',
               start: 15,
               end: 16,
-              digest: null,
             },
             right: {
               type: 'BinaryExpression',
               operator: '-',
               start: 20,
               end: 25,
-              digest: null,
+
               left: {
                 type: 'Literal',
                 value: 3,
                 raw: '3',
                 start: 20,
                 end: 21,
-                digest: null,
               },
               right: {
                 type: 'Literal',
@@ -1720,7 +1611,6 @@ describe('nests binary expressions correctly', () => {
                 raw: '4',
                 start: 24,
                 end: 25,
-                digest: null,
               },
             },
           },
@@ -1730,7 +1620,6 @@ describe('nests binary expressions correctly', () => {
             raw: '5',
             start: 29,
             end: 30,
-            digest: null,
           },
         },
       },
@@ -1740,7 +1629,6 @@ describe('nests binary expressions correctly', () => {
         raw: '6',
         start: 33,
         end: 34,
-        digest: null,
       },
     })
   })
@@ -1756,7 +1644,7 @@ const key = 'c'`
       type: 'NonCodeNode',
       start: code.indexOf('\n// this is a comment'),
       end: code.indexOf('const key') - 1,
-      digest: null,
+
       value: {
         type: 'blockComment',
         style: 'line',
@@ -1800,7 +1688,7 @@ const key = 'c'`
       type: 'NonCodeNode',
       start: 92,
       end: 149,
-      digest: null,
+
       value: {
         type: 'inlineComment',
         style: 'block',
@@ -1827,7 +1715,7 @@ const key = 'c'`
       type: 'NonCodeNode',
       start: 113,
       end: 126,
-      digest: null,
+
       value: {
         type: 'blockComment',
         value: 'a comment',
@@ -1849,18 +1737,17 @@ describe('test UnaryExpression', () => {
       operator: '-',
       start: 14,
       end: 26,
-      digest: null,
+
       argument: {
         type: 'CallExpression',
         start: 15,
         end: 26,
-        digest: null,
+
         callee: {
           type: 'Identifier',
           start: 15,
           end: 18,
           name: 'min',
-          digest: null,
         },
         arguments: [
           {
@@ -1869,7 +1756,6 @@ describe('test UnaryExpression', () => {
             end: 20,
             value: 4,
             raw: '4',
-            digest: null,
           },
           {
             type: 'Literal',
@@ -1877,7 +1763,6 @@ describe('test UnaryExpression', () => {
             end: 25,
             value: 100,
             raw: '100',
-            digest: null,
           },
         ],
         optional: false,
@@ -1897,13 +1782,12 @@ describe('testing nested call expressions', () => {
       type: 'CallExpression',
       start: 14,
       end: 40,
-      digest: null,
+
       callee: {
         type: 'Identifier',
         start: 14,
         end: 17,
         name: 'min',
-        digest: null,
       },
       arguments: [
         {
@@ -1912,33 +1796,30 @@ describe('testing nested call expressions', () => {
           end: 21,
           value: 100,
           raw: '100',
-          digest: null,
         },
         {
           type: 'BinaryExpression',
           operator: '+',
           start: 23,
           end: 39,
-          digest: null,
+
           left: {
             type: 'Literal',
             value: 1,
             raw: '1',
             start: 23,
             end: 24,
-            digest: null,
           },
           right: {
             type: 'CallExpression',
             start: 27,
             end: 39,
-            digest: null,
+
             callee: {
               type: 'Identifier',
               start: 27,
               end: 33,
               name: 'legLen',
-              digest: null,
             },
             arguments: [
               {
@@ -1947,7 +1828,6 @@ describe('testing nested call expressions', () => {
                 end: 35,
                 value: 5,
                 raw: '5',
-                digest: null,
               },
               {
                 type: 'Literal',
@@ -1955,7 +1835,6 @@ describe('testing nested call expressions', () => {
                 end: 38,
                 value: 3,
                 raw: '3',
-                digest: null,
               },
             ],
             optional: false,
@@ -1980,18 +1859,17 @@ describe('should recognise callExpresions in binaryExpressions', () => {
         operator: '+',
         start: 8,
         end: 26,
-        digest: null,
+
         left: {
           type: 'CallExpression',
           start: 8,
           end: 22,
-          digest: null,
+
           callee: {
             type: 'Identifier',
             start: 8,
             end: 15,
             name: 'segEndX',
-            digest: null,
           },
           arguments: [
             {
@@ -1999,7 +1877,6 @@ describe('should recognise callExpresions in binaryExpressions', () => {
               start: 16,
               end: 21,
               name: 'seg02',
-              digest: null,
             },
           ],
           optional: false,
@@ -2010,10 +1887,9 @@ describe('should recognise callExpresions in binaryExpressions', () => {
           raw: '1',
           start: 25,
           end: 26,
-          digest: null,
         },
       },
-      { type: 'PipeSubstitution', start: 28, end: 29, digest: null },
+      { type: 'PipeSubstitution', start: 28, end: 29 },
     ])
   })
 })
@@ -2027,6 +1903,6 @@ describe('parsing errors', () => {
     const error = result as KCLError
     expect(error.kind).toBe('syntax')
     expect(error.msg).toBe('Unexpected token: (')
-    expect(error.sourceRanges).toEqual([[27, 28]])
+    expect(error.sourceRanges).toEqual([[27, 28, 0]])
   })
 })

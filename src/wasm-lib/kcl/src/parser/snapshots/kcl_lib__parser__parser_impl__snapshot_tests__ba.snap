@@ -1,150 +1,130 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 133,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 1,
-      "end": 132,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 7,
           "end": 132,
           "id": {
-            "type": "Identifier",
-            "start": 7,
             "end": 16,
             "name": "sketch001",
-            "digest": null
+            "start": 7,
+            "type": "Identifier"
           },
           "init": {
-            "type": "PipeExpression",
-            "type": "PipeExpression",
-            "start": 19,
-            "end": 132,
             "body": [
               {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 19,
-                "end": 38,
+                "arguments": [
+                  {
+                    "end": 37,
+                    "raw": "'XY'",
+                    "start": 33,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
                 "callee": {
-                  "type": "Identifier",
-                  "start": 19,
                   "end": 32,
                   "name": "startSketchOn",
-                  "digest": null
+                  "start": 19,
+                  "type": "Identifier"
                 },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 33,
-                    "end": 37,
-                    "value": "XY",
-                    "raw": "'XY'",
-                    "digest": null
-                  }
-                ],
+                "end": 38,
                 "optional": false,
-                "digest": null
+                "start": 19,
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
-                "type": "CallExpression",
-                "type": "CallExpression",
-                "start": 115,
-                "end": 132,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 115,
-                  "end": 129,
-                  "name": "startProfileAt",
-                  "digest": null
-                },
                 "arguments": [
                   {
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution",
-                    "start": 130,
                     "end": 131,
-                    "digest": null
+                    "start": 130,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
                   }
                 ],
+                "callee": {
+                  "end": 129,
+                  "name": "startProfileAt",
+                  "start": 115,
+                  "type": "Identifier"
+                },
+                "end": 132,
                 "optional": false,
-                "digest": null
+                "start": 115,
+                "type": "CallExpression",
+                "type": "CallExpression"
               }
             ],
+            "end": 132,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "0": [
                   {
-                    "type": "NonCodeNode",
-                    "start": 41,
                     "end": 52,
+                    "start": 41,
+                    "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
                       "value": "|> arc({",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   },
                   {
-                    "type": "NonCodeNode",
-                    "start": 55,
                     "end": 74,
+                    "start": 55,
+                    "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
                       "value": "angleEnd: 270,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   },
                   {
-                    "type": "NonCodeNode",
-                    "start": 77,
                     "end": 98,
+                    "start": 77,
+                    "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
                       "value": "angleStart: 450,",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   },
                   {
-                    "type": "NonCodeNode",
-                    "start": 101,
                     "end": 109,
+                    "start": 101,
+                    "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
                       "value": "}, %)",
                       "style": "line"
-                    },
-                    "digest": null
+                    }
                   }
                 ]
               },
-              "start": [],
-              "digest": null
+              "startNodes": []
             },
-            "digest": null
+            "start": 19,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
           },
-          "digest": null
+          "start": 7,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 132,
       "kind": "const",
-      "digest": null
+      "start": 1,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 133,
+  "start": 0
 }

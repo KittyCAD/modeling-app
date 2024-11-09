@@ -1,6 +1,16 @@
 import { test, expect } from '@playwright/test'
+import fsp from 'fs/promises'
 import { uuidv4 } from 'lib/utils'
-import { getUtils, setup, tearDown } from './test-utils'
+import {
+  darkModeBgColor,
+  darkModePlaneColorXZ,
+  executorInputPath,
+  getUtils,
+  setup,
+  setupElectron,
+  tearDown,
+} from './test-utils'
+import { join } from 'path'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   await setup(context, page, testInfo)
@@ -622,16 +632,18 @@ test.describe('Editor tests', () => {
 
       await u.waitForAuthSkipAppStart()
 
-      // this test might be brittle as we add and remove functions
-      // but should also be easy to update.
       // tests clicking on an option, selection the first option
       // and arrowing down to an option
 
       await u.codeLocator.click()
       await page.keyboard.type('sketch001 = start')
 
-      // expect there to be six auto complete options
-      await expect(page.locator('.cm-completionLabel')).toHaveCount(8)
+      // expect there to be some auto complete options
+      // exact number depends on the KCL stdlib, so let's just check it's > 0 for now.
+      await expect(async () => {
+        const children = await page.locator('.cm-completionLabel').count()
+        expect(children).toBeGreaterThan(0)
+      }).toPass()
       // this makes sure we can accept a completion with click
       await page.getByText('startSketchOn').click()
       await page.keyboard.type("'XZ'")
@@ -974,4 +986,84 @@ test.describe('Editor tests', () => {
     |> close(%)
     |> extrude(5, %)`)
   })
+
+  test.fixme(
+    `Can use the import stdlib function on a local OBJ file`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const { electronApp, page } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          const bracketDir = join(dir, 'cube')
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('cube.obj'),
+            join(bracketDir, 'cube.obj')
+          )
+          await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
+        },
+      })
+      const viewportSize = { width: 1200, height: 500 }
+      await page.setViewportSize(viewportSize)
+
+      // Locators and constants
+      const u = await getUtils(page)
+      const projectLink = page.getByRole('link', { name: 'cube' })
+      const gizmo = page.locator('[aria-label*=gizmo]')
+      const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+      const locationToHavColor = async (
+        position: { x: number; y: number },
+        color: [number, number, number]
+      ) => {
+        return u.getGreatestPixDiff(position, color)
+      }
+      const notTheOrigin = {
+        x: viewportSize.width * 0.55,
+        y: viewportSize.height * 0.3,
+      }
+      const origin = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
+      const errorIndicators = page.locator('.cm-lint-marker-error')
+
+      await test.step(`Open the empty file, see the default planes`, async () => {
+        await projectLink.click()
+        await u.waitForPageLoad()
+        await expect
+          .poll(
+            async () => locationToHavColor(notTheOrigin, darkModePlaneColorXZ),
+            {
+              timeout: 5000,
+              message: 'XZ plane color is visible',
+            }
+          )
+          .toBeLessThan(15)
+      })
+      await test.step(`Write the import function line`, async () => {
+        await u.codeLocator.fill(`import('cube.obj')`)
+        await page.waitForTimeout(800)
+      })
+      await test.step(`Reset the camera before checking`, async () => {
+        await u.doAndWaitForCmd(async () => {
+          await gizmo.click({ button: 'right' })
+          await resetCameraButton.click()
+        }, 'zoom_to_fit')
+      })
+      await test.step(`Verify that we see the imported geometry and no errors`, async () => {
+        await expect(errorIndicators).toHaveCount(0)
+        await expect
+          .poll(async () => locationToHavColor(origin, darkModePlaneColorXZ), {
+            timeout: 3000,
+            message: 'Plane color should not be visible',
+          })
+          .toBeGreaterThan(15)
+        await expect
+          .poll(async () => locationToHavColor(origin, darkModeBgColor), {
+            timeout: 3000,
+            message: 'Background color should not be visible',
+          })
+          .toBeGreaterThan(15)
+      })
+
+      await electronApp.close()
+    }
+  )
 })

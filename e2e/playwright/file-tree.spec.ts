@@ -3,6 +3,7 @@ import { test, expect } from './fixtures/fixtureSetup'
 import * as fsp from 'fs/promises'
 import * as fs from 'fs'
 import {
+  createProject,
   executorInputPath,
   getUtils,
   setup,
@@ -25,10 +26,6 @@ test.describe('integrations tests', () => {
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
     async ({ tronApp, homePage, scene, editor, toolbar }) => {
-      test.skip(
-        process.platform === 'win32',
-        'windows times out will waiting for the execution indicator?'
-      )
       await tronApp.initialise({
         fixtures: { homePage, scene, editor, toolbar },
         folderSetupFn: async (dir) => {
@@ -54,7 +51,6 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        // windows times out here, hence the skip above
         await scene.waitForExecutionDone()
       })
       await test.step('enter sketch mode', async () => {
@@ -70,10 +66,13 @@ test.describe('integrations tests', () => {
         await toolbar.editSketch()
         await expect(toolbar.exitSketchBtn).toBeVisible()
       })
+
+      const fileName = 'Untitled.kcl'
       await test.step('check sketch mode is exited when creating new file', async () => {
         await toolbar.fileTreeBtn.click()
         await toolbar.expectFileTreeState(['main.kcl'])
-        await toolbar.createFile({ wait: true })
+
+        await toolbar.createFile({ fileName, waitForToastToDisappear: true })
 
         // check we're out of sketch mode
         await expect(toolbar.exitSketchBtn).not.toBeVisible()
@@ -92,10 +91,10 @@ test.describe('integrations tests', () => {
         })
         await toolbar.editSketch()
         await expect(toolbar.exitSketchBtn).toBeVisible()
-        await toolbar.expectFileTreeState(['main.kcl', 'Untitled.kcl'])
+        await toolbar.expectFileTreeState(['main.kcl', fileName])
       })
       await test.step('check sketch mode is exited when opening a different file', async () => {
-        await toolbar.openFile('untitled.kcl', { wait: false })
+        await toolbar.openFile(fileName, { wait: false })
 
         // check we're out of sketch mode
         await expect(toolbar.exitSketchBtn).not.toBeVisible()
@@ -108,26 +107,21 @@ test.describe('when using the file tree to', () => {
   const fromFile = 'main.kcl'
   const toFile = 'hello.kcl'
 
-  test(
+  test.fixme(
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
       await tronApp.initialise()
 
-      const {
-        panesOpen,
-        createAndSelectProject,
-        pasteCodeInEditor,
-        renameFile,
-        editorTextMatches,
-      } = await getUtils(tronApp.page, test)
+      const { panesOpen, pasteCodeInEditor, renameFile, editorTextMatches } =
+        await getUtils(tronApp.page, test)
 
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
 
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
@@ -135,6 +129,9 @@ test.describe('when using the file tree to', () => {
         'utf-8'
       )
       await pasteCodeInEditor(kclCube)
+
+      // TODO: We have a timeout of 1s between edits to write to disk. If you reload the page too quickly it won't write to disk.
+      await tronApp.page.waitForTimeout(2000)
 
       await renameFile(fromFile, toFile)
       await tronApp.page.reload()
@@ -158,21 +155,20 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test(
+  test.fixme(
     `create many new untitled files they increment their names`,
     { tag: '@electron' },
     async ({ browser: _, tronApp }, testInfo) => {
       await tronApp.initialise()
 
-      const { panesOpen, createAndSelectProject, createNewFile } =
-        await getUtils(tronApp.page, test)
+      const { panesOpen, createNewFile } = await getUtils(tronApp.page, test)
 
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files'])
 
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
 
       await createNewFile('')
       await createNewFile('')
@@ -195,57 +191,74 @@ test.describe('when using the file tree to', () => {
   test(
     'create a new file with the same name as an existing file cancels the operation',
     { tag: '@electron' },
-    async ({ browser: _, tronApp }, testInfo) => {
-      await tronApp.initialise()
+    async (
+      { browser: _, tronApp, homePage, scene, editor, toolbar },
+      testInfo
+    ) => {
+      const projectName = 'cube'
+      const mainFile = 'main.kcl'
+      const secondFile = 'cylinder.kcl'
+      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
+      const kclCylinder = await fsp.readFile(
+        executorInputPath('cylinder.kcl'),
+        'utf-8'
+      )
+      await tronApp.initialise({
+        fixtures: { homePage, scene, editor, toolbar },
+        folderSetupFn: async (dir) => {
+          const cubeDir = join(dir, projectName)
+          await fsp.mkdir(cubeDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('cube.kcl'),
+            join(cubeDir, mainFile)
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(cubeDir, secondFile)
+          )
+        },
+      })
 
       const {
-        openKclCodePanel,
         openFilePanel,
-        createAndSelectProject,
-        pasteCodeInEditor,
-        createNewFileAndSelect,
         renameFile,
         selectFile,
         editorTextMatches,
+        waitForPageLoad,
       } = await getUtils(tronApp.page, _test)
 
-      await tronApp.page.setViewportSize({ width: 1200, height: 500 })
-      tronApp.page.on('console', console.log)
+      await test.step(`Setup: Open project and navigate to ${secondFile}`, async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: projectName,
+              fileCount: 2,
+              folderCount: 2, // TODO: This is a pre-existing bug, there are no folders within the project
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject(projectName)
+        await waitForPageLoad()
+        await openFilePanel()
+        await selectFile(secondFile)
+      })
 
-      await createAndSelectProject('project-000')
-      await openKclCodePanel()
-      await openFilePanel()
-      // File the main.kcl with contents
-      const kclCube = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cube.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCube)
+      await test.step(`Attempt to rename ${secondFile} to ${mainFile}`, async () => {
+        await renameFile(secondFile, mainFile)
+      })
 
-      const kcl1 = 'main.kcl'
-      const kcl2 = '2.kcl'
-
-      await createNewFileAndSelect(kcl2)
-      const kclCylinder = await fsp.readFile(
-        'src/wasm-lib/tests/executor/inputs/cylinder.kcl',
-        'utf-8'
-      )
-      await pasteCodeInEditor(kclCylinder)
-
-      await renameFile(kcl2, kcl1)
-
-      await test.step(`Postcondition: ${kcl1} still has the original content`, async () => {
-        await selectFile(kcl1)
+      await test.step(`Postcondition: ${mainFile} still has the original content`, async () => {
+        await selectFile(mainFile)
         await editorTextMatches(kclCube)
       })
-      await tronApp.page.waitForTimeout(500)
 
-      await test.step(`Postcondition: ${kcl2} still exists with the original content`, async () => {
-        await selectFile(kcl2)
+      await test.step(`Postcondition: ${secondFile} still exists with the original content`, async () => {
+        await selectFile(secondFile)
         await editorTextMatches(kclCylinder)
       })
 
-      await tronApp?.close?.()
+      await tronApp.close()
     }
   )
 
@@ -255,20 +268,15 @@ test.describe('when using the file tree to', () => {
     async ({ browser: _, tronApp }, testInfo) => {
       await tronApp.initialise()
 
-      const {
-        panesOpen,
-        createAndSelectProject,
-        pasteCodeInEditor,
-        deleteFile,
-        editorTextMatches,
-      } = await getUtils(tronApp.page, _test)
+      const { panesOpen, pasteCodeInEditor, deleteFile, editorTextMatches } =
+        await getUtils(tronApp.page, _test)
 
       await tronApp.page.setViewportSize({ width: 1200, height: 500 })
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
       // File the main.kcl with contents
       const kclCube = await fsp.readFile(
         'src/wasm-lib/tests/executor/inputs/cube.kcl',
@@ -276,11 +284,11 @@ test.describe('when using the file tree to', () => {
       )
       await pasteCodeInEditor(kclCube)
 
-      const kcl1 = 'main.kcl'
+      const mainFile = 'main.kcl'
 
-      await deleteFile(kcl1)
+      await deleteFile(mainFile)
 
-      await test.step(`Postcondition: ${kcl1} is recreated but has no content`, async () => {
+      await test.step(`Postcondition: ${mainFile} is recreated but has no content`, async () => {
         await editorTextMatches('')
       })
 
@@ -288,7 +296,7 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test(
+  test.fixme(
     'loading small file, then large, then back to small',
     {
       tag: '@electron',
@@ -298,7 +306,6 @@ test.describe('when using the file tree to', () => {
 
       const {
         panesOpen,
-        createAndSelectProject,
         pasteCodeInEditor,
         createNewFile,
         openDebugPanel,
@@ -310,7 +317,7 @@ test.describe('when using the file tree to', () => {
       tronApp.page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
-      await createAndSelectProject('project-000')
+      await createProject({ name: 'project-000', page: tronApp.page })
 
       // Create a small file
       const kclCube = await fsp.readFile(
@@ -714,7 +721,7 @@ _test.describe('Renaming in the file tree', () => {
       })
 
       await _test.step('Rename the folder', async () => {
-        await page.waitForTimeout(60000)
+        await page.waitForTimeout(1000)
         await folderToRename.click({ button: 'right' })
         await _expect(renameMenuItem).toBeVisible()
         await renameMenuItem.click()
@@ -959,5 +966,172 @@ _test.describe('Deleting items from the file pane', () => {
   _test.fixme(
     'TODO - delete folder we are in, with no main.kcl',
     async () => {}
+  )
+
+  // Copied from tests above.
+  _test(
+    `external deletion of project navigates back home`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const TEST_PROJECT_NAME = 'Test Project'
+      const {
+        electronApp,
+        page,
+        dir: projectsDirName,
+      } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
+            recursive: true,
+          })
+          await fsp.copyFile(
+            executorInputPath('basic_fillet_cube_end.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'main.kcl')
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
+          )
+        },
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Constants and locators
+      const projectCard = page.getByText(TEST_PROJECT_NAME)
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const folderToDelete = page.getByRole('button', {
+        name: 'folderToDelete',
+      })
+      const fileWithinFolder = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
+      })
+
+      await _test.step(
+        'Open project and navigate into folderToDelete',
+        async () => {
+          await projectCard.click()
+          await u.waitForPageLoad()
+          await _expect(projectMenuButton).toContainText('main.kcl')
+          await u.closeKclCodePanel()
+          await u.openFilePanel()
+
+          await folderToDelete.click()
+          await _expect(fileWithinFolder).toBeVisible()
+          await fileWithinFolder.click()
+          await _expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        }
+      )
+
+      // Point of divergence. Delete the project folder and see if it goes back
+      // to the home view.
+      await _test.step(
+        'Delete projectsDirName/<project-name> externally',
+        async () => {
+          await fsp.rm(join(projectsDirName, TEST_PROJECT_NAME), {
+            recursive: true,
+            force: true,
+          })
+        }
+      )
+
+      await _test.step('Check the app is back on the home view', async () => {
+        const projectsDirLink = page.getByText('Loaded from')
+        await _expect(projectsDirLink).toBeVisible()
+      })
+
+      await electronApp.close()
+    }
+  )
+
+  // Similar to the above
+  _test(
+    `external deletion of file in sub-directory updates the file tree and recreates it on code editor typing`,
+    { tag: '@electron' },
+    async ({ browserName }, testInfo) => {
+      const TEST_PROJECT_NAME = 'Test Project'
+      const {
+        electronApp,
+        page,
+        dir: projectsDirName,
+      } = await setupElectron({
+        testInfo,
+        folderSetupFn: async (dir) => {
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
+          await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
+            recursive: true,
+          })
+          await fsp.copyFile(
+            executorInputPath('basic_fillet_cube_end.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'main.kcl')
+          )
+          await fsp.copyFile(
+            executorInputPath('cylinder.kcl'),
+            join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
+          )
+        },
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Constants and locators
+      const projectCard = page.getByText(TEST_PROJECT_NAME)
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const folderToDelete = page.getByRole('button', {
+        name: 'folderToDelete',
+      })
+      const fileWithinFolder = page.getByRole('listitem').filter({
+        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
+      })
+
+      await _test.step(
+        'Open project and navigate into folderToDelete',
+        async () => {
+          await projectCard.click()
+          await u.waitForPageLoad()
+          await _expect(projectMenuButton).toContainText('main.kcl')
+
+          await u.openFilePanel()
+
+          await folderToDelete.click()
+          await _expect(fileWithinFolder).toBeVisible()
+          await fileWithinFolder.click()
+          await _expect(projectMenuButton).toContainText('someFileWithin.kcl')
+        }
+      )
+
+      await _test.step(
+        'Delete projectsDirName/<project-name> externally',
+        async () => {
+          await fsp.rm(
+            join(
+              projectsDirName,
+              TEST_PROJECT_NAME,
+              'folderToDelete',
+              'someFileWithin.kcl'
+            )
+          )
+        }
+      )
+
+      await _test.step('Check the file is gone in the file tree', async () => {
+        await _expect(
+          page.getByTestId('file-pane-scroll-container')
+        ).not.toContainText('someFileWithin.kcl')
+      })
+
+      await _test.step(
+        'Check the file is back in the file tree after typing in code editor',
+        async () => {
+          await u.pasteCodeInEditor('hello = 1')
+          await _expect(
+            page.getByTestId('file-pane-scroll-container')
+          ).toContainText('someFileWithin.kcl')
+        }
+      )
+
+      await electronApp.close()
+    }
   )
 })

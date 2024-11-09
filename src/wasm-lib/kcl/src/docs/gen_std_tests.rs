@@ -396,6 +396,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
 fn cleanup_static_links(output: &str) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
+    // Gross hack for the stupid alias types.
+    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
+
     let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
     cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
     let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
@@ -409,7 +412,7 @@ fn cleanup_type_links(output: &str, types: Vec<String>) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
     for type_name in types {
-        if type_name == "TagDeclarator" || type_name == "TagIdentifier" {
+        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" {
             continue;
         } else {
             let link = format!("(/docs/kcl/types/{})", type_name);
@@ -486,7 +489,7 @@ fn generate_type(
     }
 
     // Skip over TagDeclarator and TagIdentifier since they have custom docs.
-    if name == "TagDeclarator" || name == "TagIdentifier" {
+    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" {
         return Ok(());
     }
 
@@ -784,6 +787,9 @@ fn test_generate_stdlib_markdown_docs() {
 
 #[test]
 fn test_generate_stdlib_json_schema() {
+    // If this test fails and you've modified the AST or something else which affects the json repr
+    // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
+    // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 

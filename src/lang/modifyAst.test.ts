@@ -21,6 +21,7 @@ import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 beforeAll(async () => {
   await initPromise
@@ -100,16 +101,16 @@ describe('Testing findUniqueName', () => {
   it('should find a unique name', () => {
     const result = findUniqueName(
       JSON.stringify([
-        { type: 'Identifier', name: 'yo01', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo02', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo03', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo04', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo05', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo06', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo07', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo08', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo09', start: 0, end: 0, digest: null },
-      ] satisfies Identifier[]),
+        { type: 'Identifier', name: 'yo01', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo02', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo03', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo04', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo05', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo06', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo07', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo08', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo09', start: 0, end: 0, moduleId: 0 },
+      ] satisfies Node<Identifier>[]),
       'yo',
       2
     )
@@ -123,8 +124,8 @@ describe('Testing addSketchTo', () => {
         body: [],
         start: 0,
         end: 0,
-        nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
-        digest: null,
+        moduleId: 0,
+        nonCodeMeta: { nonCodeNodes: {}, startNodes: [] },
       },
       'yz'
     )

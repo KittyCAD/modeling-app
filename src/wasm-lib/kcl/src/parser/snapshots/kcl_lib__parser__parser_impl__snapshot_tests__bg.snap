@@ -1,48 +1,39 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 5,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 5,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 0,
           "end": 5,
           "id": {
-            "type": "Identifier",
-            "start": 0,
             "end": 1,
             "name": "x",
-            "digest": null
+            "start": 0,
+            "type": "Identifier"
           },
           "init": {
-            "type": "Literal",
-            "type": "Literal",
-            "start": 4,
             "end": 5,
-            "value": 4,
             "raw": "4",
-            "digest": null
+            "start": 4,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 4
           },
-          "digest": null
+          "start": 0,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 5,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 5,
+  "start": 0
 }

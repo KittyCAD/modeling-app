@@ -41,6 +41,23 @@ lazy_static::lazy_static! {
     pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
 }
 
+/// The mode of execution.  When isolated, like during an import, attempting to
+/// send a command results in an error.
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum ExecutionKind {
+    #[default]
+    Normal,
+    Isolated,
+}
+
+impl ExecutionKind {
+    pub fn is_isolated(&self) -> bool {
+        matches!(self, ExecutionKind::Isolated)
+    }
+}
+
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
@@ -48,6 +65,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>;
+
+    /// Get the current execution kind.
+    fn execution_kind(&self) -> ExecutionKind;
+
+    /// Replace the current execution kind with a new value and return the
+    /// existing value.
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
     async fn default_planes(
@@ -102,6 +126,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: crate::executor::SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        let execution_kind = self.execution_kind();
+        if execution_kind.is_isolated() {
+            return Err(KclError::Semantic(KclErrorDetails { message: "Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file.".to_owned(), source_ranges: vec![source_range] }));
+        }
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),

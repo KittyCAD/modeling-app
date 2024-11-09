@@ -1,80 +1,67 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 24,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 24,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 24,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 12,
             "name": "height",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "BinaryExpression",
-            "type": "BinaryExpression",
-            "start": 15,
             "end": 24,
-            "operator": "-",
             "left": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 15,
               "end": 16,
-              "value": 1,
               "raw": "1",
-              "digest": null
+              "start": 15,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 1
             },
+            "operator": "-",
             "right": {
-              "type": "MemberExpression",
-              "type": "MemberExpression",
-              "start": 19,
+              "computed": false,
               "end": 24,
               "object": {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 19,
                 "end": 22,
                 "name": "obj",
-                "digest": null
+                "start": 19,
+                "type": "Identifier",
+                "type": "Identifier"
               },
               "property": {
-                "type": "Identifier",
-                "type": "Identifier",
-                "start": 23,
                 "end": 24,
                 "name": "a",
-                "digest": null
+                "start": 23,
+                "type": "Identifier",
+                "type": "Identifier"
               },
-              "computed": false,
-              "digest": null
+              "start": 19,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
             },
-            "digest": null
+            "start": 15,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 24,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 24,
+  "start": 0
 }

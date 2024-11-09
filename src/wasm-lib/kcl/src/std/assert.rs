@@ -24,7 +24,7 @@ async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError
 pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, description): (bool, String) = args.get_data()?;
     inner_assert(data, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_null_user_val())
 }
 
 /// Check a value at runtime, and raise an error if the argument provided
@@ -44,7 +44,7 @@ async fn inner_assert(data: bool, message: &str, args: &Args) -> Result<(), KclE
 pub async fn assert_lt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_lt(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_null_user_val())
 }
 
 /// Check that a numerical value is less than to another at runtime,
@@ -63,7 +63,7 @@ async fn inner_assert_lt(left: f64, right: f64, message: &str, args: &Args) -> R
 pub async fn assert_gt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_gt(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_null_user_val())
 }
 
 /// Check that a numerical value equals another at runtime,
@@ -78,7 +78,12 @@ pub async fn assert_gt(_exec_state: &mut ExecState, args: Args) -> Result<KclVal
     name = "assertEqual",
 }]
 async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    if (right - left).abs() < epsilon {
+    if epsilon <= 0.0 {
+        Err(KclError::Type(KclErrorDetails {
+            message: "assertEqual epsilon must be greater than zero".to_owned(),
+            source_ranges: vec![args.source_range],
+        }))
+    } else if (right - left).abs() < epsilon {
         Ok(())
     } else {
         Err(KclError::Type(KclErrorDetails {
@@ -91,7 +96,7 @@ async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, 
 pub async fn assert_equal(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, epsilon, description): (f64, f64, f64, String) = args.get_data()?;
     inner_assert_equal(left, right, epsilon, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_null_user_val())
 }
 
 /// Check that a numerical value is greater than another at runtime,
@@ -110,7 +115,7 @@ async fn inner_assert_gt(left: f64, right: f64, message: &str, args: &Args) -> R
 pub async fn assert_lte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_lte(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_null_user_val())
 }
 
 /// Check that a numerical value is less than or equal to another at runtime,
@@ -130,7 +135,7 @@ async fn inner_assert_lte(left: f64, right: f64, message: &str, args: &Args) -> 
 pub async fn assert_gte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_gte(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_null_user_val())
 }
 
 /// Check that a numerical value is greater than or equal to another at runtime,

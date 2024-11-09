@@ -1,112 +1,87 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
-  "start": 0,
-  "end": 74,
   "body": [
     {
-      "type": "VariableDeclaration",
-      "type": "VariableDeclaration",
-      "start": 0,
-      "end": 74,
       "declarations": [
         {
-          "type": "VariableDeclarator",
-          "start": 6,
           "end": 74,
           "id": {
-            "type": "Identifier",
-            "start": 6,
             "end": 7,
             "name": "x",
-            "digest": null
+            "start": 6,
+            "type": "Identifier"
           },
           "init": {
-            "type": "IfExpression",
-            "type": "IfExpression",
-            "start": 10,
-            "end": 74,
             "cond": {
-              "type": "Literal",
-              "type": "Literal",
-              "start": 13,
               "end": 17,
-              "value": true,
               "raw": "true",
-              "digest": null
+              "start": 13,
+              "type": "Literal",
+              "type": "Literal",
+              "value": true
             },
-            "then_val": {
-              "start": 32,
-              "end": 42,
-              "body": [
-                {
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement",
-                  "start": 32,
-                  "end": 33,
-                  "expression": {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 32,
-                    "end": 33,
-                    "value": 3,
-                    "raw": "3",
-                    "digest": null
-                  },
-                  "digest": null
-                }
-              ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
-            },
+            "digest": null,
             "else_ifs": [],
+            "end": 74,
             "final_else": {
-              "start": 63,
-              "end": 73,
               "body": [
                 {
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement",
-                  "start": 63,
                   "end": 64,
                   "expression": {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 63,
                     "end": 64,
-                    "value": 4,
                     "raw": "4",
-                    "digest": null
+                    "start": 63,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 4
                   },
-                  "digest": null
+                  "start": 63,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
                 }
               ],
-              "nonCodeMeta": {
-                "nonCodeNodes": {},
-                "start": [],
-                "digest": null
-              },
-              "digest": null
+              "end": 73,
+              "start": 63
             },
-            "digest": null
+            "start": 10,
+            "then_val": {
+              "body": [
+                {
+                  "end": 33,
+                  "expression": {
+                    "end": 33,
+                    "raw": "3",
+                    "start": 32,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 3
+                  },
+                  "start": 32,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                }
+              ],
+              "end": 42,
+              "start": 32
+            },
+            "type": "IfExpression",
+            "type": "IfExpression"
           },
-          "digest": null
+          "start": 6,
+          "type": "VariableDeclarator"
         }
       ],
+      "end": 74,
       "kind": "const",
-      "digest": null
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
     }
   ],
-  "nonCodeMeta": {
-    "nonCodeNodes": {},
-    "start": [],
-    "digest": null
-  },
-  "digest": null
+  "end": 74,
+  "start": 0
 }

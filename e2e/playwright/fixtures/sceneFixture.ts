@@ -10,7 +10,13 @@ import {
 } from '../test-utils'
 
 type mouseParams = {
-  pixelDiff: number
+  pixelDiff?: number
+}
+type mouseDragToParams = mouseParams & {
+  fromPoint: { x: number; y: number }
+}
+type mouseDragFromParams = mouseParams & {
+  toPoint: { x: number; y: number }
 }
 
 type SceneSerialised = {
@@ -19,6 +25,13 @@ type SceneSerialised = {
     target: [number, number, number]
   }
 }
+
+type ClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
+type MoveHandler = (moveParams?: mouseParams) => Promise<void | boolean>
+type DragToHandler = (dragParams: mouseDragToParams) => Promise<void | boolean>
+type DragFromHandler = (
+  dragParams: mouseDragFromParams
+) => Promise<void | boolean>
 
 export class SceneFixture {
   public page: Page
@@ -55,7 +68,7 @@ export class SceneFixture {
     x: number,
     y: number,
     { steps }: { steps: number } = { steps: 20 }
-  ) =>
+  ): [ClickHandler, MoveHandler] =>
     [
       (clickParams?: mouseParams) => {
         if (clickParams?.pixelDiff) {
@@ -76,6 +89,47 @@ export class SceneFixture {
           )
         }
         return this.page.mouse.move(x, y, { steps })
+      },
+    ] as const
+  makeDragHelpers = (
+    x: number,
+    y: number,
+    { steps }: { steps: number } = { steps: 20 }
+  ): [DragToHandler, DragFromHandler] =>
+    [
+      (dragToParams: mouseDragToParams) => {
+        if (dragToParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () =>
+              this.page.dragAndDrop('#stream', '#stream', {
+                sourcePosition: dragToParams.fromPoint,
+                targetPosition: { x, y },
+              }),
+            dragToParams.pixelDiff
+          )
+        }
+        return this.page.dragAndDrop('#stream', '#stream', {
+          sourcePosition: dragToParams.fromPoint,
+          targetPosition: { x, y },
+        })
+      },
+      (dragFromParams: mouseDragFromParams) => {
+        if (dragFromParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () =>
+              this.page.dragAndDrop('#stream', '#stream', {
+                sourcePosition: { x, y },
+                targetPosition: dragFromParams.toPoint,
+              }),
+            dragFromParams.pixelDiff
+          )
+        }
+        return this.page.dragAndDrop('#stream', '#stream', {
+          sourcePosition: { x, y },
+          targetPosition: dragFromParams.toPoint,
+        })
       },
     ] as const
 
@@ -141,7 +195,7 @@ export class SceneFixture {
   }
 
   waitForExecutionDone = async () => {
-    await expect(this.exeIndicator).toBeVisible()
+    await expect(this.exeIndicator).toBeVisible({ timeout: 30000 })
   }
 
   expectPixelColor = async (

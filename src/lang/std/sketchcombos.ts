@@ -49,6 +49,7 @@ import {
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -325,7 +326,7 @@ const setHorzVertDistanceCreateNode =
     if (isUndef(refNum) || err(literalArg)) return REF_NUM_ERR
 
     const valueUsedInTransform = roundOff(literalArg - refNum, 2)
-    let finalValue: Expr = createBinaryExpressionWithUnary([
+    let finalValue: Node<Expr> = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, !index),
       forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
@@ -682,6 +683,14 @@ const transformMap: TransformMap = {
             getInputOfType(args, 'yAbsolute').expr,
             tag
           ),
+      },
+      xAbs: {
+        tooltip: 'lineTo',
+        createNode: setAbsDistanceCreateNode('x'),
+      },
+      yAbs: {
+        tooltip: 'lineTo',
+        createNode: setAbsDistanceCreateNode('y'),
       },
     },
     xAbsolute: {
@@ -1541,7 +1550,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceSegName,
   forceValueUsedInTransform,
 }: {
-  ast: Program
+  ast: Node<Program>
   selectionRanges: Selections
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
@@ -1549,7 +1558,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceValueUsedInTransform?: BinaryPart
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNodeMap: PathToNodeMap
       tagInfo: {
@@ -1620,7 +1629,7 @@ export function transformAstSketchLines({
   forceValueUsedInTransform,
   referencedSegmentRange,
 }: {
-  ast: Program
+  ast: Node<Program>
   selectionRanges: Selections | PathToNode[]
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
@@ -1629,7 +1638,7 @@ export function transformAstSketchLines({
   referencedSegmentRange?: Selection['range']
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       valueUsedInTransform?: number
       pathToNodeMap: PathToNodeMap
     }
@@ -1647,7 +1656,7 @@ export function transformAstSketchLines({
 
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
-    const callExp = getNode<CallExpression>('CallExpression')
+    const callExp = getNode<Node<CallExpression>>('CallExpression')
     if (err(callExp)) return callExp
     const varDec = getNode<VariableDeclarator>('VariableDeclarator')
     if (err(varDec)) return varDec
@@ -1732,7 +1741,7 @@ export function transformAstSketchLines({
       if (err(_segment)) return _segment
       referencedSegment = _segment.segment
     } else {
-      referencedSegment = sketch.value.find(
+      referencedSegment = sketch.paths.find(
         (path) => path.tag?.value === _referencedSegmentName
       )
     }
@@ -1806,13 +1815,16 @@ function createSegAngle(referenceSegName: string): BinaryPart {
   return createCallExpression('segAng', [createIdentifier(referenceSegName)])
 }
 
-function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
+function createSegEnd(
+  referenceSegName: string,
+  isX: boolean
+): Node<CallExpression> {
   return createCallExpression(isX ? 'segEndX' : 'segEndY', [
     createIdentifier(referenceSegName),
   ])
 }
 
-function createLastSeg(isX: boolean): CallExpression {
+function createLastSeg(isX: boolean): Node<CallExpression> {
   return createCallExpression(isX ? 'lastSegX' : 'lastSegY', [
     createPipeSubstitution(),
   ])
@@ -1830,7 +1842,7 @@ export function getConstraintLevelFromSourceRange(
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
-  const nodeMeta = getNodeFromPath<CallExpression>(
+  const nodeMeta = getNodeFromPath<Node<CallExpression>>(
     ast,
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'

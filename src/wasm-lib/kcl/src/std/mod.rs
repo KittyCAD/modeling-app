@@ -57,8 +57,12 @@ lazy_static! {
         Box::new(LegAngY),
         Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
+        Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
+        Box::new(crate::std::segment::SegStart),
+        Box::new(crate::std::segment::SegStartX),
+        Box::new(crate::std::segment::SegStartY),
         Box::new(crate::std::segment::LastSegX),
         Box::new(crate::std::segment::LastSegY),
         Box::new(crate::std::segment::SegLen),
@@ -66,6 +70,7 @@ lazy_static! {
         Box::new(crate::std::segment::AngleToMatchLengthX),
         Box::new(crate::std::segment::AngleToMatchLengthY),
         Box::new(crate::std::shapes::Circle),
+        Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::LineTo),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLineTo),
@@ -99,6 +104,7 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternTransform),
         Box::new(crate::std::array::Reduce),
         Box::new(crate::std::array::Map),
+        Box::new(crate::std::array::Push),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
@@ -312,6 +318,6 @@ pub enum Primitive {
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
     pub func: Option<&'a crate::executor::MemoryFunction>,
-    pub expr: Box<FunctionExpression>,
+    pub expr: crate::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }
