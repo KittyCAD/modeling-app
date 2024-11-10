@@ -178,6 +178,10 @@ export function convertSelectionToOld(
     //   },
     // }
   }
+  if(_artifact.type === 'edgeCut') {
+    const codeRef = _artifact.codeRef
+    return { range: codeRef.range, type: 'default' }
+  }
   return null
 }
 /** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
@@ -393,19 +397,21 @@ export function getEventForSegmentSelection(
 export function handleSelectionBatch({
   selections,
 }: {
-  selections: Selections__old
+  selections: Selections
 }): {
   engineEvents: Models['WebSocketRequest_type'][]
   codeMirrorSelection: EditorSelection
   otherSelections: Axis[]
   updateSceneObjectColors: () => void
 } {
+  const oldSelections = convertSelectionsToOld(selections)
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
+  const selectionToEngine: SelectionToEngine[] = selections.graphSelections.map(
+    ({ artifact }) => ({ type: 'default', id: artifact.id })
+  )
   const engineEvents: Models['WebSocketRequest_type'][] =
-    resetAndSetEngineEntitySelectionCmds(
-      codeToIdSelections(selections.codeBasedSelections)
-    )
-  selections.codeBasedSelections.forEach(({ range, type }) => {
+    resetAndSetEngineEntitySelectionCmds(selectionToEngine)
+  oldSelections.codeBasedSelections.forEach(({ range, type }) => {
     if (range?.[1]) {
       ranges.push(EditorSelection.cursor(range[1]))
     }
@@ -415,11 +421,11 @@ export function handleSelectionBatch({
       engineEvents,
       codeMirrorSelection: EditorSelection.create(
         ranges,
-        selections.codeBasedSelections.length - 1
+        oldSelections.codeBasedSelections.length - 1
       ),
       otherSelections: selections.otherSelections,
       updateSceneObjectColors: () =>
-        updateSceneObjectColors(selections.codeBasedSelections),
+        updateSceneObjectColors(oldSelections.codeBasedSelections),
     }
 
   return {
@@ -430,7 +436,7 @@ export function handleSelectionBatch({
     engineEvents,
     otherSelections: selections.otherSelections,
     updateSceneObjectColors: () =>
-      updateSceneObjectColors(selections.codeBasedSelections),
+      updateSceneObjectColors(oldSelections.codeBasedSelections),
   }
 }
 

@@ -365,7 +365,7 @@ export const ModelingMachineProvider = ({
                 codeMirrorSelection,
                 updateSceneObjectColors,
               } = handleSelectionBatch({
-                selections: convertSelectionsToOld(selections),
+                selections,
               })
               codeMirrorSelection && dispatchSelection(codeMirrorSelection)
               engineEvents &&
@@ -400,7 +400,7 @@ export const ModelingMachineProvider = ({
               }
               const { engineEvents, updateSceneObjectColors } =
                 handleSelectionBatch({
-                  selections: convertSelectionsToOld(selections),
+                  selections: selections,
                 })
               engineEvents &&
                 engineEvents.forEach((event) => {

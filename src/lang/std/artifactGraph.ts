@@ -753,7 +753,7 @@ export function getSweepEdgeCodeRef(
   if (err(seg)) return seg
   return seg.codeRef
 }
-export function getEdgeCuteConsumedCodeRef(
+export function getEdgeCutConsumedCodeRef(
   edge: EdgeCut,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
@@ -840,6 +840,11 @@ export function getCodeRefsByArtifactId(
     return [codeRef]
   } else if (artifact?.type === 'segment') {
     return [artifact.codeRef]
+  } else if (artifact?.type === 'edgeCut') {
+    const codeRef = artifact.codeRef
+    const consumedCodeRef = getEdgeCutConsumedCodeRef(artifact, artifactGraph)
+    if (err(consumedCodeRef)) return [codeRef]
+    return [codeRef, consumedCodeRef]
   } else {
     return null
   }
