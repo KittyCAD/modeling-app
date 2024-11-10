@@ -13,7 +13,7 @@ macro_rules! println {
     }
 }
 
-pub mod ast;
+mod ast;
 pub mod coredump;
 pub mod docs;
 pub mod engine;
@@ -36,3 +36,29 @@ mod unparser;
 pub mod walk;
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
+
+pub use ast::modify::modify_ast_for_sketch;
+pub use ast::types::ModuleId;
+pub use errors::KclError;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Program {
+    ast: ast::types::Node<ast::types::Program>,
+}
+
+impl Program {
+    pub fn parse(input: &str) -> Result<Program, KclError> {
+        let module_id = ModuleId::default();
+        let tokens = token::lexer(input, module_id)?;
+        let parser = parser::Parser::new(tokens);
+        let ast = parser.ast()?;
+
+        Ok(Program { ast })
+    }
+}
+
+impl From<ast::types::Node<ast::types::Program>> for Program {
+    fn from(ast: ast::types::Node<ast::types::Program>) -> Program {
+        Self { ast }
+    }
+}

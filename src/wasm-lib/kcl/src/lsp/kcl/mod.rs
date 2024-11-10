@@ -40,11 +40,12 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Expr, ModuleId, Node, NodeRef, VariableKind},
+    ast::types::{Expr, ModuleId, Node, VariableKind},
     executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
+    Program,
 };
 
 lazy_static::lazy_static! {
@@ -289,7 +290,7 @@ impl crate::lsp::backend::Backend for Backend {
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        if self.execute(&params, &ast).await.is_err() {
+        if self.execute(&params, &ast.into()).await.is_err() {
             return;
         }
 
@@ -572,7 +573,7 @@ impl Backend {
         self.client.publish_diagnostics(params.uri.clone(), items, None).await;
     }
 
-    async fn execute(&self, params: &TextDocumentItem, ast: NodeRef<'_, crate::ast::types::Program>) -> Result<()> {
+    async fn execute(&self, params: &TextDocumentItem, ast: &Program) -> Result<()> {
         // Check if we can execute.
         if !self.can_execute().await {
             return Ok(());
