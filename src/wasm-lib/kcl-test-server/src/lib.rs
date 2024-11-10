@@ -15,7 +15,7 @@ use hyper::{
     service::{make_service_fn, service_fn},
     Body, Error, Response, Server,
 };
-use kcl_lib::{ast::types::ModuleId, executor::ExecutorContext, settings::types::UnitLength, test_server::RequestBody};
+use kcl_lib::{executor::ExecutorContext, settings::types::UnitLength, test_server::RequestBody, Program};
 use tokio::{
     sync::{mpsc, oneshot},
     task::JoinHandle,
@@ -157,15 +157,12 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
         Err(e) => return bad_request(format!("Invalid request JSON: {e}")),
     };
     let RequestBody { kcl_program, test_name } = body;
-    let module_id = ModuleId::default();
-    let parser = match kcl_lib::token::lexer(&kcl_program, module_id) {
-        Ok(ts) => kcl_lib::parser::Parser::new(ts),
-        Err(e) => return bad_request(format!("tokenization error: {e}")),
-    };
-    let program = match parser.ast() {
+
+    let program = match Program::parse(&kcl_program) {
         Ok(pr) => pr,
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
+
     eprintln!("Executing {test_name}");
     let mut id_generator = kcl_lib::executor::IdGenerator::default();
     // This is a shitty source range, I don't know what else to use for it though.

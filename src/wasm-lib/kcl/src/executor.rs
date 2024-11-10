@@ -28,13 +28,14 @@ type Point3D = kcmc::shared::Point3d<f64>;
 use crate::{
     ast::types::{
         human_friendly_type, BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef,
-        Program, TagDeclarator, TagNode,
+        TagDeclarator, TagNode,
     },
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{FnAsArg, StdLib},
+    Program,
 };
 
 /// State for executing a program.
@@ -2180,7 +2181,7 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run(
         &self,
-        program: NodeRef<'_, crate::ast::types::Program>,
+        program: &Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
         project_directory: Option<String>,
@@ -2194,7 +2195,7 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run_with_session_data(
         &self,
-        program: NodeRef<'_, crate::ast::types::Program>,
+        program: &Program,
         memory: Option<ProgramMemory>,
         id_generator: IdGenerator,
         project_directory: Option<String>,
@@ -2230,7 +2231,7 @@ impl ExecutorContext {
             )
             .await?;
 
-        self.inner_execute(program, &mut exec_state, crate::executor::BodyType::Root)
+        self.inner_execute(&program.ast, &mut exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
         Ok((exec_state, session_data))
@@ -2484,7 +2485,7 @@ impl ExecutorContext {
     /// Execute the program, then get a PNG screenshot.
     pub async fn execute_and_prepare_snapshot(
         &self,
-        program: NodeRef<'_, Program>,
+        program: &Program,
         id_generator: IdGenerator,
         project_directory: Option<String>,
     ) -> Result<TakeSnapshot> {
@@ -2496,7 +2497,7 @@ impl ExecutorContext {
     /// Execute the program, return the interpreter and outputs.
     pub async fn execute_and_prepare(
         &self,
-        program: NodeRef<'_, Program>,
+        program: &Program,
         id_generator: IdGenerator,
         project_directory: Option<String>,
     ) -> Result<(ExecState, TakeSnapshot)> {
@@ -2640,7 +2641,7 @@ mod tests {
     use crate::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
-        let program = crate::parser::top_level_parse(code)?;
+        let program = Program::parse(code)?;
 
         let ctx = ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),

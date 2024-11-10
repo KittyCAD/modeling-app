@@ -90,7 +90,8 @@ async fn execute(test_name: &str, render_to_png: bool) {
     };
 
     // Run the program.
-    let exec_res = crate::test_server::execute_and_snapshot_ast(ast, crate::settings::types::UnitLength::Mm).await;
+    let exec_res =
+        crate::test_server::execute_and_snapshot_ast(ast.into(), crate::settings::types::UnitLength::Mm).await;
     match exec_res {
         Ok((program_memory, png)) => {
             if render_to_png {

@@ -1,7 +1,7 @@
 use iai::black_box;
 
 pub fn parse(program: &str) {
-    let module_id = kcl_lib::ast::types::ModuleId::default();
+    let module_id = kcl_lib::ModuleId::default();
     let tokens = kcl_lib::token::lexer(program, module_id).unwrap();
     let tok = tokens.clone();
     let parser = kcl_lib::parser::Parser::new(tok.clone());
@@ -9,23 +9,23 @@ pub fn parse(program: &str) {
 }
 
 fn lex_kitt() {
-    let module_id = kcl_lib::ast::types::ModuleId::default();
+    let module_id = kcl_lib::ModuleId::default();
     black_box(kcl_lib::token::lexer(KITT_PROGRAM, module_id).unwrap());
 }
 fn lex_pipes() {
-    let module_id = kcl_lib::ast::types::ModuleId::default();
+    let module_id = kcl_lib::ModuleId::default();
     black_box(kcl_lib::token::lexer(PIPES_PROGRAM, module_id).unwrap());
 }
 fn lex_cube() {
-    let module_id = kcl_lib::ast::types::ModuleId::default();
+    let module_id = kcl_lib::ModuleId::default();
     black_box(kcl_lib::token::lexer(CUBE_PROGRAM, module_id).unwrap());
 }
 fn lex_math() {
-    let module_id = kcl_lib::ast::types::ModuleId::default();
+    let module_id = kcl_lib::ModuleId::default();
     black_box(kcl_lib::token::lexer(MATH_PROGRAM, module_id).unwrap());
 }
 fn lex_lsystem() {
-    let module_id = kcl_lib::ast::types::ModuleId::default();
+    let module_id = kcl_lib::ModuleId::default();
     black_box(kcl_lib::token::lexer(LSYSTEM_PROGRAM, module_id).unwrap());
 }
 

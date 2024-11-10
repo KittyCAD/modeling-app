@@ -1,8 +1,6 @@
 use kcl_lib::{
-    ast::types::{ModuleId, Node, Program},
-    errors::KclError,
     executor::{ExecutorContext, IdGenerator},
-    parser,
+    parser, KclError, Program,
 };
 
 macro_rules! gen_test_fail {
@@ -27,11 +25,8 @@ macro_rules! gen_test_parse_fail {
     };
 }
 
-async fn setup(program: &str) -> (ExecutorContext, Node<Program>, IdGenerator) {
-    let module_id = ModuleId::default();
-    let tokens = kcl_lib::token::lexer(program, module_id).unwrap();
-    let parser = kcl_lib::parser::Parser::new(tokens);
-    let program = parser.ast().unwrap();
+async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
+    let program = Program::parse(program).unwrap();
     let ctx = kcl_lib::executor::ExecutorContext {
         engine: std::sync::Arc::new(Box::new(
             kcl_lib::engine::conn_mock::EngineConnection::new().await.unwrap(),

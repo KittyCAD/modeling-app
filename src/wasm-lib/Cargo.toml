@@ -68,7 +68,6 @@ debug = "line-tables-only"
 members = [
 	"derive-docs",
 	"kcl",
-	"kcl-macros",
 	"kcl-test-server",
 	"kcl-to-core",
 ]
