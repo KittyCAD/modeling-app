@@ -318,6 +318,7 @@ test.describe('Testing settings', () => {
             timeout: 5_000,
           })
           .toContain(`themeColor = "${userThemeColor}"`)
+        // Only close the button after we've confirmed
       })
 
       await test.step('Set project theme color', async () => {
@@ -344,14 +345,13 @@ test.describe('Testing settings', () => {
       await test.step('Refresh the application and see project setting applied', async () => {
         // Make sure we're done navigating before we reload
         await expect(settingsCloseButton).not.toBeVisible()
-        await page.reload({ waitUntil: 'domcontentloaded' })
 
+        await page.reload({ waitUntil: 'domcontentloaded' })
         await expect(logoLink).toHaveCSS('--primary-hue', projectThemeColor)
       })
 
       await test.step(`Navigate back to the home view and see user setting applied`, async () => {
         await logoLink.click()
-        await page.screenshot({ path: 'out.png' })
         await expect(logoLink).toHaveCSS('--primary-hue', userThemeColor)
       })
 
