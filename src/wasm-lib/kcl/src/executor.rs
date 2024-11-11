@@ -26,8 +26,7 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 use crate::{
     ast::types::{
-        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef, TagDeclarator,
-        TagNode,
+        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef, TagDeclarator, TagNode,
     },
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
@@ -153,6 +152,7 @@ impl ProgramMemory {
     /// Find all solids in the memory that are on a specific sketch id.
     /// This does not look inside closures.  But as long as we do not allow
     /// mutation of variables in KCL, closure memory should be a subset of this.
+    #[allow(clippy::vec_box)]
     pub fn find_solids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<Box<Solid>> {
         self.environments
             .iter()
@@ -538,6 +538,7 @@ impl Geometry {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::vec_box)]
 pub enum Geometries {
     Sketches(Vec<Box<Sketch>>),
     Solids(Vec<Box<Solid>>),
@@ -556,6 +557,7 @@ impl From<Geometry> for Geometries {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SketchSet {
     Sketch(Box<Sketch>),
     Sketches(Vec<Box<Sketch>>),
@@ -636,6 +638,7 @@ impl From<Box<Sketch>> for Vec<Box<Sketch>> {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SolidSet {
     Solid(Box<Solid>),
     Solids(Vec<Box<Solid>>),
@@ -2190,6 +2193,70 @@ impl ExecutorContext {
         })
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_mock() -> Self {
+        ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
+            )),
+            fs: Arc::new(FileManager::new()),
+            stdlib: Arc::new(StdLib::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+        }
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub async fn new(
+        engine_manager: crate::engine::conn_wasm::EngineCommandManager,
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        units: UnitLength,
+    ) -> Result<Self, String> {
+        Ok(ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_wasm::EngineConnection::new(engine_manager)
+                    .await
+                    .map_err(|e| format!("{:?}", e))?,
+            )),
+            fs: Arc::new(FileManager::new(fs_manager)),
+            stdlib: Arc::new(StdLib::new()),
+            settings: ExecutorSettings {
+                units,
+                ..Default::default()
+            },
+            context_type: ContextType::Live,
+        })
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub async fn new_mock(fs_manager: crate::fs::wasm::FileSystemManager, units: UnitLength) -> Result<Self, String> {
+        Ok(ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .map_err(|e| format!("{:?}", e))?,
+            )),
+            fs: Arc::new(FileManager::new(fs_manager)),
+            stdlib: Arc::new(StdLib::new()),
+            settings: ExecutorSettings {
+                units,
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+        })
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
+        ExecutorContext {
+            engine,
+            fs: Arc::new(FileManager::new()),
+            stdlib: Arc::new(StdLib::new()),
+            settings: Default::default(),
+            context_type: ContextType::MockCustomForwarded,
+        }
+    }
+
     /// Create a new default executor context.
     /// With a kittycad client.
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
@@ -2243,48 +2310,31 @@ impl ExecutorContext {
 
     pub async fn reset_scene(
         &self,
-        id_generator: &mut IdGenerator,
+        exec_state: &mut ExecState,
         source_range: crate::executor::SourceRange,
     ) -> Result<()> {
-        self.engine.clear_scene(id_generator, source_range).await?;
+        self.engine
+            .clear_scene(&mut exec_state.id_generator, source_range)
+            .await?;
         Ok(())
     }
 
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
     /// Kurt uses this for partial execution.
-    pub async fn run(
-        &self,
-        program: &Program,
-        memory: Option<ProgramMemory>,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
-    ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory, id_generator, project_directory)
-            .await
-            .map(|x| x.0)
+    pub async fn run(&self, program: &Program, exec_state: &mut ExecState) -> Result<(), KclError> {
+        self.run_with_session_data(program, exec_state).await?;
+        Ok(())
     }
+
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
     /// Kurt uses this for partial execution.
     pub async fn run_with_session_data(
         &self,
         program: &Program,
-        memory: Option<ProgramMemory>,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
-    ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
-        let memory = if let Some(memory) = memory {
-            memory.clone()
-        } else {
-            Default::default()
-        };
-        let mut exec_state = ExecState {
-            memory,
-            id_generator,
-            project_directory,
-            ..Default::default()
-        };
+        exec_state: &mut ExecState,
+    ) -> Result<Option<ModelingSessionData>, KclError> {
         // TODO: Use the top-level file's path.
         exec_state.add_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.
@@ -2305,10 +2355,10 @@ impl ExecutorContext {
             )
             .await?;
 
-        self.inner_execute(&program.ast, &mut exec_state, crate::executor::BodyType::Root)
+        self.inner_execute(&program.ast, exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
-        Ok((exec_state, session_data))
+        Ok(session_data)
     }
 
     /// Execute an AST's program.
@@ -2560,22 +2610,14 @@ impl ExecutorContext {
     pub async fn execute_and_prepare_snapshot(
         &self,
         program: &Program,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
+        exec_state: &mut ExecState,
     ) -> Result<TakeSnapshot> {
-        self.execute_and_prepare(program, id_generator, project_directory)
-            .await
-            .map(|(_state, snap)| snap)
+        self.execute_and_prepare(program, exec_state).await
     }
 
     /// Execute the program, return the interpreter and outputs.
-    pub async fn execute_and_prepare(
-        &self,
-        program: &Program,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
-    ) -> Result<(ExecState, TakeSnapshot)> {
-        let state = self.run(program, None, id_generator, project_directory).await?;
+    pub async fn execute_and_prepare(&self, program: &Program, exec_state: &mut ExecState) -> Result<TakeSnapshot> {
+        self.run(program, exec_state).await?;
 
         // Zoom to fit.
         self.engine
@@ -2608,7 +2650,7 @@ impl ExecutorContext {
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok((state, contents))
+        Ok(contents)
     }
 }
 
@@ -2724,7 +2766,8 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
+        let mut exec_state = ExecState::default();
+        ctx.run(&program, &mut exec_state).await?;
 
         Ok(exec_state.memory)
     }

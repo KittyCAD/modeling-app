@@ -12,6 +12,7 @@ pub(crate) mod parser_impl;
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
 pub const PIPE_OPERATOR: &str = "|>";
 
+#[cfg(test)]
 /// Parse the given KCL code into an AST.  This is the top-level.
 pub fn top_level_parse(code: &str) -> Result<Node<Program>, KclError> {
     let module_id = ModuleId::default();

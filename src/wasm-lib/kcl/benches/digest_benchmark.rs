@@ -9,7 +9,7 @@ pub fn bench_digest(c: &mut Criterion) {
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("lsystem", LSYSTEM_PROGRAM),
     ] {
-        let prog = kcl_lib::parser::top_level_parse(file).unwrap();
+        let prog = kcl_lib::Program::parse(file).unwrap();
         c.bench_function(&format!("digest_{name}"), move |b| {
             let prog = prog.clone();
 

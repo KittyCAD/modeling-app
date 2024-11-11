@@ -4,7 +4,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::{BodyItem, Expr, FunctionExpression, Node, Program},
+    ast::types::{FunctionExpression, Program},
     docs::{StdLibFn, StdLibFnData},
 };
 
@@ -76,19 +76,4 @@ impl Serialize for Box<dyn KclStdLibFn> {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         self.to_json().unwrap().serialize(serializer)
     }
-}
-
-/// Parse a KCL program. Expect it to have a single body item, which is a function.
-/// Return the program and its single function.
-/// Return None if those expectations aren't met.
-pub fn extract_function(source: &str) -> Option<(Node<Program>, crate::ast::types::BoxNode<FunctionExpression>)> {
-    let src = crate::parser::top_level_parse(source).ok()?;
-    assert_eq!(src.body.len(), 1);
-    let BodyItem::ExpressionStatement(expr) = src.body.last()? else {
-        panic!("expected expression statement");
-    };
-    let Expr::FunctionExpression(function) = expr.expression.clone() else {
-        panic!("expected function expr");
-    };
-    Some((src, function))
 }

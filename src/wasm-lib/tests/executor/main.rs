@@ -1,6 +1,6 @@
 use kcl_lib::{
-    settings::types::UnitLength,
     test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
+    UnitLength,
 };
 
 /// The minimum permissible difference between asserted twenty-twenty images.
