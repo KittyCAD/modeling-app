@@ -1,7 +1,4 @@
-use kcl_lib::{
-    executor::{ExecutorContext, IdGenerator},
-    parser, KclError, Program,
-};
+use kcl_lib::{ExecState, KclError, Program};
 
 macro_rules! gen_test_fail {
     ($file:ident, $expected:literal) => {
@@ -25,38 +22,26 @@ macro_rules! gen_test_parse_fail {
     };
 }
 
-async fn setup(program: &str) -> (ExecutorContext, Program, IdGenerator) {
+async fn setup(program: &str) -> (kcl_lib::ExecutorContext, Program, ExecState) {
     let program = Program::parse(program).unwrap();
-    let ctx = kcl_lib::executor::ExecutorContext {
-        engine: std::sync::Arc::new(Box::new(
-            kcl_lib::engine::conn_mock::EngineConnection::new().await.unwrap(),
-        )),
-        fs: std::sync::Arc::new(kcl_lib::fs::FileManager::new()),
-        stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
-        settings: Default::default(),
-        context_type: kcl_lib::executor::ContextType::Mock,
+    let ctx = kcl_lib::ExecutorContext::new_mock().await;
+    let exec_state = ExecState {
+        project_directory: Some("tests/executor/inputs/no_visuals/".to_owned()),
+        ..ExecState::default()
     };
-    (ctx, program, IdGenerator::default())
+    (ctx, program, exec_state)
 }
 
 async fn run_fail(code: &str) -> KclError {
-    let (ctx, program, id_generator) = setup(code).await;
-    let Err(e) = ctx
-        .run(
-            &program,
-            None,
-            id_generator,
-            Some("tests/executor/inputs/no_visuals/".to_owned()),
-        )
-        .await
-    else {
+    let (ctx, program, mut exec_state) = setup(code).await;
+    let Err(e) = ctx.run(&program, &mut exec_state).await else {
         panic!("Expected this KCL program to fail, but it (incorrectly) never threw an error.");
     };
     e
 }
 
 async fn run_parse_fail(code: &str) -> KclError {
-    let Err(e) = parser::top_level_parse(code) else {
+    let Err(e) = Program::parse(code) else {
         panic!("Expected this KCL program to fail to parse, but it (incorrectly) never threw an error.");
     };
     e

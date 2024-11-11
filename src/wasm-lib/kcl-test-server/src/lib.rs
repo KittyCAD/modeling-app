@@ -15,7 +15,7 @@ use hyper::{
     service::{make_service_fn, service_fn},
     Body, Error, Response, Server,
 };
-use kcl_lib::{executor::ExecutorContext, settings::types::UnitLength, test_server::RequestBody, Program};
+use kcl_lib::{test_server::RequestBody, ExecState, ExecutorContext, Program, UnitLength};
 use tokio::{
     sync::{mpsc, oneshot},
     task::JoinHandle,
@@ -164,11 +164,11 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
     };
 
     eprintln!("Executing {test_name}");
-    let mut id_generator = kcl_lib::executor::IdGenerator::default();
+    let mut exec_state = ExecState::default();
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
     if let Err(e) = state
-        .reset_scene(&mut id_generator, kcl_lib::executor::SourceRange::default())
+        .reset_scene(&mut exec_state, kcl_lib::SourceRange::default())
         .await
     {
         return kcl_err(e);
@@ -176,7 +176,7 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
     // Let users know if the test is taking a long time.
     let (done_tx, done_rx) = oneshot::channel::<()>();
     let timer = time_until(done_rx);
-    let snapshot = match state.execute_and_prepare_snapshot(&program, id_generator, None).await {
+    let snapshot = match state.execute_and_prepare_snapshot(&program, &mut exec_state).await {
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };

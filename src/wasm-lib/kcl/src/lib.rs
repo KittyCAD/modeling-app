@@ -14,37 +14,68 @@ macro_rules! println {
 }
 
 mod ast;
-pub mod coredump;
-pub mod docs;
-pub mod engine;
-pub mod errors;
-pub mod executor;
-pub mod fs;
+mod coredump;
+mod docs;
+mod engine;
+mod errors;
+mod executor;
+mod fs;
 mod function_param;
-pub mod lint;
-pub mod lsp;
-pub mod parser;
-pub mod settings;
+mod lint;
+mod lsp;
+mod parser;
+mod settings;
 #[cfg(test)]
 mod simulation_tests;
-pub mod std;
+mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
-pub mod thread;
-pub mod token;
+mod thread;
+mod token;
 mod unparser;
-pub mod walk;
+mod walk;
 #[cfg(target_arch = "wasm32")]
-pub mod wasm;
+mod wasm;
 
 pub use ast::modify::modify_ast_for_sketch;
 pub use ast::types::ModuleId;
+pub use coredump::CoreDump;
+pub use engine::{EngineManager, ExecutionKind};
 pub use errors::KclError;
+pub use executor::{ExecState, ExecutorContext, SourceRange};
+pub use lsp::copilot::Backend as CopilotLspBackend;
+pub use lsp::kcl::Backend as KclLspBackend;
+pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
+pub use token::lexer;
+
+// Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
+// Ideally we wouldn't export these things at all, they should only be used for testing.
+pub mod exec {
+    pub use crate::executor::{DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch};
+}
+
+#[cfg(target_arch = "wasm32")]
+pub mod wasm_engine {
+    pub use crate::coredump::wasm::{CoreDumpManager, CoreDumper};
+    pub use crate::engine::conn_wasm::*;
+    pub use crate::fs::wasm::FileSystemManager;
+}
+
+pub mod std_utils {
+    pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
+}
+
+use serde::Serialize;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Program {
     ast: ast::types::Node<ast::types::Program>,
 }
+
+#[cfg(any(test, feature = "lsp-test-util"))]
+pub use lsp::test_util::copilot_lsp_server;
+#[cfg(any(test, feature = "lsp-test-util"))]
+pub use lsp::test_util::kcl_lsp_server;
 
 impl Program {
     pub fn parse(input: &str) -> Result<Program, KclError> {
@@ -54,6 +85,29 @@ impl Program {
         let ast = parser.ast()?;
 
         Ok(Program { ast })
+    }
+
+    pub fn from_json(json: &str) -> Result<Self, String> {
+        let ast = serde_json::from_str(json).map_err(|e| e.to_string())?;
+        Ok(Self { ast })
+    }
+
+    /// Deserialize the ast from a stringified json
+    pub fn compute_digest(&mut self) -> ast::types::digest::Digest {
+        self.ast.compute_digest()
+    }
+
+    pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
+        self.ast.lint_all()
+    }
+
+    pub fn as_serde(&self) -> &impl Serialize {
+        &self.ast
+    }
+
+    pub fn recast(&self) -> String {
+        // Use the default options until we integrate into the UI the ability to change them.
+        self.ast.recast(&Default::default(), 0)
     }
 }
 

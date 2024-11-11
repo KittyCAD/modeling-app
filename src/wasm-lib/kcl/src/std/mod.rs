@@ -48,8 +48,6 @@ pub type StdFn = fn(
     Args,
 ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValue, KclError>> + Send + '_>>;
 
-pub type FnMap = HashMap<String, StdFn>;
-
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
         Box::new(LegLen),

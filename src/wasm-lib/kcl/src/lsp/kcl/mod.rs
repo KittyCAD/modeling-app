@@ -1,4 +1,5 @@
 //! Functions for the `kcl` lsp server.
+#![allow(dead_code)]
 
 use std::{
     collections::HashMap,
@@ -41,11 +42,10 @@ use tower_lsp::{
 
 use crate::{
     ast::types::{Expr, ModuleId, Node, VariableKind},
-    executor::{IdGenerator, SourceRange},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
-    Program,
+    ExecState, Program, SourceRange,
 };
 
 lazy_static::lazy_static! {
@@ -121,6 +121,57 @@ pub struct Backend {
     pub can_execute: Arc<RwLock<bool>>,
 
     pub is_initialized: Arc<RwLock<bool>>,
+}
+
+impl Backend {
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_wasm(
+        client: Client,
+        executor_ctx: Option<crate::executor::ExecutorContext>,
+        fs: crate::fs::wasm::FileSystemManager,
+        zoo_client: kittycad::Client,
+        can_send_telemetry: bool,
+    ) -> Result<Self, String> {
+        Self::new(
+            client,
+            executor_ctx,
+            crate::fs::FileManager::new(fs),
+            zoo_client,
+            can_send_telemetry,
+        )
+    }
+
+    fn new(
+        client: Client,
+        executor_ctx: Option<crate::executor::ExecutorContext>,
+        fs: crate::fs::FileManager,
+        zoo_client: kittycad::Client,
+        can_send_telemetry: bool,
+    ) -> Result<Self, String> {
+        let stdlib = crate::std::StdLib::new();
+        let stdlib_completions = get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+
+        Ok(Self {
+            client,
+            fs: Arc::new(fs),
+            stdlib_completions,
+            stdlib_signatures,
+            zoo_client,
+            can_send_telemetry,
+            can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
+            executor_ctx: Arc::new(RwLock::new(executor_ctx)),
+            workspace_folders: Default::default(),
+            token_map: Default::default(),
+            ast_map: Default::default(),
+            memory_map: Default::default(),
+            code_map: Default::default(),
+            diagnostics_map: Default::default(),
+            symbols_map: Default::default(),
+            semantic_tokens_map: Default::default(),
+            is_initialized: Default::default(),
+        })
+    }
 }
 
 // Implement the shared backend trait for the language server.
@@ -590,25 +641,22 @@ impl Backend {
             return Ok(());
         }
 
-        let mut id_generator = IdGenerator::default();
+        let mut exec_state = ExecState::default();
 
         // Clear the scene, before we execute so it's not fugly as shit.
         executor_ctx
             .engine
-            .clear_scene(&mut id_generator, SourceRange::default())
+            .clear_scene(&mut exec_state.id_generator, SourceRange::default())
             .await?;
 
-        let exec_state = match executor_ctx.run(ast, None, id_generator, None).await {
-            Ok(exec_state) => exec_state,
-            Err(err) => {
-                self.memory_map.remove(params.uri.as_str());
-                self.add_to_diagnostics(params, &[err], false).await;
+        if let Err(err) = executor_ctx.run(ast, &mut exec_state).await {
+            self.memory_map.remove(params.uri.as_str());
+            self.add_to_diagnostics(params, &[err], false).await;
 
-                // Since we already published the diagnostics we don't really care about the error
-                // string.
-                return Err(anyhow::anyhow!("failed to execute code"));
-            }
-        };
+            // Since we already published the diagnostics we don't really care about the error
+            // string.
+            return Err(anyhow::anyhow!("failed to execute code"));
+        }
 
         self.memory_map
             .insert(params.uri.to_string(), exec_state.memory.clone());

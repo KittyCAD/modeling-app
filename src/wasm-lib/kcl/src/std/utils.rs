@@ -53,6 +53,7 @@ pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     Angle::default()
 }
 
+#[allow(dead_code)]
 pub fn clockwise_sign(points: &[Point2d]) -> i32 {
     let mut sum = 0.0;
     for i in 0..points.len() {
@@ -563,6 +564,7 @@ pub struct TangentialArcInfoInput {
 }
 
 /// Structure to hold the output data from calculating tangential arc information.
+#[allow(dead_code)]
 pub struct TangentialArcInfoOutput {
     /// The center point of the arc.
     pub center: Coords2d,

@@ -10,7 +10,7 @@ macro_rules! kcl_test {
         async fn $test_name() {
             let code = kcl_input!($file);
 
-            let result = super::execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+            let result = super::execute_and_snapshot(code, kcl_lib::UnitLength::Mm)
                 .await
                 .unwrap();
             super::assert_out($file, &result);

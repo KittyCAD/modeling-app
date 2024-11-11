@@ -1,9 +1,9 @@
 //! Types used to send data to the test server.
 
 use crate::{
-    executor::{new_zoo_client, ExecutorContext, ExecutorSettings, IdGenerator, ProgramMemory},
+    executor::{new_zoo_client, ExecutorContext, ExecutorSettings, ProgramMemory},
     settings::types::UnitLength,
-    Program,
+    ExecState, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -43,7 +43,8 @@ async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
 ) -> anyhow::Result<(crate::executor::ExecState, image::DynamicImage)> {
-    let (exec_state, snapshot) = ctx.execute_and_prepare(&program, IdGenerator::default(), None).await?;
+    let mut exec_state = ExecState::default();
+    let snapshot = ctx.execute_and_prepare(&program, &mut exec_state).await?;
 
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
