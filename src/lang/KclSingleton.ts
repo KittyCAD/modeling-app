@@ -434,13 +434,9 @@ export class KclManager {
 
     // Update the code state and the editor.
     codeManager.updateCodeStateEditor(code)
-    // Write back to the file system.
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    codeManager.writeToFile()
 
-    // execute the code.
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.executeCode()
+    // Write back to the file system.
+    void codeManager.writeToFile().then(() => this.executeCode())
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
