@@ -12,6 +12,7 @@ import {
   Selections,
   Selection,
   updateSelections,
+  updateSelections2,
 } from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
@@ -1285,9 +1286,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const updatedSelectionRanges = updateSelections(
+        const updatedSelectionRanges = updateSelections2(
           pathToNodeMap,
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           updatedAst.newAst
         )
         return {

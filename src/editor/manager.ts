@@ -285,7 +285,7 @@ export default class EditorManager {
     })
   }
   selectRange(selections: Selections) {
-    if (selections.graphSelections.length === 0) {
+    if (selections?.graphSelections?.length === 0) {
       return
     }
     let codeBasedSelections = []

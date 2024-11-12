@@ -1291,7 +1291,6 @@ export class SceneEntities {
       },
       onMove: () => {},
       onClick: (args) => {
-        console.log('onClick', args)
         // If there is a valid camera interaction that matches, do that instead
         const interaction = sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -1309,7 +1308,6 @@ export class SceneEntities {
         }
         const { selected } = args
         const event = getEventForSegmentSelection(selected)
-        console.log('event', event)
         if (!event) return
         sceneInfra.modelingSend(event)
       },

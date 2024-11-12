@@ -1675,7 +1675,6 @@ export function transformAstSketchLines({
       ''
     const inputs: InputArgs = []
 
-    console.log('getConstraintInfo', callExp.node, _pathToNode)
     getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||
