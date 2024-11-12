@@ -570,9 +570,9 @@ export const ModelingMachineProvider = ({
           // TODO: I believe this guard only allows for extruding a single face at a time
           const _selections = convertSelectionsToOld(selectionRanges)
           const hasNoSelection =
-            _selections.codeBasedSelections.length === 0 ||
-            isRangeBetweenCharacters(_selections) ||
-            isSelectionLastLine(_selections, codeManager.code)
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
 
           if (hasNoSelection) {
             // they have no selection, we should enable the button

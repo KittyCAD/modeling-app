@@ -517,14 +517,19 @@ export function processCodeMirrorRanges({
       otherSelections: [],
     }).codeBasedSelections
   )
-  const artifacts: Selection[] = []
+  const selections: Selection[] = []
   for (const { id } of idBasedSelections) {
     const artifact = engineCommandManager.artifactGraph.get(id)
     const codeRefs = getCodeRefsByArtifactId(
       id,
       engineCommandManager.artifactGraph
     )
-    if (artifact && codeRefs) artifacts.push({ artifact, codeRef: codeRefs[0] })
+    console.log('artifact', artifact, codeRefs)
+    if (artifact && codeRefs) {
+      selections.push({ codeRef: codeRefs[0] })
+    } else if (codeRefs) {
+      selections.push({ artifact, codeRef: codeRefs[0] })
+    }
   }
 
   if (!selectionRanges) return null
@@ -536,7 +541,7 @@ export function processCodeMirrorRanges({
         selectionType: 'mirrorCodeMirrorSelections',
         selection: {
           otherSelections: isShiftDown ? selectionRanges.otherSelections : [],
-          graphSelections: artifacts,
+          graphSelections: selections,
         },
       },
     },
@@ -608,18 +613,18 @@ export function isSketchPipe(selectionRanges: Selections__old) {
 }
 
 export function isSelectionLastLine(
-  selectionRanges: Selections__old,
+  selectionRanges: Selections,
   code: string,
   i = 0
 ) {
-  return selectionRanges.codeBasedSelections[i].range[1] === code.length
+  return selectionRanges.graphSelections[i]?.codeRef?.range[1] === code.length
 }
 
-export function isRangeBetweenCharacters(selectionRanges: Selections__old) {
+export function isRangeBetweenCharacters(selectionRanges: Selections) {
   return (
-    selectionRanges.codeBasedSelections.length === 1 &&
-    selectionRanges.codeBasedSelections[0].range[0] === 0 &&
-    selectionRanges.codeBasedSelections[0].range[1] === 0
+    selectionRanges.graphSelections.length === 1 &&
+    selectionRanges.graphSelections[0]?.codeRef?.range[0] === 0 &&
+    selectionRanges.graphSelections[0]?.codeRef?.range[1] === 0
   )
 }
 
@@ -807,10 +812,16 @@ export function codeToIdSelections(
           return
         }
         if (entry.artifact.type === 'path') {
-          const solid = engineCommandManager.artifactGraph.get(
+          const artifact = engineCommandManager.artifactGraph.get(
             entry.artifact.solid2dId || ''
           )
-          if (solid?.type !== 'solid2D') return
+          if (artifact?.type !== 'solid2D') {
+            bestCandidate = {
+              artifact: entry.artifact,
+              selection,
+              id: entry.id,
+            }
+          }
           if (!entry.artifact.solid2dId) {
             console.error(
               'Expected PathArtifact to have solid2dId, but none found'
@@ -818,7 +829,7 @@ export function codeToIdSelections(
             return
           }
           bestCandidate = {
-            artifact: solid,
+            artifact: artifact,
             selection,
             id: entry.artifact.solid2dId,
           }

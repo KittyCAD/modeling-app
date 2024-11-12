@@ -845,6 +845,8 @@ export function getCodeRefsByArtifactId(
     const consumedCodeRef = getEdgeCutConsumedCodeRef(artifact, artifactGraph)
     if (err(consumedCodeRef)) return [codeRef]
     return [codeRef, consumedCodeRef]
+  } else if (artifact && 'codeRef' in artifact) {
+    return [artifact.codeRef]
   } else {
     return null
   }
