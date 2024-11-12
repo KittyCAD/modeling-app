@@ -752,7 +752,6 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            // const selection = updateSelections(
             const selection = updateSelections2(
               pathToNodeMap,
               selectionRanges,

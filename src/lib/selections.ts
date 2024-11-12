@@ -801,11 +801,12 @@ export function codeToIdSelections(
           }
         | undefined
       overlappingEntries.forEach((entry) => {
+        // TODO probably need to remove much of the `type === 'xyz'` below
         if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
         }
-        if (type === 'solid2D' && entry.artifact.type === 'path') {
+        if (entry.artifact.type === 'path') {
           const solid = engineCommandManager.artifactGraph.get(
             entry.artifact.solid2dId || ''
           )
@@ -1042,7 +1043,6 @@ export function updateSelections2(
             id,
             engineCommandManager.artifactGraph
           )
-          console.log('codeRef', codeRefs)
           if (!codeRefs) continue
           if (
             JSON.stringify(codeRefs[0].pathToNode) ===
@@ -1082,21 +1082,22 @@ export function updateSelections2(
 
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
-  for (const graphSelection of prevSelectionRanges.graphSelections) {
-    const node = getNodeFromPath<Expr>(ast, graphSelection.codeRef.pathToNode)
+  for (const pathToNode of Object.values(pathToNodeMap)) {
+    const node = getNodeFromPath<Expr>(ast, pathToNode)
     if (err(node)) return node
     pathToNodeBasedSelections.push({
-      artifact: graphSelection.artifact,
       codeRef: {
         range: [node.node.start, node.node.end],
-        pathToNode: graphSelection.codeRef.pathToNode,
+        pathToNode: pathToNode,
       },
     })
   }
 
   return {
     graphSelections:
-      newSelections.length > 0 ? newSelections : pathToNodeBasedSelections,
+      newSelections.length >= pathToNodeBasedSelections.length
+        ? newSelections
+        : pathToNodeBasedSelections,
     otherSelections: prevSelectionRanges.otherSelections,
   }
 }

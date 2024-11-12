@@ -1054,9 +1054,9 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
-          selection: updateSelections(
+          selection: updateSelections2(
             pathToNodeMap,
-            convertSelectionsToOld(selectionRanges),
+            selectionRanges,
             updatedAst.newAst
           ),
         }
@@ -1088,9 +1088,9 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
-          selection: updateSelections(
+          selection: updateSelections2(
             pathToNodeMap,
-            convertSelectionsToOld(selectionRanges),
+            selectionRanges,
             updatedAst.newAst
           ),
         }
@@ -1118,9 +1118,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const updatedSelectionRanges = updateSelections(
+        const updatedSelectionRanges = updateSelections2(
           pathToNodeMap,
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           updatedAst.newAst
         )
         return {
@@ -1151,9 +1151,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const updatedSelectionRanges = updateSelections(
+        const updatedSelectionRanges = updateSelections2(
           pathToNodeMap,
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           updatedAst.newAst
         )
         return {
@@ -1184,9 +1184,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const updatedSelectionRanges = updateSelections(
+        const updatedSelectionRanges = updateSelections2(
           pathToNodeMap,
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           updatedAst.newAst
         )
         return {
@@ -1217,9 +1217,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const updatedSelectionRanges = updateSelections(
+        const updatedSelectionRanges = updateSelections2(
           pathToNodeMap,
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           updatedAst.newAst
         )
         return {
@@ -1254,9 +1254,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const updatedSelectionRanges = updateSelections(
+        const updatedSelectionRanges = updateSelections2(
           pathToNodeMap,
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           updatedAst.newAst
         )
         return {
