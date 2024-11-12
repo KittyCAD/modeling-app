@@ -67,6 +67,7 @@ export const getRectangleCallExpressions = (
   createCallExpressionStdLib('close', [createPipeSubstitution()]),
 ]
 
+
 /**
  * Mutates the pipeExpression to update the rectangle sketch
  * @param pipeExpression
@@ -76,45 +77,24 @@ export const getRectangleCallExpressions = (
  */
 export function updateRectangleSketch(
   pipeExpression: PipeExpression,
-  x: number, // rename to deltaX
-  y: number, // rename to deltaY
-  tag: string,
-  originX?: number,
-  originY?: number
+  x: number,
+  y: number,
+  tag: string
 ) {
-  let startX = originX - Math.abs(x)
-  let startY = originY - Math.abs(y)
-
-  console.log(originX, originY)
-  console.log(x, y)
-  console.log(startX, startY)
-  console.log(pipeExpression)
-  console.log('==============')
-
-  // pipeExpression.body[1] is startProfileAt
-  ;((pipeExpression.body[1] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
-    createLiteral(roundOff(startX)),
-    createLiteral(roundOff(startY)),
-  ])
-
-  const twoX = x * 2
-  const twoY = y * 2
-
   ;((pipeExpression.body[2] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
-    createLiteral(pipeExpression.body[2].arguments[0].elements[0].value),
-    createLiteral(Math.abs(twoX)),
-  ])
+      .arguments[0] as ArrayExpression) = createArrayExpression([
+        createLiteral(x >= 0 ? 0 : 180),
+        createLiteral(Math.abs(x)),
+      ])
   ;((pipeExpression.body[3] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
-    createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
-      pipeExpression.body[3].arguments[0].elements[0].operator,
-      createLiteral(90),
-    ]), // 90 offset from the previous line
-    createLiteral(Math.abs(twoY)), // This will be the height of the rectangle
-  ])
+      .arguments[0] as ArrayExpression) = createArrayExpression([
+        createBinaryExpression([
+          createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+          Math.sign(y) === Math.sign(x) ? '+' : '-',
+          createLiteral(90),
+        ]), // 90 offset from the previous line
+        createLiteral(Math.abs(y)), // This will be the height of the rectangle
+      ])
 }
 
 /**
