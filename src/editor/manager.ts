@@ -61,7 +61,9 @@ export default class EditorManager {
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView
-    this.overrideTreeHighlighterUpdateForPerformanceTracking()
+    // TODO: There is a bug with this override that is causing
+    // the editor to lock-up after an autocompletion is selected.
+    // this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
 
   overrideTreeHighlighterUpdateForPerformanceTracking() {
