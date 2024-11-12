@@ -32,11 +32,6 @@ test.describe('Testing selections', () => {
       await u.waitForAuthSkipAppStart()
       await u.openDebugPanel()
 
-      const xAxisClick = () =>
-        test.step('Click on X axis', async () => {
-          await page.mouse.click(700, 253)
-          await page.waitForTimeout(100)
-        })
       const yAxisClick = () =>
         test.step('Click on Y axis', async () => {
           await page.mouse.move(600, 200, { steps: 5 })
