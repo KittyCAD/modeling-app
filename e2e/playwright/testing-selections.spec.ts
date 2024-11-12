@@ -80,23 +80,23 @@ test.describe('Testing selections', () => {
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)`)
+    |> xLine(${commonPoints.num1}, %)`)
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)`)
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1 + 0.01}], %)
-    |> lineTo([0, ${commonPoints.num3}], %)`)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)
+    |> xLine(${commonPoints.num2 * -1}, %)`)
 
       // deselect line tool
       await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -928,6 +928,7 @@ sketch002 = startSketchOn(extrude001, $seg01)
     // test fillet button with the body in the scene
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
 extrude001 = extrude(10, sketch001)`
+    await u.codeLocator.clear()
     await u.codeLocator.fill(codeToAdd)
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()

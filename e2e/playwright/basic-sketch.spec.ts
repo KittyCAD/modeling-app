@@ -67,15 +67,15 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   if (openPanes.includes('code')) {
     await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)`)
+  |> xLine(${commonPoints.num1}, %)`)
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+  |> xLine(${commonPoints.num1}, %)
+  |> yLine(${commonPoints.num1 + 0.01}, %)`)
   } else {
     await page.waitForTimeout(500)
   }
@@ -84,9 +84,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   if (openPanes.includes('code')) {
     await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> lineTo([0, ${commonPoints.num3}], %)`)
+  |> xLine(${commonPoints.num1}, %)
+  |> yLine(${commonPoints.num1 + 0.01}, %)
+  |> xLine(${commonPoints.num2 * -1}], %)`)
   }
 
   // deselect line tool
@@ -142,9 +142,9 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await u.openKclCodePanel()
   await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %, $seg01)
-  |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> angledLine([180, segLen(seg01)], %)`)
+  |> xLine(${commonPoints.num1}, %, $seg01)
+  |> yLine(${commonPoints.num1 + 0.01}, %)
+  |> xLine(-segLen(seg01), %)`)
 }
 
 test.describe('Basic sketch', () => {
