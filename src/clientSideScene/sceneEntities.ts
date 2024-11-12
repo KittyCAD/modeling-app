@@ -813,11 +813,11 @@ export class SceneEntities {
 
           const isHorizontal =
             radToDeg(Math.abs(angle)) < ANGLE_SNAP_THRESHOLD_DEGREES ||
-            Math.abs(radToDeg(Math.abs(angle) - Math.PI)) < ANGLE_SNAP_THRESHOLD_DEGREES
+            Math.abs(radToDeg(Math.abs(angle) - Math.PI)) <
+              ANGLE_SNAP_THRESHOLD_DEGREES
           const isVertical =
             Math.abs(radToDeg(Math.abs(angle) - Math.PI / 2)) <
             ANGLE_SNAP_THRESHOLD_DEGREES
-
 
           let resolvedFunctionName: ToolTip = 'line'
 
