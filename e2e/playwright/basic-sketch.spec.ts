@@ -86,7 +86,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> xLine(${commonPoints.num1}, %)
   |> yLine(${commonPoints.num1 + 0.01}, %)
-  |> xLine(${commonPoints.num2 * -1}], %)`)
+  |> xLine(${commonPoints.num2 * -1}, %)`)
   }
 
   // deselect line tool
