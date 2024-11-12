@@ -195,7 +195,7 @@ test.describe('Sketch tests', () => {
           'persistCode',
           `sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
-      |> xLine(12.73, %)
+      |> line([12.73, -0.09], %)
       |> tangentialArcTo([24.95, -5.38], %)
       |> close(%)`
         )
@@ -681,11 +681,8 @@ test.describe('Sketch tests', () => {
     codeStr += `  |> yLine(${toU(0, 50)[1]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    let clickCoords = await click00r(-50, 0)
-    expect(clickCoords).not.toBeUndefined()
-    console.log('clickCoords', clickCoords)
-    console.log('toU', toU(clickCoords![0], clickCoords![1]))
-    codeStr += `  |> xLine(${toU(clickCoords![0], clickCoords![1])[0]}, %)`
+    await click00r(-50, 0)
+    codeStr += `  |> xLine(${toU(-50, 0)[0]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
@@ -714,7 +711,7 @@ test.describe('Sketch tests', () => {
     // TODO: I couldn't use `toSU` here because of some rounding error causing
     // it to be off by 0.01
     await click00r(30, 0)
-    codeStr += `  |> xLine(4.07, %)`
+    codeStr += `  |> xLine(2.04, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 30)
