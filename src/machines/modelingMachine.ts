@@ -825,24 +825,6 @@ export const modelingMachine = setup({
       })
     },
 
-    'listen for rectangle origin': ({ context: { sketchDetails } }) => {
-      if (!sketchDetails) return
-      sceneEntitiesManager.setupNoPointsListener({
-        sketchDetails,
-        afterClick: (args) => {
-          const twoD = args.intersectionPoint?.twoD
-          if (twoD) {
-            sceneInfra.modelingSend({
-              type: 'Add rectangle origin',
-              data: [twoD.x, twoD.y],
-            })
-          } else {
-            console.error('No intersection point found')
-          }
-        },
-      })
-    },
-
     'listen for circle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       sceneEntitiesManager.createIntersectionPlane()
@@ -1839,9 +1821,7 @@ export const modelingMachine = setup({
           },
         },
 
-        // TODO Kevin:
         'Center Rectangle tool': {
-          // TODO Kevin:
           entry: ['listen for center rectangle origin'],
 
           states: {

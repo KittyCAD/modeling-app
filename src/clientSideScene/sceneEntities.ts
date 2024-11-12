@@ -88,7 +88,7 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
-  updateCenterRectangleSketch
+  updateCenterRectangleSketch,
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs, Themes } from 'lib/theme'
 import { err, reportRejection, trap } from 'lib/trap'
@@ -442,9 +442,6 @@ export class SceneEntities {
           y: xAxisIntersection ? 0 : intersectionPoint.twoD.y,
         }
 
-        // TODO Kevin:
-        // Adds startProfileAt when user interacts with tools via the modelingMachine
-        // Note that this is NOT implemented within the tool types, this is a higher level handler!
         const addStartProfileAtRes = addStartProfileAt(
           kclManager.ast,
           sketchDetails.sketchPathToNode,
@@ -1029,13 +1026,12 @@ export class SceneEntities {
     )
     if (trap(_node1)) return Promise.reject(_node1)
 
-    // startSketchOn already exists?
+    // startSketchOn already exists
     const variableDeclarationName =
       _node1.node?.declarations?.[0]?.id?.name || ''
     const startSketchOn = _node1.node?.declarations
     const startSketchOnInit = startSketchOn?.[0]?.init
 
-    // TODO Kevin: ?
     const tags: [string, string, string] = [
       findUniqueName(_ast, 'rectangleSegmentA'),
       findUniqueName(_ast, 'rectangleSegmentB'),

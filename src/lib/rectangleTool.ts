@@ -9,11 +9,10 @@ import {
   createUnaryExpression,
 } from 'lang/modifyAst'
 import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
-import { isOverlap, roundOff } from 'lib/utils'
+import { roundOff } from 'lib/utils'
 
 /**
- * TODO Kevin: This is a lie, it does not create the startSketchOn
- * and it does not create the startProfileAt.
+ * It does not create the startSketchOn and it does not create the startProfileAt.
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn('XY')
  *  |> startProfileAt([0, 0], %)
@@ -67,7 +66,6 @@ export const getRectangleCallExpressions = (
   createCallExpressionStdLib('close', [createPipeSubstitution()]),
 ]
 
-
 /**
  * Mutates the pipeExpression to update the rectangle sketch
  * @param pipeExpression
@@ -82,19 +80,19 @@ export function updateRectangleSketch(
   tag: string
 ) {
   ;((pipeExpression.body[2] as CallExpression)
-      .arguments[0] as ArrayExpression) = createArrayExpression([
-        createLiteral(x >= 0 ? 0 : 180),
-        createLiteral(Math.abs(x)),
-      ])
+    .arguments[0] as ArrayExpression) = createArrayExpression([
+    createLiteral(x >= 0 ? 0 : 180),
+    createLiteral(Math.abs(x)),
+  ])
   ;((pipeExpression.body[3] as CallExpression)
-      .arguments[0] as ArrayExpression) = createArrayExpression([
-        createBinaryExpression([
-          createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
-          Math.sign(y) === Math.sign(x) ? '+' : '-',
-          createLiteral(90),
-        ]), // 90 offset from the previous line
-        createLiteral(Math.abs(y)), // This will be the height of the rectangle
-      ])
+    .arguments[0] as ArrayExpression) = createArrayExpression([
+    createBinaryExpression([
+      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+      Math.sign(y) === Math.sign(x) ? '+' : '-',
+      createLiteral(90),
+    ]), // 90 offset from the previous line
+    createLiteral(Math.abs(y)), // This will be the height of the rectangle
+  ])
 }
 
 /**

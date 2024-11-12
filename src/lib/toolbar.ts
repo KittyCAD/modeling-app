@@ -486,9 +486,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           description: 'Start drawing a rectangle from its center',
           links: [],
           isActive: (state) => {
-            const b = state.matches({ Sketch: 'Center Rectangle tool' })
-            console.log('active', b)
-            return b
+            return state.matches({ Sketch: 'Center Rectangle tool' })
           },
         },
       ],
