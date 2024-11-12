@@ -110,7 +110,7 @@ Which commands from setup are one off vs need to be run every time?
 The following will need to be run when checking out a new commit and guarantees the build is not stale:
 ```bash
 yarn install
-yarn build:wasm-dev # or yarn build:wasm for slower but more production-like build
+yarn build:wasm
 yarn start # or yarn build:local && yarn serve for slower but more production-like build
 ```
 

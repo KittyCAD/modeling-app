@@ -26,7 +26,6 @@ export function useRefreshSettings(routeId: string = PATHS.INDEX) {
     ctx.settings.send({
       type: 'Set all settings',
       settings: routeData,
-      doNotPersist: true,
     })
   }, [])
 }

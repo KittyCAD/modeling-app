@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/wasm-lib/**.rs'
       - 'src/wasm-lib/**.hbs'
+      - 'src/wasm-lib/**.gen'
+      - 'src/wasm-lib/**.snap'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
@@ -15,6 +17,8 @@ on:
     paths:
       - 'src/wasm-lib/**.rs'
       - 'src/wasm-lib/**.hbs'
+      - 'src/wasm-lib/**.gen'
+      - 'src/wasm-lib/**.snap'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
