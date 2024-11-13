@@ -773,7 +773,7 @@ export const modelingMachine = setup({
     'set up draft line': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setUpDraftSegment(
+      sceneEntitiesManager.setupDraftSegment(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -784,7 +784,7 @@ export const modelingMachine = setup({
     'set up draft arc': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setUpDraftSegment(
+      sceneEntitiesManager.setupDraftSegment(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -872,7 +872,7 @@ export const modelingMachine = setup({
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setUpDraftSegment(
+      sceneEntitiesManager.setupDraftSegment(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
         sketchDetails.yAxis,
