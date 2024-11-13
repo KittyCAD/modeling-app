@@ -418,7 +418,7 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
     args.make_user_val_from_f64(result)
 }
 
-/// Compute the angle (in degrees) in o
+/// Returns the angle to match the given length for x.
 ///
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')
