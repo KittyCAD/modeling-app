@@ -115,6 +115,7 @@ export function useCalculateKclExpression({
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }
+    if (!value) return
     execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
       setValueNode(null)
