@@ -879,8 +879,8 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum SketchData {
-    Plane(Box<Plane>),
     PlaneData(PlaneData),
+    Plane(Box<Plane>),
     Solid(Box<Solid>),
 }
 
