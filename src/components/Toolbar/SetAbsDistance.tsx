@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr } from '../../lang/wasm'
-import { Selections__old } from 'lib/selections'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   getTransformInfos,
   transformAstSketchLines,
@@ -33,7 +30,7 @@ export function absDistanceInfo({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   constraint: Constraint
 }):
   | {
@@ -47,13 +44,10 @@ export function absDistanceInfo({
       : constraint === 'snapToYAxis'
       ? 'xAbs'
       : 'yAbs'
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'CallExpression'
     )
     if (err(tmp)) return tmp
@@ -69,7 +63,11 @@ export function absDistanceInfo({
       toolTips.includes(node.callee.name as any)
   )
 
-  const transforms = getTransformInfos(selectionRanges, kclManager.ast, disType)
+  const transforms = getTransformInfos(
+    convertSelectionsToOld(selectionRanges),
+    kclManager.ast,
+    disType
+  )
   if (err(transforms)) return transforms
 
   const enableY =
@@ -84,7 +82,7 @@ export function absDistanceInfo({
   const enabled =
     isAllTooltips &&
     transforms.every(Boolean) &&
-    selectionRanges.codeBasedSelections.length === 1 &&
+    selectionRanges.graphSelections.length === 1 &&
     (enableX || enableY)
 
   return { enabled, transforms }
@@ -94,7 +92,7 @@ export async function applyConstraintAbsDistance({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   constraint: 'xAbs' | 'yAbs'
 }): Promise<{
   modifiedAst: Program
@@ -109,7 +107,7 @@ export async function applyConstraintAbsDistance({
 
   const transform1 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -129,7 +127,7 @@ export async function applyConstraintAbsDistance({
 
   const transform2 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -158,7 +156,7 @@ export function applyConstraintAxisAlign({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   constraint: 'snapToYAxis' | 'snapToXAxis'
 }):
   | {
@@ -177,7 +175,7 @@ export function applyConstraintAxisAlign({
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',

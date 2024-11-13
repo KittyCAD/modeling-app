@@ -28,10 +28,6 @@ export function angleBetweenInfo({
       enabled: boolean
     }
   | Error {
-  // const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-  //   getNodePathFromSourceRange(kclManager.ast, range)
-  // )
-
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp

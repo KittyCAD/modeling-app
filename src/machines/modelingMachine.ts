@@ -412,7 +412,7 @@ export const modelingMachine = setup({
     },
     'Can constrain ABS X': ({ context: { selectionRanges } }) => {
       const info = absDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
         constraint: 'xAbs',
       })
       if (trap(info)) return false
@@ -420,7 +420,7 @@ export const modelingMachine = setup({
     },
     'Can constrain ABS Y': ({ context: { selectionRanges } }) => {
       const info = absDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
         constraint: 'yAbs',
       })
       if (trap(info)) return false
@@ -472,7 +472,7 @@ export const modelingMachine = setup({
     },
     'Can constrain snap to X': ({ context: { selectionRanges } }) => {
       const info = absDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
         constraint: 'snapToXAxis',
       })
       if (trap(info)) return false
@@ -480,7 +480,7 @@ export const modelingMachine = setup({
     },
     'Can constrain snap to Y': ({ context: { selectionRanges } }) => {
       const info = absDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
         constraint: 'snapToYAxis',
       })
       if (trap(info)) return false
@@ -1162,7 +1162,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintAxisAlign({
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           constraint: 'snapToXAxis',
         })
         if (err(constraint)) return false
@@ -1195,7 +1195,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintAxisAlign({
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           constraint: 'snapToYAxis',
         })
         if (trap(constraint)) return false

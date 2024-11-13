@@ -917,7 +917,7 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintAbsDistance({
                 constraint: 'xAbs',
-                selectionRanges: convertSelectionsToOld(selectionRanges),
+                selectionRanges,
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
@@ -953,7 +953,7 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintAbsDistance({
                 constraint: 'yAbs',
-                selectionRanges: convertSelectionsToOld(selectionRanges),
+                selectionRanges,
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
