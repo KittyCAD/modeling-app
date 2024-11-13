@@ -814,7 +814,6 @@ export const modelingMachine = setup({
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({
-              // TODO
               type: 'Add center rectangle origin',
               data: [twoD.x, twoD.y],
             })
