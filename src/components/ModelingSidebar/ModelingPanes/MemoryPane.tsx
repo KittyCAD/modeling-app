@@ -10,7 +10,7 @@ import {
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
-import { trap } from 'lib/trap'
+import { Reason, trap } from 'lib/trap'
 import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 
@@ -98,7 +98,7 @@ export const processMemory = (programMemory: ProgramMemory) => {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
-      } else if (typeof sk !== 'string') {
+      } else if (!(sk instanceof Reason)) {
         processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })

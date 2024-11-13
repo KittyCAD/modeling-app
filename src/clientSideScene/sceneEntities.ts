@@ -92,7 +92,7 @@ import {
   updateRectangleSketch,
 } from 'lib/rectangleTool'
 import { getThemeColorForThreeJs, Themes } from 'lib/theme'
-import { err, reportRejection, trap } from 'lib/trap'
+import { err, Reason, reportRejection, trap } from 'lib/trap'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
@@ -1517,7 +1517,7 @@ export class SceneEntities {
         maybeSketch,
         variableDeclarationName
       )
-      if (typeof sk !== 'string') {
+      if (!(sk instanceof Reason)) {
         sketch = sk
       } else if ((maybeSketch as Solid).sketch) {
         sketch = (maybeSketch as Solid).sketch

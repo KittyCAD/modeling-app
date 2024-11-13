@@ -32,7 +32,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { err } from 'lib/trap'
+import { err, Reason } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
@@ -360,7 +360,7 @@ export class ProgramMemory {
 export function sketchFromKclValueOptional(
   obj: any,
   varName: string | null
-): Sketch | string {
+): Sketch | Reason {
   if (obj?.value?.type === 'Sketch') return obj.value
   if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Solid') return obj.sketch
@@ -369,9 +369,11 @@ export function sketchFromKclValueOptional(
   }
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
-    return `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
+    return new Reason(
+      `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
+    )
   } else {
-    return `Expected ${varName} to be a sketch, but it wasn't.`
+    return new Reason(`Expected ${varName} to be a sketch, but it wasn't.`)
   }
 }
 
@@ -381,8 +383,8 @@ export function sketchFromKclValue(
   varName: string | null
 ): Sketch | Error {
   const result = sketchFromKclValueOptional(obj, varName)
-  if (typeof result === 'string') {
-    return new Error(result)
+  if (result instanceof Reason) {
+    return result.toError()
   }
   return result
 }
