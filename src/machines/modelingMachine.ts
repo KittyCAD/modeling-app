@@ -506,7 +506,7 @@ export const modelingMachine = setup({
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
       const info = removeConstrainingValuesInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
         pathToNodes: event.data && [event.data],
       })
       if (trap(info)) return false
@@ -996,7 +996,7 @@ export const modelingMachine = setup({
         > & { data?: PathToNode }
       }) => {
         const constraint = applyRemoveConstrainingValues({
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           pathToNodes: data && [data],
         })
         if (trap(constraint)) return

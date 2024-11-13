@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selection__old, Selections__old } from 'lib/selections'
+import { convertSelectionsToOld, Selection, Selections } from 'lib/selections'
 import { PathToNode, Program, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getRemoveConstraintsTransforms,
@@ -19,22 +16,17 @@ export function removeConstrainingValuesInfo({
   selectionRanges,
   pathToNodes,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   pathToNodes?: Array<PathToNode>
 }):
   | {
       transforms: TransformInfo[]
       enabled: boolean
-      updatedSelectionRanges: Selections__old
+      updatedSelectionRanges: Selections
     }
   | Error {
-  const paths =
-    pathToNodes ||
-    selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(kclManager.ast, range)
-    )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -45,10 +37,13 @@ export function removeConstrainingValuesInfo({
   const updatedSelectionRanges = pathToNodes
     ? {
         otherSelections: [],
-        codeBasedSelections: nodes.map(
-          (node): Selection__old => ({
-            range: [node.start, node.end],
-            type: 'default',
+        graphSelections: nodes.map(
+          (node): Selection => ({
+            codeRef: {
+              range: [node.start, node.end],
+              // TODO
+              pathToNode: [],
+            },
           })
         ),
       }
@@ -60,7 +55,7 @@ export function removeConstrainingValuesInfo({
   )
 
   const transforms = getRemoveConstraintsTransforms(
-    updatedSelectionRanges,
+    convertSelectionsToOld(updatedSelectionRanges),
     kclManager.ast,
     'removeConstrainingValues'
   )
@@ -74,7 +69,7 @@ export function applyRemoveConstrainingValues({
   selectionRanges,
   pathToNodes,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   pathToNodes?: Array<PathToNode>
 }):
   | {
@@ -91,7 +86,7 @@ export function applyRemoveConstrainingValues({
 
   return transformAstSketchLines({
     ast: kclManager.ast,
-    selectionRanges: updatedSelectionRanges,
+    selectionRanges: convertSelectionsToOld(updatedSelectionRanges),
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
