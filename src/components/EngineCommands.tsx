@@ -21,7 +21,6 @@ export const EngineCommands = () => {
   const [engineCommands, clearEngineCommands] = useEngineCommands()
   const [containsFilter, setContainsFilter] = useState('')
   const [customCmd, setCustomCmd] = useState('')
-  console.log(JSON.stringify(engineCommands, null, 2))
   return (
     <div>
       <input

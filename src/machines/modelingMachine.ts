@@ -11,7 +11,6 @@ import {
   convertSelectionToOld,
   Selections,
   Selection,
-  updateSelections,
   updateSelections2,
 } from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
