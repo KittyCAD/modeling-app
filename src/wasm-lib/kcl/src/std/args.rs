@@ -670,7 +670,7 @@ impl_from_arg_via_json!(super::sketch::SketchData);
 impl_from_arg_via_json!(crate::std::import::ImportFormat);
 impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
 impl_from_arg_via_json!(crate::std::loft::LoftData);
-impl_from_arg_via_json!(crate::std::planes::StandardPlane);
+impl_from_arg_via_json!(crate::std::planes::DefaultPlane);
 impl_from_arg_via_json!(crate::std::mirror::Mirror2dData);
 impl_from_arg_via_json!(Sketch);
 impl_from_arg_via_json!(FaceTag);
