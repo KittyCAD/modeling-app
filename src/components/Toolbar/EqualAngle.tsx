@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections__old } from 'lib/selections'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -18,15 +18,15 @@ import { TransformInfo } from 'lang/std/stdTypes'
 export function equalAngleInfo({
   selectionRanges,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
 }):
   | {
       transforms: TransformInfo[]
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
+  const paths = selectionRanges.graphSelections.map(({ codeRef }) =>
+    getNodePathFromSourceRange(kclManager.ast, codeRef.range)
   )
   const _nodes = paths.map((pathToNode) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
@@ -62,10 +62,10 @@ export function equalAngleInfo({
   )
 
   const transforms = getTransformInfos(
-    {
+    convertSelectionsToOld({
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
-    },
+      graphSelections: selectionRanges.graphSelections.slice(1),
+    }),
     kclManager.ast,
     'equalAngle'
   )
@@ -82,7 +82,7 @@ export function equalAngleInfo({
 export function applyConstraintEqualAngle({
   selectionRanges,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
 }):
   | {
       modifiedAst: Program
@@ -95,7 +95,7 @@ export function applyConstraintEqualAngle({
 
   const transform = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
   })

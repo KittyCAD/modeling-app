@@ -495,7 +495,7 @@ export const modelingMachine = setup({
     },
     'Can canstrain parallel': ({ context: { selectionRanges } }) => {
       const info = equalAngleInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
       })
       if (err(info)) return false
       return info.enabled
@@ -1228,7 +1228,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintEqualAngle({
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
