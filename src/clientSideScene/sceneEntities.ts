@@ -17,6 +17,7 @@ import {
   Vector3,
 } from 'three'
 import {
+  ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
   AXIS_GROUP,
   DRAFT_POINT,
@@ -95,6 +96,7 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { radToDeg } from 'three/src/math/MathUtils'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -799,11 +801,24 @@ export class SceneEntities {
             (sceneObject) => sceneObject.object.name === X_AXIS
           )
 
-          const lastSegment = sketch.paths.slice(-1)[0]
+          const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
           const snappedPoint = {
             x: intersectsYAxis ? 0 : intersection2d.x,
             y: intersectsXAxis ? 0 : intersection2d.y,
           }
+          // Get the angle between the previous segment (or sketch start)'s end and this one's
+          const angle = Math.atan2(
+            snappedPoint.y - lastSegment.to[1],
+            snappedPoint.x - lastSegment.to[0]
+          )
+
+          const isHorizontal =
+            radToDeg(Math.abs(angle)) < ANGLE_SNAP_THRESHOLD_DEGREES ||
+            Math.abs(radToDeg(Math.abs(angle) - Math.PI)) <
+              ANGLE_SNAP_THRESHOLD_DEGREES
+          const isVertical =
+            Math.abs(radToDeg(Math.abs(angle) - Math.PI / 2)) <
+            ANGLE_SNAP_THRESHOLD_DEGREES
 
           let resolvedFunctionName: ToolTip = 'line'
 
@@ -811,6 +826,12 @@ export class SceneEntities {
           // case-based logic for different segment types
           if (lastSegment.type === 'TangentialArcTo') {
             resolvedFunctionName = 'tangentialArcTo'
+          } else if (isHorizontal) {
+            // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
+            resolvedFunctionName = 'xLine'
+          } else if (isVertical) {
+            // If the angle between is 90 or 270 degrees (+/- the snapping angle), make the line a yLine
+            resolvedFunctionName = 'yLine'
           } else if (snappedPoint.x === 0 || snappedPoint.y === 0) {
             // We consider a point placed on axes or origin to be absolute
             resolvedFunctionName = 'lineTo'

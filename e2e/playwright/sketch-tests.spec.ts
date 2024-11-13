@@ -115,7 +115,7 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
+  |> xLine(12.73, %)
   |> tangentialArcTo([24.95, -5.38], %)`
       )
     })
@@ -156,7 +156,7 @@ test.describe('Sketch tests', () => {
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
         .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
-  |> line([-12.34, 12.34], %)
+  |> yLine(12.34, %)
 
 `)
     }).toPass({ timeout: 40_000, intervals: [1_000] })
@@ -658,6 +658,9 @@ test.describe('Sketch tests', () => {
     await u.waitForAuthSkipAppStart()
     await u.openDebugPanel()
 
+    const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
+    const { toSU, toU, click00r } = getMovementUtils({ center, page })
+
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -689,16 +692,15 @@ test.describe('Sketch tests', () => {
 
     await click00r(50, 0)
     await page.waitForTimeout(100)
-    codeStr += `  |> lineTo(${toSU([50, 0])}, %)`
+    codeStr += `  |> xLine(${toU(50, 0)[0]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    coord = await click00r(0, 50)
-    codeStr += `  |> line(${coord.kcl}, %)`
+    await click00r(0, 50)
+    codeStr += `  |> yLine(${toU(0, 50)[1]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    let clickCoords = await click00r(-50, 0)
-    expect(clickCoords).not.toBeUndefined()
-    codeStr += `  |> lineTo(${toSU(clickCoords!)}, %)`
+    await click00r(-50, 0)
+    codeStr += `  |> xLine(${toU(-50, 0)[0]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
@@ -728,15 +730,15 @@ test.describe('Sketch tests', () => {
     // TODO: I couldn't use `toSU` here because of some rounding error causing
     // it to be off by 0.01
     await click00r(30, 0)
-    codeStr += `  |> lineTo([4.07, 0], %)`
+    codeStr += `  |> xLine(2.04, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    coord = await click00r(0, 30)
-    codeStr += `  |> line(${coord.kcl}, %)`
+    await click00r(0, 30)
+    codeStr += `  |> yLine(-2.03, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    coord = await click00r(-30, 0)
-    codeStr += `  |> line(${coord.kcl}, %)`
+    await click00r(-30, 0)
+    codeStr += `  |> xLine(-2.04, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(undefined, undefined)
@@ -760,8 +762,8 @@ test.describe('Sketch tests', () => {
 
       const code = `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
-    |> line([${roundOff(scale * 139.19)}, 0], %)
-    |> line([0, -${roundOff(scale * 139.2)}], %)
+    |> xLine(${roundOff(scale * 139.19)}, %)
+    |> yLine(-${roundOff(scale * 139.2)}, %)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
     |> close(%)`
 
