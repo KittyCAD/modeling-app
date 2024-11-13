@@ -2,10 +2,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from '../CustomIcon'
 import React, { useState } from 'react'
 import { ActionButton } from '../ActionButton'
-import {
-  Selections,
-  getSelectionTypeDisplayText,
-} from 'lib/selections'
+import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
 import Tooltip from 'components/Tooltip'

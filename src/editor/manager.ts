@@ -7,7 +7,6 @@ import {
   Selections,
   Selection,
   processCodeMirrorRanges,
-  convertSelectionsToOld,
   Selections__old,
 } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'

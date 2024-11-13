@@ -290,7 +290,6 @@ export const ModelingMachineProvider = ({
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
             // this was needed for ts after adding 'Set selection' action to on done modal events
-            // const oldSelections = convertSelectionsToOld(selectionRanges)
             const setSelections =
               ('data' in event &&
                 event.data &&
@@ -586,9 +585,8 @@ export const ModelingMachineProvider = ({
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
-          const _selections = convertSelectionsToOld(selectionRanges)
           if (!commandBarState.matches('Closed')) return false
-          if (_selections.codeBasedSelections.length <= 0) return false
+          if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
         'has valid fillet selection': ({ context: { selectionRanges } }) => {
@@ -704,8 +702,8 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
-            const _selections = convertSelectionsToOld(selectionRanges)
-            const sourceRange = _selections.codeBasedSelections[0].range
+            const sourceRange =
+              selectionRanges.graphSelections[0]?.codeRef?.range
             const sketchPathToNode = getNodePathFromSourceRange(
               kclManager.ast,
               sourceRange
@@ -730,11 +728,10 @@ export const ModelingMachineProvider = ({
 
         'Get horizontal info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
-            const _selections = convertSelectionsToOld(selectionRanges)
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setHorzDistance',
-                selectionRanges: _selections,
+                selectionRanges: convertSelectionsToOld(selectionRanges),
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
@@ -767,11 +764,10 @@ export const ModelingMachineProvider = ({
         ),
         'Get vertical info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
-            const _selections = convertSelectionsToOld(selectionRanges)
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setVertDistance',
-                selectionRanges: _selections,
+                selectionRanges: convertSelectionsToOld(selectionRanges),
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)

@@ -5,7 +5,6 @@ import { CommandArgument } from 'lib/commandTypes'
 import {
   Selection__old,
   canSubmitSelectionArg,
-  convertSelectionsToOld,
   getSelectionType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
@@ -54,7 +53,7 @@ function CommandBarSelectionInput({
   const selectionsByType = useMemo(() => {
     const selectionRangeEnd = !selection
       ? null
-      : convertSelectionsToOld(selection)?.codeBasedSelections[0]?.range[1]
+      : selection?.graphSelections[0]?.codeRef?.range[1]
     return !selectionRangeEnd || selectionRangeEnd === code.length || !selection
       ? 'none'
       : !selection
