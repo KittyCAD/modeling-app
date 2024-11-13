@@ -808,7 +808,7 @@ export const ModelingMachineProvider = ({
                   selectionRanges,
                 })
               : applyConstraintAngleLength({
-                  selectionRanges: convertSelectionsToOld(selectionRanges),
+                  selectionRanges,
                   angleOrLength: 'setAngle',
                 }))
             const _modifiedAst = parse(recast(modifiedAst))
@@ -846,7 +846,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintAngleLength({
-                selectionRanges: convertSelectionsToOld(selectionRanges),
+                selectionRanges,
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)

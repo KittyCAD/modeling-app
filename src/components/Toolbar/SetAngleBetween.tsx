@@ -1,13 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import {
-  convertSelectionsToOld,
-  Selections,
-} from 'lib/selections'
-import {
-  
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   transformSecondarySketchLinesTagFirst,

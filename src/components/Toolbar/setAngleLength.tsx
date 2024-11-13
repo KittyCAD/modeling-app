@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr } from '../../lang/wasm'
-import { Selections__old } from 'lib/selections'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getTransformInfos,
@@ -32,7 +29,7 @@ export function angleLengthInfo({
   selectionRanges,
   angleOrLength = 'setLength',
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
 }):
   | {
@@ -40,12 +37,8 @@ export function angleLengthInfo({
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Expr>(kclManager.ast, pathToNode, 'CallExpression')
+  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
+    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, 'CallExpression')
   )
   const _err1 = nodes.find(err)
   if (err(_err1)) return _err1
@@ -59,12 +52,12 @@ export function angleLengthInfo({
   })
 
   const transforms = getTransformInfos(
-    selectionRanges,
+    convertSelectionsToOld(selectionRanges),
     kclManager.ast,
     angleOrLength
   )
   const enabled =
-    selectionRanges.codeBasedSelections.length <= 1 &&
+    selectionRanges.graphSelections.length <= 1 &&
     isAllTooltips &&
     transforms.every(Boolean)
   return { enabled, transforms }
@@ -74,7 +67,7 @@ export async function applyConstraintAngleLength({
   selectionRanges,
   angleOrLength = 'setLength',
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
 }): Promise<{
   modifiedAst: Program
@@ -86,7 +79,7 @@ export async function applyConstraintAngleLength({
   const { transforms } = angleLength
   const sketched = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -138,7 +131,7 @@ export async function applyConstraintAngleLength({
 
   const retval = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
