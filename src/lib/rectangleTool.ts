@@ -8,13 +8,14 @@ import {
   createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
-import {
-  ArrayExpression,
-  CallExpression,
-  PipeExpression,
-  Literal,
-} from 'lang/wasm'
+import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
 import { roundOff } from 'lib/utils'
+import {
+  isCallExpression,
+  isArrayExpression,
+  isLiteral,
+  isBinaryExpression,
+} from 'lang/util'
 
 /**
  * It does not create the startSketchOn and it does not create the startProfileAt.
@@ -128,31 +129,35 @@ export function updateCenterRectangleSketch(
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
-  console.log(pipeExpression.body[2])
-  ;((pipeExpression.body[2] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
-    createLiteral(pipeExpression.body[2].arguments[0].elements[0].value),
-    createLiteral(Math.abs(twoX)),
-  ])
-
-  const call_ = pipeExpression.body[2]
-  if (call_.type === 'CallExpression') {
-    const args_ = call_.arguments[0]
-    if (args_.type === 'ArrayExpression') {
-      const literal_ = args_.elements[0]
-      if (literal_.type === 'Literal') {
-        const val: Literal = createLiteral(literal_.value)
+  let callExpression = pipeExpression.body[2]
+  if (isCallExpression(callExpression)) {
+    let arrayExpression = callExpression.arguments[0]
+    if (isArrayExpression(arrayExpression)) {
+      const literal = arrayExpression.elements[0]
+      if (isLiteral(literal)) {
+        callExpression.arguments[0] = createArrayExpression([
+          createLiteral(literal.value),
+          createLiteral(Math.abs(twoX)),
+        ])
       }
     }
   }
 
-  ;((pipeExpression.body[3] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
-    createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
-      pipeExpression.body[3].arguments[0].elements[0].operator,
-      createLiteral(90),
-    ]), // 90 offset from the previous line
-    createLiteral(Math.abs(twoY)), // This will be the height of the rectangle
-  ])
+  callExpression = pipeExpression.body[3]
+  if (isCallExpression(callExpression)) {
+    let arrayExpression = callExpression.arguments[0]
+    if (isArrayExpression(arrayExpression)) {
+      const binaryExpression = arrayExpression.elements[0]
+      if (isBinaryExpression(binaryExpression)) {
+        callExpression.arguments[0] = createArrayExpression([
+          createBinaryExpression([
+            createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
+            binaryExpression.operator,
+            createLiteral(90),
+          ]), // 90 offset from the previous line
+          createLiteral(Math.abs(twoY)), // This will be the height of the rectangle
+        ])
+      }
+    }
+  }
 }
