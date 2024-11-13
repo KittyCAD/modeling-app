@@ -8,7 +8,12 @@ import {
   createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
-import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
+import {
+  ArrayExpression,
+  CallExpression,
+  PipeExpression,
+  Literal,
+} from 'lang/wasm'
 import { roundOff } from 'lib/utils'
 
 /**
@@ -107,8 +112,8 @@ export function updateCenterRectangleSketch(
   deltaX: number,
   deltaY: number,
   tag: string,
-  originX?: number,
-  originY?: number
+  originX: number,
+  originY: number
 ) {
   let startX = originX - Math.abs(deltaX)
   let startY = originY - Math.abs(deltaY)
@@ -123,11 +128,24 @@ export function updateCenterRectangleSketch(
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
+  console.log(pipeExpression.body[2])
   ;((pipeExpression.body[2] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createLiteral(pipeExpression.body[2].arguments[0].elements[0].value),
     createLiteral(Math.abs(twoX)),
   ])
+
+  const call_ = pipeExpression.body[2]
+  if (call_.type === 'CallExpression') {
+    const args_ = call_.arguments[0]
+    if (args_.type === 'ArrayExpression') {
+      const literal_ = args_.elements[0]
+      if (literal_.type === 'Literal') {
+        const val: Literal = createLiteral(literal_.value)
+      }
+    }
+  }
+
   ;((pipeExpression.body[3] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
