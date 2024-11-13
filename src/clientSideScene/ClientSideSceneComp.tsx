@@ -209,12 +209,20 @@ const Overlay = ({
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
+  // It's possible for the pathToNode to request a newer AST node
+  // than what's available in the AST at the moment of query.
+  // It eventually settles on being updated.
   const _node1 = getNodeFromPath<Node<CallExpression>>(
     kclManager.ast,
     overlay.pathToNode,
     'CallExpression'
   )
-  if (err(_node1)) return
+
+  // For that reason, to prevent console noise, we do not use err here.
+  if (_node1 instanceof Error) {
+    console.warn('ast older than pathToNode, not fatal, eventually settles')
+    return
+  }
   const callExpression = _node1.node
 
   const constraints = getConstraintInfo(
