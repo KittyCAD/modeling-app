@@ -15,6 +15,7 @@ import { Program } from 'lang/wasm'
 import {
   doesPipeHaveCallExp,
   getNodeFromPath,
+  getNodePathFromSourceRange,
   hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
@@ -494,10 +495,12 @@ export function processCodeMirrorRanges({
   codeMirrorRanges,
   selectionRanges,
   isShiftDown,
+  ast,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
   isShiftDown: boolean
+  ast: Program
 }): null | {
   modelingEvent: ModelingMachineEvent
   engineEvents: Models['WebSocketRequest_type'][]
@@ -515,10 +518,11 @@ export function processCodeMirrorRanges({
   if (!isChange) return null
   const codeBasedSelections: Selections['graphSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
+      const pathToNode = getNodePathFromSourceRange(ast, [from, to])
       return {
         codeRef: {
-          pathToNode: [],
           range: [from, to],
+          pathToNode,
         },
       }
     })
@@ -531,10 +535,11 @@ export function processCodeMirrorRanges({
   const selections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
     if (!id) {
+      const pathToNode = getNodePathFromSourceRange(ast, range)
       selections.push({
         codeRef: {
           range,
-          pathToNode: [],
+          pathToNode,
         },
       })
       continue

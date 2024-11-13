@@ -1,7 +1,10 @@
 import { toolTips } from 'lang/langHelpers'
 import { convertSelectionsToOld, Selection, Selections } from 'lib/selections'
 import { PathToNode, Program, Expr } from '../../lang/wasm'
-import { getNodeFromPath } from '../../lang/queryAst'
+import {
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+} from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getRemoveConstraintsTransforms,
@@ -41,8 +44,10 @@ export function removeConstrainingValuesInfo({
           (node): Selection => ({
             codeRef: {
               range: [node.start, node.end],
-              // TODO
-              pathToNode: [],
+              pathToNode: getNodePathFromSourceRange(kclManager.ast, [
+                node.start,
+                node.end,
+              ]),
             },
           })
         ),

@@ -1,7 +1,7 @@
 import { EditorView, ViewUpdate } from '@codemirror/view'
 import { syntaxTree } from '@codemirror/language'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
 import {
   Selections,
@@ -344,6 +344,7 @@ export default class EditorManager {
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
+      ast: kclManager.ast,
     })
 
     if (!eventInfo) {
