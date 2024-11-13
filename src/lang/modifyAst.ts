@@ -18,6 +18,7 @@ import {
   ProgramMemory,
   SourceRange,
   sketchFromKclValue,
+  isPathToNodeNumber,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -562,7 +563,12 @@ export function sketchOnOffsetPlane(
   )
 
   // Decide where to insert the new sketch declaration
-  const offsetIndex = offsetPathToNode[1][0] as number
+
+  const offsetIndex = offsetPathToNode[1][0]
+
+  if (!isPathToNodeNumber(offsetIndex)) {
+    return new Error('Expected offsetIndex to be a number')
+  }
   // and insert it
   _node.body.splice(offsetIndex + 1, 0, newSketch)
   const newpathToNode: PathToNode = [
