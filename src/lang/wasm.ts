@@ -142,6 +142,12 @@ export const parse = (code: string | Error): Node<Program> | Error => {
 
 export type PathToNode = [string | number, string][]
 
+export const isPathToNodeNumber = (
+  pathToNode: string | number
+): pathToNode is number => {
+  return typeof pathToNode === 'number'
+}
+
 export interface ExecState {
   memory: ProgramMemory
   idGenerator: IdGenerator
