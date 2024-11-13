@@ -2,63 +2,75 @@
 
 use derive_docs::stdlib;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::{ Deserialize, Serialize };
+use kcmc::{
+  each_cmd as mcmd,
+  length_unit::LengthUnit,
+  shared::Color,
+  ModelingCmd,
+};
+use kittycad_modeling_cmds as kcmc;
 
 use crate::{
-    errors::KclError,
-    executor::{ExecState, KclValue, Metadata, Plane, UserVal},
-    std::{sketch::PlaneData, Args},
+  errors::KclError,
+  executor::{ ExecState, KclValue, Metadata, Plane, UserVal },
+  std::{ sketch::PlaneData, Args },
 };
 
 /// One of the standard planes.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum StandardPlane {
-    /// The XY plane.
-    #[serde(rename = "XY", alias = "xy")]
-    XY,
-    /// The opposite side of the XY plane.
-    #[serde(rename = "-XY", alias = "-xy")]
-    NegXY,
-    /// The XZ plane.
-    #[serde(rename = "XZ", alias = "xz")]
-    XZ,
-    /// The opposite side of the XZ plane.
-    #[serde(rename = "-XZ", alias = "-xz")]
-    NegXZ,
-    /// The YZ plane.
-    #[serde(rename = "YZ", alias = "yz")]
-    YZ,
-    /// The opposite side of the YZ plane.
-    #[serde(rename = "-YZ", alias = "-yz")]
-    NegYZ,
+  /// The XY plane.
+  #[serde(rename = "XY", alias = "xy")]
+  XY,
+  /// The opposite side of the XY plane.
+  #[serde(rename = "-XY", alias = "-xy")]
+  NegXY,
+  /// The XZ plane.
+  #[serde(rename = "XZ", alias = "xz")]
+  XZ,
+  /// The opposite side of the XZ plane.
+  #[serde(rename = "-XZ", alias = "-xz")]
+  NegXZ,
+  /// The YZ plane.
+  #[serde(rename = "YZ", alias = "yz")]
+  YZ,
+  /// The opposite side of the YZ plane.
+  #[serde(rename = "-YZ", alias = "-yz")]
+  NegYZ,
 }
 
 impl From<StandardPlane> for PlaneData {
-    fn from(value: StandardPlane) -> Self {
-        match value {
-            StandardPlane::XY => PlaneData::XY,
-            StandardPlane::NegXY => PlaneData::NegXY,
-            StandardPlane::XZ => PlaneData::XZ,
-            StandardPlane::NegXZ => PlaneData::NegXZ,
-            StandardPlane::YZ => PlaneData::YZ,
-            StandardPlane::NegYZ => PlaneData::NegYZ,
-        }
+  fn from(value: StandardPlane) -> Self {
+    match value {
+      StandardPlane::XY => PlaneData::XY,
+      StandardPlane::NegXY => PlaneData::NegXY,
+      StandardPlane::XZ => PlaneData::XZ,
+      StandardPlane::NegXZ => PlaneData::NegXZ,
+      StandardPlane::YZ => PlaneData::YZ,
+      StandardPlane::NegYZ => PlaneData::NegYZ,
     }
+  }
 }
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
+  let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
 
-    let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
+  let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
+  make_offset_plane_in_engine(&plane, &args).await?;
 
-    Ok(KclValue::UserVal(UserVal::new(
+  Ok(
+    KclValue::UserVal(
+      UserVal::new(
         vec![Metadata {
-            source_range: args.source_range,
+          source_range: args.source_range,
         }],
-        plane,
-    )))
+        plane
+      )
+    )
+  )
 }
 
 /// Offset a plane by a distance along its normal.
@@ -133,40 +145,70 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
     name = "offsetPlane",
 }]
 async fn inner_offset_plane(
-    std_plane: StandardPlane,
-    offset: f64,
-    exec_state: &mut ExecState,
-) -> Result<PlaneData, KclError> {
-    // Convert to the plane type.
-    let plane_data: PlaneData = std_plane.into();
-    // Convert to a plane.
-    let mut plane = Plane::from_plane_data(plane_data, exec_state);
+  std_plane: StandardPlane,
+  offset: f64,
+  exec_state: &mut ExecState
+) -> Result<Plane, KclError> {
+  // Convert to the plane type.
+  let plane_data: PlaneData = std_plane.into();
+  // Convert to a plane.
+  let mut plane = Plane::from_plane_data(plane_data, exec_state);
 
-    match std_plane {
-        StandardPlane::XY => {
-            plane.origin.z += offset;
-        }
-        StandardPlane::XZ => {
-            plane.origin.y -= offset;
-        }
-        StandardPlane::YZ => {
-            plane.origin.x += offset;
-        }
-        StandardPlane::NegXY => {
-            plane.origin.z -= offset;
-        }
-        StandardPlane::NegXZ => {
-            plane.origin.y += offset;
-        }
-        StandardPlane::NegYZ => {
-            plane.origin.x -= offset;
-        }
+  match std_plane {
+    StandardPlane::XY => {
+      plane.origin.z += offset;
     }
+    StandardPlane::XZ => {
+      plane.origin.y -= offset;
+    }
+    StandardPlane::YZ => {
+      plane.origin.x += offset;
+    }
+    StandardPlane::NegXY => {
+      plane.origin.z -= offset;
+    }
+    StandardPlane::NegXZ => {
+      plane.origin.y += offset;
+    }
+    StandardPlane::NegYZ => {
+      plane.origin.x -= offset;
+    }
+  }
 
-    Ok(PlaneData::Plane {
-        origin: Box::new(plane.origin),
-        x_axis: Box::new(plane.x_axis),
-        y_axis: Box::new(plane.y_axis),
-        z_axis: Box::new(plane.z_axis),
+  Ok(plane)
+}
+
+// Engine-side effectful creation of an actual plane object.
+async fn make_offset_plane_in_engine(
+  plane: &Plane,
+  args: &Args
+) -> Result<uuid::Uuid, KclError> {
+  // Create new default planes.
+  let default_size = 100.0;
+  let color = Color {
+    r: 0.6,
+    g: 0.6,
+    b: 0.6,
+    a: 0.3,
+  };
+
+  args.batch_modeling_cmd(
+    plane.id,
+    ModelingCmd::from(mcmd::MakePlane {
+      clobber: false,
+      origin: plane.origin.into(),
+      size: LengthUnit(default_size),
+      x_axis: plane.x_axis.into(),
+      y_axis: plane.y_axis.into(),
+      hide: Some(false),
     })
+  ).await?;
+
+  // Set the color.
+  args.batch_modeling_cmd(
+    uuid::Uuid::new_v4(),
+    ModelingCmd::from(mcmd::PlaneSetColor { color, plane_id: plane.id })
+  ).await?;
+
+  Ok(plane.id)
 }
