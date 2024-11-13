@@ -514,7 +514,7 @@ part001 = startSketchOn('XY')
        segEndY(seg01) + 2.93
      ], %) // xRelative`)
     })
-    it.only('testing for yRelative to horizontal distance', async () => {
+    it('testing for yRelative to horizontal distance', async () => {
       const expectedCode = await helperThing(
         inputScript,
         ['// base selection', '// yRelative'],
