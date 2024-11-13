@@ -496,7 +496,7 @@ export function processCodeMirrorRanges({
   isShiftDown,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   isShiftDown: boolean
 }): null | {
   modelingEvent: ModelingMachineEvent
@@ -504,11 +504,11 @@ export function processCodeMirrorRanges({
 } {
   const isChange =
     // todo should this take old or new selections?
-    codeMirrorRanges.length !== selectionRanges?.codeBasedSelections?.length ||
+    codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
     codeMirrorRanges.some(({ from, to }, i) => {
       return (
-        from !== selectionRanges.codeBasedSelections[i].range[0] ||
-        to !== selectionRanges.codeBasedSelections[i].range[1]
+        from !== selectionRanges.graphSelections[i]?.codeRef?.range[0] ||
+        to !== selectionRanges.graphSelections[i]?.codeRef?.range[1]
       )
     })
 

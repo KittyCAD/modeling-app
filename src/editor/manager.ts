@@ -343,7 +343,7 @@ export default class EditorManager {
 
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
-      selectionRanges: convertSelectionsToOld(this._selectionRanges),
+      selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
     })
 
