@@ -357,10 +357,10 @@ export class ProgramMemory {
 }
 
 // TODO: In the future, make the parameter be a KclValue.
-export function sketchFromKclValue(
+export function sketchFromKclValueOptional(
   obj: any,
   varName: string | null
-): Sketch | Error {
+): Sketch | string {
   if (obj?.value?.type === 'Sketch') return obj.value
   if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Solid') return obj.sketch
@@ -369,13 +369,22 @@ export function sketchFromKclValue(
   }
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
-    console.log(obj)
-    return new Error(
-      `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
-    )
+    return `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
   } else {
-    return new Error(`Expected ${varName} to be a sketch, but it wasn't.`)
+    return `Expected ${varName} to be a sketch, but it wasn't.`
   }
+}
+
+// TODO: In the future, make the parameter be a KclValue.
+export function sketchFromKclValue(
+  obj: any,
+  varName: string | null
+): Sketch | Error {
+  const result = sketchFromKclValueOptional(obj, varName)
+  if (typeof result === 'string') {
+    return new Error(result)
+  }
+  return result
 }
 
 export const executor = async (

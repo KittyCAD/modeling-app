@@ -14,6 +14,7 @@ import {
   ProgramMemory,
   ReturnStatement,
   sketchFromKclValue,
+  sketchFromKclValueOptional,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
@@ -790,7 +791,8 @@ export function hasExtrudeSketch({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' ||
+    typeof sketchFromKclValueOptional(varValue, varName) !== 'string'
   )
 }
 

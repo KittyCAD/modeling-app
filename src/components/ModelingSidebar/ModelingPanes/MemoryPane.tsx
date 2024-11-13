@@ -5,12 +5,12 @@ import {
   ProgramMemory,
   Path,
   ExtrudeSurface,
-  sketchFromKclValue,
+  sketchFromKclValueOptional,
 } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
-import { err, trap } from 'lib/trap'
+import { trap } from 'lib/trap'
 import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 
@@ -93,13 +93,13 @@ export const processMemory = (programMemory: ProgramMemory) => {
       // @ts-ignore
       val.type !== 'Function'
     ) {
-      const sg = sketchFromKclValue(val, key)
+      const sk = sketchFromKclValueOptional(val, key)
       if (val.type === 'Solid') {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
-      } else if (!err(sg)) {
-        processedMemory[key] = sg.paths.map(({ __geoMeta, ...rest }: Path) => {
+      } else if (typeof sk !== 'string') {
+        processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })
       } else {

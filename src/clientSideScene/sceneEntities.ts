@@ -47,6 +47,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   sketchFromKclValue,
+  sketchFromKclValueOptional,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -1511,10 +1512,13 @@ export class SceneEntities {
       this.sceneProgramMemory = programMemory
 
       const maybeSketch = programMemory.get(variableDeclarationName)
-      let sketch = undefined
-      const sg = sketchFromKclValue(maybeSketch, variableDeclarationName)
-      if (!err(sg)) {
-        sketch = sg
+      let sketch: Sketch | undefined
+      const sk = sketchFromKclValueOptional(
+        maybeSketch,
+        variableDeclarationName
+      )
+      if (typeof sk !== 'string') {
+        sketch = sk
       } else if ((maybeSketch as Solid).sketch) {
         sketch = (maybeSketch as Solid).sketch
       }
