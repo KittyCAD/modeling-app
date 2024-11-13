@@ -196,8 +196,7 @@ const FileTreeItem = ({
         return
       }
 
-      // Don't try to read a file that was removed.
-      if (isCurrentFile && eventType !== 'unlink') {
+      if (isCurrentFile && eventType === 'change') {
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
