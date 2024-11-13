@@ -385,18 +385,12 @@ export const modelingMachine = setup({
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(
-        convertSelectionsToOld(selectionRanges),
-        'horizontal'
-      )
+      const info = horzVertInfo(selectionRanges, 'horizontal')
       if (trap(info)) return false
       return info.enabled
     },
     'Can make selection vertical': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(
-        convertSelectionsToOld(selectionRanges),
-        'vertical'
-      )
+      const info = horzVertInfo(selectionRanges, 'vertical')
       if (trap(info)) return false
       return info.enabled
     },
@@ -1034,7 +1028,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVert(
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           'horizontal',
           kclManager.ast,
           kclManager.programMemory
@@ -1068,7 +1062,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVert(
-          convertSelectionsToOld(selectionRanges),
+          selectionRanges,
           'vertical',
           kclManager.ast,
           kclManager.programMemory

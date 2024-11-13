@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections__old } from 'lib/selections'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
 import { Program, ProgramMemory, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getTransformInfos,
@@ -16,7 +13,7 @@ import { err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export function horzVertInfo(
-  selectionRanges: Selections__old,
+  selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal'
 ):
   | {
@@ -24,11 +21,8 @@ export function horzVertInfo(
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -43,7 +37,7 @@ export function horzVertInfo(
   )
 
   const theTransforms = getTransformInfos(
-    selectionRanges,
+    convertSelectionsToOld(selectionRanges),
     kclManager.ast,
     horOrVert
   )
@@ -54,7 +48,7 @@ export function horzVertInfo(
 }
 
 export function applyConstraintHorzVert(
-  selectionRanges: Selections__old,
+  selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal',
   ast: Node<Program>,
   programMemory: ProgramMemory
@@ -70,7 +64,7 @@ export function applyConstraintHorzVert(
 
   return transformAstSketchLines({
     ast,
-    selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos,
     programMemory,
     referenceSegName: '',
