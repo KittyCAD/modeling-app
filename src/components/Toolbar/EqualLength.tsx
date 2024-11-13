@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections__old } from 'lib/selections'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   transformSecondarySketchLinesTagFirst,
@@ -19,18 +16,15 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 export function setEqualLengthInfo({
   selectionRanges,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
 }):
   | {
       transforms: TransformInfo[]
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -38,10 +32,10 @@ export function setEqualLengthInfo({
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const _varDecs = paths.map((pathToNode) => {
+  const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp
@@ -63,10 +57,10 @@ export function setEqualLengthInfo({
   )
 
   const transforms = getTransformInfos(
-    {
+    convertSelectionsToOld({
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
-    },
+      graphSelections: selectionRanges.graphSelections.slice(1),
+    }),
     kclManager.ast,
     'equalLength'
   )
@@ -84,7 +78,7 @@ export function setEqualLengthInfo({
 export function applyConstraintEqualLength({
   selectionRanges,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
 }):
   | {
       modifiedAst: Node<Program>
@@ -97,7 +91,7 @@ export function applyConstraintEqualLength({
 
   const transform = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
   })

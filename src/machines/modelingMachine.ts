@@ -488,7 +488,7 @@ export const modelingMachine = setup({
     },
     'Can constrain equal length': ({ context: { selectionRanges } }) => {
       const info = setEqualLengthInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
       })
       if (trap(info)) return false
       return info.enabled
@@ -1265,7 +1265,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintEqualLength({
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
