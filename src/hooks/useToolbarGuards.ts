@@ -2,13 +2,13 @@ import {
   SetVarNameModal,
   createSetVarNameModal,
 } from 'components/SetVarNameModal'
-import { editorManager, kclManager } from 'lib/singletons'
-import { reportRejection, trap } from 'lib/trap'
+import { editorManager, kclManager, codeManager } from 'lib/singletons'
+import { reportRejection, trap, err } from 'lib/trap'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { useModelingContext } from './useModelingContext'
-import { PathToNode, SourceRange } from 'lang/wasm'
+import { PathToNode, SourceRange, recast } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { toSync } from 'lib/utils'
 
@@ -57,6 +57,11 @@ export function useConvertToVariable(range?: SourceRange) {
         )
 
       await kclManager.updateAst(_modifiedAst, true)
+
+      const newCode = recast(_modifiedAst)
+      if (err(newCode)) return
+      codeManager.updateCodeEditor(newCode)
+
       return pathToReplacedNode
     } catch (e) {
       console.log('error', e)

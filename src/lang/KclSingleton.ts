@@ -357,9 +357,6 @@ export class KclManager {
       this.clearAst()
       return
     }
-    codeManager.updateCodeEditor(newCode)
-    // Write the file to disk.
-    await codeManager.writeToFile()
     this._ast = { ...newAst }
 
     const { logs, errors, execState } = await executeAst({
@@ -497,11 +494,6 @@ export class KclManager {
     }
 
     if (execute) {
-      // Call execute on the set ast.
-      // Update the code state and editor.
-      codeManager.updateCodeEditor(newCode)
-      // Write the file to disk.
-      await codeManager.writeToFile()
       await this.executeAst({
         ast: astWithUpdatedSource,
         zoomToFit: optionalParams?.zoomToFit,

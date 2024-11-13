@@ -18,6 +18,7 @@ import {
   sceneEntitiesManager,
   engineCommandManager,
   editorManager,
+  codeManager,
 } from 'lib/singletons'
 import {
   horzVertInfo,
@@ -512,6 +513,13 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    'update code editor and write to file': async () => {
+      const newCode = recast(kclManager.ast)
+      if (err(newCode)) return
+      await codeManager.updateCodeEditor(newCode)
+      await codeManager.writeToFile()
+    },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
         'data' in event && event.data && 'tool' in event.data
@@ -595,7 +603,6 @@ export const modelingMachine = setup({
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
-        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: [pathToExtrudeArg],
           zoomToFit: true,
@@ -604,11 +611,11 @@ export const modelingMachine = setup({
             type: 'path',
           },
         })
-        if (!engineCommandManager.engineConnection?.idleMode) {
-          store.videoElement?.play().catch((e) => {
-            console.warn('Video playing was prevented', e)
-          })
-        }
+
+        const newCode = recast(updatedAst.newAst)
+        if (err(newCode)) return
+        await codeManager.updateCodeEditor(newCode)
+
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
@@ -642,7 +649,6 @@ export const modelingMachine = setup({
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
 
-        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: [pathToRevolveArg],
           zoomToFit: true,
@@ -651,11 +657,11 @@ export const modelingMachine = setup({
             type: 'path',
           },
         })
-        if (!engineCommandManager.engineConnection?.idleMode) {
-          store.videoElement?.play().catch((e) => {
-            console.warn('Video playing was prevented', e)
-          })
-        }
+
+        const newCode = recast(updatedAst.newAst)
+        if (err(newCode)) return
+        await codeManager.updateCodeEditor(newCode)
+
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
@@ -685,6 +691,10 @@ export const modelingMachine = setup({
         }
 
         await kclManager.updateAst(modifiedAst, true)
+
+        const newCode = recast(modifiedAst)
+        if (err(newCode)) return
+        await codeManager.updateCodeEditor(newCode)
       })().catch(reportRejection)
     },
     'AST fillet': ({ event }) => {
@@ -1556,7 +1566,10 @@ export const modelingMachine = setup({
             },
           },
 
-          entry: 'setup client side sketch segments',
+          entry: [
+            'setup client side sketch segments',
+            'update code editor and write to file',
+          ],
         },
 
         'Await horizontal distance info': {
