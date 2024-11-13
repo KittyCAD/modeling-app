@@ -513,12 +513,14 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    'update code editor and write to file': async () => {
-      const newCode = recast(kclManager.ast)
-      if (err(newCode)) return
-      await codeManager.updateCodeEditor(newCode)
-      await codeManager.writeToFile()
+    'code editor process changes': ({ event, context }) => {
+      ;(async () => {
+        const newCode = recast(kclManager.ast)
+        if (err(newCode)) return
+        await codeManager.updateCodeStateEditor(newCode)
+
+        await codeManager.writeToFile()
+      })().catch(reportRejection)
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
@@ -1572,7 +1574,8 @@ export const modelingMachine = setup({
 
           entry: [
             'setup client side sketch segments',
-            'update code editor and write to file',
+
+            'code editor process changes',
           ],
         },
 
@@ -1586,7 +1589,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
             onError: 'SketchIdle',
           },
@@ -1602,7 +1605,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
             onError: 'SketchIdle',
           },
@@ -1618,7 +1621,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
             onError: 'SketchIdle',
           },
@@ -1634,7 +1637,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
             onError: 'SketchIdle',
           },
@@ -1650,7 +1653,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
             onError: 'SketchIdle',
           },
@@ -1666,7 +1669,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
             onError: 'SketchIdle',
           },
@@ -1682,7 +1685,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
             onError: 'SketchIdle',
           },
@@ -1818,7 +1821,7 @@ export const modelingMachine = setup({
             onError: 'SketchIdle',
             onDone: {
               target: 'SketchIdle',
-              actions: ['Set selection'],
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1839,7 +1842,7 @@ export const modelingMachine = setup({
             },
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1854,7 +1857,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1869,7 +1872,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1884,7 +1887,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1899,7 +1902,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1914,7 +1917,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1929,7 +1932,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1944,7 +1947,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },
@@ -1959,7 +1962,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: 'Set selection',
+              actions: ['code editor process changes', 'Set selection'],
             },
           },
         },

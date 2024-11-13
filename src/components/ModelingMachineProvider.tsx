@@ -295,6 +295,7 @@ export const ModelingMachineProvider = ({
             const dispatchSelection = (selection?: EditorSelection) => {
               if (!selection) return // TODO less of hack for the below please
               if (!editorManager.editorView) return
+
               setTimeout(() => {
                 if (!editorManager.editorView) return
                 editorManager.editorView.dispatch({
