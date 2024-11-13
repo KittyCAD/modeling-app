@@ -72,9 +72,10 @@ export default class EditorManager {
       // we cannot use <>.constructor.name since it will get destroyed
       // when packaging the application.
       const isTreeHighlightPlugin =
-        e.value.hasOwnProperty('tree') &&
-        e.value.hasOwnProperty('decoratedTo') &&
-        e.value.hasOwnProperty('decorations')
+        e?.value &&
+        e.value?.hasOwnProperty('tree') &&
+        e.value?.hasOwnProperty('decoratedTo') &&
+        e.value?.hasOwnProperty('decorations')
 
       if (isTreeHighlightPlugin) {
         let originalUpdate = e.value.update
