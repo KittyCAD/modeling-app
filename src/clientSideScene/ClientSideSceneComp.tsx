@@ -213,7 +213,7 @@ const Overlay = ({
 
   // For that reason, to prevent console noise, we do not use err here.
   if (_node1 instanceof Error) {
-    console.warn('ast older than pathToNode, not fatal, eventually settles')
+    console.warn('ast older than pathToNode, not fatal, eventually settles', '')
     return
   }
   const callExpression = _node1.node
