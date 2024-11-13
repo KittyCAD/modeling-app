@@ -1275,3 +1275,44 @@ test2.describe('Sketch mode should be toleratant to syntax errors', () => {
     }
   )
 })
+
+test2.describe(`Sketching with offset planes`, () => {
+  test2(
+    `Can select an offset plane to sketch on`,
+    async ({ app, scene, toolbar, editor }) => {
+      // We seed the scene with a single offset plane
+      await app.initialise(`offsetPlane001 = offsetPlane("XY", 10)`)
+
+      const [planeClick, planeHover] = scene.makeMouseHelpers(650, 200)
+
+      await test2.step(`Start sketching on the offset plane`, async () => {
+        await toolbar.startSketchPlaneSelection()
+
+        await test2.step(`Hovering should highlight code`, async () => {
+          await planeHover()
+          await editor.expectState({
+            activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+            diagnostics: [],
+            highlightedCode: 'offsetPlane("XY", 10)',
+          })
+        })
+
+        await test2.step(
+          `Clicking should select the plane and enter sketch mode`,
+          async () => {
+            await planeClick()
+            // Have to wait for engine-side animation to finish
+            await app.page.waitForTimeout(600)
+            await expect2(toolbar.lineBtn).toBeEnabled()
+            await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
+            await editor.expectState({
+              activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+              diagnostics: [],
+              highlightedCode: '',
+            })
+          }
+        )
+      })
+    }
+  )
+})
