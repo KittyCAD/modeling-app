@@ -656,10 +656,17 @@ const ConstraintSymbol = ({
                 kclManager.ast,
                 kclManager.programMemory
               )
+
               if (!transform) return
               const { modifiedAst } = transform
+
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              kclManager.updateAst(modifiedAst, true)
+              await kclManager.updateAst(modifiedAst, true)
+
+              // Code editor will be updated in the modelingMachine.
+              const newCode = recast(modifiedAst)
+              if (err(newCode)) return
+              await codeManager.updateCodeEditor(newCode)
             } catch (e) {
               console.log('error', e)
             }
