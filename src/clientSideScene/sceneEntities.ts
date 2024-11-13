@@ -451,6 +451,7 @@ export class SceneEntities {
         const { modifiedAst } = addStartProfileAtRes
 
         await kclManager.updateAst(modifiedAst, false)
+
         this.removeIntersectionPlane()
         this.scene.remove(draftPointGroup)
 
@@ -683,7 +684,7 @@ export class SceneEntities {
     })
     return nextAst
   }
-  setUpDraftSegment = async (
+  setupDraftSegment = async (
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
@@ -835,10 +836,11 @@ export class SceneEntities {
         }
 
         await kclManager.executeAstMock(modifiedAst)
+
         if (intersectsProfileStart) {
           sceneInfra.modelingSend({ type: 'CancelSketch' })
         } else {
-          await this.setUpDraftSegment(
+          await this.setupDraftSegment(
             sketchPathToNode,
             forward,
             up,
