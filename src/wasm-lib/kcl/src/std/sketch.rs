@@ -1032,7 +1032,7 @@ async fn inner_start_sketch_on(
             let plane = start_sketch_on_plane(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
-        SketchData::Plane(plane) => Ok(SketchSurface::Plane(Box::new(*plane))),
+        SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
                 return Err(KclError::Type(KclErrorDetails {
