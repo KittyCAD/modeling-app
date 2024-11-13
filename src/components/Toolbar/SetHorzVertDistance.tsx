@@ -1,9 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   transformSecondarySketchLinesTagFirst,
@@ -16,7 +13,7 @@ import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
-import { Selections__old } from 'lib/selections'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
@@ -26,7 +23,7 @@ export function horzVertDistanceInfo({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
 }):
   | {
@@ -34,11 +31,11 @@ export function horzVertDistanceInfo({
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  // const paths = selectionRanges.graphSelections.map(({ codeRef }) =>
+  //   getNodePathFromSourceRange(kclManager.ast, codeRef.range)
+  // )
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -47,10 +44,10 @@ export function horzVertDistanceInfo({
   if (hasErr) return nodesWErrs[0]
   const nodes = _nodes as Expr[]
 
-  const _varDecs = paths.map((pathToNode) => {
+  const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp
@@ -75,10 +72,10 @@ export function horzVertDistanceInfo({
   )
 
   const theTransforms = getTransformInfos(
-    {
+    convertSelectionsToOld({
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
-    },
+      graphSelections: selectionRanges.graphSelections.slice(1),
+    }),
     kclManager.ast,
     constraint
   )
@@ -96,7 +93,7 @@ export async function applyConstraintHorzVertDistance({
   // TODO align will always be false (covered by synconous applyConstraintHorzVertAlign), remove it
   isAlign = false,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
   isAlign?: false
 }): Promise<{
@@ -104,14 +101,14 @@ export async function applyConstraintHorzVertDistance({
   pathToNodeMap: PathToNodeMap
 }> {
   const info = horzVertDistanceInfo({
-    selectionRanges,
+    selectionRanges: selectionRanges,
     constraint,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
   const transformed = transformSecondarySketchLinesTagFirst({
     ast: structuredClone(kclManager.ast),
-    selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos,
     programMemory: kclManager.programMemory,
   })
@@ -149,7 +146,7 @@ export async function applyConstraintHorzVertDistance({
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
       ast: kclManager.ast,
-      selectionRanges,
+      selectionRanges: convertSelectionsToOld(selectionRanges),
       transformInfos,
       programMemory: kclManager.programMemory,
       forceSegName: segName,
@@ -182,7 +179,7 @@ export function applyConstraintHorzVertAlign({
   selectionRanges,
   constraint,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
 }):
   | {
@@ -199,7 +196,7 @@ export function applyConstraintHorzVertAlign({
   let finalValue = createLiteral(0)
   const retval = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges,
+    selectionRanges: convertSelectionsToOld(selectionRanges),
     transformInfos,
     programMemory: kclManager.programMemory,
     forceValueUsedInTransform: finalValue,

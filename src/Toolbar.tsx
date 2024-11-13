@@ -22,7 +22,6 @@ import {
 } from 'lib/toolbar'
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { convertSelectionsToOld } from 'lib/selections'
 
 export function Toolbar({
   className = '',

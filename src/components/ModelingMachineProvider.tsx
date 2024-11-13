@@ -730,7 +730,7 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setHorzDistance',
-                selectionRanges: convertSelectionsToOld(selectionRanges),
+                selectionRanges,
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
@@ -766,7 +766,7 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setVertDistance',
-                selectionRanges: convertSelectionsToOld(selectionRanges),
+                selectionRanges,
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)

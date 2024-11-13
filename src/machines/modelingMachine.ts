@@ -402,7 +402,7 @@ export const modelingMachine = setup({
     },
     'Can constrain horizontal distance': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges: selectionRanges,
         constraint: 'setHorzDistance',
       })
       if (trap(info)) return false
@@ -410,7 +410,7 @@ export const modelingMachine = setup({
     },
     'Can constrain vertical distance': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges: selectionRanges,
         constraint: 'setVertDistance',
       })
       if (trap(info)) return false
@@ -462,7 +462,7 @@ export const modelingMachine = setup({
     },
     'Can constrain horizontally align': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges: selectionRanges,
         constraint: 'setHorzDistance',
       })
       if (trap(info)) return false
@@ -470,7 +470,7 @@ export const modelingMachine = setup({
     },
     'Can constrain vertically align': ({ context: { selectionRanges } }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges: selectionRanges,
         constraint: 'setHorzDistance',
       })
       if (trap(info)) return false
@@ -1102,7 +1102,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges: selectionRanges,
           constraint: 'setVertDistance',
         })
         if (trap(constraint)) return
@@ -1135,7 +1135,7 @@ export const modelingMachine = setup({
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges: selectionRanges,
           constraint: 'setHorzDistance',
         })
         if (trap(constraint)) return
