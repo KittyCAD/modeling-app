@@ -54,7 +54,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
     let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
 
     let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
-    make_offset_plane_in_engine(&plane, &args).await?;
+    make_offset_plane_in_engine(&plane, exec_state, &args).await?;
 
     Ok(KclValue::UserVal(UserVal::new(
         vec![Metadata {
@@ -170,7 +170,7 @@ async fn inner_offset_plane(
 }
 
 // Engine-side effectful creation of an actual plane object.
-async fn make_offset_plane_in_engine(plane: &Plane, args: &Args) -> Result<uuid::Uuid, KclError> {
+async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, args: &Args) -> Result<(), KclError> {
     // Create new default planes.
     let default_size = 100.0;
     let color = Color {
@@ -195,7 +195,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, args: &Args) -> Result<uuid:
 
     // Set the color.
     args.batch_modeling_cmd(
-      exec_state.id_generator.next_uuid(),
+        exec_state.id_generator.next_uuid(),
         ModelingCmd::from(mcmd::PlaneSetColor {
             color,
             plane_id: plane.id,
@@ -203,5 +203,5 @@ async fn make_offset_plane_in_engine(plane: &Plane, args: &Args) -> Result<uuid:
     )
     .await?;
 
-    Ok(plane.id)
+    Ok(())
 }
