@@ -800,12 +800,12 @@ export const ModelingMachineProvider = ({
         'Get angle info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const info = angleBetweenInfo({
-              selectionRanges: convertSelectionsToOld(selectionRanges),
+              selectionRanges,
             })
             if (err(info)) return Promise.reject(info)
             const { modifiedAst, pathToNodeMap } = await (info.enabled
               ? applyConstraintAngleBetween({
-                  selectionRanges: convertSelectionsToOld(selectionRanges),
+                  selectionRanges,
                 })
               : applyConstraintAngleLength({
                   selectionRanges: convertSelectionsToOld(selectionRanges),

@@ -428,7 +428,7 @@ export const modelingMachine = setup({
     },
     'Can constrain angle': ({ context: { selectionRanges } }) => {
       const angleBetween = angleBetweenInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
+        selectionRanges,
       })
       if (trap(angleBetween)) return false
       const angleLength = angleLengthInfo({
