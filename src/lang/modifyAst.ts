@@ -525,6 +525,61 @@ export function sketchOnExtrudedFace(
   }
 }
 
+/**
+ * Modify the AST to create a new sketch using the variable declaration
+ * of an offset plane. The new sketch just has to come after the offset
+ * plane declaration.
+ */
+export function sketchOnOffsetPlane(
+  node: Node<Program>,
+  offsetPathToNode: PathToNode
+) {
+  let _node = { ...node }
+
+  // Find the offset plane declaration
+  const offsetPlaneDeclarator = getNodeFromPath<VariableDeclarator>(
+    _node,
+    offsetPathToNode,
+    'VariableDeclarator',
+    true
+  )
+  if (err(offsetPlaneDeclarator)) return offsetPlaneDeclarator
+  const { node: offsetPlaneNode } = offsetPlaneDeclarator
+  const offsetPlaneName = offsetPlaneNode.id.name
+
+  // Create a new sketch declaration
+  const newSketchName = findUniqueName(
+    node,
+    KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
+  )
+  const newSketch = createVariableDeclaration(
+    newSketchName,
+    createCallExpressionStdLib('startSketchOn', [
+      createIdentifier(offsetPlaneName),
+    ]),
+    undefined,
+    'const'
+  )
+
+  // Decide where to insert the new sketch declaration
+  const offsetIndex = offsetPathToNode[1][0] as number
+  // and insert it
+  _node.body.splice(offsetIndex + 1, 0, newSketch)
+  const newpathToNode: PathToNode = [
+    ['body', ''],
+    [offsetIndex + 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    [0, 'index'],
+    ['init', 'VariableDeclarator'],
+  ]
+
+  // Return the modified AST and the path to the new sketch declaration
+  return {
+    modifiedAst: _node,
+    pathToNode: newpathToNode,
+  }
+}
+
 export const getLastIndex = (pathToNode: PathToNode): number =>
   splitPathAtLastIndex(pathToNode).index
 
