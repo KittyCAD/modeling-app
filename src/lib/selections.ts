@@ -691,12 +691,13 @@ function nodeHasCircle(node: CommonASTNode) {
   })
 }
 
-export function canSweepSelection(selection: Selections__old) {
-  const commonNodes = selection.codeBasedSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
+export function canSweepSelection(selection: Selections) {
+  const _s = convertSelectionsToOld(selection)
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(_s, i)
   )
   return (
-    !!isSketchPipe(selection) &&
+    !!isSketchPipe(_s) &&
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
     (commonNodes.every((n) => nodeHasClose(n)) ||
       commonNodes.every((n) => nodeHasCircle(n))) &&

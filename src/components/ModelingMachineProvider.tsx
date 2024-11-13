@@ -582,7 +582,7 @@ export const ModelingMachineProvider = ({
           }
           if (!isSketchPipe(_selections)) return false
 
-          return canSweepSelection(_selections)
+          return canSweepSelection(selectionRanges)
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },
