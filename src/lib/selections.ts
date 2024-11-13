@@ -630,7 +630,7 @@ export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactGraph,
-    convertSelectionsToOld(selectionRanges)
+    selectionRanges
   )
 }
 

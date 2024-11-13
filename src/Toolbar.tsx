@@ -43,7 +43,7 @@ export function Toolbar({
       return false
     return isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,
-      convertSelectionsToOld(context.selectionRanges)
+      context.selectionRanges
     )
   }, [engineCommandManager.artifactGraph, context.selectionRanges])
 

@@ -1,4 +1,4 @@
-import { Selections__old } from 'lib/selections'
+import { Selections, Selections__old } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
 import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
@@ -59,17 +59,17 @@ export function updatePathToNodeFromMap(
 
 export function isCursorInSketchCommandRange(
   artifactGraph: ArtifactGraph,
-  selectionRanges: Selections__old
+  selectionRanges: Selections
 ): string | false {
   const overlappingEntries = filterArtifacts(
     {
       types: ['segment', 'path'],
       predicate: (artifact) => {
-        return selectionRanges.codeBasedSelections.some(
+        return selectionRanges.graphSelections.some(
           (selection) =>
-            Array.isArray(selection?.range) &&
+            Array.isArray(selection?.codeRef?.range) &&
             Array.isArray(artifact?.codeRef?.range) &&
-            isOverlap(selection.range, artifact.codeRef.range)
+            isOverlap(selection?.codeRef?.range, artifact.codeRef.range)
         )
       },
     },

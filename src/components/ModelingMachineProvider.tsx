@@ -600,12 +600,11 @@ export const ModelingMachineProvider = ({
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
-          const _selections = convertSelectionsToOld(selectionRanges)
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactGraph,
-            _selections
+            selectionRanges
           )
         },
         'Has exportable geometry': () => {
