@@ -50,7 +50,7 @@ import {
   isSketchPipe,
   convertSelectionsToOld,
   Selections,
-  updateSelections2,
+  updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -752,7 +752,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
+            const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -789,8 +789,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
-              // const selection = updateSelections(
+            const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -835,7 +834,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
+            const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -870,7 +869,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
+            const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -905,7 +904,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
+            const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -941,7 +940,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
+            const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -977,7 +976,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
+            const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst
@@ -1023,7 +1022,7 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
-            const selection = updateSelections2(
+            const selection = updateSelections(
               { 0: pathToReplacedNode },
               selectionRanges,
               updatedAst.newAst

@@ -1014,49 +1014,10 @@ export async function sendSelectEventToEngine(
   return { entity_id: '' }
 }
 
-export function updateSelections(
-  pathToNodeMap: PathToNodeMap,
-  prevSelectionRanges: Selections__old,
-  ast: Program | Error
-): Selections__old | Error {
-  if (err(ast)) return ast
-
-  const newSelections = Object.entries(pathToNodeMap)
-    .map(([index, pathToNode]): Selection__old | undefined => {
-      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
-      if (err(nodeMeta)) return undefined
-      const node = nodeMeta.node
-      const selection = prevSelectionRanges.codeBasedSelections[Number(index)]
-      if (
-        selection?.type === 'base-edgeCut' ||
-        selection?.type === 'adjacent-edgeCut' ||
-        selection?.type === 'opposite-edgeCut'
-      )
-        return {
-          range: [node.start, node.end],
-          type: selection?.type,
-          secondaryRange: selection?.secondaryRange,
-        }
-      return {
-        range: [node.start, node.end],
-        type: selection?.type,
-      }
-    })
-    .filter((x?: Selection__old) => x !== undefined) as Selection__old[]
-
-  return {
-    codeBasedSelections:
-      newSelections.length > 0
-        ? newSelections
-        : prevSelectionRanges.codeBasedSelections,
-    otherSelections: prevSelectionRanges.otherSelections,
-  }
-}
-
 // using artifact as the selection is maybe not such a good idea.
 // is the artifact stable, once you add a constrain, there will a new artifact graph
 // then the ids will not match up
-export function updateSelections2(
+export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
   ast: Program | Error
