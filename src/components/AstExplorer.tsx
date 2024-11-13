@@ -129,7 +129,9 @@ function DisplayObj({
             range,
           },
         ])[0]
-        const artifact = engineCommandManager.artifactGraph.get(idInfo.id)
+        const artifact = engineCommandManager.artifactGraph.get(
+          idInfo?.id || ''
+        )
         if (!artifact) return
         send({
           type: 'Set selection',

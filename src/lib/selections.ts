@@ -444,7 +444,14 @@ export function handleSelectionBatch({
 
   selections.graphSelections.forEach(({ artifact }) => {
     artifact?.id &&
-      selectionToEngine.push({ type: 'default', id: artifact?.id })
+      selectionToEngine.push({
+        type: 'default',
+        id: artifact?.id,
+        range: getCodeRefsByArtifactId(
+          artifact.id,
+          engineCommandManager.artifactGraph
+        )?.[0].range || [0, 0],
+      })
   })
   const engineEvents: Models['WebSocketRequest_type'][] =
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
@@ -477,7 +484,11 @@ export function handleSelectionBatch({
   }
 }
 
-type SelectionToEngine = { type: Selection__old['type']; id: string }
+type SelectionToEngine = {
+  type: Selection__old['type']
+  id?: string
+  range: SourceRange
+}
 
 export function processCodeMirrorRanges({
   codeMirrorRanges,
@@ -518,7 +529,16 @@ export function processCodeMirrorRanges({
     }).codeBasedSelections
   )
   const selections: Selection[] = []
-  for (const { id } of idBasedSelections) {
+  for (const { id, range } of idBasedSelections) {
+    if (!id) {
+      selections.push({
+        codeRef: {
+          range,
+          pathToNode: [],
+        },
+      })
+      continue
+    }
     const artifact = engineCommandManager.artifactGraph.get(id)
     const codeRefs = getCodeRefsByArtifactId(
       id,
@@ -545,7 +565,9 @@ export function processCodeMirrorRanges({
         },
       },
     },
-    engineEvents: resetAndSetEngineEntitySelectionCmds(idBasedSelections),
+    engineEvents: resetAndSetEngineEntitySelectionCmds(
+      idBasedSelections.filter(({ id }) => !!id)
+    ),
   }
 }
 
@@ -597,7 +619,7 @@ function resetAndSetEngineEntitySelectionCmds(
       type: 'modeling_cmd_req',
       cmd: {
         type: 'select_add',
-        entities: selections.map(({ id }) => id),
+        entities: selections.map(({ id }) => id).filter(isNonNullable),
       },
       cmd_id: uuidv4(),
     },
@@ -954,10 +976,11 @@ export function codeToIdSelections(
           {
             type,
             id: bestCandidate.id,
+            range: bestCandidate.selection.range,
           },
         ]
       }
-      return null
+      return [selection]
     })
     .filter(isNonNullable)
 }

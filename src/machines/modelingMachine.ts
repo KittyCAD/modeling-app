@@ -1020,9 +1020,9 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         return {
           selectionType: 'completeSelection',
-          selection: updateSelections(
+          selection: updateSelections2(
             pathToNodeMap,
-            convertSelectionsToOld(selectionRanges),
+            selectionRanges,
             updatedAst.newAst
           ),
         }
