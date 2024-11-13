@@ -568,7 +568,6 @@ export const ModelingMachineProvider = ({
         'has valid sweep selection': ({ context: { selectionRanges } }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
-          const _selections = convertSelectionsToOld(selectionRanges)
           const hasNoSelection =
             selectionRanges.graphSelections.length === 0 ||
             isRangeBetweenCharacters(selectionRanges) ||
@@ -580,7 +579,7 @@ export const ModelingMachineProvider = ({
             // BUT only if there's extrudable geometry
             return doesSceneHaveSweepableSketch(kclManager.ast)
           }
-          if (!isSketchPipe(_selections)) return false
+          if (!isSketchPipe(selectionRanges)) return false
 
           return canSweepSelection(selectionRanges)
         },
@@ -604,7 +603,8 @@ export const ModelingMachineProvider = ({
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
           const _selections = convertSelectionsToOld(selectionRanges)
-          if (!isSingleCursorInPipe(_selections, kclManager.ast)) return false
+          if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
+            return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactGraph,
             _selections

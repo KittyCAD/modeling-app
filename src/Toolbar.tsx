@@ -39,14 +39,8 @@ export function Toolbar({
     '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
 
   const sketchPathId = useMemo(() => {
-    if (
-      !isSingleCursorInPipe(
-        convertSelectionsToOld(context.selectionRanges),
-        kclManager.ast
-      )
-    ) {
+    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast))
       return false
-    }
     return isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,
       convertSelectionsToOld(context.selectionRanges)

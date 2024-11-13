@@ -59,7 +59,7 @@ function CommandBarSelectionInput({
       ? 'none'
       : !selection
       ? 'none'
-      : getSelectionType(convertSelectionsToOld(selection))
+      : getSelectionType(selection)
   }, [selection, code])
   const canSubmitSelection = useMemo<boolean>(
     () => canSubmitSelectionArg(selectionsByType, arg),
@@ -94,8 +94,6 @@ function CommandBarSelectionInput({
     onSubmit(selection)
   }
 
-  const selectionOld = selection && convertSelectionsToOld(selection)
-
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
       <label
@@ -105,7 +103,7 @@ function CommandBarSelectionInput({
         }
       >
         {canSubmitSelection
-          ? getSelectionTypeDisplayText(selectionOld) + ' selected'
+          ? getSelectionTypeDisplayText(selection) + ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}

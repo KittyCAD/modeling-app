@@ -129,9 +129,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     <span data-testid="header-arg-value">
                       {argValue ? (
                         arg.inputType === 'selection' ? (
-                          getSelectionTypeDisplayText(
-                            convertSelectionsToOld(argValue as Selections)
-                          )
+                          getSelectionTypeDisplayText(argValue as Selections)
                         ) : arg.inputType === 'kcl' ? (
                           roundOff(
                             Number(

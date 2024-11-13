@@ -1,5 +1,5 @@
 import { ToolTip } from 'lang/langHelpers'
-import { Selection__old, Selections__old } from 'lib/selections'
+import { Selection__old, Selections } from 'lib/selections'
 import {
   ArrayExpression,
   BinaryExpression,
@@ -795,12 +795,12 @@ export function hasExtrudeSketch({
 }
 
 export function isSingleCursorInPipe(
-  selectionRanges: Selections__old,
+  selectionRanges: Selections,
   ast: Program
 ) {
-  if (selectionRanges.codeBasedSelections.length !== 1) return false
-  const selection = selectionRanges.codeBasedSelections[0]
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  if (selectionRanges.graphSelections.length !== 1) return false
+  const selection = selectionRanges.graphSelections[0]
+  const pathToNode = getNodePathFromSourceRange(ast, selection?.codeRef?.range)
   const nodeTypes = pathToNode.map(([, type]) => type)
   if (nodeTypes.includes('FunctionExpression')) return false
   if (!nodeTypes.includes('VariableDeclaration')) return false

@@ -626,11 +626,11 @@ function resetAndSetEngineEntitySelectionCmds(
   ]
 }
 
-export function isSketchPipe(selectionRanges: Selections__old) {
+export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactGraph,
-    selectionRanges
+    convertSelectionsToOld(selectionRanges)
   )
 }
 
@@ -697,7 +697,7 @@ export function canSweepSelection(selection: Selections) {
     buildCommonNodeFromSelection(_s, i)
   )
   return (
-    !!isSketchPipe(_s) &&
+    !!isSketchPipe(selection) &&
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
     (commonNodes.every((n) => nodeHasClose(n)) ||
       commonNodes.every((n) => nodeHasCircle(n))) &&
@@ -705,23 +705,15 @@ export function canSweepSelection(selection: Selections) {
   )
 }
 
-export function canFilletSelection(selection: Selections__old) {
-  const commonNodes = selection.codeBasedSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  ) // TODO FILLET DUMMY PLACEHOLDER
-  return (
-    !!isSketchPipe(selection) &&
-    commonNodes.every((n) => nodeHasClose(n)) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-function canExtrudeSelectionItem(selection: Selections__old, i: number) {
+function canExtrudeSelectionItem(selection: Selections, i: number) {
   const isolatedSelection = {
     ...selection,
-    codeBasedSelections: [selection.codeBasedSelections[i]],
+    graphSelections: [selection.graphSelections[i]],
   }
-  const commonNode = buildCommonNodeFromSelection(selection, i)
+  const commonNode = buildCommonNodeFromSelection(
+    convertSelectionsToOld(selection),
+    i
+  )
 
   return (
     !!isSketchPipe(isolatedSelection) &&
@@ -741,25 +733,25 @@ export type ResolvedSelectionType = [Selection__old['type'] | 'other', number]
  * @returns
  */
 export function getSelectionType(
-  selection?: Selections__old
+  selection?: Selections
 ): ResolvedSelectionType[] {
   if (!selection) return []
   // console.trace('selection', selection)
-  const extrudableCount = selection.codeBasedSelections.filter((_, i) => {
+  const extrudableCount = selection.graphSelections.filter((_, i) => {
     const singleSelection = {
       ...selection,
-      codeBasedSelections: [selection.codeBasedSelections[i]],
+      graphSelections: [selection.graphSelections[i]],
     }
     return canExtrudeSelectionItem(singleSelection, 0)
   }).length
 
-  return extrudableCount === selection.codeBasedSelections.length
+  return extrudableCount === selection.graphSelections.length
     ? [['extrude-wall', extrudableCount]]
-    : [['other', selection.codeBasedSelections.length]]
+    : [['other', selection.graphSelections.length]]
 }
 
 export function getSelectionTypeDisplayText(
-  selection?: Selections__old
+  selection?: Selections
 ): string | null {
   const selectionsByType = getSelectionType(selection)
 
