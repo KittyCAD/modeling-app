@@ -563,7 +563,6 @@ export function sketchOnOffsetPlane(
   )
 
   // Decide where to insert the new sketch declaration
-
   const offsetIndex = offsetPathToNode[1][0]
 
   if (!isPathToNodeNumber(offsetIndex)) {
@@ -571,18 +570,13 @@ export function sketchOnOffsetPlane(
   }
   // and insert it
   _node.body.splice(offsetIndex + 1, 0, newSketch)
-  const newpathToNode: PathToNode = [
-    ['body', ''],
-    [offsetIndex + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
-    ['init', 'VariableDeclarator'],
-  ]
+  const newPathToNode = structuredClone(offsetPathToNode)
+  newPathToNode[1][0] = offsetIndex + 1
 
   // Return the modified AST and the path to the new sketch declaration
   return {
     modifiedAst: _node,
-    pathToNode: newpathToNode,
+    pathToNode: newPathToNode,
   }
 }
 
