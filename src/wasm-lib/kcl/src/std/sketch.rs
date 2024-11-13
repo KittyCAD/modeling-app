@@ -16,7 +16,7 @@ use crate::ast::types::TagNode;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
+        BasePath, ExecState, Plane, Face, GeoMeta, KclValue, Path, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
         Solid, TagEngineInfo, TagIdentifier, UserVal,
     },
     std::{
@@ -868,7 +868,7 @@ pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<K
 async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, exec_state, &args).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::PlaneData(xy_plane), None, exec_state, &args).await?;
     let sketch = inner_start_profile_at(data, sketch_surface, None, exec_state, args).await?;
     Ok(sketch)
 }
@@ -879,7 +879,8 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum SketchData {
-    Plane(PlaneData),
+    Plane(Plane),
+    PlaneData(PlaneData),
     Solid(Box<Solid>),
 }
 
@@ -1043,9 +1044,12 @@ async fn inner_start_sketch_on(
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
     match data {
-        SketchData::Plane(plane_data) => {
+        SketchData::PlaneData(plane_data) => {
             let plane = start_sketch_on_plane(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
+        }
+        SketchData::Plane(plane) => {
+            Ok(SketchSurface::Plane(Box::new(plane)))
         }
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
