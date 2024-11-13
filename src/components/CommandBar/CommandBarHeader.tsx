@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { ActionButton } from '../ActionButton'
 import {
   Selections,
-  convertSelectionsToOld,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
