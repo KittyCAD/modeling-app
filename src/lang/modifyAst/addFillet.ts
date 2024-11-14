@@ -29,9 +29,15 @@ import {
   sketchLineHelperMap,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
-import { Selections__old } from 'lib/selections'
+import {
+  convertSelectionsToOld,
+  convertSelectionToOld,
+  Selections,
+  Selections__old,
+} from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
+  Artifact,
   ArtifactGraph,
   getSweepFromSuspectedPath,
 } from 'lang/std/artifactGraph'
@@ -42,7 +48,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export function applyFilletToSelection(
   ast: Node<Program>,
-  selection: Selections__old,
+  selection: Selections,
   radius: KclCommandValue
 ): void | Error {
   // 1. clone and modify with fillet and tag
@@ -57,7 +63,7 @@ export function applyFilletToSelection(
 
 export function modifyAstWithFilletAndTag(
   ast: Node<Program>,
-  selection: Selections__old,
+  selection: Selections,
   radius: KclCommandValue
 ): { modifiedAst: Node<Program>; pathToFilletNode: Array<PathToNode> } | Error {
   let clonedAst = structuredClone(ast)
@@ -71,16 +77,15 @@ export function modifyAstWithFilletAndTag(
   // Step 1: modify ast with tags and group them by extrude nodes (bodies)
   const extrudeToTagsMap: Map<
     PathToNode,
-    Array<{ tag: string; selectionType: string }>
+    Array<{ tag: string; artifact: Artifact }>
   > = new Map()
   const lookupMap: Map<string, PathToNode> = new Map() // work around for Map key comparison
 
-  for (const selectionRange of selection.codeBasedSelections) {
-    const singleSelection = {
-      codeBasedSelections: [selectionRange],
+  for (const _s of selection.graphSelections) {
+    const singleSelection = convertSelectionsToOld({
+      graphSelections: [_s],
       otherSelections: [],
-    }
-    const selectionType = singleSelection.codeBasedSelections[0].type
+    })
 
     const result = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
@@ -96,18 +101,21 @@ export function modifyAstWithFilletAndTag(
     )
     if (err(tagResult)) return tagResult
     const { tag } = tagResult
-    const tagInfo = { tag, selectionType }
 
     // Group tags by their corresponding extrude node
     const extrudeKey = JSON.stringify(pathToExtrudeNode)
 
-    if (lookupMap.has(extrudeKey)) {
+    if (lookupMap.has(extrudeKey) && _s.artifact) {
       const existingPath = lookupMap.get(extrudeKey)
       if (!existingPath) return new Error('Path to extrude node not found.')
-      extrudeToTagsMap.get(existingPath)?.push(tagInfo)
-    } else {
+      extrudeToTagsMap
+        .get(existingPath)
+        ?.push({ tag, artifact: _s.artifact } as const)
+    } else if (_s.artifact) {
       lookupMap.set(extrudeKey, pathToExtrudeNode)
-      extrudeToTagsMap.set(pathToExtrudeNode, [tagInfo])
+      extrudeToTagsMap.set(pathToExtrudeNode, [
+        { tag, artifact: _s.artifact } as const,
+      ])
     }
   }
 
@@ -118,8 +126,8 @@ export function modifyAstWithFilletAndTag(
     const radiusValue =
       'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
 
-    const tagCalls = tagInfos.map(({ tag, selectionType }) => {
-      return getEdgeTagCall(tag, selectionType)
+    const tagCalls = tagInfos.map(({ tag, artifact }) => {
+      return getEdgeTagCall(tag, artifact)
     })
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
@@ -292,14 +300,14 @@ function mutateAstWithTagForSketchSegment(
 
 function getEdgeTagCall(
   tag: string,
-  selectionType: string
+  artifact: Artifact
 ): Node<Identifier | CallExpression> {
   let tagCall: Expr = createIdentifier(tag)
 
   // Modify the tag based on selectionType
-  if (selectionType === 'edge') {
+  if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
     tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
-  } else if (selectionType === 'adjacent-edge') {
+  } else if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
     tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
   }
   return tagCall
@@ -426,7 +434,7 @@ export const hasValidFilletSelection = ({
   ast,
   code,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   ast: Node<Program>
   code: string
 }) => {
@@ -442,22 +450,21 @@ export const hasValidFilletSelection = ({
   if (!extrudeExists) return false
 
   // check if nothing is selected
-  if (selectionRanges.codeBasedSelections.length === 0) {
+  if (selectionRanges.graphSelections.length === 0) {
     return true
   }
 
   // check if selection is last string in code
-  if (selectionRanges.codeBasedSelections[0].range[0] === code.length) {
+  if (selectionRanges.graphSelections[0]?.codeRef?.range[0] === code.length) {
     return true
   }
 
   // selection exists:
-  for (const selection of selectionRanges.codeBasedSelections) {
+  for (const selection of selectionRanges.graphSelections) {
     // check if all selections are in sketchLineHelperMap
-    const path = getNodePathFromSourceRange(ast, selection.range)
     const segmentNode = getNodeFromPath<Node<CallExpression>>(
       ast,
-      path,
+      selection.codeRef.pathToNode,
       'CallExpression'
     )
     if (err(segmentNode)) return false
@@ -472,7 +479,9 @@ export const hasValidFilletSelection = ({
     // TODO: option 1 : extrude is in the sketch pipe
 
     // option 2: extrude is outside the sketch pipe
-    const extrudeExists = hasSketchPipeBeenExtruded(selection, ast)
+    const selectionOld = convertSelectionToOld(selection)
+    if (!selectionOld) return false
+    const extrudeExists = hasSketchPipeBeenExtruded(selectionOld, ast)
     if (err(extrudeExists)) {
       return false
     }
@@ -493,9 +502,9 @@ export const hasValidFilletSelection = ({
     })
 
     // check if tag is used in fillet
-    if (tagExists) {
+    if (tagExists && selection.artifact) {
       // create tag call
-      let tagCall: Expr = getEdgeTagCall(tag, selection.type)
+      let tagCall: Expr = getEdgeTagCall(tag, selection.artifact)
 
       // check if tag is used in fillet
       let inFillet = false

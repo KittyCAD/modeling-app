@@ -590,9 +590,8 @@ export const ModelingMachineProvider = ({
           return true
         },
         'has valid fillet selection': ({ context: { selectionRanges } }) => {
-          const _selections = convertSelectionsToOld(selectionRanges)
           return hasValidFilletSelection({
-            selectionRanges: _selections,
+            selectionRanges,
             ast: kclManager.ast,
             code: codeManager.code,
           })

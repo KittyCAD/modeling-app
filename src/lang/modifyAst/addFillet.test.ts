@@ -18,7 +18,7 @@ import {
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
-import { Selections__old } from 'lib/selections'
+import { Selections, Selections__old } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { KclCommandValue } from 'lib/commandTypes'
@@ -247,10 +247,12 @@ const runModifyAstCloneWithFilletAndTag = async (
       code.indexOf(selectionSnippet) + selectionSnippet.length,
     ]
   )
-  const selection: Selections__old = {
-    codeBasedSelections: segmentRanges.map((segmentRange) => ({
-      range: segmentRange,
-      type: 'default',
+  const selection: Selections = {
+    graphSelections: segmentRanges.map((segmentRange) => ({
+      codeRef: {
+        range: segmentRange,
+        pathToNode: [],
+      },
     })),
     otherSelections: [],
   }
@@ -559,7 +561,6 @@ describe('Testing button states', () => {
     }
     const ast = astOrError
 
-    // selectionRanges
     const range: [number, number] = segmentSnippet
       ? [
           code.indexOf(segmentSnippet),
@@ -567,11 +568,13 @@ describe('Testing button states', () => {
         ]
       : [ast.end, ast.end] // empty line in the end of the code
 
-    const selectionRanges: Selections__old = {
-      codeBasedSelections: [
+    const selectionRanges: Selections = {
+      graphSelections: [
         {
-          range,
-          type: 'default',
+          codeRef: {
+            range,
+            pathToNode: [],
+          },
         },
       ],
       otherSelections: [],

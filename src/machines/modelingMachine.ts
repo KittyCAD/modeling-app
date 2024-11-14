@@ -725,7 +725,7 @@ export const modelingMachine = setup({
       // Apply fillet to selection
       const applyFilletToSelectionResult = applyFilletToSelection(
         ast,
-        convertSelectionsToOld(selection),
+        selection,
         radius
       )
       if (err(applyFilletToSelectionResult)) return applyFilletToSelectionResult
