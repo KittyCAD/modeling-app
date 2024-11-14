@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   editorManager,
   engineCommandManager,
@@ -23,6 +23,8 @@ import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
+  const stateRef = useRef(state)
+  stateRef.current = state
 
   useEffect(() => {
     if (!engineCommandManager) return
@@ -53,6 +55,7 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: (engineEvent) => {
         ;(async () => {
+          if (stateRef.current.matches('Sketch no face')) return
           const event = await getEventForSelectWithPoint(engineEvent)
           event && send(event)
         })().catch(reportRejection)

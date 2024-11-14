@@ -158,6 +158,7 @@ export function useCalc({
         engineCommandManager,
         useFakeExecutor: true,
         programMemoryOverride: kclManager.programMemory.clone(),
+        idGenerator: kclManager.execState.idGenerator,
       }).then(({ execState }) => {
         const resultDeclaration = ast.body.find(
           (a) =>

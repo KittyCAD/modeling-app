@@ -102,6 +102,7 @@ export function useCalculateKclExpression({
         engineCommandManager,
         useFakeExecutor: true,
         programMemoryOverride: kclManager.programMemory.clone(),
+        idGenerator: kclManager.execState.idGenerator,
       })
       const resultDeclaration = ast.body.find(
         (a) =>
