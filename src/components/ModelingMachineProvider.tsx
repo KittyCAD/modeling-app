@@ -733,6 +733,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -769,6 +774,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -814,6 +824,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -847,6 +862,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -882,6 +902,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -918,6 +943,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -954,6 +984,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -1000,6 +1035,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               { 0: pathToReplacedNode },
               selectionRanges,

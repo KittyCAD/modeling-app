@@ -7,6 +7,8 @@ import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
 import { KeyBinding } from '@codemirror/view'
+import { recast, Program } from 'lang/wasm'
+import { err } from 'lib/trap'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
@@ -146,6 +148,13 @@ export default class CodeManager {
     } else {
       safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }
+  }
+
+  async updateEditorWithAstAndWriteToFile(ast: Program) {
+    const newCode = recast(ast)
+    if (err(newCode)) return
+    this.updateCodeStateEditor(newCode)
+    await this.writeToFile()
   }
 }
 
