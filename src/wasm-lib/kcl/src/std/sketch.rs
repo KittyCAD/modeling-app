@@ -1610,7 +1610,7 @@ pub(crate) async fn inner_arc_to(
                 },
                 interior: kcmc::shared::Point3d {
                     x: LengthUnit(data.interior[0]),
-                    y: LengthUnit(data.interior[0]),
+                    y: LengthUnit(data.interior[1]),
                     z: LengthUnit(0.0),
                 },
                 relative: false,
