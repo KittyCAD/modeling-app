@@ -1444,7 +1444,7 @@ pub enum ArcData {
         to: [f64; 2],
         /// The radius.
         radius: f64,
-    }
+    },
 }
 
 /// Data to draw a three point arc (arcTo).
@@ -1597,18 +1597,18 @@ pub(crate) async fn inner_arc_to(
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.id_generator.next_uuid();
-    
+
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
             segment: PathSegment::ArcTo {
-                end:kcmc::shared::Point3d {
+                end: kcmc::shared::Point3d {
                     x: LengthUnit(data.end[0]),
                     y: LengthUnit(data.end[1]),
                     z: LengthUnit(0.0),
                 },
-                interior:kcmc::shared::Point3d {
+                interior: kcmc::shared::Point3d {
                     x: LengthUnit(data.interior[0]),
                     y: LengthUnit(data.interior[0]),
                     z: LengthUnit(0.0),
@@ -1623,7 +1623,7 @@ pub(crate) async fn inner_arc_to(
     let p2 = [data.interior[0], data.interior[1]];
     let p3 = [data.end[0], data.end[1]];
     let center = calculate_circle_center(p1, p2, p3);
-    let sum_of_square_differences = (center[0]-p1[0]*center[0]-p1[0]) + (center[1]-p1[1]*center[1]-p1[1]);
+    let sum_of_square_differences = (center[0] - p1[0] * center[0] - p1[0]) + (center[1] - p1[1] * center[1] - p1[1]);
     let radius = sum_of_square_differences.sqrt();
 
     let current_path = Path::Arc {
@@ -1963,7 +1963,7 @@ async fn inner_tangential_arc_to_relative(
     Ok(new_sketch)
 }
 
-fn calculate_circle_center(p1: [f64;2], p2: [f64; 2], p3: [f64; 2]) -> [f64;2]{
+fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
     // y2 - y1
     let y_2_1 = p2[1] - p1[1];
     // y3 - y2
@@ -1983,17 +1983,17 @@ fn calculate_circle_center(p1: [f64;2], p2: [f64; 2], p3: [f64; 2]) -> [f64;2]{
     // x1 + x2
     let x_1_2 = p1[0] + p2[0];
     // x2 + x3
-    let x_2_3 = p2[0] + p3[0]; 
+    let x_2_3 = p2[0] + p3[0];
     // y1 + y2
     let y_1_2 = p1[1] + p2[1];
 
     // Solve for the intersection of these two lines
-    let numerator = ( slope_a * slope_b * y_1_3 ) + ( slope_b * x_1_2 ) - (slope_a * x_2_3 );
-    let x = numerator / ( 2.0 * (slope_b - slope_a) );
+    let numerator = (slope_a * slope_b * y_1_3) + (slope_b * x_1_2) - (slope_a * x_2_3);
+    let x = numerator / (2.0 * (slope_b - slope_a));
 
-    let y = ( ( -1.0 / slope_a ) * (x - (x_1_2/2.0) ) ) + (y_1_2/2.0);
+    let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
 
-    return [x,y];
+    return [x, y];
 }
 
 /// Data to draw a bezier curve.
@@ -2168,7 +2168,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{executor::TagIdentifier, std::sketch::PlaneData, std::sketch::calculate_circle_center};
+    use crate::{executor::TagIdentifier, std::sketch::calculate_circle_center, std::sketch::PlaneData};
 
     #[test]
     fn test_deserialize_plane_data() {
@@ -2242,7 +2242,7 @@ mod tests {
 
     #[test]
     fn test_circle_center() {
-        let actual = calculate_circle_center([0.0,0.0],[5.0,5.0],[10.0,0.0]);
+        let actual = calculate_circle_center([0.0, 0.0], [5.0, 5.0], [10.0, 0.0]);
         assert_eq!(actual[0], 5.0);
         assert_eq!(actual[1], 0.0);
     }
