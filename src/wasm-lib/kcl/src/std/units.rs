@@ -14,7 +14,7 @@ use crate::{
 pub async fn mm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_mm(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Millimeters conversion factor for current projects units.
@@ -55,7 +55,7 @@ fn inner_mm(args: &Args) -> Result<f64, KclError> {
 pub async fn inch(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_inch(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Inches conversion factor for current projects units.
@@ -96,7 +96,7 @@ fn inner_inch(args: &Args) -> Result<f64, KclError> {
 pub async fn ft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_ft(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Feet conversion factor for current projects units.
@@ -138,7 +138,7 @@ fn inner_ft(args: &Args) -> Result<f64, KclError> {
 pub async fn m(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_m(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Meters conversion factor for current projects units.
@@ -180,7 +180,7 @@ fn inner_m(args: &Args) -> Result<f64, KclError> {
 pub async fn cm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_cm(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Centimeters conversion factor for current projects units.
@@ -222,7 +222,7 @@ fn inner_cm(args: &Args) -> Result<f64, KclError> {
 pub async fn yd(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_yd(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Yards conversion factor for current projects units.

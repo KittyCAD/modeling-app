@@ -4,10 +4,7 @@ use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    ast::types::ConstraintLevel,
-    executor::{KclValue, UserVal},
-};
+use crate::{ast::types::ConstraintLevel, executor::KclValue};
 
 use super::Node;
 
@@ -16,7 +13,7 @@ const KCL_NONE_ID: &str = "KCL_NONE_ID";
 /// KCL value for an optional parameter which was not given an argument.
 /// (remember, parameters are in the function declaration,
 /// arguments are in the function call/application).
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Default, Copy)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -58,19 +55,12 @@ where
     }
 }
 
-impl From<&KclNone> for UserVal {
-    fn from(none: &KclNone) -> Self {
-        UserVal {
-            value: serde_json::to_value(none).expect("can always serialize a None"),
-            meta: Default::default(),
-        }
-    }
-}
-
 impl From<&KclNone> for KclValue {
     fn from(none: &KclNone) -> Self {
-        let val = UserVal::from(none);
-        KclValue::UserVal(val)
+        KclValue::KclNone {
+            value: *none,
+            meta: Default::default(),
+        }
     }
 }
 

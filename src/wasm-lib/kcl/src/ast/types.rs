@@ -27,7 +27,7 @@ pub use crate::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, ExecutorContext, KclValue, Metadata, SourceRange, TagIdentifier, UserVal},
+    executor::{ExecState, ExecutorContext, KclValue, Metadata, SourceRange, TagIdentifier},
     parser::PIPE_OPERATOR,
     std::kcl_stdlib::KclStdLibFn,
 };
@@ -57,6 +57,14 @@ pub struct Node<T> {
     pub end: usize,
     #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
     pub module_id: ModuleId,
+}
+
+impl<T> Node<T> {
+    pub fn metadata(&self) -> Metadata {
+        Metadata {
+            source_range: SourceRange([self.start, self.end, self.module_id.0 as usize]),
+        }
+    }
 }
 
 impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
@@ -1708,34 +1716,26 @@ impl Literal {
 
 impl From<Node<Literal>> for KclValue {
     fn from(literal: Node<Literal>) -> Self {
-        KclValue::UserVal(UserVal {
-            value: JValue::from(literal.value.clone()),
-            meta: vec![Metadata {
-                source_range: literal.into(),
-            }],
-        })
+        let meta = vec![literal.metadata()];
+        match literal.inner.value {
+            LiteralValue::IInteger(value) => KclValue::Int { value, meta },
+            LiteralValue::Fractional(value) => KclValue::Number { value, meta },
+            LiteralValue::String(value) => KclValue::String { value, meta },
+            LiteralValue::Bool(value) => KclValue::Bool { value, meta },
+        }
     }
 }
 
 impl From<&Node<Literal>> for KclValue {
     fn from(literal: &Node<Literal>) -> Self {
-        KclValue::UserVal(UserVal {
-            value: JValue::from(literal.value.clone()),
-            meta: vec![Metadata {
-                source_range: literal.into(),
-            }],
-        })
+        Self::from(literal.to_owned())
     }
 }
 
 impl From<&BoxNode<Literal>> for KclValue {
     fn from(literal: &BoxNode<Literal>) -> Self {
-        KclValue::UserVal(UserVal {
-            value: JValue::from(literal.value.clone()),
-            meta: vec![Metadata {
-                source_range: literal.into(),
-            }],
-        })
+        let b: &Node<Literal> = literal;
+        Self::from(b)
     }
 }
 
@@ -3007,17 +3007,6 @@ impl ConstraintLevels {
         }
 
         source_ranges
-    }
-}
-
-pub(crate) fn human_friendly_type(j: &JValue) -> &'static str {
-    match j {
-        JValue::Null => "null",
-        JValue::Bool(_) => "boolean (true/false value)",
-        JValue::Number(_) => "number",
-        JValue::String(_) => "string (text)",
-        JValue::Array(_) => "array (list)",
-        JValue::Object(_) => "object",
     }
 }
 
