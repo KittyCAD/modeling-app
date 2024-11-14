@@ -45,7 +45,6 @@ impl Node<MemberExpression> {
             }
         };
 
-        // let array_json = array.get_json_value()?;
         let KclValue::Array { value: array, meta: _ } = array else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!("MemberExpression array is not an array: {:?}", array),
@@ -86,13 +85,16 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::Object { .. }, p) => Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
-                    "Only strings can be used as the property of an object, but you're using a {}",
-                    p.type_name()
-                ),
-                source_ranges: vec![self.clone().into()],
-            })),
+            (KclValue::Object { .. }, p) => {
+                let t = p.type_name();
+                let article = article_for(t);
+                Err(KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Only strings can be used as the property of an object, but you're using {article} {t}",
+                    ),
+                    source_ranges: vec![self.clone().into()],
+                }))
+            }
             (KclValue::Array { value: arr, meta: _ }, Property::Number(index)) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
@@ -104,13 +106,16 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::Array { .. }, p) => Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
-                    "Only integers >= 0 can be used as the index of an array, but you're using a {}",
-                    p.type_name()
-                ),
-                source_ranges: vec![self.clone().into()],
-            })),
+            (KclValue::Array { .. }, p) => {
+                let t = p.type_name();
+                let article = article_for(t);
+                Err(KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Only integers >= 0 can be used as the index of an array, but you're using {article} {t}",
+                    ),
+                    source_ranges: vec![self.clone().into()],
+                }))
+            }
             (KclValue::Solid(solid), Property::String(prop)) if prop == "sketch" => Ok(KclValue::Sketch {
                 value: Box::new(solid.sketch),
             }),
@@ -126,8 +131,11 @@ impl Node<MemberExpression> {
             }),
             (being_indexed, _) => {
                 let t = being_indexed.human_friendly_type();
+                let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Only arrays and objects can be indexed, but you're trying to index a {t}"),
+                    message: format!(
+                        "Only arrays and objects can be indexed, but you're trying to index {article} {t}"
+                    ),
                     source_ranges: vec![self.clone().into()],
                 }))
             }
@@ -657,6 +665,14 @@ impl Node<ObjectExpression> {
                 source_range: self.into(),
             }],
         })
+    }
+}
+
+fn article_for(s: &str) -> &'static str {
+    if s.starts_with(['a', 'e', 'i', 'o', 'u']) {
+        "an"
+    } else {
+        "a"
     }
 }
 

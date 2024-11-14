@@ -91,7 +91,7 @@ export const processMemory = (programMemory: ProgramMemory) => {
     if (
       val.type === 'Sketch' ||
       // @ts-ignore
-      (val.type !== 'Function' && val.type !== 'UserVal')
+      val.type !== 'Function'
     ) {
       const sg = sketchFromKclValue(val, key)
       if (val.type === 'Solid') {
@@ -110,8 +110,6 @@ export const processMemory = (programMemory: ProgramMemory) => {
       processedMemory[key] = `__function(${(val as any)?.expression?.params
         ?.map?.(({ identifier }: any) => identifier?.name || '')
         .join(', ')})__`
-    } else {
-      throw 'can never happen'
     }
   }
   return processedMemory

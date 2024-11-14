@@ -81,7 +81,7 @@ gen_test_fail!(
 );
 gen_test_fail!(
     invalid_member_object,
-    "semantic: Only arrays and objects can be indexed, but you're trying to index a integer"
+    "semantic: Only arrays and objects can be indexed, but you're trying to index an integer"
 );
 gen_test_fail!(
     invalid_member_object_prop,
