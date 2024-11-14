@@ -1486,7 +1486,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///        radius: 16
 ///      }, %)
 ///   |> close(%)
-// const example = extrude(10, exampleSketch)
+/// const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "arc",
@@ -1573,27 +1573,17 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
 }
 
-/// Draw a curved line segment along an imaginary circle.
-/// The arc is constructed such that the current position of the sketch is
-/// placed along an imaginary circle of the specified radius, at angleStart
-/// degrees. The resulting arc is the segment of the imaginary circle from
-/// that origin point to angleEnd, radius away from the center of the imaginary
-/// circle.
-///
-/// Unless this makes a lot of sense and feels like what you're looking
-/// for to construct your shape, you're likely looking for tangentialArc.
+/// Draw a 3 point arc.
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> line([10, 0], %)
 ///   |> arcTo({
-///        angleStart: 0,
-///        angleEnd: 280,
-///        radius: 16
+///         end: [10,0],
+///         interior: [5,5]
 ///      }, %)
 ///   |> close(%)
-// const example = extrude(10, exampleSketch)
+/// const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "arcTo",
