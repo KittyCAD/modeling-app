@@ -89,7 +89,7 @@ export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
   for (const [key, val] of programMemory?.visibleEntries()) {
     if (
-      (val.type === 'UserVal' && val.value.type === 'Sketch') ||
+      val.type === 'Sketch' ||
       // @ts-ignore
       (val.type !== 'Function' && val.type !== 'UserVal')
     ) {
@@ -111,7 +111,7 @@ export const processMemory = (programMemory: ProgramMemory) => {
         ?.map?.(({ identifier }: any) => identifier?.name || '')
         .join(', ')})__`
     } else {
-      processedMemory[key] = val.value
+      throw 'can never happen'
     }
   }
   return processedMemory
