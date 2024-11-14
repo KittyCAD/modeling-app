@@ -551,9 +551,9 @@ export function processCodeMirrorRanges({
     )
     console.log('artifact', artifact, codeRefs)
     if (artifact && codeRefs) {
-      selections.push({ codeRef: codeRefs[0] })
-    } else if (codeRefs) {
       selections.push({ artifact, codeRef: codeRefs[0] })
+    } else if (codeRefs) {
+      selections.push({ codeRef: codeRefs[0] })
     }
   }
 
