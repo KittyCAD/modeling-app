@@ -744,10 +744,10 @@ impl Plane {
                 meta: vec![],
             },
             crate::std::sketch::PlaneOrientationData::Plane {
-                        origin,
-                        x_axis,
-                        y_axis,
-                        z_axis,
+                origin,
+                x_axis,
+                y_axis,
+                z_axis,
             } => Plane {
                 id,
                 origin: *origin,
