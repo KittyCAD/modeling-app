@@ -1444,7 +1444,18 @@ pub enum ArcData {
         to: [f64; 2],
         /// The radius.
         radius: f64,
-    },
+    }
+}
+
+/// Data to draw a three point arc (arcTo).
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ArcToData {
+    /// End point of the arc. A point in 3D space
+    end: [f64; 2],
+    /// Interior point of the arc. A point in 3D space
+    interior: [f64; 2],
 }
 
 /// Draw an arc.
@@ -1542,6 +1553,94 @@ pub(crate) async fn inner_arc(
         },
         center: center.into(),
         radius,
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
+}
+
+/// Draw a three point arc.
+pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch, tag): (ArcToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
+
+    let new_sketch = inner_arc_to(data, sketch, tag, exec_state, args).await?;
+    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+}
+
+/// Draw a curved line segment along an imaginary circle.
+/// The arc is constructed such that the current position of the sketch is
+/// placed along an imaginary circle of the specified radius, at angleStart
+/// degrees. The resulting arc is the segment of the imaginary circle from
+/// that origin point to angleEnd, radius away from the center of the imaginary
+/// circle.
+///
+/// Unless this makes a lot of sense and feels like what you're looking
+/// for to construct your shape, you're likely looking for tangentialArc.
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([10, 0], %)
+///   |> arcTo({
+///        angleStart: 0,
+///        angleEnd: 280,
+///        radius: 16
+///      }, %)
+///   |> close(%)
+// const example = extrude(10, exampleSketch)
+/// ```
+#[stdlib {
+    name = "arcTo",
+}]
+pub(crate) async fn inner_arc_to(
+    data: ArcToData,
+    sketch: Sketch,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let from: Point2d = sketch.current_pen_position()?;
+    let id = exec_state.id_generator.next_uuid();
+    
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::ArcTo {
+                end:kcmc::shared::Point3d {
+                    x: LengthUnit(data.end[0]),
+                    y: LengthUnit(data.end[1]),
+                    z: LengthUnit(0.0),
+                },
+                interior:kcmc::shared::Point3d {
+                    x: LengthUnit(data.interior[0]),
+                    y: LengthUnit(data.interior[0]),
+                    z: LengthUnit(0.0),
+                },
+                relative: false,
+            },
+        }),
+    )
+    .await?;
+
+    let current_path = Path::Arc {
+        base: BasePath {
+            from: from.into(),
+            to: data.end.into(),
+            tag: tag.clone(),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        center: from.into(),
+        radius: 4.0,
     };
 
     let mut new_sketch = sketch.clone();

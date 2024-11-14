@@ -91,6 +91,7 @@ lazy_static! {
         Box::new(crate::std::sketch::ProfileStart),
         Box::new(crate::std::sketch::Close),
         Box::new(crate::std::sketch::Arc),
+        Box::new(crate::std::sketch::ArcTo),
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::TangentialArcTo),
         Box::new(crate::std::sketch::TangentialArcToRelative),

@@ -656,6 +656,7 @@ impl_from_arg_via_json!(super::shapes::CircleData);
 impl_from_arg_via_json!(super::shapes::PolygonData);
 impl_from_arg_via_json!(super::sketch::ArcData);
 impl_from_arg_via_json!(super::sketch::TangentialArcData);
+impl_from_arg_via_json!(super::sketch::ArcToData);
 impl_from_arg_via_json!(super::sketch::BezierData);
 impl_from_arg_via_json!(super::chamfer::ChamferData);
 impl_from_arg_via_json!(super::patterns::LinearPattern3dData);
