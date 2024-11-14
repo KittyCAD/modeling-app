@@ -5,11 +5,11 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"
         if [[ "$1" == ubuntu-latest* ]]; then
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu || true
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --shard=$1/$2 || true
         elif [[ "$1" == windows-latest* ]]; then
-            yarn test:playwright:electron:windows || true
+            yarn test:playwright:electron:windows -- --shard=$1/$2 || true
         elif [[ "$1" == macos-14* ]]; then
-            yarn test:playwright:electron:macos || true
+            yarn test:playwright:electron:macos  -- --shard=$1/$2 || true
         else
             echo "Do not run playwright. Unable to detect os runtime."
             exit 1
