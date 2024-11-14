@@ -1028,24 +1028,13 @@ impl<'a> FromKclValue<'a> for super::sketch::AngledLineToData {
     }
 }
 
-/// Is this within -360 to +360
-fn is_outside_unit_circle(degrees: f64) -> bool {
-    !(-360.0..=360.0).contains(&degrees)
-}
-
 impl<'a> FromKclValue<'a> for super::sketch::ArcData {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, radius);
         let case1 = || {
             let angle_start = obj.get("angleStart").or_else(|| obj.get("angle_start"))?.as_f64()?;
-            if is_outside_unit_circle(angle_start) {
-                return None;
-            }
             let angle_end = obj.get("angleEnd").or_else(|| obj.get("angle_end"))?.as_f64()?;
-            if is_outside_unit_circle(angle_end) {
-                return None;
-            }
             Some(Self::AnglesAndRadius {
                 angle_start,
                 angle_end,
