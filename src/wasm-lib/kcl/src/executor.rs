@@ -743,12 +743,12 @@ impl Plane {
                 value: PlaneType::YZ,
                 meta: vec![],
             },
-            crate::std::sketch::PlaneOrientationData::Custom {
+            crate::std::sketch::PlaneOrientationData::Custom(crate::std::sketch::PlaneOrientation {
                 origin,
                 x_axis,
                 y_axis,
                 z_axis,
-            } => Plane {
+            }) => Plane {
                 id,
                 origin: *origin,
                 x_axis: *x_axis,

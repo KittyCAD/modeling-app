@@ -887,24 +887,30 @@ pub enum SketchData {
 /// Orientation data that can be used to construct a plane, not a plane in itself.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(untagged)]
 pub enum PlaneOrientationData {
     /// One of the default planes.
     Default(crate::std::planes::DefaultPlane),
-    /// A defined plane.
-    Custom {
-        /// Origin of the plane.
-        origin: Box<Point3d>,
-        /// What should the plane’s X axis be?
-        #[serde(rename = "xAxis", alias = "x_axis")]
-        x_axis: Box<Point3d>,
-        /// What should the plane’s Y axis be?
-        #[serde(rename = "yAxis", alias = "y_axis")]
-        y_axis: Box<Point3d>,
-        /// The z-axis (normal).
-        #[serde(rename = "zAxis", alias = "z_axis")]
-        z_axis: Box<Point3d>,
-    },
+    /// An implicit plane from orientation data.
+    Custom(PlaneOrientation),
+}
+
+/// Orientation data that can be used to construct a plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct PlaneOrientation {
+    /// Origin of the plane.
+    pub origin: Box<Point3d>,
+    /// What should the plane’s X axis be?
+    #[serde(rename = "xAxis", alias = "x_axis")]
+    pub x_axis: Box<Point3d>,
+    /// What should the plane’s Y axis be?
+    #[serde(rename = "yAxis", alias = "y_axis")]
+    pub y_axis: Box<Point3d>,
+    /// The z-axis (normal).
+    #[serde(rename = "zAxis", alias = "z_axis")]
+    pub z_axis: Box<Point3d>,
 }
 
 /// Start a sketch on a specific plane or face.
@@ -1029,7 +1035,7 @@ async fn inner_start_sketch_on(
 ) -> Result<SketchSurface, KclError> {
     match data {
         SketchData::PlaneOrientation(plane_data) => {
-            let plane = start_sketch_on_plane(plane_data, exec_state, args).await?;
+            let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
         SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
@@ -1066,7 +1072,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn start_sketch_on_plane(
+async fn make_sketch_plane_from_orientation(
     data: PlaneOrientationData,
     exec_state: &mut ExecState,
     args: &Args,
@@ -1087,12 +1093,12 @@ async fn start_sketch_on_plane(
         PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegXZ) => default_planes.neg_xz,
         PlaneOrientationData::Default(crate::std::planes::DefaultPlane::YZ) => default_planes.yz,
         PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegYZ) => default_planes.neg_yz,
-        PlaneOrientationData::Custom {
+        PlaneOrientationData::Custom(PlaneOrientation {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
-        } => {
+        }) => {
             // Create the custom plane on the fly.
             let id = exec_state.id_generator.next_uuid();
             args.batch_modeling_cmd(
@@ -1168,11 +1174,26 @@ pub(crate) async fn inner_start_profile_at(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if let SketchSurface::Face(face) = &sketch_surface {
-        // Flush the batch for our fillets/chamfers if there are any.
-        // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+    match &sketch_surface {
+        SketchSurface::Face(face) => {
+            // Flush the batch for our fillets/chamfers if there are any.
+            // If we do not do these for sketch on face, things will fail with face does not exist.
+            args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+                .await?;
+        }
+        SketchSurface::Plane(plane) => {
+            // Hide whatever plane we are sketching on.
+            // This is especially helpful for offset planes, which would be visible otherwise.
+            // web_sys::console::log_1(&format!("Testing here {plane:?}").into());
+            args.batch_end_cmd(
+                exec_state.id_generator.next_uuid(),
+                ModelingCmd::from(mcmd::ObjectVisible {
+                    object_id: plane.id,
+                    hidden: true,
+                }),
+            )
             .await?;
+        }
     }
 
     // Enter sketch mode on the surface.

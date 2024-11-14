@@ -14,6 +14,7 @@ use crate::{
 
 /// One of the standard planes.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum DefaultPlane {
     /// The XY plane.
@@ -163,6 +164,8 @@ async fn inner_offset_plane(
 }
 
 // Engine-side effectful creation of an actual plane object.
+// offset planes are shown by default, and hidden by default if they
+// are used as a sketch plane. That hiding command is sent within inner_start_profile_at
 async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, args: &Args) -> Result<(), KclError> {
     // Create new default planes.
     let default_size = 100.0;
