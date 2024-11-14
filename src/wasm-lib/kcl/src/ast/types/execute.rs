@@ -111,10 +111,10 @@ impl Node<MemberExpression> {
                 ),
                 source_ranges: vec![self.clone().into()],
             })),
-            (KclValue::Solid(solid), Property::String(prop)) if prop == "sketch" => {
-                Ok(KclValue::Sketch(Box::new(solid.sketch)))
-            }
-            (KclValue::Sketch(sk), Property::String(prop)) if prop == "tags" => Ok(KclValue::Object {
+            (KclValue::Solid(solid), Property::String(prop)) if prop == "sketch" => Ok(KclValue::Sketch {
+                value: Box::new(solid.sketch),
+            }),
+            (KclValue::Sketch { value: sk }, Property::String(prop)) if prop == "tags" => Ok(KclValue::Object {
                 meta: vec![Metadata {
                     source_range: SourceRange::from(self.clone()),
                 }],
@@ -376,7 +376,7 @@ impl Node<CallExpression> {
                 // TODO: This could probably be done in a better way, but as of now this was my only idea
                 // and it works.
                 match result {
-                    KclValue::Sketch(ref mut sketch) => {
+                    KclValue::Sketch { value: ref mut sketch } => {
                         for (_, tag) in sketch.tags.iter() {
                             exec_state.memory.update_tag(&tag.value, tag.clone())?;
                         }

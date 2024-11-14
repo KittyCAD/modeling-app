@@ -18,7 +18,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Node<Program>
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.
-    let KclValue::Sketch(sketch) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
+    let KclValue::Sketch { value: sketch } = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
         anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
     };
     let sketch_id = sketch.id;

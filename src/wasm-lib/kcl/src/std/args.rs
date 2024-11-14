@@ -1405,7 +1405,7 @@ impl<'a> FromKclValue<'a> for f64 {
 }
 impl<'a> FromKclValue<'a> for Sketch {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Sketch(value) = arg else {
+        let KclValue::Sketch { value } = arg else {
             return None;
         };
         Some(value.as_ref().to_owned())
@@ -1439,7 +1439,7 @@ impl<'a> FromKclValue<'a> for bool {
 impl<'a> FromKclValue<'a> for SketchSet {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Sketch(sketch) => Some(SketchSet::from(sketch.to_owned())),
+            KclValue::Sketch { value: sketch } => Some(SketchSet::from(sketch.to_owned())),
             KclValue::Sketches { value } => Some(SketchSet::from(value.to_owned())),
             KclValue::Array { .. } => {
                 let v: Option<Vec<Sketch>> = FromKclValue::from_mem_item(arg);
@@ -1474,7 +1474,7 @@ impl<'a> FromKclValue<'a> for SolidSet {
 impl<'a> FromKclValue<'a> for SketchOrSurface {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Sketch(sg) => Some(Self::Sketch(sg.to_owned())),
+            KclValue::Sketch { value: sg } => Some(Self::Sketch(sg.to_owned())),
             KclValue::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
             KclValue::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
             _ => None,

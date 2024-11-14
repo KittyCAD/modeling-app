@@ -248,15 +248,15 @@ impl Environment {
         }
 
         for (_, val) in self.bindings.iter_mut() {
-            let KclValue::Sketch(v) = val else { continue };
-            let mut sketch = v.to_owned();
+            let KclValue::Sketch { value } = val else { continue };
+            let mut sketch = value.to_owned();
 
             if sketch.original_id == sg.original_id {
                 for tag in sg.tags.iter() {
                     sketch.tags.insert(tag.0.clone(), tag.1.clone());
                 }
             }
-            *val = KclValue::Sketch(sketch);
+            *val = KclValue::Sketch { value: sketch };
         }
     }
 }
@@ -377,7 +377,9 @@ pub enum KclValue {
     Plane(Box<Plane>),
     Face(Box<Face>),
 
-    Sketch(Box<Sketch>),
+    Sketch {
+        value: Box<Sketch>,
+    },
     Sketches {
         value: Vec<Box<Sketch>>,
     },
@@ -416,7 +418,7 @@ impl KclValue {
             KclValue::TagDeclarator(x) => vec![x.metadata()],
             KclValue::Plane(x) => x.meta.clone(),
             KclValue::Face(x) => x.meta.clone(),
-            KclValue::Sketch(x) => x.meta.clone(),
+            KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
             KclValue::Solid(x) => x.meta.clone(),
             KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
@@ -458,7 +460,7 @@ impl KclValue {
             KclValue::TagIdentifier(_) => "TagIdentifier",
             KclValue::Solid(_) => "Solid",
             KclValue::Solids { .. } => "Solids",
-            KclValue::Sketch(_) => "Sketch",
+            KclValue::Sketch { .. } => "Sketch",
             KclValue::Sketches { .. } => "Sketches",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
@@ -482,7 +484,7 @@ impl KclValue {
 impl From<SketchSet> for KclValue {
     fn from(sg: SketchSet) -> Self {
         match sg {
-            SketchSet::Sketch(sketch) => KclValue::Sketch(sketch),
+            SketchSet::Sketch(value) => KclValue::Sketch { value },
             SketchSet::Sketches(value) => KclValue::Sketches { value },
         }
     }
@@ -920,7 +922,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Sketch(e) => to_vec_sr(&e.meta),
+            KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
@@ -949,7 +951,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Sketch(e) => to_vec_sr(&e.meta),
+            KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
