@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest-8-cores, windows-latest-8-cores]
+        os: [ubuntu-latest-8-cores, windows-latest-8-cores, macos-14-large]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     runs-on: ${{ matrix.os }}
