@@ -284,7 +284,12 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: {
+          range: [100, 101],
+          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
+        },
+      },
     })
     expect(result).toEqual(true)
   })
@@ -304,7 +309,12 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'extrude',
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: {
+          range: [100, 101],
+          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
+        },
+      },
     })
     expect(result).toEqual(true)
   })
@@ -322,7 +332,12 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: {
+          range: [100, 101],
+          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
+        },
+      },
     })
     expect(result).toEqual(false)
   })
@@ -334,7 +349,12 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
-      selection: { type: 'default', range: [9, 10] },
+      selection: {
+        codeRef: {
+          range: [9, 10],
+          pathToNode: getNodePathFromSourceRange(ast, [9, 10]),
+        },
+      },
     })
     expect(result).toEqual(false)
   })
@@ -464,8 +484,13 @@ sketch002 = startSketchOn(extrude001, $seg01)
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        range: [characterIndex, characterIndex],
-        type: 'default',
+        codeRef: {
+          range: [characterIndex, characterIndex],
+          pathToNode: getNodePathFromSourceRange(ast, [
+            characterIndex,
+            characterIndex,
+          ]),
+        },
       },
       ast
     )
@@ -479,8 +504,13 @@ sketch002 = startSketchOn(extrude001, $seg01)
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        range: [characterIndex, characterIndex],
-        type: 'default',
+        codeRef: {
+          range: [characterIndex, characterIndex],
+          pathToNode: getNodePathFromSourceRange(ast, [
+            characterIndex,
+            characterIndex,
+          ]),
+        },
       },
       ast
     )

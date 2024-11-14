@@ -29,12 +29,7 @@ import {
   sketchLineHelperMap,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
-import {
-  convertSelectionsToOld,
-  convertSelectionToOld,
-  Selections,
-  Selections__old,
-} from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
   Artifact,
@@ -82,10 +77,10 @@ export function modifyAstWithFilletAndTag(
   const lookupMap: Map<string, PathToNode> = new Map() // work around for Map key comparison
 
   for (const _s of selection.graphSelections) {
-    const singleSelection = convertSelectionsToOld({
+    const singleSelection = {
       graphSelections: [_s],
       otherSelections: [],
-    })
+    }
 
     const result = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
@@ -220,12 +215,12 @@ function insertRadiusIntoAst(
 
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
-  selection: Selections__old,
+  selection: Selections,
   artifactGraph: ArtifactGraph
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
-    selection.codeBasedSelections[0].range
+    selection.graphSelections[0]?.codeRef?.range
   )
 
   const varDecNode = getNodeFromPath<VariableDeclaration>(
@@ -479,9 +474,7 @@ export const hasValidFilletSelection = ({
     // TODO: option 1 : extrude is in the sketch pipe
 
     // option 2: extrude is outside the sketch pipe
-    const selectionOld = convertSelectionToOld(selection)
-    if (!selectionOld) return false
-    const extrudeExists = hasSketchPipeBeenExtruded(selectionOld, ast)
+    const extrudeExists = hasSketchPipeBeenExtruded(selection, ast)
     if (err(extrudeExists)) {
       return false
     }

@@ -1,5 +1,5 @@
 import { ToolTip } from 'lang/langHelpers'
-import { Selection__old, Selections } from 'lib/selections'
+import { Selection, Selection__old, Selections } from 'lib/selections'
 import {
   ArrayExpression,
   BinaryExpression,
@@ -745,12 +745,11 @@ export function doesPipeHaveCallExp({
 }: {
   calleeName: string
   ast: Program
-  selection: Selection__old
+  selection: Selection
 }): boolean {
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const pipeExpressionMeta = getNodeFromPath<PipeExpression>(
     ast,
-    pathToNode,
+    selection?.codeRef?.pathToNode,
     'PipeExpression'
   )
   if (err(pipeExpressionMeta)) {
@@ -869,18 +868,18 @@ export function findUsesOfTagInPipe(
   return dependentRanges
 }
 
-export function hasSketchPipeBeenExtruded(
-  selection: Selection__old,
-  ast: Program
-) {
-  const path = getNodePathFromSourceRange(ast, selection.range)
-  const _node = getNodeFromPath<PipeExpression>(ast, path, 'PipeExpression')
+export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
+  const _node = getNodeFromPath<PipeExpression>(
+    ast,
+    selection.codeRef.pathToNode,
+    'PipeExpression'
+  )
   if (err(_node)) return false
   const { node: pipeExpression } = _node
   if (pipeExpression.type !== 'PipeExpression') return false
   const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection.codeRef.pathToNode,
     'VariableDeclarator'
   )
   if (err(_varDec)) return false

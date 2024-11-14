@@ -656,16 +656,13 @@ export function isRangeBetweenCharacters(selectionRanges: Selections) {
 }
 
 export type CommonASTNode = {
-  selection: Selection__old
+  selection: Selection
   ast: Program
 }
 
-function buildCommonNodeFromSelection(
-  selectionRanges: Selections__old,
-  i: number
-) {
+function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
   return {
-    selection: selectionRanges.codeBasedSelections[i],
+    selection: selectionRanges.graphSelections[i],
     ast: kclManager.ast,
   }
 }
@@ -697,9 +694,8 @@ function nodeHasCircle(node: CommonASTNode) {
 }
 
 export function canSweepSelection(selection: Selections) {
-  const _s = convertSelectionsToOld(selection)
   const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(_s, i)
+    buildCommonNodeFromSelection(selection, i)
   )
   return (
     !!isSketchPipe(selection) &&
@@ -715,10 +711,7 @@ function canExtrudeSelectionItem(selection: Selections, i: number) {
     ...selection,
     graphSelections: [selection.graphSelections[i]],
   }
-  const commonNode = buildCommonNodeFromSelection(
-    convertSelectionsToOld(selection),
-    i
-  )
+  const commonNode = buildCommonNodeFromSelection(selection, i)
 
   return (
     !!isSketchPipe(isolatedSelection) &&

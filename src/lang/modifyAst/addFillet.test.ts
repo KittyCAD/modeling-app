@@ -18,10 +18,11 @@ import {
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
-import { Selections, Selections__old } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { KclCommandValue } from 'lib/commandTypes'
+import { isOverlap } from 'lib/utils'
 
 beforeAll(async () => {
   await initPromise
@@ -105,11 +106,13 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     code.indexOf(selectedSegmentSnippet),
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
   ]
-  const selection: Selections__old = {
-    codeBasedSelections: [
+  const selection: Selections = {
+    graphSelections: [
       {
-        range: segmentRange,
-        type: 'default',
+        codeRef: {
+          range: segmentRange,
+          pathToNode: getNodePathFromSourceRange(ast, segmentRange),
+        },
       },
     ],
     otherSelections: [],
@@ -247,15 +250,6 @@ const runModifyAstCloneWithFilletAndTag = async (
       code.indexOf(selectionSnippet) + selectionSnippet.length,
     ]
   )
-  const selection: Selections = {
-    graphSelections: segmentRanges.map((segmentRange) => ({
-      codeRef: {
-        range: segmentRange,
-        pathToNode: [],
-      },
-    })),
-    otherSelections: [],
-  }
 
   // radius
   const radius: KclCommandValue = {
@@ -266,12 +260,31 @@ const runModifyAstCloneWithFilletAndTag = async (
 
   // executeAst
   await kclManager.executeAst({ ast })
+  const artifactGraph = engineCommandManager.artifactGraph
+
+  const selection: Selections = {
+    graphSelections: segmentRanges.map((segmentRange) => {
+      const maybeArtifact = [...artifactGraph].find(([, a]) => {
+        if (!('codeRef' in a)) return false
+        return isOverlap(a.codeRef.range, segmentRange)
+      })
+      return {
+        codeRef: {
+          range: segmentRange,
+          pathToNode: getNodePathFromSourceRange(ast, segmentRange),
+        },
+        artifact: maybeArtifact ? maybeArtifact[1] : undefined,
+      }
+    }),
+    otherSelections: [],
+  }
 
   // apply fillet to selection
   const result = modifyAstWithFilletAndTag(ast, selection, radius)
   if (err(result)) {
     return result
   }
+  // console.log(recast(result.modifiedAst))
   const { modifiedAst } = result
 
   const newCode = recast(modifiedAst)
@@ -573,7 +586,7 @@ describe('Testing button states', () => {
         {
           codeRef: {
             range,
-            pathToNode: [],
+            pathToNode: getNodePathFromSourceRange(ast, range),
           },
         },
       ],
