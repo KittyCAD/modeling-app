@@ -513,15 +513,6 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
-    'code editor process changes': ({ event, context }) => {
-      ;(async () => {
-        const newCode = recast(kclManager.ast)
-        if (err(newCode)) return
-        await codeManager.updateCodeStateEditor(newCode)
-
-        await codeManager.writeToFile()
-      })().catch(reportRejection)
-    },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
         'data' in event && event.data && 'tool' in event.data
@@ -541,16 +532,16 @@ export const modelingMachine = setup({
         }
       }
     ),
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    'hide default planes': () => kclManager.hidePlanes(),
+    'hide default planes': () => {
+      void kclManager.hidePlanes()
+    },
     'reset sketch metadata': assign({
       sketchDetails: null,
       sketchEnginePathId: '',
       sketchPlaneId: '',
     }),
     'reset camera position': () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      engineCommandManager.sendSceneCommand({
+      void engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
@@ -614,9 +605,7 @@ export const modelingMachine = setup({
           },
         })
 
-        const newCode = recast(updatedAst.newAst)
-        if (err(newCode)) return
-        await codeManager.updateCodeEditor(newCode)
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
@@ -660,9 +649,7 @@ export const modelingMachine = setup({
           },
         })
 
-        const newCode = recast(updatedAst.newAst)
-        if (err(newCode)) return
-        await codeManager.updateCodeEditor(newCode)
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
@@ -693,10 +680,7 @@ export const modelingMachine = setup({
         }
 
         await kclManager.updateAst(modifiedAst, true)
-
-        const newCode = recast(modifiedAst)
-        if (err(newCode)) return
-        await codeManager.updateCodeEditor(newCode)
+        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       })().catch(reportRejection)
     },
     'AST fillet': ({ event }) => {
@@ -714,6 +698,9 @@ export const modelingMachine = setup({
         radius
       )
       if (err(applyFilletToSelectionResult)) return applyFilletToSelectionResult
+
+      console.log(applyFilletToSelectionResult)
+      void codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
     'set selection filter to curves only': () => {
       ;(async () => {
@@ -770,25 +757,32 @@ export const modelingMachine = setup({
     'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
     'set up draft line': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftSegment(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        'line'
-      )
+
+      void sceneEntitiesManager
+        .setupDraftSegment(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'line'
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'set up draft arc': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftSegment(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        'tangentialArcTo'
-      )
+      void sceneEntitiesManager
+        .setupDraftSegment(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'tangentialArcTo'
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'listen for rectangle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
@@ -846,38 +840,49 @@ export const modelingMachine = setup({
     'set up draft rectangle': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Add rectangle origin') return
       if (!sketchDetails || !event.data) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftRectangle(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        event.data
-      )
+
+      void sceneEntitiesManager
+        .setupDraftRectangle(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          event.data
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'set up draft circle': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Add circle origin') return
       if (!sketchDetails || !event.data) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftCircle(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        event.data
-      )
+
+      void sceneEntitiesManager
+        .setupDraftCircle(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          event.data
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftSegment(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        'line',
-        false
-      )
+      void sceneEntitiesManager
+        .setupDraftSegment(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'line',
+          false
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'show default planes': () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -894,12 +899,14 @@ export const modelingMachine = setup({
     'add axis n grid': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
-      sceneEntitiesManager.createSketchAxis(
+      void sceneEntitiesManager.createSketchAxis(
         sketchDetails.sketchPathToNode || [],
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin
       )
+
+      void codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
     'reset client scene mouse handlers': () => {
       // when not in sketch mode we don't need any mouse listeners
@@ -928,10 +935,12 @@ export const modelingMachine = setup({
     'Delete segment': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegment({
+
+      void deleteSegment({
         pathToNode: event.data,
         sketchDetails,
+      }).then(() => {
+        return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
     },
     'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
@@ -996,6 +1005,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1030,6 +1042,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1064,6 +1077,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1096,6 +1110,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1129,6 +1144,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1162,6 +1178,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1195,6 +1212,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1232,6 +1250,8 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1264,6 +1284,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1568,11 +1589,7 @@ export const modelingMachine = setup({
             },
           },
 
-          entry: [
-            'setup client side sketch segments',
-
-            'code editor process changes',
-          ],
+          entry: ['setup client side sketch segments'],
         },
 
         'Await horizontal distance info': {
@@ -1585,7 +1602,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
             onError: 'SketchIdle',
           },
@@ -1601,7 +1618,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
             onError: 'SketchIdle',
           },
@@ -1617,7 +1634,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
             onError: 'SketchIdle',
           },
@@ -1633,7 +1650,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
             onError: 'SketchIdle',
           },
@@ -1649,7 +1666,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
             onError: 'SketchIdle',
           },
@@ -1665,7 +1682,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
             onError: 'SketchIdle',
           },
@@ -1681,7 +1698,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
             onError: 'SketchIdle',
           },
@@ -1817,7 +1834,7 @@ export const modelingMachine = setup({
             onError: 'SketchIdle',
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1838,7 +1855,7 @@ export const modelingMachine = setup({
             },
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1853,7 +1870,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1868,7 +1885,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1883,7 +1900,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1898,7 +1915,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1913,7 +1930,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1928,7 +1945,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1943,7 +1960,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1958,7 +1975,7 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: 'SketchIdle',
-              actions: ['code editor process changes', 'Set selection'],
+              actions: 'Set selection',
             },
           },
         },

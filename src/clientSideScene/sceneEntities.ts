@@ -849,9 +849,7 @@ export class SceneEntities {
           )
         }
 
-        const newCode = recast(modifiedAst)
-        if (err(newCode)) return
-        codeManager.updateCodeEditor(newCode)
+        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       },
       onMove: (args) => {
         this.onDragSegment({
@@ -991,6 +989,11 @@ export class SceneEntities {
         await kclManager.executeAstMock(_ast)
         sceneInfra.modelingSend({ type: 'Finish rectangle' })
 
+        // lee: I had this at the bottom of the function, but it's
+        // possible sketchFromKclValue "fails" when sketching on a face,
+        // and this couldn't wouldn't run.
+        await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+
         const { execState } = await executeAst({
           ast: _ast,
           useFakeExecutor: true,
@@ -1016,9 +1019,6 @@ export class SceneEntities {
         sgPaths.forEach((seg, index) =>
           this.updateSegment(seg, index, 0, _ast, orthoFactor, sketch)
         )
-
-        if (err(newCode)) return
-        codeManager.updateCodeEditor(newCode)
       },
     })
   }
@@ -1188,7 +1188,7 @@ export class SceneEntities {
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'Finish circle' })
 
-          codeManager.updateCodeEditor(newCode)
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
     })
