@@ -689,7 +689,7 @@ impl Plane {
     pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneOrientationData, exec_state: &mut ExecState) -> Self {
         let id = exec_state.id_generator.next_uuid();
         match value {
-            crate::std::sketch::PlaneOrientationData::Default(crate::std::planes::DefaultPlane::XY) => Plane {
+            crate::std::sketch::PlaneOrientationData::XY => Plane {
                 id,
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
@@ -698,7 +698,7 @@ impl Plane {
                 value: PlaneType::XY,
                 meta: vec![],
             },
-            crate::std::sketch::PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegXY) => Plane {
+            crate::std::sketch::PlaneOrientationData::NegXY => Plane {
                 id,
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
@@ -707,7 +707,7 @@ impl Plane {
                 value: PlaneType::XY,
                 meta: vec![],
             },
-            crate::std::sketch::PlaneOrientationData::Default(crate::std::planes::DefaultPlane::XZ) => Plane {
+            crate::std::sketch::PlaneOrientationData::XZ => Plane {
                 id,
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
@@ -716,7 +716,7 @@ impl Plane {
                 value: PlaneType::XZ,
                 meta: vec![],
             },
-            crate::std::sketch::PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegXZ) => Plane {
+            crate::std::sketch::PlaneOrientationData::NegXZ => Plane {
                 id,
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(-1.0, 0.0, 0.0),
@@ -725,7 +725,7 @@ impl Plane {
                 value: PlaneType::XZ,
                 meta: vec![],
             },
-            crate::std::sketch::PlaneOrientationData::Default(crate::std::planes::DefaultPlane::YZ) => Plane {
+            crate::std::sketch::PlaneOrientationData::YZ => Plane {
                 id,
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -734,7 +734,7 @@ impl Plane {
                 value: PlaneType::YZ,
                 meta: vec![],
             },
-            crate::std::sketch::PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegYZ) => Plane {
+            crate::std::sketch::PlaneOrientationData::NegYZ => Plane {
                 id,
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -743,12 +743,12 @@ impl Plane {
                 value: PlaneType::YZ,
                 meta: vec![],
             },
-            crate::std::sketch::PlaneOrientationData::Custom(crate::std::sketch::PlaneOrientation {
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-            }) => Plane {
+            crate::std::sketch::PlaneOrientationData::Plane {
+                        origin,
+                        x_axis,
+                        y_axis,
+                        z_axis,
+            } => Plane {
                 id,
                 origin: *origin,
                 x_axis: *x_axis,

@@ -867,7 +867,7 @@ pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<K
 }]
 async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
-    let xy_plane = PlaneOrientationData::Default(super::planes::DefaultPlane::XY);
+    let xy_plane = PlaneOrientationData::XY;
     let sketch_surface = inner_start_sketch_on(SketchData::PlaneOrientation(xy_plane), None, exec_state, &args).await?;
     let sketch = inner_start_profile_at(data, sketch_surface, None, exec_state, args).await?;
     Ok(sketch)
@@ -884,33 +884,49 @@ pub enum SketchData {
     Solid(Box<Solid>),
 }
 
+impl Default for SketchData {
+    fn default() -> Self {
+        SketchData::PlaneOrientation(PlaneOrientationData::XY)
+    }
+}
+
 /// Orientation data that can be used to construct a plane, not a plane in itself.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(untagged)]
-pub enum PlaneOrientationData {
-    /// One of the default planes.
-    Default(crate::std::planes::DefaultPlane),
-    /// An implicit plane from orientation data.
-    Custom(PlaneOrientation),
-}
-
-/// Orientation data that can be used to construct a plane.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct PlaneOrientation {
-    /// Origin of the plane.
-    pub origin: Box<Point3d>,
-    /// What should the plane’s X axis be?
-    #[serde(rename = "xAxis", alias = "x_axis")]
-    pub x_axis: Box<Point3d>,
-    /// What should the plane’s Y axis be?
-    #[serde(rename = "yAxis", alias = "y_axis")]
-    pub y_axis: Box<Point3d>,
-    /// The z-axis (normal).
-    #[serde(rename = "zAxis", alias = "z_axis")]
-    pub z_axis: Box<Point3d>,
+pub enum PlaneOrientationData {
+    /// The XY plane.
+    #[serde(rename = "XY", alias = "xy")]
+    XY,
+    /// The opposite side of the XY plane.
+    #[serde(rename = "-XY", alias = "-xy")]
+    NegXY,
+    /// The XZ plane.
+    #[serde(rename = "XZ", alias = "xz")]
+    XZ,
+    /// The opposite side of the XZ plane.
+    #[serde(rename = "-XZ", alias = "-xz")]
+    NegXZ,
+    /// The YZ plane.
+    #[serde(rename = "YZ", alias = "yz")]
+    YZ,
+    /// The opposite side of the YZ plane.
+    #[serde(rename = "-YZ", alias = "-yz")]
+    NegYZ,
+    /// A defined plane.
+    Plane {
+        /// Origin of the plane.
+        origin: Box<Point3d>,
+        /// What should the plane’s X axis be?
+        #[serde(rename = "xAxis", alias = "x_axis")]
+        x_axis: Box<Point3d>,
+        /// What should the plane’s Y axis be?
+        #[serde(rename = "yAxis", alias = "y_axis")]
+        y_axis: Box<Point3d>,
+        /// The z-axis (normal).
+        #[serde(rename = "zAxis", alias = "z_axis")]
+        z_axis: Box<Point3d>,
+    },
 }
 
 /// Start a sketch on a specific plane or face.
@@ -1087,18 +1103,18 @@ async fn make_sketch_plane_from_orientation(
         .await?;
 
     plane.id = match data {
-        PlaneOrientationData::Default(crate::std::planes::DefaultPlane::XY) => default_planes.xy,
-        PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegXY) => default_planes.neg_xy,
-        PlaneOrientationData::Default(crate::std::planes::DefaultPlane::XZ) => default_planes.xz,
-        PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegXZ) => default_planes.neg_xz,
-        PlaneOrientationData::Default(crate::std::planes::DefaultPlane::YZ) => default_planes.yz,
-        PlaneOrientationData::Default(crate::std::planes::DefaultPlane::NegYZ) => default_planes.neg_yz,
-        PlaneOrientationData::Custom(PlaneOrientation {
+        PlaneOrientationData::XY => default_planes.xy,
+        PlaneOrientationData::NegXY => default_planes.neg_xy,
+        PlaneOrientationData::XZ => default_planes.xz,
+        PlaneOrientationData::NegXZ => default_planes.neg_xz,
+        PlaneOrientationData::YZ => default_planes.yz,
+        PlaneOrientationData::NegYZ => default_planes.neg_yz,
+        PlaneOrientationData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
-        }) => {
+        } => {
             // Create the custom plane on the fly.
             let id = exec_state.id_generator.next_uuid();
             args.batch_modeling_cmd(
@@ -2046,25 +2062,25 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{executor::TagIdentifier, std::planes::DefaultPlane, std::sketch::PlaneOrientationData};
+    use crate::{executor::TagIdentifier, std::sketch::PlaneOrientationData};
 
     #[test]
     fn test_deserialize_plane_data() {
-        let data = PlaneOrientationData::Default(DefaultPlane::XY);
+        let data = PlaneOrientationData::XY;
         let mut str_json = serde_json::to_string(&data).unwrap();
         assert_eq!(str_json, "\"XY\"");
 
         str_json = "\"YZ\"".to_string();
         let data: PlaneOrientationData = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, PlaneOrientationData::Default(DefaultPlane::YZ));
+        assert_eq!(data, PlaneOrientationData::YZ);
 
         str_json = "\"-YZ\"".to_string();
         let data: PlaneOrientationData = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, PlaneOrientationData::Default(DefaultPlane::NegYZ));
+        assert_eq!(data, PlaneOrientationData::NegYZ);
 
         str_json = "\"-xz\"".to_string();
         let data: PlaneOrientationData = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, PlaneOrientationData::Default(DefaultPlane::NegXZ));
+        assert_eq!(data, PlaneOrientationData::NegXZ);
     }
 
     #[test]

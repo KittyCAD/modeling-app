@@ -16,7 +16,7 @@ use crate::{
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub enum DefaultPlane {
+pub enum StandardPlane {
     /// The XY plane.
     #[serde(rename = "XY", alias = "xy")]
     XY,
@@ -37,15 +37,22 @@ pub enum DefaultPlane {
     NegYZ,
 }
 
-impl From<DefaultPlane> for PlaneOrientationData {
-    fn from(value: DefaultPlane) -> Self {
-        PlaneOrientationData::Default(value)
+impl From<StandardPlane> for PlaneOrientationData {
+    fn from(value: StandardPlane) -> Self {
+        match value {
+            StandardPlane::XY => PlaneOrientationData::XY,
+            StandardPlane::NegXY => PlaneOrientationData::NegXY,
+            StandardPlane::XZ => PlaneOrientationData::XZ,
+            StandardPlane::NegXZ => PlaneOrientationData::NegXZ,
+            StandardPlane::YZ => PlaneOrientationData::YZ,
+            StandardPlane::NegYZ => PlaneOrientationData::NegYZ,
+        }
     }
 }
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (std_plane, offset): (DefaultPlane, f64) = args.get_data_and_float()?;
+    let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
 
     let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
@@ -130,7 +137,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
     name = "offsetPlane",
 }]
 async fn inner_offset_plane(
-    std_plane: DefaultPlane,
+    std_plane: StandardPlane,
     offset: f64,
     exec_state: &mut ExecState,
 ) -> Result<Plane, KclError> {
@@ -140,22 +147,22 @@ async fn inner_offset_plane(
     let mut plane = Plane::from_plane_data(plane_data, exec_state);
 
     match std_plane {
-        DefaultPlane::XY => {
+        StandardPlane::XY => {
             plane.origin.z += offset;
         }
-        DefaultPlane::XZ => {
+        StandardPlane::XZ => {
             plane.origin.y -= offset;
         }
-        DefaultPlane::YZ => {
+        StandardPlane::YZ => {
             plane.origin.x += offset;
         }
-        DefaultPlane::NegXY => {
+        StandardPlane::NegXY => {
             plane.origin.z -= offset;
         }
-        DefaultPlane::NegXZ => {
+        StandardPlane::NegXZ => {
             plane.origin.y += offset;
         }
-        DefaultPlane::NegYZ => {
+        StandardPlane::NegYZ => {
             plane.origin.x -= offset;
         }
     }
