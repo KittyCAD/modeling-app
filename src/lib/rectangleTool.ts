@@ -120,18 +120,23 @@ export function updateCenterRectangleSketch(
   let startY = originY - Math.abs(deltaY)
 
   // pipeExpression.body[1] is startProfileAt
-  ;((pipeExpression.body[1] as CallExpression)
-    .arguments[0] as ArrayExpression) = createArrayExpression([
-    createLiteral(roundOff(startX)),
-    createLiteral(roundOff(startY)),
-  ])
+  let callExpression = pipeExpression.body[1]
+  if (isCallExpression(callExpression)) {
+    const arrayExpression = callExpression.arguments[0]
+    if (isArrayExpression(arrayExpression)) {
+      callExpression.arguments[0] = createArrayExpression([
+        createLiteral(roundOff(startX)),
+        createLiteral(roundOff(startY)),
+      ])
+    }
+  }
 
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
-  let callExpression = pipeExpression.body[2]
+  callExpression = pipeExpression.body[2]
   if (isCallExpression(callExpression)) {
-    let arrayExpression = callExpression.arguments[0]
+    const arrayExpression = callExpression.arguments[0]
     if (isArrayExpression(arrayExpression)) {
       const literal = arrayExpression.elements[0]
       if (isLiteral(literal)) {
@@ -145,7 +150,7 @@ export function updateCenterRectangleSketch(
 
   callExpression = pipeExpression.body[3]
   if (isCallExpression(callExpression)) {
-    let arrayExpression = callExpression.arguments[0]
+    const arrayExpression = callExpression.arguments[0]
     if (isArrayExpression(arrayExpression)) {
       const binaryExpression = arrayExpression.elements[0]
       if (isBinaryExpression(binaryExpression)) {
