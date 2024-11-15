@@ -14,7 +14,7 @@ use uuid::Uuid;
 use crate::{
     ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
-    executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier, UserVal},
+    executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
     settings::types::UnitLength,
     std::Args,
 };
@@ -186,15 +186,10 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_opposite_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the opposite edge to the edge given.
@@ -264,15 +259,10 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_next_adjacent_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the next adjacent edge to the edge given.
@@ -354,15 +344,10 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_previous_adjacent_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the previous adjacent edge to the edge given.

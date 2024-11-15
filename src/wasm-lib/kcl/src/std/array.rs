@@ -1,47 +1,25 @@
 use derive_docs::stdlib;
-use serde_json::Value as JValue;
 
 use super::{args::FromArgs, Args, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, SourceRange, UserVal},
+    executor::{ExecState, KclValue, SourceRange},
     function_param::FunctionParam,
 };
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, f): (Vec<JValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
-    let array: Vec<KclValue> = array
-        .into_iter()
-        .map(|jval| {
-            KclValue::UserVal(UserVal {
-                value: jval,
-                meta: vec![args.source_range.into()],
-            })
-        })
-        .collect();
+    let (array, f): (Vec<KclValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let meta = vec![args.source_range.into()];
     let map_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
-        meta: vec![args.source_range.into()],
+        meta: meta.clone(),
         ctx: args.ctx.clone(),
         memory: *f.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
-    let unwrapped = new_array
-        .clone()
-        .into_iter()
-        .map(|k| match k {
-            KclValue::UserVal(user_val) => Ok(user_val.value),
-            _ => Err(()),
-        })
-        .collect::<Result<Vec<_>, _>>();
-    if let Ok(unwrapped) = unwrapped {
-        let uv = UserVal::new(vec![args.source_range.into()], unwrapped);
-        return Ok(KclValue::UserVal(uv));
-    }
-    let uv = UserVal::new(vec![args.source_range.into()], new_array);
-    Ok(KclValue::UserVal(uv))
+    Ok(KclValue::Array { value: new_array, meta })
 }
 
 /// Apply a function to every element of a list.
@@ -110,16 +88,7 @@ async fn call_map_closure<'a>(
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<JValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
-    let array: Vec<KclValue> = array
-        .into_iter()
-        .map(|jval| {
-            KclValue::UserVal(UserVal {
-                value: jval,
-                meta: vec![args.source_range.into()],
-            })
-        })
-        .collect();
+    let (array, start, f): (Vec<KclValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
     let reduce_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
@@ -206,50 +175,26 @@ async fn call_reduce_closure<'a>(
 #[stdlib {
     name = "push",
 }]
-async fn inner_push(array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
+async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
     // Unwrap the KclValues to JValues for manipulation
-    let mut unwrapped_array = array
-        .into_iter()
-        .map(|k| match k {
-            KclValue::UserVal(user_val) => Ok(user_val.value),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a UserVal in array".to_string(),
-                source_ranges: vec![args.source_range],
-            })),
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-
-    // Unwrap the element
-    let unwrapped_elem = match elem {
-        KclValue::UserVal(user_val) => user_val.value,
-        _ => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a UserVal as element".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        }
-    };
-
-    // Append the element to the array
-    unwrapped_array.push(unwrapped_elem);
-
-    // Wrap the new array into a UserVal with the source range metadata
-    let uv = UserVal::new(vec![args.source_range.into()], unwrapped_array);
-
-    // Return the new array wrapped as a KclValue::UserVal
-    Ok(KclValue::UserVal(uv))
+    array.push(elem);
+    Ok(KclValue::Array {
+        value: array,
+        meta: vec![args.source_range.into()],
+    })
 }
 
 pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Extract the array and the element from the arguments
-    let (array_jvalues, elem): (Vec<JValue>, KclValue) = FromArgs::from_args(&args, 0)?;
+    let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
 
-    // Convert the array of JValue into Vec<KclValue>
-    let array: Vec<KclValue> = array_jvalues
-        .into_iter()
-        .map(|jval| KclValue::UserVal(UserVal::new(vec![args.source_range.into()], jval)))
-        .collect();
-
-    // Call the inner_push function
+    let meta = vec![args.source_range];
+    let KclValue::Array { value: array, meta: _ } = val else {
+        let actual_type = val.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't push to a value of type {actual_type}, only an array"),
+        }));
+    };
     inner_push(array, elem, &args).await
 }

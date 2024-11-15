@@ -32,10 +32,17 @@ test.describe('Testing selections', () => {
       await u.waitForAuthSkipAppStart()
       await u.openDebugPanel()
 
-      const xAxisClick = () =>
-        page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
+      const yAxisClick = () =>
+        test.step('Click on Y axis', async () => {
+          await page.mouse.move(600, 200, { steps: 5 })
+          await page.mouse.click(600, 200)
+          await page.waitForTimeout(100)
+        })
       const xAxisClickAfterExitingSketch = () =>
-        page.mouse.click(639, 278).then(() => page.waitForTimeout(100))
+        test.step(`Click on X axis after exiting sketch, which shifts it at the moment`, async () => {
+          await page.mouse.click(639, 278)
+          await page.waitForTimeout(100)
+        })
       const emptySpaceHover = () =>
         test.step('Hover over empty space', async () => {
           await page.mouse.move(700, 143, { steps: 5 })
@@ -80,23 +87,23 @@ test.describe('Testing selections', () => {
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)`)
+    |> xLine(${commonPoints.num1}, %)`)
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)`)
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1 + 0.01}], %)
-    |> lineTo([0, ${commonPoints.num3}], %)`)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)
+    |> xLine(${commonPoints.num2 * -1}, %)`)
 
       // deselect line tool
       await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -121,53 +128,58 @@ test.describe('Testing selections', () => {
         // now check clicking works including axis
 
         // click a segment hold shift and click an axis, see that a relevant constraint is enabled
-        await topHorzSegmentClick()
-        await page.keyboard.down('Shift')
         const constrainButton = page.getByRole('button', {
           name: 'Length: open menu',
         })
-        const absYButton = page.getByRole('button', { name: 'Absolute Y' })
-        await constrainButton.click()
-        await expect(absYButton).toBeDisabled()
-        await page.waitForTimeout(100)
-        await xAxisClick()
-        await page.keyboard.up('Shift')
-        await constrainButton.click()
-        await absYButton.and(page.locator(':not([disabled])')).waitFor()
-        await expect(absYButton).not.toBeDisabled()
+        const absXButton = page.getByRole('button', { name: 'Absolute X' })
 
-        // clear selection by clicking on nothing
+        await test.step(`Select a segment and an axis, see that a relevant constraint is enabled`, async () => {
+          await topHorzSegmentClick()
+          await page.keyboard.down('Shift')
+          await constrainButton.click()
+          await expect(absXButton).toBeDisabled()
+          await page.waitForTimeout(100)
+          await yAxisClick()
+          await page.keyboard.up('Shift')
+          await constrainButton.click()
+          await absXButton.and(page.locator(':not([disabled])')).waitFor()
+          await expect(absXButton).not.toBeDisabled()
+        })
+
         await emptySpaceClick()
-
-        await page.waitForTimeout(100)
-        // same selection but click the axis first
-        await xAxisClick()
-        await constrainButton.click()
-        await expect(absYButton).toBeDisabled()
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(100)
-        await topHorzSegmentClick()
         await page.waitForTimeout(100)
 
-        await page.keyboard.up('Shift')
-        await constrainButton.click()
-        await expect(absYButton).not.toBeDisabled()
+        await test.step(`Same selection but click the axis first`, async () => {
+          await yAxisClick()
+          await constrainButton.click()
+          await expect(absXButton).toBeDisabled()
+          await page.keyboard.down('Shift')
+          await page.waitForTimeout(100)
+          await topHorzSegmentClick()
+          await page.waitForTimeout(100)
+
+          await page.keyboard.up('Shift')
+          await constrainButton.click()
+          await expect(absXButton).not.toBeDisabled()
+        })
 
         // clear selection by clicking on nothing
         await emptySpaceClick()
 
         // check the same selection again by putting cursor in code first then selecting axis
-        await page
-          .getByText(`  |> lineTo([0, ${commonPoints.num3}], %)`)
-          .click()
-        await page.keyboard.down('Shift')
-        await constrainButton.click()
-        await expect(absYButton).toBeDisabled()
-        await page.waitForTimeout(100)
-        await xAxisClick()
-        await page.keyboard.up('Shift')
-        await constrainButton.click()
-        await expect(absYButton).not.toBeDisabled()
+        await test.step(`Same selection but code selection then axis`, async () => {
+          await page
+            .getByText(`  |> xLine(${commonPoints.num2 * -1}, %)`)
+            .click()
+          await page.keyboard.down('Shift')
+          await constrainButton.click()
+          await expect(absXButton).toBeDisabled()
+          await page.waitForTimeout(100)
+          await yAxisClick()
+          await page.keyboard.up('Shift')
+          await constrainButton.click()
+          await expect(absXButton).not.toBeDisabled()
+        })
 
         // clear selection by clicking on nothing
         await emptySpaceClick()
@@ -182,9 +194,7 @@ test.describe('Testing selections', () => {
           process.platform === 'linux' ? 'Control' : 'Meta'
         )
         await page.waitForTimeout(100)
-        await page
-          .getByText(`  |> lineTo([0, ${commonPoints.num3}], %)`)
-          .click()
+        await page.getByText(`  |> xLine(${commonPoints.num2 * -1}, %)`).click()
 
         await expect(page.locator('.cm-cursor')).toHaveCount(2)
         await page.waitForTimeout(500)
@@ -928,6 +938,7 @@ sketch002 = startSketchOn(extrude001, $seg01)
     // test fillet button with the body in the scene
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
 extrude001 = extrude(10, sketch001)`
+    await u.codeLocator.clear()
     await u.codeLocator.fill(codeToAdd)
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()

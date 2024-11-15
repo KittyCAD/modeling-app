@@ -23,8 +23,110 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `UserVal`|  | No |
-| `value` |``|  | No |
+| `type` |enum: `Uuid`|  | No |
+| `value` |`string`|  | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Bool`|  | No |
+| `value` |`boolean`|  | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Number`|  | No |
+| `value` |`number`|  | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Int`|  | No |
+| `value` |`integer`|  | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `String`|  | No |
+| `value` |`string`|  | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Array`|  | No |
+| `value` |`[` [`KclValue`](/docs/kcl/types/KclValue) `]`|  | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Object`|  | No |
+| `value` |`object`|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 
@@ -112,6 +214,38 @@ A face.
 
 
 ----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: [`Sketch`](/docs/kcl/types/Sketch)|  | No |
+| `value` |[`Sketch`](/docs/kcl/types/Sketch)| Any KCL value. | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `Sketches`|  | No |
+| `value` |`[` [`Sketch`](/docs/kcl/types/Sketch) `]`|  | No |
+
+
+----
 An solid is a collection of extrude surfaces.
 
 **Type:** `object`
@@ -185,6 +319,23 @@ Data for an imported geometry.
 | `type` |enum: `Function`|  | No |
 | `expression` |[`FunctionExpression`](/docs/kcl/types/FunctionExpression)| Any KCL value. | No |
 | `memory` |[`ProgramMemory`](/docs/kcl/types/ProgramMemory)| Any KCL value. | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: [`KclNone`](/docs/kcl/types/KclNone)|  | No |
+| `value` |[`KclNone`](/docs/kcl/types/KclNone)| Any KCL value. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
 

@@ -462,7 +462,7 @@ test(
     await page.waitForTimeout(100)
 
     code += `
-  |> line([7.25, 0], %)`
+  |> xLine(7.25, %)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
@@ -647,7 +647,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> line([7.25, 0], %)`
+  |> xLine(7.25, %)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -752,7 +752,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> line([184.3, 0], %)`
+  |> xLine(184.3, %)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page

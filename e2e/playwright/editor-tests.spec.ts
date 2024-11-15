@@ -694,6 +694,9 @@ test.describe('Editor tests', () => {
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([3.14, 12], %)
     |> xLine(5, %) // lin`)
+
+      // expect there to be no KCL errors
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
 
     test('with tab to accept the completion', async ({ page }) => {

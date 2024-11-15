@@ -48,7 +48,9 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         args.get_circle_args()?;
 
     let sketch = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(sketch.meta.clone(), sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
 }
 
 /// Construct a 2-dimensional circle, of the specified radius, centered at
@@ -166,7 +168,7 @@ pub struct PolygonData {
     pub center: [f64; 2],
     /// The type of the polygon (inscribed or circumscribed)
     #[serde(skip)]
-    polygon_type: PolygonType,
+    pub polygon_type: PolygonType,
     /// Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius
     #[serde(default = "default_inscribed")]
     pub inscribed: bool,
@@ -182,7 +184,9 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_polygon_args()?;
 
     let sketch = inner_polygon(data, sketch_surface_or_group, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(sketch.meta.clone(), sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
 }
 
 /// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.

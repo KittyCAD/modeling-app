@@ -8,32 +8,27 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "five": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 5,
           "__meta": [
             {
@@ -46,8 +41,7 @@ snapshot_kind: text
           ]
         },
         "four": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 4,
           "__meta": [
             {
@@ -60,14 +54,73 @@ snapshot_kind: text
           ]
         },
         "r1": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            0,
-            1,
-            2,
-            3,
-            4
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
@@ -80,14 +133,73 @@ snapshot_kind: text
           ]
         },
         "r2": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            0,
-            1,
-            2,
-            3,
-            4
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    95,
+                    107,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    95,
+                    107,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    95,
+                    107,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    95,
+                    107,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    95,
+                    107,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
@@ -100,15 +212,86 @@ snapshot_kind: text
           ]
         },
         "r3": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    194,
+                    206,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    194,
+                    206,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    194,
+                    206,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    194,
+                    206,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    194,
+                    206,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 5,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    194,
+                    206,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
@@ -121,13 +304,60 @@ snapshot_kind: text
           ]
         },
         "r4": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            1,
-            2,
-            3,
-            4
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    341,
+                    373,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    341,
+                    373,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    341,
+                    373,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    341,
+                    373,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
@@ -140,8 +370,7 @@ snapshot_kind: text
           ]
         },
         "zero": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 0,
           "__meta": [
             {

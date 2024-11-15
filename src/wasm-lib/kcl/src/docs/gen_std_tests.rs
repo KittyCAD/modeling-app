@@ -790,6 +790,7 @@ fn test_generate_stdlib_json_schema() {
     // If this test fails and you've modified the AST or something else which affects the json repr
     // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
     // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
+    // Alternatively, run `just redo-kcl-stdlib-docs` (make sure to have just installed).
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 

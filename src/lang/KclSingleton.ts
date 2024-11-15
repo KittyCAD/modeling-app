@@ -125,7 +125,7 @@ export class KclManager {
     if (this.lints.length > 0) {
       diagnostics = diagnostics.concat(this.lints)
     }
-    editorManager.setDiagnostics(diagnostics)
+    editorManager?.setDiagnostics(diagnostics)
   }
 
   addKclErrors(kclErrors: KCLError[]) {

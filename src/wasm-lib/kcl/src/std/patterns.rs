@@ -14,13 +14,10 @@ use kittycad_modeling_cmds::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JValue;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{
-        ExecState, Geometries, Geometry, KclValue, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange, UserVal,
-    },
+    executor::{ExecState, Geometries, Geometry, KclValue, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange},
     function_param::FunctionParam,
     std::{types::Uint, Args},
 };
@@ -361,10 +358,10 @@ async fn make_transform<'a>(
     exec_state: &mut ExecState,
 ) -> Result<Transform, KclError> {
     // Call the transform fn for this repetition.
-    let repetition_num = KclValue::UserVal(UserVal {
-        value: JValue::Number(i.into()),
+    let repetition_num = KclValue::Int {
+        value: i.into(),
         meta: vec![source_range.into()],
-    });
+    };
     let transform_fn_args = vec![repetition_num];
     let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
 
@@ -376,7 +373,7 @@ async fn make_transform<'a>(
             source_ranges: source_ranges.clone(),
         })
     })?;
-    let KclValue::UserVal(transform) = transform_fn_return else {
+    let KclValue::Object { value: transform, meta } = transform_fn_return else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Transform function must return a transform object".to_string(),
             source_ranges: source_ranges.clone(),
@@ -384,9 +381,9 @@ async fn make_transform<'a>(
     };
 
     // Apply defaults to the transform.
-    let replicate = match transform.value.get("replicate") {
-        Some(JValue::Bool(true)) => true,
-        Some(JValue::Bool(false)) => false,
+    let replicate = match transform.get("replicate") {
+        Some(KclValue::Bool { value: true, .. }) => true,
+        Some(KclValue::Bool { value: false, .. }) => false,
         Some(_) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: "The 'replicate' key must be a bool".to_string(),
@@ -395,38 +392,43 @@ async fn make_transform<'a>(
         }
         None => true,
     };
-    let scale = match transform.value.get("scale") {
+    let scale = match transform.get("scale") {
         Some(x) => array_to_point3d(x, source_ranges.clone())?,
         None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
-    let translate = match transform.value.get("translate") {
+    let translate = match transform.get("translate") {
         Some(x) => array_to_point3d(x, source_ranges.clone())?,
         None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
     };
     let mut rotation = Rotation::default();
-    if let Some(rot) = transform.value.get("rotation") {
+    if let Some(rot) = transform.get("rotation") {
+        let KclValue::Object { value: rot, meta: _ } = rot else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')"
+                    .to_string(),
+                source_ranges: source_ranges.clone(),
+            }));
+        };
         if let Some(axis) = rot.get("axis") {
             rotation.axis = array_to_point3d(axis, source_ranges.clone())?.into();
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
-                JValue::Number(number) => {
-                    if let Some(number) = number.as_f64() {
-                        rotation.angle = Angle::from_degrees(number);
-                    }
+                KclValue::Number { value: number, meta: _ } => {
+                    rotation.angle = Angle::from_degrees(*number);
                 }
                 _ => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "The 'rotation.angle' key must be a number (of degrees)".to_string(),
-                        source_ranges: source_ranges.clone(),
+                        source_ranges: meta.iter().map(|m| m.source_range).collect(),
                     }));
                 }
             }
         }
         if let Some(origin) = rot.get("origin") {
             rotation.origin = match origin {
-                JValue::String(s) if s == "local" => OriginType::Local,
-                JValue::String(s) if s == "global" => OriginType::Global,
+                KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
+                KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
                 other => {
                     let origin = array_to_point3d(other, source_ranges.clone())?.into();
                     OriginType::Custom { origin }
@@ -443,8 +445,8 @@ async fn make_transform<'a>(
     Ok(t)
 }
 
-fn array_to_point3d(json: &JValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-    let JValue::Array(arr) = json else {
+fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+    let KclValue::Array { value: arr, meta } = val else {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Expected an array of 3 numbers (i.e. a 3D point)".to_string(),
             source_ranges,
@@ -457,17 +459,21 @@ fn array_to_point3d(json: &JValue, source_ranges: Vec<SourceRange>) -> Result<Po
             source_ranges,
         }));
     };
-    // Gets an f64 from a JSON value, returns Option.
-    let f = |j: &JValue| j.as_number().and_then(|num| num.as_f64()).map(|x| x.to_owned());
-    let err = |component| {
-        KclError::Semantic(KclErrorDetails {
-            message: format!("{component} component of this point was not a number"),
-            source_ranges: source_ranges.clone(),
-        })
+    // Gets an f64 from a KCL value.
+    let f = |k: &KclValue, component: char| {
+        use super::args::FromKclValue;
+        if let Some(value) = f64::from_mem_item(k) {
+            Ok(value)
+        } else {
+            Err(KclError::Semantic(KclErrorDetails {
+                message: format!("{component} component of this point was not a number"),
+                source_ranges: meta.iter().map(|m| m.source_range).collect(),
+            }))
+        }
     };
-    let x = f(&arr[0]).ok_or_else(|| err("X"))?;
-    let y = f(&arr[1]).ok_or_else(|| err("Y"))?;
-    let z = f(&arr[2]).ok_or_else(|| err("Z"))?;
+    let x = f(&arr[0], 'x')?;
+    let y = f(&arr[1], 'y')?;
+    let z = f(&arr[2], 'z')?;
     Ok(Point3d { x, y, z })
 }
 
@@ -477,8 +483,22 @@ mod tests {
 
     #[test]
     fn test_array_to_point3d() {
-        let input = serde_json::json! {
-            [1.1, 2.2, 3.3]
+        let input = KclValue::Array {
+            value: vec![
+                KclValue::Number {
+                    value: 1.1,
+                    meta: Default::default(),
+                },
+                KclValue::Number {
+                    value: 2.2,
+                    meta: Default::default(),
+                },
+                KclValue::Number {
+                    value: 3.3,
+                    meta: Default::default(),
+                },
+            ],
+            meta: Default::default(),
         };
         let expected = Point3d { x: 1.1, y: 2.2, z: 3.3 };
         let actual = array_to_point3d(&input, Vec::new());

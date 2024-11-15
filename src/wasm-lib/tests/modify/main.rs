@@ -4,7 +4,7 @@ use kcl_lib::{
         modify::modify_ast_for_sketch,
         types::{ModuleId, Node, Program},
     },
-    executor::{ExecutorContext, IdGenerator, KclValue, PlaneType, Sketch, SourceRange},
+    executor::{ExecutorContext, IdGenerator, KclValue, PlaneType, SourceRange},
 };
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
@@ -18,11 +18,8 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Node<Program>
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.
-    let KclValue::UserVal(user_val) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
+    let KclValue::Sketch { value: sketch } = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
         anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
-    };
-    let Some((sketch, _meta)) = user_val.get::<Sketch>() else {
-        anyhow::bail!("part001 was not a Sketch");
     };
     let sketch_id = sketch.id;
 

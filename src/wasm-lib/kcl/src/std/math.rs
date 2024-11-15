@@ -40,7 +40,7 @@ pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number()?;
     let result = inner_cos(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the cosine of a number (in radians).
@@ -70,7 +70,7 @@ pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number()?;
     let result = inner_sin(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the sine of a number (in radians).
@@ -100,7 +100,7 @@ pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number()?;
     let result = inner_tan(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the tangent of a number (in radians).
@@ -129,7 +129,7 @@ fn inner_tan(num: f64) -> Result<f64, KclError> {
 pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_pi()?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).
@@ -155,7 +155,7 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_sqrt(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the square root of a number.
@@ -185,7 +185,7 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let num = args.get_number()?;
     let result = inner_abs(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the absolute value of a number.
@@ -222,7 +222,7 @@ pub async fn floor(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let num = args.get_number()?;
     let result = inner_floor(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the largest integer less than or equal to a number.
@@ -250,7 +250,7 @@ pub async fn ceil(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_ceil(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the smallest integer greater than or equal to a number.
@@ -278,7 +278,7 @@ pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let nums = args.get_number_array()?;
     let result = inner_min(nums);
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the minimum of the given arguments.
@@ -315,7 +315,7 @@ pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let nums = args.get_number_array()?;
     let result = inner_max(nums);
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the maximum of the given arguments.
@@ -366,7 +366,7 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 
     let result = inner_pow(nums[0], nums[1])?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the number to a power.
@@ -396,7 +396,7 @@ pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_acos(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the arccosine of a number (in radians).
@@ -427,7 +427,7 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_asin(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the arcsine of a number (in radians).
@@ -457,7 +457,7 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_atan(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the arctangent of a number (in radians).
@@ -504,7 +504,7 @@ pub async fn log(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     }
     let result = inner_log(nums[0], nums[1])?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the logarithm of the number with respect to an arbitrary base.
@@ -536,7 +536,7 @@ pub async fn log2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let num = args.get_number()?;
     let result = inner_log2(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the base 2 logarithm of the number.
@@ -564,7 +564,7 @@ pub async fn log10(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let num = args.get_number()?;
     let result = inner_log10(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the base 10 logarithm of the number.
@@ -592,7 +592,7 @@ pub async fn ln(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let num = args.get_number()?;
     let result = inner_ln(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the natural logarithm of the number.
@@ -619,7 +619,7 @@ fn inner_ln(num: f64) -> Result<f64, KclError> {
 pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_e()?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Return the value of Euler’s number `e`.
@@ -648,7 +648,7 @@ fn inner_e() -> Result<f64, KclError> {
 pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_tau()?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
@@ -678,7 +678,7 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let num = args.get_number()?;
     let result = inner_to_radians(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Converts a number from degrees to radians.
@@ -708,7 +708,7 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let num = args.get_number()?;
     let result = inner_to_degrees(num)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Converts a number from radians to degrees.
