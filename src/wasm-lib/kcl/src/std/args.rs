@@ -1090,7 +1090,7 @@ impl<'a> FromKclValue<'a> for crate::executor::Point3d {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::sketch::PlaneOrientationData {
+impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         // Case 0: actual plane
         if let KclValue::Plane(p) = arg {
@@ -1282,7 +1282,7 @@ impl<'a> FromKclValue<'a> for crate::executor::Solid {
 
 impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::sketch::PlaneOrientationData::from_mem_item;
+        let case1 = super::sketch::PlaneData::from_mem_item;
         let case2 = crate::executor::Solid::from_mem_item;
         case1(arg)
             .map(Self::PlaneOrientation)

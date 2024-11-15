@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclError,
     executor::{ExecState, KclValue, Plane},
-    std::{sketch::PlaneOrientationData, Args},
+    std::{sketch::PlaneData, Args},
 };
 
 /// One of the standard planes.
@@ -37,15 +37,15 @@ pub enum StandardPlane {
     NegYZ,
 }
 
-impl From<StandardPlane> for PlaneOrientationData {
+impl From<StandardPlane> for PlaneData {
     fn from(value: StandardPlane) -> Self {
         match value {
-            StandardPlane::XY => PlaneOrientationData::XY,
-            StandardPlane::NegXY => PlaneOrientationData::NegXY,
-            StandardPlane::XZ => PlaneOrientationData::XZ,
-            StandardPlane::NegXZ => PlaneOrientationData::NegXZ,
-            StandardPlane::YZ => PlaneOrientationData::YZ,
-            StandardPlane::NegYZ => PlaneOrientationData::NegYZ,
+            StandardPlane::XY => PlaneData::XY,
+            StandardPlane::NegXY => PlaneData::NegXY,
+            StandardPlane::XZ => PlaneData::XZ,
+            StandardPlane::NegXZ => PlaneData::NegXZ,
+            StandardPlane::YZ => PlaneData::YZ,
+            StandardPlane::NegYZ => PlaneData::NegYZ,
         }
     }
 }
@@ -149,7 +149,7 @@ async fn inner_offset_plane(
     exec_state: &mut ExecState,
 ) -> Result<Plane, KclError> {
     // Convert to the plane type.
-    let plane_data: PlaneOrientationData = std_plane.into();
+    let plane_data: PlaneData = std_plane.into();
     // Convert to a plane.
     let mut plane = Plane::from_plane_data(plane_data, exec_state);
 
