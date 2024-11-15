@@ -13,7 +13,7 @@ import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
-import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
@@ -108,7 +108,7 @@ export async function applyConstraintHorzVertDistance({
   const transformInfos = info.transforms
   const transformed = transformSecondarySketchLinesTagFirst({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
   })
@@ -146,7 +146,7 @@ export async function applyConstraintHorzVertDistance({
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
       ast: kclManager.ast,
-      selectionRanges: convertSelectionsToOld(selectionRanges),
+      selectionRanges,
       transformInfos,
       programMemory: kclManager.programMemory,
       forceSegName: segName,
@@ -196,7 +196,7 @@ export function applyConstraintHorzVertAlign({
   let finalValue = createLiteral(0)
   const retval = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     forceValueUsedInTransform: finalValue,

@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import {
   getNodeFromPath,
   isLinesParallelAndConstrained,
@@ -145,7 +145,7 @@ export async function applyConstraintIntersect({
 
   const transform1 = transformSecondarySketchLinesTagFirst({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(forcedSelectionRanges),
+    selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
   })
@@ -182,7 +182,7 @@ export async function applyConstraintIntersect({
   const finalValue = removeDoubleNegatives(valueNode, sign, variableName)
   const transform2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges: convertSelectionsToOld(forcedSelectionRanges),
+    selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     forceSegName: segName,

@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -95,7 +95,7 @@ export function applyConstraintEqualAngle({
 
   const transform = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
   })

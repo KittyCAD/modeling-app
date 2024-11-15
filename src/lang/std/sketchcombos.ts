@@ -7,7 +7,12 @@ import {
   TransformInfo,
 } from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Selections__old, Selection__old, Selections } from 'lib/selections'
+import {
+  Selections__old,
+  Selection__old,
+  Selections,
+  convertSelectionsToOld,
+} from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
@@ -1548,7 +1553,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceValueUsedInTransform,
 }: {
   ast: Node<Program>
-  selectionRanges: Selections__old
+  selectionRanges: Selections
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   forceSegName?: string
@@ -1568,11 +1573,10 @@ export function transformSecondarySketchLinesTagFirst({
 
   // We need to sort the selections by their start position
   // so that we can process them in dependency order and not write invalid KCL.
-  const sortedCodeBasedSelections =
-    selectionRanges.codeBasedSelections.toSorted(
-      (a, b) => a.range[0] - b.range[0]
-    )
-  const primarySelection = sortedCodeBasedSelections[0].range
+  const sortedCodeBasedSelections = selectionRanges.graphSelections.toSorted(
+    (a, b) => a?.codeRef?.range[0] - b?.codeRef?.range[0]
+  )
+  const primarySelection = sortedCodeBasedSelections[0]?.codeRef?.range
   const secondarySelections = sortedCodeBasedSelections.slice(1)
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
@@ -1581,10 +1585,10 @@ export function transformSecondarySketchLinesTagFirst({
 
   const result = transformAstSketchLines({
     ast: modifiedAst,
-    selectionRanges: {
+    selectionRanges: convertSelectionsToOld({
       ...selectionRanges,
-      codeBasedSelections: secondarySelections,
-    },
+      graphSelections: secondarySelections,
+    }),
     referencedSegmentRange: primarySelection,
     transformInfos,
     programMemory,

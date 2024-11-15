@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
@@ -93,7 +93,7 @@ export async function applyConstraintAngleBetween({
 
   const transformed1 = transformSecondarySketchLinesTagFirst({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
   })
@@ -131,7 +131,7 @@ export async function applyConstraintAngleBetween({
   // transform again but forcing certain values
   const transformed2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     forceSegName: segName,

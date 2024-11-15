@@ -153,7 +153,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
 
       const newAst = transformSecondarySketchLinesTagFirst({
         ast,
-        selectionRanges: convertSelectionsToOld(transformedSelection),
+        selectionRanges: transformedSelection,
         transformInfos,
         programMemory: execState.memory,
       })
@@ -322,7 +322,7 @@ part001 = startSketchOn('XY')
 
     const newAst = transformSecondarySketchLinesTagFirst({
       ast,
-      selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
+      selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       programMemory: execState.memory,
     })
@@ -578,7 +578,7 @@ async function helperThing(
 
   const newAst = transformSecondarySketchLinesTagFirst({
     ast,
-    selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
+    selectionRanges: makeSelections(selectionRanges),
     transformInfos,
     programMemory: execState.memory,
   })
