@@ -2369,16 +2369,13 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
 
     // Get the diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    match diagnostics {
-        Some(diagnostics) => {
-            let ds: Vec<Diagnostic> = diagnostics.to_owned();
-            eprintln!("Expected no diagnostics, but found some.");
-            for d in ds {
-                eprintln!("{:?}: {}", d.severity, d.message);
-            }
-            panic!();
+    if let Some(diagnostics) = diagnostics {
+        let ds: Vec<Diagnostic> = diagnostics.to_owned();
+        eprintln!("Expected no diagnostics, but found some.");
+        for d in ds {
+            eprintln!("{:?}: {}", d.severity, d.message);
         }
-        None => {}
+        panic!();
     }
 }
 
