@@ -801,6 +801,17 @@ impl Plane {
             },
         }
     }
+
+    /// The standard planes are XY, YZ and XZ (in both positive and negative)
+    pub fn is_standard(&self) -> bool {
+        !self.is_custom()
+    }
+
+    /// The standard planes are XY, YZ and XZ (in both positive and negative)
+    /// Custom planes are any other plane that the user might specify.
+    pub fn is_custom(&self) -> bool {
+        matches!(self.value, PlaneType::Custom)
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
