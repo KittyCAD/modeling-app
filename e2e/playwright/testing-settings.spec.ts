@@ -318,7 +318,6 @@ test.describe('Testing settings', () => {
             timeout: 5_000,
           })
           .toContain(`themeColor = "${userThemeColor}"`)
-        // Only close the button after we've confirmed
       })
 
       await test.step('Set project theme color', async () => {

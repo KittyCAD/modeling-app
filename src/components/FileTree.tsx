@@ -22,6 +22,8 @@ import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { normalizeLineEndings } from 'lib/codeEditor'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -241,7 +243,7 @@ const FileTreeItem = ({
       // Show the renaming form
       addCurrentItemToRenaming()
     } else if (e.code === 'Space') {
-      void handleClick()
+      toSync(handleClick, reportRejection)
     }
   }
 
@@ -292,7 +294,7 @@ const FileTreeItem = ({
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => {
                 e.currentTarget.focus()
-                void handleClick()
+                toSync(handleClick, reportRejection)
               }}
               onKeyUp={handleKeyUp}
             >

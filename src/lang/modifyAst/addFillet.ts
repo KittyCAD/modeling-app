@@ -8,7 +8,6 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   sketchFromKclValue,
-  recast,
 } from '../wasm'
 import {
   createCallExpressionStdLib,
@@ -260,9 +259,7 @@ async function updateAstAndFocus(
     focusPath: pathToFilletNode,
   })
 
-  const newCode = recast(updatedAst.newAst)
-  if (err(newCode)) return
-  await codeManager.updateCodeEditor(newCode)
+  await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
   if (updatedAst?.selections) {
     editorManager.selectRange(updatedAst?.selections)

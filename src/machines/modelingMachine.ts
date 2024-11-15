@@ -533,7 +533,8 @@ export const modelingMachine = setup({
       }
     ),
     'hide default planes': () => {
-      void kclManager.hidePlanes()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.hidePlanes()
     },
     'reset sketch metadata': assign({
       sketchDetails: null,
@@ -541,7 +542,8 @@ export const modelingMachine = setup({
       sketchPlaneId: '',
     }),
     'reset camera position': () => {
-      void engineCommandManager.sendSceneCommand({
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
@@ -699,8 +701,8 @@ export const modelingMachine = setup({
       )
       if (err(applyFilletToSelectionResult)) return applyFilletToSelectionResult
 
-      console.log(applyFilletToSelectionResult)
-      void codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
     'set selection filter to curves only': () => {
       ;(async () => {
@@ -758,7 +760,8 @@ export const modelingMachine = setup({
     'set up draft line': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
 
-      void sceneEntitiesManager
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
         .setupDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -772,7 +775,9 @@ export const modelingMachine = setup({
     },
     'set up draft arc': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      void sceneEntitiesManager
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
         .setupDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -841,7 +846,8 @@ export const modelingMachine = setup({
       if (event.type !== 'Add rectangle origin') return
       if (!sketchDetails || !event.data) return
 
-      void sceneEntitiesManager
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
         .setupDraftRectangle(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -857,7 +863,8 @@ export const modelingMachine = setup({
       if (event.type !== 'Add circle origin') return
       if (!sketchDetails || !event.data) return
 
-      void sceneEntitiesManager
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
         .setupDraftCircle(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -871,7 +878,9 @@ export const modelingMachine = setup({
     },
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      void sceneEntitiesManager
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
         .setupDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
@@ -899,14 +908,17 @@ export const modelingMachine = setup({
     'add axis n grid': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
-      void sceneEntitiesManager.createSketchAxis(
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.createSketchAxis(
         sketchDetails.sketchPathToNode || [],
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin
       )
 
-      void codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
     'reset client scene mouse handlers': () => {
       // when not in sketch mode we don't need any mouse listeners
@@ -936,7 +948,8 @@ export const modelingMachine = setup({
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
 
-      void deleteSegment({
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deleteSegment({
         pathToNode: event.data,
         sketchDetails,
       }).then(() => {
