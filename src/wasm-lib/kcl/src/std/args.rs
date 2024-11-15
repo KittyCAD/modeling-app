@@ -244,7 +244,7 @@ impl Args {
             .args
             .iter()
             .map(|arg| {
-                let Some(num) = f64::from_mem_item(arg) else {
+                let Some(num) = f64::from_kcl_val(arg) else {
                     return Err(KclError::Semantic(KclErrorDetails {
                         source_ranges: arg.metadata().iter().map(|x| x.source_range).collect(),
                         message: format!("Expected a number but found {}", arg.human_friendly_type()),
@@ -498,7 +498,7 @@ pub trait FromArgs<'a>: Sized {
 /// Types which impl this trait can be extracted from a `KclValue`.
 pub trait FromKclValue<'a>: Sized {
     /// Try to convert a KclValue into this type.
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self>;
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self>;
 }
 
 impl<'a> FromArgs<'a> for Vec<KclValue> {
@@ -531,7 +531,7 @@ where
                 source_ranges: vec![args.source_range],
             }));
         };
-        let Some(val) = T::from_mem_item(arg) else {
+        let Some(val) = T::from_kcl_val(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
@@ -551,10 +551,10 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
-        if crate::ast::types::KclNone::from_mem_item(arg).is_some() {
+        if crate::ast::types::KclNone::from_kcl_val(arg).is_some() {
             return Ok(None);
         }
-        let Some(val) = T::from_mem_item(arg) else {
+        let Some(val) = T::from_kcl_val(arg) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
@@ -610,7 +610,7 @@ where
 }
 
 impl<'a> FromKclValue<'a> for [f64; 2] {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Array { value, meta: _ } = arg else {
             return None;
         };
@@ -625,7 +625,7 @@ impl<'a> FromKclValue<'a> for [f64; 2] {
 }
 
 impl<'a> FromKclValue<'a> for [usize; 3] {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Array { value, meta: _ } = arg else {
             return None;
         };
@@ -641,7 +641,7 @@ impl<'a> FromKclValue<'a> for [usize; 3] {
 }
 
 impl<'a> FromKclValue<'a> for [f64; 3] {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Array { value, meta: _ } = arg else {
             return None;
         };
@@ -657,19 +657,19 @@ impl<'a> FromKclValue<'a> for [f64; 3] {
 }
 
 impl<'a> FromKclValue<'a> for TagNode {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_declarator().ok()
     }
 }
 
 impl<'a> FromKclValue<'a> for TagIdentifier {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_identifier().ok()
     }
 }
 
 impl<'a> FromKclValue<'a> for KclValue {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Some(arg.clone())
     }
 }
@@ -697,24 +697,24 @@ macro_rules! fields_opt {
 
 macro_rules! fields_recurse {
     ($obj:ident, $field:ident) => {
-        let $field = $obj.get(stringify!($field)).and_then(FromKclValue::from_mem_item)?;
+        let $field = $obj.get(stringify!($field)).and_then(FromKclValue::from_kcl_val)?;
     };
     ($obj:ident, $field:ident $k:literal) => {
-        let $field = $obj.get($k).and_then(FromKclValue::from_mem_item)?;
+        let $field = $obj.get($k).and_then(FromKclValue::from_kcl_val)?;
     };
 }
 
 macro_rules! fields_recurse_opt {
     ($obj:ident, $field:ident) => {
-        let $field = $obj.get(stringify!($field)).and_then(FromKclValue::from_mem_item);
+        let $field = $obj.get(stringify!($field)).and_then(FromKclValue::from_kcl_val);
     };
     ($obj:ident, $field:ident, $k:literal) => {
-        let $field = $obj.get($k).and_then(FromKclValue::from_mem_item);
+        let $field = $obj.get($k).and_then(FromKclValue::from_kcl_val);
     };
 }
 
 impl<'a> FromKclValue<'a> for crate::std::import::ImportFormat {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_str, typ "type");
         match typ {
@@ -743,7 +743,7 @@ impl<'a> FromKclValue<'a> for crate::std::import::ImportFormat {
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::AngledLineThatIntersectsData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields_recurse!(obj, angle);
         fields_recurse!(obj, intersect_tag "intersectTag");
@@ -757,7 +757,7 @@ impl<'a> FromKclValue<'a> for super::sketch::AngledLineThatIntersectsData {
 }
 
 impl<'a> FromKclValue<'a> for super::shapes::PolygonData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields_recurse!(obj, radius);
         fields_recurse!(obj, num_sides "numSides");
@@ -779,7 +779,7 @@ impl<'a> FromKclValue<'a> for super::shapes::PolygonData {
 }
 
 impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields_recurse!(obj, angle);
         fields_recurse!(obj, length);
@@ -788,7 +788,7 @@ impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
 }
 
 impl<'a> FromKclValue<'a> for crate::std::loft::LoftData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields_recurse_opt!(obj, v_degree);
         fields_recurse_opt!(obj, bez_approximate_rational);
@@ -804,7 +804,7 @@ impl<'a> FromKclValue<'a> for crate::std::loft::LoftData {
 }
 
 impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
         match s {
             "XY" | "xy" => Some(Self::XY),
@@ -819,14 +819,14 @@ impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
 }
 
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::units::UnitLength {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
         s.parse().ok()
     }
 }
 
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::System {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields_recurse!(obj, forward);
         fields_recurse!(obj, up);
@@ -835,7 +835,7 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::System {
 }
 
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::AxisDirectionPair {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields_recurse!(obj, axis);
         fields_recurse!(obj, direction);
@@ -844,7 +844,7 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::AxisDirectionPair {
 }
 
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Axis {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
         match s {
             "y" => Some(Self::Y),
@@ -855,7 +855,7 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Axis {
 }
 
 impl<'a> FromKclValue<'a> for PolygonType {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
         match s {
             "inscribed" => Some(Self::Inscribed),
@@ -865,7 +865,7 @@ impl<'a> FromKclValue<'a> for PolygonType {
 }
 
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
         match s {
             "positive" => Some(Self::Positive),
@@ -876,7 +876,7 @@ impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::coord::Direction {
 }
 
 impl<'a> FromKclValue<'a> for super::patterns::CircularPattern3dData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, instances);
         fields!(obj, as_f64, arc_degrees "arcDegrees");
@@ -895,7 +895,7 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern3dData {
 }
 
 impl<'a> FromKclValue<'a> for super::patterns::CircularPattern2dData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, instances);
         fields!(obj, as_f64, arc_degrees "arcDegrees");
@@ -912,7 +912,7 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern2dData {
 }
 
 impl<'a> FromKclValue<'a> for super::patterns::LinearPattern3dData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, instances, distance);
         let instances = Uint::new(instances);
@@ -926,7 +926,7 @@ impl<'a> FromKclValue<'a> for super::patterns::LinearPattern3dData {
 }
 
 impl<'a> FromKclValue<'a> for super::patterns::LinearPattern2dData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, instances, distance);
         let instances = Uint::new(instances);
@@ -940,7 +940,7 @@ impl<'a> FromKclValue<'a> for super::patterns::LinearPattern2dData {
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::BezierData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_point2d, to, control1, control2);
         Some(Self { to, control1, control2 })
@@ -948,7 +948,7 @@ impl<'a> FromKclValue<'a> for super::sketch::BezierData {
 }
 
 impl<'a> FromKclValue<'a> for super::shell::ShellData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, thickness);
         fields_recurse!(obj, faces);
@@ -957,7 +957,7 @@ impl<'a> FromKclValue<'a> for super::shell::ShellData {
 }
 
 impl<'a> FromKclValue<'a> for super::chamfer::ChamferData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, length);
         fields_recurse!(obj, tags);
@@ -966,7 +966,7 @@ impl<'a> FromKclValue<'a> for super::chamfer::ChamferData {
 }
 
 impl<'a> FromKclValue<'a> for super::fillet::FilletData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, radius);
         fields_opt!(obj, as_f64, tolerance);
@@ -980,7 +980,7 @@ impl<'a> FromKclValue<'a> for super::fillet::FilletData {
 }
 
 impl<'a> FromKclValue<'a> for super::helix::HelixData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, revolutions);
         fields_opt!(obj, as_f64, length);
@@ -997,14 +997,14 @@ impl<'a> FromKclValue<'a> for super::helix::HelixData {
 }
 
 impl<'a> FromKclValue<'a> for FaceTag {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = || match arg.as_str() {
             Some("start" | "START") => Some(Self::StartOrEnd(super::sketch::StartOrEnd::Start)),
             Some("end" | "END") => Some(Self::StartOrEnd(super::sketch::StartOrEnd::End)),
             _ => None,
         };
         let case2 = || {
-            let tag = TagIdentifier::from_mem_item(arg)?;
+            let tag = TagIdentifier::from_kcl_val(arg)?;
             Some(Self::Tag(Box::new(tag)))
         };
         case1().or_else(case2)
@@ -1012,7 +1012,7 @@ impl<'a> FromKclValue<'a> for FaceTag {
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::AngledLineToData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Deserialize from an {angle, to} object.
         let case1 = || {
             let obj = arg.as_object()?;
@@ -1029,7 +1029,7 @@ impl<'a> FromKclValue<'a> for super::sketch::AngledLineToData {
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::ArcData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, radius);
         let case1 = || {
@@ -1051,7 +1051,7 @@ impl<'a> FromKclValue<'a> for super::sketch::ArcData {
 }
 
 impl<'a> FromKclValue<'a> for super::revolve::RevolveData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let angle = obj.get("angle").and_then(|x| x.as_f64());
         let tolerance = obj.get("tolerance").and_then(|x| x.as_f64());
@@ -1061,7 +1061,7 @@ impl<'a> FromKclValue<'a> for super::revolve::RevolveData {
 }
 
 impl<'a> FromKclValue<'a> for super::shapes::CircleData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_point2d, center);
         fields!(obj, as_f64, radius);
@@ -1070,7 +1070,7 @@ impl<'a> FromKclValue<'a> for super::shapes::CircleData {
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_f64, radius, offset);
         Some(Self::RadiusAndOffset { radius, offset })
@@ -1078,20 +1078,20 @@ impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::Point3d {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 1: object with x/y/z fields
         if let Some(obj) = arg.as_object() {
             fields!(obj, as_f64, x, y, z);
             return Some(Self { x, y, z });
         }
         // Case 2: Array of 3 numbers.
-        let [x, y, z]: [f64; 3] = FromKclValue::from_mem_item(arg)?;
+        let [x, y, z]: [f64; 3] = FromKclValue::from_kcl_val(arg)?;
         Some(Self { x, y, z })
     }
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 0: actual plane
         if let KclValue::Plane(p) = arg {
             return Some(Self::Plane {
@@ -1116,24 +1116,21 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         // Case 2: custom plane
         let obj = arg.as_object()?;
         fields!(obj, as_object, plane);
-        let origin = plane
-            .get("origin")
-            .and_then(FromKclValue::from_mem_item)
-            .map(Box::new)?;
+        let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
         let x_axis = plane
             .get("xAxis")
             .or_else(|| plane.get("x_axis"))
-            .and_then(FromKclValue::from_mem_item)
+            .and_then(FromKclValue::from_kcl_val)
             .map(Box::new)?;
         let y_axis = plane
             .get("yAxis")
             .or_else(|| plane.get("y_axis"))
-            .and_then(FromKclValue::from_mem_item)
+            .and_then(FromKclValue::from_kcl_val)
             .map(Box::new)?;
         let z_axis = plane
             .get("zAxis")
             .or_else(|| plane.get("z_axis"))
-            .and_then(FromKclValue::from_mem_item)
+            .and_then(FromKclValue::from_kcl_val)
             .map(Box::new)?;
         Some(Self::Plane {
             origin,
@@ -1145,27 +1142,27 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::ExtrudePlane {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_uuid, face_id "faceId");
-        let tag = FromKclValue::from_mem_item(obj.get("tag")?);
+        let tag = FromKclValue::from_kcl_val(obj.get("tag")?);
         fields_recurse!(obj, geo_meta "geoMeta");
         Some(Self { face_id, tag, geo_meta })
     }
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::ExtrudeArc {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_uuid, face_id "faceId");
-        let tag = FromKclValue::from_mem_item(obj.get("tag")?);
+        let tag = FromKclValue::from_kcl_val(obj.get("tag")?);
         fields_recurse!(obj, geo_meta "geoMeta");
         Some(Self { face_id, tag, geo_meta })
     }
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::GeoMeta {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_uuid, id);
         fields_recurse!(obj, source_range "sourceRange");
@@ -1178,31 +1175,31 @@ impl<'a> FromKclValue<'a> for crate::executor::GeoMeta {
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::ChamferSurface {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_uuid, face_id "faceId");
-        let tag = FromKclValue::from_mem_item(obj.get("tag")?);
+        let tag = FromKclValue::from_kcl_val(obj.get("tag")?);
         fields_recurse!(obj, geo_meta "geoMeta");
         Some(Self { face_id, tag, geo_meta })
     }
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::FilletSurface {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_uuid, face_id "faceId");
-        let tag = FromKclValue::from_mem_item(obj.get("tag")?);
+        let tag = FromKclValue::from_kcl_val(obj.get("tag")?);
         fields_recurse!(obj, geo_meta "geoMeta");
         Some(Self { face_id, tag, geo_meta })
     }
 }
 
 impl<'a> FromKclValue<'a> for ExtrudeSurface {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let case1 = crate::executor::ExtrudePlane::from_mem_item;
-        let case2 = crate::executor::ExtrudeArc::from_mem_item;
-        let case3 = crate::executor::ChamferSurface::from_mem_item;
-        let case4 = crate::executor::FilletSurface::from_mem_item;
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = crate::executor::ExtrudePlane::from_kcl_val;
+        let case2 = crate::executor::ExtrudeArc::from_kcl_val;
+        let case3 = crate::executor::ChamferSurface::from_kcl_val;
+        let case4 = crate::executor::FilletSurface::from_kcl_val;
         case1(arg)
             .map(Self::ExtrudePlane)
             .or_else(|| case2(arg).map(Self::ExtrudeArc))
@@ -1212,10 +1209,10 @@ impl<'a> FromKclValue<'a> for ExtrudeSurface {
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::EdgeCut {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields!(obj, as_str, typ "type");
-        let tag = Box::new(obj.get("tag").and_then(FromKclValue::from_mem_item));
+        let tag = Box::new(obj.get("tag").and_then(FromKclValue::from_kcl_val));
         fields!(obj, as_uuid, edge_id "edgeId");
         fields!(obj, as_uuid, id);
         match typ {
@@ -1245,10 +1242,10 @@ impl<'a> FromKclValue<'a> for crate::executor::EdgeCut {
 macro_rules! impl_from_kcl_for_vec {
     ($typ:path) => {
         impl<'a> FromKclValue<'a> for Vec<$typ> {
-            fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+            fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
                 arg.as_array()?
                     .iter()
-                    .map(|value| FromKclValue::from_mem_item(value))
+                    .map(|value| FromKclValue::from_kcl_val(value))
                     .collect::<Option<_>>()
             }
         }
@@ -1263,27 +1260,27 @@ impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(Sketch);
 
 impl<'a> FromKclValue<'a> for crate::executor::SourceRange {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        FromKclValue::from_mem_item(arg).map(crate::executor::SourceRange)
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        FromKclValue::from_kcl_val(arg).map(crate::executor::SourceRange)
     }
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::Metadata {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        FromKclValue::from_mem_item(arg).map(|sr| Self { source_range: sr })
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        FromKclValue::from_kcl_val(arg).map(|sr| Self { source_range: sr })
     }
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::Solid {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.as_solid().cloned()
     }
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::SketchData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::sketch::PlaneData::from_mem_item;
-        let case2 = crate::executor::Solid::from_mem_item;
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = super::sketch::PlaneData::from_kcl_val;
+        let case2 = crate::executor::Solid::from_kcl_val;
         case1(arg)
             .map(Self::Plane)
             .or_else(|| case2(arg).map(Box::new).map(Self::Solid))
@@ -1291,7 +1288,7 @@ impl<'a> FromKclValue<'a> for super::sketch::SketchData {
 }
 
 impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 1: predefined planes.
         if let Some(s) = arg.as_str() {
             return match s {
@@ -1311,23 +1308,23 @@ impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
 }
 
 impl<'a> FromKclValue<'a> for super::fillet::EdgeReference {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let id = arg.as_uuid().map(Self::Uuid);
-        let tag = || TagIdentifier::from_mem_item(arg).map(Box::new).map(Self::Tag);
+        let tag = || TagIdentifier::from_kcl_val(arg).map(Box::new).map(Self::Tag);
         id.or_else(tag)
     }
 }
 
 impl<'a> FromKclValue<'a> for super::revolve::AxisOrEdgeReference {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::revolve::AxisAndOrigin::from_mem_item;
-        let case2 = super::fillet::EdgeReference::from_mem_item;
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = super::revolve::AxisAndOrigin::from_kcl_val;
+        let case2 = super::fillet::EdgeReference::from_kcl_val;
         case1(arg).map(Self::Axis).or_else(|| case2(arg).map(Self::Edge))
     }
 }
 
 impl<'a> FromKclValue<'a> for super::mirror::Mirror2dData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         fields_recurse!(obj, axis);
         Some(Self { axis })
@@ -1335,7 +1332,7 @@ impl<'a> FromKclValue<'a> for super::mirror::Mirror2dData {
 }
 
 impl<'a> FromKclValue<'a> for super::sketch::AngledLineData {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             fields!(obj, as_f64, angle, length);
@@ -1352,7 +1349,7 @@ impl<'a> FromKclValue<'a> for super::sketch::AngledLineData {
 }
 
 impl<'a> FromKclValue<'a> for i64 {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Int { value, meta: _ } = arg else {
             return None;
         };
@@ -1361,7 +1358,7 @@ impl<'a> FromKclValue<'a> for i64 {
 }
 
 impl<'a> FromKclValue<'a> for u32 {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Int { value, meta: _ } = arg else {
             return None;
         };
@@ -1370,13 +1367,13 @@ impl<'a> FromKclValue<'a> for u32 {
 }
 
 impl<'a> FromKclValue<'a> for NonZeroU32 {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
-        u32::from_mem_item(arg).and_then(|x| x.try_into().ok())
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        u32::from_kcl_val(arg).and_then(|x| x.try_into().ok())
     }
 }
 
 impl<'a> FromKclValue<'a> for u64 {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Int { value, meta: _ } = arg else {
             return None;
         };
@@ -1384,7 +1381,7 @@ impl<'a> FromKclValue<'a> for u64 {
     }
 }
 impl<'a> FromKclValue<'a> for f64 {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Number { value, meta: _ } => Some(*value),
             KclValue::Int { value, meta: _ } => Some(*value as f64),
@@ -1393,7 +1390,7 @@ impl<'a> FromKclValue<'a> for f64 {
     }
 }
 impl<'a> FromKclValue<'a> for Sketch {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Sketch { value } = arg else {
             return None;
         };
@@ -1401,7 +1398,7 @@ impl<'a> FromKclValue<'a> for Sketch {
     }
 }
 impl<'a> FromKclValue<'a> for String {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::String { value, meta: _ } = arg else {
             return None;
         };
@@ -1409,7 +1406,7 @@ impl<'a> FromKclValue<'a> for String {
     }
 }
 impl<'a> FromKclValue<'a> for crate::ast::types::KclNone {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::KclNone { value, meta: _ } = arg else {
             return None;
         };
@@ -1417,7 +1414,7 @@ impl<'a> FromKclValue<'a> for crate::ast::types::KclNone {
     }
 }
 impl<'a> FromKclValue<'a> for bool {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Bool { value, meta: _ } = arg else {
             return None;
         };
@@ -1426,12 +1423,12 @@ impl<'a> FromKclValue<'a> for bool {
 }
 
 impl<'a> FromKclValue<'a> for SketchSet {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Sketch { value: sketch } => Some(SketchSet::from(sketch.to_owned())),
             KclValue::Sketches { value } => Some(SketchSet::from(value.to_owned())),
             KclValue::Array { .. } => {
-                let v: Option<Vec<Sketch>> = FromKclValue::from_mem_item(arg);
+                let v: Option<Vec<Sketch>> = FromKclValue::from_kcl_val(arg);
                 Some(SketchSet::Sketches(v?.iter().cloned().map(Box::new).collect()))
             }
             _ => None,
@@ -1440,7 +1437,7 @@ impl<'a> FromKclValue<'a> for SketchSet {
 }
 
 impl<'a> FromKclValue<'a> for Box<Solid> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Solid(s) = arg else {
             return None;
         };
@@ -1449,19 +1446,19 @@ impl<'a> FromKclValue<'a> for Box<Solid> {
 }
 
 impl<'a> FromKclValue<'a> for FnAsArg<'a> {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_function()
     }
 }
 
 impl<'a> FromKclValue<'a> for SolidSet {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_solid_set().ok()
     }
 }
 
 impl<'a> FromKclValue<'a> for SketchOrSurface {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Sketch { value: sg } => Some(Self::Sketch(sg.to_owned())),
             KclValue::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
@@ -1471,7 +1468,7 @@ impl<'a> FromKclValue<'a> for SketchOrSurface {
     }
 }
 impl<'a> FromKclValue<'a> for SketchSurface {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Plane(sg) => Some(Self::Plane(sg.clone())),
             KclValue::Face(sg) => Some(Self::Face(sg.clone())),
