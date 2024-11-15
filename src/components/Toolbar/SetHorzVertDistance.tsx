@@ -72,10 +72,10 @@ export function horzVertDistanceInfo({
   )
 
   const theTransforms = getTransformInfos(
-    convertSelectionsToOld({
+    {
       ...selectionRanges,
       graphSelections: selectionRanges.graphSelections.slice(1),
-    }),
+    },
     kclManager.ast,
     constraint
   )

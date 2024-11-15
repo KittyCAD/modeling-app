@@ -52,7 +52,7 @@ export function angleLengthInfo({
   })
 
   const transforms = getTransformInfos(
-    convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     kclManager.ast,
     angleOrLength
   )

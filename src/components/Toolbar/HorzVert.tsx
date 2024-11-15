@@ -37,7 +37,7 @@ export function horzVertInfo(
   )
 
   const theTransforms = getTransformInfos(
-    convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     kclManager.ast,
     horOrVert
   )

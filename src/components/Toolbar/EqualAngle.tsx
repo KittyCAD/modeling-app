@@ -62,10 +62,10 @@ export function equalAngleInfo({
   )
 
   const transforms = getTransformInfos(
-    convertSelectionsToOld({
+    {
       ...selectionRanges,
       graphSelections: selectionRanges.graphSelections.slice(1),
-    }),
+    },
     kclManager.ast,
     'equalAngle'
   )

@@ -63,11 +63,7 @@ export function absDistanceInfo({
       toolTips.includes(node.callee.name as any)
   )
 
-  const transforms = getTransformInfos(
-    convertSelectionsToOld(selectionRanges),
-    kclManager.ast,
-    disType
-  )
+  const transforms = getTransformInfos(selectionRanges, kclManager.ast, disType)
   if (err(transforms)) return transforms
 
   const enableY =

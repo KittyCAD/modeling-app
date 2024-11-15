@@ -1,4 +1,4 @@
-import { parse, Expr, recast, initPromise } from '../wasm'
+import { parse, Expr, recast, initPromise, Program } from '../wasm'
 import {
   getConstraintType,
   getTransformInfos,
@@ -9,9 +9,10 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from 'lang/langHelpers'
-import { Selections__old, Selection__old } from 'lib/selections'
+import { Selections, convertSelectionsToOld, Selection } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 
 beforeAll(async () => {
   await initPromise
@@ -87,10 +88,10 @@ function getConstraintTypeFromSourceHelper2(
 }
 
 function makeSelections(
-  codeBaseSelections: Selections__old['codeBasedSelections']
-): Selections__old {
+  graphSelections: Selections['graphSelections']
+): Selections {
   return {
-    codeBasedSelections: codeBaseSelections,
+    graphSelections: graphSelections,
     otherSelections: [],
   }
 }
@@ -112,7 +113,11 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
   |> close(%)
 `
 
-    const selectLine = (script: string, lineNumber: number): Selection__old => {
+    const selectLine = (
+      script: string,
+      lineNumber: number,
+      ast: Program
+    ): Selection => {
       const lines = script.split('\n')
       const codeBeforeLine = lines.slice(0, lineNumber).join('\n').length
       const line = lines.find((_, i) => i === lineNumber)
@@ -124,14 +129,16 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       const start = codeBeforeLine + line.indexOf('|> ' + 5)
       const range: [number, number] = [start, start]
       return {
-        type: 'default',
-        range,
+        codeRef: {
+          range,
+          pathToNode: getNodePathFromSourceRange(ast, range),
+        },
       }
     }
 
     async function applyTransformation(
       inputCode: string,
-      selectionRanges: Selections__old['codeBasedSelections']
+      selectionRanges: Selections['graphSelections']
     ) {
       const ast = parse(inputCode)
       if (err(ast)) return Promise.reject(ast)
@@ -146,7 +153,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
 
       const newAst = transformSecondarySketchLinesTagFirst({
         ast,
-        selectionRanges: transformedSelection,
+        selectionRanges: convertSelectionsToOld(transformedSelection),
         transformInfos,
         programMemory: execState.memory,
       })
@@ -157,9 +164,11 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     }
 
     it(`Should reorder when user selects first-to-last`, async () => {
-      const selectionRanges: Selections__old['codeBasedSelections'] = [
-        selectLine(inputScript, 3),
-        selectLine(inputScript, 4),
+      const ast = parse(inputScript)
+      if (err(ast)) return Promise.reject(ast)
+      const selectionRanges: Selections['graphSelections'] = [
+        selectLine(inputScript, 3, ast),
+        selectLine(inputScript, 4, ast),
       ]
 
       const newCode = await applyTransformation(inputScript, selectionRanges)
@@ -167,9 +176,11 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     })
 
     it(`Should reorder when user selects last-to-first`, async () => {
-      const selectionRanges: Selections__old['codeBasedSelections'] = [
-        selectLine(inputScript, 4),
-        selectLine(inputScript, 3),
+      const ast = parse(inputScript)
+      if (err(ast)) return Promise.reject(ast)
+      const selectionRanges: Selections['graphSelections'] = [
+        selectLine(inputScript, 4, ast),
+        selectLine(inputScript, 3, ast),
       ]
 
       const newCode = await applyTransformation(inputScript, selectionRanges)
@@ -288,15 +299,17 @@ part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          type: 'default',
-          range: [start, start],
+          codeRef: {
+            range: [start, start],
+            pathToNode: getNodePathFromSourceRange(ast, [start, start]),
+          },
         }
       })
 
@@ -309,7 +322,7 @@ part001 = startSketchOn('XY')
 
     const newAst = transformSecondarySketchLinesTagFirst({
       ast,
-      selectionRanges: makeSelections(selectionRanges),
+      selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
       transformInfos,
       programMemory: execState.memory,
     })
@@ -379,15 +392,17 @@ part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          type: 'default',
-          range: [start, start],
+          codeRef: {
+            range: [start, start],
+            pathToNode: getNodePathFromSourceRange(ast, [start, start]),
+          },
         }
       })
 
@@ -400,7 +415,7 @@ part001 = startSketchOn('XY')
 
     const newAst = transformAstSketchLines({
       ast,
-      selectionRanges: makeSelections(selectionRanges),
+      selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
       transformInfos,
       programMemory: execState.memory,
       referenceSegName: '',
@@ -441,15 +456,17 @@ part001 = startSketchOn('XY')
     const ast = parse(inputScript)
     if (err(ast)) return Promise.reject(ast)
 
-    const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          type: 'default',
-          range: [start, start],
+          codeRef: {
+            range: [start, start],
+            pathToNode: getNodePathFromSourceRange(ast, [start, start]),
+          },
         }
       })
 
@@ -462,7 +479,7 @@ part001 = startSketchOn('XY')
 
     const newAst = transformAstSketchLines({
       ast,
-      selectionRanges: makeSelections(selectionRanges),
+      selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
       transformInfos,
       programMemory: execState.memory,
       referenceSegName: '',
@@ -536,7 +553,7 @@ async function helperThing(
   const ast = parse(inputScript)
   if (err(ast)) return Promise.reject(ast)
 
-  const selectionRanges: Selections__old['codeBasedSelections'] = inputScript
+  const selectionRanges: Selections['graphSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
       linesOfInterest.some((lineOfInterest) => ln.includes(lineOfInterest))
@@ -545,8 +562,10 @@ async function helperThing(
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
       return {
-        type: 'default',
-        range: [start, start],
+        codeRef: {
+          range: [start, start],
+          pathToNode: getNodePathFromSourceRange(ast, [start, start]),
+        },
       }
     })
 
@@ -559,7 +578,7 @@ async function helperThing(
 
   const newAst = transformSecondarySketchLinesTagFirst({
     ast,
-    selectionRanges: makeSelections(selectionRanges),
+    selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
     transformInfos,
     programMemory: execState.memory,
   })
@@ -605,7 +624,7 @@ part001 = startSketchOn('XY')
     const ast = parse(code)
     const constraintLevels: ConstraintLevel[] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {
-      const recursivelySeachCommentsAndCheckConstraintLevel = (
+      const recursivelySearchCommentsAndCheckConstraintLevel = (
         str: string,
         offset: number = 0
       ): null => {
@@ -622,12 +641,12 @@ part001 = startSketchOn('XY')
           throw expectedConstraintLevel
         }
         expect(expectedConstraintLevel.level).toBe(constraintLevel)
-        return recursivelySeachCommentsAndCheckConstraintLevel(
+        return recursivelySearchCommentsAndCheckConstraintLevel(
           str,
           index + constraintLevel.length
         )
       }
-      recursivelySeachCommentsAndCheckConstraintLevel(code)
+      recursivelySearchCommentsAndCheckConstraintLevel(code)
     })
   })
 })

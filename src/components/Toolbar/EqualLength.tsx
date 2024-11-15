@@ -57,10 +57,10 @@ export function setEqualLengthInfo({
   )
 
   const transforms = getTransformInfos(
-    convertSelectionsToOld({
+    {
       ...selectionRanges,
       graphSelections: selectionRanges.graphSelections.slice(1),
-    }),
+    },
     kclManager.ast,
     'equalLength'
   )

@@ -62,10 +62,10 @@ export function angleBetweenInfo({
   )
 
   const theTransforms = getTransformInfos(
-    convertSelectionsToOld({
+    {
       ...selectionRanges,
       graphSelections: selectionRanges.graphSelections.slice(1),
-    }),
+    },
     kclManager.ast,
     'setAngleBetween'
   )

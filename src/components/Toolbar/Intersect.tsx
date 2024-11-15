@@ -106,10 +106,10 @@ export function intersectInfo({
   )
 
   const theTransforms = getTransformInfos(
-    convertSelectionsToOld({
+    {
       ...selectionRanges,
       graphSelections: _forcedSelectionRanges.graphSelections.slice(1),
-    }),
+    },
     kclManager.ast,
     'intersect'
   )

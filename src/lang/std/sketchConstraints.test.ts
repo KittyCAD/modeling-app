@@ -5,9 +5,10 @@ import {
   transformAstSketchLines,
 } from './sketchcombos'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { Selection__old } from 'lib/selections'
+import { convertSelectionsToOld, Selection__old } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 
 beforeAll(async () => {
   await initPromise
@@ -36,7 +37,14 @@ async function testingSwapSketchFnCall({
 
   const execState = await enginelessExecutor(ast)
   const selections = {
-    codeBasedSelections: [range],
+    graphSelections: [
+      {
+        codeRef: {
+          range: range.range,
+          pathToNode: getNodePathFromSourceRange(ast, range.range),
+        },
+      },
+    ],
     otherSelections: [],
   }
   const transformInfos = getTransformInfos(selections, ast, constraintType)
@@ -46,7 +54,7 @@ async function testingSwapSketchFnCall({
   const ast2 = transformAstSketchLines({
     ast,
     programMemory: execState.memory,
-    selectionRanges: selections,
+    selectionRanges: convertSelectionsToOld(selections),
     transformInfos,
     referenceSegName: '',
   })
