@@ -32,6 +32,8 @@ lazy_static! {
         set.insert("true");
         set.insert("false");
         set.insert("nil");
+        // This isn't a type because brackets are used for the type.
+        set.insert("array");
         set.insert("and");
         set.insert("or");
         set.insert("not");
