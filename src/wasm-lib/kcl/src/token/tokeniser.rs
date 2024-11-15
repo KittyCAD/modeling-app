@@ -44,7 +44,6 @@ lazy_static! {
         // "import" is special because of import().
         set.insert("export");
         set.insert("interface");
-        set.insert("type");
         set.insert("new");
         set.insert("self");
         set.insert("record");
