@@ -1575,6 +1575,10 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 
 /// Draw a 3 point arc.
 ///
+/// The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point.
+/// The interior point is placed inbetween the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from
+/// the start and end.
+///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
@@ -1598,6 +1602,7 @@ pub(crate) async fn inner_arc_to(
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.id_generator.next_uuid();
 
+    // The start point is taken from the path you are extending.
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
@@ -1619,11 +1624,17 @@ pub(crate) async fn inner_arc_to(
     )
     .await?;
 
-    let p1 = [from.x, from.y];
-    let p2 = [data.interior[0], data.interior[1]];
-    let p3 = [data.end[0], data.end[1]];
-    let center = calculate_circle_center(p1, p2, p3);
-    let sum_of_square_differences = (center[0] - p1[0] * center[0] - p1[0]) + (center[1] - p1[1] * center[1] - p1[1]);
+    let start = [from.x, from.y];
+    let interior = [data.interior[0], data.interior[1]];
+    let end = [data.end[0], data.end[1]];
+
+    // compute the center of the circle since we do not have the value returned from the engine
+    let center = calculate_circle_center(start, interior, end);
+
+    // compute the radius since we do not have the value returned from the engine
+    // Pick any of the 3 points since they all lie along the circle
+    let sum_of_square_differences =
+        (center[0] - start[0] * center[0] - start[0]) + (center[1] - start[1] * center[1] - start[1]);
     let radius = sum_of_square_differences.sqrt();
 
     let current_path = Path::Arc {
@@ -1963,6 +1974,9 @@ async fn inner_tangential_arc_to_relative(
     Ok(new_sketch)
 }
 
+// Calculate the center of 3 points
+// To caluclate the center of the 3 point cirlce 2 perpendicular lines are created
+// These perpendicular lines will intersect at the center of the circle.
 fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
     // y2 - y1
     let y_2_1 = p2[1] - p1[1];
