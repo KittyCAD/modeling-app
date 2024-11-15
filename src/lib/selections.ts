@@ -549,7 +549,6 @@ export function processCodeMirrorRanges({
       id,
       engineCommandManager.artifactGraph
     )
-    console.log('artifact', artifact, codeRefs)
     if (artifact && codeRefs) {
       selections.push({ artifact, codeRef: codeRefs[0] })
     } else if (codeRefs) {

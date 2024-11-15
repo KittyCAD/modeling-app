@@ -1,8 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { Selections__old } from 'lib/selections'
+import { convertSelectionsToOld, Selections } from 'lib/selections'
 import {
-  getNodePathFromSourceRange,
   getNodeFromPath,
   isLinesParallelAndConstrained,
 } from '../../lang/queryAst'
@@ -17,7 +16,7 @@ import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
@@ -26,15 +25,15 @@ const getModalInfo = createInfoModal(GetInfoModal)
 export function intersectInfo({
   selectionRanges,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
 }):
   | {
       transforms: TransformInfo[]
       enabled: boolean
-      forcedSelectionRanges: Selections__old
+      forcedSelectionRanges: Selections
     }
   | Error {
-  if (selectionRanges.codeBasedSelections.length < 2) {
+  if (selectionRanges.graphSelections.length < 2) {
     return {
       enabled: false,
       transforms: [],
@@ -43,38 +42,35 @@ export function intersectInfo({
   }
 
   const previousSegment =
-    selectionRanges.codeBasedSelections.length > 1 &&
+    selectionRanges.graphSelections.length > 1 &&
     isLinesParallelAndConstrained(
       kclManager.ast,
+      engineCommandManager.artifactGraph,
       kclManager.programMemory,
-      selectionRanges.codeBasedSelections[0],
-      selectionRanges.codeBasedSelections[1]
+      selectionRanges.graphSelections[0],
+      selectionRanges.graphSelections[1]
     )
+
   if (err(previousSegment)) return previousSegment
 
+  const artifact = selectionRanges.graphSelections[1]?.artifact
   const shouldUsePreviousSegment =
-    selectionRanges.codeBasedSelections?.[1]?.type !== 'line-end' &&
+    (!artifact || artifact.type === 'segment') &&
     previousSegment &&
     previousSegment.isParallelAndConstrained
 
   const _forcedSelectionRanges: typeof selectionRanges = {
     ...selectionRanges,
-    codeBasedSelections: [
-      selectionRanges.codeBasedSelections?.[0],
-      shouldUsePreviousSegment
-        ? {
-            range: previousSegment.sourceRange,
-            type: 'line-end',
-          }
-        : selectionRanges.codeBasedSelections?.[1],
+    graphSelections: [
+      selectionRanges.graphSelections?.[0],
+      shouldUsePreviousSegment && previousSegment.selection
+        ? previousSegment.selection
+        : selectionRanges.graphSelections?.[1],
     ],
   }
 
-  const paths = _forcedSelectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -82,10 +78,10 @@ export function intersectInfo({
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const _varDecs = paths.map((pathToNode) => {
+  const _varDecs = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp
@@ -110,20 +106,21 @@ export function intersectInfo({
   )
 
   const theTransforms = getTransformInfos(
-    {
+    convertSelectionsToOld({
       ...selectionRanges,
-      codeBasedSelections: _forcedSelectionRanges.codeBasedSelections.slice(1),
-    },
+      graphSelections: _forcedSelectionRanges.graphSelections.slice(1),
+    }),
     kclManager.ast,
     'intersect'
   )
 
+  const forcedArtifact = _forcedSelectionRanges?.graphSelections?.[1]?.artifact
   const _enableEqual =
     secondaryVarDecs.length === 1 &&
     isAllTooltips &&
     isOthersLinkedToPrimary &&
     theTransforms.every(Boolean) &&
-    _forcedSelectionRanges?.codeBasedSelections?.[1]?.type === 'line-end'
+    (!forcedArtifact || forcedArtifact.type === 'segment')
 
   return {
     enabled: _enableEqual,
@@ -135,7 +132,7 @@ export function intersectInfo({
 export async function applyConstraintIntersect({
   selectionRanges,
 }: {
-  selectionRanges: Selections__old
+  selectionRanges: Selections
 }): Promise<{
   modifiedAst: Node<Program>
   pathToNodeMap: PathToNodeMap
@@ -148,7 +145,7 @@ export async function applyConstraintIntersect({
 
   const transform1 = transformSecondarySketchLinesTagFirst({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: forcedSelectionRanges,
+    selectionRanges: convertSelectionsToOld(forcedSelectionRanges),
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
   })
@@ -185,7 +182,7 @@ export async function applyConstraintIntersect({
   const finalValue = removeDoubleNegatives(valueNode, sign, variableName)
   const transform2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
-    selectionRanges: forcedSelectionRanges,
+    selectionRanges: convertSelectionsToOld(forcedSelectionRanges),
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     forceSegName: segName,

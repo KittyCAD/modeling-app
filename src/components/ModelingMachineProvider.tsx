@@ -48,7 +48,6 @@ import {
   isSelectionLastLine,
   isRangeBetweenCharacters,
   isSketchPipe,
-  convertSelectionsToOld,
   Selections,
   updateSelections,
 } from 'lib/selections'
@@ -882,7 +881,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const { modifiedAst, pathToNodeMap } =
               await applyConstraintIntersect({
-                selectionRanges: convertSelectionsToOld(selectionRanges),
+                selectionRanges,
               })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)

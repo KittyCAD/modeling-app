@@ -448,9 +448,7 @@ export const modelingMachine = setup({
     'Can constrain perpendicular distance': ({
       context: { selectionRanges },
     }) => {
-      const info = intersectInfo({
-        selectionRanges: convertSelectionsToOld(selectionRanges),
-      })
+      const info = intersectInfo({ selectionRanges })
       if (trap(info)) return false
       return info.enabled
     },
