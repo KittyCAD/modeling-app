@@ -818,6 +818,41 @@ impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::executor::Plane {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        fields!(obj, as_uuid, id);
+        fields_recurse!(obj, value);
+        fields_recurse!(obj, origin);
+        fields_recurse!(obj, x_axis "xAxis");
+        fields_recurse!(obj, y_axis "yAxis");
+        fields_recurse!(obj, z_axis "zAxis");
+        fields_recurse!(obj, meta "__meta");
+        Some(Self {
+            id,
+            value,
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+            meta,
+        })
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::executor::PlaneType {
+    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+        let plane_type = match arg.as_str()? {
+            "XY" | "xy" => Self::XY,
+            "XZ" | "xz" => Self::XZ,
+            "YZ" | "yz" => Self::YZ,
+            "Custom" => Self::Custom,
+            _ => return None,
+        };
+        Some(plane_type)
+    }
+}
+
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::units::UnitLength {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
@@ -1284,9 +1319,11 @@ impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
         let case1 = super::sketch::PlaneData::from_mem_item;
         let case2 = crate::executor::Solid::from_mem_item;
+        let case3 = crate::executor::Plane::from_mem_item;
         case1(arg)
             .map(Self::PlaneOrientation)
             .or_else(|| case2(arg).map(Box::new).map(Self::Solid))
+            .or_else(|| case3(arg).map(Box::new).map(Self::Plane))
     }
 }
 
