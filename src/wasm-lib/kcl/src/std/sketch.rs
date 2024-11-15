@@ -1228,7 +1228,6 @@ pub(crate) async fn inner_start_profile_at(
         SketchSurface::Plane(plane) => {
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
-            // web_sys::console::log_1(&format!("Testing here {plane:?}").into());
             args.batch_end_cmd(
                 exec_state.id_generator.next_uuid(),
                 ModelingCmd::from(mcmd::ObjectVisible {
