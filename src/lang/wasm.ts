@@ -342,7 +342,7 @@ export class ProgramMemory {
    */
   hasSketchOrSolid(): boolean {
     for (const node of this.visibleEntries().values()) {
-      if (node.type === 'Solid' || node.value?.type === 'Sketch') {
+      if (node.type === 'Solid' || node.type === 'Sketch') {
         return true
       }
     }

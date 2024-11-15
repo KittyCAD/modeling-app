@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, Metadata, Plane, UserVal},
+    executor::{ExecState, KclValue, Plane},
     std::{sketch::PlaneOrientationData, Args},
 };
 
@@ -53,16 +53,9 @@ impl From<StandardPlane> for PlaneOrientationData {
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
-
     let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
-
-    Ok(KclValue::UserVal(UserVal::new(
-        vec![Metadata {
-            source_range: args.source_range,
-        }],
-        plane,
-    )))
+    Ok(KclValue::Plane(Box::new(plane)))
 }
 
 /// Offset a plane by a distance along its normal.
@@ -133,6 +126,20 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
+/// ```no_run
+/// // A circle on the XY plane
+/// startSketchOn("XY")
+///   |> startProfileAt([0, 0], %)
+///   |> circle({radius: 10, center: [0, 0]}, %)
+///   
+/// // Triangle on the plane 4 units above
+/// startSketchOn(offsetPlane("XY", 4))
+///   |> startProfileAt([0, 0], %)
+///   |> line([10, 0], %)
+///   |> line([0, 10], %)
+///   |> close(%)
+/// ```
+
 #[stdlib {
     name = "offsetPlane",
 }]

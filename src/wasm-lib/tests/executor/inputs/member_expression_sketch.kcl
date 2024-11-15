@@ -13,5 +13,5 @@ sq = square([0,0], 10)
 cb = square([3,3], 4)
     |> extrude(10, %)
 
-pt1 = sq.paths[0]
-pt2 = cb.value[0]
+// pt1 = sq.paths[0]
+// pt2 = cb.value[0]

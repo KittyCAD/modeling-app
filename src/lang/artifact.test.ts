@@ -18,8 +18,7 @@ const mySketch001 = startSketchOn('XY')
     // @ts-ignore
     const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
-      type: 'UserVal',
-      __meta: [{ sourceRange: [46, 71, 0] }],
+      type: 'Sketch',
       value: {
         type: 'Sketch',
         on: expect.any(Object),
