@@ -28,6 +28,7 @@ lazy_static! {
         set.insert("fn");
         set.insert("let");
         set.insert("mut");
+        set.insert("as");
         set.insert("loop");
         set.insert("true");
         set.insert("false");
