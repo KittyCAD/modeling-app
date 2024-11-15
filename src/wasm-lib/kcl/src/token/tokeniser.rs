@@ -42,6 +42,7 @@ lazy_static! {
         set.insert("interface");
         set.insert("type");
         set.insert("new");
+        set.insert("self");
         set.insert("record");
         set.insert("struct");
         set.insert("object");
