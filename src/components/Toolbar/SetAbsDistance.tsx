@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr } from '../../lang/wasm'
-import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
   getTransformInfos,
@@ -103,7 +103,7 @@ export async function applyConstraintAbsDistance({
 
   const transform1 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -123,7 +123,7 @@ export async function applyConstraintAbsDistance({
 
   const transform2 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -171,7 +171,7 @@ export function applyConstraintAxisAlign({
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',

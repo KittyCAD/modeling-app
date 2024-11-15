@@ -5,7 +5,7 @@ import {
   transformAstSketchLines,
 } from './sketchcombos'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { convertSelectionsToOld, Selection__old } from 'lib/selections'
+import { Selection__old } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
@@ -54,7 +54,7 @@ async function testingSwapSketchFnCall({
   const ast2 = transformAstSketchLines({
     ast,
     programMemory: execState.memory,
-    selectionRanges: convertSelectionsToOld(selections),
+    selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
   })

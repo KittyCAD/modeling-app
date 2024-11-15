@@ -91,7 +91,7 @@ export function applyRemoveConstrainingValues({
 
   return transformAstSketchLines({
     ast: kclManager.ast,
-    selectionRanges: convertSelectionsToOld(updatedSelectionRanges),
+    selectionRanges: updatedSelectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     referenceSegName: '',

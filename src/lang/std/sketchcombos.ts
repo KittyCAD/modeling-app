@@ -7,12 +7,7 @@ import {
   TransformInfo,
 } from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import {
-  Selections__old,
-  Selection__old,
-  Selections,
-  convertSelectionsToOld,
-} from 'lib/selections'
+import { Selections__old, Selection__old, Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
@@ -1585,10 +1580,10 @@ export function transformSecondarySketchLinesTagFirst({
 
   const result = transformAstSketchLines({
     ast: modifiedAst,
-    selectionRanges: convertSelectionsToOld({
+    selectionRanges: {
       ...selectionRanges,
       graphSelections: secondarySelections,
-    }),
+    },
     referencedSegmentRange: primarySelection,
     transformInfos,
     programMemory,
@@ -1631,7 +1626,7 @@ export function transformAstSketchLines({
   referencedSegmentRange,
 }: {
   ast: Node<Program>
-  selectionRanges: Selections__old | PathToNode[]
+  selectionRanges: Selections | PathToNode[]
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
@@ -1787,11 +1782,11 @@ export function transformAstSketchLines({
     }
   }
 
-  if ('codeBasedSelections' in selectionRanges) {
+  if ('graphSelections' in selectionRanges) {
     // If the processing of any of the selections failed, return the first error
-    const maybeProcessErrors = selectionRanges.codeBasedSelections
-      .map(({ range }, index) =>
-        processSelection(getNodePathFromSourceRange(node, range), index)
+    const maybeProcessErrors = selectionRanges.graphSelections
+      .map(({ codeRef }, index) =>
+        processSelection(getNodePathFromSourceRange(node, codeRef.range), index)
       )
       .filter(err)
 

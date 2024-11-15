@@ -9,7 +9,7 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from 'lang/langHelpers'
-import { Selections, convertSelectionsToOld, Selection } from 'lib/selections'
+import { Selections, Selection } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
@@ -415,7 +415,7 @@ part001 = startSketchOn('XY')
 
     const newAst = transformAstSketchLines({
       ast,
-      selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
+      selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       programMemory: execState.memory,
       referenceSegName: '',
@@ -479,7 +479,7 @@ part001 = startSketchOn('XY')
 
     const newAst = transformAstSketchLines({
       ast,
-      selectionRanges: convertSelectionsToOld(makeSelections(selectionRanges)),
+      selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       programMemory: execState.memory,
       referenceSegName: '',

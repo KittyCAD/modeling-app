@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { Program, ProgramMemory, Expr } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
@@ -64,7 +64,7 @@ export function applyConstraintHorzVert(
 
   return transformAstSketchLines({
     ast,
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos,
     programMemory,
     referenceSegName: '',

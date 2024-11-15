@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Program, Expr } from '../../lang/wasm'
-import { convertSelectionsToOld, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
@@ -79,7 +79,7 @@ export async function applyConstraintAngleLength({
   const { transforms } = angleLength
   const sketched = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -131,7 +131,7 @@ export async function applyConstraintAngleLength({
 
   const retval = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: convertSelectionsToOld(selectionRanges),
+    selectionRanges,
     transformInfos: transforms,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
