@@ -60,7 +60,7 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_end_x(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the ending point of the provided line segment along the 'x' axis.
@@ -96,7 +96,7 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_end_y(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the ending point of the provided line segment along the 'y' axis.
@@ -179,7 +179,7 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_start_x(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the starting point of the provided line segment along the 'x' axis.
@@ -215,7 +215,7 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_start_y(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the starting point of the provided line segment along the 'y' axis.
@@ -251,7 +251,7 @@ pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<K
     let sketch = args.get_sketch()?;
     let result = inner_last_segment_x(sketch, args.clone())?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Extract the 'x' axis value of the last line segment in the provided 2-d
@@ -291,7 +291,7 @@ pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<K
     let sketch = args.get_sketch()?;
     let result = inner_last_segment_y(sketch, args.clone())?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Extract the 'y' axis value of the last line segment in the provided 2-d
@@ -330,7 +330,7 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<f64, KclError> {
 pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
     let result = inner_segment_length(&tag, exec_state, args.clone())?;
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the length of the provided line segment.
@@ -376,7 +376,7 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     let tag: TagIdentifier = args.get_data()?;
 
     let result = inner_segment_angle(&tag, exec_state, args.clone())?;
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Compute the angle (in degrees) of the provided line segment.
@@ -415,7 +415,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
     let result = inner_angle_to_match_length_x(&tag, to, sketch, exec_state, args.clone())?;
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Returns the angle to match the given length for x.
@@ -478,7 +478,7 @@ fn inner_angle_to_match_length_x(
 pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
     let result = inner_angle_to_match_length_y(&tag, to, sketch, exec_state, args.clone())?;
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Returns the angle to match the given length for y.

@@ -146,7 +146,7 @@ export function useCalc({
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {
-          type: 'UserVal',
+          type: 'String',
           value,
           __meta: [],
         })
