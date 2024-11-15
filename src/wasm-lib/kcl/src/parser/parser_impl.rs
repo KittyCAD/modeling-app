@@ -2040,6 +2040,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
 
 #[cfg(test)]
 mod tests {
+    use itertools::Itertools;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -2064,10 +2065,12 @@ mod tests {
 
     #[test]
     fn reserved_words() {
-        for word in crate::token::KEYWORDS.iter() {
+        // Since these are stored in a set, we sort to make the tests
+        // deterministic.
+        for word in crate::token::KEYWORDS.iter().sorted() {
             assert_reserved(word);
         }
-        for word in crate::token::TYPES.iter() {
+        for word in crate::token::TYPES.iter().sorted() {
             assert_reserved(word);
         }
         assert_reserved("import");

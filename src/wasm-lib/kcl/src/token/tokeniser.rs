@@ -1,4 +1,4 @@
-use indexmap::IndexSet;
+use fnv::FnvHashSet;
 use lazy_static::lazy_static;
 use winnow::{
     ascii::{digit1, multispace1},
@@ -16,8 +16,8 @@ use crate::{
 };
 
 lazy_static! {
-    pub(crate) static ref KEYWORDS: IndexSet<&'static str> = {
-        let mut set = IndexSet::new();
+    pub(crate) static ref KEYWORDS: FnvHashSet<&'static str> = {
+        let mut set = FnvHashSet::default();
         set.insert("if");
         set.insert("else");
         set.insert("for");
@@ -49,8 +49,8 @@ lazy_static! {
         set
     };
 
-    pub(crate) static ref TYPES: IndexSet<&'static str> = {
-        let mut set = IndexSet::new();
+    pub(crate) static ref TYPES: FnvHashSet<&'static str> = {
+        let mut set = FnvHashSet::default();
         set.insert("string");
         set.insert("number");
         set.insert("bool");
