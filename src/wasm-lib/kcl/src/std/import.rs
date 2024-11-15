@@ -166,6 +166,15 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// const model = import("tests/inputs/cube.step")
 /// ```
+///
+/// ```no_run
+/// import height, buildSketch from 'common.kcl'
+///
+/// plane = 'XZ'
+/// margin = 2
+/// s1 = buildSketch(plane, [0, 0])
+/// s2 = buildSketch(plane, [0, height() + margin])
+/// ```
 #[stdlib {
     name = "import",
     tags = [],
