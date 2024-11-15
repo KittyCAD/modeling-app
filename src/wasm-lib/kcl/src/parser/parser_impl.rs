@@ -2045,6 +2045,34 @@ mod tests {
     use super::*;
     use crate::ast::types::{BodyItem, Expr, ModuleId, VariableKind};
 
+    fn assert_reserved(word: &str) {
+        // Try to use it as a variable name.
+        let code = format!(r#"{} = 0"#, word);
+        let result = crate::parser::top_level_parse(code.as_str());
+        let err = result.unwrap_err();
+        // Which token causes the error may change.  In "return = 0", for
+        // example, "return" is the problem.
+        assert!(
+            err.message().starts_with("Unexpected token: ")
+                || err
+                    .message()
+                    .starts_with("Cannot assign a variable to a reserved keyword: "),
+            "Error message is: {}",
+            err.message(),
+        );
+    }
+
+    #[test]
+    fn reserved_words() {
+        for word in crate::token::KEYWORDS.iter() {
+            assert_reserved(word);
+        }
+        for word in crate::token::TYPES.iter() {
+            assert_reserved(word);
+        }
+        assert_reserved("import");
+    }
+
     #[test]
     fn parse_args() {
         for (i, (test, expected_len)) in [("someVar", 1), ("5, 3", 2), (r#""a""#, 1)].into_iter().enumerate() {

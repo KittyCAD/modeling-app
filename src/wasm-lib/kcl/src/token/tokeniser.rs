@@ -1,6 +1,8 @@
+use indexmap::IndexSet;
+use lazy_static::lazy_static;
 use winnow::{
     ascii::{digit1, multispace1},
-    combinator::{alt, opt, peek, preceded, repeat, terminated},
+    combinator::{alt, opt, peek, preceded, repeat},
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
@@ -12,6 +14,52 @@ use crate::{
     ast::types::ModuleId,
     token::{Token, TokenType},
 };
+
+lazy_static! {
+    pub(crate) static ref KEYWORDS: IndexSet<&'static str> = {
+        let mut set = IndexSet::new();
+        set.insert("if");
+        set.insert("else");
+        set.insert("for");
+        set.insert("while");
+        set.insert("return");
+        set.insert("break");
+        set.insert("continue");
+        set.insert("fn");
+        set.insert("let");
+        set.insert("mut");
+        set.insert("loop");
+        set.insert("true");
+        set.insert("false");
+        set.insert("nil");
+        set.insert("and");
+        set.insert("or");
+        set.insert("not");
+        set.insert("var");
+        set.insert("const");
+        // "import" is special because of import().
+        set.insert("export");
+        set.insert("interface");
+        set.insert("type");
+        set.insert("new");
+        set.insert("record");
+        set.insert("struct");
+        set.insert("object");
+        set.insert("_");
+        set
+    };
+
+    pub(crate) static ref TYPES: IndexSet<&'static str> = {
+        let mut set = IndexSet::new();
+        set.insert("string");
+        set.insert("number");
+        set.insert("bool");
+        set.insert("sketch");
+        set.insert("sketch_surface");
+        set.insert("solid");
+        set
+    };
+}
 
 pub fn lexer(i: &str, module_id: ModuleId) -> Result<Vec<Token>, ParseError<Input<'_>, ContextError>> {
     let state = State::new(module_id);
@@ -50,7 +98,7 @@ pub fn token(i: &mut Input<'_>) -> PResult<Token> {
         '$' => dollar,
         '!' => alt((operator, bang)),
         ' ' | '\t' | '\n' => whitespace,
-        _ => alt((operator, keyword,type_, word))
+        _ => alt((operator, keyword_type_or_word))
     }
     .parse_next(i)
     {
@@ -287,47 +335,18 @@ fn import_keyword(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn unambiguous_keywords(i: &mut Input<'_>) -> PResult<Token> {
-    // These are the keywords themselves.
-    let keyword_candidates = alt((
-        "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
-        "nil", "and", "or", "not", "var", "const", "export",
-    ));
-    // Look ahead. If any of these characters follow the keyword, then it's not a keyword, it's just
-    // the start of a normal word.
-    let keyword = terminated(
-        keyword_candidates,
-        peek(none_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9'))),
-    );
-    let (value, range) = keyword.with_span().parse_next(i)?;
-    Ok(Token::from_range(
-        range,
-        i.state.module_id,
-        TokenType::Keyword,
-        value.to_owned(),
-    ))
+fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+    let mut w = word.parse_next(i)?;
+    if KEYWORDS.contains(w.value.as_str()) {
+        w.token_type = TokenType::Keyword;
+    } else if TYPES.contains(w.value.as_str()) {
+        w.token_type = TokenType::Type;
+    }
+    Ok(w)
 }
 
-fn keyword(i: &mut Input<'_>) -> PResult<Token> {
-    alt((import_keyword, unambiguous_keywords)).parse_next(i)
-}
-
-fn type_(i: &mut Input<'_>) -> PResult<Token> {
-    // These are the types themselves.
-    let type_candidates = alt(("string", "number", "bool", "sketch", "sketch_surface", "solid"));
-    // Look ahead. If any of these characters follow the type, then it's not a type, it's just
-    // the start of a normal word.
-    let type_ = terminated(
-        type_candidates,
-        peek(none_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9'))),
-    );
-    let (value, range) = type_.with_span().parse_next(i)?;
-    Ok(Token::from_range(
-        range,
-        i.state.module_id,
-        TokenType::Type,
-        value.to_owned(),
-    ))
+fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+    alt((import_keyword, unambiguous_keyword_type_or_word)).parse_next(i)
 }
 
 #[cfg(test)]
