@@ -1,4 +1,4 @@
-use fnv::FnvHashSet;
+use fnv::FnvHashMap;
 use lazy_static::lazy_static;
 use winnow::{
     ascii::{digit1, multispace1},
@@ -16,51 +16,48 @@ use crate::{
 };
 
 lazy_static! {
-    pub(crate) static ref KEYWORDS: FnvHashSet<&'static str> = {
-        let mut set = FnvHashSet::default();
-        set.insert("if");
-        set.insert("else");
-        set.insert("for");
-        set.insert("while");
-        set.insert("return");
-        set.insert("break");
-        set.insert("continue");
-        set.insert("fn");
-        set.insert("let");
-        set.insert("mut");
-        set.insert("as");
-        set.insert("from");
-        set.insert("loop");
-        set.insert("true");
-        set.insert("false");
-        set.insert("nil");
+    pub(crate) static ref RESERVED_WORDS: FnvHashMap<&'static str, TokenType> = {
+        let mut set = FnvHashMap::default();
+        set.insert("if", TokenType::Keyword);
+        set.insert("else", TokenType::Keyword);
+        set.insert("for", TokenType::Keyword);
+        set.insert("while", TokenType::Keyword);
+        set.insert("return", TokenType::Keyword);
+        set.insert("break", TokenType::Keyword);
+        set.insert("continue", TokenType::Keyword);
+        set.insert("fn", TokenType::Keyword);
+        set.insert("let", TokenType::Keyword);
+        set.insert("mut", TokenType::Keyword);
+        set.insert("as", TokenType::Keyword);
+        set.insert("from", TokenType::Keyword);
+        set.insert("loop", TokenType::Keyword);
+        set.insert("true", TokenType::Keyword);
+        set.insert("false", TokenType::Keyword);
+        set.insert("nil", TokenType::Keyword);
         // This isn't a type because brackets are used for the type.
-        set.insert("array");
-        set.insert("and");
-        set.insert("or");
-        set.insert("not");
-        set.insert("var");
-        set.insert("const");
+        set.insert("array", TokenType::Keyword);
+        set.insert("and", TokenType::Keyword);
+        set.insert("or", TokenType::Keyword);
+        set.insert("not", TokenType::Keyword);
+        set.insert("var", TokenType::Keyword);
+        set.insert("const", TokenType::Keyword);
         // "import" is special because of import().
-        set.insert("export");
-        set.insert("interface");
-        set.insert("new");
-        set.insert("self");
-        set.insert("record");
-        set.insert("struct");
-        set.insert("object");
-        set.insert("_");
-        set
-    };
+        set.insert("export", TokenType::Keyword);
+        set.insert("interface", TokenType::Keyword);
+        set.insert("new", TokenType::Keyword);
+        set.insert("self", TokenType::Keyword);
+        set.insert("record", TokenType::Keyword);
+        set.insert("struct", TokenType::Keyword);
+        set.insert("object", TokenType::Keyword);
+        set.insert("_", TokenType::Keyword);
 
-    pub(crate) static ref TYPES: FnvHashSet<&'static str> = {
-        let mut set = FnvHashSet::default();
-        set.insert("string");
-        set.insert("number");
-        set.insert("bool");
-        set.insert("sketch");
-        set.insert("sketch_surface");
-        set.insert("solid");
+        set.insert("string", TokenType::Type);
+        set.insert("number", TokenType::Type);
+        set.insert("bool", TokenType::Type);
+        set.insert("sketch", TokenType::Type);
+        set.insert("sketch_surface", TokenType::Type);
+        set.insert("solid", TokenType::Type);
+
         set
     };
 }
@@ -341,10 +338,8 @@ fn import_keyword(i: &mut Input<'_>) -> PResult<Token> {
 
 fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
     let mut w = word.parse_next(i)?;
-    if KEYWORDS.contains(w.value.as_str()) {
-        w.token_type = TokenType::Keyword;
-    } else if TYPES.contains(w.value.as_str()) {
-        w.token_type = TokenType::Type;
+    if let Some(token_type) = RESERVED_WORDS.get(w.value.as_str()) {
+        w.token_type = *token_type;
     }
     Ok(w)
 }

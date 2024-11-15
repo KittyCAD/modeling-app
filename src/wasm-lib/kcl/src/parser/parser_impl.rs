@@ -2067,10 +2067,7 @@ mod tests {
     fn reserved_words() {
         // Since these are stored in a set, we sort to make the tests
         // deterministic.
-        for word in crate::token::KEYWORDS.iter().sorted() {
-            assert_reserved(word);
-        }
-        for word in crate::token::TYPES.iter().sorted() {
+        for word in crate::token::RESERVED_WORDS.keys().sorted() {
             assert_reserved(word);
         }
         assert_reserved("import");

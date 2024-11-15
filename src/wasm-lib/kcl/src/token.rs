@@ -18,7 +18,7 @@ mod tokeniser;
 // Re-export
 pub use tokeniser::Input;
 #[cfg(test)]
-pub(crate) use tokeniser::{KEYWORDS, TYPES};
+pub(crate) use tokeniser::RESERVED_WORDS;
 
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
