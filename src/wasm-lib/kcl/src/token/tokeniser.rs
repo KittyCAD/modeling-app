@@ -29,7 +29,6 @@ lazy_static! {
         set.insert("let", TokenType::Keyword);
         set.insert("mut", TokenType::Keyword);
         set.insert("as", TokenType::Keyword);
-        set.insert("from", TokenType::Keyword);
         set.insert("loop", TokenType::Keyword);
         set.insert("true", TokenType::Keyword);
         set.insert("false", TokenType::Keyword);
