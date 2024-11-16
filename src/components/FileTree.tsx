@@ -22,7 +22,6 @@ import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { normalizeLineEndings } from 'lib/codeEditor'
-import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 
 function getIndentationCSS(level: number) {
