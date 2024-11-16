@@ -453,6 +453,7 @@ export class SceneEntities {
         const { modifiedAst } = addStartProfileAtRes
 
         await kclManager.updateAst(modifiedAst, false)
+
         this.removeIntersectionPlane()
         this.scene.remove(draftPointGroup)
 
@@ -685,7 +686,7 @@ export class SceneEntities {
     })
     return nextAst
   }
-  setUpDraftSegment = async (
+  setupDraftSegment = async (
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
@@ -856,10 +857,11 @@ export class SceneEntities {
         }
 
         await kclManager.executeAstMock(modifiedAst)
+
         if (intersectsProfileStart) {
           sceneInfra.modelingSend({ type: 'CancelSketch' })
         } else {
-          await this.setUpDraftSegment(
+          await this.setupDraftSegment(
             sketchPathToNode,
             forward,
             up,
@@ -867,6 +869,8 @@ export class SceneEntities {
             segmentName
           )
         }
+
+        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       },
       onMove: (args) => {
         this.onDragSegment({
@@ -991,43 +995,51 @@ export class SceneEntities {
         if (trap(_node)) return
         const sketchInit = _node.node?.declarations?.[0]?.init
 
-        if (sketchInit.type === 'PipeExpression') {
-          updateRectangleSketch(sketchInit, x, y, tags[0])
-
-          let _recastAst = parse(recast(_ast))
-          if (trap(_recastAst)) return
-          _ast = _recastAst
-
-          // Update the primary AST and unequip the rectangle tool
-          await kclManager.executeAstMock(_ast)
-          sceneInfra.modelingSend({ type: 'Finish rectangle' })
-
-          const { execState } = await executeAst({
-            ast: _ast,
-            useFakeExecutor: true,
-            engineCommandManager: this.engineCommandManager,
-            programMemoryOverride,
-            idGenerator: kclManager.execState.idGenerator,
-          })
-          const programMemory = execState.memory
-
-          // Prepare to update the THREEjs scene
-          this.sceneProgramMemory = programMemory
-          const sketch = sketchFromKclValue(
-            programMemory.get(variableDeclarationName),
-            variableDeclarationName
-          )
-          if (err(sketch)) return
-          const sgPaths = sketch.paths
-          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-
-          // Update the starting segment of the THREEjs scene
-          this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
-          // Update the rest of the segments of the THREEjs scene
-          sgPaths.forEach((seg, index) =>
-            this.updateSegment(seg, index, 0, _ast, orthoFactor, sketch)
-          )
+        if (sketchInit.type !== 'PipeExpression') {
+          return
         }
+
+        updateRectangleSketch(sketchInit, x, y, tags[0])
+
+        const newCode = recast(_ast)
+        let _recastAst = parse(newCode)
+        if (trap(_recastAst)) return
+        _ast = _recastAst
+
+        // Update the primary AST and unequip the rectangle tool
+        await kclManager.executeAstMock(_ast)
+        sceneInfra.modelingSend({ type: 'Finish rectangle' })
+
+        // lee: I had this at the bottom of the function, but it's
+        // possible sketchFromKclValue "fails" when sketching on a face,
+        // and this couldn't wouldn't run.
+        await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+
+        const { execState } = await executeAst({
+          ast: _ast,
+          useFakeExecutor: true,
+          engineCommandManager: this.engineCommandManager,
+          programMemoryOverride,
+          idGenerator: kclManager.execState.idGenerator,
+        })
+        const programMemory = execState.memory
+
+        // Prepare to update the THREEjs scene
+        this.sceneProgramMemory = programMemory
+        const sketch = sketchFromKclValue(
+          programMemory.get(variableDeclarationName),
+          variableDeclarationName
+        )
+        if (err(sketch)) return
+        const sgPaths = sketch.paths
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        // Update the starting segment of the THREEjs scene
+        this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
+        // Update the rest of the segments of the THREEjs scene
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketch)
+        )
       },
     })
   }
@@ -1187,13 +1199,17 @@ export class SceneEntities {
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
 
-          let _recastAst = parse(recast(modded))
+          const newCode = recast(modded)
+          if (err(newCode)) return
+          let _recastAst = parse(newCode)
           if (trap(_recastAst)) return Promise.reject(_recastAst)
           _ast = _recastAst
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'Finish circle' })
+
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
     })
@@ -1229,6 +1245,7 @@ export class SceneEntities {
             forward,
             position,
           })
+          await codeManager.writeToFile()
         }
       },
       onDrag: async ({
