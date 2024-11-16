@@ -243,7 +243,7 @@ const FileTreeItem = ({
       // Show the renaming form
       addCurrentItemToRenaming()
     } else if (e.code === 'Space') {
-      toSync(handleClick, reportRejection)
+      void handleClick().catch(reportRejection)
     }
   }
 
@@ -294,7 +294,7 @@ const FileTreeItem = ({
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => {
                 e.currentTarget.focus()
-                toSync(handleClick, reportRejection)
+                void handleClick().catch(reportRejection)
               }}
               onKeyUp={handleKeyUp}
             >
