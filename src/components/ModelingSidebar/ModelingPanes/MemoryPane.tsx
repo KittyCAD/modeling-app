@@ -89,9 +89,9 @@ export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
   for (const [key, val] of programMemory?.visibleEntries()) {
     if (
-      (val.type === 'UserVal' && val.value.type === 'Sketch') ||
+      val.type === 'Sketch' ||
       // @ts-ignore
-      (val.type !== 'Function' && val.type !== 'UserVal')
+      val.type !== 'Function'
     ) {
       const sg = sketchFromKclValue(val, key)
       if (val.type === 'Solid') {
@@ -110,8 +110,6 @@ export const processMemory = (programMemory: ProgramMemory) => {
       processedMemory[key] = `__function(${(val as any)?.expression?.params
         ?.map?.(({ identifier }: any) => identifier?.name || '')
         .join(', ')})__`
-    } else {
-      processedMemory[key] = val.value
     }
   }
   return processedMemory

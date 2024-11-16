@@ -633,7 +633,7 @@ export function expandSweep(
   if (err(path)) return path
   return {
     type: 'sweep',
-    subType: 'extrusion',
+    subType: sweep.subType,
     surfaces: Array.from(surfs.values()),
     edges: Array.from(edges.values()),
     path,
