@@ -77,14 +77,14 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
       code.indexOf(expectedExtrudeSnippet),
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
     ]
-    const expedtedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
-    const expedtedExtrudeNodeResult = getNodeFromPath<
+    const expectedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
+    const expectedExtrudeNodeResult = getNodeFromPath<
       VariableDeclarator | CallExpression
-    >(ast, expedtedExtrudePath)
-    if (err(expedtedExtrudeNodeResult)) {
-      return expedtedExtrudeNodeResult
+    >(ast, expectedExtrudePath)
+    if (err(expectedExtrudeNodeResult)) {
+      return expectedExtrudeNodeResult
     }
-    const expectedExtrudeNode = expedtedExtrudeNodeResult.node
+    const expectedExtrudeNode = expectedExtrudeNodeResult.node
 
     // check whether extrude is in the sketch pipe
     const extrudeInSketchPipe = expectedExtrudeNode.type === 'CallExpression'
