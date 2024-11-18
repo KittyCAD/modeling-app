@@ -247,7 +247,7 @@ test.describe('Can export from electron app', () => {
             .poll(
               async () => {
                 try {
-                  const outputGltf = await fsp.readFile('output.gltf')
+                  const outputGltf = await fsp.readFile('main.gltf')
                   return outputGltf.byteLength
                 } catch (e) {
                   return 0
@@ -258,7 +258,7 @@ test.describe('Can export from electron app', () => {
             .toBeGreaterThan(300_000)
 
           // clean up output.gltf
-          await fsp.rm('output.gltf')
+          await fsp.rm('main.gltf')
         })
 
         await electronApp.close()
