@@ -1060,6 +1060,14 @@ impl KclValue {
         }
     }
 
+    pub fn as_plane(&self) -> Option<&Plane> {
+        if let KclValue::Plane(value) = &self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
     pub fn as_solid(&self) -> Option<&Solid> {
         if let KclValue::Solid(value) = &self {
             Some(value)

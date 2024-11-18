@@ -905,8 +905,9 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum SketchData {
-    PlaneOrientation(PlaneData),
+    // Order is critical since PlaneData is a subset of Plane.
     Plane(Box<Plane>),
+    PlaneOrientation(PlaneData),
     Solid(Box<Solid>),
 }
 

@@ -796,6 +796,10 @@ impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
 
 impl<'a> FromKclValue<'a> for crate::executor::Plane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        if let Some(plane) = arg.as_plane() {
+            return Some(plane.clone());
+        }
+
         let obj = arg.as_object()?;
         let_field_of!(obj, id);
         let_field_of!(obj, value);
@@ -1299,13 +1303,15 @@ impl<'a> FromKclValue<'a> for crate::executor::Solid {
 
 impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::sketch::PlaneData::from_kcl_val;
-        let case2 = crate::executor::Solid::from_kcl_val;
-        let case3 = crate::executor::Plane::from_kcl_val;
+        // Order is critical since PlaneData is a subset of Plane.
+        let case1 = crate::executor::Plane::from_kcl_val;
+        let case2 = super::sketch::PlaneData::from_kcl_val;
+        let case3 = crate::executor::Solid::from_kcl_val;
         case1(arg)
-            .map(Self::PlaneOrientation)
-            .or_else(|| case2(arg).map(Box::new).map(Self::Solid))
-            .or_else(|| case3(arg).map(Box::new).map(Self::Plane))
+            .map(Box::new)
+            .map(Self::Plane)
+            .or_else(|| case2(arg).map(Self::PlaneOrientation))
+            .or_else(|| case3(arg).map(Box::new).map(Self::Solid))
     }
 }
 
