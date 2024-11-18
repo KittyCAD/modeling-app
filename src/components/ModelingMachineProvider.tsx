@@ -63,6 +63,7 @@ import {
 import {
   moveValueIntoNewVariablePath,
   sketchOnExtrudedFace,
+  sketchOnOffsetPlane,
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import { Program, parse, recast } from 'lang/wasm'
@@ -639,13 +640,16 @@ export const ModelingMachineProvider = ({
         ),
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return undefined
-          if (input.type === 'extrudeFace') {
-            const sketched = sketchOnExtrudedFace(
-              kclManager.ast,
-              input.sketchPathToNode,
-              input.extrudePathToNode,
-              input.faceInfo
-            )
+          if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
+            const sketched =
+              input.type === 'extrudeFace'
+                ? sketchOnExtrudedFace(
+                    kclManager.ast,
+                    input.sketchPathToNode,
+                    input.extrudePathToNode,
+                    input.faceInfo
+                  )
+                : sketchOnOffsetPlane(kclManager.ast, input.pathToNode)
             if (err(sketched)) {
               const sketchedError = new Error(
                 'Incompatible face, please try another'
@@ -657,10 +661,9 @@ export const ModelingMachineProvider = ({
 
             await kclManager.executeAstMock(modifiedAst)
 
-            await letEngineAnimateAndSyncCamAfter(
-              engineCommandManager,
-              input.faceId
-            )
+            const id =
+              input.type === 'extrudeFace' ? input.faceId : input.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,

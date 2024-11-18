@@ -138,8 +138,42 @@ export function useEngineConnectionSubscriptions() {
                 })
                 return
               }
+              const artifact =
+                engineCommandManager.artifactGraph.get(planeOrFaceId)
+
+              if (artifact?.type === 'plane') {
+                const planeInfo = await getFaceDetails(planeOrFaceId)
+                sceneInfra.modelingSend({
+                  type: 'Select default plane',
+                  data: {
+                    type: 'offsetPlane',
+                    zAxis: [
+                      planeInfo.z_axis.x,
+                      planeInfo.z_axis.y,
+                      planeInfo.z_axis.z,
+                    ],
+                    yAxis: [
+                      planeInfo.y_axis.x,
+                      planeInfo.y_axis.y,
+                      planeInfo.y_axis.z,
+                    ],
+                    position: [
+                      planeInfo.origin.x,
+                      planeInfo.origin.y,
+                      planeInfo.origin.z,
+                    ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
+                      number,
+                      number,
+                      number
+                    ],
+                    planeId: planeOrFaceId,
+                    pathToNode: artifact.codeRef.pathToNode,
+                  },
+                })
+              }
+
+              // Artifact is likely an extrusion face
               const faceId = planeOrFaceId
-              const artifact = engineCommandManager.artifactGraph.get(faceId)
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
                 engineCommandManager.artifactGraph
