@@ -1032,6 +1032,15 @@ impl<'a> FromKclValue<'a> for super::sketch::ArcData {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::sketch::ArcToData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, end);
+        let_field_of!(obj, interior);
+        Some(Self { end, interior })
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::revolve::RevolveData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;

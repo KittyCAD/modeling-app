@@ -1475,9 +1475,9 @@ pub enum ArcData {
 #[serde(rename_all = "camelCase")]
 pub struct ArcToData {
     /// End point of the arc. A point in 3D space
-    end: [f64; 2],
+    pub end: [f64; 2],
     /// Interior point of the arc. A point in 3D space
-    interior: [f64; 2],
+    pub interior: [f64; 2],
 }
 
 /// Draw an arc.
@@ -1594,7 +1594,9 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let (data, sketch, tag): (ArcToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_arc_to(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a 3 point arc.
