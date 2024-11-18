@@ -894,7 +894,7 @@ pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<K
 async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, exec_state, &args).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::PlaneOrientation(xy_plane), None, exec_state, &args).await?;
     let sketch = inner_start_profile_at(data, sketch_surface, None, exec_state, args).await?;
     Ok(sketch)
 }
@@ -905,11 +905,12 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum SketchData {
-    Plane(PlaneData),
+    PlaneOrientation(PlaneData),
+    Plane(Box<Plane>),
     Solid(Box<Solid>),
 }
 
-/// Data for a plane.
+/// Orientation data that can be used to construct a plane, not a plane in itself.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -1069,10 +1070,11 @@ async fn inner_start_sketch_on(
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
     match data {
-        SketchData::Plane(plane_data) => {
-            let plane = start_sketch_on_plane(plane_data, exec_state, args).await?;
+        SketchData::PlaneOrientation(plane_data) => {
+            let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
+        SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
                 return Err(KclError::Type(KclErrorDetails {
@@ -1106,7 +1108,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn start_sketch_on_plane(
+async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
     args: &Args,
@@ -1122,10 +1124,10 @@ async fn start_sketch_on_plane(
 
     plane.id = match data {
         PlaneData::XY => default_planes.xy,
-        PlaneData::XZ => default_planes.xz,
-        PlaneData::YZ => default_planes.yz,
         PlaneData::NegXY => default_planes.neg_xy,
+        PlaneData::XZ => default_planes.xz,
         PlaneData::NegXZ => default_planes.neg_xz,
+        PlaneData::YZ => default_planes.yz,
         PlaneData::NegYZ => default_planes.neg_yz,
         PlaneData::Plane {
             origin,
@@ -1210,11 +1212,26 @@ pub(crate) async fn inner_start_profile_at(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if let SketchSurface::Face(face) = &sketch_surface {
-        // Flush the batch for our fillets/chamfers if there are any.
-        // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+    match &sketch_surface {
+        SketchSurface::Face(face) => {
+            // Flush the batch for our fillets/chamfers if there are any.
+            // If we do not do these for sketch on face, things will fail with face does not exist.
+            args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+                .await?;
+        }
+        SketchSurface::Plane(plane) if !plane.is_standard() => {
+            // Hide whatever plane we are sketching on.
+            // This is especially helpful for offset planes, which would be visible otherwise.
+            args.batch_end_cmd(
+                exec_state.id_generator.next_uuid(),
+                ModelingCmd::from(mcmd::ObjectVisible {
+                    object_id: plane.id,
+                    hidden: true,
+                }),
+            )
             .await?;
+        }
+        _ => {}
     }
 
     // Enter sketch mode on the surface.

@@ -794,6 +794,45 @@ impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::executor::Plane {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        if let Some(plane) = arg.as_plane() {
+            return Some(plane.clone());
+        }
+
+        let obj = arg.as_object()?;
+        let_field_of!(obj, id);
+        let_field_of!(obj, value);
+        let_field_of!(obj, origin);
+        let_field_of!(obj, x_axis "xAxis");
+        let_field_of!(obj, y_axis "yAxis");
+        let_field_of!(obj, z_axis "zAxis");
+        let_field_of!(obj, meta "__meta");
+        Some(Self {
+            id,
+            value,
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+            meta,
+        })
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::executor::PlaneType {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let plane_type = match arg.as_str()? {
+            "XY" | "xy" => Self::XY,
+            "XZ" | "xz" => Self::XZ,
+            "YZ" | "yz" => Self::YZ,
+            "Custom" => Self::Custom,
+            _ => return None,
+        };
+        Some(plane_type)
+    }
+}
+
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::units::UnitLength {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
@@ -1273,11 +1312,15 @@ impl<'a> FromKclValue<'a> for crate::executor::Solid {
 
 impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::sketch::PlaneData::from_kcl_val;
-        let case2 = crate::executor::Solid::from_kcl_val;
+        // Order is critical since PlaneData is a subset of Plane.
+        let case1 = crate::executor::Plane::from_kcl_val;
+        let case2 = super::sketch::PlaneData::from_kcl_val;
+        let case3 = crate::executor::Solid::from_kcl_val;
         case1(arg)
+            .map(Box::new)
             .map(Self::Plane)
-            .or_else(|| case2(arg).map(Box::new).map(Self::Solid))
+            .or_else(|| case2(arg).map(Self::PlaneOrientation))
+            .or_else(|| case3(arg).map(Box::new).map(Self::Solid))
     }
 }
 
