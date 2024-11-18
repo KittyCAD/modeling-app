@@ -8,35 +8,54 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "obj": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Object",
           "value": {
-            "bar": 0,
-            "foo": 1
+            "bar": {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    71,
+                    72,
+                    0
+                  ]
+                }
+              ]
+            },
+            "foo": {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    63,
+                    64,
+                    0
+                  ]
+                }
+              ]
+            }
           },
           "__meta": [
             {
@@ -49,12 +68,47 @@ snapshot_kind: text
           ]
         },
         "obj2": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Object",
           "value": {
             "inner": {
-              "bar": 0,
-              "foo": 1
+              "type": "Object",
+              "value": {
+                "bar": {
+                  "type": "Int",
+                  "value": 0,
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        71,
+                        72,
+                        0
+                      ]
+                    }
+                  ]
+                },
+                "foo": {
+                  "type": "Int",
+                  "value": 1,
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        63,
+                        64,
+                        0
+                      ]
+                    }
+                  ]
+                }
+              },
+              "__meta": [
+                {
+                  "sourceRange": [
+                    56,
+                    74,
+                    0
+                  ]
+                }
+              ]
             }
           },
           "__meta": [
@@ -68,64 +122,59 @@ snapshot_kind: text
           ]
         },
         "one_a": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 1,
           "__meta": [
             {
               "sourceRange": [
-                122,
-                132,
+                63,
+                64,
                 0
               ]
             }
           ]
         },
         "one_b": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 1,
           "__meta": [
             {
               "sourceRange": [
-                356,
-                362,
+                63,
+                64,
                 0
               ]
             }
           ]
         },
         "one_c": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 1,
           "__meta": [
             {
               "sourceRange": [
-                553,
-                570,
+                63,
+                64,
                 0
               ]
             }
           ]
         },
         "one_d": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 1,
           "__meta": [
             {
               "sourceRange": [
-                757,
-                770,
+                63,
+                64,
                 0
               ]
             }
           ]
         },
         "p": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "String",
           "value": "foo",
           "__meta": [
             {

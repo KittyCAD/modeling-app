@@ -245,7 +245,7 @@ pub enum FunctionKind {
 pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
-    args.make_user_val_from_f64(result)
+    Ok(KclValue::from_number(result, vec![args.into()]))
 }
 
 /// Compute the length of the given leg.
@@ -265,7 +265,7 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 pub async fn leg_angle_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
-    args.make_user_val_from_f64(result)
+    Ok(KclValue::from_number(result, vec![args.into()]))
 }
 
 /// Compute the angle of the given leg for x.
@@ -285,7 +285,7 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 pub async fn leg_angle_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
-    args.make_user_val_from_f64(result)
+    Ok(KclValue::from_number(result, vec![args.into()]))
 }
 
 /// Compute the angle of the given leg for y.

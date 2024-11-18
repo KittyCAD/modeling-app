@@ -8,32 +8,27 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "a": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 3,
           "__meta": [
             {
@@ -46,8 +41,7 @@ snapshot_kind: text
           ]
         },
         "b": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 4,
           "__meta": [
             {
@@ -60,8 +54,7 @@ snapshot_kind: text
           ]
         },
         "c": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Int",
           "value": 5,
           "__meta": [
             {
