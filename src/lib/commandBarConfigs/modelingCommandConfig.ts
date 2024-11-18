@@ -1,6 +1,6 @@
 import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE, KCL_DEFAULT_AXIS } from 'lib/constants'
+import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE, KCL_DEFAULT_AXIS, KCL_AXIS_X, KCL_AXIS_Y } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
@@ -271,9 +271,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
       },
       axis: {
-        inputType: 'string',
+        required: true,
+        inputType: 'options',
         defaultValue: KCL_DEFAULT_AXIS,
-        required: true
+        options: [
+          { name: 'X Axis', isCurrent: true, value: KCL_AXIS_X },
+          { name: 'Y Axis', isCurrent: false, value: KCL_AXIS_Y },
+        ],
       },
       angle: {
         inputType: 'kcl',
