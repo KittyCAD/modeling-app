@@ -86,9 +86,7 @@ export async function exportSave({
   if (files.length > 1) {
     let zip = new JSZip()
     for (const file of files) {
-      zip.file(fileName || file.name, new Uint8Array(file.contents), {
-        binary: true,
-      })
+      zip.file(file.name, new Uint8Array(file.contents), { binary: true })
     }
     return zip.generateAsync({ type: 'array' }).then((contents) => {
       return save_({ name: `${fileName || 'output'}.zip`, contents }, toastId)
