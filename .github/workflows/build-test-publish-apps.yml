@@ -14,7 +14,7 @@ on:
 
 env:
   CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  BUILD_RELEASE: true
   NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
 
 concurrency:
@@ -48,7 +48,7 @@ jobs:
         run: "yarn build:wasm"
 
       - name: Set nightly version
-        if: github.event_name == 'schedule'
+        # if: github.event_name == 'schedule'
         run: |
           VERSION=$(date +'%-y.%-m.%-d')-alpha yarn bump-jsons
 
@@ -95,7 +95,6 @@ jobs:
             platform: linux
     runs-on: ${{ matrix.os }}
     env:
-      VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
       - uses: actions/checkout@v4
@@ -250,7 +249,7 @@ jobs:
     needs: [prepare-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
-      VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
+      VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       BUCKET_DIR: 'dl.kittycad.io/releases/modeling-app'
       WEBSITE_DIR: 'dl.zoo.dev/releases/modeling-app'
