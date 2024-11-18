@@ -71,7 +71,7 @@ linux:
       role: Editor
 publish:
   - provider: generic
-    url: https://dl.zoo.dev/releases/modeling-app
+    url: https://dl.zoo.dev/releases/modeling-app/test-nightly-electron-channel
     channel: latest
 releaseInfo:
   releaseNotesFile: release-notes.md
