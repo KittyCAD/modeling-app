@@ -13,7 +13,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
 const semanticEntityNames: { [key: string]: Array<Artifact['type']> } = {
-  face: ['wall', 'cap'],
+  face: ['wall', 'cap', 'solid2D'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
   point: [],
 }

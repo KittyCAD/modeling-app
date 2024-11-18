@@ -699,19 +699,19 @@ export function canSweepSelection(selection: Selections) {
   )
 }
 
-function canExtrudeSelectionItem(selection: Selections, i: number) {
-  const isolatedSelection = {
-    ...selection,
-    graphSelections: [selection.graphSelections[i]],
-  }
-  const commonNode = buildCommonNodeFromSelection(selection, i)
+// function canExtrudeSelectionItem(selection: Selections, i: number) {
+//   const isolatedSelection = {
+//     ...selection,
+//     graphSelections: [selection.graphSelections[i]],
+//   }
+//   const commonNode = buildCommonNodeFromSelection(selection, i)
 
-  return (
-    !!isSketchPipe(isolatedSelection) &&
-    (nodeHasClose(commonNode) || nodeHasCircle(commonNode)) &&
-    !nodeHasExtrude(commonNode)
-  )
-}
+//   return (
+//     !!isSketchPipe(isolatedSelection) &&
+//     (nodeHasClose(commonNode) || nodeHasCircle(commonNode)) &&
+//     !nodeHasExtrude(commonNode)
+//   )
+// }
 
 // This accounts for non-geometry selections under "other"
 export type ResolvedSelectionType = [Artifact['type'] | 'other', number]
@@ -748,9 +748,10 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type.replace('extrude-wall', 'face')}${
-          count > 1 ? 's' : ''
-        }`
+        `${count} ${type
+          .replace('extrude-wall', 'face')
+          .replace('solid2D', 'face')
+          .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
     .join(', ')
 }
