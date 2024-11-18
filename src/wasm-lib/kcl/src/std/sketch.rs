@@ -905,16 +905,9 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum SketchData {
-    // Order is critical since PlaneData is a subset of Plane.
-    Plane(Box<Plane>),
     PlaneOrientation(PlaneData),
+    Plane(Box<Plane>),
     Solid(Box<Solid>),
-}
-
-impl Default for SketchData {
-    fn default() -> Self {
-        SketchData::PlaneOrientation(PlaneData::XY)
-    }
 }
 
 /// Orientation data that can be used to construct a plane, not a plane in itself.
