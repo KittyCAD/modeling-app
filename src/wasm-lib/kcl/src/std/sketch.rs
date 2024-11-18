@@ -1602,7 +1602,7 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Draw a 3 point arc.
 ///
 /// The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point.
-/// The interior point is placed inbetween the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from
+/// The interior point is placed between the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from
 /// the start and end.
 ///
 /// ```no_run
@@ -2007,7 +2007,7 @@ async fn inner_tangential_arc_to_relative(
 }
 
 // Calculate the center of 3 points
-// To caluclate the center of the 3 point cirlce 2 perpendicular lines are created
+// To calculate the center of the 3 point circle 2 perpendicular lines are created
 // These perpendicular lines will intersect at the center of the circle.
 fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
     // y2 - y1
