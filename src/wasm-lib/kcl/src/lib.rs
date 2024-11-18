@@ -21,7 +21,7 @@ mod errors;
 mod executor;
 mod fs;
 mod function_param;
-mod lint;
+pub mod lint;
 mod lsp;
 mod parser;
 mod settings;
@@ -38,13 +38,14 @@ mod walk;
 mod wasm;
 
 pub use ast::modify::modify_ast_for_sketch;
-pub use ast::types::ModuleId;
+pub use ast::types::{FormatOptions, ModuleId};
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::KclError;
-pub use executor::{ExecState, ExecutorContext, SourceRange};
+pub use executor::{ExecState, ExecutorContext, ExecutorSettings, SourceRange};
 pub use lsp::copilot::Backend as CopilotLspBackend;
 pub use lsp::kcl::Backend as KclLspBackend;
+pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use token::lexer;
 
@@ -59,6 +60,11 @@ pub mod wasm_engine {
     pub use crate::coredump::wasm::{CoreDumpManager, CoreDumper};
     pub use crate::engine::conn_wasm::{EngineCommandManager, EngineConnection};
     pub use crate::fs::wasm::FileSystemManager;
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub mod native_engine {
+    pub use crate::engine::conn::EngineConnection;
 }
 
 pub mod std_utils {
@@ -97,9 +103,17 @@ impl Program {
         self.ast.lint_all()
     }
 
+    pub fn lint<'a>(&'a self, rule: impl lint::Rule<'a>) -> Result<Vec<lint::Discovered>, anyhow::Error> {
+        self.ast.lint(rule)
+    }
+
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
         self.ast.recast(&Default::default(), 0)
+    }
+
+    pub fn recast_with_options(&self, options: &FormatOptions) -> String {
+        self.ast.recast(options, 0)
     }
 }
 

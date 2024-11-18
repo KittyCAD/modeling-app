@@ -1,5 +1,4 @@
 pub mod checks;
-pub mod rule;
+mod rule;
 
-#[allow(unused_imports)]
-pub use rule::{Discovered, Finding};
+pub use rule::{Discovered, Finding, Rule};

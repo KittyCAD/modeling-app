@@ -2280,9 +2280,17 @@ impl ExecutorContext {
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_with_default_client(settings: ExecutorSettings) -> Result<Self> {
+    pub async fn new_with_default_client(units: UnitLength) -> Result<Self> {
         // Create the client.
-        let ctx = Self::new_with_client(settings, None, None).await?;
+        let ctx = Self::new_with_client(
+            ExecutorSettings {
+                units,
+                ..Default::default()
+            },
+            None,
+            None,
+        )
+        .await?;
         Ok(ctx)
     }
 

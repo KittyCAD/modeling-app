@@ -132,7 +132,7 @@ impl Backend {
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        Self::new(
+        Self::with_file_manager(
             client,
             executor_ctx,
             crate::fs::FileManager::new(fs),
@@ -141,7 +141,23 @@ impl Backend {
         )
     }
 
-    fn new(
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn new(
+        client: Client,
+        executor_ctx: Option<crate::executor::ExecutorContext>,
+        zoo_client: kittycad::Client,
+        can_send_telemetry: bool,
+    ) -> Result<Self, String> {
+        Self::with_file_manager(
+            client,
+            executor_ctx,
+            crate::fs::FileManager::new(),
+            zoo_client,
+            can_send_telemetry,
+        )
+    }
+
+    fn with_file_manager(
         client: Client,
         executor_ctx: Option<crate::executor::ExecutorContext>,
         fs: crate::fs::FileManager,
