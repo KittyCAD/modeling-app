@@ -62,6 +62,8 @@ test(
       const errorToastMessage = page.getByText(`Error while exporting`)
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      // The open file's name is `main.kcl`, so the export file name should be `main.gltf`
+      const exportFileName = `main.gltf`
 
       // Click the export button
       await exportButton.click()
@@ -96,7 +98,7 @@ test(
           .poll(
             async () => {
               try {
-                const outputGltf = await fsp.readFile('output.gltf')
+                const outputGltf = await fsp.readFile(exportFileName)
                 return outputGltf.byteLength
               } catch (e) {
                 return 0
@@ -107,7 +109,7 @@ test(
           .toBeGreaterThan(300_000)
 
         // clean up output.gltf
-        await fsp.rm('output.gltf')
+        await fsp.rm(exportFileName)
       })
     })
 
