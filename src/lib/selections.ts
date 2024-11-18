@@ -727,18 +727,16 @@ export function getSelectionType(
   selection?: Selections
 ): ResolvedSelectionType[] {
   if (!selection) return []
-  // console.trace('selection', selection)
-  const extrudableCount = selection.graphSelections.filter((_, i) => {
-    const singleSelection = {
-      ...selection,
-      graphSelections: [selection.graphSelections[i]],
-    }
-    return canExtrudeSelectionItem(singleSelection, 0)
-  }).length
-
-  return extrudableCount === selection.graphSelections.length
-    ? [['solid2D', extrudableCount]]
-    : [['other', selection.graphSelections.length]]
+  const selectionsWithArtifacts = selection.graphSelections.filter(
+    (s) => !!s.artifact
+  )
+  const firstSelection = selectionsWithArtifacts[0]
+  const firstSelectionType = firstSelection?.artifact?.type
+  if (!firstSelectionType) return []
+  const selectionsWithSameType = selectionsWithArtifacts.filter(
+    (s) => s.artifact?.type === firstSelection.artifact?.type
+  )
+  return [[firstSelectionType, selectionsWithSameType.length]]
 }
 
 export function getSelectionTypeDisplayText(
