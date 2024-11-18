@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, Plane},
+    executor::{ExecState, KclValue, Plane, PlaneType},
     std::{sketch::PlaneData, Args},
 };
 
@@ -152,6 +152,9 @@ async fn inner_offset_plane(
     let plane_data: PlaneData = std_plane.into();
     // Convert to a plane.
     let mut plane = Plane::from_plane_data(plane_data, exec_state);
+    // Though offset planes are derived from standard planes, they are not
+    // standard planes themselves.
+    plane.value = PlaneType::Custom;
 
     match std_plane {
         StandardPlane::XY => {
