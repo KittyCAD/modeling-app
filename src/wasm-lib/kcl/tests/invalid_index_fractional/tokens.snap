@@ -1,0 +1,147 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing invalid_index_fractional.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "word",
+      "start": 0,
+      "end": 3,
+      "value": "arr"
+    },
+    {
+      "type": "whitespace",
+      "start": 3,
+      "end": 4,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 4,
+      "end": 5,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 5,
+      "end": 6,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 6,
+      "end": 7,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 7,
+      "end": 8,
+      "value": "1"
+    },
+    {
+      "type": "comma",
+      "start": 8,
+      "end": 9,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 9,
+      "end": 10,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 10,
+      "end": 11,
+      "value": "2"
+    },
+    {
+      "type": "comma",
+      "start": 11,
+      "end": 12,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 12,
+      "end": 13,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 13,
+      "end": 14,
+      "value": "3"
+    },
+    {
+      "type": "brace",
+      "start": 14,
+      "end": 15,
+      "value": "]"
+    },
+    {
+      "type": "whitespace",
+      "start": 15,
+      "end": 16,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 16,
+      "end": 17,
+      "value": "x"
+    },
+    {
+      "type": "whitespace",
+      "start": 17,
+      "end": 18,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 18,
+      "end": 19,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 19,
+      "end": 20,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 20,
+      "end": 23,
+      "value": "arr"
+    },
+    {
+      "type": "brace",
+      "start": 23,
+      "end": 24,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 24,
+      "end": 27,
+      "value": "1.2"
+    },
+    {
+      "type": "brace",
+      "start": 27,
+      "end": 28,
+      "value": "]"
+    },
+    {
+      "type": "whitespace",
+      "start": 28,
+      "end": 29,
+      "value": "\n"
+    }
+  ]
+}
