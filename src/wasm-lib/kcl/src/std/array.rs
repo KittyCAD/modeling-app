@@ -102,26 +102,79 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Take a starting value. Then, for each element of an array, calculate the next value,
 /// using the previous value and the element.
 /// ```no_run
-/// fn decagon = (radius) => {
-///   let step = (1/10) * tau()
-///   let sketch001 = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
-///   return reduce([1..10], sketch001, (i, sg) => {
-///       let x = cos(step * i) * radius
-///       let y = sin(step * i) * radius
-///       return lineTo([x, y], sg)
-///   })
-/// }
-/// decagon(5.0) |> close(%)
+/// // This function adds two numbers.
+/// fn add = (a, b) => { return a + b }
+///
+/// // This function adds an array of numbers.
+/// // It uses the `reduce` function, to call the `add` function on every
+/// // element of the `arr` parameter. The starting value is 0.
+/// fn sum = (arr) => { return reduce(arr, 0, add) }
+///
+/// /*
+/// The above is basically like this pseudo-code:
+/// fn sum(arr):
+///     let sumSoFar = 0
+///     for i in arr:
+///         sumSoFar = add(sumSoFar, i)
+///     return sumSoFar
+/// */
+///
+/// // We use `assertEqual` to check that our `sum` function gives the
+/// // expected result. It's good to check your work!
+/// assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
 /// ```
 /// ```no_run
+/// // This example works just like the previous example above, but it uses
+/// // an anonymous `add` function as its parameter, instead of declaring a
+/// // named function outside.
 /// arr = [1, 2, 3]
 /// sum = reduce(arr, 0, (i, result_so_far) => { return i + result_so_far })
+///
+/// // We use `assertEqual` to check that our `sum` function gives the
+/// // expected result. It's good to check your work!
 /// assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
 /// ```
 /// ```no_run
-/// fn add = (a, b) => { return a + b }
-/// fn sum = (arr) => { return reduce(arr, 0, add) }
-/// assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
+/// // Declare a function that sketches a decagon.
+/// fn decagon = (radius) => {
+///   // Each side of the decagon is turned this many degrees from the previous angle.
+///   stepAngle = (1/10) * tau()
+///
+///   // Start the decagon sketch at this point.
+///   startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///
+///   // Use a `reduce` to draw the remaining decagon sides.
+///   // For each number in the array 1..10, run the given function,
+///   // which takes a partially-sketched decagon and adds one more edge to it.
+///   fullDecagon = reduce([1..10], startOfDecagonSketch, (i, partialDecagon) => {
+///       // Draw one edge of the decagon.
+///       let x = cos(stepAngle * i) * radius
+///       let y = sin(stepAngle * i) * radius
+///       return lineTo([x, y], partialDecagon)
+///   })
+///
+///   return fullDecagon
+///
+/// }
+///
+/// /*
+/// The `decagon` above is basically like this pseudo-code:
+/// fn decagon(radius):
+///     let stepAngle = (1/10) * tau()
+///     let startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///
+///     // Here's the reduce part.
+///     let partialDecagon = startOfDecagonSketch
+///     for i in [1..10]:
+///         let x = cos(stepAngle * i) * radius
+///         let y = sin(stepAngle * i) * radius
+///         partialDecagon = lineTo([x, y], partialDecagon)
+///     fullDecagon = partialDecagon // it's now full
+///     return fullDecagon
+/// */
+///
+/// // Use the `decagon` function declared above, to sketch a decagon with radius 5.
+/// decagon(5.0) |> close(%)
 /// ```
 #[stdlib {
     name = "reduce",
