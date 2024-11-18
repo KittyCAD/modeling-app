@@ -29,10 +29,6 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
-function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
-  return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
-}
-
 export default class EditorManager {
   private _editorView: EditorView | null = null
   private _copilotEnabled: boolean = true
@@ -167,20 +163,29 @@ export default class EditorManager {
     }
   }
 
+  /**
+   * Given an array of Diagnostics remove any duplicates by hashing a key
+   * in the format of from + ' ' + to + ' ' + message.
+   */
+  makeUniqueDiagnostics(duplicatedDiagnostics: Diagnostic[]): Diagnostic[] {
+    const uniqueDiagnostics: Diagnostic[] = []
+    const seenDiagnostic: { [key: string]: boolean } = {}
+
+    duplicatedDiagnostics.forEach((diagnostic: Diagnostic) => {
+      const hash = `${diagnostic.from} ${diagnostic.to} ${diagnostic.message}`
+      if (!seenDiagnostic[hash]) {
+        uniqueDiagnostics.push(diagnostic)
+        seenDiagnostic[hash] = true
+      }
+    })
+
+    return uniqueDiagnostics
+  }
+
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
     // Clear out any existing diagnostics that are the same.
-    for (const diagnostic of diagnostics) {
-      for (const otherDiagnostic of diagnostics) {
-        if (diagnosticIsEqual(diagnostic, otherDiagnostic)) {
-          diagnostics = diagnostics.filter(
-            (d) => !diagnosticIsEqual(d, diagnostic)
-          )
-          diagnostics.push(diagnostic)
-          break
-        }
-      }
-    }
+    diagnostics = this.makeUniqueDiagnostics(diagnostics)
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],

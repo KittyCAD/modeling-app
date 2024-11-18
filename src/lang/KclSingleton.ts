@@ -125,7 +125,7 @@ export class KclManager {
     if (this.lints.length > 0) {
       diagnostics = diagnostics.concat(this.lints)
     }
-    editorManager.setDiagnostics(diagnostics)
+    editorManager?.setDiagnostics(diagnostics)
   }
 
   addKclErrors(kclErrors: KCLError[]) {
@@ -357,9 +357,6 @@ export class KclManager {
       this.clearAst()
       return
     }
-    codeManager.updateCodeEditor(newCode)
-    // Write the file to disk.
-    await codeManager.writeToFile()
     this._ast = { ...newAst }
 
     const { logs, errors, execState } = await executeAst({
@@ -434,13 +431,9 @@ export class KclManager {
 
     // Update the code state and the editor.
     codeManager.updateCodeStateEditor(code)
-    // Write back to the file system.
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    codeManager.writeToFile()
 
-    // execute the code.
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.executeCode()
+    // Write back to the file system.
+    void codeManager.writeToFile().then(() => this.executeCode())
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
@@ -501,11 +494,6 @@ export class KclManager {
     }
 
     if (execute) {
-      // Call execute on the set ast.
-      // Update the code state and editor.
-      codeManager.updateCodeEditor(newCode)
-      // Write the file to disk.
-      await codeManager.writeToFile()
       await this.executeAst({
         ast: astWithUpdatedSource,
         zoomToFit: optionalParams?.zoomToFit,

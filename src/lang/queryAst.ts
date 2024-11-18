@@ -318,6 +318,62 @@ function moreNodePathFromSourceRange(
   }
 
   if (_node.type === 'PipeSubstitution' && isInRange) return path
+
+  if (_node.type === 'IfExpression' && isInRange) {
+    const { cond, then_val, else_ifs, final_else } = _node
+    if (cond.start <= start && cond.end >= end) {
+      path.push(['cond', 'IfExpression'])
+      return moreNodePathFromSourceRange(cond, sourceRange, path)
+    }
+    if (then_val.start <= start && then_val.end >= end) {
+      path.push(['then_val', 'IfExpression'])
+      path.push(['body', 'IfExpression'])
+      return getNodePathFromSourceRange(then_val, sourceRange, path)
+    }
+    for (let i = 0; i < else_ifs.length; i++) {
+      const else_if = else_ifs[i]
+      if (else_if.start <= start && else_if.end >= end) {
+        path.push(['else_ifs', 'IfExpression'])
+        path.push([i, 'index'])
+        const { cond, then_val } = else_if
+        if (cond.start <= start && cond.end >= end) {
+          path.push(['cond', 'IfExpression'])
+          return moreNodePathFromSourceRange(cond, sourceRange, path)
+        }
+        path.push(['then_val', 'IfExpression'])
+        path.push(['body', 'IfExpression'])
+        return getNodePathFromSourceRange(then_val, sourceRange, path)
+      }
+    }
+    if (final_else.start <= start && final_else.end >= end) {
+      path.push(['final_else', 'IfExpression'])
+      path.push(['body', 'IfExpression'])
+      return getNodePathFromSourceRange(final_else, sourceRange, path)
+    }
+    return path
+  }
+
+  if (_node.type === 'ImportStatement' && isInRange) {
+    const { items } = _node
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      if (item.start <= start && item.end >= end) {
+        path.push(['items', 'ImportStatement'])
+        path.push([i, 'index'])
+        if (item.name.start <= start && item.name.end >= end) {
+          path.push(['name', 'ImportItem'])
+          return path
+        }
+        if (item.alias && item.alias.start <= start && item.alias.end >= end) {
+          path.push(['alias', 'ImportItem'])
+          return path
+        }
+        return path
+      }
+    }
+    return path
+  }
+
   console.error('not implemented: ' + node.type)
 
   return path

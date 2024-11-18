@@ -36,7 +36,12 @@ import {
   ArtifactGraph,
   getSweepFromSuspectedPath,
 } from 'lang/std/artifactGraph'
-import { kclManager, engineCommandManager, editorManager } from 'lib/singletons'
+import {
+  kclManager,
+  engineCommandManager,
+  editorManager,
+  codeManager,
+} from 'lib/singletons'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 // Apply Fillet To Selection
@@ -256,6 +261,9 @@ async function updateAstAndFocus(
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
     focusPath: pathToFilletNode,
   })
+
+  await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
   if (updatedAst?.selections) {
     editorManager._selectRange(updatedAst?.selections)
   }
