@@ -159,6 +159,15 @@ export type DefaultPlane = {
   yAxis: [number, number, number]
 }
 
+export type OffsetPlane = {
+  type: 'offsetPlane'
+  position: [number, number, number]
+  planeId: string
+  pathToNode: PathToNode
+  zAxis: [number, number, number]
+  yAxis: [number, number, number]
+}
+
 export type SegmentOverlayPayload =
   | {
       type: 'set-one'
@@ -198,7 +207,7 @@ export type ModelingMachineEvent =
   | { type: 'Sketch On Face' }
   | {
       type: 'Select default plane'
-      data: DefaultPlane | ExtrudeFacePlane
+      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
     }
   | {
       type: 'Set selection'
@@ -1394,7 +1403,7 @@ export const modelingMachine = setup({
       }
     ),
     'animate-to-face': fromPromise(
-      async (_: { input?: ExtrudeFacePlane | DefaultPlane }) => {
+      async (_: { input?: ExtrudeFacePlane | DefaultPlane | OffsetPlane }) => {
         return {} as
           | undefined
           | {

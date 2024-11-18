@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
-    lsp_types::{SemanticTokenModifier, SemanticTokenType},
+    lsp_types::{Diagnostic, SemanticTokenModifier, SemanticTokenType},
     LanguageServer,
 };
 
@@ -2369,7 +2369,14 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
 
     // Get the diagnostics.
     let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    if let Some(diagnostics) = diagnostics {
+        let ds: Vec<Diagnostic> = diagnostics.to_owned();
+        eprintln!("Expected no diagnostics, but found some.");
+        for d in ds {
+            eprintln!("{:?}: {}", d.severity, d.message);
+        }
+        panic!();
+    }
 }
 
 #[tokio::test(flavor = "multi_thread")]
