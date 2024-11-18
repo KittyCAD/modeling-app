@@ -1250,39 +1250,6 @@ impl<'a> FromKclValue<'a> for crate::executor::SourceRange {
     }
 }
 
-impl_from_arg_via_json!(super::sketch::AngledLineData);
-impl_from_arg_via_json!(super::sketch::AngledLineToData);
-impl_from_arg_via_json!(super::sketch::AngledLineThatIntersectsData);
-impl_from_arg_via_json!(super::shapes::CircleData);
-impl_from_arg_via_json!(super::shapes::PolygonData);
-impl_from_arg_via_json!(super::sketch::ArcData);
-impl_from_arg_via_json!(super::sketch::TangentialArcData);
-impl_from_arg_via_json!(super::sketch::ArcToData);
-impl_from_arg_via_json!(super::sketch::BezierData);
-impl_from_arg_via_json!(super::chamfer::ChamferData);
-impl_from_arg_via_json!(super::patterns::LinearPattern3dData);
-impl_from_arg_via_json!(super::patterns::CircularPattern3dData);
-impl_from_arg_via_json!(super::patterns::LinearPattern2dData);
-impl_from_arg_via_json!(super::patterns::CircularPattern2dData);
-impl_from_arg_via_json!(super::helix::HelixData);
-impl_from_arg_via_json!(super::shell::ShellData);
-impl_from_arg_via_json!(super::fillet::FilletData);
-impl_from_arg_via_json!(super::revolve::RevolveData);
-impl_from_arg_via_json!(super::sketch::SketchData);
-impl_from_arg_via_json!(crate::std::import::ImportFormat);
-impl_from_arg_via_json!(crate::std::polar::PolarCoordsData);
-impl_from_arg_via_json!(crate::std::loft::LoftData);
-impl_from_arg_via_json!(crate::std::planes::StandardPlane);
-impl_from_arg_via_json!(crate::std::mirror::Mirror2dData);
-impl_from_arg_via_json!(Sketch);
-impl_from_arg_via_json!(FaceTag);
-impl_from_arg_via_json!(String);
-impl_from_arg_via_json!(crate::ast::types::KclNone);
-impl_from_arg_via_json!(u32);
-impl_from_arg_via_json!(u64);
-impl_from_arg_via_json!(f64);
-impl_from_arg_via_json!(bool);
-
 impl<'a> FromKclValue<'a> for crate::executor::Metadata {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         FromKclValue::from_kcl_val(arg).map(|sr| Self { source_range: sr })
