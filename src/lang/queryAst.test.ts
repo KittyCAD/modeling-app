@@ -1,4 +1,4 @@
-import { parse, recast, initPromise, PathToNode } from './wasm'
+import { parse, recast, initPromise, PathToNode, Identifier } from './wasm'
 import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
@@ -10,6 +10,7 @@ import {
   hasSketchPipeBeenExtruded,
   doesSceneHaveSweepableSketch,
   traverse,
+  getNodeFromPath,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -265,6 +266,86 @@ describe('testing getNodePathFromSourceRange', () => {
       sourceIndex,
     ])
     expect(selectWholeThing).toEqual(expected)
+  })
+
+  it('finds the node in if-else condition', () => {
+    const code = `y = 0
+    x = if x > y {
+      x + 1
+    } else {
+      y
+    }`
+    const searchLn = `x > y`
+    const sourceIndex = code.indexOf(searchLn)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+
+    const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
+    expect(result).toEqual([
+      ['body', ''],
+      [1, 'index'],
+      ['declarations', 'VariableDeclaration'],
+      [0, 'index'],
+      ['init', ''],
+      ['cond', 'IfExpression'],
+      ['left', 'BinaryExpression'],
+    ])
+    const _node = getNodeFromPath<Identifier>(ast, result)
+    if (err(_node)) throw _node
+    expect(_node.node.type).toEqual('Identifier')
+    expect(_node.node.name).toEqual('x')
+  })
+
+  it('finds the node in if-else then', () => {
+    const code = `y = 0
+    x = if x > y {
+      x + 1
+    } else {
+      y
+    }`
+    const searchLn = `x + 1`
+    const sourceIndex = code.indexOf(searchLn)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+
+    const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
+    expect(result).toEqual([
+      ['body', ''],
+      [1, 'index'],
+      ['declarations', 'VariableDeclaration'],
+      [0, 'index'],
+      ['init', ''],
+      ['then_val', 'IfExpression'],
+      ['body', 'IfExpression'],
+      [0, 'index'],
+      ['expression', 'ExpressionStatement'],
+      ['left', 'BinaryExpression'],
+    ])
+    const _node = getNodeFromPath<Identifier>(ast, result)
+    if (err(_node)) throw _node
+    expect(_node.node.type).toEqual('Identifier')
+    expect(_node.node.name).toEqual('x')
+  })
+
+  it('finds the node in import statement item', () => {
+    const code = `import foo, bar as baz from 'thing.kcl'`
+    const searchLn = `bar`
+    const sourceIndex = code.indexOf(searchLn)
+    const ast = parse(code)
+    if (err(ast)) throw ast
+
+    const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
+    expect(result).toEqual([
+      ['body', ''],
+      [0, 'index'],
+      ['items', 'ImportStatement'],
+      [1, 'index'],
+      ['name', 'ImportItem'],
+    ])
+    const _node = getNodeFromPath<Identifier>(ast, result)
+    if (err(_node)) throw _node
+    expect(_node.node.type).toEqual('Identifier')
+    expect(_node.node.name).toEqual('bar')
   })
 })
 

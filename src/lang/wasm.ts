@@ -62,6 +62,7 @@ export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
 export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
 export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
+export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 
 export type SyntaxType =
@@ -81,6 +82,7 @@ export type SyntaxType =
   | 'PipeExpression'
   | 'PipeSubstitution'
   | 'Literal'
+  | 'LiteralValue'
   | 'NonCodeNode'
   | 'UnaryExpression'
 

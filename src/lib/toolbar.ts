@@ -407,8 +407,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Center circle',
           disabled: (state) =>
-            !canRectangleOrCircleTool(state.context) &&
-            !state.matches({ Sketch: 'Circle tool' }),
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Circle tool' })),
           isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
@@ -448,8 +449,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'rectangle',
           status: 'available',
           disabled: (state) =>
-            !canRectangleOrCircleTool(state.context) &&
-            !state.matches({ Sketch: 'Rectangle tool' }),
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Rectangle tool' })),
           title: 'Corner rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
@@ -459,13 +461,33 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'center-rectangle',
-          onClick: () => console.error('Center rectangle not yet implemented'),
-          icon: 'rectangle',
-          status: 'unavailable',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({
+                  Sketch: 'Center Rectangle tool',
+                })
+                  ? 'center rectangle'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: 'available',
+          disabled: (state) =>
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Center Rectangle tool' })),
           title: 'Center rectangle',
-          showTitle: false,
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Center Rectangle tool' })
+              ? ['Esc', 'C']
+              : 'C',
           description: 'Start drawing a rectangle from its center',
           links: [],
+          isActive: (state) => {
+            return state.matches({ Sketch: 'Center Rectangle tool' })
+          },
         },
       ],
       {

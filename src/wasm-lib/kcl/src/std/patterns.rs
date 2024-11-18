@@ -462,7 +462,7 @@ fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<P
     // Gets an f64 from a KCL value.
     let f = |k: &KclValue, component: char| {
         use super::args::FromKclValue;
-        if let Some(value) = f64::from_mem_item(k) {
+        if let Some(value) = f64::from_kcl_val(k) {
             Ok(value)
         } else {
             Err(KclError::Semantic(KclErrorDetails {
