@@ -1,11 +1,17 @@
-import { parse, Sketch, recast, initPromise, sketchFromKclValue } from '../wasm'
+import {
+  parse,
+  Sketch,
+  recast,
+  initPromise,
+  sketchFromKclValue,
+  SourceRange,
+} from '../wasm'
 import {
   ConstraintType,
   getTransformInfos,
   transformAstSketchLines,
 } from './sketchcombos'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { Selection__old } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
@@ -28,10 +34,7 @@ async function testingSwapSketchFnCall({
   originalRange: [number, number]
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: Selection__old = {
-    type: 'default',
-    range: [startIndex, startIndex + callToSwap.length],
-  }
+  const range: SourceRange = [startIndex, startIndex + callToSwap.length]
   const ast = parse(inputCode)
   if (err(ast)) return Promise.reject(ast)
 
@@ -40,8 +43,8 @@ async function testingSwapSketchFnCall({
     graphSelections: [
       {
         codeRef: {
-          range: range.range,
-          pathToNode: getNodePathFromSourceRange(ast, range.range),
+          range: range,
+          pathToNode: getNodePathFromSourceRange(ast, range),
         },
       },
     ],
@@ -65,7 +68,7 @@ async function testingSwapSketchFnCall({
 
   return {
     newCode,
-    originalRange: range.range,
+    originalRange: range,
   }
 }
 
