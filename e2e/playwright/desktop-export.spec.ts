@@ -108,7 +108,7 @@ test(
           )
           .toBeGreaterThan(300_000)
 
-        // clean up output.gltf
+        // clean up exported file
         await fsp.rm(exportFileName)
       })
     })
@@ -140,6 +140,8 @@ test(
       const errorToastMessage = page.getByText(`Error while exporting`)
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      // The open file's name is `other.kcl`, so the export file name should be `other.gltf`
+      const exportFileName = `other.gltf`
 
       // Click the export button
       await exportButton.click()
@@ -173,7 +175,7 @@ test(
           .poll(
             async () => {
               try {
-                const outputGltf = await fsp.readFile('output.gltf')
+                const outputGltf = await fsp.readFile(exportFileName)
                 return outputGltf.byteLength
               } catch (e) {
                 return 0
@@ -183,8 +185,8 @@ test(
           )
           .toBeGreaterThan(100_000)
 
-        // clean up output.gltf
-        await fsp.rm('output.gltf')
+        // clean up exported file
+        await fsp.rm(exportFileName)
       })
       await electronApp.close()
     })

@@ -257,7 +257,7 @@ test.describe('Can export from electron app', () => {
             )
             .toBeGreaterThan(300_000)
 
-          // clean up output.gltf
+          // clean up exported file
           await fsp.rm('main.gltf')
         })
 
