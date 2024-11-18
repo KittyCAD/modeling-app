@@ -714,7 +714,7 @@ function canExtrudeSelectionItem(selection: Selections, i: number) {
 }
 
 // This accounts for non-geometry selections under "other"
-export type ResolvedSelectionType = [Selection__old['type'] | 'other', number]
+export type ResolvedSelectionType = [Artifact['type'] | 'other', number]
 
 /**
  * In the future, I'd like this function to properly return the type of each selected entity based on
@@ -737,7 +737,7 @@ export function getSelectionType(
   }).length
 
   return extrudableCount === selection.graphSelections.length
-    ? [['extrude-wall', extrudableCount]]
+    ? [['solid2D', extrudableCount]]
     : [['other', selection.graphSelections.length]]
 }
 
