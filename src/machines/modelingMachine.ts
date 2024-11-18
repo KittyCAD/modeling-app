@@ -646,7 +646,9 @@ export const modelingMachine = setup({
           ast,
           pathToNode,
           false,
-          'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst,
+          'variableName' in angle
+            ? angle.variableIdentifierAst
+            : angle.valueAst,
           axis
         )
         if (trap(revolveSketchRes)) return

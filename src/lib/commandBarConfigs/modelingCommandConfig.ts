@@ -1,6 +1,14 @@
 import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE, KCL_DEFAULT_AXIS, KCL_AXIS_X, KCL_AXIS_Y, KCL_AXIS_NEG_X, KCL_AXIS_NEG_Y } from 'lib/constants'
+import {
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_AXIS,
+  KCL_AXIS_X,
+  KCL_AXIS_Y,
+  KCL_AXIS_NEG_X,
+  KCL_AXIS_NEG_Y,
+} from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
@@ -34,6 +42,7 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
+    axis: string
   }
   Fillet: {
     // todo
