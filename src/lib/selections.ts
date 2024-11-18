@@ -48,7 +48,7 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
 /** @deprecated Use {@link Artifact} instead. */
-export type Selection__old =
+type Selection__old =
   | {
       type:
         | 'default'
