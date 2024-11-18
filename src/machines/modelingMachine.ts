@@ -18,6 +18,7 @@ import {
   sceneEntitiesManager,
   engineCommandManager,
   editorManager,
+  codeManager,
 } from 'lib/singletons'
 import {
   horzVertInfo,
@@ -183,6 +184,7 @@ export type SketchTool =
   | 'line'
   | 'tangentialArc'
   | 'rectangle'
+  | 'center rectangle'
   | 'circle'
   | 'none'
 
@@ -238,6 +240,10 @@ export type ModelingMachineEvent =
       data: [x: number, y: number]
     }
   | {
+      type: 'Add center rectangle origin'
+      data: [x: number, y: number]
+    }
+  | {
       type: 'Add circle origin'
       data: [x: number, y: number]
     }
@@ -277,6 +283,7 @@ export type ModelingMachineEvent =
       }
     }
   | { type: 'Finish rectangle' }
+  | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
@@ -505,6 +512,9 @@ export const modelingMachine = setup({
     'next is rectangle': ({ context: { sketchDetails, currentTool } }) =>
       currentTool === 'rectangle' &&
       canRectangleOrCircleTool({ sketchDetails }),
+    'next is center rectangle': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'center rectangle' &&
+      canRectangleOrCircleTool({ sketchDetails }),
     'next is circle': ({ context: { sketchDetails, currentTool } }) =>
       currentTool === 'circle' && canRectangleOrCircleTool({ sketchDetails }),
     'next is line': ({ context }) => context.currentTool === 'line',
@@ -531,8 +541,10 @@ export const modelingMachine = setup({
         }
       }
     ),
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    'hide default planes': () => kclManager.hidePlanes(),
+    'hide default planes': () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.hidePlanes()
+    },
     'reset sketch metadata': assign({
       sketchDetails: null,
       sketchEnginePathId: '',
@@ -595,7 +607,6 @@ export const modelingMachine = setup({
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
-        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: [pathToExtrudeArg],
           zoomToFit: true,
@@ -604,11 +615,9 @@ export const modelingMachine = setup({
             type: 'path',
           },
         })
-        if (!engineCommandManager.engineConnection?.idleMode) {
-          store.videoElement?.play().catch((e) => {
-            console.warn('Video playing was prevented', e)
-          })
-        }
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
@@ -642,7 +651,6 @@ export const modelingMachine = setup({
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
 
-        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: [pathToRevolveArg],
           zoomToFit: true,
@@ -651,11 +659,9 @@ export const modelingMachine = setup({
             type: 'path',
           },
         })
-        if (!engineCommandManager.engineConnection?.idleMode) {
-          store.videoElement?.play().catch((e) => {
-            console.warn('Video playing was prevented', e)
-          })
-        }
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
@@ -685,6 +691,7 @@ export const modelingMachine = setup({
         }
 
         await kclManager.updateAst(modifiedAst, true)
+        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       })().catch(reportRejection)
     },
     'AST fillet': ({ event }) => {
@@ -702,6 +709,9 @@ export const modelingMachine = setup({
         radius
       )
       if (err(applyFilletToSelectionResult)) return applyFilletToSelectionResult
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
     'set selection filter to curves only': () => {
       ;(async () => {
@@ -758,25 +768,35 @@ export const modelingMachine = setup({
     'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
     'set up draft line': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setUpDraftSegment(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        'line'
-      )
+      sceneEntitiesManager
+        .setupDraftSegment(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'line'
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'set up draft arc': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setUpDraftSegment(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        'tangentialArcTo'
-      )
+      sceneEntitiesManager
+        .setupDraftSegment(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'tangentialArcTo'
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'listen for rectangle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
@@ -795,6 +815,26 @@ export const modelingMachine = setup({
         },
       })
     },
+
+    'listen for center rectangle origin': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      // setupNoPointsListener has the code for startProfileAt onClick
+      sceneEntitiesManager.setupNoPointsListener({
+        sketchDetails,
+        afterClick: (args) => {
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add center rectangle origin',
+              data: [twoD.x, twoD.y],
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
+    },
+
     'listen for circle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       sceneEntitiesManager.createIntersectionPlane()
@@ -834,8 +874,28 @@ export const modelingMachine = setup({
     'set up draft rectangle': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Add rectangle origin') return
       if (!sketchDetails || !event.data) return
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftRectangle(
+      sceneEntitiesManager
+        .setupDraftRectangle(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          event.data
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
+    },
+    'set up draft center rectangle': ({
+      context: { sketchDetails },
+      event,
+    }) => {
+      if (event.type !== 'Add center rectangle origin') return
+      if (!sketchDetails || !event.data) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.setupDraftCenterRectangle(
         sketchDetails.sketchPathToNode,
         sketchDetails.zAxis,
         sketchDetails.yAxis,
@@ -846,26 +906,36 @@ export const modelingMachine = setup({
     'set up draft circle': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Add circle origin') return
       if (!sketchDetails || !event.data) return
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setupDraftCircle(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        event.data
-      )
+      sceneEntitiesManager
+        .setupDraftCircle(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          event.data
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.setUpDraftSegment(
-        sketchDetails.sketchPathToNode,
-        sketchDetails.zAxis,
-        sketchDetails.yAxis,
-        sketchDetails.origin,
-        'line',
-        false
-      )
+      sceneEntitiesManager
+        .setupDraftSegment(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          'line',
+          false
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
     },
     'show default planes': () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -882,12 +952,17 @@ export const modelingMachine = setup({
     'add axis n grid': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.createSketchAxis(
         sketchDetails.sketchPathToNode || [],
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin
       )
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
     'reset client scene mouse handlers': () => {
       // when not in sketch mode we don't need any mouse listeners
@@ -916,10 +991,13 @@ export const modelingMachine = setup({
     'Delete segment': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deleteSegment({
         pathToNode: event.data,
         sketchDetails,
+      }).then(() => {
+        return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
     },
     'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
@@ -984,6 +1062,9 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1018,6 +1099,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1052,6 +1134,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1084,6 +1167,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1117,6 +1201,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1150,6 +1235,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1183,6 +1269,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1220,6 +1307,8 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1252,6 +1341,7 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1556,7 +1646,7 @@ export const modelingMachine = setup({
             },
           },
 
-          entry: 'setup client side sketch segments',
+          entry: ['setup client side sketch segments'],
         },
 
         'Await horizontal distance info': {
@@ -1776,6 +1866,40 @@ export const modelingMachine = setup({
           },
         },
 
+        'Center Rectangle tool': {
+          entry: ['listen for center rectangle origin'],
+
+          states: {
+            'Awaiting corner': {
+              on: {
+                'Finish center rectangle': 'Finished Center Rectangle',
+              },
+            },
+
+            'Awaiting origin': {
+              on: {
+                'Add center rectangle origin': {
+                  target: 'Awaiting corner',
+                  // TODO
+                  actions: 'set up draft center rectangle',
+                },
+              },
+            },
+
+            'Finished Center Rectangle': {
+              always: '#Modeling.Sketch.SketchIdle',
+            },
+          },
+
+          initial: 'Awaiting origin',
+
+          on: {
+            'change tool': {
+              target: 'Change Tool',
+            },
+          },
+        },
+
         'clean slate': {
           always: 'SketchIdle',
         },
@@ -1801,7 +1925,7 @@ export const modelingMachine = setup({
             onError: 'SketchIdle',
             onDone: {
               target: 'SketchIdle',
-              actions: ['Set selection'],
+              actions: 'Set selection',
             },
           },
         },
@@ -1968,6 +2092,10 @@ export const modelingMachine = setup({
             {
               target: 'Circle tool',
               guard: 'next is circle',
+            },
+            {
+              target: 'Center Rectangle tool',
+              guard: 'next is center rectangle',
             },
           ],
 
