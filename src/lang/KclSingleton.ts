@@ -1,5 +1,5 @@
 import { executeAst, lintAst } from 'lang/langHelpers'
-import { Selections__old } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
@@ -452,18 +452,18 @@ export class KclManager {
     }
   ): Promise<{
     newAst: Node<Program>
-    selections?: Selections__old
+    selections?: Selections
   }> {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 
     const astWithUpdatedSource = this.safeParse(newCode)
     if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
-    let returnVal: Selections__old | undefined = undefined
+    let returnVal: Selections | undefined = undefined
 
     if (optionalParams?.focusPath) {
       returnVal = {
-        codeBasedSelections: [],
+        graphSelections: [],
         otherSelections: [],
       }
 
@@ -485,9 +485,11 @@ export class KclManager {
           }
 
         if (start && end) {
-          returnVal.codeBasedSelections.push({
-            type: 'default',
-            range: [start, end],
+          returnVal.graphSelections.push({
+            codeRef: {
+              range: [start, end],
+              pathToNode: path,
+            },
           })
         }
       }

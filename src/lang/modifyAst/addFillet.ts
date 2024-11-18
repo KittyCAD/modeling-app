@@ -265,7 +265,7 @@ async function updateAstAndFocus(
   await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
   if (updatedAst?.selections) {
-    editorManager._selectRange(updatedAst?.selections)
+    editorManager.selectRange(updatedAst?.selections)
   }
 }
 

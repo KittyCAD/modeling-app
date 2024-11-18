@@ -633,7 +633,7 @@ export const modelingMachine = setup({
         await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
         if (updatedAst?.selections) {
-          editorManager._selectRange(updatedAst?.selections)
+          editorManager.selectRange(updatedAst?.selections)
         }
       })().catch(reportRejection)
     },
@@ -677,7 +677,7 @@ export const modelingMachine = setup({
         await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
         if (updatedAst?.selections) {
-          editorManager._selectRange(updatedAst?.selections)
+          editorManager.selectRange(updatedAst?.selections)
         }
       })().catch(reportRejection)
     },

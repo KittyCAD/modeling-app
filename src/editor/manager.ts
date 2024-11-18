@@ -3,12 +3,7 @@ import { syntaxTree } from '@codemirror/language'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
-import {
-  Selections,
-  Selection,
-  processCodeMirrorRanges,
-  Selections__old,
-} from 'lib/selections'
+import { Selections, Selection, processCodeMirrorRanges } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
@@ -258,37 +253,6 @@ export default class EditorManager {
     return false
   }
 
-  _selectRange(selections: Selections__old) {
-    if (selections.codeBasedSelections.length === 0) {
-      return
-    }
-    let codeBasedSelections = []
-    for (const selection of selections.codeBasedSelections) {
-      codeBasedSelections.push(
-        EditorSelection.range(selection.range[0], selection.range[1])
-      )
-    }
-
-    codeBasedSelections.push(
-      EditorSelection.cursor(
-        selections.codeBasedSelections[
-          selections.codeBasedSelections.length - 1
-        ].range[1]
-      )
-    )
-
-    if (!this._editorView) {
-      return
-    }
-
-    this._editorView.dispatch({
-      selection: EditorSelection.create(codeBasedSelections, 1),
-      annotations: [
-        updateOutsideEditorEvent,
-        Transaction.addToHistory.of(false),
-      ],
-    })
-  }
   selectRange(selections: Selections) {
     if (selections?.graphSelections?.length === 0) {
       return
