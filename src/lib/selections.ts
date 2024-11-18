@@ -526,12 +526,8 @@ export function processCodeMirrorRanges({
         },
       }
     })
-  const idBasedSelections: SelectionToEngine[] = codeToIdSelections(
-    convertSelectionsToOld({
-      graphSelections: codeBasedSelections,
-      otherSelections: [],
-    }).codeBasedSelections
-  )
+  const idBasedSelections: SelectionToEngine[] =
+    codeToIdSelections(codeBasedSelections)
   const selections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
     if (!id) {
@@ -780,9 +776,13 @@ export function canSubmitSelectionArg(
 }
 
 export function codeToIdSelections(
-  codeBasedSelections: Selection__old[]
+  selections: Selection[]
 ): SelectionToEngine[] {
-  return codeBasedSelections
+  const selectionsOld = convertSelectionsToOld({
+    graphSelections: selections,
+    otherSelections: [],
+  }).codeBasedSelections
+  return selectionsOld
     .flatMap((selection): null | SelectionToEngine[] => {
       const { type } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale

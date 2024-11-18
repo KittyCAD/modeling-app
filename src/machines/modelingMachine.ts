@@ -5,14 +5,7 @@ import {
   parse,
   recast,
 } from 'lang/wasm'
-import {
-  Axis,
-  convertSelectionsToOld,
-  convertSelectionToOld,
-  Selections,
-  Selection,
-  updateSelections,
-} from 'lib/selections'
+import { Axis, Selections, Selection, updateSelections } from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
@@ -685,14 +678,10 @@ export const modelingMachine = setup({
     'AST delete selection': ({ context: { selectionRanges } }) => {
       ;(async () => {
         let ast = kclManager.ast
-        const oldSelection = convertSelectionToOld(
-          selectionRanges.graphSelections[0]
-        )
-        if (!oldSelection) return
 
         const modifiedAst = await deleteFromSelection(
           ast,
-          oldSelection,
+          selectionRanges.graphSelections[0],
           kclManager.programMemory,
           getFaceDetails
         )
@@ -763,7 +752,7 @@ export const modelingMachine = setup({
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
           maybeModdedAst: kclManager.ast,
-          selectionRanges: convertSelectionsToOld(selectionRanges),
+          selectionRanges,
         })
         sceneInfra.resetMouseListeners()
         sceneEntitiesManager.setupSketchIdleCallbacks({

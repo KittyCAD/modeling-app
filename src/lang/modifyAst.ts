@@ -1,5 +1,5 @@
 import { err, reportRejection, trap } from 'lib/trap'
-import { Selection__old } from 'lib/selections'
+import { Selection, Selection__old } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -973,24 +973,21 @@ export function removeSingleConstraintInfo(
 
 export async function deleteFromSelection(
   ast: Node<Program>,
-  selection: Selection__old,
+  selection: Selection,
   programMemory: ProgramMemory,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
-  const range = selection.range
-  const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection?.codeRef?.pathToNode,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
   if (
-    (selection.type === 'extrude-wall' ||
-      selection.type === 'end-cap' ||
-      selection.type === 'start-cap') &&
+    (selection?.artifact?.type === 'wall' ||
+      selection?.artifact?.type === 'cap') &&
     varDec.node.init.type === 'PipeExpression'
   ) {
     const varDecName = varDec.node.id.name

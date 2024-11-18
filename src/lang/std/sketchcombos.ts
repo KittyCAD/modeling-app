@@ -7,7 +7,7 @@ import {
   TransformInfo,
 } from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Selections__old, Selection__old, Selections } from 'lib/selections'
+import { Selection__old, Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
@@ -1508,16 +1508,12 @@ export function getTransformInfos(
 }
 
 export function getRemoveConstraintsTransforms(
-  selectionRanges: Selections__old,
+  selectionRanges: Selections,
   ast: Program,
   constraintType: ConstraintType
 ): TransformInfo[] | Error {
-  // return ()
-  const paths = selectionRanges.codeBasedSelections.map((selectionRange) =>
-    getNodePathFromSourceRange(ast, selectionRange.range)
-  )
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Expr>(ast, pathToNode)
+  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode)
   )
 
   const theTransforms = nodes.map((nodeMeta) => {

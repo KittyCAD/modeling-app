@@ -125,8 +125,10 @@ function DisplayObj({
         const range: [number, number] = [obj?.start || 0, obj.end || 0]
         const idInfo = codeToIdSelections([
           {
-            type: 'default',
-            range,
+            codeRef: {
+              range,
+              pathToNode: getNodePathFromSourceRange(kclManager.ast, range),
+            },
           },
         ])[0]
         const artifact = engineCommandManager.artifactGraph.get(

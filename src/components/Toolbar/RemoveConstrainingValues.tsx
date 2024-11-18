@@ -1,5 +1,5 @@
 import { toolTips } from 'lang/langHelpers'
-import { convertSelectionsToOld, Selection, Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { PathToNode, Program, Expr } from '../../lang/wasm'
 import {
   getNodeFromPath,
@@ -60,7 +60,7 @@ export function removeConstrainingValuesInfo({
   )
 
   const transforms = getRemoveConstraintsTransforms(
-    convertSelectionsToOld(updatedSelectionRanges),
+    updatedSelectionRanges,
     kclManager.ast,
     'removeConstrainingValues'
   )

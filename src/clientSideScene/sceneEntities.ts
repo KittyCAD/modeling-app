@@ -80,7 +80,7 @@ import {
   createPipeSubstitution,
   findUniqueName,
 } from 'lang/modifyAst'
-import { Selections__old, getEventForSegmentSelection } from 'lib/selections'
+import { Selections, getEventForSegmentSelection } from 'lib/selections'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
@@ -477,7 +477,7 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
-    selectionRanges?: Selections__old
+    selectionRanges?: Selections
   }): Promise<{
     truncatedAst: Node<Program>
     programMemoryOverride: ProgramMemory
@@ -575,10 +575,8 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
-      const isSelected = selectionRanges?.codeBasedSelections.some(
-        (selection) => {
-          return isOverlap(selection.range, segment.__geoMeta.sourceRange)
-        }
+      const isSelected = selectionRanges?.graphSelections.some((selection) =>
+        isOverlap(selection?.codeRef?.range, segment.__geoMeta.sourceRange)
       )
 
       let seg: Group
