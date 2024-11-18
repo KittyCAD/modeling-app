@@ -1,0 +1,111 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing object_prop_not_found.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "word",
+      "start": 0,
+      "end": 3,
+      "value": "obj"
+    },
+    {
+      "type": "whitespace",
+      "start": 3,
+      "end": 4,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 4,
+      "end": 5,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 5,
+      "end": 6,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 6,
+      "end": 7,
+      "value": "{"
+    },
+    {
+      "type": "whitespace",
+      "start": 7,
+      "end": 9,
+      "value": "  "
+    },
+    {
+      "type": "brace",
+      "start": 9,
+      "end": 10,
+      "value": "}"
+    },
+    {
+      "type": "whitespace",
+      "start": 10,
+      "end": 11,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 11,
+      "end": 12,
+      "value": "k"
+    },
+    {
+      "type": "whitespace",
+      "start": 12,
+      "end": 13,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 13,
+      "end": 14,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 14,
+      "end": 15,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 15,
+      "end": 18,
+      "value": "obj"
+    },
+    {
+      "type": "brace",
+      "start": 18,
+      "end": 19,
+      "value": "["
+    },
+    {
+      "type": "string",
+      "start": 19,
+      "end": 24,
+      "value": "\"age\""
+    },
+    {
+      "type": "brace",
+      "start": 24,
+      "end": 25,
+      "value": "]"
+    },
+    {
+      "type": "whitespace",
+      "start": 25,
+      "end": 26,
+      "value": "\n"
+    }
+  ]
+}
