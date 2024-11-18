@@ -9,7 +9,10 @@ new-test name:
 lint:
     cargo clippy --workspace --all-targets -- -D warnings
 
+# Generate the stdlib image artifacts
+# Then run the stdlib docs generation
 redo-kcl-stdlib-docs:
+    TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib kcl_test_example
     EXPECTORATE=overwrite {{cnr}} -p kcl-lib docs::gen_std_tests::test_generate_stdlib
 
 # Create a new KCL deterministic simulation test case.
@@ -18,4 +21,4 @@ new-sim-test test_name render_to_png="true":
     {{cita}} -p kcl-lib -- tests::{{test_name}}::parse
     {{cita}} -p kcl-lib -- tests::{{test_name}}::unparse
     TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
-    
+
