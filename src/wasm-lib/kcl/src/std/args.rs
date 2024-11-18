@@ -795,15 +795,15 @@ impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::Plane {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
-        fields!(obj, as_uuid, id);
-        fields_recurse!(obj, value);
-        fields_recurse!(obj, origin);
-        fields_recurse!(obj, x_axis "xAxis");
-        fields_recurse!(obj, y_axis "yAxis");
-        fields_recurse!(obj, z_axis "zAxis");
-        fields_recurse!(obj, meta "__meta");
+        let_field_of!(obj, id);
+        let_field_of!(obj, value);
+        let_field_of!(obj, origin);
+        let_field_of!(obj, x_axis "xAxis");
+        let_field_of!(obj, y_axis "yAxis");
+        let_field_of!(obj, z_axis "zAxis");
+        let_field_of!(obj, meta "__meta");
         Some(Self {
             id,
             value,
@@ -817,7 +817,7 @@ impl<'a> FromKclValue<'a> for crate::executor::Plane {
 }
 
 impl<'a> FromKclValue<'a> for crate::executor::PlaneType {
-    fn from_mem_item(arg: &'a KclValue) -> Option<Self> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let plane_type = match arg.as_str()? {
             "XY" | "xy" => Self::XY,
             "XZ" | "xz" => Self::XZ,
