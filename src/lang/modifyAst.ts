@@ -1,5 +1,5 @@
 import { err, reportRejection, trap } from 'lib/trap'
-import { Selection, Selection__old } from 'lib/selections'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -780,7 +780,7 @@ export function createBinaryExpressionWithUnary([left, right]: [
 
 export function giveSketchFnCallTag(
   ast: Node<Program>,
-  range: Selection__old['range'],
+  range: SourceRange,
   tag?: string
 ):
   | {
@@ -854,7 +854,7 @@ export function moveValueIntoNewVariablePath(
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
   programMemory: ProgramMemory,
-  sourceRange: Selection__old['range'],
+  sourceRange: SourceRange,
   variableName: string
 ): {
   modifiedAst: Node<Program>
@@ -1067,7 +1067,6 @@ export async function deleteFromSelection(
               sketchName
             )
             if (err(sketchToPreserve)) return sketchToPreserve
-            console.log('sketchName', sketchName)
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
             const faceDetails = await getFaceDetails(sketchToPreserve.on.id)

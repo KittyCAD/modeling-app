@@ -89,9 +89,7 @@ export type Selections = {
 /** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
  * this function should only be used for backwards compatibility with old functions.
  */
-export function convertSelectionToOld(
-  selection: Selection
-): Selection__old | null {
+function convertSelectionToOld(selection: Selection): Selection__old | null {
   // return {} as Selection__old
   // TODO implementation
   const _artifact = selection.artifact

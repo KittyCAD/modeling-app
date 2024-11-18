@@ -7,7 +7,7 @@ import {
   TransformInfo,
 } from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Selection__old, Selections } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
@@ -19,6 +19,7 @@ import {
   ProgramMemory,
   sketchFromKclValue,
   Literal,
+  SourceRange,
 } from '../wasm'
 import {
   getNodeFromPath,
@@ -1626,7 +1627,7 @@ export function transformAstSketchLines({
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
-  referencedSegmentRange?: Selection__old['range']
+  referencedSegmentRange?: SourceRange
   forceValueUsedInTransform?: BinaryPart
 }):
   | {
@@ -1830,7 +1831,7 @@ function getArgLiteralVal(arg: Literal): number | Error {
 export type ConstraintLevel = 'free' | 'partial' | 'full'
 
 export function getConstraintLevelFromSourceRange(
-  cursorRange: Selection__old['range'],
+  cursorRange: SourceRange,
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast

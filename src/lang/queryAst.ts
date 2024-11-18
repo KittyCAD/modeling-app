@@ -1,5 +1,5 @@
 import { ToolTip } from 'lang/langHelpers'
-import { Selection, Selection__old, Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import {
   ArrayExpression,
   BinaryExpression,
@@ -130,7 +130,7 @@ function moreNodePathFromSourceRange(
     | VariableDeclaration
     | ReturnStatement
   >,
-  sourceRange: Selection__old['range'],
+  sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange
@@ -381,7 +381,7 @@ function moreNodePathFromSourceRange(
 
 export function getNodePathFromSourceRange(
   node: Program,
-  sourceRange: Selection__old['range'],
+  sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange || []
@@ -560,7 +560,7 @@ export function findAllPreviousVariablesPath(
 export function findAllPreviousVariables(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Selection__old['range'],
+  sourceRange: SourceRange,
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
@@ -844,13 +844,12 @@ export function hasExtrudeSketch({
   programMemory,
 }: {
   ast: Program
-  selection: Selection__old
+  selection: Selection
   programMemory: ProgramMemory
 }): boolean {
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const varDecMeta = getNodeFromPath<VariableDeclaration>(
     ast,
-    pathToNode,
+    selection?.codeRef?.pathToNode,
     'VariableDeclaration'
   )
   if (err(varDecMeta)) {

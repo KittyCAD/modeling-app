@@ -338,18 +338,11 @@ export const ModelingMachineProvider = ({
                 setSelections.selection &&
                 !editorManager.isShiftDown
               ) {
-                // const oldSelection = convertSelectionToOld(setSelections.selection)
-                // if (oldSelection) {
-
-                // }
                 selections = {
                   graphSelections: [setSelections.selection],
                   otherSelections: [],
                 }
               } else if (setSelections.selection && editorManager.isShiftDown) {
-                // const oldSelection = convertSelectionToOld(setSelections.selection)
-                // if (oldSelection) {
-                // }
                 selections = {
                   graphSelections: [
                     ...selectionRanges.graphSelections,
