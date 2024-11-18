@@ -100,14 +100,6 @@ function convertSelectionToOld(selection: Selection): Selection__old | null {
     )
     if (err(codeRef)) return null
     return { range: codeRef.range, type: 'solid2D' }
-    // return {
-    //   type: 'Set selection',
-    //   data: {
-    //     selectionType: 'singleCodeCursor',
-
-    //     selection: { range: codeRef.range, type: 'solid2D' },
-    //   },
-    // }
   }
   if (_artifact?.type === 'cap') {
     const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
@@ -116,16 +108,6 @@ function convertSelectionToOld(selection: Selection): Selection__old | null {
       range: codeRef.range,
       type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
     }
-    // return {
-    //   type: 'Set selection',
-    //   data: {
-    //     selectionType: 'singleCodeCursor',
-    //     selection: {
-    //       range: codeRef.range,
-    //       type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
-    //     },
-    //   },
-    // }
   }
   if (_artifact?.type === 'wall') {
     const codeRef = getWallCodeRef(
@@ -134,23 +116,9 @@ function convertSelectionToOld(selection: Selection): Selection__old | null {
     )
     if (err(codeRef)) return null
     return { range: codeRef.range, type: 'extrude-wall' }
-    // return {
-    //   type: 'Set selection',
-    //   data: {
-    //     selectionType: 'singleCodeCursor',
-    //     selection: { range: codeRef.range, type: 'extrude-wall' },
-    //   },
-    // }
   }
   if (_artifact?.type === 'segment' || _artifact?.type === 'path') {
     return { range: _artifact.codeRef.range, type: 'default' }
-    // return {
-    //   type: 'Set selection',
-    //   data: {
-    //     selectionType: 'singleCodeCursor',
-    //     selection: { range: _artifact.codeRef.range, type: 'default' },
-    //   },
-    // }
   }
   if (_artifact?.type === 'sweepEdge') {
     const codeRef = getSweepEdgeCodeRef(
@@ -160,22 +128,8 @@ function convertSelectionToOld(selection: Selection): Selection__old | null {
     if (err(codeRef)) return null
     if (_artifact?.subType === 'adjacent') {
       return { range: codeRef.range, type: 'adjacent-edge' }
-      // return {
-      //   type: 'Set selection',
-      //   data: {
-      //     selectionType: 'singleCodeCursor',
-      //     selection: { range: codeRef.range, type: 'adjacent-edge' },
-      //   },
-      // }
     }
     return { range: codeRef.range, type: 'edge' }
-    // return {
-    //   type: 'Set selection',
-    //   data: {
-    //     selectionType: 'singleCodeCursor',
-    //     selection: { range: codeRef.range, type: 'edge' },
-    //   },
-    // }
   }
   if (_artifact?.type === 'edgeCut') {
     const codeRef = _artifact.codeRef
@@ -240,98 +194,6 @@ export async function getEventForSelectWithPoint({
       },
     }
   }
-  // if (_artifact.type === 'wall') {
-  //   const codeRef = getWallCodeRef(
-  //     _artifact,
-  //     engineCommandManager.artifactGraph
-  //   )
-  //   if (err(codeRef)) return null
-  //   return {
-  //     type: 'Set selection',
-  //     data: {
-  //       selectionType: 'singleCodeCursor',
-  //       selection: { range: codeRef.range, type: 'extrude-wall' },
-  //     },
-  //   }
-  // }
-  // if (_artifact.type === 'segment' || _artifact.type === 'path') {
-  //   return {
-  //     type: 'Set selection',
-  //     data: {
-  //       selectionType: 'singleCodeCursor',
-  //       selection: { range: _artifact.codeRef.range, type: 'default' },
-  //     },
-  //   }
-  // }
-  // if (_artifact.type === 'sweepEdge') {
-  //   const codeRef = getSweepEdgeCodeRef(
-  //     _artifact,
-  //     engineCommandManager.artifactGraph
-  //   )
-  //   if (err(codeRef)) return null
-  //   if (_artifact?.subType === 'adjacent') {
-  //     return {
-  //       type: 'Set selection',
-  //       data: {
-  //         selectionType: 'singleCodeCursor',
-  //         selection: { range: codeRef.range, type: 'adjacent-edge' },
-  //       },
-  //     }
-  //   }
-  //   return {
-  //     type: 'Set selection',
-  //     data: {
-  //       selectionType: 'singleCodeCursor',
-  //       selection: { range: codeRef.range, type: 'edge' },
-  //     },
-  //   }
-  // }
-  // if (_artifact.type === 'edgeCut') {
-  //   const consumedEdge = getArtifactOfTypes(
-  //     { key: _artifact.consumedEdgeId, types: ['segment', 'sweepEdge'] },
-  //     engineCommandManager.artifactGraph
-  //   )
-  //   if (err(consumedEdge))
-  //     return {
-  //       type: 'Set selection',
-  //       data: {
-  //         selectionType: 'singleCodeCursor',
-  //         selection: { range: _artifact.codeRef.range, type: 'default' },
-  //       },
-  //     }
-  //   if (consumedEdge.type === 'segment') {
-  //     return {
-  //       type: 'Set selection',
-  //       data: {
-  //         selectionType: 'singleCodeCursor',
-  //         selection: {
-  //           range: _artifact.codeRef.range,
-  //           type: 'base-edgeCut',
-  //           secondaryRange: consumedEdge.codeRef.range,
-  //         },
-  //       },
-  //     }
-  //   }
-  //   const segment = getArtifactOfTypes(
-  //     { key: consumedEdge.segId, types: ['segment'] },
-  //     engineCommandManager.artifactGraph
-  //   )
-  //   if (err(segment)) return null
-  //   return {
-  //     type: 'Set selection',
-  //     data: {
-  //       selectionType: 'singleCodeCursor',
-  //       selection: {
-  //         range: _artifact.codeRef.range,
-  //         type:
-  //           consumedEdge.subType === 'adjacent'
-  //             ? 'adjacent-edgeCut'
-  //             : 'opposite-edgeCut',
-  //         secondaryRange: segment.codeRef.range,
-  //       },
-  //     },
-  //   }
-  // }
   return null
 }
 
@@ -402,30 +264,6 @@ export function getEventForSegmentSelection(
       },
     },
   }
-  // const pathToNode = group?.userData?.pathToNode
-  // if (!pathToNode) return null
-  // // previous drags don't update ast for efficiency reasons
-  // // So we want to make sure we have and updated ast with
-  // // accurate source ranges
-  // const updatedAst = parse(codeManager.code)
-  // if (err(updatedAst)) return null
-
-  // const nodeMeta = getNodeFromPath<CallExpression>(
-  //   updatedAst,
-  //   pathToNode,
-  //   'CallExpression'
-  // )
-  // if (err(nodeMeta)) return null
-
-  // const node = nodeMeta.node
-  // const range: SourceRange = [node.start, node.end]
-  // return {
-  //   type: 'Set selection',
-  //   data: {
-  //     selectionType: 'singleCodeCursor',
-  //     selection: { range, type: 'default' },
-  //   },
-  // }
 }
 
 export function handleSelectionBatch({
@@ -504,7 +342,6 @@ export function processCodeMirrorRanges({
   engineEvents: Models['WebSocketRequest_type'][]
 } {
   const isChange =
-    // todo should this take old or new selections?
     codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
     codeMirrorRanges.some(({ from, to }, i) => {
       return (
@@ -699,20 +536,6 @@ export function canSweepSelection(selection: Selections) {
   )
 }
 
-// function canExtrudeSelectionItem(selection: Selections, i: number) {
-//   const isolatedSelection = {
-//     ...selection,
-//     graphSelections: [selection.graphSelections[i]],
-//   }
-//   const commonNode = buildCommonNodeFromSelection(selection, i)
-
-//   return (
-//     !!isSketchPipe(isolatedSelection) &&
-//     (nodeHasClose(commonNode) || nodeHasCircle(commonNode)) &&
-//     !nodeHasExtrude(commonNode)
-//   )
-// }
-
 // This accounts for non-geometry selections under "other"
 export type ResolvedSelectionType = [Artifact['type'] | 'other', number]
 
@@ -749,7 +572,7 @@ export function getSelectionTypeDisplayText(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
         `${count} ${type
-          .replace('extrude-wall', 'face')
+          .replace('wall', 'face')
           .replace('solid2D', 'face')
           .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
@@ -1001,9 +824,6 @@ export async function sendSelectEventToEngine(
   return { entity_id: '' }
 }
 
-// using artifact as the selection is maybe not such a good idea.
-// is the artifact stable, once you add a constrain, there will a new artifact graph
-// then the ids will not match up
 export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
@@ -1035,13 +855,6 @@ export function updateSelections(
             break
           }
         }
-        // if (
-        //   a.codeRef.range[0] === node.start &&
-        //   a.codeRef.range[1] === node.end
-        // ) {
-        //   artifact = a
-        //   break
-        // }
       }
       if (!artifact) return undefined
       return {
@@ -1050,15 +863,7 @@ export function updateSelections(
           range: [node.start, node.end],
           pathToNode: pathToNode,
         },
-        // codeRef: {
-        //   range: [node.start, node.end],
-        //   pathToNode: pathToNode,
-        // },
       }
-      // return {
-      //   range: [node.start, node.end],
-      //   type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
-      // }
     })
     .filter((x?: Selection) => x !== undefined) as Selection[]
 

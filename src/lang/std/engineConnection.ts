@@ -2132,7 +2132,11 @@ export class EngineCommandManager extends EventTarget {
         responseMap: this.responseMap,
         ast: this.getAst(),
       })
-      if (useFakeExecutor) return
+      if (useFakeExecutor) {
+        // mock executions don't product an artifactGraph, so this will always be empty
+        // skipping the below logic to wait for the next real execution
+        return
+      }
       if (this.artifactGraph.size) {
         this.deferredArtifactEmptied(null)
       } else {

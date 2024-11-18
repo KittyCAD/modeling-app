@@ -824,7 +824,6 @@ export function getCodeRefsByArtifactId(
     const codeRef = getSolid2dCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return [codeRef]
-    // editorManager.setHighlightRange([codeRef.range])
   } else if (artifact?.type === 'cap') {
     const codeRef = getCapCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null

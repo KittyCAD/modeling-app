@@ -284,7 +284,6 @@ const runModifyAstCloneWithFilletAndTag = async (
   if (err(result)) {
     return result
   }
-  // console.log(recast(result.modifiedAst))
   const { modifiedAst } = result
 
   const newCode = recast(modifiedAst)

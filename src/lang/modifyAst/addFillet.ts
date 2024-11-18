@@ -63,7 +63,7 @@ export function applyFilletToSelection(
 
 export function modifyAstWithFilletAndTag(
   ast: Node<Program>,
-  selection: Selections,
+  selections: Selections,
   radius: KclCommandValue
 ): { modifiedAst: Node<Program>; pathToFilletNode: Array<PathToNode> } | Error {
   let clonedAst = structuredClone(ast)
@@ -81,9 +81,9 @@ export function modifyAstWithFilletAndTag(
   > = new Map()
   const lookupMap: Map<string, PathToNode> = new Map() // work around for Map key comparison
 
-  for (const _s of selection.graphSelections) {
+  for (const selection of selections.graphSelections) {
     const singleSelection = {
-      graphSelections: [_s],
+      graphSelections: [selection],
       otherSelections: [],
     }
 
@@ -105,16 +105,16 @@ export function modifyAstWithFilletAndTag(
     // Group tags by their corresponding extrude node
     const extrudeKey = JSON.stringify(pathToExtrudeNode)
 
-    if (lookupMap.has(extrudeKey) && _s.artifact) {
+    if (lookupMap.has(extrudeKey) && selection.artifact) {
       const existingPath = lookupMap.get(extrudeKey)
       if (!existingPath) return new Error('Path to extrude node not found.')
       extrudeToTagsMap
         .get(existingPath)
-        ?.push({ tag, artifact: _s.artifact } as const)
-    } else if (_s.artifact) {
+        ?.push({ tag, artifact: selection.artifact } as const)
+    } else if (selection.artifact) {
       lookupMap.set(extrudeKey, pathToExtrudeNode)
       extrudeToTagsMap.set(pathToExtrudeNode, [
-        { tag, artifact: _s.artifact } as const,
+        { tag, artifact: selection.artifact } as const,
       ])
     }
   }
