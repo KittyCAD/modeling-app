@@ -316,10 +316,6 @@ export const ModelingMachineProvider = ({
                 })
               })
             }
-            // let selections: Selections__old = {
-            //   codeBasedSelections: [],
-            //   otherSelections: [],
-            // }
             let selections: Selections = {
               graphSelections: [],
               otherSelections: [],
