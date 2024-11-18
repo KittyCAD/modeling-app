@@ -15,7 +15,6 @@ on:
 env:
   CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
   BUILD_RELEASE: true
-  #
   NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
 
 concurrency:

@@ -1,0 +1,102 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing non_string_key_of_object.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declarations": [
+          {
+            "end": 18,
+            "id": {
+              "end": 3,
+              "name": "obj",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "init": {
+              "end": 18,
+              "properties": [
+                {
+                  "end": 16,
+                  "key": {
+                    "end": 11,
+                    "name": "key",
+                    "start": 8,
+                    "type": "Identifier"
+                  },
+                  "start": 8,
+                  "type": "ObjectProperty",
+                  "value": {
+                    "end": 16,
+                    "raw": "123",
+                    "start": 13,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 123
+                  }
+                }
+              ],
+              "start": 6,
+              "type": "ObjectExpression",
+              "type": "ObjectExpression"
+            },
+            "start": 0,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 18,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declarations": [
+          {
+            "end": 31,
+            "id": {
+              "end": 22,
+              "name": "num",
+              "start": 19,
+              "type": "Identifier"
+            },
+            "init": {
+              "computed": false,
+              "end": 31,
+              "object": {
+                "end": 28,
+                "name": "obj",
+                "start": 25,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "end": 30,
+                "raw": "3",
+                "start": 29,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 3
+              },
+              "start": 25,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "start": 19,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 31,
+        "kind": "const",
+        "start": 19,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 32,
+    "start": 0
+  }
+}

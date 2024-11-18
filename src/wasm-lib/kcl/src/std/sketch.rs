@@ -894,7 +894,7 @@ pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<K
 async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, exec_state, &args).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::PlaneOrientation(xy_plane), None, exec_state, &args).await?;
     let sketch = inner_start_profile_at(data, sketch_surface, None, exec_state, args).await?;
     Ok(sketch)
 }
@@ -905,11 +905,12 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum SketchData {
-    Plane(PlaneData),
+    PlaneOrientation(PlaneData),
+    Plane(Box<Plane>),
     Solid(Box<Solid>),
 }
 
-/// Data for a plane.
+/// Orientation data that can be used to construct a plane, not a plane in itself.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -1069,10 +1070,11 @@ async fn inner_start_sketch_on(
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
     match data {
-        SketchData::Plane(plane_data) => {
-            let plane = start_sketch_on_plane(plane_data, exec_state, args).await?;
+        SketchData::PlaneOrientation(plane_data) => {
+            let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
+        SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
                 return Err(KclError::Type(KclErrorDetails {
@@ -1106,7 +1108,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn start_sketch_on_plane(
+async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
     args: &Args,
@@ -1122,10 +1124,10 @@ async fn start_sketch_on_plane(
 
     plane.id = match data {
         PlaneData::XY => default_planes.xy,
-        PlaneData::XZ => default_planes.xz,
-        PlaneData::YZ => default_planes.yz,
         PlaneData::NegXY => default_planes.neg_xy,
+        PlaneData::XZ => default_planes.xz,
         PlaneData::NegXZ => default_planes.neg_xz,
+        PlaneData::YZ => default_planes.yz,
         PlaneData::NegYZ => default_planes.neg_yz,
         PlaneData::Plane {
             origin,
@@ -1210,11 +1212,26 @@ pub(crate) async fn inner_start_profile_at(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if let SketchSurface::Face(face) = &sketch_surface {
-        // Flush the batch for our fillets/chamfers if there are any.
-        // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+    match &sketch_surface {
+        SketchSurface::Face(face) => {
+            // Flush the batch for our fillets/chamfers if there are any.
+            // If we do not do these for sketch on face, things will fail with face does not exist.
+            args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+                .await?;
+        }
+        SketchSurface::Plane(plane) if !plane.is_standard() => {
+            // Hide whatever plane we are sketching on.
+            // This is especially helpful for offset planes, which would be visible otherwise.
+            args.batch_end_cmd(
+                exec_state.id_generator.next_uuid(),
+                ModelingCmd::from(mcmd::ObjectVisible {
+                    object_id: plane.id,
+                    hidden: true,
+                }),
+            )
             .await?;
+        }
+        _ => {}
     }
 
     // Enter sketch mode on the surface.
@@ -1469,6 +1486,17 @@ pub enum ArcData {
     },
 }
 
+/// Data to draw a three point arc (arcTo).
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ArcToData {
+    /// End point of the arc. A point in 3D space
+    pub end: [f64; 2],
+    /// Interior point of the arc. A point in 3D space
+    pub interior: [f64; 2],
+}
+
 /// Draw an arc.
 pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch, tag): (ArcData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
@@ -1499,7 +1527,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///        radius: 16
 ///      }, %)
 ///   |> close(%)
-// const example = extrude(10, exampleSketch)
+/// const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "arc",
@@ -1565,6 +1593,104 @@ pub(crate) async fn inner_arc(
             },
         },
         center: center.into(),
+        radius,
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
+}
+
+/// Draw a three point arc.
+pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch, tag): (ArcToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
+
+    let new_sketch = inner_arc_to(data, sketch, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+/// Draw a 3 point arc.
+///
+/// The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point.
+/// The interior point is placed between the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from
+/// the start and end.
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> arcTo({
+///         end: [10,0],
+///         interior: [5,5]
+///      }, %)
+///   |> close(%)
+/// const example = extrude(10, exampleSketch)
+/// ```
+#[stdlib {
+    name = "arcTo",
+}]
+pub(crate) async fn inner_arc_to(
+    data: ArcToData,
+    sketch: Sketch,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let from: Point2d = sketch.current_pen_position()?;
+    let id = exec_state.id_generator.next_uuid();
+
+    // The start point is taken from the path you are extending.
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::ArcTo {
+                end: kcmc::shared::Point3d {
+                    x: LengthUnit(data.end[0]),
+                    y: LengthUnit(data.end[1]),
+                    z: LengthUnit(0.0),
+                },
+                interior: kcmc::shared::Point3d {
+                    x: LengthUnit(data.interior[0]),
+                    y: LengthUnit(data.interior[1]),
+                    z: LengthUnit(0.0),
+                },
+                relative: false,
+            },
+        }),
+    )
+    .await?;
+
+    let start = [from.x, from.y];
+    let interior = [data.interior[0], data.interior[1]];
+    let end = [data.end[0], data.end[1]];
+
+    // compute the center of the circle since we do not have the value returned from the engine
+    let center = calculate_circle_center(start, interior, end);
+
+    // compute the radius since we do not have the value returned from the engine
+    // Pick any of the 3 points since they all lie along the circle
+    let sum_of_square_differences =
+        (center[0] - start[0] * center[0] - start[0]) + (center[1] - start[1] * center[1] - start[1]);
+    let radius = sum_of_square_differences.sqrt();
+
+    let current_path = Path::Arc {
+        base: BasePath {
+            from: from.into(),
+            to: data.end,
+            tag: tag.clone(),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        center,
         radius,
     };
 
@@ -1897,6 +2023,42 @@ async fn inner_tangential_arc_to_relative(
     Ok(new_sketch)
 }
 
+// Calculate the center of 3 points
+// To calculate the center of the 3 point circle 2 perpendicular lines are created
+// These perpendicular lines will intersect at the center of the circle.
+fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
+    // y2 - y1
+    let y_2_1 = p2[1] - p1[1];
+    // y3 - y2
+    let y_3_2 = p3[1] - p2[1];
+    // x2 - x1
+    let x_2_1 = p2[0] - p1[0];
+    // x3 - x2
+    let x_3_2 = p3[0] - p2[0];
+
+    // Slope of two perpendicular lines
+    let slope_a = y_2_1 / x_2_1;
+    let slope_b = y_3_2 / x_3_2;
+
+    // Values for line intersection
+    // y1 - y3
+    let y_1_3 = p1[1] - p3[1];
+    // x1 + x2
+    let x_1_2 = p1[0] + p2[0];
+    // x2 + x3
+    let x_2_3 = p2[0] + p3[0];
+    // y1 + y2
+    let y_1_2 = p1[1] + p2[1];
+
+    // Solve for the intersection of these two lines
+    let numerator = (slope_a * slope_b * y_1_3) + (slope_b * x_1_2) - (slope_a * x_2_3);
+    let x = numerator / (2.0 * (slope_b - slope_a));
+
+    let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
+
+    [x, y]
+}
+
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -2073,7 +2235,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{executor::TagIdentifier, std::sketch::PlaneData};
+    use crate::{executor::TagIdentifier, std::sketch::calculate_circle_center, std::sketch::PlaneData};
 
     #[test]
     fn test_deserialize_plane_data() {
@@ -2143,5 +2305,12 @@ mod tests {
             data,
             crate::std::sketch::FaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
         );
+    }
+
+    #[test]
+    fn test_circle_center() {
+        let actual = calculate_circle_center([0.0, 0.0], [5.0, 5.0], [10.0, 0.0]);
+        assert_eq!(actual[0], 5.0);
+        assert_eq!(actual[1], 0.0);
     }
 }

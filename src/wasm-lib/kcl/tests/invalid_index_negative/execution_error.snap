@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing invalid_index_negative.kcl
+snapshot_kind: text
+---
+semantic: KclErrorDetails { source_ranges: [SourceRange([27, 33, 0])], message: "'-1' is negative, so you can't index an array with it" }

@@ -7,9 +7,6 @@ use kcl_lib::{
 /// i.e. how different the current model snapshot can be from the previous saved one.
 const MIN_DIFF: f64 = 0.99;
 
-mod no_visuals;
-mod visuals;
-
 macro_rules! kcl_input {
     ($file:literal) => {
         include_str!(concat!("inputs/", $file, ".kcl"))

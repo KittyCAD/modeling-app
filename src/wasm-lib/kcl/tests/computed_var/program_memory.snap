@@ -1,0 +1,194 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing computed_var.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "arr": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    44,
+                    45,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    47,
+                    48,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    50,
+                    51,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 10,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    53,
+                    55,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                43,
+                56,
+                0
+              ]
+            }
+          ]
+        },
+        "i": {
+          "type": "Int",
+          "value": 3,
+          "__meta": [
+            {
+              "sourceRange": [
+                61,
+                62,
+                0
+              ]
+            }
+          ]
+        },
+        "obj": {
+          "type": "Object",
+          "value": {
+            "bar": {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    148,
+                    149,
+                    0
+                  ]
+                }
+              ]
+            },
+            "foo": {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    140,
+                    141,
+                    0
+                  ]
+                }
+              ]
+            }
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                133,
+                151,
+                0
+              ]
+            }
+          ]
+        },
+        "one": {
+          "type": "Int",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                140,
+                141,
+                0
+              ]
+            }
+          ]
+        },
+        "p": {
+          "type": "String",
+          "value": "foo",
+          "__meta": [
+            {
+              "sourceRange": [
+                121,
+                126,
+                0
+              ]
+            }
+          ]
+        },
+        "ten": {
+          "type": "Int",
+          "value": 10,
+          "__meta": [
+            {
+              "sourceRange": [
+                53,
+                55,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}
