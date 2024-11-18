@@ -43,6 +43,7 @@ import {
   completionKeymap,
 } from '@codemirror/autocomplete'
 import CodeEditor from './CodeEditor'
+import { codeManagerHistoryCompartment } from 'lang/codeManager'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -89,7 +90,7 @@ export const KclEditorPane = () => {
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
-      history(),
+      codeManagerHistoryCompartment.of(history()),
       closeBrackets(),
       codeFolding(),
       keymap.of([
