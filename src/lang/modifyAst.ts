@@ -349,7 +349,8 @@ export function revolveSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
   shouldPipe = false,
-  angle: Expr = createLiteral(4)
+  angle: Expr = createLiteral(4),
+  axis: string
 ):
   | {
       modifiedAst: Node<Program>
@@ -384,8 +385,7 @@ export function revolveSketch(
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      // TODO: hard coded 'X' axis for revolve MVP, should be changed.
-      axis: createLiteral('X'),
+      axis: createLiteral(axis),
     }),
     createIdentifier(variableDeclarator.id.name),
   ])
