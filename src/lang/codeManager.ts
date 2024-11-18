@@ -97,6 +97,7 @@ export default class CodeManager {
     this.code = code
     if (editorManager.editorView) {
       if (clearHistory) {
+        clearCodeMirrorHistory(editorManager.editorView)
       }
       editorManager.editorView.dispatch({
         changes: {
@@ -106,7 +107,7 @@ export default class CodeManager {
         },
         annotations: [
           codeManagerUpdateEvent,
-          Transaction.addToHistory.of(true),
+          Transaction.addToHistory.of(!clearHistory),
         ],
       })
     }
