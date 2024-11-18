@@ -98,12 +98,22 @@ sketch004 = startSketchOn(extrude003, seg02)
 |> close(%)
 extrude004 = extrude(3, sketch004)
 `
+const exampleCodeOffsetPlanes = `
+offsetPlane001 = offsetPlane("XY", 20)
+offsetPlane002 = offsetPlane("XZ", -50)
+offsetPlane003 = offsetPlane("YZ", 10)
+
+sketch002 = startSketchOn(offsetPlane001)
+  |> startProfileAt([0, 0], %)
+  |> line([6.78, 15.01], %)
+`
 
 // add more code snippets here and use `getCommands` to get the orderedCommands and responseMap for more tests
 const codeToWriteCacheFor = {
   exampleCode1,
   sketchOnFaceOnFaceEtc,
   exampleCodeNo3D,
+  exampleCodeOffsetPlanes,
 } as const
 
 type CodeKey = keyof typeof codeToWriteCacheFor
@@ -165,6 +175,52 @@ afterAll(() => {
 })
 
 describe('testing createArtifactGraph', () => {
+  describe('code with offset planes and a sketch:', () => {
+    let ast: Program
+    let theMap: ReturnType<typeof createArtifactGraph>
+
+    it('setup', () => {
+      // putting this logic in here because describe blocks runs before beforeAll has finished
+      const {
+        orderedCommands,
+        responseMap,
+        ast: _ast,
+      } = getCommands('exampleCodeOffsetPlanes')
+      ast = _ast
+      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+    })
+
+    it(`there should be one sketch`, () => {
+      const sketches = [...filterArtifacts({ types: ['path'] }, theMap)].map(
+        (path) => expandPath(path[1], theMap)
+      )
+      expect(sketches).toHaveLength(1)
+      sketches.forEach((path) => {
+        if (err(path)) throw path
+        expect(path.type).toBe('path')
+      })
+    })
+
+    it(`there should be three offsetPlanes`, () => {
+      const offsetPlanes = [
+        ...filterArtifacts({ types: ['plane'] }, theMap),
+      ].map((plane) => expandPlane(plane[1], theMap))
+      expect(offsetPlanes).toHaveLength(3)
+      offsetPlanes.forEach((path) => {
+        expect(path.type).toBe('plane')
+      })
+    })
+
+    it(`Only one offset plane should have a path`, () => {
+      const offsetPlanes = [
+        ...filterArtifacts({ types: ['plane'] }, theMap),
+      ].map((plane) => expandPlane(plane[1], theMap))
+      const offsetPlaneWithPaths = offsetPlanes.filter(
+        (plane) => plane.paths.length
+      )
+      expect(offsetPlaneWithPaths).toHaveLength(1)
+    })
+  })
   describe('code with an extrusion, fillet and sketch of face:', () => {
     let ast: Program
     let theMap: ReturnType<typeof createArtifactGraph>

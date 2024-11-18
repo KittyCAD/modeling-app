@@ -249,7 +249,20 @@ export function getArtifactsToUpdate({
   const cmd = command.cmd
   const returnArr: ReturnType<typeof getArtifactsToUpdate> = []
   if (!response) return returnArr
-  if (cmd.type === 'enable_sketch_mode') {
+  if (cmd.type === 'make_plane' && range[1] !== 0) {
+    // If we're calling `make_plane` and the code range doesn't end at `0`
+    // it's not a default plane, but a custom one from the offsetPlane standard library function
+    return [
+      {
+        id,
+        artifact: {
+          type: 'plane',
+          pathIds: [],
+          codeRef: { range, pathToNode },
+        },
+      },
+    ]
+  } else if (cmd.type === 'enable_sketch_mode') {
     const plane = getArtifact(currentPlaneId)
     const pathIds = plane?.type === 'plane' ? plane?.pathIds : []
     const codeRef =
