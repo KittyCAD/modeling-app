@@ -107,7 +107,7 @@ export default class CodeManager {
         },
         annotations: [
           codeManagerUpdateEvent,
-          Transaction.addToHistory.of(!clearHistory),
+          Transaction.addToHistory.of(true),
         ],
       })
     }

@@ -1135,3 +1135,164 @@ _test.describe('Deleting items from the file pane', () => {
     }
   )
 })
+
+_test.describe(
+  'Undo and redo do not keep history when navigating between files',
+  () => {
+    _test(
+      `open a file, change something, open a different file, hitting undo should do nothing`,
+      { tag: '@electron' },
+      async ({ browserName }, testInfo) => {
+        const { page } = await setupElectron({
+          testInfo,
+          folderSetupFn: async (dir) => {
+            const testDir = join(dir, 'testProject')
+            await fsp.mkdir(testDir, { recursive: true })
+            await fsp.copyFile(
+              executorInputPath('cylinder.kcl'),
+              join(testDir, 'main.kcl')
+            )
+            await fsp.copyFile(
+              executorInputPath('basic_fillet_cube_end.kcl'),
+              join(testDir, 'other.kcl')
+            )
+          },
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+
+        // Constants and locators
+        const projectCard = page.getByText('testProject')
+        const otherFile = page
+          .getByRole('listitem')
+          .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+
+        await _test.step(
+          'Open project and make a change to the file',
+          async () => {
+            await projectCard.click()
+            await u.waitForPageLoad()
+
+            // Get the text in the code locator.
+            const originalText = await u.codeLocator.innerText()
+            // Click in the editor and add some new lines.
+            await u.codeLocator.click()
+
+            await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    some other shit`)
+
+            // Ensure the content in the editor changed.
+            const newContent = await u.codeLocator.innerText()
+
+            expect(originalText !== newContent)
+          }
+        )
+
+        await _test.step('navigate to other.kcl', async () => {
+          await u.openFilePanel()
+
+          await otherFile.click()
+          await u.waitForPageLoad()
+          await u.openKclCodePanel()
+          await _expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+        })
+
+        await _test.step('hit undo', async () => {
+          // Get the original content of the file.
+          const originalText = await u.codeLocator.innerText()
+          // Now hit undo
+          await page.keyboard.down('Control')
+          await page.keyboard.press('KeyZ')
+          await page.keyboard.up('Control')
+
+          await page.waitForTimeout(100)
+          await expect(u.codeLocator).toContainText(originalText)
+        })
+      }
+    )
+
+    _test(
+      `open a file, change something, undo it, open a different file, hitting redo should do nothing`,
+      { tag: '@electron' },
+      async ({ browserName }, testInfo) => {
+        const { page } = await setupElectron({
+          testInfo,
+          folderSetupFn: async (dir) => {
+            const testDir = join(dir, 'testProject')
+            await fsp.mkdir(testDir, { recursive: true })
+            await fsp.copyFile(
+              executorInputPath('cylinder.kcl'),
+              join(testDir, 'main.kcl')
+            )
+            await fsp.copyFile(
+              executorInputPath('basic_fillet_cube_end.kcl'),
+              join(testDir, 'other.kcl')
+            )
+          },
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+
+        // Constants and locators
+        const projectCard = page.getByText('testProject')
+        const otherFile = page
+          .getByRole('listitem')
+          .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+
+        await _test.step(
+          'Open project and make a change to the file',
+          async () => {
+            await projectCard.click()
+            await u.waitForPageLoad()
+
+            // Get the text in the code locator.
+            const originalText = await u.codeLocator.innerText()
+            // Click in the editor and add some new lines.
+            await u.codeLocator.click()
+
+            await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    some other shit`)
+
+            // Ensure the content in the editor changed.
+            const newContent = await u.codeLocator.innerText()
+
+            expect(originalText !== newContent)
+
+            // Now hit undo
+            await page.keyboard.down('Control')
+            await page.keyboard.press('KeyZ')
+            await page.keyboard.up('Control')
+
+            await page.waitForTimeout(100)
+            await expect(u.codeLocator).toContainText(originalText)
+          }
+        )
+
+        await _test.step('navigate to other.kcl', async () => {
+          await u.openFilePanel()
+
+          await otherFile.click()
+          await u.waitForPageLoad()
+          await u.openKclCodePanel()
+          await _expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+        })
+
+        await _test.step('hit redo', async () => {
+          // Get the original content of the file.
+          const originalText = await u.codeLocator.innerText()
+          // Now hit redo
+          await page.keyboard.down('Shift')
+          await page.keyboard.down('Control')
+          await page.keyboard.press('KeyZ')
+          await page.keyboard.up('Control')
+          await page.keyboard.down('Shift')
+
+          await page.waitForTimeout(100)
+          await expect(u.codeLocator).toContainText(originalText)
+        })
+      }
+    )
+  }
+)
