@@ -1666,15 +1666,15 @@ pub(crate) async fn inner_arc_to(
     let current_path = Path::Arc {
         base: BasePath {
             from: from.into(),
-            to: data.end.into(),
+            to: data.end,
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
-        center: center,
-        radius: radius,
+        center,
+        radius,
     };
 
     let mut new_sketch = sketch.clone();
@@ -2039,7 +2039,7 @@ fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2]
 
     let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
 
-    return [x, y];
+    [x, y]
 }
 
 /// Data to draw a bezier curve.
