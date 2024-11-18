@@ -1,5 +1,12 @@
 import { Selections, Selections__old } from 'lib/selections'
-import { Program, PathToNode } from './wasm'
+import {
+  Program,
+  PathToNode,
+  CallExpression,
+  Literal,
+  ArrayExpression,
+  BinaryExpression,
+} from './wasm'
 import { getNodeFromPath } from './queryAst'
 import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
@@ -83,4 +90,20 @@ export function isCursorInSketchCommandRange(
     : [...overlappingEntries].find(
         ([, artifact]) => artifact.type === 'path'
       )?.[0] || false
+}
+
+export function isCallExpression(e: any): e is CallExpression {
+  return e && e.type === 'CallExpression'
+}
+
+export function isArrayExpression(e: any): e is ArrayExpression {
+  return e && e.type === 'ArrayExpression'
+}
+
+export function isLiteral(e: any): e is Literal {
+  return e && e.type === 'Literal'
+}
+
+export function isBinaryExpression(e: any): e is BinaryExpression {
+  return e && e.type === 'BinaryExpression'
 }

@@ -184,6 +184,7 @@ export type SketchTool =
   | 'line'
   | 'tangentialArc'
   | 'rectangle'
+  | 'center rectangle'
   | 'circle'
   | 'none'
 
@@ -239,6 +240,10 @@ export type ModelingMachineEvent =
       data: [x: number, y: number]
     }
   | {
+      type: 'Add center rectangle origin'
+      data: [x: number, y: number]
+    }
+  | {
       type: 'Add circle origin'
       data: [x: number, y: number]
     }
@@ -278,6 +283,7 @@ export type ModelingMachineEvent =
       }
     }
   | { type: 'Finish rectangle' }
+  | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
@@ -519,6 +525,9 @@ export const modelingMachine = setup({
 
     'next is rectangle': ({ context: { sketchDetails, currentTool } }) =>
       currentTool === 'rectangle' &&
+      canRectangleOrCircleTool({ sketchDetails }),
+    'next is center rectangle': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'center rectangle' &&
       canRectangleOrCircleTool({ sketchDetails }),
     'next is circle': ({ context: { sketchDetails, currentTool } }) =>
       currentTool === 'circle' && canRectangleOrCircleTool({ sketchDetails }),
@@ -820,6 +829,26 @@ export const modelingMachine = setup({
         },
       })
     },
+
+    'listen for center rectangle origin': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      // setupNoPointsListener has the code for startProfileAt onClick
+      sceneEntitiesManager.setupNoPointsListener({
+        sketchDetails,
+        afterClick: (args) => {
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add center rectangle origin',
+              data: [twoD.x, twoD.y],
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
+    },
+
     'listen for circle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       sceneEntitiesManager.createIntersectionPlane()
@@ -872,6 +901,21 @@ export const modelingMachine = setup({
         .then(() => {
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
+    },
+    'set up draft center rectangle': ({
+      context: { sketchDetails },
+      event,
+    }) => {
+      if (event.type !== 'Add center rectangle origin') return
+      if (!sketchDetails || !event.data) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.setupDraftCenterRectangle(
+        sketchDetails.sketchPathToNode,
+        sketchDetails.zAxis,
+        sketchDetails.yAxis,
+        sketchDetails.origin,
+        event.data
+      )
     },
     'set up draft circle': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Add circle origin') return
@@ -1836,6 +1880,40 @@ export const modelingMachine = setup({
           },
         },
 
+        'Center Rectangle tool': {
+          entry: ['listen for center rectangle origin'],
+
+          states: {
+            'Awaiting corner': {
+              on: {
+                'Finish center rectangle': 'Finished Center Rectangle',
+              },
+            },
+
+            'Awaiting origin': {
+              on: {
+                'Add center rectangle origin': {
+                  target: 'Awaiting corner',
+                  // TODO
+                  actions: 'set up draft center rectangle',
+                },
+              },
+            },
+
+            'Finished Center Rectangle': {
+              always: '#Modeling.Sketch.SketchIdle',
+            },
+          },
+
+          initial: 'Awaiting origin',
+
+          on: {
+            'change tool': {
+              target: 'Change Tool',
+            },
+          },
+        },
+
         'clean slate': {
           always: 'SketchIdle',
         },
@@ -2028,6 +2106,10 @@ export const modelingMachine = setup({
             {
               target: 'Circle tool',
               guard: 'next is circle',
+            },
+            {
+              target: 'Center Rectangle tool',
+              guard: 'next is center rectangle',
             },
           ],
 

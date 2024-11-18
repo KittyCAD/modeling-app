@@ -144,6 +144,9 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Note: The import command currently only works when using the native
 /// Modeling App.
 ///
+/// For importing KCL functions using the `import` statement, see the docs on
+/// [KCL modules](/docs/kcl/modules).
+///
 /// ```no_run
 /// const model = import("tests/inputs/cube.obj")
 /// ```
@@ -162,6 +165,15 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// const model = import("tests/inputs/cube.step")
+/// ```
+///
+/// ```no_run
+/// import height, buildSketch from 'common.kcl'
+///
+/// plane = 'XZ'
+/// margin = 2
+/// s1 = buildSketch(plane, [0, 0])
+/// s2 = buildSketch(plane, [0, height() + margin])
 /// ```
 #[stdlib {
     name = "import",
