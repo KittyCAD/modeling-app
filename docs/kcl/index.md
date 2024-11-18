@@ -7,6 +7,7 @@ layout: manual
 ## Table of Contents
 
 * [Types](kcl/types)
+* [Modules](kcl/modules)
 * [Known Issues](kcl/KNOWN-ISSUES)
 * [`abs`](kcl/abs)
 * [`acos`](kcl/acos)
