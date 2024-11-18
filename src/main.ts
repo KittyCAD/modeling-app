@@ -256,6 +256,7 @@ export function getAutoUpdater(): AppUpdater {
 
 app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
+  console.log('autoUpdater.channel', autoUpdater.channel)
   setTimeout(() => {
     autoUpdater.checkForUpdates().catch(reportRejection)
   }, 1000)

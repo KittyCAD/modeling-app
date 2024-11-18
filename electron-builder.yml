@@ -75,3 +75,4 @@ publish:
     channel: latest
 releaseInfo:
   releaseNotesFile: release-notes.md
+generateUpdatesFilesForAllChannels: true
