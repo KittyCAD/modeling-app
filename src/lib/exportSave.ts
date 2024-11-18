@@ -68,7 +68,16 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
 }
 
 // Saves files locally from an export call.
-export async function exportSave(data: ArrayBuffer, toastId: string) {
+// We override the file's name with one passed in from the client side.
+export async function exportSave({
+  data,
+  fileName,
+  toastId,
+}: {
+  data: ArrayBuffer
+  fileName: string
+  toastId: string
+}) {
   // This converts the ArrayBuffer to a Rust equivalent Vec<u8>.
   let uintArray = new Uint8Array(data)
 
@@ -77,12 +86,15 @@ export async function exportSave(data: ArrayBuffer, toastId: string) {
   if (files.length > 1) {
     let zip = new JSZip()
     for (const file of files) {
-      zip.file(file.name, new Uint8Array(file.contents), { binary: true })
+      zip.file(fileName || file.name, new Uint8Array(file.contents), {
+        binary: true,
+      })
     }
     return zip.generateAsync({ type: 'array' }).then((contents) => {
-      return save_({ name: 'output.zip', contents }, toastId)
+      return save_({ name: `${fileName || 'output'}.zip`, contents }, toastId)
     })
   } else {
+    files[0].name = fileName || files[0].name
     return save_(files[0], toastId)
   }
 }
