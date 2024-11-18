@@ -482,8 +482,9 @@ export const ModelingMachineProvider = ({
           // Set the export intent.
           engineCommandManager.exportInfo = {
             intent: ExportIntent.Save,
-            // This never gets used its only for make.
-            name: '',
+            // If we have a name for the file, like if we are in the desktop
+            // app, we can use it for the name of the resulting export.
+            name: file?.name || '',
           }
 
           const format = {

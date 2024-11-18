@@ -6,6 +6,7 @@ import JSZip from 'jszip'
 import ModelingAppFile from './modelingAppFile'
 import toast from 'react-hot-toast'
 import { EXPORT_TOAST_MESSAGES } from './constants'
+import { string } from 'yargs'
 
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {
@@ -68,11 +69,19 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
 }
 
 // Saves files locally from an export call.
-export async function exportSave(data: ArrayBuffer, toastId: string) {
+export async function exportSave(
+  data: ArrayBuffer,
+  filename: string,
+  toastId: string
+) {
   // This converts the ArrayBuffer to a Rust equivalent Vec<u8>.
   let uintArray = new Uint8Array(data)
 
   let files: ModelingAppFile[] = deserialize_files(uintArray)
+
+  if (filename === '') {
+    filename = 'output'
+  }
 
   if (files.length > 1) {
     let zip = new JSZip()
@@ -80,9 +89,13 @@ export async function exportSave(data: ArrayBuffer, toastId: string) {
       zip.file(file.name, new Uint8Array(file.contents), { binary: true })
     }
     return zip.generateAsync({ type: 'array' }).then((contents) => {
-      return save_({ name: 'output.zip', contents }, toastId)
+      return save_({ name: filename + '.zip', contents }, toastId)
     })
   } else {
-    return save_(files[0], toastId)
+    const file = files[0]
+    return save_(
+      { name: file.name.replace('output', filename), contents: file.contents },
+      toastId
+    )
   }
 }

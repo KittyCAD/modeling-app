@@ -1631,7 +1631,11 @@ export class EngineCommandManager extends EventTarget {
 
           switch (this.exportInfo.intent) {
             case ExportIntent.Save: {
-              exportSave(event.data, this.pendingExport.toastId).then(() => {
+              exportSave(
+                event.data,
+                this.exportInfo.name,
+                this.pendingExport.toastId
+              ).then(() => {
                 this.pendingExport?.resolve(null)
               }, this.pendingExport?.reject)
               break
