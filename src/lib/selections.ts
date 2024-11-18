@@ -32,6 +32,10 @@ import {
   Artifact,
   getArtifactOfTypes,
   getArtifactsOfTypes,
+  getCapCodeRef,
+  getSweepEdgeCodeRef,
+  getSolid2dCodeRef,
+  getWallCodeRef,
   CodeRef,
   getCodeRefsByArtifactId,
   ArtifactId,
@@ -44,7 +48,7 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
 /** @deprecated Use {@link Artifact} instead. */
-type Selection__old =
+export type Selection__old =
   | {
       type:
         | 'default'
@@ -80,6 +84,122 @@ export interface Selection {
 export type Selections = {
   otherSelections: Array<Axis>
   graphSelections: Array<Selection>
+}
+
+/** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
+ * this function should only be used for backwards compatibility with old functions.
+ */
+function convertSelectionToOld(selection: Selection): Selection__old | null {
+  // return {} as Selection__old
+  // TODO implementation
+  const _artifact = selection.artifact
+  if (_artifact?.type === 'solid2D') {
+    const codeRef = getSolid2dCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return { range: codeRef.range, type: 'solid2D' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+
+    //     selection: { range: codeRef.range, type: 'solid2D' },
+    //   },
+    // }
+  }
+  if (_artifact?.type === 'cap') {
+    const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
+    if (err(codeRef)) return null
+    return {
+      range: codeRef.range,
+      type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+    }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: {
+    //       range: codeRef.range,
+    //       type: _artifact?.subType === 'end' ? 'end-cap' : 'start-cap',
+    //     },
+    //   },
+    // }
+  }
+  if (_artifact?.type === 'wall') {
+    const codeRef = getWallCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    return { range: codeRef.range, type: 'extrude-wall' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: { range: codeRef.range, type: 'extrude-wall' },
+    //   },
+    // }
+  }
+  if (_artifact?.type === 'segment' || _artifact?.type === 'path') {
+    return { range: _artifact.codeRef.range, type: 'default' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: { range: _artifact.codeRef.range, type: 'default' },
+    //   },
+    // }
+  }
+  if (_artifact?.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(
+      _artifact,
+      engineCommandManager.artifactGraph
+    )
+    if (err(codeRef)) return null
+    if (_artifact?.subType === 'adjacent') {
+      return { range: codeRef.range, type: 'adjacent-edge' }
+      // return {
+      //   type: 'Set selection',
+      //   data: {
+      //     selectionType: 'singleCodeCursor',
+      //     selection: { range: codeRef.range, type: 'adjacent-edge' },
+      //   },
+      // }
+    }
+    return { range: codeRef.range, type: 'edge' }
+    // return {
+    //   type: 'Set selection',
+    //   data: {
+    //     selectionType: 'singleCodeCursor',
+    //     selection: { range: codeRef.range, type: 'edge' },
+    //   },
+    // }
+  }
+  if (_artifact?.type === 'edgeCut') {
+    const codeRef = _artifact.codeRef
+    return { range: codeRef.range, type: 'default' }
+  }
+  if (selection?.codeRef?.range) {
+    return { range: selection.codeRef.range, type: 'default' }
+  }
+  return null
+}
+/** @deprecated If you're writing a new function, it should use {@link Selection} and not {@link Selection__old}
+ * this function should only be used for backwards compatibility with old functions.
+ */
+export function convertSelectionsToOld(selection: Selections): Selections__old {
+  const selections: Selection__old[] = []
+  for (const artifact of selection.graphSelections) {
+    const converted = convertSelectionToOld(artifact)
+    if (converted) selections.push(converted)
+  }
+  const selectionsOld: Selections__old = {
+    otherSelections: selection.otherSelections,
+    codeBasedSelections: selections,
+  }
+  return selectionsOld
 }
 
 export async function getEventForSelectWithPoint({
@@ -324,7 +444,7 @@ export function handleSelectionBatch({
   selections.graphSelections.forEach(({ artifact }) => {
     artifact?.id &&
       selectionToEngine.push({
-        type: artifact?.type,
+        type: 'default',
         id: artifact?.id,
         range: getCodeRefsByArtifactId(
           artifact.id,
@@ -364,7 +484,7 @@ export function handleSelectionBatch({
 }
 
 type SelectionToEngine = {
-  type: Artifact['type']
+  type: Selection__old['type']
   id?: string
   range: SourceRange
 }
@@ -655,15 +775,18 @@ export function canSubmitSelectionArg(
 export function codeToIdSelections(
   selections: Selection[]
 ): SelectionToEngine[] {
-  return selections
+  const selectionsOld = convertSelectionsToOld({
+    graphSelections: selections,
+    otherSelections: [],
+  }).codeBasedSelections
+  return selectionsOld
     .flatMap((selection): null | SelectionToEngine[] => {
-      const type = selection.artifact?.type
-      const artifact = selection.artifact
+      const { type } = selection
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
           if (!('codeRef' in artifact)) return null
-          return isOverlap(artifact.codeRef.range, selection?.codeRef?.range)
+          return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
                 selection,
@@ -688,12 +811,12 @@ export function codeToIdSelections(
         | {
             id: ArtifactId
             artifact: unknown
-            selection: Selection
+            selection: Selection__old
           }
         | undefined
       overlappingEntries.forEach((entry) => {
         // TODO probably need to remove much of the `type === 'xyz'` below
-        if (!artifact && entry.artifact.type === 'segment') {
+        if (type === 'default' && entry.artifact.type === 'segment') {
           bestCandidate = entry
           return
         }
@@ -720,7 +843,7 @@ export function codeToIdSelections(
             id: entry.artifact.solid2dId,
           }
         }
-        if (artifact?.type === 'wall' && entry.artifact.type === 'segment') {
+        if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
           const wall = engineCommandManager.artifactGraph.get(
             entry.artifact.surfaceId
           )
@@ -732,7 +855,7 @@ export function codeToIdSelections(
           }
           return
         }
-        if (artifact?.type === 'segment' && entry.artifact.type === 'segment') {
+        if (type === 'edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
             { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
@@ -745,11 +868,7 @@ export function codeToIdSelections(
             id: edge[0],
           }
         }
-        if (
-          artifact?.type === 'sweepEdge' &&
-          artifact.subType === 'adjacent' &&
-          entry.artifact.type === 'segment'
-        ) {
+        if (type === 'adjacent-edge' && entry.artifact.type === 'segment') {
           const edges = getArtifactsOfTypes(
             { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
             engineCommandManager.artifactGraph
@@ -766,26 +885,9 @@ export function codeToIdSelections(
           }
         }
         if (
-          artifact?.type === 'sweepEdge' &&
-          artifact.subType === 'opposite' &&
-          entry.artifact.type === 'segment'
+          (type === 'end-cap' || type === 'start-cap') &&
+          entry.artifact.type === 'path'
         ) {
-          const edges = getArtifactsOfTypes(
-            { keys: entry.artifact.edgeIds, types: ['sweepEdge'] },
-            engineCommandManager.artifactGraph
-          )
-          const edge = [...edges].find(
-            ([_, edge]) =>
-              edge.type === 'sweepEdge' && edge.subType === 'opposite'
-          )
-          if (!edge) return
-          bestCandidate = {
-            artifact: edge[1],
-            selection,
-            id: edge[0],
-          }
-        }
-        if (artifact?.type === 'cap' && entry.artifact.type === 'path') {
           const extrusion = getArtifactOfTypes(
             {
               key: entry.artifact.sweepId,
@@ -799,7 +901,7 @@ export function codeToIdSelections(
             engineCommandManager.artifactGraph
           )
           const cap = [...caps].find(
-            ([_, cap]) => cap.subType === artifact?.subType
+            ([_, cap]) => cap.subType === (type === 'end-cap' ? 'end' : 'start')
           )
           if (!cap) return
           bestCandidate = {
@@ -818,16 +920,12 @@ export function codeToIdSelections(
             engineCommandManager.artifactGraph
           )
           if (err(consumedEdge)) return
-          const codeRefs = getCodeRefsByArtifactId(
-            artifact?.id || '',
-            engineCommandManager.artifactGraph
-          )
           if (
             consumedEdge.type === 'segment' &&
-            artifact?.type === 'edgeCutEdge' &&
+            type === 'base-edgeCut' &&
             isOverlap(
               consumedEdge.codeRef.range,
-              codeRefs?.[1]?.range || [0, 0]
+              selection.secondaryRange || [0, 0]
             )
           ) {
             bestCandidate = {
@@ -837,11 +935,9 @@ export function codeToIdSelections(
             }
           } else if (
             consumedEdge.type === 'sweepEdge' &&
-            ((artifact?.type === 'sweepEdge' &&
-              artifact.subType === 'adjacent' &&
+            ((type === 'adjacent-edgeCut' &&
               consumedEdge.subType === 'adjacent') ||
-              (artifact?.type === 'sweepEdge' &&
-                artifact.subType === 'opposite' &&
+              (type === 'opposite-edgeCut' &&
                 consumedEdge.subType === 'opposite'))
           ) {
             const seg = getArtifactOfTypes(
@@ -849,7 +945,9 @@ export function codeToIdSelections(
               engineCommandManager.artifactGraph
             )
             if (err(seg)) return
-            if (isOverlap(seg.codeRef.range, codeRefs?.[1]?.range || [0, 0])) {
+            if (
+              isOverlap(seg.codeRef.range, selection.secondaryRange || [0, 0])
+            ) {
               bestCandidate = {
                 artifact: entry.artifact,
                 selection,
@@ -860,16 +958,16 @@ export function codeToIdSelections(
         }
       })
 
-      if (bestCandidate && type) {
+      if (bestCandidate) {
         return [
           {
             type,
             id: bestCandidate.id,
-            range: bestCandidate.selection.codeRef.range,
+            range: bestCandidate.selection.range,
           },
         ]
       }
-      return null
+      return [selection]
     })
     .filter(isNonNullable)
 }
