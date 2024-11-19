@@ -1,9 +1,9 @@
 import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useKclContext } from 'lang/KclProvider'
+import { Artifact } from 'lang/std/artifactGraph'
 import { CommandArgument } from 'lib/commandTypes'
 import {
-  Selection,
   canSubmitSelectionArg,
   getSelectionType,
   getSelectionTypeDisplayText,
@@ -12,13 +12,13 @@ import { modelingMachine } from 'machines/modelingMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
-const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
-  face: ['extrude-wall', 'start-cap', 'end-cap'],
-  edge: ['edge', 'line', 'arc'],
-  point: ['point', 'line-end', 'line-mid'],
+const semanticEntityNames: { [key: string]: Array<Artifact['type']> } = {
+  face: ['wall', 'cap', 'solid2D'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  point: [],
 }
 
-function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
+function getSemanticSelectionType(selectionType: Array<Artifact['type']>) {
   const semanticSelectionType = new Set()
   selectionType.forEach((type) => {
     Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {
@@ -49,8 +49,12 @@ function CommandBarSelectionInput({
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    const selectionRangeEnd = selection?.codeBasedSelections[0]?.range[1]
-    return !selectionRangeEnd || selectionRangeEnd === code.length
+    const selectionRangeEnd = !selection
+      ? null
+      : selection?.graphSelections[0]?.codeRef?.range[1]
+    return !selectionRangeEnd || selectionRangeEnd === code.length || !selection
+      ? 'none'
+      : !selection
       ? 'none'
       : getSelectionType(selection)
   }, [selection, code])

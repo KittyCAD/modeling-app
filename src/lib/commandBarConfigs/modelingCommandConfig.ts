@@ -242,8 +242,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        // TODO: These are products of an extrude
-        selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
+        selectionTypes: ['solid2D', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -274,7 +273,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
+        selectionTypes: ['solid2D', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -305,18 +304,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: [
-          'default',
-          'line-end',
-          'line-mid',
-          'extrude-wall',
-          'solid2D',
-          'start-cap',
-          'end-cap',
-          'point',
-          'edge',
-          'line',
-          'arc',
-          'all',
+          'segment',
+          'sweepEdge',
+          'edgeCutEdge',
+          // 'solid2D',
         ],
         multiple: true,
         required: true,

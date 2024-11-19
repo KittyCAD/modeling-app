@@ -735,7 +735,7 @@ sketch003 = startSketchOn('XZ')
   |> close(%)`,
         codeAfter: `myVar = 5\n`,
         lineOfInterest: 'line([-2.94, 2.7], %)',
-        type: 'default',
+        type: 'segment',
       },
     ],
     [
@@ -761,7 +761,7 @@ const extrude001 = extrude(10, sketch001)`,
   |> line([-17.67, 0.85], %)
   |> close(%)\n`,
         lineOfInterest: 'line([2.66, 1.17], %)',
-        type: 'extrude-wall',
+        type: 'wall',
       },
     ],
     [
@@ -817,7 +817,7 @@ sketch002 = startSketchOn({
   |> close(%)
 `,
         lineOfInterest: 'line([-11.18, -2.15], %)',
-        type: 'extrude-wall',
+        type: 'wall',
       },
     ],
     [
@@ -873,7 +873,7 @@ sketch002 = startSketchOn({
   |> close(%)
 `,
         lineOfInterest: 'startProfileAt([4.46, 5.12], %, $tag)',
-        type: 'end-cap',
+        type: 'cap',
       },
     ],
   ] as const
@@ -890,11 +890,15 @@ sketch002 = startSketchOn({
         codeBefore.indexOf(lineOfInterest),
         codeBefore.indexOf(lineOfInterest) + lineOfInterest.length,
       ]
+      const artifact = { type } as any
       const newAst = await deleteFromSelection(
         ast,
         {
-          range,
-          type,
+          codeRef: {
+            range,
+            pathToNode: getNodePathFromSourceRange(ast, range),
+          },
+          artifact,
         },
         execState.memory,
         async () => {

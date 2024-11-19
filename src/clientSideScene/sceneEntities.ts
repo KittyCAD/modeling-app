@@ -577,10 +577,8 @@ export class SceneEntities {
         draftExpressionsIndices &&
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
-      const isSelected = selectionRanges?.codeBasedSelections.some(
-        (selection) => {
-          return isOverlap(selection.range, segment.__geoMeta.sourceRange)
-        }
+      const isSelected = selectionRanges?.graphSelections.some((selection) =>
+        isOverlap(selection?.codeRef?.range, segment.__geoMeta.sourceRange)
       )
 
       let seg: Group

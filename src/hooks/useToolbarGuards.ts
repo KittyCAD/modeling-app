@@ -28,14 +28,16 @@ export function useConvertToVariable(range?: SourceRange) {
 
     const meta = isNodeSafeToReplace(
       parsed,
-      range || context.selectionRanges.codeBasedSelections?.[0]?.range || []
+      range ||
+        context.selectionRanges.graphSelections?.[0]?.codeRef?.range ||
+        []
     )
     if (trap(meta)) return
 
     const { isSafe, value } = meta
     const canReplace = isSafe && value.type !== 'Identifier'
     const isOnlyOneSelection =
-      !!range || context.selectionRanges.codeBasedSelections.length === 1
+      !!range || context.selectionRanges.graphSelections.length === 1
 
     setEnabled(canReplace && isOnlyOneSelection)
   }, [context.selectionRanges])
@@ -52,7 +54,7 @@ export function useConvertToVariable(range?: SourceRange) {
         moveValueIntoNewVariable(
           ast,
           kclManager.programMemory,
-          range || context.selectionRanges.codeBasedSelections[0].range,
+          range || context.selectionRanges.graphSelections[0]?.codeRef?.range,
           variableName
         )
 

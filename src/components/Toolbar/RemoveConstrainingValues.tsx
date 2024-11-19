@@ -2,8 +2,8 @@ import { toolTips } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import { PathToNode, Program, Expr } from '../../lang/wasm'
 import {
-  getNodePathFromSourceRange,
   getNodeFromPath,
+  getNodePathFromSourceRange,
 } from '../../lang/queryAst'
 import {
   PathToNodeMap,
@@ -28,13 +28,8 @@ export function removeConstrainingValuesInfo({
       updatedSelectionRanges: Selections
     }
   | Error {
-  const paths =
-    pathToNodes ||
-    selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(kclManager.ast, range)
-    )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -45,10 +40,15 @@ export function removeConstrainingValuesInfo({
   const updatedSelectionRanges = pathToNodes
     ? {
         otherSelections: [],
-        codeBasedSelections: nodes.map(
+        graphSelections: nodes.map(
           (node): Selection => ({
-            range: [node.start, node.end],
-            type: 'default',
+            codeRef: {
+              range: [node.start, node.end],
+              pathToNode: getNodePathFromSourceRange(kclManager.ast, [
+                node.start,
+                node.end,
+              ]),
+            },
           })
         ),
       }
