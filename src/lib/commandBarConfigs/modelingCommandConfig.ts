@@ -283,12 +283,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: [
-          'segment',
-          'sweepEdge',
-          'edgeCutEdge',
-          // 'solid2D',
-        ],
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: true,
         required: true,
         skip: false,

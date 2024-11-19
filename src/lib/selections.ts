@@ -238,7 +238,6 @@ export function getEventForSegmentSelection(
       data: {
         selectionType: 'singleCodeCursor',
         selection: {
-          // artifact: {} as any,
           codeRef: {
             range: [node.node.start, node.node.end],
             pathToNode: group.userData.pathToNode,
