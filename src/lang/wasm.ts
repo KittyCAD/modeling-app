@@ -62,6 +62,7 @@ export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
 export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
 export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
+export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 
 export type SyntaxType =
@@ -81,6 +82,7 @@ export type SyntaxType =
   | 'PipeExpression'
   | 'PipeSubstitution'
   | 'Literal'
+  | 'LiteralValue'
   | 'NonCodeNode'
   | 'UnaryExpression'
 
@@ -141,6 +143,12 @@ export const parse = (code: string | Error): Node<Program> | Error => {
 }
 
 export type PathToNode = [string | number, string][]
+
+export const isPathToNodeNumber = (
+  pathToNode: string | number
+): pathToNode is number => {
+  return typeof pathToNode === 'number'
+}
 
 export interface ExecState {
   memory: ProgramMemory

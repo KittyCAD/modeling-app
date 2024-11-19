@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing array_index_oob.kcl
+snapshot_kind: text
+---
+undefined value: KclErrorDetails { source_ranges: [SourceRange([13, 19, 0])], message: "The array doesn't have any item at index 0" }

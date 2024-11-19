@@ -1,0 +1,7 @@
+// Make sure pipe value doesn't leak into the function call.
+fn f = (ignored) => {
+  return %
+}
+
+answer = %
+  |> f(%)
