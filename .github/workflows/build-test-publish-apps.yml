@@ -50,12 +50,14 @@ jobs:
       - name: Run build:wasm
         run: "yarn build:wasm"
 
-      - name: Set nightly version and different name
+      - name: Set nightly version, product name, and icons
         if: ${{ env.NIGHTLY == 'true' }}
         run: |
           VERSION=$(date +'%-y.%-m.%-d') yarn json:set-version
           yarn json:set-nightly-name
           # Do we need to change the appId too? (dev.zoo.modeling-app)
+          cp assets/icon-nightly.png assets/icon.png
+          cp assets/icon-nightly.ico assets/icon.ico
 
       # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
 
@@ -71,6 +73,8 @@ jobs:
             package.json
             src/wasm-lib/pkg/wasm_lib*
             release-notes.md
+            assets/icon.ico
+            assets/icon.png
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
@@ -130,6 +134,8 @@ jobs:
           mkdir src/wasm-lib/pkg
           cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
           cp prepared-files/release-notes.md release-notes.md
+          cp prepared-files/assets/icon.ico assets/icon.ico
+          cp prepared-files/assets/icon.png assets/icon.png
 
       - uses: actions/download-artifact@v3
         if: ${{ env.NIGHTLY == 'true' }}
