@@ -1215,7 +1215,9 @@ _test.describe(
     _test(
       `open a file, change something, undo it, open a different file, hitting redo should do nothing`,
       { tag: '@electron' },
+      // Skip on windows i think the keybindings are different for redo.
       async ({ browserName }, testInfo) => {
+        test.skip(process.platform === 'win32', 'Skip on windows')
         const { page } = await setupElectron({
           testInfo,
           folderSetupFn: async (dir) => {
