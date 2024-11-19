@@ -484,7 +484,7 @@ export const ModelingMachineProvider = ({
           engineCommandManager.exportInfo = {
             intent: ExportIntent.Save,
             // This never gets used its only for make.
-            name: '',
+            name: file?.name?.replace('.kcl', `.${event.data.type}`) || '',
           }
 
           const format = {
