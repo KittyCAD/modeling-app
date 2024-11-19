@@ -801,6 +801,17 @@ impl Plane {
             },
         }
     }
+
+    /// The standard planes are XY, YZ and XZ (in both positive and negative)
+    pub fn is_standard(&self) -> bool {
+        !self.is_custom()
+    }
+
+    /// The standard planes are XY, YZ and XZ (in both positive and negative)
+    /// Custom planes are any other plane that the user might specify.
+    pub fn is_custom(&self) -> bool {
+        matches!(self.value, PlaneType::Custom)
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1044,6 +1055,14 @@ impl KclValue {
     pub fn as_uuid(&self) -> Option<uuid::Uuid> {
         if let KclValue::Uuid { value, meta: _ } = &self {
             Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_plane(&self) -> Option<&Plane> {
+        if let KclValue::Plane(value) = &self {
+            Some(value)
         } else {
             None
         }
@@ -3033,14 +3052,14 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
-        let ast = r#"fn box = (array) => {
+        let ast = r#"fn box = (arr) => {
  let myBox =startSketchOn('XY')
-    |> startProfileAt(array[0], %)
-    |> line([0, array[1]], %)
-    |> line([array[2], 0], %)
-    |> line([0, -array[1]], %)
+    |> startProfileAt(arr[0], %)
+    |> line([0, arr[1]], %)
+    |> line([arr[2], 0], %)
+    |> line([0, -arr[1]], %)
     |> close(%)
-    |> extrude(array[3], %)
+    |> extrude(arr[3], %)
 
   return myBox
 }

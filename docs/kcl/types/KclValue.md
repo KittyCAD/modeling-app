@@ -180,7 +180,7 @@ A plane.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Plane`|  | No |
+| `type` |enum: [`Plane`](/docs/kcl/types/Plane)|  | No |
 | `id` |`string`| The id of the plane. | No |
 | `value` |[`PlaneType`](/docs/kcl/types/PlaneType)| Any KCL value. | No |
 | `origin` |[`Point3d`](/docs/kcl/types/Point3d)| Origin of the plane. | No |

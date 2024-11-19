@@ -1,0 +1,1281 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing sketch_on_face_end.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "keyword",
+      "start": 0,
+      "end": 2,
+      "value": "fn"
+    },
+    {
+      "type": "whitespace",
+      "start": 2,
+      "end": 3,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 3,
+      "end": 7,
+      "value": "cube"
+    },
+    {
+      "type": "whitespace",
+      "start": 7,
+      "end": 8,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 8,
+      "end": 9,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 9,
+      "end": 10,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 10,
+      "end": 11,
+      "value": "("
+    },
+    {
+      "type": "word",
+      "start": 11,
+      "end": 14,
+      "value": "pos"
+    },
+    {
+      "type": "comma",
+      "start": 14,
+      "end": 15,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 15,
+      "end": 16,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 16,
+      "end": 21,
+      "value": "scale"
+    },
+    {
+      "type": "brace",
+      "start": 21,
+      "end": 22,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 22,
+      "end": 23,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 23,
+      "end": 25,
+      "value": "=>"
+    },
+    {
+      "type": "whitespace",
+      "start": 25,
+      "end": 26,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 26,
+      "end": 27,
+      "value": "{"
+    },
+    {
+      "type": "whitespace",
+      "start": 27,
+      "end": 30,
+      "value": "\n  "
+    },
+    {
+      "type": "word",
+      "start": 30,
+      "end": 32,
+      "value": "sg"
+    },
+    {
+      "type": "whitespace",
+      "start": 32,
+      "end": 33,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 33,
+      "end": 34,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 34,
+      "end": 35,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 35,
+      "end": 48,
+      "value": "startSketchOn"
+    },
+    {
+      "type": "brace",
+      "start": 48,
+      "end": 49,
+      "value": "("
+    },
+    {
+      "type": "string",
+      "start": 49,
+      "end": 53,
+      "value": "'XY'"
+    },
+    {
+      "type": "brace",
+      "start": 53,
+      "end": 54,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 54,
+      "end": 59,
+      "value": "\n    "
+    },
+    {
+      "type": "operator",
+      "start": 59,
+      "end": 61,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 61,
+      "end": 62,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 62,
+      "end": 76,
+      "value": "startProfileAt"
+    },
+    {
+      "type": "brace",
+      "start": 76,
+      "end": 77,
+      "value": "("
+    },
+    {
+      "type": "word",
+      "start": 77,
+      "end": 80,
+      "value": "pos"
+    },
+    {
+      "type": "comma",
+      "start": 80,
+      "end": 81,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 81,
+      "end": 82,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 82,
+      "end": 83,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 83,
+      "end": 84,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 84,
+      "end": 89,
+      "value": "\n    "
+    },
+    {
+      "type": "operator",
+      "start": 89,
+      "end": 91,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 91,
+      "end": 92,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 92,
+      "end": 96,
+      "value": "line"
+    },
+    {
+      "type": "brace",
+      "start": 96,
+      "end": 97,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 97,
+      "end": 98,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 98,
+      "end": 99,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 99,
+      "end": 100,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 100,
+      "end": 101,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 101,
+      "end": 106,
+      "value": "scale"
+    },
+    {
+      "type": "brace",
+      "start": 106,
+      "end": 107,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 107,
+      "end": 108,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 108,
+      "end": 109,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 109,
+      "end": 110,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 110,
+      "end": 111,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 111,
+      "end": 116,
+      "value": "\n    "
+    },
+    {
+      "type": "operator",
+      "start": 116,
+      "end": 118,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 118,
+      "end": 119,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 119,
+      "end": 123,
+      "value": "line"
+    },
+    {
+      "type": "brace",
+      "start": 123,
+      "end": 124,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 124,
+      "end": 125,
+      "value": "["
+    },
+    {
+      "type": "word",
+      "start": 125,
+      "end": 130,
+      "value": "scale"
+    },
+    {
+      "type": "comma",
+      "start": 130,
+      "end": 131,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 131,
+      "end": 132,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 132,
+      "end": 133,
+      "value": "0"
+    },
+    {
+      "type": "brace",
+      "start": 133,
+      "end": 134,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 134,
+      "end": 135,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 135,
+      "end": 136,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 136,
+      "end": 137,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 137,
+      "end": 138,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 138,
+      "end": 143,
+      "value": "\n    "
+    },
+    {
+      "type": "operator",
+      "start": 143,
+      "end": 145,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 145,
+      "end": 146,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 146,
+      "end": 150,
+      "value": "line"
+    },
+    {
+      "type": "brace",
+      "start": 150,
+      "end": 151,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 151,
+      "end": 152,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 152,
+      "end": 153,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 153,
+      "end": 154,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 154,
+      "end": 155,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 155,
+      "end": 156,
+      "value": "-"
+    },
+    {
+      "type": "word",
+      "start": 156,
+      "end": 161,
+      "value": "scale"
+    },
+    {
+      "type": "brace",
+      "start": 161,
+      "end": 162,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 162,
+      "end": 163,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 163,
+      "end": 164,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 164,
+      "end": 165,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 165,
+      "end": 166,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 166,
+      "end": 170,
+      "value": "\n\n  "
+    },
+    {
+      "type": "keyword",
+      "start": 170,
+      "end": 176,
+      "value": "return"
+    },
+    {
+      "type": "whitespace",
+      "start": 176,
+      "end": 177,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 177,
+      "end": 179,
+      "value": "sg"
+    },
+    {
+      "type": "whitespace",
+      "start": 179,
+      "end": 180,
+      "value": "\n"
+    },
+    {
+      "type": "brace",
+      "start": 180,
+      "end": 181,
+      "value": "}"
+    },
+    {
+      "type": "whitespace",
+      "start": 181,
+      "end": 182,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 182,
+      "end": 189,
+      "value": "part001"
+    },
+    {
+      "type": "whitespace",
+      "start": 189,
+      "end": 190,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 190,
+      "end": 191,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 191,
+      "end": 192,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 192,
+      "end": 196,
+      "value": "cube"
+    },
+    {
+      "type": "brace",
+      "start": 196,
+      "end": 197,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 197,
+      "end": 198,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 198,
+      "end": 199,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 199,
+      "end": 200,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 200,
+      "end": 201,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 201,
+      "end": 202,
+      "value": "0"
+    },
+    {
+      "type": "brace",
+      "start": 202,
+      "end": 203,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 203,
+      "end": 204,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 204,
+      "end": 205,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 205,
+      "end": 207,
+      "value": "20"
+    },
+    {
+      "type": "brace",
+      "start": 207,
+      "end": 208,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 208,
+      "end": 211,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 211,
+      "end": 213,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 213,
+      "end": 214,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 214,
+      "end": 219,
+      "value": "close"
+    },
+    {
+      "type": "brace",
+      "start": 219,
+      "end": 220,
+      "value": "("
+    },
+    {
+      "type": "operator",
+      "start": 220,
+      "end": 221,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 221,
+      "end": 222,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 222,
+      "end": 225,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 225,
+      "end": 227,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 227,
+      "end": 228,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 228,
+      "end": 235,
+      "value": "extrude"
+    },
+    {
+      "type": "brace",
+      "start": 235,
+      "end": 236,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 236,
+      "end": 238,
+      "value": "20"
+    },
+    {
+      "type": "comma",
+      "start": 238,
+      "end": 239,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 239,
+      "end": 240,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 240,
+      "end": 241,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 241,
+      "end": 242,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 242,
+      "end": 244,
+      "value": "\n\n"
+    },
+    {
+      "type": "word",
+      "start": 244,
+      "end": 251,
+      "value": "part002"
+    },
+    {
+      "type": "whitespace",
+      "start": 251,
+      "end": 252,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 252,
+      "end": 253,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 253,
+      "end": 254,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 254,
+      "end": 267,
+      "value": "startSketchOn"
+    },
+    {
+      "type": "brace",
+      "start": 267,
+      "end": 268,
+      "value": "("
+    },
+    {
+      "type": "word",
+      "start": 268,
+      "end": 275,
+      "value": "part001"
+    },
+    {
+      "type": "comma",
+      "start": 275,
+      "end": 276,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 276,
+      "end": 277,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 277,
+      "end": 282,
+      "value": "\"END\""
+    },
+    {
+      "type": "brace",
+      "start": 282,
+      "end": 283,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 283,
+      "end": 286,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 286,
+      "end": 288,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 288,
+      "end": 289,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 289,
+      "end": 303,
+      "value": "startProfileAt"
+    },
+    {
+      "type": "brace",
+      "start": 303,
+      "end": 304,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 304,
+      "end": 305,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 305,
+      "end": 306,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 306,
+      "end": 307,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 307,
+      "end": 308,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 308,
+      "end": 309,
+      "value": "0"
+    },
+    {
+      "type": "brace",
+      "start": 309,
+      "end": 310,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 310,
+      "end": 311,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 311,
+      "end": 312,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 312,
+      "end": 313,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 313,
+      "end": 314,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 314,
+      "end": 317,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 317,
+      "end": 319,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 319,
+      "end": 320,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 320,
+      "end": 324,
+      "value": "line"
+    },
+    {
+      "type": "brace",
+      "start": 324,
+      "end": 325,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 325,
+      "end": 326,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 326,
+      "end": 327,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 327,
+      "end": 328,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 328,
+      "end": 329,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 329,
+      "end": 331,
+      "value": "10"
+    },
+    {
+      "type": "brace",
+      "start": 331,
+      "end": 332,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 332,
+      "end": 333,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 333,
+      "end": 334,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 334,
+      "end": 335,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 335,
+      "end": 336,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 336,
+      "end": 339,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 339,
+      "end": 341,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 341,
+      "end": 342,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 342,
+      "end": 346,
+      "value": "line"
+    },
+    {
+      "type": "brace",
+      "start": 346,
+      "end": 347,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 347,
+      "end": 348,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 348,
+      "end": 350,
+      "value": "10"
+    },
+    {
+      "type": "comma",
+      "start": 350,
+      "end": 351,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 351,
+      "end": 352,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 352,
+      "end": 353,
+      "value": "0"
+    },
+    {
+      "type": "brace",
+      "start": 353,
+      "end": 354,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 354,
+      "end": 355,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 355,
+      "end": 356,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 356,
+      "end": 357,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 357,
+      "end": 358,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 358,
+      "end": 361,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 361,
+      "end": 363,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 363,
+      "end": 364,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 364,
+      "end": 368,
+      "value": "line"
+    },
+    {
+      "type": "brace",
+      "start": 368,
+      "end": 369,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 369,
+      "end": 370,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 370,
+      "end": 371,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 371,
+      "end": 372,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 372,
+      "end": 373,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 373,
+      "end": 374,
+      "value": "-"
+    },
+    {
+      "type": "number",
+      "start": 374,
+      "end": 376,
+      "value": "10"
+    },
+    {
+      "type": "brace",
+      "start": 376,
+      "end": 377,
+      "value": "]"
+    },
+    {
+      "type": "comma",
+      "start": 377,
+      "end": 378,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 378,
+      "end": 379,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 379,
+      "end": 380,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 380,
+      "end": 381,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 381,
+      "end": 384,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 384,
+      "end": 386,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 386,
+      "end": 387,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 387,
+      "end": 392,
+      "value": "close"
+    },
+    {
+      "type": "brace",
+      "start": 392,
+      "end": 393,
+      "value": "("
+    },
+    {
+      "type": "operator",
+      "start": 393,
+      "end": 394,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 394,
+      "end": 395,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 395,
+      "end": 398,
+      "value": "\n  "
+    },
+    {
+      "type": "operator",
+      "start": 398,
+      "end": 400,
+      "value": "|>"
+    },
+    {
+      "type": "whitespace",
+      "start": 400,
+      "end": 401,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 401,
+      "end": 408,
+      "value": "extrude"
+    },
+    {
+      "type": "brace",
+      "start": 408,
+      "end": 409,
+      "value": "("
+    },
+    {
+      "type": "number",
+      "start": 409,
+      "end": 410,
+      "value": "5"
+    },
+    {
+      "type": "comma",
+      "start": 410,
+      "end": 411,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 411,
+      "end": 412,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 412,
+      "end": 413,
+      "value": "%"
+    },
+    {
+      "type": "brace",
+      "start": 413,
+      "end": 414,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 414,
+      "end": 415,
+      "value": "\n"
+    }
+  ]
+}

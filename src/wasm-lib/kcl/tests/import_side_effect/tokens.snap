@@ -1,0 +1,57 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing import_side_effect.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "keyword",
+      "start": 0,
+      "end": 6,
+      "value": "import"
+    },
+    {
+      "type": "whitespace",
+      "start": 6,
+      "end": 7,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 7,
+      "end": 10,
+      "value": "foo"
+    },
+    {
+      "type": "whitespace",
+      "start": 10,
+      "end": 11,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 11,
+      "end": 15,
+      "value": "from"
+    },
+    {
+      "type": "whitespace",
+      "start": 15,
+      "end": 16,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 16,
+      "end": 40,
+      "value": "\"export_side_effect.kcl\""
+    },
+    {
+      "type": "whitespace",
+      "start": 40,
+      "end": 41,
+      "value": "\n"
+    }
+  ]
+}

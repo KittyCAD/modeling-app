@@ -9,21 +9,16 @@ new-test name:
 lint:
     cargo clippy --workspace --all-targets -- -D warnings
 
+# Generate the stdlib image artifacts
+# Then run the stdlib docs generation
 redo-kcl-stdlib-docs:
+    TWENTY_TWENTY=overwrite {{cnr}} -p kcl-lib kcl_test_example
     EXPECTORATE=overwrite {{cnr}} -p kcl-lib docs::gen_std_tests::test_generate_stdlib
 
 # Create a new KCL deterministic simulation test case.
-new-sim-test test_name kcl_program render_to_png="true":
-    # Each test file gets its own directory. This will contain the KCL program, and its
-    # snapshotted artifacts (e.g. serialized tokens, serialized ASTs, program memory,
-    # PNG snapshots, etc).
-    mkdir kcl/tests/{{test_name}}
-    echo "{{kcl_program}}" > kcl/tests/{{test_name}}/input.kcl
-    # Add the various tests for this new test case.
-    cat kcl/tests/simtest.tmpl | sed "s/TEST_NAME_HERE/{{test_name}}/" | sed "s/RENDER_TO_PNG/{{render_to_png}}/" >> kcl/src/simulation_tests.rs
-    # Run all the tests for the first time, in the right order.
+new-sim-test test_name render_to_png="true":
     {{cita}} -p kcl-lib -- tests::{{test_name}}::tokenize
     {{cita}} -p kcl-lib -- tests::{{test_name}}::parse
     {{cita}} -p kcl-lib -- tests::{{test_name}}::unparse
     TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
-    
+

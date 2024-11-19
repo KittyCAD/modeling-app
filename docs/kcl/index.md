@@ -7,6 +7,7 @@ layout: manual
 ## Table of Contents
 
 * [Types](kcl/types)
+* [Modules](kcl/modules)
 * [Known Issues](kcl/KNOWN-ISSUES)
 * [`abs`](kcl/abs)
 * [`acos`](kcl/acos)
@@ -19,6 +20,7 @@ layout: manual
 * [`angledLineToX`](kcl/angledLineToX)
 * [`angledLineToY`](kcl/angledLineToY)
 * [`arc`](kcl/arc)
+* [`arcTo`](kcl/arcTo)
 * [`asin`](kcl/asin)
 * [`assert`](kcl/assert)
 * [`assertEqual`](kcl/assertEqual)

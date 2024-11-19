@@ -107,14 +107,14 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
-/// // element of the `array` parameter. The starting value is 0.
-/// fn sum = (array) => { return reduce(array, 0, add) }
+/// // element of the `arr` parameter. The starting value is 0.
+/// fn sum = (arr) => { return reduce(arr, 0, add) }
 ///
 /// /*
 /// The above is basically like this pseudo-code:
-/// fn sum(array):
+/// fn sum(arr):
 ///     let sumSoFar = 0
-///     for i in array:
+///     for i in arr:
 ///         sumSoFar = add(sumSoFar, i)
 ///     return sumSoFar
 /// */
@@ -127,8 +127,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // This example works just like the previous example above, but it uses
 /// // an anonymous `add` function as its parameter, instead of declaring a
 /// // named function outside.
-/// array = [1, 2, 3]
-/// sum = reduce(array, 0, (i, result_so_far) => { return i + result_so_far })
+/// arr = [1, 2, 3]
+/// sum = reduce(arr, 0, (i, result_so_far) => { return i + result_so_far })
 ///
 /// // We use `assertEqual` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
