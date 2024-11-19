@@ -2040,10 +2040,38 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
 
 #[cfg(test)]
 mod tests {
+    use itertools::Itertools;
     use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ast::types::{BodyItem, Expr, ModuleId, VariableKind};
+
+    fn assert_reserved(word: &str) {
+        // Try to use it as a variable name.
+        let code = format!(r#"{} = 0"#, word);
+        let result = crate::parser::top_level_parse(code.as_str());
+        let err = result.unwrap_err();
+        // Which token causes the error may change.  In "return = 0", for
+        // example, "return" is the problem.
+        assert!(
+            err.message().starts_with("Unexpected token: ")
+                || err
+                    .message()
+                    .starts_with("Cannot assign a variable to a reserved keyword: "),
+            "Error message is: {}",
+            err.message(),
+        );
+    }
+
+    #[test]
+    fn reserved_words() {
+        // Since these are stored in a set, we sort to make the tests
+        // deterministic.
+        for word in crate::token::RESERVED_WORDS.keys().sorted() {
+            assert_reserved(word);
+        }
+        assert_reserved("import");
+    }
 
     #[test]
     fn parse_args() {
