@@ -55,9 +55,8 @@ jobs:
         run: |
           VERSION=$(date +'%-y.%-m.%-d') yarn json:set-version
           yarn json:set-nightly-name
+          yarn assets:set-nightly-icons
           # Do we need to change the appId too? (dev.zoo.modeling-app)
-          cp assets/icon-nightly.png assets/icon.png
-          cp assets/icon-nightly.ico assets/icon.ico
 
       # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
 

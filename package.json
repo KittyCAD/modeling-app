@@ -94,6 +94,7 @@
     "lint": "eslint --max-warnings 0 src e2e packages/codemirror-lsp-client",
     "json:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
     "json:set-nightly-name": "echo \"$(jq --arg name 'Zoo Modeling App (Nightly)' '.productName=$name' package.json --indent 2)\" > package.json",
+    "assets:set-nightly-icons": "cp assets/icon-nightly.png assets/icon.png && cp assets/icon-nightly.ico assets/icon.ico",
     "postinstall": "yarn fetch:samples && yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
