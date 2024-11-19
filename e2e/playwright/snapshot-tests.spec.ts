@@ -283,7 +283,7 @@ part001 = startSketchOn('-XZ')
         const gltfFilename = filenames.filter((t: string) =>
           t.includes('.gltf')
         )[0]
-        if (!gltfFilename) throw new Error('No output.gltf in this archive')
+        if (!gltfFilename) throw new Error('No gLTF in this archive')
         cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${parentPath}/${gltfFilename} ${imagePath}`
       }
 

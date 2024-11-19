@@ -927,7 +927,11 @@ export function findUsesOfTagInPipe(
 
 export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   const path = getNodePathFromSourceRange(ast, selection.range)
-  const _node = getNodeFromPath<PipeExpression>(ast, path, 'PipeExpression')
+  const _node = getNodeFromPath<Node<PipeExpression>>(
+    ast,
+    path,
+    'PipeExpression'
+  )
   if (err(_node)) return false
   const { node: pipeExpression } = _node
   if (pipeExpression.type !== 'PipeExpression') return false
@@ -940,19 +944,33 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   const varDec = _varDec.node
   if (varDec.type !== 'VariableDeclarator') return false
   let extruded = false
-  traverse(ast as any, {
+  // option 1: extrude or revolve is called in the sketch pipe
+  traverse(pipeExpression, {
     enter(node) {
       if (
         node.type === 'CallExpression' &&
-        node.callee.type === 'Identifier' &&
-        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
-        node.arguments?.[1]?.type === 'Identifier' &&
-        node.arguments[1].name === varDec.id.name
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve')
       ) {
         extruded = true
       }
     },
   })
+  // option 2: extrude or revolve is called in the separate pipe
+  if (!extruded) {
+    traverse(ast as any, {
+      enter(node) {
+        if (
+          node.type === 'CallExpression' &&
+          node.callee.type === 'Identifier' &&
+          (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
+          node.arguments?.[1]?.type === 'Identifier' &&
+          node.arguments[1].name === varDec.id.name
+        ) {
+          extruded = true
+        }
+      },
+    })
+  }
   return extruded
 }
 
