@@ -27,7 +27,7 @@ snapshot_kind: text
           "value": 0.0,
           "__meta": []
         },
-        "array": {
+        "arr": {
           "type": "Array",
           "value": [
             {
@@ -36,8 +36,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    42,
                     44,
-                    46,
                     0
                   ]
                 }
@@ -49,8 +49,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    46,
                     48,
-                    50,
                     0
                   ]
                 }
@@ -62,8 +62,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    50,
                     52,
-                    54,
                     0
                   ]
                 }
@@ -73,8 +73,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                43,
-                55,
+                41,
+                53,
                 0
               ]
             }
@@ -86,8 +86,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                256,
-                266,
+                252,
+                262,
                 0
               ]
             }
@@ -99,8 +99,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
+                46,
                 48,
-                50,
                 0
               ]
             }
@@ -112,8 +112,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
+                46,
                 48,
-                50,
                 0
               ]
             }

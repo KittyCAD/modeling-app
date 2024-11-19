@@ -1,0 +1,510 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing riddle_small.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "ANSWER": {
+          "type": "Int",
+          "value": 41803,
+          "__meta": [
+            {
+              "sourceRange": [
+                9,
+                14,
+                0
+              ]
+            }
+          ]
+        },
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "ox": {
+          "type": "Number",
+          "value": -26.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                102,
+                104,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                9,
+                14,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                79,
+                85,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                55,
+                60,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                64,
+                70,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                116,
+                118,
+                0
+              ]
+            }
+          ]
+        },
+        "oy": {
+          "type": "Number",
+          "value": 34.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                125,
+                127,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                9,
+                14,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                91,
+                96,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                55,
+                60,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                64,
+                70,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                139,
+                141,
+                0
+              ]
+            }
+          ]
+        },
+        "r": {
+          "type": "Solid",
+          "type": "Solid",
+          "id": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                205,
+                220,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                226,
+                242,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                248,
+                264,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                270,
+                278,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    205,
+                    220,
+                    0
+                  ]
+                },
+                "from": [
+                  -26.0,
+                  34.0
+                ],
+                "tag": null,
+                "to": [
+                  -25.0,
+                  34.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    226,
+                    242,
+                    0
+                  ]
+                },
+                "from": [
+                  -25.0,
+                  34.0
+                ],
+                "tag": null,
+                "to": [
+                  -25.0,
+                  33.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    248,
+                    264,
+                    0
+                  ]
+                },
+                "from": [
+                  -25.0,
+                  33.0
+                ],
+                "tag": null,
+                "to": [
+                  -26.0,
+                  33.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    270,
+                    278,
+                    0
+                  ]
+                },
+                "from": [
+                  -26.0,
+                  33.0
+                ],
+                "tag": null,
+                "to": [
+                  -26.0,
+                  34.0
+                ],
+                "type": "ToPoint"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XZ",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": 0.0
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                -26.0,
+                34.0
+              ],
+              "to": [
+                -26.0,
+                34.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  172,
+                  199,
+                  0
+                ]
+              }
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  172,
+                  199,
+                  0
+                ]
+              }
+            ]
+          },
+          "height": 1.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "__meta": [
+            {
+              "sourceRange": [
+                172,
+                199,
+                0
+              ]
+            }
+          ]
+        },
+        "t": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 70,
+                    "left": {
+                      "end": 60,
+                      "left": {
+                        "end": 52,
+                        "left": {
+                          "end": 48,
+                          "name": "ANSWER",
+                          "start": 42,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "end": 52,
+                          "name": "s",
+                          "start": 51,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "start": 42,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "operator": "+",
+                      "right": {
+                        "end": 60,
+                        "raw": "12345",
+                        "start": 55,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 12345
+                      },
+                      "start": 42,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "%",
+                    "right": {
+                      "end": 70,
+                      "raw": "214748",
+                      "start": 64,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 214748
+                    },
+                    "start": 42,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 70,
+                  "start": 34,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 72,
+              "start": 30
+            },
+            "end": 72,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 25,
+                  "name": "s",
+                  "start": 24,
+                  "type": "Identifier"
+                },
+                "optional": false
+              }
+            ],
+            "start": 23,
+            "type": "FunctionExpression"
+          },
+          "memory": {
+            "environments": [
+              {
+                "bindings": {
+                  "ANSWER": {
+                    "type": "Int",
+                    "value": 41803,
+                    "__meta": [
+                      {
+                        "sourceRange": [
+                          9,
+                          14,
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  "HALF_TURN": {
+                    "type": "Number",
+                    "value": 180.0,
+                    "__meta": []
+                  },
+                  "QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 90.0,
+                    "__meta": []
+                  },
+                  "THREE_QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 270.0,
+                    "__meta": []
+                  },
+                  "ZERO": {
+                    "type": "Number",
+                    "value": 0.0,
+                    "__meta": []
+                  }
+                },
+                "parent": null
+              }
+            ],
+            "currentEnv": 0,
+            "return": null
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                23,
+                72,
+                0
+              ]
+            }
+          ]
+        },
+        "xs": {
+          "type": "Int",
+          "value": 205804,
+          "__meta": [
+            {
+              "sourceRange": [
+                79,
+                85,
+                0
+              ]
+            }
+          ]
+        },
+        "ys": {
+          "type": "Int",
+          "value": 71816,
+          "__meta": [
+            {
+              "sourceRange": [
+                91,
+                96,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

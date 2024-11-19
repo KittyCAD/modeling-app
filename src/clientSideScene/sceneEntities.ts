@@ -1176,6 +1176,11 @@ export class SceneEntities {
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'Finish center rectangle' })
 
+          // lee: I had this at the bottom of the function, but it's
+          // possible sketchFromKclValue "fails" when sketching on a face,
+          // and this couldn't wouldn't run.
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+
           const { execState } = await executeAst({
             ast: _ast,
             useFakeExecutor: true,
