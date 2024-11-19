@@ -77,22 +77,30 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
       code.indexOf(expectedExtrudeSnippet),
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
     ]
-    const expedtedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
-    const expedtedExtrudeNodeResult = getNodeFromPath<VariableDeclarator>(
-      ast,
-      expedtedExtrudePath
-    )
-    if (err(expedtedExtrudeNodeResult)) {
-      return expedtedExtrudeNodeResult
+    const expectedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
+    const expectedExtrudeNodeResult = getNodeFromPath<
+      VariableDeclarator | CallExpression
+    >(ast, expectedExtrudePath)
+    if (err(expectedExtrudeNodeResult)) {
+      return expectedExtrudeNodeResult
     }
-    const expectedExtrudeNode = expedtedExtrudeNodeResult.node
-    const init = expectedExtrudeNode.init
-    if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
-      return new Error(
-        'Expected extrude expression is not a CallExpression or PipeExpression'
-      )
+    const expectedExtrudeNode = expectedExtrudeNodeResult.node
+
+    // check whether extrude is in the sketch pipe
+    const extrudeInSketchPipe = expectedExtrudeNode.type === 'CallExpression'
+    if (extrudeInSketchPipe) {
+      return expectedExtrudeNode
     }
-    return init
+    if (!extrudeInSketchPipe) {
+      const init = expectedExtrudeNode.init
+      if (init.type !== 'CallExpression' && init.type !== 'PipeExpression') {
+        return new Error(
+          'Expected extrude expression is not a CallExpression or PipeExpression'
+        )
+      }
+      return init
+    }
+    return new Error('Expected extrude expression not found')
   }
 
   // ast
@@ -154,6 +162,23 @@ describe('Testing getPathToExtrudeForSegmentSelection', () => {
 extrude001 = extrude(-15, sketch001)`
     const selectedSegmentSnippet = `line([20, 0], %)`
     const expectedExtrudeSnippet = `extrude001 = extrude(-15, sketch001)`
+    await runGetPathToExtrudeForSegmentSelectionTest(
+      code,
+      selectedSegmentSnippet,
+      expectedExtrudeSnippet
+    )
+  }, 5_000)
+  it('should return the correct paths when extrusion occurs within the sketch pipe', async () => {
+    const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(15, %)`
+    const selectedSegmentSnippet = `line([20, 0], %)`
+    const expectedExtrudeSnippet = `extrude(15, %)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
@@ -296,6 +321,34 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
+  |> fillet({ radius: 3, tags: [seg01] }, %)`
+
+    await runModifyAstCloneWithFilletAndTag(
+      code,
+      segmentSnippets,
+      radiusValue,
+      expectedCode
+    )
+  })
+  it('should add a fillet to the sketch pipe', async () => {
+    const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(-15, %)`
+    const segmentSnippets = ['line([0, -20], %)']
+    const radiusValue = 3
+    const expectedCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %, $seg01)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(-15, %)
   |> fillet({ radius: 3, tags: [seg01] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
