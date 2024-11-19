@@ -261,6 +261,7 @@ export function getArtifactsToUpdate({
         id,
         artifact: {
           type: 'plane',
+          id,
           pathIds: [],
           codeRef: { range, pathToNode },
         },
