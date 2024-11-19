@@ -14,7 +14,10 @@ on:
 
 env:
   CUT_RELEASE_PR: ${{ github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  # NIGHTLY: ${{ github.event_name == 'schedule' }}
+  NIGHTLY: true
+  # BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  BUILD_RELEASE: true
   NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Non-release build, commit {0}', github.sha) }}
 
 concurrency:
@@ -47,10 +50,12 @@ jobs:
       - name: Run build:wasm
         run: "yarn build:wasm"
 
-      - name: Set nightly version
-        if: github.event_name == 'schedule'
+      - name: Set nightly version and different name
+        if: ${{ env.NIGHTLY == 'true' }}
         run: |
-          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+          VERSION=$(date +'%-y.%-m.%-d') yarn json:set-version
+          yarn json:set-nightly-name
+          # Do we need to change the appId too? (dev.zoo.modeling-app)
 
       # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
 
@@ -71,12 +76,12 @@ jobs:
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
       - name: Prepare electron-builder.yml file for nightly
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ env.NIGHTLY == 'true' }}
         run: |
           yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/nightly"' electron-builder.yml
 
       - uses: actions/upload-artifact@v3
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ env.NIGHTLY == 'true' }}
         with:
           name: prepared-files-nightly
           path: |
@@ -109,7 +114,7 @@ jobs:
             platform: linux
     runs-on: ${{ matrix.os }}
     env:
-      VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
+      VERSION: ${{ needs.prepare-files.outputs.version }}
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
       - uses: actions/checkout@v4
@@ -127,11 +132,11 @@ jobs:
           cp prepared-files/release-notes.md release-notes.md
 
       - uses: actions/download-artifact@v3
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ env.NIGHTLY == 'true' }}
         name: prepared-files-nightly
 
       - name: Copy updated electron-builder.yml file for nightly build
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ env.NIGHTLY == 'true' }}
         run: |
           ls -R prepared-files-nightly
           cp prepared-files-nightly/electron-builder.yml electron-builder.yml
