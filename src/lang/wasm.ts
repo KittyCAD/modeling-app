@@ -32,7 +32,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { err } from 'lib/trap'
+import { err, Reason } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
@@ -365,10 +365,10 @@ export class ProgramMemory {
 }
 
 // TODO: In the future, make the parameter be a KclValue.
-export function sketchFromKclValue(
+export function sketchFromKclValueOptional(
   obj: any,
   varName: string | null
-): Sketch | Error {
+): Sketch | Reason {
   if (obj?.value?.type === 'Sketch') return obj.value
   if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Solid') return obj.sketch
@@ -377,13 +377,24 @@ export function sketchFromKclValue(
   }
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
-    console.log(obj)
-    return new Error(
+    return new Reason(
       `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
     )
   } else {
-    return new Error(`Expected ${varName} to be a sketch, but it wasn't.`)
+    return new Reason(`Expected ${varName} to be a sketch, but it wasn't.`)
   }
+}
+
+// TODO: In the future, make the parameter be a KclValue.
+export function sketchFromKclValue(
+  obj: any,
+  varName: string | null
+): Sketch | Error {
+  const result = sketchFromKclValueOptional(obj, varName)
+  if (result instanceof Reason) {
+    return result.toError()
+  }
+  return result
 }
 
 export const executor = async (

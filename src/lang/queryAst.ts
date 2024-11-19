@@ -14,6 +14,7 @@ import {
   ProgramMemory,
   ReturnStatement,
   sketchFromKclValue,
+  sketchFromKclValueOptional,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
@@ -27,7 +28,7 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from './std/sketchcombos'
-import { err } from 'lib/trap'
+import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
@@ -846,7 +847,8 @@ export function hasExtrudeSketch({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' ||
+    !(sketchFromKclValueOptional(varValue, varName) instanceof Reason)
   )
 }
 
