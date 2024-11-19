@@ -52,13 +52,7 @@ jobs:
 
       - name: Set nightly version, product name, and icons
         if: ${{ env.NIGHTLY == 'true' }}
-        run: |
-          VERSION=$(date +'%-y.%-m.%-d') yarn json:set-version
-          yarn json:set-nightly-name
-          yarn assets:set-nightly-icons
-          # Do we need to change the appId too? (dev.zoo.modeling-app)
-
-      # TODO: see if we need to inject updater nightly URL here https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json
+        run: yarn files:set-to-nightly
 
       - name: Generate release notes
         run: |
@@ -70,6 +64,7 @@ jobs:
           name: prepared-files
           path: |
             package.json
+            electron-builder.yml
             src/wasm-lib/pkg/wasm_lib*
             release-notes.md
             assets/icon.ico
@@ -77,18 +72,6 @@ jobs:
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare electron-builder.yml file for nightly
-        if: ${{ env.NIGHTLY == 'true' }}
-        run: |
-          yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/nightly"' electron-builder.yml
-
-      - uses: actions/upload-artifact@v3
-        if: ${{ env.NIGHTLY == 'true' }}
-        with:
-          name: prepared-files-nightly
-          path: |
-            electron-builder.yml
 
       - name: Prepare electron-builder.yml file for updater test
         if: ${{ env.CUT_RELEASE_PR == 'true' }}
@@ -129,22 +112,13 @@ jobs:
         run: |
           ls -R prepared-files
           cp prepared-files/package.json package.json
+          cp prepared-files/electron-builder.yml electron-builder.yml
           cp prepared-files/src/wasm-lib/pkg/wasm_lib_bg.wasm public
           mkdir src/wasm-lib/pkg
           cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
-
-      - uses: actions/download-artifact@v3
-        if: ${{ env.NIGHTLY == 'true' }}
-        name: prepared-files-nightly
-
-      - name: Copy updated electron-builder.yml file for nightly build
-        if: ${{ env.NIGHTLY == 'true' }}
-        run: |
-          ls -R prepared-files-nightly
-          cp prepared-files-nightly/electron-builder.yml electron-builder.yml
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
@@ -284,7 +258,7 @@ jobs:
     needs: [prepare-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
-      VERSION: ${{ github.event_name == 'schedule' && needs.prepare-files.outputs.version || format('v{0}', needs.prepare-files.outputs.version) }}
+      VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       BUCKET_DIR: ${{ github.event_name == 'schedule' && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app' }}
       WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
