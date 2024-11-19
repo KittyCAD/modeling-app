@@ -1202,9 +1202,9 @@ _test.describe(
           // Get the original content of the file.
           const originalText = await u.codeLocator.innerText()
           // Now hit undo
-          await page.keyboard.down('Control')
+          await page.keyboard.down('ControlOrMeta')
           await page.keyboard.press('KeyZ')
-          await page.keyboard.up('Control')
+          await page.keyboard.up('ControlOrMeta')
 
           await page.waitForTimeout(100)
           await expect(u.codeLocator).toContainText(originalText)
@@ -1241,6 +1241,7 @@ _test.describe(
           .getByRole('listitem')
           .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
 
+        const badContent = 'this shit'
         await _test.step(
           'Open project and make a change to the file',
           async () => {
@@ -1252,8 +1253,7 @@ _test.describe(
             // Click in the editor and add some new lines.
             await u.codeLocator.click()
 
-            await page.keyboard.type(`sketch001 = startSketchOn('XY')
-    some other shit`)
+            await page.keyboard.type(badContent)
 
             // Ensure the content in the editor changed.
             const newContent = await u.codeLocator.innerText()
@@ -1261,12 +1261,33 @@ _test.describe(
             expect(originalText !== newContent)
 
             // Now hit undo
-            await page.keyboard.down('Control')
+            await page.keyboard.down('ControlOrMeta')
             await page.keyboard.press('KeyZ')
-            await page.keyboard.up('Control')
+            await page.keyboard.up('ControlOrMeta')
 
             await page.waitForTimeout(100)
             await expect(u.codeLocator).toContainText(originalText)
+            await expect(u.codeLocator).not.toContainText(badContent)
+
+            // Hit redo.
+            await page.keyboard.down('Shift')
+            await page.keyboard.down('ControlOrMeta')
+            await page.keyboard.press('KeyZ')
+            await page.keyboard.up('ControlOrMeta')
+            await page.keyboard.up('Shift')
+
+            await page.waitForTimeout(100)
+            await expect(u.codeLocator).toContainText(originalText)
+            await expect(u.codeLocator).toContainText(badContent)
+
+            // Now hit undo
+            await page.keyboard.down('ControlOrMeta')
+            await page.keyboard.press('KeyZ')
+            await page.keyboard.up('ControlOrMeta')
+
+            await page.waitForTimeout(100)
+            await expect(u.codeLocator).toContainText(originalText)
+            await expect(u.codeLocator).not.toContainText(badContent)
           }
         )
 
@@ -1277,6 +1298,7 @@ _test.describe(
           await u.waitForPageLoad()
           await u.openKclCodePanel()
           await _expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+          await expect(u.codeLocator).not.toContainText(badContent)
         })
 
         await _test.step('hit redo', async () => {
@@ -1284,13 +1306,14 @@ _test.describe(
           const originalText = await u.codeLocator.innerText()
           // Now hit redo
           await page.keyboard.down('Shift')
-          await page.keyboard.down('Control')
+          await page.keyboard.down('ControlOrMeta')
           await page.keyboard.press('KeyZ')
-          await page.keyboard.up('Control')
-          await page.keyboard.down('Shift')
+          await page.keyboard.up('ControlOrMeta')
+          await page.keyboard.up('Shift')
 
           await page.waitForTimeout(100)
           await expect(u.codeLocator).toContainText(originalText)
+          await expect(u.codeLocator).not.toContainText(badContent)
         })
       }
     )

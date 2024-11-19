@@ -122,7 +122,6 @@ export const KclEditorPane = () => {
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
-        history(),
         foldGutter(),
         EditorState.allowMultipleSelections.of(true),
         indentOnInput(),

@@ -107,7 +107,7 @@ export default class CodeManager {
         },
         annotations: [
           codeManagerUpdateEvent,
-          Transaction.addToHistory.of(true),
+          Transaction.addToHistory.of(!clearHistory),
         ],
       })
     }
@@ -178,10 +178,12 @@ function clearCodeMirrorHistory(view: EditorView) {
   // Clear history
   view.dispatch({
     effects: [codeManagerHistoryCompartment.reconfigure([])],
+    annotations: [codeManagerUpdateEvent],
   })
 
   // Add history back
   view.dispatch({
     effects: [codeManagerHistoryCompartment.reconfigure([history()])],
+    annotations: [codeManagerUpdateEvent],
   })
 }
