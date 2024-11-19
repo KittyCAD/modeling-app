@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing comparisons_multiple.kcl
+snapshot_kind: text
+---
+semantic: KclErrorDetails { source_ranges: [SourceRange([7, 13, 0])], message: "Expected a number, but found a boolean (true/false value)" }

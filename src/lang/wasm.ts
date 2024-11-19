@@ -62,6 +62,7 @@ export type { CallExpression } from '../wasm-lib/kcl/bindings/CallExpression'
 export type { VariableDeclarator } from '../wasm-lib/kcl/bindings/VariableDeclarator'
 export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
+export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 
 export type SyntaxType =
@@ -81,6 +82,7 @@ export type SyntaxType =
   | 'PipeExpression'
   | 'PipeSubstitution'
   | 'Literal'
+  | 'LiteralValue'
   | 'NonCodeNode'
   | 'UnaryExpression'
 
@@ -120,8 +122,8 @@ const initialise = async () => {
 
 export const initPromise = initialise()
 
-export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
-  ranges.map(([start, end]) => [start, end])
+export const rangeTypeFix = (ranges: number[][]): [number, number, number][] =>
+  ranges.map(([start, end, moduleId]) => [start, end, moduleId])
 
 export const parse = (code: string | Error): Node<Program> | Error => {
   if (err(code)) return code
@@ -141,6 +143,12 @@ export const parse = (code: string | Error): Node<Program> | Error => {
 }
 
 export type PathToNode = [string | number, string][]
+
+export const isPathToNodeNumber = (
+  pathToNode: string | number
+): pathToNode is number => {
+  return typeof pathToNode === 'number'
+}
 
 export interface ExecState {
   memory: ProgramMemory
@@ -336,7 +344,7 @@ export class ProgramMemory {
    */
   hasSketchOrSolid(): boolean {
     for (const node of this.visibleEntries().values()) {
-      if (node.type === 'Solid' || node.value?.type === 'Sketch') {
+      if (node.type === 'Solid' || node.type === 'Sketch') {
         return true
       }
     }

@@ -8,6 +8,7 @@ import {
   VariableDeclarator,
   Expr,
   Literal,
+  LiteralValue,
   PipeSubstitution,
   Identifier,
   ArrayExpression,
@@ -18,6 +19,7 @@ import {
   ProgramMemory,
   SourceRange,
   sketchFromKclValue,
+  isPathToNodeNumber,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -242,6 +244,7 @@ export function mutateObjExpProp(
         value: updateWith,
         start: 0,
         end: 0,
+        moduleId: 0,
       })
     }
   }
@@ -524,6 +527,60 @@ export function sketchOnExtrudedFace(
   }
 }
 
+/**
+ * Modify the AST to create a new sketch using the variable declaration
+ * of an offset plane. The new sketch just has to come after the offset
+ * plane declaration.
+ */
+export function sketchOnOffsetPlane(
+  node: Node<Program>,
+  offsetPathToNode: PathToNode
+) {
+  let _node = { ...node }
+
+  // Find the offset plane declaration
+  const offsetPlaneDeclarator = getNodeFromPath<VariableDeclarator>(
+    _node,
+    offsetPathToNode,
+    'VariableDeclarator',
+    true
+  )
+  if (err(offsetPlaneDeclarator)) return offsetPlaneDeclarator
+  const { node: offsetPlaneNode } = offsetPlaneDeclarator
+  const offsetPlaneName = offsetPlaneNode.id.name
+
+  // Create a new sketch declaration
+  const newSketchName = findUniqueName(
+    node,
+    KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
+  )
+  const newSketch = createVariableDeclaration(
+    newSketchName,
+    createCallExpressionStdLib('startSketchOn', [
+      createIdentifier(offsetPlaneName),
+    ]),
+    undefined,
+    'const'
+  )
+
+  // Decide where to insert the new sketch declaration
+  const offsetIndex = offsetPathToNode[1][0]
+
+  if (!isPathToNodeNumber(offsetIndex)) {
+    return new Error('Expected offsetIndex to be a number')
+  }
+  // and insert it
+  _node.body.splice(offsetIndex + 1, 0, newSketch)
+  const newPathToNode = structuredClone(offsetPathToNode)
+  newPathToNode[1][0] = offsetIndex + 1
+
+  // Return the modified AST and the path to the new sketch declaration
+  return {
+    modifiedAst: _node,
+    pathToNode: newPathToNode,
+  }
+}
+
 export const getLastIndex = (pathToNode: PathToNode): number =>
   splitPathAtLastIndex(pathToNode).index
 
@@ -572,11 +629,12 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
-export function createLiteral(value: string | number): Node<Literal> {
+export function createLiteral(value: LiteralValue): Node<Literal> {
   return {
     type: 'Literal',
     start: 0,
     end: 0,
+    moduleId: 0,
     value,
     raw: `${value}`,
   }
@@ -587,6 +645,7 @@ export function createTagDeclarator(value: string): Node<TagDeclarator> {
     type: 'TagDeclarator',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     value,
   }
@@ -597,6 +656,7 @@ export function createIdentifier(name: string): Node<Identifier> {
     type: 'Identifier',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     name,
   }
@@ -607,6 +667,7 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
     type: 'PipeSubstitution',
     start: 0,
     end: 0,
+    moduleId: 0,
   }
 }
 
@@ -618,10 +679,12 @@ export function createCallExpressionStdLib(
     type: 'CallExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
+      moduleId: 0,
 
       name,
     },
@@ -638,10 +701,12 @@ export function createCallExpression(
     type: 'CallExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
+      moduleId: 0,
 
       name,
     },
@@ -657,6 +722,7 @@ export function createArrayExpression(
     type: 'ArrayExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
@@ -670,6 +736,7 @@ export function createPipeExpression(
     type: 'PipeExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
@@ -686,12 +753,14 @@ export function createVariableDeclaration(
     type: 'VariableDeclaration',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     declarations: [
       {
         type: 'VariableDeclarator',
         start: 0,
         end: 0,
+        moduleId: 0,
 
         id: createIdentifier(varName),
         init,
@@ -709,12 +778,14 @@ export function createObjectExpression(properties: {
     type: 'ObjectExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
       end: 0,
+      moduleId: 0,
       key: createIdentifier(key),
 
       value,
@@ -730,6 +801,7 @@ export function createUnaryExpression(
     type: 'UnaryExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     operator,
     argument,
@@ -745,6 +817,7 @@ export function createBinaryExpression([left, operator, right]: [
     type: 'BinaryExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     operator,
     left,

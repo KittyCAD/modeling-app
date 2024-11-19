@@ -69,6 +69,26 @@ sketch004 = startSketchOn('-XZ')
   |> tangentialArcTo([-6.8, 8.17], %)
 `
 
+const exampleCodeNo3D = `sketch003 = startSketchOn('YZ')
+  |> startProfileAt([5.82, 0], %)
+  |> angledLine([180, 11.54], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       8.21
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch004 = startSketchOn('-XZ')
+  |> startProfileAt([0, 14.36], %)
+  |> line([15.49, 0.05], %)
+  |> tangentialArcTo([0, 0], %)
+  |> tangentialArcTo([-6.8, 8.17], %)
+`
+
 const sketchOnFaceOnFaceEtc = `sketch001 = startSketchOn('XZ')
 |> startProfileAt([0, 0], %)
 |> line([4, 8], %)
@@ -98,12 +118,22 @@ sketch004 = startSketchOn(extrude003, seg02)
 |> close(%)
 extrude004 = extrude(3, sketch004)
 `
+const exampleCodeOffsetPlanes = `
+offsetPlane001 = offsetPlane("XY", 20)
+offsetPlane002 = offsetPlane("XZ", -50)
+offsetPlane003 = offsetPlane("YZ", 10)
+
+sketch002 = startSketchOn(offsetPlane001)
+  |> startProfileAt([0, 0], %)
+  |> line([6.78, 15.01], %)
+`
 
 // add more code snippets here and use `getCommands` to get the orderedCommands and responseMap for more tests
 const codeToWriteCacheFor = {
   exampleCode1,
   sketchOnFaceOnFaceEtc,
   exampleCodeNo3D,
+  exampleCodeOffsetPlanes,
 } as const
 
 type CodeKey = keyof typeof codeToWriteCacheFor
@@ -165,6 +195,52 @@ afterAll(() => {
 })
 
 describe('testing createArtifactGraph', () => {
+  describe('code with offset planes and a sketch:', () => {
+    let ast: Program
+    let theMap: ReturnType<typeof createArtifactGraph>
+
+    it('setup', () => {
+      // putting this logic in here because describe blocks runs before beforeAll has finished
+      const {
+        orderedCommands,
+        responseMap,
+        ast: _ast,
+      } = getCommands('exampleCodeOffsetPlanes')
+      ast = _ast
+      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+    })
+
+    it(`there should be one sketch`, () => {
+      const sketches = [...filterArtifacts({ types: ['path'] }, theMap)].map(
+        (path) => expandPath(path[1], theMap)
+      )
+      expect(sketches).toHaveLength(1)
+      sketches.forEach((path) => {
+        if (err(path)) throw path
+        expect(path.type).toBe('path')
+      })
+    })
+
+    it(`there should be three offsetPlanes`, () => {
+      const offsetPlanes = [
+        ...filterArtifacts({ types: ['plane'] }, theMap),
+      ].map((plane) => expandPlane(plane[1], theMap))
+      expect(offsetPlanes).toHaveLength(3)
+      offsetPlanes.forEach((path) => {
+        expect(path.type).toBe('plane')
+      })
+    })
+
+    it(`Only one offset plane should have a path`, () => {
+      const offsetPlanes = [
+        ...filterArtifacts({ types: ['plane'] }, theMap),
+      ].map((plane) => expandPlane(plane[1], theMap))
+      const offsetPlaneWithPaths = offsetPlanes.filter(
+        (plane) => plane.paths.length
+      )
+      expect(offsetPlaneWithPaths).toHaveLength(1)
+    })
+  })
   describe('code with an extrusion, fillet and sketch of face:', () => {
     let ast: Program
     let theMap: ReturnType<typeof createArtifactGraph>
@@ -610,7 +686,7 @@ describe('testing getArtifactsToUpdate', () => {
         sweepId: '',
         codeRef: {
           pathToNode: [['body', '']],
-          range: [37, 64],
+          range: [37, 64, 0],
         },
       },
     ])
@@ -622,7 +698,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: [],
         edgeIds: [],
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -632,7 +708,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64],
+          range: [37, 64, 0],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -645,7 +721,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: '',
         edgeIds: [],
         codeRef: {
-          range: [70, 86],
+          range: [70, 86, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -655,7 +731,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64],
+          range: [37, 64, 0],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -669,7 +745,7 @@ describe('testing getArtifactsToUpdate', () => {
         edgeIds: [],
         surfaceId: '',
         codeRef: {
-          range: [260, 299],
+          range: [260, 299, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -679,7 +755,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119],
+          range: [92, 119, 0],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -699,7 +775,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [156, 203],
+          range: [156, 203, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -710,7 +786,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -727,7 +803,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [125, 150],
+          range: [125, 150, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -738,7 +814,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -755,7 +831,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119],
+          range: [92, 119, 0],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -767,7 +843,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -784,7 +860,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [70, 86],
+          range: [70, 86, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -795,7 +871,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -813,7 +889,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },
@@ -831,7 +907,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254],
+          range: [231, 254, 0],
           pathToNode: [['body', '']],
         },
       },

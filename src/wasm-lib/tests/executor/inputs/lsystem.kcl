@@ -27,7 +27,7 @@ fn Gte = (a, b) => { return Not(Lt(a, b)) }
 
 deg = pi()*2 / 360
 
-fn setSketch = (state, _) => {
+fn setSketch = (state, _q) => {
   return {
     depthMax: state.depthMax,
     depth: state.depth + 1,
@@ -35,43 +35,43 @@ fn setSketch = (state, _) => {
     factor: state.factor,
     currentAngle: state.currentAngle,
     angle: state.angle,
-    _: _
+    _q: _q
   }
 }
 
-fn setDepth = (state, _) => {
+fn setDepth = (state, _q) => {
   return {
     depthMax: state.depthMax,
-    depth: _,
+    depth: _q,
     currentLength: state.currentLength,
     factor: state.factor,
     currentAngle: state.currentAngle,
     angle: state.angle,
-    _:  state._
+    _q:  state._q
   }
 }
 
-fn setAngle = (state, _) => {
+fn setAngle = (state, _q) => {
   return {
     depthMax: state.depthMax,
     depth: state.depth,
     currentLength: state.currentLength,
     factor: state.factor,
-    currentAngle: _,
+    currentAngle: _q,
     angle: state.angle,
-    _:  state._
+    _q:  state._q
   }
 }
 
-fn setLength = (state, _) => {
+fn setLength = (state, _q) => {
   return {
     depthMax: state.depthMax,
     depth: state.depth,
-    currentLength: _,
+    currentLength: _q,
     factor: state.factor,
     currentAngle: state.currentAngle,
     angle: state.angle,
-    _:  state._
+    _q:  state._q
   }
 }
 
@@ -95,7 +95,7 @@ fn F = (state, F) => {
 
   } else {
     // Pass onto the next instruction
-    state |> setSketch(%, angledLine({ angle: state.currentAngle, length: state.currentLength }, state._))
+    state |> setSketch(%, angledLine({ angle: state.currentAngle, length: state.currentLength }, state._q))
   }
 }
 
@@ -107,7 +107,7 @@ fn LSystem = (args, axioms) => {
     factor: args.factor,
     currentAngle: 0,
     angle: args.angle,
-    _: startSketchAt([0, 0]),
+    _q: startSketchAt([0, 0]),
   })
 }
 
@@ -115,7 +115,7 @@ LSystem({
   iterations: 1,
   factor: 1.36,
   angle: 60,
-}, (_) => {
-  result = _ |> F(%, F) |> Add(%) |> Add(%) |> F(%, F) |> Add(%) |> Add(%) |> F(%, F) 
-  return result._
+}, (_q) => {
+  result = _q |> F(%, F) |> Add(%) |> Add(%) |> F(%, F) |> Add(%) |> Add(%) |> F(%, F) 
+  return result._q
 })

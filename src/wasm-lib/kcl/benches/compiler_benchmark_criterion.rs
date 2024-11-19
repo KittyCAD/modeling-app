@@ -1,9 +1,10 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 pub fn bench_lex(c: &mut Criterion) {
-    c.bench_function("lex_cube", |b| b.iter(|| lex(CUBE_PROGRAM)));
-    c.bench_function("lex_big_kitt", |b| b.iter(|| lex(KITT_PROGRAM)));
-    c.bench_function("lex_pipes_on_pipes", |b| b.iter(|| lex(PIPES_PROGRAM)));
+    let module_id = kcl_lib::ast::types::ModuleId::default();
+    c.bench_function("lex_cube", |b| b.iter(|| lex(CUBE_PROGRAM, module_id)));
+    c.bench_function("lex_big_kitt", |b| b.iter(|| lex(KITT_PROGRAM, module_id)));
+    c.bench_function("lex_pipes_on_pipes", |b| b.iter(|| lex(PIPES_PROGRAM, module_id)));
 }
 
 pub fn bench_parse(c: &mut Criterion) {
@@ -15,7 +16,8 @@ pub fn bench_parse(c: &mut Criterion) {
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("koch snowflake", LSYSTEM_KOCH_SNOWFLAKE_PROGRAM),
     ] {
-        let tokens = kcl_lib::token::lexer(file).unwrap();
+        let module_id = kcl_lib::ast::types::ModuleId::default();
+        let tokens = kcl_lib::token::lexer(file, module_id).unwrap();
         c.bench_function(&format!("parse_{name}"), move |b| {
             let tok = tokens.clone();
             b.iter(move || {
@@ -26,8 +28,8 @@ pub fn bench_parse(c: &mut Criterion) {
     }
 }
 
-fn lex(program: &str) {
-    black_box(kcl_lib::token::lexer(program).unwrap());
+fn lex(program: &str, module_id: kcl_lib::ast::types::ModuleId) {
+    black_box(kcl_lib::token::lexer(program, module_id).unwrap());
 }
 
 criterion_group!(benches, bench_lex, bench_parse);
@@ -37,5 +39,5 @@ const KITT_PROGRAM: &str = include_str!("../../tests/executor/inputs/kittycad_sv
 const PIPES_PROGRAM: &str = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../tests/executor/inputs/math.kcl");
-const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../tests/executor/inputs/mike_stress_test.kcl");
+const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
 const LSYSTEM_KOCH_SNOWFLAKE_PROGRAM: &str = include_str!("../../tests/executor/inputs/lsystem.kcl");

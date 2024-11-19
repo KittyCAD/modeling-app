@@ -1,0 +1,1550 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing add_lots.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "f": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 30,
+                    "left": {
+                      "end": 26,
+                      "name": "i",
+                      "start": 25,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "*",
+                    "right": {
+                      "end": 30,
+                      "raw": "2",
+                      "start": 29,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 2
+                    },
+                    "start": 25,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 30,
+                  "start": 18,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 32,
+              "start": 14
+            },
+            "end": 32,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 9,
+                  "name": "i",
+                  "start": 8,
+                  "type": "Identifier"
+                },
+                "optional": false
+              }
+            ],
+            "start": 7,
+            "type": "FunctionExpression"
+          },
+          "memory": {
+            "environments": [
+              {
+                "bindings": {
+                  "HALF_TURN": {
+                    "type": "Number",
+                    "value": 180.0,
+                    "__meta": []
+                  },
+                  "QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 90.0,
+                    "__meta": []
+                  },
+                  "THREE_QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 270.0,
+                    "__meta": []
+                  },
+                  "ZERO": {
+                    "type": "Number",
+                    "value": 0.0,
+                    "__meta": []
+                  }
+                },
+                "parent": null
+              }
+            ],
+            "currentEnv": 0,
+            "return": null
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                7,
+                32,
+                0
+              ]
+            }
+          ]
+        },
+        "x": {
+          "type": "Number",
+          "value": 10100.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                40,
+                41,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                47,
+                48,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                54,
+                55,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                61,
+                62,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                68,
+                69,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                75,
+                76,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                82,
+                83,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                89,
+                90,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                96,
+                97,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                103,
+                104,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                110,
+                112,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                118,
+                120,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                126,
+                128,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                134,
+                136,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                142,
+                144,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                150,
+                152,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                158,
+                160,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                166,
+                168,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                174,
+                176,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                182,
+                184,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                190,
+                192,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                198,
+                200,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                206,
+                208,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                214,
+                216,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                222,
+                224,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                230,
+                232,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                238,
+                240,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                246,
+                248,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                254,
+                256,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                262,
+                264,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                270,
+                272,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                278,
+                280,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                286,
+                288,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                294,
+                296,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                302,
+                304,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                310,
+                312,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                318,
+                320,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                326,
+                328,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                334,
+                336,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                342,
+                344,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                350,
+                352,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                358,
+                360,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                366,
+                368,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                374,
+                376,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                382,
+                384,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                390,
+                392,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                398,
+                400,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                406,
+                408,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                414,
+                416,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                422,
+                424,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                430,
+                432,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                438,
+                440,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                446,
+                448,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                454,
+                456,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                462,
+                464,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                470,
+                472,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                478,
+                480,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                486,
+                488,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                494,
+                496,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                502,
+                504,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                510,
+                512,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                518,
+                520,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                526,
+                528,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                534,
+                536,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                542,
+                544,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                550,
+                552,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                558,
+                560,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                566,
+                568,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                574,
+                576,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                582,
+                584,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                590,
+                592,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                598,
+                600,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                606,
+                608,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                614,
+                616,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                622,
+                624,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                630,
+                632,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                638,
+                640,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                646,
+                648,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                654,
+                656,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                662,
+                664,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                670,
+                672,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                678,
+                680,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                686,
+                688,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                694,
+                696,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                702,
+                704,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                710,
+                712,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                718,
+                720,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                726,
+                728,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                734,
+                736,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                742,
+                744,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                750,
+                752,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                758,
+                760,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                766,
+                768,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                774,
+                776,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                782,
+                784,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                790,
+                792,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                798,
+                800,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                806,
+                808,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                814,
+                816,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                822,
+                824,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                830,
+                833,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                29,
+                30,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

@@ -91,7 +91,7 @@ export function useCalculateKclExpression({
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {
-          type: 'UserVal',
+          type: 'String',
           value,
           __meta: [],
         })
@@ -115,6 +115,7 @@ export function useCalculateKclExpression({
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }
+    if (!value) return
     execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
       setValueNode(null)

@@ -21,6 +21,7 @@ import {
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
+import { markOnce } from 'lib/performance'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
@@ -50,6 +51,7 @@ export class KclManager {
     body: [],
     start: 0,
     end: 0,
+    moduleId: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
       startNodes: [],
@@ -140,7 +142,7 @@ export class KclManager {
     if (this.lints.length > 0) {
       diagnostics = diagnostics.concat(this.lints)
     }
-    editorManager.setDiagnostics(diagnostics)
+    editorManager?.setDiagnostics(diagnostics)
   }
 
   addKclErrors(kclErrors: KCLError[]) {
@@ -221,6 +223,7 @@ export class KclManager {
       body: [],
       start: 0,
       end: 0,
+      moduleId: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
         startNodes: [],
@@ -272,6 +275,7 @@ export class KclManager {
     }
 
     const ast = args.ast || this.ast
+    markOnce('code/startExecuteAst')
 
     const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
@@ -346,6 +350,7 @@ export class KclManager {
     })
 
     this._cancelTokens.delete(currentExecutionId)
+    markOnce('code/endExecuteAst')
   }
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
@@ -369,9 +374,6 @@ export class KclManager {
       this.clearAst()
       return
     }
-    codeManager.updateCodeEditor(newCode)
-    // Write the file to disk.
-    await codeManager.writeToFile()
     this._ast = { ...newAst }
 
     const { logs, errors, execState } = await executeAst({
@@ -509,11 +511,6 @@ export class KclManager {
     }
 
     if (execute) {
-      // Call execute on the set ast.
-      // Update the code state and editor.
-      codeManager.updateCodeEditor(newCode)
-      // Write the file to disk.
-      await codeManager.writeToFile()
       await this.executeAst({
         ast: astWithUpdatedSource,
         zoomToFit: optionalParams?.zoomToFit,

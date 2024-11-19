@@ -1,4 +1,5 @@
 import { EditorView, ViewUpdate } from '@codemirror/view'
+import { syntaxTree } from '@codemirror/language'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
 import { engineCommandManager } from 'lib/singletons'
 import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
@@ -12,6 +13,7 @@ import {
   setDiagnosticsEffect,
 } from '@codemirror/lint'
 import { StateFrom } from 'xstate'
+import { markOnce } from 'lib/performance'
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -21,10 +23,6 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
-
-function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
-  return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
-}
 
 export default class EditorManager {
   private _editorView: EditorView | null = null
@@ -59,6 +57,49 @@ export default class EditorManager {
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView
+    this.overrideTreeHighlighterUpdateForPerformanceTracking()
+  }
+
+  overrideTreeHighlighterUpdateForPerformanceTracking() {
+    // @ts-ignore
+    this._editorView?.plugins.forEach((e) => {
+      let sawATreeDiff = false
+
+      // we cannot use <>.constructor.name since it will get destroyed
+      // when packaging the application.
+      const isTreeHighlightPlugin =
+        e?.value &&
+        e.value?.hasOwnProperty('tree') &&
+        e.value?.hasOwnProperty('decoratedTo') &&
+        e.value?.hasOwnProperty('decorations')
+
+      if (isTreeHighlightPlugin) {
+        let originalUpdate = e.value.update
+        // @ts-ignore
+        function performanceTrackingUpdate(args) {
+          /**
+           * TreeHighlighter.update will be called multiple times on start up.
+           * We do not want to track the highlight performance of an empty update.
+           * mark the syntax highlight one time when the new tree comes in with the
+           * initial code
+           */
+          const treeIsDifferent =
+            // @ts-ignore
+            !sawATreeDiff && this.tree !== syntaxTree(args.state)
+          if (treeIsDifferent && !sawATreeDiff) {
+            markOnce('code/willSyntaxHighlight')
+          }
+          // Call the original function
+          // @ts-ignore
+          originalUpdate.apply(this, [args])
+          if (treeIsDifferent && !sawATreeDiff) {
+            markOnce('code/didSyntaxHighlight')
+            sawATreeDiff = true
+          }
+        }
+        e.value.update = performanceTrackingUpdate
+      }
+    })
   }
 
   get editorView(): EditorView | null {
@@ -117,20 +158,29 @@ export default class EditorManager {
     }
   }
 
+  /**
+   * Given an array of Diagnostics remove any duplicates by hashing a key
+   * in the format of from + ' ' + to + ' ' + message.
+   */
+  makeUniqueDiagnostics(duplicatedDiagnostics: Diagnostic[]): Diagnostic[] {
+    const uniqueDiagnostics: Diagnostic[] = []
+    const seenDiagnostic: { [key: string]: boolean } = {}
+
+    duplicatedDiagnostics.forEach((diagnostic: Diagnostic) => {
+      const hash = `${diagnostic.from} ${diagnostic.to} ${diagnostic.message}`
+      if (!seenDiagnostic[hash]) {
+        uniqueDiagnostics.push(diagnostic)
+        seenDiagnostic[hash] = true
+      }
+    })
+
+    return uniqueDiagnostics
+  }
+
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
     // Clear out any existing diagnostics that are the same.
-    for (const diagnostic of diagnostics) {
-      for (const otherDiagnostic of diagnostics) {
-        if (diagnosticIsEqual(diagnostic, otherDiagnostic)) {
-          diagnostics = diagnostics.filter(
-            (d) => !diagnosticIsEqual(d, diagnostic)
-          )
-          diagnostics.push(diagnostic)
-          break
-        }
-      }
-    }
+    diagnostics = this.makeUniqueDiagnostics(diagnostics)
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],

@@ -4,24 +4,20 @@ use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    ast::types::ConstraintLevel,
-    executor::{KclValue, SourceRange, UserVal},
-};
+use crate::{ast::types::ConstraintLevel, executor::KclValue};
+
+use super::Node;
 
 const KCL_NONE_ID: &str = "KCL_NONE_ID";
 
 /// KCL value for an optional parameter which was not given an argument.
 /// (remember, parameters are in the function declaration,
 /// arguments are in the function call/application).
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Default)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Default, Copy)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct KclNone {
-    // TODO: Convert this to be an Option<SourceRange>.
-    pub start: usize,
-    pub end: usize,
     #[serde(deserialize_with = "deser_private")]
     #[ts(skip)]
     #[schemars(skip)]
@@ -29,12 +25,8 @@ pub struct KclNone {
 }
 
 impl KclNone {
-    pub fn new(start: usize, end: usize) -> Self {
-        Self {
-            start,
-            end,
-            __private: Private {},
-        }
+    pub fn new() -> Self {
+        Self { __private: Private {} }
     }
 }
 
@@ -63,38 +55,27 @@ where
     }
 }
 
-impl From<&KclNone> for SourceRange {
-    fn from(v: &KclNone) -> Self {
-        Self([v.start, v.end])
-    }
-}
-
-impl From<&KclNone> for UserVal {
+impl From<&KclNone> for KclValue {
     fn from(none: &KclNone) -> Self {
-        UserVal {
-            value: serde_json::to_value(none).expect("can always serialize a None"),
+        KclValue::KclNone {
+            value: *none,
             meta: Default::default(),
         }
     }
 }
 
-impl From<&KclNone> for KclValue {
-    fn from(none: &KclNone) -> Self {
-        let val = UserVal::from(none);
-        KclValue::UserVal(val)
+impl From<&Node<KclNone>> for KclValue {
+    fn from(none: &Node<KclNone>) -> Self {
+        Self::from(&none.inner)
     }
 }
 
-impl KclNone {
-    pub fn source_range(&self) -> SourceRange {
-        SourceRange([self.start, self.end])
-    }
-
+impl Node<KclNone> {
     /// Get the constraint level.
     /// KCL None is never constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::None {
-            source_ranges: vec![self.source_range()],
+            source_ranges: self.as_source_ranges(),
         }
     }
 }

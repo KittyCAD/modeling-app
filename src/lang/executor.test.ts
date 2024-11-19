@@ -58,14 +58,20 @@ const newVar = myVar + 1`
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
-    const minusGeo = mem.get('mySketch')?.value?.paths
+    const sk = mem.get('mySketch')
+    expect(sk?.type).toEqual('Sketch')
+    if (sk?.type !== 'Sketch') {
+      return
+    }
+
+    const minusGeo = sk?.value?.paths
     expect(minusGeo).toEqual([
       {
         type: 'ToPoint',
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [72, 97],
+          sourceRange: [72, 97, 0],
           id: expect.any(String),
         },
         tag: {
@@ -81,7 +87,7 @@ const newVar = myVar + 1`
         from: [0, 2],
         tag: null,
         __geoMeta: {
-          sourceRange: [103, 119],
+          sourceRange: [103, 119, 0],
           id: expect.any(String),
         },
       },
@@ -90,7 +96,7 @@ const newVar = myVar + 1`
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [125, 154],
+          sourceRange: [125, 154, 0],
           id: expect.any(String),
         },
         tag: {
@@ -150,7 +156,7 @@ const newVar = myVar + 1`
     ].join('\n')
     const mem = await exe(code)
     expect(mem.get('mySk1')).toEqual({
-      type: 'UserVal',
+      type: 'Sketch',
       value: {
         type: 'Sketch',
         on: expect.any(Object),
@@ -160,14 +166,14 @@ const newVar = myVar + 1`
           tag: null,
           __geoMeta: {
             id: expect.any(String),
-            sourceRange: [39, 63],
+            sourceRange: [39, 63, 0],
           },
         },
         tags: {
           myPath: {
             __meta: [
               {
-                sourceRange: [109, 116],
+                sourceRange: [109, 116, 0],
               },
             ],
             type: 'TagIdentifier',
@@ -182,7 +188,7 @@ const newVar = myVar + 1`
             from: [0, 0],
             tag: null,
             __geoMeta: {
-              sourceRange: [69, 85],
+              sourceRange: [69, 85, 0],
               id: expect.any(String),
             },
           },
@@ -191,7 +197,7 @@ const newVar = myVar + 1`
             to: [0, 1],
             from: [1, 1],
             __geoMeta: {
-              sourceRange: [91, 117],
+              sourceRange: [91, 117, 0],
               id: expect.any(String),
             },
             tag: {
@@ -207,15 +213,14 @@ const newVar = myVar + 1`
             from: [0, 1],
             tag: null,
             __geoMeta: {
-              sourceRange: [123, 139],
+              sourceRange: [123, 139, 0],
               id: expect.any(String),
             },
           },
         ],
         id: expect.any(String),
-        __meta: [{ sourceRange: [39, 63] }],
+        __meta: [{ sourceRange: [39, 63, 0] }],
       },
-      __meta: [{ sourceRange: [39, 63] }],
     })
   })
   it('execute array expression', async () => {
@@ -225,20 +230,29 @@ const newVar = myVar + 1`
     const mem = await exe(code)
     // TODO path to node is probably wrong here, zero indexes are not correct
     expect(mem.get('three')).toEqual({
-      type: 'UserVal',
+      type: 'Int',
       value: 3,
       __meta: [
         {
-          sourceRange: [14, 15],
+          sourceRange: [14, 15, 0],
         },
       ],
     })
     expect(mem.get('yo')).toEqual({
-      type: 'UserVal',
-      value: [1, '2', 3, 9],
+      type: 'Array',
+      value: [
+        { type: 'Int', value: 1, __meta: [{ sourceRange: [28, 29, 0] }] },
+        { type: 'String', value: '2', __meta: [{ sourceRange: [31, 34, 0] }] },
+        { type: 'Int', value: 3, __meta: [{ sourceRange: [14, 15, 0] }] },
+        {
+          type: 'Number',
+          value: 9,
+          __meta: [{ sourceRange: [43, 44, 0] }, { sourceRange: [47, 48, 0] }],
+        },
+      ],
       __meta: [
         {
-          sourceRange: [27, 49],
+          sourceRange: [27, 49, 0],
         },
       ],
     })
@@ -253,11 +267,28 @@ const newVar = myVar + 1`
     ].join('\n')
     const mem = await exe(code)
     expect(mem.get('yo')).toEqual({
-      type: 'UserVal',
-      value: { aStr: 'str', anum: 2, identifier: 3, binExp: 9 },
+      type: 'Object',
+      value: {
+        aStr: {
+          type: 'String',
+          value: 'str',
+          __meta: [{ sourceRange: [34, 39, 0] }],
+        },
+        anum: { type: 'Int', value: 2, __meta: [{ sourceRange: [47, 48, 0] }] },
+        identifier: {
+          type: 'Int',
+          value: 3,
+          __meta: [{ sourceRange: [14, 15, 0] }],
+        },
+        binExp: {
+          type: 'Number',
+          value: 9,
+          __meta: [{ sourceRange: [77, 78, 0] }, { sourceRange: [81, 82, 0] }],
+        },
+      },
       __meta: [
         {
-          sourceRange: [27, 83],
+          sourceRange: [27, 83, 0],
         },
       ],
     })
@@ -268,11 +299,11 @@ const newVar = myVar + 1`
     )
     const mem = await exe(code)
     expect(mem.get('myVar')).toEqual({
-      type: 'UserVal',
+      type: 'String',
       value: '123',
       __meta: [
         {
-          sourceRange: [41, 50],
+          sourceRange: [19, 24, 0],
         },
       ],
     })
@@ -356,7 +387,26 @@ describe('testing math operators', () => {
   it('with unaryExpression in ArrayExpression', async () => {
     const code = 'const myVar = [1,-legLen(5, 4)]'
     const mem = await exe(code)
-    expect(mem.get('myVar')?.value).toEqual([1, -3])
+    expect(mem.get('myVar')?.value).toEqual([
+      {
+        __meta: [
+          {
+            sourceRange: [15, 16, 0],
+          },
+        ],
+        type: 'Int',
+        value: 1,
+      },
+      {
+        __meta: [
+          {
+            sourceRange: [17, 30, 0],
+          },
+        ],
+        type: 'Number',
+        value: -3,
+      },
+    ])
   })
   it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', async () => {
     const code = [
@@ -426,7 +476,7 @@ const theExtrude = startSketchOn('XY')
       new KCLError(
         'undefined_value',
         'memory item key `myVarZ` is not defined',
-        [[129, 135]]
+        [[129, 135, 0]]
       )
     )
   })

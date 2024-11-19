@@ -8,27 +8,23 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "cube": {
@@ -717,27 +713,23 @@ snapshot_kind: text
               {
                 "bindings": {
                   "HALF_TURN": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 180,
+                    "type": "Number",
+                    "value": 180.0,
                     "__meta": []
                   },
                   "QUARTER_TURN": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 90,
+                    "type": "Number",
+                    "value": 90.0,
                     "__meta": []
                   },
                   "THREE_QUARTER_TURN": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 270,
+                    "type": "Number",
+                    "value": 270.0,
                     "__meta": []
                   },
                   "ZERO": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 0,
+                    "type": "Number",
+                    "value": 0.0,
                     "__meta": []
                   }
                 },
@@ -751,7 +743,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 10,
-                316
+                316,
+                0
               ]
             }
           ]
@@ -766,7 +759,8 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 206,
-                219
+                219,
+                0
               ],
               "tag": null,
               "type": "extrudePlane"
@@ -776,7 +770,8 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 225,
-                238
+                238,
+                0
               ],
               "tag": null,
               "type": "extrudePlane"
@@ -786,7 +781,8 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 244,
-                257
+                257,
+                0
               ],
               "tag": null,
               "type": "extrudePlane"
@@ -796,7 +792,8 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 263,
-                276
+                276,
+                0
               ],
               "tag": null,
               "type": "extrudePlane"
@@ -811,7 +808,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     206,
-                    219
+                    219,
+                    0
                   ]
                 },
                 "from": [
@@ -830,7 +828,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     225,
-                    238
+                    238,
+                    0
                   ]
                 },
                 "from": [
@@ -849,7 +848,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     244,
-                    257
+                    257,
+                    0
                   ]
                 },
                 "from": [
@@ -868,7 +868,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     263,
-                    276
+                    276,
+                    0
                   ]
                 },
                 "from": [
@@ -887,7 +888,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     282,
-                    290
+                    290,
+                    0
                   ]
                 },
                 "from": [
@@ -942,7 +944,8 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   183,
-                  200
+                  200,
+                  0
                 ]
               }
             },
@@ -950,7 +953,8 @@ snapshot_kind: text
               {
                 "sourceRange": [
                   183,
-                  200
+                  200,
+                  0
                 ]
               }
             ]
@@ -962,7 +966,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 183,
-                200
+                200,
+                0
               ]
             }
           ]

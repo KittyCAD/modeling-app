@@ -115,7 +115,7 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
+  |> xLine(12.73, %)
   |> tangentialArcTo([24.95, -5.38], %)`
       )
     })
@@ -156,7 +156,7 @@ test.describe('Sketch tests', () => {
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
         .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
-  |> line([-12.34, 12.34], %)
+  |> yLine(12.34, %)
 
 `)
     }).toPass({ timeout: 40_000, intervals: [1_000] })
@@ -645,7 +645,7 @@ test.describe('Sketch tests', () => {
     await u.openDebugPanel()
 
     const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
-    const { toSU, click00r } = getMovementUtils({ center, page })
+    const { toSU, toU, click00r } = getMovementUtils({ center, page })
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -674,16 +674,15 @@ test.describe('Sketch tests', () => {
 
     await click00r(50, 0)
     await page.waitForTimeout(100)
-    codeStr += `  |> lineTo(${toSU([50, 0])}, %)`
+    codeStr += `  |> xLine(${toU(50, 0)[0]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 50)
-    codeStr += `  |> line(${toSU([0, 50])}, %)`
+    codeStr += `  |> yLine(${toU(0, 50)[1]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    let clickCoords = await click00r(-50, 0)
-    expect(clickCoords).not.toBeUndefined()
-    codeStr += `  |> lineTo(${toSU(clickCoords!)}, %)`
+    await click00r(-50, 0)
+    codeStr += `  |> xLine(${toU(-50, 0)[0]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
@@ -712,15 +711,15 @@ test.describe('Sketch tests', () => {
     // TODO: I couldn't use `toSU` here because of some rounding error causing
     // it to be off by 0.01
     await click00r(30, 0)
-    codeStr += `  |> lineTo([4.07, 0], %)`
+    codeStr += `  |> xLine(2.04, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 30)
-    codeStr += `  |> line([0, -2.03], %)`
+    codeStr += `  |> yLine(-2.03, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(-30, 0)
-    codeStr += `  |> line([-2.04, 0], %)`
+    codeStr += `  |> xLine(-2.04, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(undefined, undefined)
@@ -744,8 +743,8 @@ test.describe('Sketch tests', () => {
 
       const code = `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
-    |> line([${roundOff(scale * 139.19)}, 0], %)
-    |> line([0, -${roundOff(scale * 139.2)}], %)
+    |> xLine(${roundOff(scale * 139.19)}, %)
+    |> yLine(-${roundOff(scale * 139.2)}, %)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
     |> close(%)`
 
@@ -1272,6 +1271,47 @@ test2.describe('Sketch mode should be toleratant to syntax errors', () => {
         await verifyArrowHeadColor(arrowHeadWhite)
       })
       await app.page.waitForTimeout(100)
+    }
+  )
+})
+
+test2.describe(`Sketching with offset planes`, () => {
+  test2(
+    `Can select an offset plane to sketch on`,
+    async ({ app, scene, toolbar, editor }) => {
+      // We seed the scene with a single offset plane
+      await app.initialise(`offsetPlane001 = offsetPlane("XY", 10)`)
+
+      const [planeClick, planeHover] = scene.makeMouseHelpers(650, 200)
+
+      await test2.step(`Start sketching on the offset plane`, async () => {
+        await toolbar.startSketchPlaneSelection()
+
+        await test2.step(`Hovering should highlight code`, async () => {
+          await planeHover()
+          await editor.expectState({
+            activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+            diagnostics: [],
+            highlightedCode: 'offsetPlane("XY", 10)',
+          })
+        })
+
+        await test2.step(
+          `Clicking should select the plane and enter sketch mode`,
+          async () => {
+            await planeClick()
+            // Have to wait for engine-side animation to finish
+            await app.page.waitForTimeout(600)
+            await expect2(toolbar.lineBtn).toBeEnabled()
+            await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
+            await editor.expectState({
+              activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+              diagnostics: [],
+              highlightedCode: '',
+            })
+          }
+        )
+      })
     }
   )
 })

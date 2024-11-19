@@ -18,7 +18,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     {
       name: '"{"kind"',
       message:
-        '"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}"',
+        '"engine","sourceRanges":[[0,0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}"',
       stack: '',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
       project: 'Google Chrome',
@@ -156,8 +156,8 @@ export const isErrorWhitelisted = (exception: Error) => {
     {
       name: 'Unhandled Promise Rejection',
       message:
-        '{"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}',
-      stack: `Unhandled Promise Rejection: {"kind":"engine","sourceRanges":[[0,0]],"msg":"Failed to get string from response from engine: \`JsValue(undefined)\`"}
+        '{"kind":"engine","sourceRanges":[[0,0,0]],"msg":"Failed to get string from response from engine: `JsValue(undefined)`"}',
+      stack: `Unhandled Promise Rejection: {"kind":"engine","sourceRanges":[[0,0,0]],"msg":"Failed to get string from response from engine: \`JsValue(undefined)\`"}
     at unknown (http://localhost:3000/src/lang/std/engineConnection.ts:1245:26)`,
       foundInSpec:
         'e2e/playwright/onboarding-tests.spec.ts Click through each onboarding step',
@@ -253,7 +253,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     {
       name: '{"kind"',
       stack: ``,
-      message: `engine","sourceRanges":[[0,0]],"msg":"Failed to wait for promise from engine: JsValue(\\"Force interrupt, executionIsStale, new AST requested\\")"}`,
+      message: `engine","sourceRanges":[[0,0,0]],"msg":"Failed to wait for promise from engine: JsValue(\\"Force interrupt, executionIsStale, new AST requested\\")"}`,
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/testing-settings.spec.ts',
     },

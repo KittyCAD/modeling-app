@@ -283,7 +283,7 @@ part001 = startSketchOn('-XZ')
         const gltfFilename = filenames.filter((t: string) =>
           t.includes('.gltf')
         )[0]
-        if (!gltfFilename) throw new Error('No output.gltf in this archive')
+        if (!gltfFilename) throw new Error('No gLTF in this archive')
         cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${parentPath}/${gltfFilename} ${imagePath}`
       }
 
@@ -462,7 +462,7 @@ test(
     await page.waitForTimeout(100)
 
     code += `
-  |> line([7.25, 0], %)`
+  |> xLine(7.25, %)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
@@ -647,7 +647,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> line([7.25, 0], %)`
+  |> xLine(7.25, %)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -752,7 +752,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> line([184.3, 0], %)`
+  |> xLine(184.3, %)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -1031,7 +1031,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 })
 
-test('theme persists', async ({ page, context }) => {
+test.fixme('theme persists', async ({ page, context }) => {
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(

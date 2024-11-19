@@ -8,27 +8,23 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "part001": {
@@ -41,7 +37,8 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 35,
-                76
+                76,
+                0
               ],
               "tag": null,
               "type": "extrudeArc"
@@ -56,7 +53,8 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     35,
-                    76
+                    76,
+                    0
                   ]
                 },
                 "ccw": true,
@@ -117,7 +115,8 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   35,
-                  76
+                  76,
+                  0
                 ]
               }
             },
@@ -125,7 +124,8 @@ snapshot_kind: text
               {
                 "sourceRange": [
                   35,
-                  76
+                  76,
+                  0
                 ]
               }
             ]
@@ -137,7 +137,8 @@ snapshot_kind: text
             {
               "sourceRange": [
                 35,
-                76
+                76,
+                0
               ]
             }
           ]

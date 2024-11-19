@@ -1,47 +1,25 @@
 use derive_docs::stdlib;
-use serde_json::Value as JValue;
 
 use super::{args::FromArgs, Args, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, SourceRange, UserVal},
+    executor::{ExecState, KclValue, SourceRange},
     function_param::FunctionParam,
 };
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, f): (Vec<JValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
-    let array: Vec<KclValue> = array
-        .into_iter()
-        .map(|jval| {
-            KclValue::UserVal(UserVal {
-                value: jval,
-                meta: vec![args.source_range.into()],
-            })
-        })
-        .collect();
+    let (array, f): (Vec<KclValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let meta = vec![args.source_range.into()];
     let map_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
-        meta: vec![args.source_range.into()],
+        meta: meta.clone(),
         ctx: args.ctx.clone(),
         memory: *f.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
-    let unwrapped = new_array
-        .clone()
-        .into_iter()
-        .map(|k| match k {
-            KclValue::UserVal(user_val) => Ok(user_val.value),
-            _ => Err(()),
-        })
-        .collect::<Result<Vec<_>, _>>();
-    if let Ok(unwrapped) = unwrapped {
-        let uv = UserVal::new(vec![args.source_range.into()], unwrapped);
-        return Ok(KclValue::UserVal(uv));
-    }
-    let uv = UserVal::new(vec![args.source_range.into()], new_array);
-    Ok(KclValue::UserVal(uv))
+    Ok(KclValue::Array { value: new_array, meta })
 }
 
 /// Apply a function to every element of a list.
@@ -110,16 +88,7 @@ async fn call_map_closure<'a>(
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<JValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
-    let array: Vec<KclValue> = array
-        .into_iter()
-        .map(|jval| {
-            KclValue::UserVal(UserVal {
-                value: jval,
-                meta: vec![args.source_range.into()],
-            })
-        })
-        .collect();
+    let (array, start, f): (Vec<KclValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
     let reduce_fn = FunctionParam {
         inner: f.func,
         fn_expr: f.expr,
@@ -133,26 +102,79 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Take a starting value. Then, for each element of an array, calculate the next value,
 /// using the previous value and the element.
 /// ```no_run
-/// fn decagon = (radius) => {
-///   let step = (1/10) * tau()
-///   let sketch001 = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
-///   return reduce([1..10], sketch001, (i, sg) => {
-///       let x = cos(step * i) * radius
-///       let y = sin(step * i) * radius
-///       return lineTo([x, y], sg)
-///   })
-/// }
-/// decagon(5.0) |> close(%)
+/// // This function adds two numbers.
+/// fn add = (a, b) => { return a + b }
+///
+/// // This function adds an array of numbers.
+/// // It uses the `reduce` function, to call the `add` function on every
+/// // element of the `arr` parameter. The starting value is 0.
+/// fn sum = (arr) => { return reduce(arr, 0, add) }
+///
+/// /*
+/// The above is basically like this pseudo-code:
+/// fn sum(arr):
+///     let sumSoFar = 0
+///     for i in arr:
+///         sumSoFar = add(sumSoFar, i)
+///     return sumSoFar
+/// */
+///
+/// // We use `assertEqual` to check that our `sum` function gives the
+/// // expected result. It's good to check your work!
+/// assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
 /// ```
 /// ```no_run
-/// array = [1, 2, 3]
-/// sum = reduce(array, 0, (i, result_so_far) => { return i + result_so_far })
+/// // This example works just like the previous example above, but it uses
+/// // an anonymous `add` function as its parameter, instead of declaring a
+/// // named function outside.
+/// arr = [1, 2, 3]
+/// sum = reduce(arr, 0, (i, result_so_far) => { return i + result_so_far })
+///
+/// // We use `assertEqual` to check that our `sum` function gives the
+/// // expected result. It's good to check your work!
 /// assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
 /// ```
 /// ```no_run
-/// fn add = (a, b) => { return a + b }
-/// fn sum = (array) => { return reduce(array, 0, add) }
-/// assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
+/// // Declare a function that sketches a decagon.
+/// fn decagon = (radius) => {
+///   // Each side of the decagon is turned this many degrees from the previous angle.
+///   stepAngle = (1/10) * tau()
+///
+///   // Start the decagon sketch at this point.
+///   startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///
+///   // Use a `reduce` to draw the remaining decagon sides.
+///   // For each number in the array 1..10, run the given function,
+///   // which takes a partially-sketched decagon and adds one more edge to it.
+///   fullDecagon = reduce([1..10], startOfDecagonSketch, (i, partialDecagon) => {
+///       // Draw one edge of the decagon.
+///       let x = cos(stepAngle * i) * radius
+///       let y = sin(stepAngle * i) * radius
+///       return lineTo([x, y], partialDecagon)
+///   })
+///
+///   return fullDecagon
+///
+/// }
+///
+/// /*
+/// The `decagon` above is basically like this pseudo-code:
+/// fn decagon(radius):
+///     let stepAngle = (1/10) * tau()
+///     let startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///
+///     // Here's the reduce part.
+///     let partialDecagon = startOfDecagonSketch
+///     for i in [1..10]:
+///         let x = cos(stepAngle * i) * radius
+///         let y = sin(stepAngle * i) * radius
+///         partialDecagon = lineTo([x, y], partialDecagon)
+///     fullDecagon = partialDecagon // it's now full
+///     return fullDecagon
+/// */
+///
+/// // Use the `decagon` function declared above, to sketch a decagon with radius 5.
+/// decagon(5.0) |> close(%)
 /// ```
 #[stdlib {
     name = "reduce",
@@ -206,50 +228,26 @@ async fn call_reduce_closure<'a>(
 #[stdlib {
     name = "push",
 }]
-async fn inner_push(array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
+async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
     // Unwrap the KclValues to JValues for manipulation
-    let mut unwrapped_array = array
-        .into_iter()
-        .map(|k| match k {
-            KclValue::UserVal(user_val) => Ok(user_val.value),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a UserVal in array".to_string(),
-                source_ranges: vec![args.source_range],
-            })),
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-
-    // Unwrap the element
-    let unwrapped_elem = match elem {
-        KclValue::UserVal(user_val) => user_val.value,
-        _ => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a UserVal as element".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        }
-    };
-
-    // Append the element to the array
-    unwrapped_array.push(unwrapped_elem);
-
-    // Wrap the new array into a UserVal with the source range metadata
-    let uv = UserVal::new(vec![args.source_range.into()], unwrapped_array);
-
-    // Return the new array wrapped as a KclValue::UserVal
-    Ok(KclValue::UserVal(uv))
+    array.push(elem);
+    Ok(KclValue::Array {
+        value: array,
+        meta: vec![args.source_range.into()],
+    })
 }
 
 pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Extract the array and the element from the arguments
-    let (array_jvalues, elem): (Vec<JValue>, KclValue) = FromArgs::from_args(&args, 0)?;
+    let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
 
-    // Convert the array of JValue into Vec<KclValue>
-    let array: Vec<KclValue> = array_jvalues
-        .into_iter()
-        .map(|jval| KclValue::UserVal(UserVal::new(vec![args.source_range.into()], jval)))
-        .collect();
-
-    // Call the inner_push function
+    let meta = vec![args.source_range];
+    let KclValue::Array { value: array, meta: _ } = val else {
+        let actual_type = val.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't push to a value of type {actual_type}, only an array"),
+        }));
+    };
     inner_push(array, elem, &args).await
 }

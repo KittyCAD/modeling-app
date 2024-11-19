@@ -1,0 +1,195 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing property_of_object.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "obj": {
+          "type": "Object",
+          "value": {
+            "bar": {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    71,
+                    72,
+                    0
+                  ]
+                }
+              ]
+            },
+            "foo": {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    63,
+                    64,
+                    0
+                  ]
+                }
+              ]
+            }
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                56,
+                74,
+                0
+              ]
+            }
+          ]
+        },
+        "obj2": {
+          "type": "Object",
+          "value": {
+            "inner": {
+              "type": "Object",
+              "value": {
+                "bar": {
+                  "type": "Int",
+                  "value": 0,
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        71,
+                        72,
+                        0
+                      ]
+                    }
+                  ]
+                },
+                "foo": {
+                  "type": "Int",
+                  "value": 1,
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        63,
+                        64,
+                        0
+                      ]
+                    }
+                  ]
+                }
+              },
+              "__meta": [
+                {
+                  "sourceRange": [
+                    56,
+                    74,
+                    0
+                  ]
+                }
+              ]
+            }
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                529,
+                543,
+                0
+              ]
+            }
+          ]
+        },
+        "one_a": {
+          "type": "Int",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                63,
+                64,
+                0
+              ]
+            }
+          ]
+        },
+        "one_b": {
+          "type": "Int",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                63,
+                64,
+                0
+              ]
+            }
+          ]
+        },
+        "one_c": {
+          "type": "Int",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                63,
+                64,
+                0
+              ]
+            }
+          ]
+        },
+        "one_d": {
+          "type": "Int",
+          "value": 1,
+          "__meta": [
+            {
+              "sourceRange": [
+                63,
+                64,
+                0
+              ]
+            }
+          ]
+        },
+        "p": {
+          "type": "String",
+          "value": "foo",
+          "__meta": [
+            {
+              "sourceRange": [
+                342,
+                347,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

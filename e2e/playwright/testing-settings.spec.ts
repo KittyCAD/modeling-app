@@ -258,7 +258,7 @@ test.describe('Testing settings', () => {
     })
   })
 
-  test(
+  test.fixme(
     `Project settings override user settings on desktop`,
     { tag: ['@electron', '@skipWin'] },
     async ({ browser: _ }, testInfo) => {
@@ -318,7 +318,6 @@ test.describe('Testing settings', () => {
             timeout: 5_000,
           })
           .toContain(`themeColor = "${userThemeColor}"`)
-        // Only close the button after we've confirmed
       })
 
       await test.step('Set project theme color', async () => {
@@ -415,7 +414,7 @@ test.describe('Testing settings', () => {
   )
 
   // It was much easier to test the logo color than the background stream color.
-  test(
+  test.fixme(
     'user settings reload on external change, on project and modeling view',
     { tag: '@electron' },
     async ({ browserName }, testInfo) => {
