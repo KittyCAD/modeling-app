@@ -284,10 +284,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         defaultValue: KCL_DEFAULT_AXIS,
         options: [
-          { name: 'X Axis', isCurrent: true, value: KCL_AXIS_X },
-          { name: 'Y Axis', isCurrent: false, value: KCL_AXIS_Y },
-          { name: '-X Axis', isCurrent: false, value: KCL_AXIS_NEG_X },
-          { name: '-Y Axis', isCurrent: false, value: KCL_AXIS_NEG_Y },
+          { name: 'Local X Axis', isCurrent: true, value: KCL_AXIS_X },
+          { name: 'Local Y Axis', isCurrent: false, value: KCL_AXIS_Y },
+          { name: 'Local -X Axis', isCurrent: false, value: KCL_AXIS_NEG_X },
+          { name: 'Local -Y Axis', isCurrent: false, value: KCL_AXIS_NEG_Y },
         ],
       },
       angle: {
