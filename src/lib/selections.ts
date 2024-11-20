@@ -280,18 +280,19 @@ export function getEventForSegmentSelection(
   }
   if (!id || !group) return null
   const artifact = engineCommandManager.artifactGraph.get(id)
-  const codeRefs = getCodeRefsByArtifactId(
-    id,
-    engineCommandManager.artifactGraph
-  )
-  if (!artifact || !codeRefs) return null
+  if (!artifact) return null
+  const node = getNodeFromPath<Expr>(kclManager.ast, group.userData.pathToNode)
+  if (err(node)) return null
   return {
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
       selection: {
         artifact,
-        codeRef: codeRefs[0],
+        codeRef: {
+          pathToNode: group?.userData?.pathToNode,
+          range: [node.node.start, node.node.end, true],
+        },
       },
     },
   }
@@ -675,8 +676,7 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(selection)
   if (selectionsByType === 'none') return null
 
-  return selectionsByType
-    .entries()
+  return [...selectionsByType.entries()]
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
@@ -685,7 +685,6 @@ export function getSelectionTypeDisplayText(
           .replace('solid2D', 'face')
           .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
-    .toArray()
     .join(', ')
 }
 
@@ -695,7 +694,7 @@ export function canSubmitSelectionArg(
 ) {
   return (
     selectionsByType !== 'none' &&
-    selectionsByType.entries().every(([type, count]) => {
+    [...selectionsByType.entries()].every(([type, count]) => {
       const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
       return (
         foundIndex !== -1 &&
@@ -718,7 +717,7 @@ export function codeToIdSelections(
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact)) return null
+          if (!('codeRef' in artifact && artifact.codeRef)) return null
           return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
@@ -961,7 +960,6 @@ export function updateSelections(
             JSON.stringify(pathToNode)
           ) {
             artifact = a
-            console.log('found artifact', a)
             break
           }
         }
