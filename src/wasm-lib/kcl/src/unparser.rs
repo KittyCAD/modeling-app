@@ -364,7 +364,7 @@ impl ObjectExpression {
                 .iter()
                 .map(|prop| {
                     format!(
-                        "{}: {}",
+                        "{} = {}",
                         prop.key.name,
                         prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
                     )
@@ -398,7 +398,7 @@ impl ObjectExpression {
                     // Use a comma unless it's the last item
                     let comma = if i == num_items - 1 { "" } else { ",\n" };
                     let s = format!(
-                        "{}: {}{comma}",
+                        "{} = {}{comma}",
                         prop.key.name,
                         prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
                     );
@@ -722,15 +722,15 @@ fn o = (c_x, c_y) => {
   startSketchOn('XY')
     |> startProfileAt([o_x1, o_y1], %)
     |> arc({
-         radius: o_r,
-         angle_start: 45 + a,
-         angle_end: 225 - a
+         radius = o_r,
+         angle_start = 45 + a,
+         angle_end = 225 - a
        }, %)
     |> angledLine([45, o_r - i_r], %)
     |> arc({
-         radius: i_r,
-         angle_start: 225 - a,
-         angle_end: 45 + a
+         radius = i_r,
+         angle_start = 225 - a,
+         angle_end = 45 + a
        }, %)
     |> close(%)
     |> extrude(d, %)
@@ -738,15 +738,15 @@ fn o = (c_x, c_y) => {
   startSketchOn('XY')
     |> startProfileAt([o_x2, o_y2], %)
     |> arc({
-         radius: o_r,
-         angle_start: 225 + a,
-         angle_end: 360 + 45 - a
+         radius = o_r,
+         angle_start = 225 + a,
+         angle_end = 360 + 45 - a
        }, %)
     |> angledLine([225, o_r - i_r], %)
     |> arc({
-         radius: i_r,
-         angle_start: 45 - a,
-         angle_end: 225 + a - 360
+         radius = i_r,
+         angle_start = 45 - a,
+         angle_end = 225 + a - 360
        }, %)
     |> close(%)
     |> extrude(d, %)
@@ -799,18 +799,18 @@ sphere = startSketchOn('XZ')
      ], %)
   |> line([sphereDia - 0.1, 0], %)
   |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
+       angle_start = 0,
+       angle_end = -180,
+       radius = sphereDia / 2 - 0.05
      }, %)
   |> close(%)
   |> revolve({ axis: 'x' }, %)
   |> patternCircular3d({
-       axis: [0, 0, 1],
-       center: [0, 0, 0],
-       repetitions: 10,
-       arcDegrees: 360,
-       rotateDuplicates: true
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       repetitions = 10,
+       arcDegrees = 360,
+       rotateDuplicates = true
      }, %)
 
 // Sketch and revolve the outside bearing
@@ -856,7 +856,7 @@ insideRevolve = startSketchOn('XZ')
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
   |> close(%)
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn('XZ')
@@ -866,18 +866,18 @@ sphere = startSketchOn('XZ')
      ], %)
   |> line([sphereDia - 0.1, 0], %)
   |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
+       angle_start = 0,
+       angle_end = -180,
+       radius = sphereDia / 2 - 0.05
      }, %)
   |> close(%)
-  |> revolve({ axis: 'x' }, %)
+  |> revolve({ axis = 'x' }, %)
   |> patternCircular3d({
-       axis: [0, 0, 1],
-       center: [0, 0, 0],
-       repetitions: 10,
-       arcDegrees: 360,
-       rotateDuplicates: true
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       repetitions = 10,
+       arcDegrees = 360,
+       rotateDuplicates = true
      }, %)
 
 // Sketch and revolve the outside bearing
@@ -895,15 +895,15 @@ outsideRevolve = startSketchOn('XZ')
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
   |> close(%)
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = 'y' }, %)
 "#
         );
     }
 
     #[test]
     fn test_recast_fn_in_object() {
-        let some_program_string = r#"bing = { yo: 55 }
-myNestedVar = [{ prop: callExp(bing.yo) }]
+        let some_program_string = r#"bing = { yo = 55 }
+myNestedVar = [{ prop = callExp(bing.yo) }]
 "#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
@@ -913,7 +913,7 @@ myNestedVar = [{ prop: callExp(bing.yo) }]
 
     #[test]
     fn test_recast_fn_in_array() {
-        let some_program_string = r#"bing = { yo: 55 }
+        let some_program_string = r#"bing = { yo = 55 }
 myNestedVar = [callExp(bing.yo)]
 "#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
@@ -958,7 +958,7 @@ thing(1)
 
     #[test]
     fn test_recast_object_fn_in_array_weird_bracket() {
-        let some_program_string = r#"bing = { yo: 55 }
+        let some_program_string = r#"bing = { yo = 55 }
 myNestedVar = [
   {
   prop:   line([bing.yo, 21], sketch001)
@@ -970,9 +970,11 @@ myNestedVar = [
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"bing = { yo: 55 }
+            r#"bing = { yo = 55 }
 myNestedVar = [
-  { prop: line([bing.yo, 21], sketch001) }
+  {
+  prop = line([bing.yo, 21], sketch001)
+}
 ]
 "#
         );
@@ -1113,8 +1115,8 @@ fn rectShape = (pos, w, l) => {
 scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
   |> fillet({
-       radius: radius,
-       tags: [
+       radius = radius,
+       tags = [
   edge2,
   edge4,
   getOppositeEdge(edge2),
@@ -1125,10 +1127,10 @@ scarlett_body = rectShape([0, 0], width, length)
 fn bracketSketch = (w, d, t) => {
   s = startSketchOn({
          plane: {
-  origin: { x: 0, y: length / 2 + thk, z: 0 },
-  x_axis: { x: 1, y: 0, z: 0 },
-  y_axis: { x: 0, y: 0, z: 1 },
-  z_axis: { x: 0, y: 1, z: 0 }
+  origin: { x = 0, y = length / 2 + thk, z = 0 },
+  x_axis: { x = 1, y = 0, z = 0 },
+  y_axis: { x = 0, y = 0, z = 1 },
+  z_axis: { x = 0, y = 1, z = 0 }
 }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
@@ -1146,7 +1148,7 @@ fn bracketSketch = (w, d, t) => {
 bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
   |> fillet({
-       radius: radius,
+       radius = radius,
        tags: [
   getNextAdjacentEdge(edge7),
   getNextAdjacentEdge(edge2),
@@ -1157,10 +1159,10 @@ bracket_body = bracketSketch(width, depth, thk)
   // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
        plane: {
-  origin: { x: 0, y: 0, z: depth + thk },
-  x_axis: { x: 1, y: 0, z: 0 },
-  y_axis: { x: 0, y: 1, z: 0 },
-  z_axis: { x: 0, y: 0, z: 1 }
+  origin: { x = 0, y = 0, z = depth + thk },
+  x_axis: { x = 1, y = 0, z = 0 },
+  y_axis: { x = 0, y = 1, z = 0 },
+  z_axis: { x = 0, y = 0, z = 1 }
 }
      })
   |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
@@ -1169,25 +1171,25 @@ tabs_r = startSketchOn({
   |> line([-10, -5], %)
   |> close(%)
   |> hole(circle({
-       center: [
+       center = [
          width / 2 + thk + hole_diam,
          length / 2 - hole_diam
        ],
-       radius: hole_diam / 2
+       radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
-       axis: [0, -1, 0],
-       repetitions: 1,
-       distance: length - 10
+       axis = [0, -1, 0],
+       repetitions = 1,
+       distance = length - 10
      }, %)
   // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
        plane: {
-  origin: { x: 0, y: 0, z: depth + thk },
-  x_axis: { x: 1, y: 0, z: 0 },
-  y_axis: { x: 0, y: 1, z: 0 },
-  z_axis: { x: 0, y: 0, z: 1 }
+  origin = { x = 0, y = 0, z = depth + thk },
+  x_axis = { x = 1, y = 0, z = 0 },
+  y_axis = { x = 0, y = 1, z = 0 },
+  z_axis = { x = 0, y = 0, z = 1 }
 }
      })
   |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
@@ -1196,17 +1198,17 @@ tabs_l = startSketchOn({
   |> line([10, -5], %)
   |> close(%)
   |> hole(circle({
-       center: [
+       center = [
          -width / 2 - thk - hole_diam,
          length / 2 - hole_diam
        ],
-       radius: hole_diam / 2
+       radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
-       axis: [0, -1, 0],
-       repetitions: 1,
-       distance: length - 10
+       axis = [0, -1, 0],
+       repetitions = 1,
+       distance = length - 10
      }, %)
 "#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
@@ -1237,8 +1239,8 @@ fn rectShape = (pos, w, l) => {
 scarlett_body = rectShape([0, 0], width, length)
   |> extrude(depth, %)
   |> fillet({
-       radius: radius,
-       tags: [
+       radius = radius,
+       tags = [
          edge2,
          edge4,
          getOppositeEdge(edge2),
@@ -1248,11 +1250,11 @@ scarlett_body = rectShape([0, 0], width, length)
 // build the bracket sketch around the body
 fn bracketSketch = (w, d, t) => {
   s = startSketchOn({
-         plane: {
-           origin: { x: 0, y: length / 2 + thk, z: 0 },
-           x_axis: { x: 1, y: 0, z: 0 },
-           y_axis: { x: 0, y: 0, z: 1 },
-           z_axis: { x: 0, y: 1, z: 0 }
+         plane = {
+           origin = { x = 0, y = length / 2 + thk, z = 0 },
+           x_axis = { x = 1, y = 0, z = 0 },
+           y_axis = { x = 0, y = 0, z = 1 },
+           z_axis = { x = 0, y = 1, z = 0 }
          }
        })
     |> startProfileAt([-w / 2 - t, d + t], %)
@@ -1270,8 +1272,8 @@ fn bracketSketch = (w, d, t) => {
 bracket_body = bracketSketch(width, depth, thk)
   |> extrude(length + 10, %)
   |> fillet({
-       radius: radius,
-       tags: [
+       radius = radius,
+       tags = [
          getNextAdjacentEdge(edge7),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),
@@ -1280,11 +1282,11 @@ bracket_body = bracketSketch(width, depth, thk)
      }, %)
 // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
-       plane: {
-         origin: { x: 0, y: 0, z: depth + thk },
-         x_axis: { x: 1, y: 0, z: 0 },
-         y_axis: { x: 0, y: 1, z: 0 },
-         z_axis: { x: 0, y: 0, z: 1 }
+       plane = {
+         origin = { x = 0, y = 0, z = depth + thk },
+         x_axis = { x = 1, y = 0, z = 0 },
+         y_axis = { x = 0, y = 1, z = 0 },
+         z_axis = { x = 0, y = 0, z = 1 }
        }
      })
   |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
@@ -1293,25 +1295,25 @@ tabs_r = startSketchOn({
   |> line([-10, -5], %)
   |> close(%)
   |> hole(circle({
-       center: [
+       center = [
          width / 2 + thk + hole_diam,
          length / 2 - hole_diam
        ],
-       radius: hole_diam / 2
+       radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
-       axis: [0, -1, 0],
-       repetitions: 1,
-       distance: length - 10
+       axis = [0, -1, 0],
+       repetitions = 1,
+       distance = length - 10
      }, %)
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
-       plane: {
-         origin: { x: 0, y: 0, z: depth + thk },
-         x_axis: { x: 1, y: 0, z: 0 },
-         y_axis: { x: 0, y: 1, z: 0 },
-         z_axis: { x: 0, y: 0, z: 1 }
+       plane = {
+         origin = { x = 0, y = 0, z = depth + thk },
+         x_axis = { x = 1, y = 0, z = 0 },
+         y_axis = { x = 0, y = 1, z = 0 },
+         z_axis = { x = 0, y = 0, z = 1 }
        }
      })
   |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
@@ -1320,17 +1322,17 @@ tabs_l = startSketchOn({
   |> line([10, -5], %)
   |> close(%)
   |> hole(circle({
-       center: [
+       center = [
          -width / 2 - thk - hole_diam,
          length / 2 - hole_diam
        ],
-       radius: hole_diam / 2
+       radius = hole_diam / 2
      }, %), %)
   |> extrude(-thk, %)
   |> patternLinear3d({
-       axis: [0, -1, 0],
-       repetitions: 1,
-       distance: length - 10
+       axis = [0, -1, 0],
+       repetitions = 1,
+       distance = length - 10
      }, %)
 "#
         );
@@ -1427,7 +1429,7 @@ tabs_l = startSketchOn({
     fn test_recast_comment_in_a_fn_block() {
         let some_program_string = r#"fn myFn = () => {
   // this is a comment
-  yo = { a: { b: { c: '123' } } } /* block
+  yo = { a = { b = { c = '123' } } } /* block
   comment */
 
   key = 'c'
@@ -1441,7 +1443,7 @@ tabs_l = startSketchOn({
             recasted,
             r#"fn myFn = () => {
   // this is a comment
-  yo = { a: { b: { c: '123' } } } /* block
+  yo = { a = { b = { c = '123' } } } /* block
   comment */
 
   key = 'c'
@@ -1613,9 +1615,9 @@ mySk1 = startSketchOn('XY')
   |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
-       angle: 201,
-       offset: -1.35,
-       intersectTag: seg01
+       angle = 201,
+       offset = -1.35,
+       intersectTag = seg01
      }, %)
   |> line([-0.42, -1.72], %)"#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
@@ -1629,10 +1631,10 @@ mySk1 = startSketchOn('XY')
         let some_program_string = r#"three = 3
 
 yo = {
-  aStr: 'str',
-  anum: 2,
-  identifier: three,
-  binExp: 4 + 5
+  aStr = 'str',
+  anum = 2,
+  identifier = three,
+  binExp = 4 + 5
 }
 yo = [
   1,
@@ -1652,7 +1654,7 @@ yo = [
     fn test_recast_new_line_before_comment() {
         let some_program_string = r#"
 // this is a comment
-yo = { a: { b: { c: '123' } } }
+yo = { a = { b = { c = '123' } } }
 
 key = 'c'
 things = "things"
@@ -1670,10 +1672,10 @@ things = "things"
     #[test]
     fn test_recast_comment_tokens_inside_strings() {
         let some_program_string = r#"b = {
-  end: 141,
-  start: 125,
-  type_: "NonCodeNode",
-  value: "
+  end = 141,
+  start = 125,
+  type_ = "NonCodeNode",
+  value = "
  // a comment
    "
 }"#;
@@ -1769,7 +1771,7 @@ part002 = "part002"
 things = [mySuperCoolPart, 0.0]
 blah = 1
 foo = false
-baz = { a: 1, part001: "thing" }
+baz = { a = 1, part001 = "thing" }
 
 fn ghi = (part001) => {
   return part001
@@ -1801,9 +1803,9 @@ fn ghi = (part001) => {
         let some_program_string = r#"startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> arc({
-    radius: 1,
-    angle_start: 0,
-    angle_end: 180,
+    radius = 1,
+    angle_start = 0,
+    angle_end = 180,
   }, %)"#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
 
@@ -1813,9 +1815,9 @@ fn ghi = (part001) => {
             r#"startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> arc({
-       radius: 1,
-       angle_start: 0,
-       angle_end: 180
+       radius = 1,
+       angle_start = 0,
+       angle_end = 180
      }, %)
 "#
         );
@@ -2003,19 +2005,19 @@ fn f = () => {
         let input = r#"
 sketch002 = startSketchOn({
        plane: {
-    origin: { x: 1, y: 2, z: 3 },
-    x_axis: { x: 4, y: 5, z: 6 },
-    y_axis: { x: 7, y: 8, z: 9 },
-    z_axis: { x: 10, y: 11, z: 12 }
+    origin: { x = 1, y = 2, z = 3 },
+    x_axis: { x = 4, y = 5, z = 6 },
+    y_axis: { x = 7, y = 8, z = 9 },
+    z_axis: { x = 10, y = 11, z = 12 }
        }
   })
 "#;
         let expected = r#"sketch002 = startSketchOn({
-  plane: {
-    origin: { x: 1, y: 2, z: 3 },
-    x_axis: { x: 4, y: 5, z: 6 },
-    y_axis: { x: 7, y: 8, z: 9 },
-    z_axis: { x: 10, y: 11, z: 12 }
+  plane = {
+    origin = { x = 1, y = 2, z = 3 },
+    x_axis = { x = 4, y = 5, z = 6 },
+    y_axis = { x = 7, y = 8, z = 9 },
+    z_axis = { x = 10, y = 11, z = 12 }
   }
 })
 "#;
@@ -2030,15 +2032,15 @@ sketch002 = startSketchOn({
         for (i, (input, expected, reason)) in [(
             "\
 {
-  a: 1,
-  // b: 2,
-  c: 3
+  a = 1,
+  // b = 2,
+  c = 3
 }",
             "\
 {
-  a: 1,
-  // b: 2,
-  c: 3
+  a = 1,
+  // b = 2,
+  c = 3
 }",
             "preserves comments",
         )]

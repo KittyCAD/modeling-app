@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 65
 description: Result of parsing sketch_on_face_circle_tagged.kcl
 snapshot_kind: text
 ---
@@ -434,7 +435,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 359,
+            "end": 361,
             "id": {
               "end": 251,
               "name": "part002",
@@ -476,10 +477,10 @@ snapshot_kind: text
                 {
                   "arguments": [
                     {
-                      "end": 325,
+                      "end": 327,
                       "properties": [
                         {
-                          "end": 312,
+                          "end": 313,
                           "key": {
                             "end": 304,
                             "name": "center",
@@ -491,42 +492,42 @@ snapshot_kind: text
                           "value": {
                             "elements": [
                               {
-                                "end": 308,
+                                "end": 309,
                                 "raw": "0",
-                                "start": 307,
+                                "start": 308,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": 0
                               },
                               {
-                                "end": 311,
+                                "end": 312,
                                 "raw": "0",
-                                "start": 310,
+                                "start": 311,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": 0
                               }
                             ],
-                            "end": 312,
-                            "start": 306,
+                            "end": 313,
+                            "start": 307,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
                         },
                         {
-                          "end": 323,
+                          "end": 325,
                           "key": {
-                            "end": 320,
+                            "end": 321,
                             "name": "radius",
-                            "start": 314,
+                            "start": 315,
                             "type": "Identifier"
                           },
-                          "start": 314,
+                          "start": 315,
                           "type": "ObjectProperty",
                           "value": {
-                            "end": 323,
+                            "end": 325,
                             "raw": "5",
-                            "start": 322,
+                            "start": 324,
                             "type": "Literal",
                             "type": "Literal",
                             "value": 5
@@ -538,14 +539,14 @@ snapshot_kind: text
                       "type": "ObjectExpression"
                     },
                     {
-                      "end": 328,
-                      "start": 327,
+                      "end": 330,
+                      "start": 329,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     },
                     {
-                      "end": 339,
-                      "start": 330,
+                      "end": 341,
+                      "start": 332,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "myCircle"
@@ -557,7 +558,7 @@ snapshot_kind: text
                     "start": 289,
                     "type": "Identifier"
                   },
-                  "end": 340,
+                  "end": 342,
                   "optional": false,
                   "start": 289,
                   "type": "CallExpression",
@@ -566,34 +567,34 @@ snapshot_kind: text
                 {
                   "arguments": [
                     {
-                      "end": 355,
+                      "end": 357,
                       "raw": "5",
-                      "start": 354,
+                      "start": 356,
                       "type": "Literal",
                       "type": "Literal",
                       "value": 5
                     },
                     {
-                      "end": 358,
-                      "start": 357,
+                      "end": 360,
+                      "start": 359,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     }
                   ],
                   "callee": {
-                    "end": 353,
+                    "end": 355,
                     "name": "extrude",
-                    "start": 346,
+                    "start": 348,
                     "type": "Identifier"
                   },
-                  "end": 359,
+                  "end": 361,
                   "optional": false,
-                  "start": 346,
+                  "start": 348,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
-              "end": 359,
+              "end": 361,
               "start": 254,
               "type": "PipeExpression",
               "type": "PipeExpression"
@@ -602,14 +603,14 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 359,
+        "end": 361,
         "kind": "const",
         "start": 244,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 360,
+    "end": 362,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [

@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 105
 description: Program memory after executing poop_chute.kcl
 snapshot_kind: text
 ---
@@ -165,12 +166,12 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 292,
-                353,
+                355,
                 0
               ],
               "tag": {
-                "end": 352,
-                "start": 346,
+                "end": 354,
+                "start": 348,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -180,8 +181,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                359,
-                377,
+                361,
+                379,
                 0
               ],
               "tag": null,
@@ -191,8 +192,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                383,
-                408,
+                385,
+                410,
                 0
               ],
               "tag": null,
@@ -202,8 +203,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                414,
-                440,
+                416,
+                442,
                 0
               ],
               "tag": null,
@@ -213,8 +214,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                446,
-                543,
+                448,
+                547,
                 0
               ],
               "tag": null,
@@ -224,8 +225,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                549,
-                574,
+                553,
+                578,
                 0
               ],
               "tag": null,
@@ -235,8 +236,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                580,
-                637,
+                584,
+                662,
                 0
               ],
               "tag": null,
@@ -246,30 +247,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                643,
-                661,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                667,
-                680,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
+                668,
                 686,
-                712,
                 0
               ],
               "tag": null,
@@ -279,8 +258,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                718,
-                762,
+                692,
+                705,
                 0
               ],
               "tag": null,
@@ -290,8 +269,30 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                768,
-                776,
+                711,
+                737,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                743,
+                789,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                795,
+                803,
                 0
               ],
               "tag": null,
@@ -327,7 +328,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     292,
-                    353,
+                    355,
                     0
                   ]
                 },
@@ -336,8 +337,8 @@ snapshot_kind: text
                   0.0
                 ],
                 "tag": {
-                  "end": 352,
-                  "start": 346,
+                  "end": 354,
+                  "start": 348,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -351,8 +352,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    359,
-                    377,
+                    361,
+                    379,
                     0
                   ]
                 },
@@ -371,8 +372,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    383,
-                    408,
+                    385,
+                    410,
                     0
                   ]
                 },
@@ -391,8 +392,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    414,
-                    440,
+                    416,
+                    442,
                     0
                   ]
                 },
@@ -411,8 +412,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    446,
-                    543,
+                    448,
+                    547,
                     0
                   ]
                 },
@@ -431,8 +432,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    549,
-                    574,
+                    553,
+                    578,
                     0
                   ]
                 },
@@ -451,8 +452,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    580,
-                    637,
+                    584,
+                    662,
                     0
                   ]
                 },
@@ -471,48 +472,48 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    643,
-                    661,
-                    0
-                  ]
-                },
-                "from": [
-                  0.125,
-                  0.9375
-                ],
-                "tag": null,
-                "to": [
-                  0.125,
-                  5.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    667,
-                    680,
-                    0
-                  ]
-                },
-                "from": [
-                  0.125,
-                  5.5
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  5.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
+                    668,
                     686,
-                    712,
+                    0
+                  ]
+                },
+                "from": [
+                  0.125,
+                  0.9375
+                ],
+                "tag": null,
+                "to": [
+                  0.125,
+                  5.5
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    692,
+                    705,
+                    0
+                  ]
+                },
+                "from": [
+                  0.125,
+                  5.5
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  5.5
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    711,
+                    737,
                     0
                   ]
                 },
@@ -531,8 +532,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    718,
-                    762,
+                    743,
+                    789,
                     0
                   ]
                 },
@@ -551,8 +552,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    768,
-                    776,
+                    795,
+                    803,
                     0
                   ]
                 },
@@ -626,7 +627,7 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         292,
-                        353,
+                        355,
                         0
                       ]
                     },
@@ -635,8 +636,8 @@ snapshot_kind: text
                       0.0
                     ],
                     "tag": {
-                      "end": 352,
-                      "start": 346,
+                      "end": 354,
+                      "start": 348,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -651,12 +652,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       292,
-                      353,
+                      355,
                       0
                     ],
                     "tag": {
-                      "end": 352,
-                      "start": 346,
+                      "end": 354,
+                      "start": 348,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -666,8 +667,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      346,
-                      352,
+                      348,
+                      354,
                       0
                     ]
                   }
@@ -710,7 +711,7 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   292,
-                  353,
+                  355,
                   0
                 ]
               },
@@ -719,8 +720,8 @@ snapshot_kind: text
                 0.0
               ],
               "tag": {
-                "end": 352,
-                "start": 346,
+                "end": 354,
+                "start": 348,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -735,12 +736,12 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 292,
-                353,
+                355,
                 0
               ],
               "tag": {
-                "end": 352,
-                "start": 346,
+                "end": 354,
+                "start": 348,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -750,8 +751,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                346,
-                352,
+                348,
+                354,
                 0
               ]
             }
@@ -769,8 +770,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1044,
-                  1105,
+                  1076,
+                  1139,
                   0
                 ]
               },
@@ -779,8 +780,8 @@ snapshot_kind: text
                 0.0
               ],
               "tag": {
-                "end": 1104,
-                "start": 1098,
+                "end": 1138,
+                "start": 1132,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -794,13 +795,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1044,
-                1105,
+                1076,
+                1139,
                 0
               ],
               "tag": {
-                "end": 1104,
-                "start": 1098,
+                "end": 1138,
+                "start": 1132,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -810,8 +811,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1098,
-                1104,
+                1132,
+                1138,
                 0
               ]
             }
@@ -848,7 +849,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     292,
-                    353,
+                    355,
                     0
                   ]
                 },
@@ -857,8 +858,8 @@ snapshot_kind: text
                   0.0
                 ],
                 "tag": {
-                  "end": 352,
-                  "start": 346,
+                  "end": 354,
+                  "start": 348,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -872,8 +873,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    359,
-                    377,
+                    361,
+                    379,
                     0
                   ]
                 },
@@ -892,8 +893,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    383,
-                    408,
+                    385,
+                    410,
                     0
                   ]
                 },
@@ -912,8 +913,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    414,
-                    440,
+                    416,
+                    442,
                     0
                   ]
                 },
@@ -932,8 +933,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    446,
-                    543,
+                    448,
+                    547,
                     0
                   ]
                 },
@@ -952,8 +953,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    549,
-                    574,
+                    553,
+                    578,
                     0
                   ]
                 },
@@ -972,8 +973,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    580,
-                    637,
+                    584,
+                    662,
                     0
                   ]
                 },
@@ -992,48 +993,48 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    643,
-                    661,
-                    0
-                  ]
-                },
-                "from": [
-                  0.125,
-                  0.9375
-                ],
-                "tag": null,
-                "to": [
-                  0.125,
-                  5.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    667,
-                    680,
-                    0
-                  ]
-                },
-                "from": [
-                  0.125,
-                  5.5
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  5.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
+                    668,
                     686,
-                    712,
+                    0
+                  ]
+                },
+                "from": [
+                  0.125,
+                  0.9375
+                ],
+                "tag": null,
+                "to": [
+                  0.125,
+                  5.5
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    692,
+                    705,
+                    0
+                  ]
+                },
+                "from": [
+                  0.125,
+                  5.5
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  5.5
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    711,
+                    737,
                     0
                   ]
                 },
@@ -1052,8 +1053,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    718,
-                    762,
+                    743,
+                    789,
                     0
                   ]
                 },
@@ -1072,8 +1073,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    768,
-                    776,
+                    795,
+                    803,
                     0
                   ]
                 },
@@ -1147,7 +1148,7 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         292,
-                        353,
+                        355,
                         0
                       ]
                     },
@@ -1156,8 +1157,8 @@ snapshot_kind: text
                       0.0
                     ],
                     "tag": {
-                      "end": 352,
-                      "start": 346,
+                      "end": 354,
+                      "start": 348,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1172,12 +1173,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       292,
-                      353,
+                      355,
                       0
                     ],
                     "tag": {
-                      "end": 352,
-                      "start": 346,
+                      "end": 354,
+                      "start": 348,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1187,8 +1188,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      346,
-                      352,
+                      348,
+                      354,
                       0
                     ]
                   }
@@ -1215,8 +1216,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1010,
-                1038,
+                1042,
+                1070,
                 0
               ],
               "tag": null,
@@ -1226,13 +1227,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1044,
-                1105,
+                1076,
+                1139,
                 0
               ],
               "tag": {
-                "end": 1104,
-                "start": 1098,
+                "end": 1138,
+                "start": 1132,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1242,8 +1243,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1111,
-                1129,
+                1145,
+                1163,
                 0
               ],
               "tag": null,
@@ -1253,8 +1254,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1135,
-                1160,
+                1169,
+                1194,
                 0
               ],
               "tag": null,
@@ -1264,8 +1265,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1166,
-                1192,
+                1200,
+                1226,
                 0
               ],
               "tag": null,
@@ -1275,8 +1276,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1198,
-                1295,
+                1232,
+                1331,
                 0
               ],
               "tag": null,
@@ -1286,8 +1287,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1301,
-                1326,
+                1337,
+                1362,
                 0
               ],
               "tag": null,
@@ -1297,8 +1298,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1332,
-                1389,
+                1368,
+                1446,
                 0
               ],
               "tag": null,
@@ -1308,41 +1309,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1395,
-                1413,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1419,
-                1432,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1438,
-                1464,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
+                1452,
                 1470,
-                1514,
                 0
               ],
               "tag": null,
@@ -1352,8 +1320,41 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1520,
-                1528,
+                1476,
+                1489,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                1495,
+                1521,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                1527,
+                1573,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                1579,
+                1587,
                 0
               ],
               "tag": null,
@@ -1368,8 +1369,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1010,
-                    1038,
+                    1042,
+                    1070,
                     0
                   ]
                 },
@@ -1388,8 +1389,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1044,
-                    1105,
+                    1076,
+                    1139,
                     0
                   ]
                 },
@@ -1398,8 +1399,8 @@ snapshot_kind: text
                   0.0
                 ],
                 "tag": {
-                  "end": 1104,
-                  "start": 1098,
+                  "end": 1138,
+                  "start": 1132,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1413,8 +1414,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1111,
-                    1129,
+                    1145,
+                    1163,
                     0
                   ]
                 },
@@ -1433,8 +1434,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1135,
-                    1160,
+                    1169,
+                    1194,
                     0
                   ]
                 },
@@ -1453,8 +1454,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1166,
-                    1192,
+                    1200,
+                    1226,
                     0
                   ]
                 },
@@ -1473,8 +1474,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1198,
-                    1295,
+                    1232,
+                    1331,
                     0
                   ]
                 },
@@ -1493,8 +1494,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1301,
-                    1326,
+                    1337,
+                    1362,
                     0
                   ]
                 },
@@ -1513,8 +1514,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1332,
-                    1389,
+                    1368,
+                    1446,
                     0
                   ]
                 },
@@ -1533,68 +1534,68 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1395,
-                    1413,
-                    0
-                  ]
-                },
-                "from": [
-                  0.125,
-                  0.9375
-                ],
-                "tag": null,
-                "to": [
-                  0.125,
-                  5.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1419,
-                    1432,
-                    0
-                  ]
-                },
-                "from": [
-                  0.125,
-                  5.5
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  5.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1438,
-                    1464,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  5.5
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.9375
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
+                    1452,
                     1470,
-                    1514,
+                    0
+                  ]
+                },
+                "from": [
+                  0.125,
+                  0.9375
+                ],
+                "tag": null,
+                "to": [
+                  0.125,
+                  5.5
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    1476,
+                    1489,
+                    0
+                  ]
+                },
+                "from": [
+                  0.125,
+                  5.5
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  5.5
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    1495,
+                    1521,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  5.5
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.9375
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    1527,
+                    1573,
                     0
                   ]
                 },
@@ -1613,8 +1614,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1520,
-                    1528,
+                    1579,
+                    1587,
                     0
                   ]
                 },
@@ -1669,8 +1670,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  960,
-                  1004,
+                  992,
+                  1036,
                   0
                 ]
               }
@@ -1687,8 +1688,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1044,
-                        1105,
+                        1076,
+                        1139,
                         0
                       ]
                     },
@@ -1697,8 +1698,8 @@ snapshot_kind: text
                       0.0
                     ],
                     "tag": {
-                      "end": 1104,
-                      "start": 1098,
+                      "end": 1138,
+                      "start": 1132,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1712,13 +1713,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1044,
-                      1105,
+                      1076,
+                      1139,
                       0
                     ],
                     "tag": {
-                      "end": 1104,
-                      "start": 1098,
+                      "end": 1138,
+                      "start": 1132,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -1728,8 +1729,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1098,
-                      1104,
+                      1132,
+                      1138,
                       0
                     ]
                   }
@@ -1739,8 +1740,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  960,
-                  1004,
+                  992,
+                  1036,
                   0
                 ]
               }
@@ -1752,8 +1753,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                960,
-                1004,
+                992,
+                1036,
                 0
               ]
             }

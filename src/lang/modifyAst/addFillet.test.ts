@@ -330,7 +330,7 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01] }, %)`
+  |> fillet({ radius = 3, tags = [seg01] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
       code,
@@ -358,7 +358,7 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
   |> extrude(-15, %)
-  |> fillet({ radius: 3, tags: [seg01] }, %)`
+  |> fillet({ radius = 3, tags = [seg01] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
       code,
@@ -386,7 +386,7 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01] }, %)`
+  |> fillet({ radius = 3, tags = [seg01] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
       code,
@@ -414,7 +414,7 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg02] }, %)`
+  |> fillet({ radius = 3, tags = [seg02] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
       code,
@@ -432,7 +432,7 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 5, tags: [seg01] }, %)`
+  |> fillet({ radius = 5, tags = [seg01] }, %)`
     const segmentSnippets = ['line([-20, 0], %)']
     const radiusValue = 3
     const expectedCode = `sketch001 = startSketchOn('XY')
@@ -443,8 +443,8 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 5, tags: [seg01] }, %)
-  |> fillet({ radius: 3, tags: [seg02] }, %)`
+  |> fillet({ radius = 5, tags = [seg01] }, %)
+  |> fillet({ radius = 3, tags = [seg02] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
       code,
@@ -472,7 +472,7 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01, seg02] }, %)`
+  |> fillet({ radius = 3, tags = [seg01, seg02] }, %)`
 
     await runModifyAstCloneWithFilletAndTag(
       code,
@@ -512,7 +512,7 @@ extrude002 = extrude(-25, sketch002)` // <--- body 2
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01, seg02] }, %)
+  |> fillet({ radius = 3, tags = [seg01, seg02] }, %)
 sketch002 = startSketchOn('XY')
   |> startProfileAt([30, 10], %)
   |> line([15, 0], %)
@@ -521,7 +521,7 @@ sketch002 = startSketchOn('XY')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude002 = extrude(-25, sketch002)
-  |> fillet({ radius: 3, tags: [seg03] }, %)` // <-- able to add a new one
+  |> fillet({ radius = 3, tags = [seg03] }, %)` // <-- able to add a new one
 
     await runModifyAstCloneWithFilletAndTag(
       code,
@@ -541,8 +541,8 @@ describe('Testing isTagUsedInFillet', () => {
   |> close(%)
 extrude001 = extrude(-5, sketch001)
   |> fillet({
-       radius: 1.11,
-       tags: [
+       radius = 1.11,
+       tags = [
          getOppositeEdge(seg01),
          seg01,
          getPreviousAdjacentEdge(seg02)

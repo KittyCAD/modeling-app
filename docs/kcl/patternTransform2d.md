@@ -31,12 +31,12 @@ patternTransform2d(total_instances: u32, transform_function: FunctionParam, soli
 ```js
 // Each instance will be shifted along the X axis.
 fn transform = (id) => {
-  return { translate: [4 * id, 0] }
+  return { translate = [4 * id, 0] }
 }
 
 // Sketch 4 circles.
 sketch001 = startSketchOn('XZ')
-  |> circle({ center: [0, 0], radius: 2 }, %)
+  |> circle({ center = [0, 0], radius = 2 }, %)
   |> patternTransform2d(4, transform, %)
 ```
 

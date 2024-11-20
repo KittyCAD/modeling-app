@@ -61,6 +61,9 @@ fn unparse(test_name: &str) {
     };
     // Check recasting the AST produces the original string.
     let actual = ast.recast(&Default::default(), 0);
+    if matches!(std::env::var("EXPECTORATE").as_deref(), Ok("overwrite")) {
+        std::fs::write(format!("tests/{test_name}/input.kcl"), &actual).unwrap();
+    }
     let expected = read("input.kcl", test_name);
     pretty_assertions::assert_eq!(
         actual,

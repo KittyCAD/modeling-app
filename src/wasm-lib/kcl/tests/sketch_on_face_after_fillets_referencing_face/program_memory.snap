@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 105
 description: Program memory after executing sketch_on_face_after_fillets_referencing_face.kcl
 snapshot_kind: text
 ---
@@ -811,8 +812,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1577,
-                1599,
+                1581,
+                1603,
                 0
               ],
               "tag": null,
@@ -822,8 +823,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1605,
-                1627,
+                1609,
+                1631,
                 0
               ],
               "tag": null,
@@ -833,8 +834,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1633,
-                1655,
+                1637,
+                1659,
                 0
               ],
               "tag": null,
@@ -844,8 +845,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1661,
-                1708,
+                1665,
+                1712,
                 0
               ],
               "tag": null,
@@ -860,8 +861,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1577,
-                    1599,
+                    1581,
+                    1603,
                     0
                   ]
                 },
@@ -880,8 +881,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1605,
-                    1627,
+                    1609,
+                    1631,
                     0
                   ]
                 },
@@ -900,8 +901,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1633,
-                    1655,
+                    1637,
+                    1659,
                     0
                   ]
                 },
@@ -920,8 +921,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1661,
-                    1708,
+                    1665,
+                    1712,
                     0
                   ]
                 },
@@ -940,8 +941,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1714,
-                    1722,
+                    1718,
+                    1726,
                     0
                   ]
                 },
@@ -1468,8 +1469,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    1505,
-                    1534,
+                    1509,
+                    1538,
                     0
                   ]
                 }
@@ -1488,8 +1489,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1540,
-                  1571,
+                  1544,
+                  1575,
                   0
                 ]
               }
@@ -1497,8 +1498,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  1540,
-                  1571,
+                  1544,
+                  1575,
                   0
                 ]
               }
@@ -1510,8 +1511,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1540,
-                1571,
+                1544,
+                1575,
                 0
               ]
             }

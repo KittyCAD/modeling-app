@@ -552,13 +552,6 @@ fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     ))
 }
 
-/// Parse the = operator.
-fn equals(i: TokenSlice) -> PResult<Token> {
-    one_of((TokenType::Operator, "="))
-        .context(expected("the equals operator, ="))
-        .parse_next(i)
-}
-
 #[allow(clippy::large_enum_variant)]
 pub enum NonCodeOr<T> {
     NonCode(Node<NonCodeNode>),
@@ -692,11 +685,12 @@ fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectPropert
 }
 
 fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    colon
+    // Temporarily accept both `:` and `=` for compatibility.
+    alt((colon, equals))
         .context(expected(
-            "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
+            "`=`, which separates the property's key from the value you're setting it to, e.g. 'height = 4'",
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
@@ -1930,6 +1924,13 @@ fn double_period(i: TokenSlice) -> PResult<Token> {
 
 fn colon(i: TokenSlice) -> PResult<()> {
     TokenType::Colon.parse_from(i)?;
+    Ok(())
+}
+
+fn equals(i: TokenSlice) -> PResult<()> {
+    one_of((TokenType::Operator, "="))
+        .context(expected("the equals operator, ="))
+        .parse_next(i)?;
     Ok(())
 }
 

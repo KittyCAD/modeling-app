@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 105
 description: Program memory after executing sketch_in_object.kcl
 snapshot_kind: text
 ---
@@ -334,10 +335,10 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 395,
+                    "end": 397,
                     "properties": [
                       {
-                        "end": 391,
+                        "end": 393,
                         "key": {
                           "end": 209,
                           "name": "thing1",
@@ -347,40 +348,40 @@ snapshot_kind: text
                         "start": 203,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 391,
+                          "end": 393,
                           "properties": [
                             {
-                              "end": 385,
+                              "end": 387,
                               "key": {
-                                "end": 225,
+                                "end": 226,
                                 "name": "thing2",
-                                "start": 219,
+                                "start": 220,
                                 "type": "Identifier"
                               },
-                              "start": 219,
+                              "start": 220,
                               "type": "ObjectProperty",
                               "value": {
                                 "body": [
                                   {
                                     "arguments": [
                                       {
-                                        "end": 245,
+                                        "end": 247,
                                         "raw": "'XY'",
-                                        "start": 241,
+                                        "start": 243,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": "XY"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 240,
+                                      "end": 242,
                                       "name": "startSketchOn",
-                                      "start": 227,
+                                      "start": 229,
                                       "type": "Identifier"
                                     },
-                                    "end": 246,
+                                    "end": 248,
                                     "optional": false,
-                                    "start": 227,
+                                    "start": 229,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -389,43 +390,43 @@ snapshot_kind: text
                                       {
                                         "elements": [
                                           {
-                                            "end": 275,
+                                            "end": 277,
                                             "raw": "0",
-                                            "start": 274,
+                                            "start": 276,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": 0
                                           },
                                           {
-                                            "end": 278,
+                                            "end": 280,
                                             "raw": "0",
-                                            "start": 277,
+                                            "start": 279,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": 0
                                           }
                                         ],
-                                        "end": 279,
-                                        "start": 273,
+                                        "end": 281,
+                                        "start": 275,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 282,
-                                        "start": 281,
+                                        "end": 284,
+                                        "start": 283,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 272,
+                                      "end": 274,
                                       "name": "startProfileAt",
-                                      "start": 258,
+                                      "start": 260,
                                       "type": "Identifier"
                                     },
-                                    "end": 283,
+                                    "end": 285,
                                     "optional": false,
-                                    "start": 258,
+                                    "start": 260,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -434,43 +435,43 @@ snapshot_kind: text
                                       {
                                         "elements": [
                                           {
-                                            "end": 302,
+                                            "end": 304,
                                             "raw": "0",
-                                            "start": 301,
+                                            "start": 303,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": 0
                                           },
                                           {
-                                            "end": 305,
+                                            "end": 307,
                                             "raw": "1",
-                                            "start": 304,
+                                            "start": 306,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": 1
                                           }
                                         ],
-                                        "end": 306,
-                                        "start": 300,
+                                        "end": 308,
+                                        "start": 302,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 309,
-                                        "start": 308,
+                                        "end": 311,
+                                        "start": 310,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 299,
+                                      "end": 301,
                                       "name": "line",
-                                      "start": 295,
+                                      "start": 297,
                                       "type": "Identifier"
                                     },
-                                    "end": 310,
+                                    "end": 312,
                                     "optional": false,
-                                    "start": 295,
+                                    "start": 297,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -479,43 +480,43 @@ snapshot_kind: text
                                       {
                                         "elements": [
                                           {
-                                            "end": 329,
+                                            "end": 331,
                                             "raw": "1",
-                                            "start": 328,
+                                            "start": 330,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": 1
                                           },
                                           {
-                                            "end": 332,
+                                            "end": 334,
                                             "raw": "0",
-                                            "start": 331,
+                                            "start": 333,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": 0
                                           }
                                         ],
-                                        "end": 333,
-                                        "start": 327,
+                                        "end": 335,
+                                        "start": 329,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 336,
-                                        "start": 335,
+                                        "end": 338,
+                                        "start": 337,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 326,
+                                      "end": 328,
                                       "name": "line",
-                                      "start": 322,
+                                      "start": 324,
                                       "type": "Identifier"
                                     },
-                                    "end": 337,
+                                    "end": 339,
                                     "optional": false,
-                                    "start": 322,
+                                    "start": 324,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -524,83 +525,83 @@ snapshot_kind: text
                                       {
                                         "elements": [
                                           {
-                                            "end": 356,
+                                            "end": 358,
                                             "raw": "0",
-                                            "start": 355,
+                                            "start": 357,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": 0
                                           },
                                           {
                                             "argument": {
-                                              "end": 360,
+                                              "end": 362,
                                               "raw": "1",
-                                              "start": 359,
+                                              "start": 361,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": 1
                                             },
-                                            "end": 360,
+                                            "end": 362,
                                             "operator": "-",
-                                            "start": 358,
+                                            "start": 360,
                                             "type": "UnaryExpression",
                                             "type": "UnaryExpression"
                                           }
                                         ],
-                                        "end": 361,
-                                        "start": 354,
+                                        "end": 363,
+                                        "start": 356,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 364,
-                                        "start": 363,
+                                        "end": 366,
+                                        "start": 365,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 353,
+                                      "end": 355,
                                       "name": "line",
-                                      "start": 349,
+                                      "start": 351,
                                       "type": "Identifier"
                                     },
-                                    "end": 365,
+                                    "end": 367,
                                     "optional": false,
-                                    "start": 349,
+                                    "start": 351,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 384,
-                                        "start": 383,
+                                        "end": 386,
+                                        "start": 385,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 382,
+                                      "end": 384,
                                       "name": "close",
-                                      "start": 377,
+                                      "start": 379,
                                       "type": "Identifier"
                                     },
-                                    "end": 385,
+                                    "end": 387,
                                     "optional": false,
-                                    "start": 377,
+                                    "start": 379,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 385,
-                                "start": 227,
+                                "end": 387,
+                                "start": 229,
                                 "type": "PipeExpression",
                                 "type": "PipeExpression"
                               }
                             }
                           ],
-                          "start": 211,
+                          "start": 212,
                           "type": "ObjectExpression",
                           "type": "ObjectExpression"
                         }
@@ -610,16 +611,16 @@ snapshot_kind: text
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
-                  "end": 395,
+                  "end": 397,
                   "start": 190,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 397,
+              "end": 399,
               "start": 186
             },
-            "end": 397,
+            "end": 399,
             "params": [],
             "start": 180,
             "type": "FunctionExpression"
@@ -959,7 +960,7 @@ snapshot_kind: text
             {
               "sourceRange": [
                 180,
-                397,
+                399,
                 0
               ]
             }
@@ -1124,8 +1125,8 @@ snapshot_kind: text
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            295,
-                            310,
+                            297,
+                            312,
                             0
                           ]
                         },
@@ -1144,8 +1145,8 @@ snapshot_kind: text
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            322,
-                            337,
+                            324,
+                            339,
                             0
                           ]
                         },
@@ -1164,8 +1165,8 @@ snapshot_kind: text
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            349,
-                            365,
+                            351,
+                            367,
                             0
                           ]
                         },
@@ -1184,8 +1185,8 @@ snapshot_kind: text
                         "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
-                            377,
-                            385,
+                            379,
+                            387,
                             0
                           ]
                         },
@@ -1240,8 +1241,8 @@ snapshot_kind: text
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          258,
-                          283,
+                          260,
+                          285,
                           0
                         ]
                       }
@@ -1249,8 +1250,8 @@ snapshot_kind: text
                     "__meta": [
                       {
                         "sourceRange": [
-                          258,
-                          283,
+                          260,
+                          285,
                           0
                         ]
                       }
@@ -1261,8 +1262,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    211,
-                    391,
+                    212,
+                    393,
                     0
                   ]
                 }
@@ -1273,7 +1274,7 @@ snapshot_kind: text
             {
               "sourceRange": [
                 197,
-                395,
+                397,
                 0
               ]
             }

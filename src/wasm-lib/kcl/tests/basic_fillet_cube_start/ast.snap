@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 65
 description: Result of parsing basic_fillet_cube_start.kcl
 snapshot_kind: text
 ---
@@ -9,7 +10,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 231,
+            "end": 233,
             "id": {
               "end": 7,
               "name": "part001",
@@ -295,10 +296,10 @@ snapshot_kind: text
                 {
                   "arguments": [
                     {
-                      "end": 227,
+                      "end": 229,
                       "properties": [
                         {
-                          "end": 202,
+                          "end": 203,
                           "key": {
                             "end": 199,
                             "name": "radius",
@@ -308,43 +309,43 @@ snapshot_kind: text
                           "start": 193,
                           "type": "ObjectProperty",
                           "value": {
-                            "end": 202,
+                            "end": 203,
                             "raw": "2",
-                            "start": 201,
+                            "start": 202,
                             "type": "Literal",
                             "type": "Literal",
                             "value": 2
                           }
                         },
                         {
-                          "end": 225,
+                          "end": 227,
                           "key": {
-                            "end": 208,
+                            "end": 209,
                             "name": "tags",
-                            "start": 204,
+                            "start": 205,
                             "type": "Identifier"
                           },
-                          "start": 204,
+                          "start": 205,
                           "type": "ObjectProperty",
                           "value": {
                             "elements": [
                               {
-                                "end": 216,
+                                "end": 218,
                                 "name": "thing",
-                                "start": 211,
+                                "start": 213,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               {
-                                "end": 224,
+                                "end": 226,
                                 "name": "thing2",
-                                "start": 218,
+                                "start": 220,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
-                            "end": 225,
-                            "start": 210,
+                            "end": 227,
+                            "start": 212,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
@@ -355,8 +356,8 @@ snapshot_kind: text
                       "type": "ObjectExpression"
                     },
                     {
-                      "end": 230,
-                      "start": 229,
+                      "end": 232,
+                      "start": 231,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     }
@@ -367,14 +368,14 @@ snapshot_kind: text
                     "start": 184,
                     "type": "Identifier"
                   },
-                  "end": 231,
+                  "end": 233,
                   "optional": false,
                   "start": 184,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
-              "end": 231,
+              "end": 233,
               "start": 10,
               "type": "PipeExpression",
               "type": "PipeExpression"
@@ -383,14 +384,14 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 231,
+        "end": 233,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 232,
+    "end": 234,
     "start": 0
   }
 }

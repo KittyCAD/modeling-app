@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 65
 description: Result of parsing helix_ccw.kcl
 snapshot_kind: text
 ---
@@ -9,7 +10,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 183,
+            "end": 188,
             "id": {
               "end": 7,
               "name": "part001",
@@ -44,10 +45,10 @@ snapshot_kind: text
                 {
                   "arguments": [
                     {
-                      "end": 72,
+                      "end": 74,
                       "properties": [
                         {
-                          "end": 58,
+                          "end": 59,
                           "key": {
                             "end": 50,
                             "name": "center",
@@ -59,42 +60,42 @@ snapshot_kind: text
                           "value": {
                             "elements": [
                               {
-                                "end": 54,
+                                "end": 55,
                                 "raw": "5",
-                                "start": 53,
+                                "start": 54,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": 5
                               },
                               {
-                                "end": 57,
+                                "end": 58,
                                 "raw": "5",
-                                "start": 56,
+                                "start": 57,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": 5
                               }
                             ],
-                            "end": 58,
-                            "start": 52,
+                            "end": 59,
+                            "start": 53,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
                         },
                         {
-                          "end": 70,
+                          "end": 72,
                           "key": {
-                            "end": 66,
+                            "end": 67,
                             "name": "radius",
-                            "start": 60,
+                            "start": 61,
                             "type": "Identifier"
                           },
-                          "start": 60,
+                          "start": 61,
                           "type": "ObjectProperty",
                           "value": {
-                            "end": 70,
+                            "end": 72,
                             "raw": "10",
-                            "start": 68,
+                            "start": 70,
                             "type": "Literal",
                             "type": "Literal",
                             "value": 10
@@ -106,8 +107,8 @@ snapshot_kind: text
                       "type": "ObjectExpression"
                     },
                     {
-                      "end": 75,
-                      "start": 74,
+                      "end": 77,
+                      "start": 76,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     }
@@ -118,7 +119,7 @@ snapshot_kind: text
                     "start": 35,
                     "type": "Identifier"
                   },
-                  "end": 76,
+                  "end": 78,
                   "optional": false,
                   "start": 35,
                   "type": "CallExpression",
@@ -127,120 +128,120 @@ snapshot_kind: text
                 {
                   "arguments": [
                     {
-                      "end": 92,
+                      "end": 94,
                       "raw": "10",
-                      "start": 90,
+                      "start": 92,
                       "type": "Literal",
                       "type": "Literal",
                       "value": 10
                     },
                     {
-                      "end": 95,
-                      "start": 94,
+                      "end": 97,
+                      "start": 96,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     }
                   ],
                   "callee": {
-                    "end": 89,
+                    "end": 91,
                     "name": "extrude",
-                    "start": 82,
+                    "start": 84,
                     "type": "Identifier"
                   },
-                  "end": 96,
+                  "end": 98,
                   "optional": false,
-                  "start": 82,
+                  "start": 84,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 },
                 {
                   "arguments": [
                     {
-                      "end": 179,
+                      "end": 184,
                       "properties": [
                         {
-                          "end": 132,
+                          "end": 135,
                           "key": {
-                            "end": 128,
+                            "end": 130,
                             "name": "revolutions",
-                            "start": 117,
+                            "start": 119,
                             "type": "Identifier"
                           },
-                          "start": 117,
+                          "start": 119,
                           "type": "ObjectProperty",
                           "value": {
-                            "end": 132,
+                            "end": 135,
                             "raw": "16",
-                            "start": 130,
+                            "start": 133,
                             "type": "Literal",
                             "type": "Literal",
                             "value": 16
                           }
                         },
                         {
-                          "end": 154,
+                          "end": 158,
                           "key": {
-                            "end": 151,
+                            "end": 154,
                             "name": "angleStart",
-                            "start": 141,
+                            "start": 144,
                             "type": "Identifier"
                           },
-                          "start": 141,
+                          "start": 144,
                           "type": "ObjectProperty",
                           "value": {
-                            "end": 154,
+                            "end": 158,
                             "raw": "0",
-                            "start": 153,
+                            "start": 157,
                             "type": "Literal",
                             "type": "Literal",
                             "value": 0
                           }
                         },
                         {
-                          "end": 172,
+                          "end": 177,
                           "key": {
-                            "end": 166,
+                            "end": 170,
                             "name": "ccw",
-                            "start": 163,
+                            "start": 167,
                             "type": "Identifier"
                           },
-                          "start": 163,
+                          "start": 167,
                           "type": "ObjectProperty",
                           "value": {
-                            "end": 172,
+                            "end": 177,
                             "raw": "true",
-                            "start": 168,
+                            "start": 173,
                             "type": "Literal",
                             "type": "Literal",
                             "value": true
                           }
                         }
                       ],
-                      "start": 108,
+                      "start": 110,
                       "type": "ObjectExpression",
                       "type": "ObjectExpression"
                     },
                     {
-                      "end": 182,
-                      "start": 181,
+                      "end": 187,
+                      "start": 186,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     }
                   ],
                   "callee": {
-                    "end": 107,
+                    "end": 109,
                     "name": "helix",
-                    "start": 102,
+                    "start": 104,
                     "type": "Identifier"
                   },
-                  "end": 183,
+                  "end": 188,
                   "optional": false,
-                  "start": 102,
+                  "start": 104,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
-              "end": 183,
+              "end": 188,
               "start": 10,
               "type": "PipeExpression",
               "type": "PipeExpression"
@@ -249,14 +250,14 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 183,
+        "end": 188,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 184,
+    "end": 189,
     "start": 0
   }
 }
