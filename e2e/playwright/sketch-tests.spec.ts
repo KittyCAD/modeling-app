@@ -669,7 +669,7 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
     await click00r(0, 0)
-    codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
+    codeStr += `profile001 = startProfileAt(${toSU([0, 0])}, sketch001)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(50, 0)
@@ -705,7 +705,7 @@ test.describe('Sketch tests', () => {
     await u.closeDebugPanel()
 
     await click00r(30, 0)
-    codeStr += `  |> startProfileAt([2.03, 0], %)`
+    codeStr += `profile002 = startProfileAt([2.03, 0], sketch002)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // TODO: I couldn't use `toSU` here because of some rounding error causing
@@ -742,7 +742,9 @@ test.describe('Sketch tests', () => {
       await u.openDebugPanel()
 
       const code = `sketch001 = startSketchOn('-XZ')
-    |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
+profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
+        scale * 34.8
+      )}], sketch001)
     |> xLine(${roundOff(scale * 139.19)}, %)
     |> yLine(-${roundOff(scale * 139.2)}, %)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -808,11 +810,17 @@ test.describe('Sketch tests', () => {
       await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       prevContent = await page.locator('.cm-content').innerText()
 
-      await expect(page.locator('.cm-content')).toHaveText(code)
-      // Assert the tool was unequipped
+      await expect
+        .poll(async () => {
+          const text = await page.locator('.cm-content').innerText()
+          return text.replace(/\s/g, '')
+        })
+        .toBe(code.replace(/\s/g, ''))
+
+      // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
-      ).not.toHaveAttribute('aria-pressed', 'true')
+      ).toHaveAttribute('aria-pressed', 'true')
 
       // exit sketch
       await u.openAndClearDebugPanel()
@@ -1130,11 +1138,17 @@ sketch002 = startSketchOn(extrude001, 'END')
     await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
     await page.waitForTimeout(200)
     await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([11.8, 9.09], %)
-  |> line([3.39, -3.39], %)
-`)
-
+    await expect
+      .poll(async () => {
+        const text = await u.codeLocator.innerText()
+        return text.replace(/\s/g, '')
+      })
+      .toBe(
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([11.8, 9.09], sketch001)
+   |> line([3.39, -3.39], %)
+`.replace(/\s/g, '')
+      )
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',

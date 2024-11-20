@@ -77,30 +77,31 @@ test.describe('Testing selections', () => {
       const startXPx = 600
       await u.closeDebugPanel()
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)`)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      )
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
     |> xLine(${commonPoints.num1}, %)`)
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+        commonPoints.startAt
+      }, sketch001)
     |> xLine(${commonPoints.num1}, %)
     |> yLine(${commonPoints.num1 + 0.01}, %)`)
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+        commonPoints.startAt
+      }, sketch001)
     |> xLine(${commonPoints.num1}, %)
     |> yLine(${commonPoints.num1 + 0.01}, %)
     |> xLine(${commonPoints.num2 * -1}, %)`)
