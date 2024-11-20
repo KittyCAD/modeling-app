@@ -596,6 +596,21 @@ fn array_end_start(i: TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
     ))
 }
 
+fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    ignore_whitespace(i);
+    Ok(Node {
+        start: key.start,
+        end: key.end,
+        module_id: key.module_id,
+        inner: ObjectProperty {
+            value: Expr::Identifier(Box::new(key.clone())),
+            key,
+            digest: None,
+        },
+    })
+}
+
 fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
@@ -642,7 +657,11 @@ pub(crate) fn object(i: TokenSlice) -> PResult<Node<ObjectExpression>> {
         0..,
         alt((
             terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
-            terminated(object_property, property_separator).map(NonCodeOr::Code),
+            terminated(
+                alt((object_property, object_property_same_key_and_val)),
+                property_separator,
+            )
+            .map(NonCodeOr::Code),
         )),
     )
     .context(expected(
@@ -3888,6 +3907,11 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
     snapshot_test!(bh, "const obj = {center : [10, 10], radius: 5}");
+    snapshot_test!(
+        bi,
+        r#"x = 3
+        obj = { x, y: 4}"#
+    );
 }
 
 #[allow(unused)]
