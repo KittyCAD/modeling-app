@@ -12,7 +12,7 @@ import { ToolTip } from 'lang/langHelpers'
 import { Selections, Selection } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { codeRefFromRange } from './artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -129,10 +129,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       const start = codeBeforeLine + line.indexOf('|> ' + 5)
       const range: [number, number] = [start, start]
       return {
-        codeRef: {
-          range,
-          pathToNode: getNodePathFromSourceRange(ast, range),
-        },
+        codeRef: codeRefFromRange(range, ast),
       }
     }
 
@@ -306,10 +303,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: {
-            range: [start, start],
-            pathToNode: getNodePathFromSourceRange(ast, [start, start]),
-          },
+          codeRef: codeRefFromRange([start, start], ast),
         }
       })
 
@@ -399,10 +393,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: {
-            range: [start, start],
-            pathToNode: getNodePathFromSourceRange(ast, [start, start]),
-          },
+          codeRef: codeRefFromRange([start, start], ast),
         }
       })
 
@@ -463,10 +454,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: {
-            range: [start, start],
-            pathToNode: getNodePathFromSourceRange(ast, [start, start]),
-          },
+          codeRef: codeRefFromRange([start, start], ast),
         }
       })
 
@@ -562,10 +550,7 @@ async function helperThing(
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
       return {
-        codeRef: {
-          range: [start, start],
-          pathToNode: getNodePathFromSourceRange(ast, [start, start]),
-        },
+        codeRef: codeRefFromRange([start, start], ast),
       }
     })
 

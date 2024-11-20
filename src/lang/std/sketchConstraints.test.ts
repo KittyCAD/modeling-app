@@ -14,7 +14,7 @@ import {
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { codeRefFromRange } from './artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -42,10 +42,7 @@ async function testingSwapSketchFnCall({
   const selections = {
     graphSelections: [
       {
-        codeRef: {
-          range: range,
-          pathToNode: getNodePathFromSourceRange(ast, range),
-        },
+        codeRef: codeRefFromRange(range, ast),
       },
     ],
     otherSelections: [],

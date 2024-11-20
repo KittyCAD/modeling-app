@@ -864,3 +864,10 @@ export function getCodeRefsByArtifactId(
     return null
   }
 }
+
+export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
+  return {
+    range,
+    pathToNode: getNodePathFromSourceRange(ast, range),
+  }
+}

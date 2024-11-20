@@ -31,7 +31,7 @@ import {
 import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { ArtifactGraph } from './std/artifactGraph'
+import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -797,10 +797,7 @@ export function isLinesParallelAndConstrained(
     return {
       isParallelAndConstrained,
       selection: {
-        codeRef: {
-          range: prevSourceRange,
-          pathToNode: getNodePathFromSourceRange(ast, prevSourceRange),
-        },
+        codeRef: codeRefFromRange(prevSourceRange, ast),
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }

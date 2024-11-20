@@ -22,7 +22,7 @@ import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { Artifact } from './std/artifactGraph'
+import { Artifact, codeRefFromRange } from './std/artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -895,10 +895,7 @@ sketch002 = startSketchOn({
       const newAst = await deleteFromSelection(
         ast,
         {
-          codeRef: {
-            range,
-            pathToNode: getNodePathFromSourceRange(ast, range),
-          },
+          codeRef: codeRefFromRange(range, ast),
           artifact,
         },
         execState.memory,

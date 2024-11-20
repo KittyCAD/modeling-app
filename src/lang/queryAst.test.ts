@@ -20,6 +20,7 @@ import {
   createPipeSubstitution,
 } from './modifyAst'
 import { err } from 'lib/trap'
+import { codeRefFromRange } from './std/artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -366,10 +367,7 @@ part001 = startSketchAt([-1.41, 3.46])
       calleeName: 'close',
       ast,
       selection: {
-        codeRef: {
-          range: [100, 101],
-          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
-        },
+        codeRef: codeRefFromRange([100, 101], ast),
       },
     })
     expect(result).toEqual(true)
@@ -391,10 +389,7 @@ part001 = startSketchAt([-1.41, 3.46])
       calleeName: 'extrude',
       ast,
       selection: {
-        codeRef: {
-          range: [100, 101],
-          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
-        },
+        codeRef: codeRefFromRange([100, 101], ast),
       },
     })
     expect(result).toEqual(true)
@@ -414,10 +409,7 @@ part001 = startSketchAt([-1.41, 3.46])
       calleeName: 'close',
       ast,
       selection: {
-        codeRef: {
-          range: [100, 101],
-          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
-        },
+        codeRef: codeRefFromRange([100, 101], ast),
       },
     })
     expect(result).toEqual(false)
@@ -431,10 +423,7 @@ part001 = startSketchAt([-1.41, 3.46])
       calleeName: 'close',
       ast,
       selection: {
-        codeRef: {
-          range: [9, 10],
-          pathToNode: getNodePathFromSourceRange(ast, [9, 10]),
-        },
+        codeRef: codeRefFromRange([9, 10], ast),
       },
     })
     expect(result).toEqual(false)
@@ -456,10 +445,7 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = hasExtrudeSketch({
       ast,
       selection: {
-        codeRef: {
-          range: [100, 101],
-          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
-        },
+        codeRef: codeRefFromRange([100, 101], ast),
       },
       programMemory: execState.memory,
     })
@@ -480,10 +466,7 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = hasExtrudeSketch({
       ast,
       selection: {
-        codeRef: {
-          range: [100, 101],
-          pathToNode: getNodePathFromSourceRange(ast, [100, 101]),
-        },
+        codeRef: codeRefFromRange([100, 101], ast),
       },
       programMemory: execState.memory,
     })
@@ -498,10 +481,7 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = hasExtrudeSketch({
       ast,
       selection: {
-        codeRef: {
-          range: [10, 11],
-          pathToNode: getNodePathFromSourceRange(ast, [10, 11]),
-        },
+        codeRef: codeRefFromRange([10, 11], ast),
       },
       programMemory: execState.memory,
     })
@@ -591,13 +571,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        codeRef: {
-          range: [characterIndex, characterIndex],
-          pathToNode: getNodePathFromSourceRange(ast, [
-            characterIndex,
-            characterIndex,
-          ]),
-        },
+        codeRef: codeRefFromRange([characterIndex, characterIndex], ast),
       },
       ast
     )
@@ -611,13 +585,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        codeRef: {
-          range: [characterIndex, characterIndex],
-          pathToNode: getNodePathFromSourceRange(ast, [
-            characterIndex,
-            characterIndex,
-          ]),
-        },
+        codeRef: codeRefFromRange([characterIndex, characterIndex], ast),
       },
       ast
     )
@@ -631,8 +599,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        range: [characterIndex, characterIndex],
-        type: 'default',
+        codeRef: codeRefFromRange([characterIndex, characterIndex], ast),
       },
       ast
     )

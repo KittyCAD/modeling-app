@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import { PathToNode, Program, Expr } from '../../lang/wasm'
-import {
-  getNodeFromPath,
-  getNodePathFromSourceRange,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getRemoveConstraintsTransforms,
@@ -14,6 +11,7 @@ import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { codeRefFromRange } from 'lang/std/artifactGraph'
 
 export function removeConstrainingValuesInfo({
   selectionRanges,
@@ -42,13 +40,7 @@ export function removeConstrainingValuesInfo({
         otherSelections: [],
         graphSelections: nodes.map(
           (node): Selection => ({
-            codeRef: {
-              range: [node.start, node.end],
-              pathToNode: getNodePathFromSourceRange(kclManager.ast, [
-                node.start,
-                node.end,
-              ]),
-            },
+            codeRef: codeRefFromRange([node.start, node.end], kclManager.ast),
           })
         ),
       }

@@ -23,6 +23,7 @@ import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { KclCommandValue } from 'lib/commandTypes'
 import { isOverlap } from 'lib/utils'
+import { codeRefFromRange } from 'lang/std/artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -117,10 +118,7 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   const selection: Selections = {
     graphSelections: [
       {
-        codeRef: {
-          range: segmentRange,
-          pathToNode: getNodePathFromSourceRange(ast, segmentRange),
-        },
+        codeRef: codeRefFromRange(segmentRange, ast),
       },
     ],
     otherSelections: [],
@@ -294,10 +292,7 @@ const runModifyAstCloneWithFilletAndTag = async (
         return isOverlap(a.codeRef.range, segmentRange)
       })
       return {
-        codeRef: {
-          range: segmentRange,
-          pathToNode: getNodePathFromSourceRange(ast, segmentRange),
-        },
+        codeRef: codeRefFromRange(segmentRange, ast),
         artifact: maybeArtifact ? maybeArtifact[1] : undefined,
       }
     }),
@@ -636,10 +631,7 @@ describe('Testing button states', () => {
     const selectionRanges: Selections = {
       graphSelections: [
         {
-          codeRef: {
-            range,
-            pathToNode: getNodePathFromSourceRange(ast, range),
-          },
+          codeRef: codeRefFromRange(range, ast),
         },
       ],
       otherSelections: [],
