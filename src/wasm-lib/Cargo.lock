@@ -1738,18 +1738,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-macros"
-version = "0.1.0"
-dependencies = [
- "databake",
- "kcl-lib",
- "pretty_assertions",
- "proc-macro2",
- "quote",
- "syn 2.0.87",
-]
-
-[[package]]
 name = "kcl-test-server"
 version = "0.1.16"
 dependencies = [

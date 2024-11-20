@@ -1,9 +1,9 @@
 //! Types used to send data to the test server.
 
 use crate::{
-    ast::types::{Node, Program},
-    executor::{new_zoo_client, ExecutorContext, ExecutorSettings, IdGenerator, ProgramMemory},
+    executor::{new_zoo_client, ExecutorContext, ExecutorSettings, ProgramMemory},
     settings::types::UnitLength,
+    ExecState, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -17,14 +17,14 @@ pub struct RequestBody {
 /// This returns the bytes of the snapshot.
 pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> anyhow::Result<image::DynamicImage> {
     let ctx = new_context(units, true).await?;
-    let program = crate::parser::top_level_parse(code)?;
+    let program = Program::parse(code)?;
     do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 pub async fn execute_and_snapshot_ast(
-    ast: Node<Program>,
+    ast: Program,
     units: UnitLength,
 ) -> anyhow::Result<(ProgramMemory, image::DynamicImage)> {
     let ctx = new_context(units, true).await?;
@@ -35,15 +35,16 @@ pub async fn execute_and_snapshot_ast(
 
 pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> anyhow::Result<image::DynamicImage> {
     let ctx = new_context(units, false).await?;
-    let program = crate::parser::top_level_parse(code)?;
+    let program = Program::parse(code)?;
     do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
 }
 
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
-    program: Node<Program>,
+    program: Program,
 ) -> anyhow::Result<(crate::executor::ExecState, image::DynamicImage)> {
-    let (exec_state, snapshot) = ctx.execute_and_prepare(&program, IdGenerator::default(), None).await?;
+    let mut exec_state = ExecState::default();
+    let snapshot = ctx.execute_and_prepare(&program, &mut exec_state).await?;
 
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
