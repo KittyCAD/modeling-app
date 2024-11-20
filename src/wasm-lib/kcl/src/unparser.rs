@@ -1685,7 +1685,7 @@ things = "things"
         let some_program_string = r#"b = {
   end: 141,
   start: 125,
-  type: "NonCodeNode",
+  type_: "NonCodeNode",
   value: "
  // a comment
    "

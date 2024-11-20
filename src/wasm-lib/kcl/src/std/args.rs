@@ -692,7 +692,7 @@ macro_rules! let_field_of {
 impl<'a> FromKclValue<'a> for crate::std::import::ImportFormat {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
-        let_field_of!(obj, typ "type");
+        let_field_of!(obj, typ "format");
         match typ {
             "fbx" => Some(Self::Fbx {}),
             "gltf" => Some(Self::Gltf {}),
