@@ -16,7 +16,7 @@ impl Program {
         let result = self
             .body
             .iter()
-            .map(|statement| match statement.clone() {
+            .map(|body_item| match body_item.clone() {
                 BodyItem::ImportStatement(stmt) => stmt.recast(options, indentation_level),
                 BodyItem::ExpressionStatement(expression_statement) => {
                     expression_statement
@@ -30,7 +30,7 @@ impl Program {
                     format!(
                         "{}return {}",
                         indentation,
-                        return_statement.argument.recast(options, 0, false)
+                        return_statement.argument.recast(options, indentation_level, false)
                     )
                 }
             })
@@ -556,16 +556,17 @@ impl FunctionExpression {
         // We don't want to end with a new line inside nested functions.
         let mut new_options = options.clone();
         new_options.insert_final_newline = false;
-        format!(
-            "({}) => {{\n{}{}\n}}",
-            self.params
-                .iter()
-                .map(|param| param.identifier.name.clone())
-                .collect::<Vec<String>>()
-                .join(", "),
-            options.get_indentation(indentation_level + 1),
-            self.body.recast(&new_options, indentation_level + 1)
-        )
+        println!("Fn, indent = {indentation_level}");
+        let param_list = self
+            .params
+            .iter()
+            .map(|param| param.identifier.name.clone())
+            .collect::<Vec<String>>()
+            .join(", ");
+        let tab0 = options.get_indentation(indentation_level);
+        let tab1 = options.get_indentation(indentation_level + 1);
+        let body = self.body.recast(&new_options, indentation_level + 1);
+        format!("({param_list}) => {{\n{tab1}{body}\n{tab0}}}")
     }
 }
 
@@ -1952,6 +1953,25 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[test]
+    fn recast_nested_fn() {
+        let some_program_string = r#"fn f = () => {
+  return () => {
+  return 1
+}
+}"#;
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
+        let recasted = program.recast(&Default::default(), 0);
+        println!("{recasted}");
+        let expected = "\
+fn f = () => {
+  return () => {
+    return 1
+  }
+}";
+        assert_eq!(recasted.trim(), expected);
     }
 
     #[test]
