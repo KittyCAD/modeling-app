@@ -565,14 +565,25 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> line([-17.67, 0.85], %)
   |> close(%)
 extrude001 = extrude(10, sketch001)
-sketch002 = startSketchOn(extrude001, $seg01)
+sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2, -1.25], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
+sketch003 = startSketchOn(extrude001, 'END')
+  |> startProfileAt([8.14, 2.8], %)
+  |> line([-1.24, 4.39], %)
+  |> line([3.79, 1.91], %)
+  |> line([1.77, -2.95], %)
+  |> line([3.12, 1.74], %)
+  |> line([1.91, -4.09], %)
+  |> line([-5.6, -2.75], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+  |> extrude(3.14, %)
 `
-  it('finds sketch001 pipe to be extruded', async () => {
+  it('identifies sketch001 pipe as extruded (extrusion after pipe)', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
     const lineOfInterest = `line([4.99, -0.46], %, $seg01)`
@@ -592,7 +603,7 @@ sketch002 = startSketchOn(extrude001, $seg01)
     )
     expect(extruded).toBeTruthy()
   })
-  it('find sketch002 NOT pipe to be extruded', async () => {
+  it('identifies sketch002 pipe as not extruded', async () => {
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
     const lineOfInterest = `line([2.45, -0.2], %)`
@@ -611,6 +622,21 @@ sketch002 = startSketchOn(extrude001, $seg01)
       ast
     )
     expect(extruded).toBeFalsy()
+  })
+  it('identifies sketch003 pipe as extruded (extrusion within pipe)', async () => {
+    const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+    const lineOfInterest = `|> line([3.12, 1.74], %)`
+    const characterIndex =
+      exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
+    const extruded = hasSketchPipeBeenExtruded(
+      {
+        range: [characterIndex, characterIndex],
+        type: 'default',
+      },
+      ast
+    )
+    expect(extruded).toBeTruthy()
   })
 })
 

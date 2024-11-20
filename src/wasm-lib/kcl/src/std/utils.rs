@@ -53,20 +53,6 @@ pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     Angle::default()
 }
 
-pub fn clockwise_sign(points: &[Point2d]) -> i32 {
-    let mut sum = 0.0;
-    for i in 0..points.len() {
-        let current_point = points[i];
-        let next_point = points[(i + 1) % points.len()];
-        sum += (next_point.x - current_point.x) * (next_point.y + current_point.y);
-    }
-    if sum >= 0.0 {
-        1
-    } else {
-        -1
-    }
-}
-
 pub fn normalize_rad(angle: f64) -> f64 {
     let draft = angle % (2.0 * PI);
     if draft < 0.0 {
@@ -74,32 +60,6 @@ pub fn normalize_rad(angle: f64) -> f64 {
     } else {
         draft
     }
-}
-
-/// Calculates the distance between two points.
-///
-/// # Examples
-///
-/// ```
-/// use kcl_lib::executor::Point2d;
-///
-/// assert_eq!(
-///     kcl_lib::std::utils::distance_between_points(Point2d::ZERO, Point2d { x: 0.0, y: 5.0 }),
-///     5.0
-/// );
-/// assert_eq!(
-///     kcl_lib::std::utils::distance_between_points(Point2d::ZERO, Point2d { x: 3.0, y: 4.0 }),
-///     5.0
-/// );
-/// ```
-#[allow(dead_code)]
-pub fn distance_between_points(point_a: Point2d, point_b: Point2d) -> f64 {
-    let x1 = point_a.x;
-    let y1 = point_a.y;
-    let x2 = point_b.x;
-    let y2 = point_b.y;
-
-    ((y2 - y1).powi(2) + (x2 - x1).powi(2)).sqrt()
 }
 
 pub fn calculate_intersection_of_two_lines(line1: &[Point2d; 2], line2_angle: f64, line2_point: Point2d) -> Point2d {
@@ -563,6 +523,7 @@ pub struct TangentialArcInfoInput {
 }
 
 /// Structure to hold the output data from calculating tangential arc information.
+#[allow(dead_code)]
 pub struct TangentialArcInfoOutput {
     /// The center point of the arc.
     pub center: Coords2d,
