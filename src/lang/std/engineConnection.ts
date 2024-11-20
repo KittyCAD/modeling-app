@@ -2133,7 +2133,7 @@ export class EngineCommandManager extends EventTarget {
         ast: this.kclManager.ast,
       })
       if (useFakeExecutor) {
-        // mock executions don't product an artifactGraph, so this will always be empty
+        // mock executions don't produce an artifactGraph, so this will always be empty
         // skipping the below logic to wait for the next real execution
         return
       }
