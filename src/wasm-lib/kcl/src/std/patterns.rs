@@ -315,7 +315,7 @@ async fn inner_pattern_transform<'a>(
 async fn send_pattern_transform(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
-    transform: Vec<Transform>,
+    transforms: Vec<Vec<Transform>>,
     solid: &Solid,
     exec_state: &mut ExecState,
     args: &Args,
@@ -327,7 +327,8 @@ async fn send_pattern_transform(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: solid.id,
-                transform,
+                transform: Default::default(),
+                transforms,
             }),
         )
         .await?;
@@ -356,7 +357,7 @@ async fn make_transform<'a>(
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
-) -> Result<Transform, KclError> {
+) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::Int {
         value: i.into(),
@@ -373,76 +374,98 @@ async fn make_transform<'a>(
             source_ranges: source_ranges.clone(),
         })
     })?;
-    let KclValue::Object { value: transform, meta } = transform_fn_return else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Transform function must return a transform object".to_string(),
-            source_ranges: source_ranges.clone(),
-        }));
+    let (transforms, meta) = match transform_fn_return {
+        KclValue::Object { value, meta } => (vec![value], meta),
+        KclValue::Array { value, meta } => {
+            let transforms: Vec<_> = value
+                .into_iter()
+                .map(|val| {
+                    val.into_object().ok_or(KclError::Semantic(KclErrorDetails {
+                        message: "Transform function must return a transform object".to_string(),
+                        source_ranges: source_ranges.clone(),
+                    }))
+                })
+                .collect::<Result<_, _>>()?;
+            (transforms, meta)
+        }
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Transform function must return a transform object".to_string(),
+                source_ranges: source_ranges.clone(),
+            }))
+        }
     };
 
-    // Apply defaults to the transform.
-    let replicate = match transform.get("replicate") {
-        Some(KclValue::Bool { value: true, .. }) => true,
-        Some(KclValue::Bool { value: false, .. }) => false,
-        Some(_) => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "The 'replicate' key must be a bool".to_string(),
-                source_ranges: source_ranges.clone(),
-            }));
-        }
-        None => true,
-    };
-    let scale = match transform.get("scale") {
-        Some(x) => array_to_point3d(x, source_ranges.clone())?,
-        None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
-    };
-    let translate = match transform.get("translate") {
-        Some(x) => array_to_point3d(x, source_ranges.clone())?,
-        None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
-    };
-    let mut rotation = Rotation::default();
-    if let Some(rot) = transform.get("rotation") {
-        let KclValue::Object { value: rot, meta: _ } = rot else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')"
-                    .to_string(),
-                source_ranges: source_ranges.clone(),
-            }));
-        };
-        if let Some(axis) = rot.get("axis") {
-            rotation.axis = array_to_point3d(axis, source_ranges.clone())?.into();
-        }
-        if let Some(angle) = rot.get("angle") {
-            match angle {
-                KclValue::Number { value: number, meta: _ } => {
-                    rotation.angle = Angle::from_degrees(*number);
-                }
-                _ => {
+    let transforms: Vec<Transform> = transforms
+        .into_iter()
+        .map(|transform| {
+            // Apply defaults to the transform.
+            let replicate = match transform.get("replicate") {
+                Some(KclValue::Bool { value: true, .. }) => true,
+                Some(KclValue::Bool { value: false, .. }) => false,
+                Some(_) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: "The 'rotation.angle' key must be a number (of degrees)".to_string(),
-                        source_ranges: meta.iter().map(|m| m.source_range).collect(),
+                        message: "The 'replicate' key must be a bool".to_string(),
+                        source_ranges: source_ranges.clone(),
                     }));
                 }
-            }
-        }
-        if let Some(origin) = rot.get("origin") {
-            rotation.origin = match origin {
-                KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
-                KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
-                other => {
-                    let origin = array_to_point3d(other, source_ranges.clone())?.into();
-                    OriginType::Custom { origin }
-                }
+                None => true,
             };
-        }
-    }
-    let t = Transform {
-        replicate,
-        scale: scale.into(),
-        translate: translate.into(),
-        rotation,
-    };
-    Ok(t)
+            let scale = match transform.get("scale") {
+                Some(x) => array_to_point3d(x, source_ranges.clone())?,
+                None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
+            };
+            let translate = match transform.get("translate") {
+                Some(x) => array_to_point3d(x, source_ranges.clone())?,
+                None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
+            };
+            let mut rotation = Rotation::default();
+            if let Some(rot) = transform.get("rotation") {
+                let KclValue::Object { value: rot, meta: _ } = rot else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message:
+                            "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')"
+                                .to_string(),
+                        source_ranges: source_ranges.clone(),
+                    }));
+                };
+                if let Some(axis) = rot.get("axis") {
+                    rotation.axis = array_to_point3d(axis, source_ranges.clone())?.into();
+                }
+                if let Some(angle) = rot.get("angle") {
+                    match angle {
+                        KclValue::Number { value: number, meta: _ } => {
+                            rotation.angle = Angle::from_degrees(*number);
+                        }
+                        _ => {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: "The 'rotation.angle' key must be a number (of degrees)".to_string(),
+                                source_ranges: meta.iter().map(|m| m.source_range).collect(),
+                            }));
+                        }
+                    }
+                }
+                if let Some(origin) = rot.get("origin") {
+                    rotation.origin = match origin {
+                        KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
+                        KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
+                        other => {
+                            let origin = array_to_point3d(other, source_ranges.clone())?.into();
+                            OriginType::Custom { origin }
+                        }
+                    };
+                }
+            }
+            let t = Transform {
+                replicate,
+                scale: scale.into(),
+                translate: translate.into(),
+                rotation,
+            };
+            Ok(t)
+        })
+        .collect::<Result<_, _>>()?;
+    Ok(transforms)
 }
 
 fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
