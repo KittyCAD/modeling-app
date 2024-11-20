@@ -30,7 +30,10 @@ impl Program {
                     format!(
                         "{}return {}",
                         indentation,
-                        return_statement.argument.recast(options, indentation_level, false)
+                        return_statement
+                            .argument
+                            .recast(options, indentation_level, false)
+                            .trim_start()
                     )
                 }
             })
