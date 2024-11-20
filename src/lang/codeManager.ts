@@ -57,6 +57,10 @@ export default class CodeManager {
     return this._code
   }
 
+  localStoragePersistCode(): string {
+    return safeLSGetItem(PERSIST_CODE_KEY)
+  }
+
   registerCallBacks({ setCode }: { setCode: (arg: string) => void }) {
     this.#updateState = setCode
   }
