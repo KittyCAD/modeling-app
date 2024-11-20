@@ -20,11 +20,11 @@ export class AuthenticatedApp {
   public readonly page: Page
   public readonly context: BrowserContext
   public readonly testInfo: TestInfo
-  public readonly viewPortSize = { width: 1000, height: 500 }
+  public readonly viewPortSize = { width: 1200, height: 500 }
 
   constructor(context: BrowserContext, page: Page, testInfo: TestInfo) {
-    this.page = page
     this.context = context
+    this.page = page
     this.testInfo = testInfo
   }
 
@@ -49,7 +49,7 @@ export class AuthenticatedApp {
   }
 }
 
-interface Fixtures {
+export interface Fixtures {
   app: AuthenticatedApp
   tronApp: AuthenticatedTronApp
   cmdBar: CmdBarFixture
@@ -61,9 +61,10 @@ interface Fixtures {
 export class AuthenticatedTronApp {
   public readonly _page: Page
   public page: Page
-  public readonly context: BrowserContext
+  public context: BrowserContext
   public readonly testInfo: TestInfo
   public electronApp?: ElectronApplication
+  public readonly viewPortSize = { width: 1200, height: 500 }
 
   constructor(context: BrowserContext, page: Page, testInfo: TestInfo) {
     this._page = page
@@ -79,15 +80,20 @@ export class AuthenticatedTronApp {
       appSettings?: Partial<SaveSettingsPayload>
     } = { fixtures: {} }
   ) {
-    const { electronApp, page } = await setupElectron({
+    const { electronApp, page, context } = await setupElectron({
       testInfo: this.testInfo,
       folderSetupFn: arg.folderSetupFn,
       cleanProjectDir: arg.cleanProjectDir,
       appSettings: arg.appSettings,
     })
     this.page = page
+    this.context = context
     this.electronApp = electronApp
-    await page.setViewportSize({ width: 1200, height: 500 })
+
+    // Setup localStorage, addCookies, reload
+    await setup(this.context, this.page, this.testInfo)
+
+    await page.setViewportSize(this.viewPortSize)
 
     for (const key of unsafeTypedKeys(arg.fixtures)) {
       const fixture = arg.fixtures[key]
@@ -110,13 +116,7 @@ export class AuthenticatedTronApp {
     })
 }
 
-export const test = base.extend<Fixtures>({
-  app: async ({ page, context }, use, testInfo) => {
-    await use(new AuthenticatedApp(context, page, testInfo))
-  },
-  tronApp: async ({ page, context }, use, testInfo) => {
-    await use(new AuthenticatedTronApp(context, page, testInfo))
-  },
+export const fixtures = {
   cmdBar: async ({ page }, use) => {
     await use(new CmdBarFixture(page))
   },
@@ -129,13 +129,7 @@ export const test = base.extend<Fixtures>({
   scene: async ({ page }, use) => {
     await use(new SceneFixture(page))
   },
-  homePage: async ({ page }, use) => {
+  homePage: async ({ page }, use, testInfo) => {
     await use(new HomePageFixture(page))
   },
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
-
-export { expect } from '@playwright/test'
+}
