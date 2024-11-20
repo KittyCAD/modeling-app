@@ -298,8 +298,7 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Lets update the ast.
-        let parser = crate::parser::Parser::new(tokens.clone());
-        let result = parser.ast();
+        let result = crate::parser::parse_tokens(tokens.clone());
         let mut ast = match result {
             Ok(ast) => ast,
             Err(err) => {
@@ -1302,11 +1301,7 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(tokens) = crate::token::lexer(current_code, module_id) else {
-            return Ok(None);
-        };
-        let parser = crate::parser::Parser::new(tokens);
-        let Ok(ast) = parser.ast() else {
+        let Ok(ast) = crate::parser::parse_str(current_code, module_id) else {
             return Ok(None);
         };
         // Now recast it.
@@ -1340,11 +1335,7 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(tokens) = crate::token::lexer(current_code, module_id) else {
-            return Ok(None);
-        };
-        let parser = crate::parser::Parser::new(tokens);
-        let Ok(mut ast) = parser.ast() else {
+        let Ok(mut ast) = crate::parser::parse_str(current_code, module_id) else {
             return Ok(None);
         };
 
