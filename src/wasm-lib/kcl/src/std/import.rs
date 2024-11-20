@@ -42,7 +42,7 @@ const ZOO_COORD_SYSTEM: System = System {
 /// Import format specifier
 #[derive(serde :: Serialize, serde :: Deserialize, PartialEq, Debug, Clone, schemars :: JsonSchema)]
 #[cfg_attr(feature = "tabled", derive(tabled::Tabled))]
-#[serde(tag = "type")]
+#[serde(tag = "format")]
 pub enum ImportFormat {
     /// Autodesk Filmbox (FBX) format
     #[serde(rename = "fbx")]
@@ -152,7 +152,7 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.obj", {type: "obj", units: "m"})
+/// const model = import("tests/inputs/cube.obj", {format: "obj", units: "m"})
 /// ```
 ///
 /// ```no_run
