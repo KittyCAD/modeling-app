@@ -52,7 +52,7 @@ jobs:
 
       - name: Set nightly version, product name, and icons
         if: ${{ env.NIGHTLY == 'true' }}
-        run: yarn files:set-to-nightly
+        run: yarn files:flip-to-nightly
 
       - name: Generate release notes
         run: |
@@ -100,7 +100,6 @@ jobs:
             platform: linux
     runs-on: ${{ matrix.os }}
     env:
-      VERSION: ${{ needs.prepare-files.outputs.version }}
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
       - uses: actions/checkout@v4

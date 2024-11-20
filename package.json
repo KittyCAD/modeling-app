@@ -93,7 +93,7 @@
     "lint-fix": "eslint --fix src e2e packages/codemirror-lsp-client",
     "lint": "eslint --max-warnings 0 src e2e packages/codemirror-lsp-client",
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
-    "files:set-to-nightly": "./scripts/set-files-to-nightly.sh",
+    "files:flip-to-nightly": "./scripts/set-files-to-nightly.sh",
     "postinstall": "yarn fetch:samples && yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
     "make:dev": "make dev",
