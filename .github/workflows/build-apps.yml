@@ -11,14 +11,15 @@ on:
 env:
   # BUILD_RELEASE: ${{ github.ref_type == 'tag' }}
   BUILD_RELEASE: true
-  NIGHTLY: ${{ endsWith(github.ref_name, '-nightly') }}
+  # NIGHTLY: ${{ endsWith(github.ref_name, '-nightly') }}
+  NIGHTLY: true
   # TODO: Change this to only real releases
   # BUILD_UPDATER_TEST: ${{ github.ref_type == 'tag' }}
-  BUILD_UPDATER_TEST: true
+  BUILD_UPDATER_TEST: false
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+#   cancel-in-progress: true
 
 jobs:
   prepare-files:
