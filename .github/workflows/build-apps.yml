@@ -106,7 +106,6 @@ jobs:
           cp prepared-files/src/wasm-lib/pkg/wasm_lib_bg.wasm public
           mkdir src/wasm-lib/pkg
           cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
-          cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
 
