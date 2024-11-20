@@ -3,7 +3,7 @@ use iai::black_box;
 async fn execute_server_rack_heavy() {
     let code = SERVER_RACK_HEAVY_PROGRAM;
     black_box(
-        kcl_lib::test_server::execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+        kcl_lib::test_server::execute_and_snapshot(code, kcl_lib::UnitLength::Mm)
             .await
             .unwrap(),
     );
@@ -12,7 +12,7 @@ async fn execute_server_rack_heavy() {
 async fn execute_server_rack_lite() {
     let code = SERVER_RACK_LITE_PROGRAM;
     black_box(
-        kcl_lib::test_server::execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+        kcl_lib::test_server::execute_and_snapshot(code, kcl_lib::UnitLength::Mm)
             .await
             .unwrap(),
     );

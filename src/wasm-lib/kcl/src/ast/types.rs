@@ -223,7 +223,7 @@ impl Node<Program> {
     /// Check the provided Program for any lint findings.
     pub fn lint<'a, RuleT>(&'a self, rule: RuleT) -> Result<Vec<crate::lint::Discovered>>
     where
-        RuleT: crate::lint::rule::Rule<'a>,
+        RuleT: crate::lint::Rule<'a>,
     {
         let v = Arc::new(Mutex::new(vec![]));
         crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
