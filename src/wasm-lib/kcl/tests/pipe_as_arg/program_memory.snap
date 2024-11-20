@@ -494,177 +494,177 @@ snapshot_kind: text
                       {
                         "arguments": [
                           {
-                            "end": 215,
+                            "end": 217,
                             "name": "p1",
-                            "start": 213,
+                            "start": 215,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 218,
-                            "start": 217,
+                            "end": 220,
+                            "start": 219,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 212,
+                          "end": 214,
                           "name": "lineTo",
-                          "start": 206,
+                          "start": 208,
                           "type": "Identifier"
                         },
-                        "end": 219,
+                        "end": 221,
                         "optional": false,
-                        "start": 206,
+                        "start": 208,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 234,
+                            "end": 238,
                             "name": "p2",
-                            "start": 232,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          {
-                            "end": 237,
                             "start": 236,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          {
+                            "end": 241,
+                            "start": 240,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 231,
+                          "end": 235,
                           "name": "lineTo",
-                          "start": 225,
+                          "start": 229,
                           "type": "Identifier"
                         },
-                        "end": 238,
+                        "end": 242,
                         "optional": false,
-                        "start": 225,
+                        "start": 229,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 253,
+                            "end": 259,
                             "name": "p3",
-                            "start": 251,
+                            "start": 257,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 256,
-                            "start": 255,
+                            "end": 262,
+                            "start": 261,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 250,
+                          "end": 256,
                           "name": "lineTo",
-                          "start": 244,
+                          "start": 250,
                           "type": "Identifier"
                         },
-                        "end": 257,
+                        "end": 263,
                         "optional": false,
-                        "start": 244,
+                        "start": 250,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 272,
+                            "end": 280,
                             "name": "p0",
-                            "start": 270,
+                            "start": 278,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 275,
-                            "start": 274,
+                            "end": 283,
+                            "start": 282,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 269,
+                          "end": 277,
                           "name": "lineTo",
-                          "start": 263,
+                          "start": 271,
                           "type": "Identifier"
                         },
-                        "end": 276,
+                        "end": 284,
                         "optional": false,
-                        "start": 263,
+                        "start": 271,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 289,
-                            "start": 288,
+                            "end": 299,
+                            "start": 298,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 287,
+                          "end": 297,
                           "name": "close",
-                          "start": 282,
+                          "start": 292,
                           "type": "Identifier"
                         },
-                        "end": 290,
+                        "end": 300,
                         "optional": false,
-                        "start": 282,
+                        "start": 292,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 310,
+                            "end": 322,
                             "name": "length",
-                            "start": 304,
+                            "start": 316,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 313,
-                            "start": 312,
+                            "end": 325,
+                            "start": 324,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 303,
+                          "end": 315,
                           "name": "extrude",
-                          "start": 296,
+                          "start": 308,
                           "type": "Identifier"
                         },
-                        "end": 314,
+                        "end": 326,
                         "optional": false,
-                        "start": 296,
+                        "start": 308,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 314,
+                    "end": 326,
                     "start": 183,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 314,
+                  "end": 326,
                   "start": 176,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 316,
+              "end": 328,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
@@ -682,7 +682,7 @@ snapshot_kind: text
               },
               "start": 30
             },
-            "end": 316,
+            "end": 328,
             "params": [
               {
                 "type": "Parameter",
@@ -743,7 +743,7 @@ snapshot_kind: text
             {
               "sourceRange": [
                 10,
-                316,
+                328,
                 0
               ]
             }
@@ -756,50 +756,50 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 353,
+                    "end": 365,
                     "left": {
-                      "end": 349,
+                      "end": 361,
                       "name": "x",
-                      "start": 348,
+                      "start": 360,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "*",
                     "right": {
-                      "end": 353,
+                      "end": 365,
                       "raw": "2",
-                      "start": 352,
+                      "start": 364,
                       "type": "Literal",
                       "type": "Literal",
                       "value": 2
                     },
-                    "start": 348,
+                    "start": 360,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 353,
-                  "start": 341,
+                  "end": 365,
+                  "start": 353,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 355,
-              "start": 337
+              "end": 367,
+              "start": 349
             },
-            "end": 355,
+            "end": 367,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 332,
+                  "end": 344,
                   "name": "x",
-                  "start": 331,
+                  "start": 343,
                   "type": "Identifier"
                 },
                 "optional": false
               }
             ],
-            "start": 330,
+            "start": 342,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -1293,177 +1293,177 @@ snapshot_kind: text
                                 {
                                   "arguments": [
                                     {
-                                      "end": 215,
+                                      "end": 217,
                                       "name": "p1",
-                                      "start": 213,
+                                      "start": 215,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 218,
-                                      "start": 217,
+                                      "end": 220,
+                                      "start": 219,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 212,
+                                    "end": 214,
                                     "name": "lineTo",
-                                    "start": 206,
+                                    "start": 208,
                                     "type": "Identifier"
                                   },
-                                  "end": 219,
+                                  "end": 221,
                                   "optional": false,
-                                  "start": 206,
+                                  "start": 208,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 234,
+                                      "end": 238,
                                       "name": "p2",
-                                      "start": 232,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 237,
                                       "start": 236,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    {
+                                      "end": 241,
+                                      "start": 240,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 231,
+                                    "end": 235,
                                     "name": "lineTo",
-                                    "start": 225,
+                                    "start": 229,
                                     "type": "Identifier"
                                   },
-                                  "end": 238,
+                                  "end": 242,
                                   "optional": false,
-                                  "start": 225,
+                                  "start": 229,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 253,
+                                      "end": 259,
                                       "name": "p3",
-                                      "start": 251,
+                                      "start": 257,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 256,
-                                      "start": 255,
+                                      "end": 262,
+                                      "start": 261,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 250,
+                                    "end": 256,
                                     "name": "lineTo",
-                                    "start": 244,
+                                    "start": 250,
                                     "type": "Identifier"
                                   },
-                                  "end": 257,
+                                  "end": 263,
                                   "optional": false,
-                                  "start": 244,
+                                  "start": 250,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 272,
+                                      "end": 280,
                                       "name": "p0",
-                                      "start": 270,
+                                      "start": 278,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 275,
-                                      "start": 274,
+                                      "end": 283,
+                                      "start": 282,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 269,
+                                    "end": 277,
                                     "name": "lineTo",
-                                    "start": 263,
+                                    "start": 271,
                                     "type": "Identifier"
                                   },
-                                  "end": 276,
+                                  "end": 284,
                                   "optional": false,
-                                  "start": 263,
+                                  "start": 271,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 289,
-                                      "start": 288,
+                                      "end": 299,
+                                      "start": 298,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 287,
+                                    "end": 297,
                                     "name": "close",
-                                    "start": 282,
+                                    "start": 292,
                                     "type": "Identifier"
                                   },
-                                  "end": 290,
+                                  "end": 300,
                                   "optional": false,
-                                  "start": 282,
+                                  "start": 292,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 310,
+                                      "end": 322,
                                       "name": "length",
-                                      "start": 304,
+                                      "start": 316,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 313,
-                                      "start": 312,
+                                      "end": 325,
+                                      "start": 324,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 303,
+                                    "end": 315,
                                     "name": "extrude",
-                                    "start": 296,
+                                    "start": 308,
                                     "type": "Identifier"
                                   },
-                                  "end": 314,
+                                  "end": 326,
                                   "optional": false,
-                                  "start": 296,
+                                  "start": 308,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 }
                               ],
-                              "end": 314,
+                              "end": 326,
                               "start": 183,
                               "type": "PipeExpression",
                               "type": "PipeExpression"
                             },
-                            "end": 314,
+                            "end": 326,
                             "start": 176,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 316,
+                        "end": 328,
                         "nonCodeMeta": {
                           "nonCodeNodes": {
                             "6": [
@@ -1481,7 +1481,7 @@ snapshot_kind: text
                         },
                         "start": 30
                       },
-                      "end": 316,
+                      "end": 328,
                       "params": [
                         {
                           "type": "Parameter",
@@ -1542,7 +1542,7 @@ snapshot_kind: text
                       {
                         "sourceRange": [
                           10,
-                          316,
+                          328,
                           0
                         ]
                       }
@@ -1558,8 +1558,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                330,
-                355,
+                342,
+                367,
                 0
               ]
             }
@@ -1574,8 +1574,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                206,
-                219,
+                208,
+                221,
                 0
               ],
               "tag": null,
@@ -1585,8 +1585,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                225,
-                238,
+                229,
+                242,
                 0
               ],
               "tag": null,
@@ -1596,19 +1596,19 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                244,
-                257,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
+                250,
                 263,
-                276,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                271,
+                284,
                 0
               ],
               "tag": null,
@@ -1623,8 +1623,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    206,
-                    219,
+                    208,
+                    221,
                     0
                   ]
                 },
@@ -1643,8 +1643,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    225,
-                    238,
+                    229,
+                    242,
                     0
                   ]
                 },
@@ -1663,28 +1663,28 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    244,
-                    257,
-                    0
-                  ]
-                },
-                "from": [
-                  200.0,
-                  200.0
-                ],
-                "tag": null,
-                "to": [
-                  200.0,
-                  -200.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
+                    250,
                     263,
-                    276,
+                    0
+                  ]
+                },
+                "from": [
+                  200.0,
+                  200.0
+                ],
+                "tag": null,
+                "to": [
+                  200.0,
+                  -200.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    271,
+                    284,
                     0
                   ]
                 },
@@ -1703,8 +1703,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    282,
-                    290,
+                    292,
+                    300,
                     0
                   ]
                 },
@@ -1795,25 +1795,25 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 387,
+                    "end": 399,
                     "raw": "200",
-                    "start": 384,
+                    "start": 396,
                     "type": "Literal",
                     "type": "Literal",
                     "value": 200
                   },
-                  "end": 387,
-                  "start": 377,
+                  "end": 399,
+                  "start": 389,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 389,
-              "start": 373
+              "end": 401,
+              "start": 385
             },
-            "end": 389,
+            "end": 401,
             "params": [],
-            "start": 367,
+            "start": 379,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -2307,177 +2307,177 @@ snapshot_kind: text
                                 {
                                   "arguments": [
                                     {
-                                      "end": 215,
+                                      "end": 217,
                                       "name": "p1",
-                                      "start": 213,
+                                      "start": 215,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 218,
-                                      "start": 217,
+                                      "end": 220,
+                                      "start": 219,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 212,
+                                    "end": 214,
                                     "name": "lineTo",
-                                    "start": 206,
+                                    "start": 208,
                                     "type": "Identifier"
                                   },
-                                  "end": 219,
+                                  "end": 221,
                                   "optional": false,
-                                  "start": 206,
+                                  "start": 208,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 234,
+                                      "end": 238,
                                       "name": "p2",
-                                      "start": 232,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 237,
                                       "start": 236,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    {
+                                      "end": 241,
+                                      "start": 240,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 231,
+                                    "end": 235,
                                     "name": "lineTo",
-                                    "start": 225,
+                                    "start": 229,
                                     "type": "Identifier"
                                   },
-                                  "end": 238,
+                                  "end": 242,
                                   "optional": false,
-                                  "start": 225,
+                                  "start": 229,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 253,
+                                      "end": 259,
                                       "name": "p3",
-                                      "start": 251,
+                                      "start": 257,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 256,
-                                      "start": 255,
+                                      "end": 262,
+                                      "start": 261,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 250,
+                                    "end": 256,
                                     "name": "lineTo",
-                                    "start": 244,
+                                    "start": 250,
                                     "type": "Identifier"
                                   },
-                                  "end": 257,
+                                  "end": 263,
                                   "optional": false,
-                                  "start": 244,
+                                  "start": 250,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 272,
+                                      "end": 280,
                                       "name": "p0",
-                                      "start": 270,
+                                      "start": 278,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 275,
-                                      "start": 274,
+                                      "end": 283,
+                                      "start": 282,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 269,
+                                    "end": 277,
                                     "name": "lineTo",
-                                    "start": 263,
+                                    "start": 271,
                                     "type": "Identifier"
                                   },
-                                  "end": 276,
+                                  "end": 284,
                                   "optional": false,
-                                  "start": 263,
+                                  "start": 271,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 289,
-                                      "start": 288,
+                                      "end": 299,
+                                      "start": 298,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 287,
+                                    "end": 297,
                                     "name": "close",
-                                    "start": 282,
+                                    "start": 292,
                                     "type": "Identifier"
                                   },
-                                  "end": 290,
+                                  "end": 300,
                                   "optional": false,
-                                  "start": 282,
+                                  "start": 292,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 },
                                 {
                                   "arguments": [
                                     {
-                                      "end": 310,
+                                      "end": 322,
                                       "name": "length",
-                                      "start": 304,
+                                      "start": 316,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     {
-                                      "end": 313,
-                                      "start": 312,
+                                      "end": 325,
+                                      "start": 324,
                                       "type": "PipeSubstitution",
                                       "type": "PipeSubstitution"
                                     }
                                   ],
                                   "callee": {
-                                    "end": 303,
+                                    "end": 315,
                                     "name": "extrude",
-                                    "start": 296,
+                                    "start": 308,
                                     "type": "Identifier"
                                   },
-                                  "end": 314,
+                                  "end": 326,
                                   "optional": false,
-                                  "start": 296,
+                                  "start": 308,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
                                 }
                               ],
-                              "end": 314,
+                              "end": 326,
                               "start": 183,
                               "type": "PipeExpression",
                               "type": "PipeExpression"
                             },
-                            "end": 314,
+                            "end": 326,
                             "start": 176,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 316,
+                        "end": 328,
                         "nonCodeMeta": {
                           "nonCodeNodes": {
                             "6": [
@@ -2495,7 +2495,7 @@ snapshot_kind: text
                         },
                         "start": 30
                       },
-                      "end": 316,
+                      "end": 328,
                       "params": [
                         {
                           "type": "Parameter",
@@ -2556,7 +2556,7 @@ snapshot_kind: text
                       {
                         "sourceRange": [
                           10,
-                          316,
+                          328,
                           0
                         ]
                       }
@@ -2569,50 +2569,50 @@ snapshot_kind: text
                         "body": [
                           {
                             "argument": {
-                              "end": 353,
+                              "end": 365,
                               "left": {
-                                "end": 349,
+                                "end": 361,
                                 "name": "x",
-                                "start": 348,
+                                "start": 360,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 353,
+                                "end": 365,
                                 "raw": "2",
-                                "start": 352,
+                                "start": 364,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": 2
                               },
-                              "start": 348,
+                              "start": 360,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "end": 353,
-                            "start": 341,
+                            "end": 365,
+                            "start": 353,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 355,
-                        "start": 337
+                        "end": 367,
+                        "start": 349
                       },
-                      "end": 355,
+                      "end": 367,
                       "params": [
                         {
                           "type": "Parameter",
                           "identifier": {
-                            "end": 332,
+                            "end": 344,
                             "name": "x",
-                            "start": 331,
+                            "start": 343,
                             "type": "Identifier"
                           },
                           "optional": false
                         }
                       ],
-                      "start": 330,
+                      "start": 342,
                       "type": "FunctionExpression"
                     },
                     "memory": {
@@ -3106,177 +3106,177 @@ snapshot_kind: text
                                           {
                                             "arguments": [
                                               {
-                                                "end": 215,
+                                                "end": 217,
                                                 "name": "p1",
-                                                "start": 213,
+                                                "start": 215,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               {
-                                                "end": 218,
-                                                "start": 217,
+                                                "end": 220,
+                                                "start": 219,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 212,
+                                              "end": 214,
                                               "name": "lineTo",
-                                              "start": 206,
+                                              "start": 208,
                                               "type": "Identifier"
                                             },
-                                            "end": 219,
+                                            "end": 221,
                                             "optional": false,
-                                            "start": 206,
+                                            "start": 208,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 234,
+                                                "end": 238,
                                                 "name": "p2",
-                                                "start": 232,
-                                                "type": "Identifier",
-                                                "type": "Identifier"
-                                              },
-                                              {
-                                                "end": 237,
                                                 "start": 236,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              {
+                                                "end": 241,
+                                                "start": 240,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 231,
+                                              "end": 235,
                                               "name": "lineTo",
-                                              "start": 225,
+                                              "start": 229,
                                               "type": "Identifier"
                                             },
-                                            "end": 238,
+                                            "end": 242,
                                             "optional": false,
-                                            "start": 225,
+                                            "start": 229,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 253,
+                                                "end": 259,
                                                 "name": "p3",
-                                                "start": 251,
+                                                "start": 257,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               {
-                                                "end": 256,
-                                                "start": 255,
+                                                "end": 262,
+                                                "start": 261,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 250,
+                                              "end": 256,
                                               "name": "lineTo",
-                                              "start": 244,
+                                              "start": 250,
                                               "type": "Identifier"
                                             },
-                                            "end": 257,
+                                            "end": 263,
                                             "optional": false,
-                                            "start": 244,
+                                            "start": 250,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 272,
+                                                "end": 280,
                                                 "name": "p0",
-                                                "start": 270,
+                                                "start": 278,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               {
-                                                "end": 275,
-                                                "start": 274,
+                                                "end": 283,
+                                                "start": 282,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 269,
+                                              "end": 277,
                                               "name": "lineTo",
-                                              "start": 263,
+                                              "start": 271,
                                               "type": "Identifier"
                                             },
-                                            "end": 276,
+                                            "end": 284,
                                             "optional": false,
-                                            "start": 263,
+                                            "start": 271,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 289,
-                                                "start": 288,
+                                                "end": 299,
+                                                "start": 298,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 287,
+                                              "end": 297,
                                               "name": "close",
-                                              "start": 282,
+                                              "start": 292,
                                               "type": "Identifier"
                                             },
-                                            "end": 290,
+                                            "end": 300,
                                             "optional": false,
-                                            "start": 282,
+                                            "start": 292,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 310,
+                                                "end": 322,
                                                 "name": "length",
-                                                "start": 304,
+                                                "start": 316,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               {
-                                                "end": 313,
-                                                "start": 312,
+                                                "end": 325,
+                                                "start": 324,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 303,
+                                              "end": 315,
                                               "name": "extrude",
-                                              "start": 296,
+                                              "start": 308,
                                               "type": "Identifier"
                                             },
-                                            "end": 314,
+                                            "end": 326,
                                             "optional": false,
-                                            "start": 296,
+                                            "start": 308,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           }
                                         ],
-                                        "end": 314,
+                                        "end": 326,
                                         "start": 183,
                                         "type": "PipeExpression",
                                         "type": "PipeExpression"
                                       },
-                                      "end": 314,
+                                      "end": 326,
                                       "start": 176,
                                       "type": "ReturnStatement",
                                       "type": "ReturnStatement"
                                     }
                                   ],
-                                  "end": 316,
+                                  "end": 328,
                                   "nonCodeMeta": {
                                     "nonCodeNodes": {
                                       "6": [
@@ -3294,7 +3294,7 @@ snapshot_kind: text
                                   },
                                   "start": 30
                                 },
-                                "end": 316,
+                                "end": 328,
                                 "params": [
                                   {
                                     "type": "Parameter",
@@ -3355,7 +3355,7 @@ snapshot_kind: text
                                 {
                                   "sourceRange": [
                                     10,
-                                    316,
+                                    328,
                                     0
                                   ]
                                 }
@@ -3371,8 +3371,8 @@ snapshot_kind: text
                     "__meta": [
                       {
                         "sourceRange": [
-                          330,
-                          355,
+                          342,
+                          367,
                           0
                         ]
                       }
@@ -3388,8 +3388,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                367,
-                389,
+                379,
+                401,
                 0
               ]
             }
