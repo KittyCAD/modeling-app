@@ -9,10 +9,12 @@ on:
       - 'v*-test'
 
 env:
-  BUILD_RELEASE: ${{ github.ref_type == 'tag' }}
+  # BUILD_RELEASE: ${{ github.ref_type == 'tag' }}
+  BUILD_RELEASE: true
   NIGHTLY: ${{ endsWith(github.ref_name, '-nightly') }}
   # TODO: Change this to only real releases
-  BUILD_UPDATER_TEST: ${{ github.ref_type == 'tag' }}
+  # BUILD_UPDATER_TEST: ${{ github.ref_type == 'tag' }}
+  BUILD_UPDATER_TEST: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
