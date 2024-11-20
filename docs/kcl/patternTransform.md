@@ -96,24 +96,24 @@ fn cube = (length, center) => {
   p3 = [l + x, -l + y]
 
   return startSketchAt(p0)
-  |> lineTo(p1, %)
-  |> lineTo(p2, %)
-  |> lineTo(p3, %)
-  |> lineTo(p0, %)
-  |> close(%)
-  |> extrude(length, %)
+    |> lineTo(p1, %)
+    |> lineTo(p2, %)
+    |> lineTo(p3, %)
+    |> lineTo(p0, %)
+    |> close(%)
+    |> extrude(length, %)
 }
 
 width = 20
 fn transform = (i) => {
   return {
-  // Move down each time.
-  translate: [0, 0, -i * width],
-  // Make the cube longer, wider and flatter each time.
-  scale: [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
-  // Turn by 15 degrees each time.
-  rotation: { angle: 15 * i, origin: "local" }
-}
+    // Move down each time.
+    translate: [0, 0, -i * width],
+    // Make the cube longer, wider and flatter each time.
+    scale: [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
+    // Turn by 15 degrees each time.
+    rotation: { angle: 15 * i, origin: "local" }
+  }
 }
 
 myCubes = cube(width, [100, 0])
@@ -133,24 +133,24 @@ fn cube = (length, center) => {
   p3 = [l + x, -l + y]
 
   return startSketchAt(p0)
-  |> lineTo(p1, %)
-  |> lineTo(p2, %)
-  |> lineTo(p3, %)
-  |> lineTo(p0, %)
-  |> close(%)
-  |> extrude(length, %)
+    |> lineTo(p1, %)
+    |> lineTo(p2, %)
+    |> lineTo(p3, %)
+    |> lineTo(p0, %)
+    |> close(%)
+    |> extrude(length, %)
 }
 
 width = 20
 fn transform = (i) => {
   return {
-  translate: [0, 0, -i * width],
-  rotation: {
-    angle: 90 * i,
-    // Rotate around the overall scene's origin.
-    origin: "global"
+    translate: [0, 0, -i * width],
+    rotation: {
+      angle: 90 * i,
+      // Rotate around the overall scene's origin.
+      origin: "global"
+    }
   }
-}
 }
 myCubes = cube(width, [100, 100])
   |> patternTransform(4, transform, %)
@@ -168,16 +168,16 @@ t = 0.005 // taper factor [0-1)
 fn transform = (replicaId) => {
   scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
   return {
-  translate: [0, 0, replicaId * 10],
-  scale: [scale, scale, 0]
-}
+    translate: [0, 0, replicaId * 10],
+    scale: [scale, scale, 0]
+  }
 }
 // Each layer is just a pretty thin cylinder.
 fn layer = () => {
   return startSketchOn("XY")
-  // or some other plane idk
-  |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
-  |> extrude(h, %)
+    // or some other plane idk
+    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
+    |> extrude(h, %)
 }
 // The vase is 100 layers tall.
 // The 100 layers are replica of each other, with a slight transformation applied to each.

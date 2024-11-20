@@ -17,9 +17,9 @@ p = startSketchOn('XY')
 
 fn circl = (x, face) => {
   return startSketchOn(p, face)
-  |> startProfileAt([x + radius, triangleHeight / 2], %)
-  |> arc(circ, %, $arc_tag)
-  |> close(%)
+    |> startProfileAt([x + radius, triangleHeight / 2], %)
+    |> arc(circ, %, $arc_tag)
+    |> close(%)
 }
 
 c1 = circl(-200, c)
