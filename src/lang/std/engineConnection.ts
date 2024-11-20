@@ -2126,6 +2126,7 @@ export class EngineCommandManager extends EventTarget {
       // the ast is wrong without this one tick timeout.
       // an example is `Solids should be select and deletable` e2e test will fail
       // because the out of date ast messes with selections
+      // TODO: race condition
       if (!this?.kclManager) return
       this.artifactGraph = createArtifactGraph({
         orderedCommands: this.orderedCommands,
