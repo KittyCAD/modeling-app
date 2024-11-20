@@ -780,7 +780,7 @@ export const modelingMachine = setup({
           'line'
         )
         .then(() => {
-          codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
     },
     'set up draft arc': ({ context: { sketchDetails } }) => {
