@@ -713,11 +713,11 @@ export const modelingMachine = setup({
         const revolveSketchRes = revolveSketch(
           ast,
           pathToNode,
-          false,
           'variableName' in angle
             ? angle.variableIdentifierAst
             : angle.valueAst,
-          axis
+          axis,
+          selection.graphSelections[0]?.artifact
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
