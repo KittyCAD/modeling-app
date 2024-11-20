@@ -9,6 +9,7 @@ import {
   tearDown,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
+import { a } from 'vitest/dist/suite-IbNSsUWN'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   await setup(context, page, testInfo)
@@ -114,9 +115,9 @@ test.describe('Sketch tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> xLine(12.73, %)
-  |> tangentialArcTo([24.95, -5.38], %)`
+  |> startProfileAt([2.61, -4.01], %)
+  |> xLine(8.73, %)
+  |> tangentialArcTo([8.33, -1.31], %)`
       )
     })
 
@@ -126,7 +127,7 @@ test.describe('Sketch tests', () => {
 
     await expect(async () => {
       await page.mouse.click(700, 200)
-      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+      await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeEnabled({ timeout: 1000 })
@@ -135,7 +136,7 @@ test.describe('Sketch tests', () => {
 
     await page.waitForTimeout(600) // wait for animation
 
-    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')
@@ -149,17 +150,21 @@ test.describe('Sketch tests', () => {
 
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page.waitForTimeout(100)
+    // click start profileAt handle to continue profile
+    await page.mouse.click(702, 407)
+    await page.waitForTimeout(100)
 
     await expect(async () => {
+      // click to add segment
       await page.mouse.click(700, 200)
 
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
-        .toBe(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([12.34, -12.34], %)
+        .toBe(`sketch002 = startSketchOn('XZ')
+sketch001 = startProfileAt([12.34, -12.34], sketch002)
   |> yLine(12.34, %)
 
 `)
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
+    }).toPass({ timeout: 5_000, intervals: [1_000] })
   })
   test('Can exit selection of face', async ({ page }) => {
     // Load the app with the code panes
@@ -669,7 +674,7 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
     await click00r(0, 0)
-    codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
+    codeStr += `profile001 = startProfileAt(${toSU([0, 0])}, sketch001)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(50, 0)
@@ -705,7 +710,7 @@ test.describe('Sketch tests', () => {
     await u.closeDebugPanel()
 
     await click00r(30, 0)
-    codeStr += `  |> startProfileAt([2.03, 0], %)`
+    codeStr += `profile002 = startProfileAt([2.03, 0], sketch002)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // TODO: I couldn't use `toSU` here because of some rounding error causing
@@ -742,7 +747,9 @@ test.describe('Sketch tests', () => {
       await u.openDebugPanel()
 
       const code = `sketch001 = startSketchOn('-XZ')
-    |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
+profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
+        scale * 34.8
+      )}], sketch001)
     |> xLine(${roundOff(scale * 139.19)}, %)
     |> yLine(-${roundOff(scale * 139.2)}, %)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -808,11 +815,17 @@ test.describe('Sketch tests', () => {
       await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       prevContent = await page.locator('.cm-content').innerText()
 
-      await expect(page.locator('.cm-content')).toHaveText(code)
-      // Assert the tool was unequipped
+      await expect
+        .poll(async () => {
+          const text = await page.locator('.cm-content').innerText()
+          return text.replace(/\s/g, '')
+        })
+        .toBe(code.replace(/\s/g, ''))
+
+      // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
-      ).not.toHaveAttribute('aria-pressed', 'true')
+      ).toHaveAttribute('aria-pressed', 'true')
 
       // exit sketch
       await u.openAndClearDebugPanel()
@@ -1130,11 +1143,17 @@ sketch002 = startSketchOn(extrude001, 'END')
     await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
     await page.waitForTimeout(200)
     await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([11.8, 9.09], %)
-  |> line([3.39, -3.39], %)
-`)
-
+    await expect
+      .poll(async () => {
+        const text = await u.codeLocator.innerText()
+        return text.replace(/\s/g, '')
+      })
+      .toBe(
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([11.8, 9.09], sketch001)
+   |> line([3.39, -3.39], %)
+`.replace(/\s/g, '')
+      )
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -1415,6 +1434,297 @@ test2.describe(`Sketching with offset planes`, () => {
             })
           }
         )
+      })
+    }
+  )
+})
+
+test2.describe('multi-profile sketching', () => {
+  test2(
+    'Can add multiple profiles to a sketch (all tool types)',
+    async ({ app, scene, toolbar, editor }) => {
+      await app.initialise(``)
+
+      const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+
+      const [startProfile1] = scene.makeMouseHelpers(568, 70)
+      const [endLineStartTanArc] = scene.makeMouseHelpers(701, 78)
+      const [endArcStartLine] = scene.makeMouseHelpers(745, 189)
+
+      const [startProfile2] = scene.makeMouseHelpers(782, 80)
+      const [profile2Point2] = scene.makeMouseHelpers(921, 90)
+      const [profile2Point3] = scene.makeMouseHelpers(953, 178)
+
+      const [circle1Center] = scene.makeMouseHelpers(842, 147)
+      const [circle1Radius] = scene.makeMouseHelpers(870, 171)
+
+      const [circle2Center] = scene.makeMouseHelpers(850, 222)
+      const [circle2Radius] = scene.makeMouseHelpers(843, 230)
+
+      const [crnRect1point1] = scene.makeMouseHelpers(583, 205)
+      const [crnRect1point2] = scene.makeMouseHelpers(618, 320)
+
+      const [crnRect2point1] = scene.makeMouseHelpers(663, 215)
+      const [crnRect2point2] = scene.makeMouseHelpers(744, 276)
+
+      const [cntrRect1point1] = scene.makeMouseHelpers(624, 387)
+      const [cntrRect1point2] = scene.makeMouseHelpers(676, 355)
+
+      const [cntrRect2point1] = scene.makeMouseHelpers(785, 332)
+      const [cntrRect2point2] = scene.makeMouseHelpers(808, 286)
+
+      await toolbar.startSketchPlaneSelection()
+      await selectXZPlane()
+      // timeout wait for engine animation is unavoidable
+      await app.page.waitForTimeout(600)
+      await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
+      await test.step('Create a close profile stopping mid profile to equip the tangential arc, and than back to the line tool', async () => {
+        await startProfile1()
+        await editor.expectEditor.toContain(
+          `profile001 = startProfileAt([4.61, 12.21], sketch001)`
+        )
+
+        await endLineStartTanArc()
+        await editor.expectEditor.toContain(`|> line([9.02, -0.55], %)`)
+        await toolbar.tangentialArcBtn.click()
+        await app.page.waitForTimeout(100)
+        await endLineStartTanArc()
+
+        await endArcStartLine()
+        await editor.expectEditor.toContain(
+          `|> tangentialArcTo([16.61, 4.14], %)`
+        )
+        await toolbar.lineBtn.click()
+        await app.page.waitForTimeout(100)
+        await endArcStartLine()
+
+        await app.page.mouse.click(572, 110)
+        await editor.expectEditor.toContain(`|> line([-11.73, 5.35], %)`)
+        await startProfile1()
+        await editor.expectEditor
+          .toContain(`|> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> close(%)`)
+        await app.page.waitForTimeout(100)
+      })
+
+      await test.step('Without unequipping from the last step, make another profile, and one that is not closed', async () => {
+        await startProfile2()
+        await editor.expectEditor.toContain(
+          `profile002 = startProfileAt([19.12, 11.53], sketch001)`
+        )
+        await profile2Point2()
+        await editor.expectEditor.toContain(`|> line([9.43, -0.68], %)`)
+        await profile2Point3()
+        await editor.expectEditor.toContain(`|> line([2.17, -5.97], %)`)
+      })
+
+      await test.step('create two circles in a row without unequip', async () => {
+        await toolbar.circleBtn.click()
+
+        await circle1Center()
+        await app.page.waitForTimeout(100)
+        await circle1Radius()
+        await editor.expectEditor.toContain(
+          `profile003 = circle({ center = [23.19, 6.98], radius = 2.5 }, sketch001)`
+        )
+
+        await test.step('hover in empty space to wait for overlays to get out of the way', async () => {
+          await app.page.mouse.move(951, 223)
+          await app.page.waitForTimeout(1000)
+        })
+
+        await circle2Center()
+        await app.page.waitForTimeout(100)
+        await circle2Radius()
+        await editor.expectEditor.toContain(
+          `profile004 = circle({ center = [23.74, 1.9], radius = 0.72 }, sketch001)`
+        )
+      })
+      await test.step('create two corner rectangles in a row without unequip', async () => {
+        await toolbar.rectangleBtn.click()
+
+        await crnRect1point1()
+        await editor.expectEditor.toContain(
+          `profile005 = startProfileAt([5.63, 3.05], sketch001)`
+        )
+        await crnRect1point2()
+        await editor.expectEditor
+          .toContain(`|> angledLine([0, 2.37], %, $rectangleSegmentA001)
+  |> angledLine([segAng(rectangleSegmentA001) - 90, 7.8], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`)
+        await app.page.waitForTimeout(100)
+
+        await crnRect2point1()
+        await editor.expectEditor.toContain(
+          `profile006 = startProfileAt([11.05, 2.37], sketch001)`
+        )
+        await crnRect2point2()
+        await editor.expectEditor
+          .toContain(`|> angledLine([0, 5.49], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       4.14
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`)
+      })
+
+      await test.step('create two center rectangles in a row without unequip', async () => {
+        await toolbar.selectCenterRectangle()
+
+        await cntrRect1point1()
+        await editor.expectEditor.toContain(
+          `profile007 = startProfileAt([8.41, -9.29], sketch001)`
+        )
+        await cntrRect1point2()
+        await editor.expectEditor
+          .toContain(`|> angledLine([0, 7.06], %, $rectangleSegmentA003)
+|> angledLine([
+     segAng(rectangleSegmentA003) + 90,
+     4.34
+   ], %)
+|> angledLine([
+     segAng(rectangleSegmentA003),
+     -segLen(rectangleSegmentA003)
+   ], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)`)
+        await app.page.waitForTimeout(100)
+
+        await cntrRect2point1()
+        await editor.expectEditor.toContain(
+          `profile008 = startProfileAt([19.33, -5.56], sketch001)`
+        )
+        await cntrRect2point2()
+        await editor.expectEditor
+          .toContain(`|> angledLine([0, 3.12], %, $rectangleSegmentA004)
+|> angledLine([
+     segAng(rectangleSegmentA004) + 90,
+     6.24
+   ], %)
+|> angledLine([
+     segAng(rectangleSegmentA004),
+     -segLen(rectangleSegmentA004)
+   ], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)`)
+      })
+    }
+  )
+
+  test2(
+    'Can edit a sketch with multiple profiles, dragging segments to edit them, and adding one new profile',
+    async ({ app, scene, toolbar, editor }) => {
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([6.24, 4.54], sketch001)
+  |> line([-0.41, 6.99], %)
+  |> line([8.61, 0.74], %)
+  |> line([10.99, -5.22], %)
+profile002 = startProfileAt([11.19, 5.02], sketch001)
+  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       4.14
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
+`)
+
+      const [pointOnSegment] = scene.makeMouseHelpers(590, 141)
+      const [profileEnd] = scene.makeMouseHelpers(970, 105)
+      const profileEndMv = scene.makeMouseHelpers(951, 101)[1]
+      const [newProfileEnd] = scene.makeMouseHelpers(764, 104)
+      const dragSegmentTo = scene.makeMouseHelpers(850, 104)[1]
+
+      const rectHandle = scene.makeMouseHelpers(901, 150)[1]
+      const rectDragTo = scene.makeMouseHelpers(901, 180)[1]
+
+      const circleEdge = scene.makeMouseHelpers(691, 331)[1]
+      const dragCircleTo = scene.makeMouseHelpers(720, 331)[1]
+
+      const [rectStart] = scene.makeMouseHelpers(794, 322)
+      const [rectEnd] = scene.makeMouseHelpers(757, 395)
+
+      await test2.step('enter sketch and setup', async () => {
+        await pointOnSegment({ shouldDbClick: true })
+        await app.page.waitForTimeout(600)
+
+        await toolbar.lineBtn.click()
+        await app.page.waitForTimeout(100)
+      })
+
+      await test2.step('extend existing profile', async () => {
+        await profileEnd()
+        await app.page.waitForTimeout(100)
+        await newProfileEnd()
+        await editor.expectEditor.toContain(`|> line([-11.4, 0.71], %)`)
+        await toolbar.lineBtn.click()
+        await app.page.waitForTimeout(100)
+      })
+
+      await test2.step('edit existing profile', async () => {
+        await profileEndMv()
+        await app.page.mouse.down()
+        await dragSegmentTo()
+        await app.page.mouse.up()
+        await editor.expectEditor.toContain(`line([4.16, -4.51], %)`)
+      })
+
+      await test2.step('edit existing rect', async () => {
+        await rectHandle()
+        await app.page.mouse.down()
+        await rectDragTo()
+        await app.page.mouse.up()
+        await editor.expectEditor.toContain(
+          `angledLine([-7, 10.2], %, $rectangleSegmentA001)`
+        )
+      })
+
+      await test2.step('edit existing circl', async () => {
+        await circleEdge()
+        await app.page.mouse.down()
+        await dragCircleTo()
+        await app.page.mouse.up()
+        await editor.expectEditor.toContain(
+          `profile003 = circle({ center = [6.92, -4.2], radius = 4.77 }, sketch001)`
+        )
+      })
+
+      await test2.step('add new profile', async () => {
+        await toolbar.rectangleBtn.click()
+        await app.page.waitForTimeout(100)
+        await rectStart()
+        await editor.expectEditor.toContain(
+          `profile004 = startProfileAt([15.62, -3.83], sketch001)`
+        )
+        await app.page.waitForTimeout(100)
+        await rectEnd()
+        await editor.expectEditor
+          .toContain(`|> angledLine([180, 1.97], %, $rectangleSegmentA002)
+    |> angledLine([
+         segAng(rectangleSegmentA002) + 90,
+         3.88
+       ], %)
+    |> angledLine([
+         segAng(rectangleSegmentA002),
+         -segLen(rectangleSegmentA002)
+       ], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)`)
       })
     }
   )
