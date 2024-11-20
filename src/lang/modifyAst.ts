@@ -78,41 +78,75 @@ export function startSketchOnDefault(
   }
 }
 
-export function addStartProfileAt(
+export function insertNewStartProfileAt(
   node: Node<Program>,
-  pathToNode: PathToNode,
-  at: [number, number]
-): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
-  const _node1 = getNodeFromPath<VariableDeclaration>(
+  sketchEntryNodePath: PathToNode,
+  sketchNodePaths: PathToNode[],
+  planeNodePath: PathToNode,
+  at: [number, number],
+  insertType: 'start' | 'end' = 'end'
+):
+  | {
+      modifiedAst: Node<Program>
+      updatedSketchNodePaths: PathToNode[]
+      updatedEntryNodePath: PathToNode
+    }
+  | Error {
+  const varDec = getNodeFromPath<VariableDeclarator>(
     node,
-    pathToNode,
-    'VariableDeclaration'
+    planeNodePath,
+    'VariableDeclarator'
   )
-  if (err(_node1)) return _node1
-  const variableDeclaration = _node1.node
-  if (variableDeclaration.type !== 'VariableDeclaration') {
-    return new Error('variableDeclaration.init.type !== PipeExpression')
-  }
-  const _node = { ...node }
-  const init = variableDeclaration.declarations[0].init
-  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
-    createArrayExpression([
-      createLiteral(roundOff(at[0])),
-      createLiteral(roundOff(at[1])),
-    ]),
-    createPipeSubstitution(),
-  ])
-  if (init.type === 'PipeExpression') {
-    init.body.splice(1, 0, startProfileAt)
-  } else {
-    variableDeclaration.declarations[0].init = createPipeExpression([
-      init,
-      startProfileAt,
+  if (err(varDec)) return varDec
+  if (varDec.node.type !== 'VariableDeclarator') return new Error('not a var')
+
+  const newExpression = createVariableDeclaration(
+    findUniqueName(node, 'profile'),
+    createCallExpressionStdLib('startProfileAt', [
+      createArrayExpression([
+        createLiteral(roundOff(at[0])),
+        createLiteral(roundOff(at[1])),
+      ]),
+      createIdentifier(varDec.node.id.name),
     ])
+  )
+  let minIndex = 0
+  let maxIndex = 0
+  for (const path of sketchNodePaths) {
+    const index = Number(path[1][0])
+    if (index < minIndex) minIndex = index
+    if (index > maxIndex) maxIndex = index
+  }
+
+  const _node = structuredClone(node)
+  const insertIndex = !sketchNodePaths.length
+    ? Number(planeNodePath[1][0]) + 1
+    : insertType === 'start'
+    ? minIndex
+    : maxIndex + 1
+  // TODO the rest of this function will not be robust to work for sketches defined within a function declaration
+  _node.body.splice(insertIndex, 0, newExpression)
+  const netExpressionPathToNode: PathToNode = [
+    ['body', ''],
+    [insertIndex, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+  ]
+  let updatedSketchNodePaths = structuredClone(sketchNodePaths)
+  if (insertType === 'start') {
+    updatedSketchNodePaths = updatedSketchNodePaths.map((path) => {
+      path[1][0] = Number(path[1][0]) + 1
+      return path
+    })
+    updatedSketchNodePaths.unshift(netExpressionPathToNode)
+  } else {
+    updatedSketchNodePaths.push(netExpressionPathToNode)
   }
   return {
     modifiedAst: _node,
-    pathToNode,
+    updatedSketchNodePaths,
+    updatedEntryNodePath: netExpressionPathToNode,
   }
 }
 

@@ -3,7 +3,6 @@ import { DEV } from 'env'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import {
   canRectangleOrCircleTool,
-  isClosedSketch,
   isEditingExistingSketch,
   modelingMachine,
   pipeHasCircle,
@@ -73,7 +72,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         disabled: (state) => !state.matches('idle'),
         title: ({ sketchPathId }) =>
-          `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
+          sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -309,22 +308,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       {
         id: 'line',
         onClick: ({ modelingState, modelingSend }) => {
-          if (modelingState.matches({ Sketch: { 'Line tool': 'No Points' } })) {
-            // Exit the sketch state if there are no points and they press ESC
-            modelingSend({
-              type: 'Cancel',
-            })
-          } else {
-            // Exit the tool if there are points and they press ESC
-            modelingSend({
-              type: 'change tool',
-              data: {
-                tool: !modelingState.matches({ Sketch: 'Line tool' })
-                  ? 'line'
-                  : 'none',
-              },
-            })
-          }
+          modelingSend({
+            type: 'change tool',
+            data: {
+              tool: !modelingState.matches({ Sketch: 'Line tool' })
+                ? 'line'
+                : 'none',
+            },
+          })
         },
         icon: 'line',
         status: 'available',
@@ -335,8 +326,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }) ||
           state.matches({
             Sketch: { 'Circle tool': 'Awaiting Radius' },
-          }) ||
-          isClosedSketch(state.context),
+          }),
         title: 'Line',
         hotkey: (state) =>
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',

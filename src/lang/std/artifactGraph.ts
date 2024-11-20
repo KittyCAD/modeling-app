@@ -2,6 +2,7 @@ import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
+import { engineCommandManager } from 'lib/singletons'
 
 export type ArtifactId = string
 
@@ -34,7 +35,7 @@ export interface PathArtifact extends BaseArtifact {
   codeRef: CodeRef
 }
 
-interface solid2D extends BaseArtifact {
+interface Solid2DArtifact extends BaseArtifact {
   type: 'solid2D'
   pathId: ArtifactId
 }
@@ -132,7 +133,7 @@ export type Artifact =
   | SweepEdge
   | EdgeCut
   | EdgeCutEdge
-  | solid2D
+  | Solid2DArtifact
 
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
@@ -733,7 +734,7 @@ export function getCapCodeRef(
 }
 
 export function getSolid2dCodeRef(
-  solid2D: solid2D,
+  solid2D: Solid2DArtifact,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const path = getArtifactOfTypes(
@@ -870,4 +871,122 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
     range,
     pathToNode: getNodePathFromSourceRange(ast, range),
   }
+}
+
+function getPlaneFromPath(
+  path: PathArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | Error {
+  const plane = getArtifactOfTypes(
+    { key: path.planeId, types: ['plane'] },
+    graph
+  )
+  if (err(plane)) return plane
+  return plane
+}
+
+function getPlaneFromSegment(
+  segment: SegmentArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | Error {
+  const path = getArtifactOfTypes(
+    { key: segment.pathId, types: ['path'] },
+    graph
+  )
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromSolid2D(
+  solid2D: Solid2DArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | Error {
+  const path = getArtifactOfTypes(
+    { key: solid2D.pathId, types: ['path'] },
+    graph
+  )
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromCap(
+  cap: CapArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | Error {
+  const sweep = getArtifactOfTypes(
+    { key: cap.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromWall(
+  wall: WallArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | Error {
+  const sweep = getArtifactOfTypes(
+    { key: wall.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+
+export function getPlaneFromArtifact(
+  artifact: Artifact | undefined,
+  graph: ArtifactGraph
+): PlaneArtifact | Error {
+  if (!artifact) return new Error(`Artifact is undefined`)
+  if (artifact.type === 'path') return getPlaneFromPath(artifact, graph)
+  if (artifact.type === 'segment') return getPlaneFromSegment(artifact, graph)
+  if (artifact.type === 'solid2D') return getPlaneFromSolid2D(artifact, graph)
+  if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
+  if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
+  return new Error(`Artifact type ${artifact.type} does not have a plane`)
+}
+
+export function getPathsFromArtifact({
+  sketchPathToNode,
+  artifact,
+}: {
+  sketchPathToNode: PathToNode
+  artifact?: Artifact
+}): PathToNode[] | Error {
+  const onlyConsecutivePaths = (
+    nodePaths: PathToNode[],
+    originalPath: PathToNode
+  ): PathToNode[] => {
+    const originalIndex = nodePaths.findIndex(
+      (path) => path[1][0] === originalPath[1][0]
+    )
+    const safePaths = [nodePaths[originalIndex]]
+    nodePaths.slice(originalIndex + 1).forEach((path) => {
+      const lastPath = safePaths[safePaths.length - 1]
+      if (Number(path[1][0]) === Number(lastPath[1][0]) + 1) {
+        safePaths.push(path)
+      }
+    })
+    nodePaths.slice(0, originalIndex).forEach((path) => {
+      const lastPath = safePaths[0]
+      if (Number(path[1][0]) === Number(lastPath[1][0]) - 1) {
+        safePaths.unshift(path)
+      }
+    })
+    return safePaths
+  }
+  const plane = getPlaneFromArtifact(
+    artifact,
+    engineCommandManager.artifactGraph
+  )
+  if (err(plane)) return plane
+  const paths = getArtifactsOfTypes(
+    { keys: plane.pathIds, types: ['path'] },
+    engineCommandManager.artifactGraph
+  )
+  const nodePaths = [...paths]
+    .map((path) => path[1].codeRef.pathToNode)
+    .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
+  return onlyConsecutivePaths(nodePaths, sketchPathToNode)
 }
