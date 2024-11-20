@@ -270,6 +270,24 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// // The 100 layers are replica of each other, with a slight transformation applied to each.
 /// let vase = layer() |> patternTransform(100, transform, %)
 /// ```
+/// ```
+/// fn transform = (i) => {
+///   // Transform functions can return multiple transforms. They'll be applied in order.
+///   return [
+///     { translate: [30 * i, 0, 0] },
+///     { rotation: { angle: 45 * i } },
+///   ]
+/// }
+/// startSketchAt([0, 0])
+///   |> polygon({
+///        radius: 10,
+///        numSides: 4,
+///        center: [0, 0],
+///        inscribed: false
+///      }, %)
+///   |> extrude(4, %)
+///   |> patternTransform(3, transform, %)
+/// ```
 #[stdlib {
      name = "patternTransform",
  }]
