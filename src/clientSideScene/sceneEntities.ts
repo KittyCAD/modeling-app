@@ -141,12 +141,14 @@ export class SceneEntities {
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
   axisGroup: Group | null = null
+  draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
     this.scene = sceneInfra?.scene
     sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
     window.addEventListener('resize', this.onWindowResize)
+    this.createIntersectionPlane()
   }
 
   onWindowResize = () => {
@@ -224,7 +226,6 @@ export class SceneEntities {
 
   createIntersectionPlane() {
     if (sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)) {
-      // this.removeIntersectionPlane()
       console.warn('createIntersectionPlane called when it already exists')
       return
     }
@@ -316,10 +317,6 @@ export class SceneEntities {
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.scene.add(this.axisGroup)
   }
-  removeIntersectionPlane() {
-    const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
-    if (intersectionPlane) this.scene.remove(intersectionPlane)
-  }
   getDraftPoint() {
     return this.scene.getObjectByName(DRAFT_POINT)
   }
@@ -337,6 +334,7 @@ export class SceneEntities {
     draftPoint.layers.set(SKETCH_LAYER)
     group.add(draftPoint)
   }
+
   removeDraftPoint() {
     const draftPoint = this.getDraftPoint()
     if (draftPoint) draftPoint.removeFromParent()
@@ -352,8 +350,9 @@ export class SceneEntities {
     // TODO: Consolidate shared logic between this and setupSketch
     // Which should just fire when the sketch mode is entered,
     // instead of in these two separate XState states.
-    this.createIntersectionPlane()
+
     const draftPointGroup = new Group()
+    this.draftPointGroups.push(draftPointGroup)
     draftPointGroup.name = DRAFT_POINT_GROUP
     sketchDetails.origin &&
       draftPointGroup.position.set(...sketchDetails.origin)
@@ -456,7 +455,6 @@ export class SceneEntities {
 
         await kclManager.updateAst(modifiedAst, false)
 
-        this.removeIntersectionPlane()
         this.scene.remove(draftPointGroup)
 
         // Now perform the caller-specified action
@@ -487,8 +485,6 @@ export class SceneEntities {
     sketch: Sketch
     variableDeclarationName: string
   }> {
-    this.createIntersectionPlane()
-
     const prepared = this.prepareTruncatedMemoryAndAst(
       sketchPathToNode || [],
       maybeModdedAst
@@ -597,8 +593,8 @@ export class SceneEntities {
         segment.type === 'TangentialArcTo'
           ? segmentUtils.tangentialArcTo.init
           : segment.type === 'Circle'
-          ? segmentUtils.circle.init
-          : segmentUtils.straight.init
+            ? segmentUtils.circle.init
+            : segmentUtils.straight.init
       const input: SegmentInputs =
         segment.type === 'Circle'
           ? {
@@ -1843,7 +1839,10 @@ export class SceneEntities {
     reject: () => void,
     { removeAxis = true }: { removeAxis?: boolean }
   ) {
-    if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
+    // Remove all draft groups
+    this.draftPointGroups.forEach((draftPointGroup) => {
+      this.scene.remove(draftPointGroup)
+    })
     if (this.axisGroup && removeAxis) this.scene.remove(this.axisGroup)
     const sketchSegments = this.scene.children.find(
       ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS
