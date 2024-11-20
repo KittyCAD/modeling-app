@@ -88,13 +88,11 @@ impl Program {
     pub fn parse(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
         let tokens = token::lexer(input, module_id)?;
-        let parser = parser::Parser::new(tokens);
-        let ast = parser.ast()?;
+        let ast = parser::parse_tokens(tokens)?;
 
         Ok(Program { ast })
     }
 
-    /// Deserialize the ast from a stringified json
     pub fn compute_digest(&mut self) -> ast::types::digest::Digest {
         self.ast.compute_digest()
     }

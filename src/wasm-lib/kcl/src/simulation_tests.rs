@@ -3,7 +3,6 @@ use insta::rounded_redaction;
 use crate::{
     ast::types::{ModuleId, Node, Program},
     errors::KclError,
-    parser::Parser,
     token::Token,
 };
 
@@ -61,7 +60,7 @@ fn parse(test_name: &str) {
     };
 
     // Parse the tokens into an AST.
-    let parse_res = Parser::new(tokens).ast();
+    let parse_res = crate::parser::parse_tokens(tokens);
     assert_snapshot(test_name, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res);
     });
