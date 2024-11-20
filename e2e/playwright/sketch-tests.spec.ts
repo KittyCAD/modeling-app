@@ -1,5 +1,7 @@
-import { test, expect, Page } from '@playwright/test'
-import { test as test2, expect as expect2 } from './fixtures/fixtureSetup'
+import { test, expect, Page } from './zoo-test'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { HomePageFixture } from './fixtures/homePageFixture'
 
 import {
   getMovementUtils,
@@ -10,10 +12,6 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
 test.afterEach(async ({ page }, testInfo) => {
   await tearDown(page, testInfo)
 })
@@ -22,6 +20,7 @@ test.describe('Sketch tests', () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
     page,
     context,
+    homePage,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -81,7 +80,7 @@ test.describe('Sketch tests', () => {
     )
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // wait for execution done
     await u.openDebugPanel()
@@ -108,6 +107,8 @@ test.describe('Sketch tests', () => {
   })
   test('Can delete most of a sketch and the line tool will still work', async ({
     page,
+    center,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -120,12 +121,9 @@ test.describe('Sketch tests', () => {
       )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
-
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await expect(async () => {
-      await page.mouse.click(700, 200)
       await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
@@ -151,6 +149,7 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(100)
 
     await expect(async () => {
+      await page.mouse.move(700, 200, { step: 25 })
       await page.mouse.click(700, 200)
 
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
@@ -161,7 +160,7 @@ test.describe('Sketch tests', () => {
 `)
     }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
-  test('Can exit selection of face', async ({ page }) => {
+  test('Can exit selection of face', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
       localStorage.setItem('persistCode', ``)
@@ -170,7 +169,7 @@ test.describe('Sketch tests', () => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await page.getByRole('button', { name: 'Start Sketch' }).click()
     await expect(
@@ -187,6 +186,7 @@ test.describe('Sketch tests', () => {
   test.describe('Can edit segments by dragging their handles', () => {
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
+      homePage: HomePageFixture,
       openPanes: string[]
     ) => {
       // Load the app with the code panes
@@ -202,10 +202,9 @@ test.describe('Sketch tests', () => {
       })
 
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
 
-      await u.waitForAuthSkipAppStart()
-      await expect(
+    await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
 
@@ -318,7 +317,7 @@ test.describe('Sketch tests', () => {
       |> line([1.97, 2.06], %)
       |> close(%)`)
     }
-    test('code pane open at start-handles', async ({ page }) => {
+    test('code pane open at start-handles', async ({ page, homePage }) => {
       // Load the app with the code panes
       await page.addInitScript(async () => {
         localStorage.setItem(
@@ -331,10 +330,10 @@ test.describe('Sketch tests', () => {
           })
         )
       })
-      await doEditSegmentsByDraggingHandle(page, ['code'])
+      await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
     })
 
-    test('code pane closed at start-handles', async ({ page }) => {
+    test('code pane closed at start-handles', async ({ page, homePage }) => {
       // Load the app with the code panes
       await page.addInitScript(async (persistModelingContext) => {
         localStorage.setItem(
@@ -342,12 +341,13 @@ test.describe('Sketch tests', () => {
           JSON.stringify({ openPanes: [] })
         )
       }, PERSIST_MODELING_CONTEXT)
-      await doEditSegmentsByDraggingHandle(page, [])
+      await doEditSegmentsByDraggingHandle(page, homePage, [])
     })
   })
 
   test('Can edit a circle center and radius by dragging its handles', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -358,9 +358,8 @@ test.describe('Sketch tests', () => {
       )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-    await u.waitForAuthSkipAppStart()
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -434,6 +433,7 @@ test.describe('Sketch tests', () => {
   })
   test('Can edit a sketch that has been extruded in the same pipe', async ({
     page,
+    homePage
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -448,9 +448,8 @@ test.describe('Sketch tests', () => {
       )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-    await u.waitForAuthSkipAppStart()
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -504,11 +503,11 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(100)
 
     const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-    await page.waitForTimeout(100)
     await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-      targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
+      sourcePosition: { x: lineEnd.x - 15, y: lineEnd.y },
+      targetPosition: { x: lineEnd.x, y: lineEnd.y + 15 },
     })
+    await page.waitForTimeout(100)
     await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
     prevContent = await page.locator('.cm-content').innerText()
 
@@ -517,8 +516,8 @@ test.describe('Sketch tests', () => {
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
       targetPosition: {
-        x: tangentEnd.x + dragPX,
-        y: tangentEnd.y + dragPX,
+        x: tangentEnd.x,
+        y: tangentEnd.y - 15,
       },
     })
     await page.waitForTimeout(100)
@@ -528,8 +527,8 @@ test.describe('Sketch tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.12, -12.68], %)
-  |> line([15.39, -2.78], %)
-  |> tangentialArcTo([27.6, -3.05], %)
+  |> line([12.68, -1.09], %)
+  |> tangentialArcTo([24.89, 0.68], %)
   |> close(%)
   |> extrude(5, %)
 `)
@@ -537,6 +536,7 @@ test.describe('Sketch tests', () => {
 
   test('Can edit a sketch that has been revolved in the same pipe', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -551,9 +551,8 @@ test.describe('Sketch tests', () => {
       )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-    await u.waitForAuthSkipAppStart()
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -636,12 +635,13 @@ test.describe('Sketch tests', () => {
     |> close(%)
     |> revolve({ axis = "X" }, %)`)
   })
-  test('Can add multiple sketches', async ({ page }) => {
+  test('Can add multiple sketches', async ({ page, homePage }) => {
     const u = await getUtils(page)
+
     const viewportSize = { width: 1200, height: 500 }
     await page.setViewportSize(viewportSize)
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await u.openDebugPanel()
 
     const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
@@ -738,8 +738,7 @@ test.describe('Sketch tests', () => {
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
-      await u.openDebugPanel()
+    await u.openDebugPanel()
 
       const code = `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
@@ -820,16 +819,19 @@ test.describe('Sketch tests', () => {
       await u.expectCmdLog('[data-message-type="execution-done"]')
       await u.removeCurrentCode()
     }
-    test('[0, 100, 100]', async ({ page }) => {
+    test('[0, 100, 100]', async ({ page, homePage }) => {
+      await homePage.goToModelingScene()
       await doSnapAtDifferentScales(page, [0, 100, 100], 0.01)
     })
 
-    test('[0, 10000, 10000]', async ({ page }) => {
+    test('[0, 10000, 10000]', async ({ page, homePage }) => {
+      await homePage.goToModelingScene()
       await doSnapAtDifferentScales(page, [0, 10000, 10000])
     })
   })
   test('exiting a close extrude, has the extrude button enabled ready to go', async ({
     page,
+    homePage,
   }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
@@ -849,7 +851,7 @@ test.describe('Sketch tests', () => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // wait for execution done
     await u.openDebugPanel()
@@ -885,7 +887,7 @@ test.describe('Sketch tests', () => {
       timeout: 10_000,
     })
   })
-  test("Existing sketch with bad code delete user's code", async ({ page }) => {
+  test("Existing sketch with bad code delete user's code", async ({ page, homePage }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -905,7 +907,7 @@ extrude001 = extrude(5, sketch001)
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -1049,12 +1051,8 @@ sketch002 = startSketchOn(extrude001, 'END')
 
   test('empty-scene default-planes act as expected', async ({
     page,
-    browserName,
+    homePage,
   }) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari until `window.tearDown` is working there'
-    )
     /**
      * Tests the following things
      * 1) The the planes are there on load because the scene is empty
@@ -1067,9 +1065,7 @@ sketch002 = startSketchOn(extrude001, 'END')
      */
 
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -1117,7 +1113,7 @@ sketch002 = startSketchOn(extrude001, 'END')
 
     // click start Sketch
     await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y, { steps: 5 })
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y, { steps: 50 })
     const hoveredColor: [number, number, number] = [93, 93, 127]
     // now that we're expecting the user to select a plan, it does respond to hover
     await expect
@@ -1144,8 +1140,6 @@ sketch002 = startSketchOn(extrude001, 'END')
 `
       )
     })
-    await page.reload()
-    await u.waitForAuthSkipAppStart()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -1159,12 +1153,8 @@ sketch002 = startSketchOn(extrude001, 'END')
 
   test('Can attempt to sketch on revolved face', async ({
     page,
-    browserName,
+    homePage,
   }) => {
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari until `window.tearDown` is working there'
-    )
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -1191,7 +1181,7 @@ sketch002 = startSketchOn(extrude001, 'END')
       )
     })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -1223,6 +1213,7 @@ sketch002 = startSketchOn(extrude001, 'END')
 
   test('Can sketch on face when user defined function was used in the sketch', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -1279,7 +1270,7 @@ const rail = startSketchOn('XZ')
 
     const center = { x: 600, y: 250 }
     const rectangleSize = 20
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // Start a sketch
     await page.getByRole('button', { name: 'Start Sketch' }).click()
@@ -1318,27 +1309,26 @@ const rail = startSketchOn('XZ')
   })
 })
 
-test2.describe('Sketch mode should be toleratant to syntax errors', () => {
-  test2(
+test.describe('Sketch mode should be toleratant to syntax errors', () => {
+  test(
     'adding a syntax error, recovers after fixing',
     { tag: ['@skipWin'] },
-    async ({ app, scene, editor, toolbar }) => {
-      test.skip(
-        process.platform === 'win32',
-        'a codemirror error appears in this test only on windows, that causes the test to fail only because of our "no new error" logic, but it can not be replicated locally'
-      )
-      const file = await app.getInputFile('e2e-can-sketch-on-chamfer.kcl')
-      await app.initialise(file)
+    async ({ page, homePage, context, scene, editor, toolbar }) => {
+      const file = await fs.readFile(path.resolve(__dirname, '../../', './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer.kcl'), 'utf-8')
+      await context.addInitScript((file) => {
+        localStorage.setItem('persistCode', file)
+      }, file)
+      await homePage.goToModelingScene()
 
       const [objClick] = scene.makeMouseHelpers(600, 250)
-      const arrowHeadLocation = { x: 604, y: 129 } as const
+      const arrowHeadLocation = { x: 706, y: 129 } as const
       const arrowHeadWhite: [number, number, number] = [255, 255, 255]
       const backgroundGray: [number, number, number] = [28, 28, 28]
       const verifyArrowHeadColor = async (c: [number, number, number]) =>
         scene.expectPixelColor(c, arrowHeadLocation, 15)
 
       await test.step('check chamfer selection changes cursor positon', async () => {
-        await expect2(async () => {
+        await expect(async () => {
           // sometimes initial click doesn't register
           await objClick()
           await editor.expectActiveLinesToBe([
@@ -1374,7 +1364,7 @@ test2.describe('Sketch mode should be toleratant to syntax errors', () => {
         // this checks sketch segments have been drawn
         await verifyArrowHeadColor(arrowHeadWhite)
       })
-      await app.page.waitForTimeout(100)
+      await page.waitForTimeout(100)
     }
   )
 })

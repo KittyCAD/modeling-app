@@ -798,6 +798,8 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   // It seems it's best to give the browser about 3s to close things
   // It's not super reliable but we have no real other choice for now
   await page.waitForTimeout(3000)
+
+  await testInfo.tronApp.close()
 }
 
 // settingsOverrides may need to be augmented to take more generic items,
@@ -887,8 +889,10 @@ export async function setupElectron({
       ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
       : {}),
   })
+
   const context = electronApp.context()
   const page = await electronApp.firstWindow()
+
   context.on('console', console.log)
   page.on('console', console.log)
 
@@ -924,7 +928,7 @@ export async function setupElectron({
 
   await setup(context, page)
 
-  return { electronApp, page, dir: projectDirName }
+  return { electronApp, page, context, dir: projectDirName }
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
