@@ -559,7 +559,6 @@ impl FunctionExpression {
         // We don't want to end with a new line inside nested functions.
         let mut new_options = options.clone();
         new_options.insert_final_newline = false;
-        println!("Fn, indent = {indentation_level}");
         let param_list = self
             .params
             .iter()
@@ -1967,7 +1966,6 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 }"#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);
-        println!("{recasted}");
         let expected = "\
 fn f = () => {
   return () => {
