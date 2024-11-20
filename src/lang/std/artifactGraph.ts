@@ -279,7 +279,7 @@ export function getArtifactsToUpdate({
           id: currentPlaneId,
           artifact: {
             type: 'wall',
-            id,
+            id: currentPlaneId,
             segId: existingPlane.segId,
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
@@ -321,7 +321,7 @@ export function getArtifactsToUpdate({
         id: currentPlaneId,
         artifact: {
           type: 'wall',
-          id,
+          id: currentPlaneId,
           segId: plane.segId,
           edgeCutEdgeIds: plane.edgeCutEdgeIds,
           sweepId: plane.sweepId,
