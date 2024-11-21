@@ -21,6 +21,7 @@ mod errors;
 mod executor;
 mod fs;
 mod function_param;
+mod kcl_value;
 pub mod lint;
 mod lsp;
 mod parser;

@@ -5,6 +5,10 @@ cita := "cargo insta test --accept"
 lint:
     cargo clippy --workspace --all-targets -- -D warnings
 
+# Run the stdlib docs generation
+redo-kcl-stdlib-docs-no-imgs:
+    EXPECTORATE=overwrite {{cnr}} -p kcl-lib docs::gen_std_tests::test_generate_stdlib
+
 # Generate the stdlib image artifacts
 # Then run the stdlib docs generation
 redo-kcl-stdlib-docs:
@@ -13,6 +17,9 @@ redo-kcl-stdlib-docs:
 
 # Create a new KCL deterministic simulation test case.
 new-sim-test test_name render_to_png="true":
+    # Add the various tests for this new test case.
+    cat kcl/tests/simtest.tmpl | sed "s/TEST_NAME_HERE/{{test_name}}/" | sed "s/RENDER_TO_PNG/{{render_to_png}}/" >> kcl/src/simulation_tests.rs
+    # Run all the tests for the first time, in the right order.
     {{cita}} -p kcl-lib -- tests::{{test_name}}::tokenize
     {{cita}} -p kcl-lib -- tests::{{test_name}}::parse
     {{cita}} -p kcl-lib -- tests::{{test_name}}::unparse
