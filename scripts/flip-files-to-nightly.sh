@@ -13,7 +13,6 @@ yq -i '.appId = "dev.zoo.modeling-app-nightly"' electron-builder.yml
 
 # Release notes
 echo "Nightly build $VERSION (commit $COMMIT)" > release-notes.md
-cat release-notes.md
 
 # icons
 cp assets/icon-nightly.png assets/icon.png

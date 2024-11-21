@@ -55,6 +55,7 @@ jobs:
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
         run: |
+          GITHUB_REF_NAME=v0.1.2
           export VERSION=${GITHUB_REF_NAME#v}
           yarn files:set-version
 
@@ -387,17 +388,8 @@ jobs:
       #   uses: softprops/action-gh-release@v2
       #   if: ${{ env.IS_RELEASE == 'true' }}
       #   with:
-      #     # TODO: fetch previous tag
-      #     body: |
-      #       ## Changed
-      #       * ...
-
-      #       ## Added
-      #       * ...
-
-      #       ## Fixed
-      #       * ...
-
-      #       **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/{BEFORE}...${{ github.ref_name }}
+      #     name: ${{ github.tag_name }}
+      #     tag_name: ${{ github.tag_name }}
       #     draft: true
+      # .   generate_release_notes: true
       #     files: 'out/Zoo*'
