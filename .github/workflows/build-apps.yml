@@ -18,9 +18,9 @@ env:
   IS_NIGHTLY: true
   IS_MAIN: ${{ github.ref_type == 'branch' && github.head_ref == 'main' }}
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+#   cancel-in-progress: true
 
 jobs:
   prepare-files:
@@ -52,7 +52,7 @@ jobs:
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:flip-to-nightly
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: prepared-files
           path: |
@@ -71,7 +71,7 @@ jobs:
         run: |
           yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test"' electron-builder.yml
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ env.IS_MAIN == 'true' }}
         with:
           name: prepared-files-updater-test
@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         name: prepared-files
 
       - name: Copy prepared files
@@ -172,7 +172,7 @@ jobs:
       - name: List artifacts in out/
         run: ls -R out
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: out-arm64-${{ matrix.platform }}
           # first two will pick both Zoo Modeling App-$VERSION-arm64-win.exe and Zoo Modeling App-$VERSION-win.exe
@@ -182,7 +182,7 @@ jobs:
             out/*-arm64-mac.*
             out/*-arm64-linux.*
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: out-x64-${{ matrix.platform }}
           path: |
@@ -190,7 +190,7 @@ jobs:
             out/*-x64-mac.*
             out/*-x86_64-linux.*
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
         with:
           name: out-yml
@@ -199,7 +199,7 @@ jobs:
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         if: ${{ env.IS_MAIN == 'true' }}
         name: prepared-files-updater-test
 
@@ -223,7 +223,7 @@ jobs:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
         run: yarn electron-builder --config --publish always
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ env.IS_MAIN == 'true' }}
         with:
           name: updater-test-arm64-${{ matrix.platform }}
@@ -232,7 +232,7 @@ jobs:
             out/*-arm64-mac.dmg
             out/*-arm64-linux.AppImage
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ env.IS_MAIN == 'true' }}
         with:
           name: updater-test-x64-${{ matrix.platform }}
@@ -259,37 +259,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: out-arm64-win
           path: out
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: out-x64-win
           path: out
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: out-arm64-mac
           path: out
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: out-x64-mac
           path: out
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: out-arm64-linux
           path: out
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: out-x64-linux
           path: out
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: out-yml
           path: out

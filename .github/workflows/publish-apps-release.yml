@@ -20,7 +20,16 @@ jobs:
       PUB_DATE: ${{ github.event.release.created_at }}
       BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app' }}
     steps:
-      # TODO: download draft release artifacts
+      # TODO: find run id associated with tag
+      - name: Find tag workflow id
+        id: tag_workflow_id
+        run: |
+          echo "id=TEST" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
 
       - name: List artifacts
         run: "ls -R out"
