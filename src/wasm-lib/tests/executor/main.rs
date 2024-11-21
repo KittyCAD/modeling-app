@@ -30,42 +30,6 @@ async fn kcl_test_fillet_duplicate_tags() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_with_function_sketch() {
-    let code = kcl_input!("function_sketch");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("function_sketch", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_with_function_sketch_with_position() {
-    let code = kcl_input!("function_sketch_with_position");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("function_sketch_with_position", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_with_angled_line() {
-    let code = kcl_input!("angled_line");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("angled_line", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_parametric_example() {
-    let code = kcl_input!("parametric");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("parametric", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_parametric_with_tan_arc_example() {
-    let code = kcl_input!("parametric_with_tan_arc");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("parametric_with_tan_arc", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_engine_error_return() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
