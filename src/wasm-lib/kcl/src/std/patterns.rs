@@ -14,10 +14,13 @@ use kittycad_modeling_cmds::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, Geometries, Geometry, KclValue, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange},
+    executor::{
+        ExecState, Geometries, Geometry, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange,
+    },
     function_param::FunctionParam,
     std::{types::Uint, Args},
 };
@@ -83,9 +86,7 @@ impl LinearPattern {
     }
 }
 
-/// A linear pattern
-/// Each element in the pattern repeats a particular piece of geometry.
-/// The repetitions can be transformed by the `transform` parameter.
+/// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
 
@@ -104,6 +105,28 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
     )
     .await?;
     Ok(KclValue::Solids { value: solids })
+}
+
+/// Repeat some 2D sketch, changing each repetition slightly.
+pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (num_repetitions, transform, sketch): (u32, super::FnAsArg<'_>, SketchSet) =
+        super::args::FromArgs::from_args(&args, 0)?;
+
+    let sketches = inner_pattern_transform_2d(
+        num_repetitions,
+        FunctionParam {
+            inner: transform.func,
+            fn_expr: transform.expr,
+            meta: vec![args.source_range.into()],
+            ctx: args.ctx.clone(),
+            memory: *transform.memory,
+        },
+        sketch,
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(KclValue::Sketches { value: sketches })
 }
 
 /// Repeat a 3-dimensional solid, changing it each time.
@@ -305,14 +328,72 @@ async fn inner_pattern_transform<'a>(
         }));
     }
     for i in 1..total_instances {
-        let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
+        let t = make_transform(i, &transform_function, args.source_range, exec_state, Dimensions::Three).await?;
         transform.push(t);
     }
     let transform = transform; // remove mutability
-    execute_pattern_transform(transform, solid_set, exec_state, args).await
+    execute_pattern_transform_3d(transform, solid_set, exec_state, args).await
 }
 
-async fn execute_pattern_transform<'a>(
+/// Just like patternTransform, but works on 2D sketches not 3D solids.
+/// ```no_run
+/// // Each instance will be shifted along the X axis.
+/// fn transform = (id) => {
+///   return { translate: [4 * id, 0] }
+/// }
+///
+/// // Sketch 4 circles.
+/// sketch001 = startSketchOn('XZ')
+///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> patternTransform2d(4, transform, %)
+/// ```
+#[stdlib {
+     name = "patternTransform2d",
+ }]
+async fn inner_pattern_transform_2d<'a>(
+    total_instances: u32,
+    transform_function: FunctionParam<'a>,
+    solid_set: SketchSet,
+    exec_state: &mut ExecState,
+    args: &'a Args,
+) -> Result<Vec<Box<Sketch>>, KclError> {
+    // Build the vec of transforms, one for each repetition.
+    let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
+    if total_instances < 1 {
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: MUST_HAVE_ONE_INSTANCE.to_owned(),
+        }));
+    }
+    for i in 1..total_instances {
+        let t = make_transform(i, &transform_function, args.source_range, exec_state, Dimensions::Two).await?;
+        transform.push(t);
+    }
+    let transform = transform; // remove mutability
+    execute_pattern_transform_2d(transform, solid_set, exec_state, args).await
+}
+
+async fn execute_pattern_transform_2d<'a>(
+    transforms: Vec<Vec<Transform>>,
+    sketch_set: SketchSet,
+    exec_state: &mut ExecState,
+    args: &'a Args,
+) -> Result<Vec<Box<Sketch>>, KclError> {
+    let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
+
+    if args.ctx.context_type == crate::executor::ContextType::Mock {
+        return Ok(starting_sketches);
+    }
+
+    let mut sketches = Vec::new();
+    for e in starting_sketches {
+        let new_sketches = send_pattern_transform(transforms.clone(), &e, exec_state, args).await?;
+        sketches.extend(new_sketches);
+    }
+    Ok(sketches)
+}
+
+async fn execute_pattern_transform_3d<'a>(
     transforms: Vec<Vec<Transform>>,
     solid_set: SolidSet,
     exec_state: &mut ExecState,
@@ -338,21 +419,45 @@ async fn execute_pattern_transform<'a>(
     Ok(solids)
 }
 
-async fn send_pattern_transform(
+trait GeometryWithId: Clone {
+    fn id(&self) -> Uuid;
+    fn set_id(&mut self, id: Uuid);
+}
+
+impl GeometryWithId for Box<Sketch> {
+    fn set_id(&mut self, id: Uuid) {
+        self.id = id;
+    }
+    fn id(&self) -> Uuid {
+        self.id
+    }
+}
+
+impl GeometryWithId for Box<Solid> {
+    fn set_id(&mut self, id: Uuid) {
+        self.id = id;
+    }
+
+    fn id(&self) -> Uuid {
+        self.id
+    }
+}
+
+async fn send_pattern_transform<T: GeometryWithId>(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
     transforms: Vec<Vec<Transform>>,
-    solid: &Solid,
+    solid: &T,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<Vec<Box<Solid>>, KclError> {
+) -> Result<Vec<T>, KclError> {
     let id = exec_state.id_generator.next_uuid();
 
     let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
-                entity_id: solid.id,
+                entity_id: solid.id(),
                 transform: Default::default(),
                 transforms,
             }),
@@ -369,11 +474,11 @@ async fn send_pattern_transform(
         }));
     };
 
-    let mut geometries = vec![Box::new(solid.clone())];
-    for id in pattern_info.entity_ids.iter() {
+    let mut geometries = vec![solid.clone()];
+    for id in pattern_info.entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
-        new_solid.id = *id;
-        geometries.push(Box::new(new_solid));
+        new_solid.set_id(id);
+        geometries.push(new_solid);
     }
     Ok(geometries)
 }
@@ -383,6 +488,7 @@ async fn make_transform<'a>(
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
+    dimensions: Dimensions,
 ) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::Int {
@@ -424,13 +530,22 @@ async fn make_transform<'a>(
 
     transforms
         .into_iter()
-        .map(|obj| transform_from_obj_fields(obj, source_ranges.clone()))
+        .map(|obj| transform_from_obj_fields(obj, source_ranges.clone(), dimensions))
         .collect()
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum Dimensions {
+    /// 2D
+    Two,
+    /// 3D
+    Three,
 }
 
 fn transform_from_obj_fields(
     transform: HashMap<String, KclValue>,
     source_ranges: Vec<SourceRange>,
+    dimensions: Dimensions,
 ) -> Result<Transform, KclError> {
     // Apply defaults to the transform.
     let replicate = match transform.get("replicate") {
@@ -444,14 +559,25 @@ fn transform_from_obj_fields(
         }
         None => true,
     };
-    let scale = match transform.get("scale") {
-        Some(x) => array_to_point3d(x, source_ranges.clone())?,
-        None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
+
+    let scale = match (transform.get("scale"), dimensions) {
+        (Some(x), Dimensions::Three) => array_to_point3d(x, source_ranges.clone())?,
+        (Some(x), Dimensions::Two) => {
+            let Point2d { x, y } = array_to_point2d(x, source_ranges.clone())?;
+            Point3d { x, y, z: 0.0 }
+        }
+        (None, _) => Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
-    let translate = match transform.get("translate") {
-        Some(x) => array_to_point3d(x, source_ranges.clone())?,
-        None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
+
+    let translate = match (transform.get("translate"), dimensions) {
+        (Some(x), Dimensions::Three) => array_to_point3d(x, source_ranges.clone())?,
+        (Some(x), Dimensions::Two) => {
+            let Point2d { x, y } = array_to_point2d(x, source_ranges.clone())?;
+            Point3d { x, y, z: 0.0 }
+        }
+        (None, _) => Point3d { x: 0.0, y: 0.0, z: 0.0 },
     };
+
     let mut rotation = Rotation::default();
     if let Some(rot) = transform.get("rotation") {
         let KclValue::Object { value: rot, meta: _ } = rot else {
@@ -462,7 +588,13 @@ fn transform_from_obj_fields(
             }));
         };
         if let Some(axis) = rot.get("axis") {
-            rotation.axis = array_to_point3d(axis, source_ranges.clone())?.into();
+            rotation.axis = match dimensions {
+                Dimensions::Three => array_to_point3d(axis, source_ranges.clone())?.into(),
+                Dimensions::Two => {
+                    let Point2d { x, y } = array_to_point2d(axis, source_ranges.clone())?;
+                    Point3d { x, y, z: 0.0 }.into()
+                }
+            };
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
@@ -478,16 +610,22 @@ fn transform_from_obj_fields(
             }
         }
         if let Some(origin) = rot.get("origin") {
-            rotation.origin = match origin {
-                KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
-                KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
-                other => {
+            rotation.origin = match (origin, dimensions) {
+                (KclValue::String { value: s, meta: _ }, _) if s == "local" => OriginType::Local,
+                (KclValue::String { value: s, meta: _ }, _) if s == "global" => OriginType::Global,
+                (other, Dimensions::Three) => {
                     let origin = array_to_point3d(other, source_ranges.clone())?.into();
+                    OriginType::Custom { origin }
+                }
+                (other, Dimensions::Two) => {
+                    let Point2d { x, y } = array_to_point2d(other, source_ranges.clone())?;
+                    let origin = kcmc::shared::Point3d { x, y, z: 0.0 };
                     OriginType::Custom { origin }
                 }
             };
         }
     }
+
     Ok(Transform {
         replicate,
         scale: scale.into(),
@@ -526,6 +664,37 @@ fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<P
     let y = f(&arr[1], 'y')?;
     let z = f(&arr[2], 'z')?;
     Ok(Point3d { x, y, z })
+}
+
+fn array_to_point2d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point2d, KclError> {
+    let KclValue::Array { value: arr, meta } = val else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected an array of 2 numbers (i.e. a 2D point)".to_string(),
+            source_ranges,
+        }));
+    };
+    let len = arr.len();
+    if len != 2 {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: format!("Expected an array of 2 numbers (i.e. a 2D point) but found {len} items"),
+            source_ranges,
+        }));
+    };
+    // Gets an f64 from a KCL value.
+    let f = |k: &KclValue, component: char| {
+        use super::args::FromKclValue;
+        if let Some(value) = f64::from_kcl_val(k) {
+            Ok(value)
+        } else {
+            Err(KclError::Semantic(KclErrorDetails {
+                message: format!("{component} component of this point was not a number"),
+                source_ranges: meta.iter().map(|m| m.source_range).collect(),
+            }))
+        }
+    };
+    let x = f(&arr[0], 'x')?;
+    let y = f(&arr[1], 'y')?;
+    Ok(Point2d { x, y })
 }
 
 #[cfg(test)]
@@ -684,7 +853,7 @@ async fn inner_pattern_linear_3d(
             }]
         })
         .collect();
-    execute_pattern_transform(transforms, solid_set, exec_state, &args).await
+    execute_pattern_transform_3d(transforms, solid_set, exec_state, &args).await
 }
 
 async fn pattern_linear(

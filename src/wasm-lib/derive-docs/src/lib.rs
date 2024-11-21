@@ -115,14 +115,9 @@ fn do_stdlib_inner(
     let name = metadata.name;
 
     // Fail if the name is not camel case.
-    let whitelist = [
-        "mirror2d",
-        "patternLinear3d",
-        "patternLinear2d",
-        "patternCircular3d",
-        "patternCircular2d",
-    ];
-    if !name.is_camel_case() && !whitelist.contains(&name.as_str()) {
+    // Exceptions are that our methods can end in 2d/3d, e.g. "patternTransform2d".
+    let name_is_okay = name.is_camel_case() || name.ends_with("2d") || name.ends_with("3d");
+    if !name_is_okay {
         errors.push(Error::new_spanned(
             &ast.sig.ident,
             format!("stdlib function names must be in camel case: `{}`", name),
