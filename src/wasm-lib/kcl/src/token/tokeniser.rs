@@ -1,6 +1,8 @@
+use fnv::FnvHashMap;
+use lazy_static::lazy_static;
 use winnow::{
     ascii::{digit1, multispace1},
-    combinator::{alt, opt, peek, preceded, repeat, terminated},
+    combinator::{alt, opt, peek, preceded, repeat},
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
@@ -12,6 +14,53 @@ use crate::{
     ast::types::ModuleId,
     token::{Token, TokenType},
 };
+
+lazy_static! {
+    pub(crate) static ref RESERVED_WORDS: FnvHashMap<&'static str, TokenType> = {
+        let mut set = FnvHashMap::default();
+        set.insert("if", TokenType::Keyword);
+        set.insert("else", TokenType::Keyword);
+        set.insert("for", TokenType::Keyword);
+        set.insert("while", TokenType::Keyword);
+        set.insert("return", TokenType::Keyword);
+        set.insert("break", TokenType::Keyword);
+        set.insert("continue", TokenType::Keyword);
+        set.insert("fn", TokenType::Keyword);
+        set.insert("let", TokenType::Keyword);
+        set.insert("mut", TokenType::Keyword);
+        set.insert("as", TokenType::Keyword);
+        set.insert("loop", TokenType::Keyword);
+        set.insert("true", TokenType::Keyword);
+        set.insert("false", TokenType::Keyword);
+        set.insert("nil", TokenType::Keyword);
+        // This isn't a type because brackets are used for the type.
+        set.insert("array", TokenType::Keyword);
+        set.insert("and", TokenType::Keyword);
+        set.insert("or", TokenType::Keyword);
+        set.insert("not", TokenType::Keyword);
+        set.insert("var", TokenType::Keyword);
+        set.insert("const", TokenType::Keyword);
+        // "import" is special because of import().
+        set.insert("export", TokenType::Keyword);
+        set.insert("type", TokenType::Keyword);
+        set.insert("interface", TokenType::Keyword);
+        set.insert("new", TokenType::Keyword);
+        set.insert("self", TokenType::Keyword);
+        set.insert("record", TokenType::Keyword);
+        set.insert("struct", TokenType::Keyword);
+        set.insert("object", TokenType::Keyword);
+        set.insert("_", TokenType::Keyword);
+
+        set.insert("string", TokenType::Type);
+        set.insert("number", TokenType::Type);
+        set.insert("bool", TokenType::Type);
+        set.insert("sketch", TokenType::Type);
+        set.insert("sketch_surface", TokenType::Type);
+        set.insert("solid", TokenType::Type);
+
+        set
+    };
+}
 
 pub fn lexer(i: &str, module_id: ModuleId) -> Result<Vec<Token>, ParseError<Input<'_>, ContextError>> {
     let state = State::new(module_id);
@@ -50,7 +99,7 @@ pub fn token(i: &mut Input<'_>) -> PResult<Token> {
         '$' => dollar,
         '!' => alt((operator, bang)),
         ' ' | '\t' | '\n' => whitespace,
-        _ => alt((operator, keyword,type_, word))
+        _ => alt((operator, keyword_type_or_word))
     }
     .parse_next(i)
     {
@@ -287,47 +336,16 @@ fn import_keyword(i: &mut Input<'_>) -> PResult<Token> {
     ))
 }
 
-fn unambiguous_keywords(i: &mut Input<'_>) -> PResult<Token> {
-    // These are the keywords themselves.
-    let keyword_candidates = alt((
-        "if", "else", "for", "while", "return", "break", "continue", "fn", "let", "mut", "loop", "true", "false",
-        "nil", "and", "or", "not", "var", "const", "export",
-    ));
-    // Look ahead. If any of these characters follow the keyword, then it's not a keyword, it's just
-    // the start of a normal word.
-    let keyword = terminated(
-        keyword_candidates,
-        peek(none_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9'))),
-    );
-    let (value, range) = keyword.with_span().parse_next(i)?;
-    Ok(Token::from_range(
-        range,
-        i.state.module_id,
-        TokenType::Keyword,
-        value.to_owned(),
-    ))
+fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+    let mut w = word.parse_next(i)?;
+    if let Some(token_type) = RESERVED_WORDS.get(w.value.as_str()) {
+        w.token_type = *token_type;
+    }
+    Ok(w)
 }
 
-fn keyword(i: &mut Input<'_>) -> PResult<Token> {
-    alt((import_keyword, unambiguous_keywords)).parse_next(i)
-}
-
-fn type_(i: &mut Input<'_>) -> PResult<Token> {
-    // These are the types themselves.
-    let type_candidates = alt(("string", "number", "bool", "sketch", "sketch_surface", "solid"));
-    // Look ahead. If any of these characters follow the type, then it's not a type, it's just
-    // the start of a normal word.
-    let type_ = terminated(
-        type_candidates,
-        peek(none_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9'))),
-    );
-    let (value, range) = type_.with_span().parse_next(i)?;
-    Ok(Token::from_range(
-        range,
-        i.state.module_id,
-        TokenType::Type,
-        value.to_owned(),
-    ))
+fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
+    alt((import_keyword, unambiguous_keyword_type_or_word)).parse_next(i)
 }
 
 #[cfg(test)]

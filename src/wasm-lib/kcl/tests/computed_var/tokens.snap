@@ -1,0 +1,585 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing computed_var.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "lineComment",
+      "start": 0,
+      "end": 34,
+      "value": "// This tests computed properties."
+    },
+    {
+      "type": "whitespace",
+      "start": 34,
+      "end": 37,
+      "value": "\n\n\n"
+    },
+    {
+      "type": "word",
+      "start": 37,
+      "end": 40,
+      "value": "arr"
+    },
+    {
+      "type": "whitespace",
+      "start": 40,
+      "end": 41,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 41,
+      "end": 42,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 42,
+      "end": 43,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 43,
+      "end": 44,
+      "value": "["
+    },
+    {
+      "type": "number",
+      "start": 44,
+      "end": 45,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 45,
+      "end": 46,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 46,
+      "end": 47,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 47,
+      "end": 48,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 48,
+      "end": 49,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 49,
+      "end": 50,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 50,
+      "end": 51,
+      "value": "0"
+    },
+    {
+      "type": "comma",
+      "start": 51,
+      "end": 52,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 52,
+      "end": 53,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 53,
+      "end": 55,
+      "value": "10"
+    },
+    {
+      "type": "brace",
+      "start": 55,
+      "end": 56,
+      "value": "]"
+    },
+    {
+      "type": "whitespace",
+      "start": 56,
+      "end": 57,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 57,
+      "end": 58,
+      "value": "i"
+    },
+    {
+      "type": "whitespace",
+      "start": 58,
+      "end": 59,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 59,
+      "end": 60,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 60,
+      "end": 61,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 61,
+      "end": 62,
+      "value": "3"
+    },
+    {
+      "type": "whitespace",
+      "start": 62,
+      "end": 63,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 63,
+      "end": 66,
+      "value": "ten"
+    },
+    {
+      "type": "whitespace",
+      "start": 66,
+      "end": 67,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 67,
+      "end": 68,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 68,
+      "end": 69,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 69,
+      "end": 72,
+      "value": "arr"
+    },
+    {
+      "type": "brace",
+      "start": 72,
+      "end": 73,
+      "value": "["
+    },
+    {
+      "type": "word",
+      "start": 73,
+      "end": 74,
+      "value": "i"
+    },
+    {
+      "type": "brace",
+      "start": 74,
+      "end": 75,
+      "value": "]"
+    },
+    {
+      "type": "whitespace",
+      "start": 75,
+      "end": 77,
+      "value": "\n\n"
+    },
+    {
+      "type": "word",
+      "start": 77,
+      "end": 88,
+      "value": "assertEqual"
+    },
+    {
+      "type": "brace",
+      "start": 88,
+      "end": 89,
+      "value": "("
+    },
+    {
+      "type": "word",
+      "start": 89,
+      "end": 92,
+      "value": "ten"
+    },
+    {
+      "type": "comma",
+      "start": 92,
+      "end": 93,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 93,
+      "end": 94,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 94,
+      "end": 96,
+      "value": "10"
+    },
+    {
+      "type": "comma",
+      "start": 96,
+      "end": 97,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 97,
+      "end": 98,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 98,
+      "end": 106,
+      "value": "0.000001"
+    },
+    {
+      "type": "comma",
+      "start": 106,
+      "end": 107,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 107,
+      "end": 108,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 108,
+      "end": 114,
+      "value": "\"oops\""
+    },
+    {
+      "type": "brace",
+      "start": 114,
+      "end": 115,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 115,
+      "end": 117,
+      "value": "\n\n"
+    },
+    {
+      "type": "word",
+      "start": 117,
+      "end": 118,
+      "value": "p"
+    },
+    {
+      "type": "whitespace",
+      "start": 118,
+      "end": 119,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 119,
+      "end": 120,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 120,
+      "end": 121,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 121,
+      "end": 126,
+      "value": "\"foo\""
+    },
+    {
+      "type": "whitespace",
+      "start": 126,
+      "end": 127,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 127,
+      "end": 130,
+      "value": "obj"
+    },
+    {
+      "type": "whitespace",
+      "start": 130,
+      "end": 131,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 131,
+      "end": 132,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 132,
+      "end": 133,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 133,
+      "end": 134,
+      "value": "{"
+    },
+    {
+      "type": "whitespace",
+      "start": 134,
+      "end": 135,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 135,
+      "end": 138,
+      "value": "foo"
+    },
+    {
+      "type": "colon",
+      "start": 138,
+      "end": 139,
+      "value": ":"
+    },
+    {
+      "type": "whitespace",
+      "start": 139,
+      "end": 140,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 140,
+      "end": 141,
+      "value": "1"
+    },
+    {
+      "type": "comma",
+      "start": 141,
+      "end": 142,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 142,
+      "end": 143,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 143,
+      "end": 146,
+      "value": "bar"
+    },
+    {
+      "type": "colon",
+      "start": 146,
+      "end": 147,
+      "value": ":"
+    },
+    {
+      "type": "whitespace",
+      "start": 147,
+      "end": 148,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 148,
+      "end": 149,
+      "value": "0"
+    },
+    {
+      "type": "whitespace",
+      "start": 149,
+      "end": 150,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 150,
+      "end": 151,
+      "value": "}"
+    },
+    {
+      "type": "whitespace",
+      "start": 151,
+      "end": 152,
+      "value": "\n"
+    },
+    {
+      "type": "word",
+      "start": 152,
+      "end": 155,
+      "value": "one"
+    },
+    {
+      "type": "whitespace",
+      "start": 155,
+      "end": 156,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 156,
+      "end": 157,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 157,
+      "end": 158,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 158,
+      "end": 161,
+      "value": "obj"
+    },
+    {
+      "type": "brace",
+      "start": 161,
+      "end": 162,
+      "value": "["
+    },
+    {
+      "type": "word",
+      "start": 162,
+      "end": 163,
+      "value": "p"
+    },
+    {
+      "type": "brace",
+      "start": 163,
+      "end": 164,
+      "value": "]"
+    },
+    {
+      "type": "whitespace",
+      "start": 164,
+      "end": 166,
+      "value": "\n\n"
+    },
+    {
+      "type": "word",
+      "start": 166,
+      "end": 177,
+      "value": "assertEqual"
+    },
+    {
+      "type": "brace",
+      "start": 177,
+      "end": 178,
+      "value": "("
+    },
+    {
+      "type": "word",
+      "start": 178,
+      "end": 181,
+      "value": "one"
+    },
+    {
+      "type": "comma",
+      "start": 181,
+      "end": 182,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 182,
+      "end": 183,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 183,
+      "end": 184,
+      "value": "1"
+    },
+    {
+      "type": "comma",
+      "start": 184,
+      "end": 185,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 185,
+      "end": 186,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 186,
+      "end": 195,
+      "value": "0.0000001"
+    },
+    {
+      "type": "comma",
+      "start": 195,
+      "end": 196,
+      "value": ","
+    },
+    {
+      "type": "whitespace",
+      "start": 196,
+      "end": 197,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 197,
+      "end": 203,
+      "value": "\"oops\""
+    },
+    {
+      "type": "brace",
+      "start": 203,
+      "end": 204,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 204,
+      "end": 205,
+      "value": "\n"
+    }
+  ]
+}

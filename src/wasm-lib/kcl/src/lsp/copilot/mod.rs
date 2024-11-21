@@ -1,4 +1,5 @@
 //! The copilot lsp server for ghost text.
+#![allow(dead_code)]
 
 pub mod cache;
 pub mod types;
@@ -26,6 +27,7 @@ use tower_lsp::{
 
 use crate::lsp::{
     backend::Backend as _,
+    copilot::cache::CopilotCache,
     copilot::types::{
         CopilotAcceptCompletionParams, CopilotCompletionResponse, CopilotCompletionTelemetry, CopilotEditorInfo,
         CopilotLspCompletionParams, CopilotRejectCompletionParams, DocParams,
@@ -131,6 +133,38 @@ impl crate::lsp::backend::Backend for Backend {
 }
 
 impl Backend {
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_wasm(
+        client: tower_lsp::Client,
+        fs: crate::fs::wasm::FileSystemManager,
+        zoo_client: kittycad::Client,
+        dev_mode: bool,
+    ) -> Self {
+        Self::new(client, crate::fs::FileManager::new(fs), zoo_client, dev_mode)
+    }
+
+    pub fn new(
+        client: tower_lsp::Client,
+        fs: crate::fs::FileManager,
+        zoo_client: kittycad::Client,
+        dev_mode: bool,
+    ) -> Self {
+        Self {
+            client,
+            fs: Arc::new(fs),
+            workspace_folders: Default::default(),
+            code_map: Default::default(),
+            editor_info: Arc::new(RwLock::new(CopilotEditorInfo::default())),
+            cache: Arc::new(CopilotCache::new()),
+            telemetry: Default::default(),
+            zoo_client,
+
+            is_initialized: Default::default(),
+            diagnostics_map: Default::default(),
+            dev_mode,
+        }
+    }
+
     /// Get completions from the kittycad api.
     pub async fn get_completions(&self, language: String, prompt: String, suffix: String) -> Result<Vec<String>> {
         let body = kittycad::types::KclCodeCompletionRequest {

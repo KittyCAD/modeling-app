@@ -1,0 +1,2 @@
+obj = { key: 123 }
+num = obj[3]

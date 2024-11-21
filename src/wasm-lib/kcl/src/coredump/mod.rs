@@ -1,4 +1,5 @@
 //! Core dump related structures and functions.
+#![allow(dead_code)]
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod local;

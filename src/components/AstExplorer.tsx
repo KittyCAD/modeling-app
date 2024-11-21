@@ -4,6 +4,7 @@ import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
 import { trap } from 'lib/trap'
 import { codeToIdSelections } from 'lib/selections'
+import { codeRefFromRange } from 'lang/std/artifactGraph'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
@@ -124,12 +125,7 @@ function DisplayObj({
       onClick={(e) => {
         const range: [number, number] = [obj?.start || 0, obj.end || 0]
         const idInfo = codeToIdSelections([
-          {
-            codeRef: {
-              range,
-              pathToNode: getNodePathFromSourceRange(kclManager.ast, range),
-            },
-          },
+          { codeRef: codeRefFromRange(range, kclManager.ast) },
         ])[0]
         const artifact = engineCommandManager.artifactGraph.get(
           idInfo?.id || ''
@@ -141,10 +137,7 @@ function DisplayObj({
             selectionType: 'singleCodeCursor',
             selection: {
               artifact: artifact,
-              codeRef: {
-                range,
-                pathToNode: getNodePathFromSourceRange(kclManager.ast, range),
-              },
+              codeRef: codeRefFromRange(range, kclManager.ast),
             },
           },
         })

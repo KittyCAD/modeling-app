@@ -14,6 +14,7 @@ import {
   ProgramMemory,
   ReturnStatement,
   sketchFromKclValue,
+  sketchFromKclValueOptional,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
@@ -27,10 +28,10 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from './std/sketchcombos'
-import { err } from 'lib/trap'
+import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { ArtifactGraph } from './std/artifactGraph'
+import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -796,10 +797,7 @@ export function isLinesParallelAndConstrained(
     return {
       isParallelAndConstrained,
       selection: {
-        codeRef: {
-          range: prevSourceRange,
-          pathToNode: getNodePathFromSourceRange(ast, prevSourceRange),
-        },
+        codeRef: codeRefFromRange(prevSourceRange, ast),
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
@@ -861,7 +859,8 @@ export function hasExtrudeSketch({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'Solid' || !err(sketchFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' ||
+    !(sketchFromKclValueOptional(varValue, varName) instanceof Reason)
   )
 }
 
@@ -941,7 +940,7 @@ export function findUsesOfTagInPipe(
 }
 
 export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
-  const _node = getNodeFromPath<PipeExpression>(
+  const _node = getNodeFromPath<Node<PipeExpression>>(
     ast,
     selection.codeRef.pathToNode,
     'PipeExpression'
@@ -958,19 +957,33 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   const varDec = _varDec.node
   if (varDec.type !== 'VariableDeclarator') return false
   let extruded = false
-  traverse(ast as any, {
+  // option 1: extrude or revolve is called in the sketch pipe
+  traverse(pipeExpression, {
     enter(node) {
       if (
         node.type === 'CallExpression' &&
-        node.callee.type === 'Identifier' &&
-        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
-        node.arguments?.[1]?.type === 'Identifier' &&
-        node.arguments[1].name === varDec.id.name
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve')
       ) {
         extruded = true
       }
     },
   })
+  // option 2: extrude or revolve is called in the separate pipe
+  if (!extruded) {
+    traverse(ast as any, {
+      enter(node) {
+        if (
+          node.type === 'CallExpression' &&
+          node.callee.type === 'Identifier' &&
+          (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
+          node.arguments?.[1]?.type === 'Identifier' &&
+          node.arguments[1].name === varDec.id.name
+        ) {
+          extruded = true
+        }
+      },
+    })
+  }
   return extruded
 }
 

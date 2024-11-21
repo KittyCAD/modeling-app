@@ -1,12 +1,12 @@
 // This tests indexing an array.
 
 
-array = [90, 91, 92]
+arr = [90, 91, 92]
 
 // Test: literal index.
 
 
-result0 = array[1]
+result0 = arr[1]
 
 assertLessThanOrEq(result0, 91, "Literal property lookup")
 assertGreaterThanOrEq(result0, 91, "Literal property lookup")
@@ -15,7 +15,7 @@ assertGreaterThanOrEq(result0, 91, "Literal property lookup")
 
 
 i = int(1 + 0)
-result1 = array[i]
+result1 = arr[i]
 
 assertLessThanOrEq(result1, 91, "Computed property lookup")
 assertGreaterThanOrEq(result1, 91, "Computed property lookup")

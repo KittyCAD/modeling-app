@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing pipe_substitution_inside_function_called_from_pipeline.kcl
+snapshot_kind: text
+---
+semantic: KclErrorDetails { source_ranges: [SourceRange([106, 107, 0])], message: "cannot use % outside a pipe expression" }

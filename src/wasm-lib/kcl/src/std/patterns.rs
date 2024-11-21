@@ -1,6 +1,6 @@
 //! Standard library patterns.
 
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::HashMap};
 
 use anyhow::Result;
 use derive_docs::stdlib;
@@ -21,6 +21,8 @@ use crate::{
     function_param::FunctionParam,
     std::{types::Uint, Args},
 };
+
+use super::args::Arg;
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
@@ -270,6 +272,24 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// // The 100 layers are replica of each other, with a slight transformation applied to each.
 /// let vase = layer() |> patternTransform(100, transform, %)
 /// ```
+/// ```
+/// fn transform = (i) => {
+///   // Transform functions can return multiple transforms. They'll be applied in order.
+///   return [
+///     { translate: [30 * i, 0, 0] },
+///     { rotation: { angle: 45 * i } },
+///   ]
+/// }
+/// startSketchAt([0, 0])
+///   |> polygon({
+///        radius: 10,
+///        numSides: 4,
+///        center: [0, 0],
+///        inscribed: false
+///      }, %)
+///   |> extrude(4, %)
+///   |> patternTransform(3, transform, %)
+/// ```
 #[stdlib {
      name = "patternTransform",
  }]
@@ -315,7 +335,7 @@ async fn inner_pattern_transform<'a>(
 async fn send_pattern_transform(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
-    transform: Vec<Transform>,
+    transforms: Vec<Vec<Transform>>,
     solid: &Solid,
     exec_state: &mut ExecState,
     args: &Args,
@@ -327,7 +347,8 @@ async fn send_pattern_transform(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: solid.id,
-                transform,
+                transform: Default::default(),
+                transforms,
             }),
         )
         .await?;
@@ -356,13 +377,13 @@ async fn make_transform<'a>(
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
-) -> Result<Transform, KclError> {
+) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::Int {
         value: i.into(),
         meta: vec![source_range.into()],
     };
-    let transform_fn_args = vec![repetition_num];
+    let transform_fn_args = vec![Arg::synthetic(repetition_num)];
     let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
 
     // Unpack the returned transform object.
@@ -373,13 +394,38 @@ async fn make_transform<'a>(
             source_ranges: source_ranges.clone(),
         })
     })?;
-    let KclValue::Object { value: transform, meta } = transform_fn_return else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Transform function must return a transform object".to_string(),
-            source_ranges: source_ranges.clone(),
-        }));
+    let transforms = match transform_fn_return {
+        KclValue::Object { value, meta: _ } => vec![value],
+        KclValue::Array { value, meta: _ } => {
+            let transforms: Vec<_> = value
+                .into_iter()
+                .map(|val| {
+                    val.into_object().ok_or(KclError::Semantic(KclErrorDetails {
+                        message: "Transform function must return a transform object".to_string(),
+                        source_ranges: source_ranges.clone(),
+                    }))
+                })
+                .collect::<Result<_, _>>()?;
+            transforms
+        }
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Transform function must return a transform object".to_string(),
+                source_ranges: source_ranges.clone(),
+            }))
+        }
     };
 
+    transforms
+        .into_iter()
+        .map(|obj| transform_from_obj_fields(obj, source_ranges.clone()))
+        .collect()
+}
+
+fn transform_from_obj_fields(
+    transform: HashMap<String, KclValue>,
+    source_ranges: Vec<SourceRange>,
+) -> Result<Transform, KclError> {
     // Apply defaults to the transform.
     let replicate = match transform.get("replicate") {
         Some(KclValue::Bool { value: true, .. }) => true,
@@ -420,7 +466,7 @@ async fn make_transform<'a>(
                 _ => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "The 'rotation.angle' key must be a number (of degrees)".to_string(),
-                        source_ranges: meta.iter().map(|m| m.source_range).collect(),
+                        source_ranges: source_ranges.clone(),
                     }));
                 }
             }
@@ -436,13 +482,12 @@ async fn make_transform<'a>(
             };
         }
     }
-    let t = Transform {
+    Ok(Transform {
         replicate,
         scale: scale.into(),
         translate: translate.into(),
         rotation,
-    };
-    Ok(t)
+    })
 }
 
 fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {

@@ -1,0 +1,219 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of tokenizing import_cycle1.kcl
+snapshot_kind: text
+---
+{
+  "Ok": [
+    {
+      "type": "keyword",
+      "start": 0,
+      "end": 6,
+      "value": "import"
+    },
+    {
+      "type": "whitespace",
+      "start": 6,
+      "end": 7,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 7,
+      "end": 10,
+      "value": "two"
+    },
+    {
+      "type": "whitespace",
+      "start": 10,
+      "end": 11,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 11,
+      "end": 15,
+      "value": "from"
+    },
+    {
+      "type": "whitespace",
+      "start": 15,
+      "end": 16,
+      "value": " "
+    },
+    {
+      "type": "string",
+      "start": 16,
+      "end": 35,
+      "value": "\"import_cycle2.kcl\""
+    },
+    {
+      "type": "whitespace",
+      "start": 35,
+      "end": 37,
+      "value": "\n\n"
+    },
+    {
+      "type": "keyword",
+      "start": 37,
+      "end": 43,
+      "value": "export"
+    },
+    {
+      "type": "whitespace",
+      "start": 43,
+      "end": 44,
+      "value": " "
+    },
+    {
+      "type": "keyword",
+      "start": 44,
+      "end": 46,
+      "value": "fn"
+    },
+    {
+      "type": "whitespace",
+      "start": 46,
+      "end": 47,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 47,
+      "end": 50,
+      "value": "one"
+    },
+    {
+      "type": "whitespace",
+      "start": 50,
+      "end": 51,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 51,
+      "end": 52,
+      "value": "="
+    },
+    {
+      "type": "whitespace",
+      "start": 52,
+      "end": 53,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 53,
+      "end": 54,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 54,
+      "end": 55,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 55,
+      "end": 56,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 56,
+      "end": 58,
+      "value": "=>"
+    },
+    {
+      "type": "whitespace",
+      "start": 58,
+      "end": 59,
+      "value": " "
+    },
+    {
+      "type": "brace",
+      "start": 59,
+      "end": 60,
+      "value": "{"
+    },
+    {
+      "type": "whitespace",
+      "start": 60,
+      "end": 63,
+      "value": "\n  "
+    },
+    {
+      "type": "keyword",
+      "start": 63,
+      "end": 69,
+      "value": "return"
+    },
+    {
+      "type": "whitespace",
+      "start": 69,
+      "end": 70,
+      "value": " "
+    },
+    {
+      "type": "word",
+      "start": 70,
+      "end": 73,
+      "value": "two"
+    },
+    {
+      "type": "brace",
+      "start": 73,
+      "end": 74,
+      "value": "("
+    },
+    {
+      "type": "brace",
+      "start": 74,
+      "end": 75,
+      "value": ")"
+    },
+    {
+      "type": "whitespace",
+      "start": 75,
+      "end": 76,
+      "value": " "
+    },
+    {
+      "type": "operator",
+      "start": 76,
+      "end": 77,
+      "value": "-"
+    },
+    {
+      "type": "whitespace",
+      "start": 77,
+      "end": 78,
+      "value": " "
+    },
+    {
+      "type": "number",
+      "start": 78,
+      "end": 79,
+      "value": "1"
+    },
+    {
+      "type": "whitespace",
+      "start": 79,
+      "end": 80,
+      "value": "\n"
+    },
+    {
+      "type": "brace",
+      "start": 80,
+      "end": 81,
+      "value": "}"
+    },
+    {
+      "type": "whitespace",
+      "start": 81,
+      "end": 82,
+      "value": "\n"
+    }
+  ]
+}

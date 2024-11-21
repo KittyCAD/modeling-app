@@ -149,7 +149,7 @@ export function modifyAstWithFilletAndTag(
 
     // Modify the extrude expression to include this fillet expression
     // CallExpression - no fillet
-    // PipeExpression - fillet exists
+    // PipeExpression - fillet exists or extrude in sketch pipe
 
     let pathToFilletNode: PathToNode = []
 
@@ -170,15 +170,7 @@ export function modifyAstWithFilletAndTag(
       )
       pathToFilletNodes.push(pathToFilletNode)
     } else if (extrudeDeclarator.init.type === 'PipeExpression') {
-      // 2. case when fillet exists
-
-      const existingFilletCall = extrudeDeclarator.init.body.find((node) => {
-        return node.type === 'CallExpression' && node.callee.name === 'fillet'
-      })
-
-      if (!existingFilletCall || existingFilletCall.type !== 'CallExpression') {
-        return new Error('Fillet CallExpression not found.')
-      }
+      // 2. case when fillet exists or extrude in sketch pipe
 
       // mutate the extrude node with the new fillet call
       extrudeDeclarator.init.body.push(filletCall)
@@ -320,14 +312,14 @@ function locateExtrudeDeclarator(
   node: Program,
   pathToExtrudeNode: PathToNode
 ): { extrudeDeclarator: VariableDeclarator } | Error {
-  const extrudeChunk = getNodeFromPath<VariableDeclaration>(
+  const nodeOfExtrudeCall = getNodeFromPath<VariableDeclaration>(
     node,
     pathToExtrudeNode,
     'VariableDeclaration'
   )
-  if (err(extrudeChunk)) return extrudeChunk
+  if (err(nodeOfExtrudeCall)) return nodeOfExtrudeCall
 
-  const { node: extrudeVarDecl } = extrudeChunk
+  const { node: extrudeVarDecl } = nodeOfExtrudeCall
   const extrudeDeclarator = extrudeVarDecl.declarations[0]
   if (!extrudeDeclarator) {
     return new Error('Extrude Declarator not found.')

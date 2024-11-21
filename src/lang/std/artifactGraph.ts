@@ -261,6 +261,7 @@ export function getArtifactsToUpdate({
         id,
         artifact: {
           type: 'plane',
+          id,
           pathIds: [],
           codeRef: { range, pathToNode },
         },
@@ -278,7 +279,7 @@ export function getArtifactsToUpdate({
           id: currentPlaneId,
           artifact: {
             type: 'wall',
-            id,
+            id: currentPlaneId,
             segId: existingPlane.segId,
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
@@ -320,7 +321,7 @@ export function getArtifactsToUpdate({
         id: currentPlaneId,
         artifact: {
           type: 'wall',
-          id,
+          id: currentPlaneId,
           segId: plane.segId,
           edgeCutEdgeIds: plane.edgeCutEdgeIds,
           sweepId: plane.sweepId,
@@ -861,5 +862,12 @@ export function getCodeRefsByArtifactId(
     return [artifact.codeRef]
   } else {
     return null
+  }
+}
+
+export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
+  return {
+    range,
+    pathToNode: getNodePathFromSourceRange(ast, range),
   }
 }

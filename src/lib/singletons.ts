@@ -18,8 +18,6 @@ window.tearDown = engineCommandManager.tearDown
 export const kclManager = new KclManager(engineCommandManager)
 engineCommandManager.kclManager = kclManager
 
-engineCommandManager.getAstCb = () => kclManager.ast
-
 export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 

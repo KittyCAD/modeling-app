@@ -1,6 +1,9 @@
 use derive_docs::stdlib;
 
-use super::{args::FromArgs, Args, FnAsArg};
+use super::{
+    args::{Arg, FromArgs},
+    Args, FnAsArg,
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecState, KclValue, SourceRange},
@@ -75,7 +78,7 @@ async fn call_map_closure<'a>(
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn.call(exec_state, vec![input]).await?;
+    let output = map_fn.call(exec_state, vec![Arg::synthetic(input)]).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -107,14 +110,14 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
-/// // element of the `array` parameter. The starting value is 0.
-/// fn sum = (array) => { return reduce(array, 0, add) }
+/// // element of the `arr` parameter. The starting value is 0.
+/// fn sum = (arr) => { return reduce(arr, 0, add) }
 ///
 /// /*
 /// The above is basically like this pseudo-code:
-/// fn sum(array):
+/// fn sum(arr):
 ///     let sumSoFar = 0
-///     for i in array:
+///     for i in arr:
 ///         sumSoFar = add(sumSoFar, i)
 ///     return sumSoFar
 /// */
@@ -127,8 +130,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // This example works just like the previous example above, but it uses
 /// // an anonymous `add` function as its parameter, instead of declaring a
 /// // named function outside.
-/// array = [1, 2, 3]
-/// sum = reduce(array, 0, (i, result_so_far) => { return i + result_so_far })
+/// arr = [1, 2, 3]
+/// sum = reduce(arr, 0, (i, result_so_far) => { return i + result_so_far })
 ///
 /// // We use `assertEqual` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
@@ -202,7 +205,7 @@ async fn call_reduce_closure<'a>(
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
-    let reduce_fn_args = vec![elem, start];
+    let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
     let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
 
     // Unpack the returned transform object.

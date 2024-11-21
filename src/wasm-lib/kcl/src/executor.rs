@@ -24,16 +24,17 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
+pub use crate::kcl_value::KclValue;
 use crate::{
     ast::types::{
-        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef, Program, TagDeclarator,
-        TagNode,
+        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef, TagDeclarator, TagNode,
     },
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
     settings::types::UnitLength,
-    std::{FnAsArg, StdLib},
+    std::{args::Arg, StdLib},
+    Program,
 };
 
 /// State for executing a program.
@@ -152,6 +153,7 @@ impl ProgramMemory {
     /// Find all solids in the memory that are on a specific sketch id.
     /// This does not look inside closures.  But as long as we do not allow
     /// mutation of variables in KCL, closure memory should be a subset of this.
+    #[allow(clippy::vec_box)]
     pub fn find_solids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<Box<Solid>> {
         self.environments
             .iter()
@@ -332,189 +334,6 @@ impl IdGenerator {
     }
 }
 
-/// Any KCL value.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum KclValue {
-    Uuid {
-        value: ::uuid::Uuid,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    Bool {
-        value: bool,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    Number {
-        value: f64,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    Int {
-        value: i64,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    String {
-        value: String,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    Array {
-        value: Vec<KclValue>,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    Object {
-        value: HashMap<String, KclValue>,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(crate::ast::types::BoxNode<TagDeclarator>),
-    Plane(Box<Plane>),
-    Face(Box<Face>),
-
-    Sketch {
-        value: Box<Sketch>,
-    },
-    Sketches {
-        value: Vec<Box<Sketch>>,
-    },
-    Solid(Box<Solid>),
-    Solids {
-        value: Vec<Box<Solid>>,
-    },
-    ImportedGeometry(ImportedGeometry),
-    #[ts(skip)]
-    Function {
-        #[serde(skip)]
-        func: Option<MemoryFunction>,
-        expression: crate::ast::types::BoxNode<FunctionExpression>,
-        memory: Box<ProgramMemory>,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    KclNone {
-        value: KclNone,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-}
-
-impl KclValue {
-    pub(crate) fn metadata(&self) -> Vec<Metadata> {
-        match self {
-            KclValue::Uuid { value: _, meta } => meta.clone(),
-            KclValue::Bool { value: _, meta } => meta.clone(),
-            KclValue::Number { value: _, meta } => meta.clone(),
-            KclValue::Int { value: _, meta } => meta.clone(),
-            KclValue::String { value: _, meta } => meta.clone(),
-            KclValue::Array { value: _, meta } => meta.clone(),
-            KclValue::Object { value: _, meta } => meta.clone(),
-            KclValue::TagIdentifier(x) => x.meta.clone(),
-            KclValue::TagDeclarator(x) => vec![x.metadata()],
-            KclValue::Plane(x) => x.meta.clone(),
-            KclValue::Face(x) => x.meta.clone(),
-            KclValue::Sketch { value } => value.meta.clone(),
-            KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
-            KclValue::Solid(x) => x.meta.clone(),
-            KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
-            KclValue::ImportedGeometry(x) => x.meta.clone(),
-            KclValue::Function { meta, .. } => meta.clone(),
-            KclValue::KclNone { meta, .. } => meta.clone(),
-        }
-    }
-
-    pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
-        match self {
-            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
-            KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
-            KclValue::Array { value, .. } => {
-                let solids: Vec<_> = value
-                    .iter()
-                    .enumerate()
-                    .map(|(i, v)| {
-                        v.as_solid().map(|v| v.to_owned()).map(Box::new).ok_or_else(|| {
-                            anyhow::anyhow!(
-                                "expected this array to only contain solids, but element {i} was actually {}",
-                                v.human_friendly_type()
-                            )
-                        })
-                    })
-                    .collect::<Result<_, _>>()?;
-                Ok(SolidSet::Solids(solids))
-            }
-            _ => anyhow::bail!("Not a solid or solids: {:?}", self),
-        }
-    }
-
-    /// Human readable type name used in error messages.  Should not be relied
-    /// on for program logic.
-    pub(crate) fn human_friendly_type(&self) -> &'static str {
-        match self {
-            KclValue::Uuid { .. } => "Unique ID (uuid)",
-            KclValue::TagDeclarator(_) => "TagDeclarator",
-            KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::Solid(_) => "Solid",
-            KclValue::Solids { .. } => "Solids",
-            KclValue::Sketch { .. } => "Sketch",
-            KclValue::Sketches { .. } => "Sketches",
-            KclValue::ImportedGeometry(_) => "ImportedGeometry",
-            KclValue::Function { .. } => "Function",
-            KclValue::Plane(_) => "Plane",
-            KclValue::Face(_) => "Face",
-            KclValue::Bool { .. } => "boolean (true/false value)",
-            KclValue::Number { .. } => "number",
-            KclValue::Int { .. } => "integer",
-            KclValue::String { .. } => "string (text)",
-            KclValue::Array { .. } => "array (list)",
-            KclValue::Object { .. } => "object",
-            KclValue::KclNone { .. } => "None",
-        }
-    }
-
-    pub(crate) fn is_function(&self) -> bool {
-        matches!(self, KclValue::Function { .. })
-    }
-}
-
-impl From<SketchSet> for KclValue {
-    fn from(sg: SketchSet) -> Self {
-        match sg {
-            SketchSet::Sketch(value) => KclValue::Sketch { value },
-            SketchSet::Sketches(value) => KclValue::Sketches { value },
-        }
-    }
-}
-
-impl From<Vec<Box<Sketch>>> for KclValue {
-    fn from(sg: Vec<Box<Sketch>>) -> Self {
-        KclValue::Sketches { value: sg }
-    }
-}
-
-impl From<SolidSet> for KclValue {
-    fn from(eg: SolidSet) -> Self {
-        match eg {
-            SolidSet::Solid(eg) => KclValue::Solid(eg),
-            SolidSet::Solids(egs) => KclValue::Solids { value: egs },
-        }
-    }
-}
-
-impl From<Vec<Box<Solid>>> for KclValue {
-    fn from(eg: Vec<Box<Solid>>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Solid(eg[0].clone())
-        } else {
-            KclValue::Solids { value: eg }
-        }
-    }
-}
-
 /// A geometry.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -537,6 +356,7 @@ impl Geometry {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::vec_box)]
 pub enum Geometries {
     Sketches(Vec<Box<Sketch>>),
     Solids(Vec<Box<Solid>>),
@@ -555,6 +375,7 @@ impl From<Geometry> for Geometries {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SketchSet {
     Sketch(Box<Sketch>),
     Sketches(Vec<Box<Sketch>>),
@@ -635,6 +456,7 @@ impl From<Box<Sketch>> for Vec<Box<Sketch>> {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SolidSet {
     Solid(Box<Solid>),
     Solids(Vec<Box<Solid>>),
@@ -918,295 +740,13 @@ impl std::hash::Hash for TagIdentifier {
 
 pub type MemoryFunction =
     fn(
-        s: Vec<KclValue>,
+        s: Vec<Arg>,
         memory: ProgramMemory,
         expression: crate::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
         ctx: ExecutorContext,
     ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>;
-
-impl From<KclValue> for Vec<SourceRange> {
-    fn from(item: KclValue) -> Self {
-        match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
-            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
-            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Sketch { value } => to_vec_sr(&value.meta),
-            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
-            KclValue::Function { meta, .. } => to_vec_sr(&meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
-            KclValue::Bool { meta, .. } => to_vec_sr(&meta),
-            KclValue::Number { meta, .. } => to_vec_sr(&meta),
-            KclValue::Int { meta, .. } => to_vec_sr(&meta),
-            KclValue::String { meta, .. } => to_vec_sr(&meta),
-            KclValue::Array { meta, .. } => to_vec_sr(&meta),
-            KclValue::Object { meta, .. } => to_vec_sr(&meta),
-            KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
-            KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
-        }
-    }
-}
-
-fn to_vec_sr(meta: &[Metadata]) -> Vec<SourceRange> {
-    meta.iter().map(|m| m.source_range).collect()
-}
-
-impl From<&KclValue> for Vec<SourceRange> {
-    fn from(item: &KclValue) -> Self {
-        match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
-            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
-            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Sketch { value } => to_vec_sr(&value.meta),
-            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
-            KclValue::Function { meta, .. } => to_vec_sr(meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
-            KclValue::Bool { meta, .. } => to_vec_sr(meta),
-            KclValue::Number { meta, .. } => to_vec_sr(meta),
-            KclValue::Int { meta, .. } => to_vec_sr(meta),
-            KclValue::String { meta, .. } => to_vec_sr(meta),
-            KclValue::Uuid { meta, .. } => to_vec_sr(meta),
-            KclValue::Array { meta, .. } => to_vec_sr(meta),
-            KclValue::Object { meta, .. } => to_vec_sr(meta),
-            KclValue::KclNone { meta, .. } => to_vec_sr(meta),
-        }
-    }
-}
-
-impl KclValue {
-    /// Put the number into a KCL value.
-    pub fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number { value: f, meta }
-    }
-
-    /// Put the point into a KCL value.
-    pub fn from_point2d(p: [f64; 2], meta: Vec<Metadata>) -> Self {
-        Self::Array {
-            value: vec![
-                Self::Number {
-                    value: p[0],
-                    meta: meta.clone(),
-                },
-                Self::Number {
-                    value: p[1],
-                    meta: meta.clone(),
-                },
-            ],
-            meta,
-        }
-    }
-
-    pub(crate) fn as_usize(&self) -> Option<usize> {
-        match self {
-            KclValue::Int { value, .. } => Some(*value as usize),
-            _ => None,
-        }
-    }
-
-    pub fn as_int(&self) -> Option<i64> {
-        if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_object(&self) -> Option<&HashMap<String, KclValue>> {
-        if let KclValue::Object { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_str(&self) -> Option<&str> {
-        if let KclValue::String { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_array(&self) -> Option<&[KclValue]> {
-        if let KclValue::Array { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_point2d(&self) -> Option<[f64; 2]> {
-        let arr = self.as_array()?;
-        if arr.len() != 2 {
-            return None;
-        }
-        let x = arr[0].as_f64()?;
-        let y = arr[1].as_f64()?;
-        Some([x, y])
-    }
-
-    pub fn as_uuid(&self) -> Option<uuid::Uuid> {
-        if let KclValue::Uuid { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_plane(&self) -> Option<&Plane> {
-        if let KclValue::Plane(value) = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_solid(&self) -> Option<&Solid> {
-        if let KclValue::Solid(value) = &self {
-            Some(value)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_f64(&self) -> Option<f64> {
-        if let KclValue::Number { value, meta: _ } = &self {
-            Some(*value)
-        } else if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value as f64)
-        } else {
-            None
-        }
-    }
-
-    pub fn as_bool(&self) -> Option<bool> {
-        if let KclValue::Bool { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
-        }
-    }
-
-    /// If this value fits in a u32, return it.
-    pub fn get_u32(&self, source_ranges: Vec<SourceRange>) -> Result<u32, KclError> {
-        let u = self.as_int().and_then(|n| u64::try_from(n).ok()).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: "Expected an integer >= 0".to_owned(),
-                source_ranges: source_ranges.clone(),
-            })
-        })?;
-        u32::try_from(u).map_err(|_| {
-            KclError::Semantic(KclErrorDetails {
-                message: "Number was too big".to_owned(),
-                source_ranges,
-            })
-        })
-    }
-
-    /// If this value is of type function, return it.
-    pub fn get_function(&self) -> Option<FnAsArg<'_>> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory,
-            meta: _,
-        } = &self
-        else {
-            return None;
-        };
-        Some(FnAsArg {
-            func: func.as_ref(),
-            expr: expression.to_owned(),
-            memory: memory.to_owned(),
-        })
-    }
-
-    /// Get a tag identifier from a memory item.
-    pub fn get_tag_identifier(&self) -> Result<TagIdentifier, KclError> {
-        match self {
-            KclValue::TagIdentifier(t) => Ok(*t.clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag identifier: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
-        }
-    }
-
-    /// Get a tag declarator from a memory item.
-    pub fn get_tag_declarator(&self) -> Result<TagNode, KclError> {
-        match self {
-            KclValue::TagDeclarator(t) => Ok((**t).clone()),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag declarator: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
-        }
-    }
-
-    /// Get an optional tag from a memory item.
-    pub fn get_tag_declarator_opt(&self) -> Result<Option<TagNode>, KclError> {
-        match self {
-            KclValue::TagDeclarator(t) => Ok(Some((**t).clone())),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag declarator: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
-        }
-    }
-
-    /// If this KCL value is a bool, retrieve it.
-    pub fn get_bool(&self) -> Result<bool, KclError> {
-        let Self::Bool { value: b, .. } = self else {
-            return Err(KclError::Type(KclErrorDetails {
-                source_ranges: self.into(),
-                message: format!("Expected bool, found {}", self.human_friendly_type()),
-            }));
-        };
-        Ok(*b)
-    }
-
-    /// If this memory item is a function, call it with the given arguments, return its val as Ok.
-    /// If it's not a function, return Err.
-    pub async fn call_fn(
-        &self,
-        args: Vec<KclValue>,
-        exec_state: &mut ExecState,
-        ctx: ExecutorContext,
-    ) -> Result<Option<KclValue>, KclError> {
-        let KclValue::Function {
-            func,
-            expression,
-            memory: closure_memory,
-            meta,
-        } = &self
-        else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "not a in memory function".to_string(),
-                source_ranges: vec![],
-            }));
-        };
-        if let Some(func) = func {
-            func(
-                args,
-                closure_memory.as_ref().clone(),
-                expression.clone(),
-                meta.clone(),
-                exec_state,
-                ctx,
-            )
-            .await
-        } else {
-            call_user_defined_function(args, closure_memory.as_ref(), expression.as_ref(), exec_state, &ctx).await
-        }
-    }
-}
 
 /// Engine information for a tag.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1490,6 +1030,11 @@ impl SourceRange {
     /// Create a new source range.
     pub fn new(start: usize, end: usize, module_id: ModuleId) -> Self {
         Self([start, end, module_id.as_usize()])
+    }
+
+    /// A source range that doesn't correspond to any source code.
+    pub fn synthetic() -> Self {
+        Self::default()
     }
 
     /// Get the start of the range.
@@ -2189,6 +1734,70 @@ impl ExecutorContext {
         })
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_mock() -> Self {
+        ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
+            )),
+            fs: Arc::new(FileManager::new()),
+            stdlib: Arc::new(StdLib::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+        }
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub async fn new(
+        engine_manager: crate::engine::conn_wasm::EngineCommandManager,
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        units: UnitLength,
+    ) -> Result<Self, String> {
+        Ok(ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_wasm::EngineConnection::new(engine_manager)
+                    .await
+                    .map_err(|e| format!("{:?}", e))?,
+            )),
+            fs: Arc::new(FileManager::new(fs_manager)),
+            stdlib: Arc::new(StdLib::new()),
+            settings: ExecutorSettings {
+                units,
+                ..Default::default()
+            },
+            context_type: ContextType::Live,
+        })
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub async fn new_mock(fs_manager: crate::fs::wasm::FileSystemManager, units: UnitLength) -> Result<Self, String> {
+        Ok(ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .map_err(|e| format!("{:?}", e))?,
+            )),
+            fs: Arc::new(FileManager::new(fs_manager)),
+            stdlib: Arc::new(StdLib::new()),
+            settings: ExecutorSettings {
+                units,
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+        })
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
+        ExecutorContext {
+            engine,
+            fs: Arc::new(FileManager::new()),
+            stdlib: Arc::new(StdLib::new()),
+            settings: Default::default(),
+            context_type: ContextType::MockCustomForwarded,
+        }
+    }
+
     /// Create a new default executor context.
     /// With a kittycad client.
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
@@ -2212,9 +1821,17 @@ impl ExecutorContext {
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_with_default_client(settings: ExecutorSettings) -> Result<Self> {
+    pub async fn new_with_default_client(units: UnitLength) -> Result<Self> {
         // Create the client.
-        let ctx = Self::new_with_client(settings, None, None).await?;
+        let ctx = Self::new_with_client(
+            ExecutorSettings {
+                units,
+                ..Default::default()
+            },
+            None,
+            None,
+        )
+        .await?;
         Ok(ctx)
     }
 
@@ -2242,48 +1859,31 @@ impl ExecutorContext {
 
     pub async fn reset_scene(
         &self,
-        id_generator: &mut IdGenerator,
+        exec_state: &mut ExecState,
         source_range: crate::executor::SourceRange,
     ) -> Result<()> {
-        self.engine.clear_scene(id_generator, source_range).await?;
+        self.engine
+            .clear_scene(&mut exec_state.id_generator, source_range)
+            .await?;
         Ok(())
     }
 
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
     /// Kurt uses this for partial execution.
-    pub async fn run(
-        &self,
-        program: NodeRef<'_, crate::ast::types::Program>,
-        memory: Option<ProgramMemory>,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
-    ) -> Result<ExecState, KclError> {
-        self.run_with_session_data(program, memory, id_generator, project_directory)
-            .await
-            .map(|x| x.0)
+    pub async fn run(&self, program: &Program, exec_state: &mut ExecState) -> Result<(), KclError> {
+        self.run_with_session_data(program, exec_state).await?;
+        Ok(())
     }
+
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
     /// Kurt uses this for partial execution.
     pub async fn run_with_session_data(
         &self,
-        program: NodeRef<'_, crate::ast::types::Program>,
-        memory: Option<ProgramMemory>,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
-    ) -> Result<(ExecState, Option<ModelingSessionData>), KclError> {
-        let memory = if let Some(memory) = memory {
-            memory.clone()
-        } else {
-            Default::default()
-        };
-        let mut exec_state = ExecState {
-            memory,
-            id_generator,
-            project_directory,
-            ..Default::default()
-        };
+        program: &Program,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<ModelingSessionData>, KclError> {
         // TODO: Use the top-level file's path.
         exec_state.add_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.
@@ -2304,10 +1904,10 @@ impl ExecutorContext {
             )
             .await?;
 
-        self.inner_execute(program, &mut exec_state, crate::executor::BodyType::Root)
+        self.inner_execute(&program.ast, exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
-        Ok((exec_state, session_data))
+        Ok(session_data)
     }
 
     /// Execute an AST's program.
@@ -2354,7 +1954,7 @@ impl ExecutorContext {
                     }
                     let module_id = exec_state.add_module(resolved_path.clone());
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-                    let program = crate::parser::parse(&source, module_id)?;
+                    let program = crate::parser::parse_str(&source, module_id)?;
                     let (module_memory, module_exports) = {
                         exec_state.import_stack.push(resolved_path.clone());
                         let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
@@ -2558,23 +2158,15 @@ impl ExecutorContext {
     /// Execute the program, then get a PNG screenshot.
     pub async fn execute_and_prepare_snapshot(
         &self,
-        program: NodeRef<'_, Program>,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
+        program: &Program,
+        exec_state: &mut ExecState,
     ) -> Result<TakeSnapshot> {
-        self.execute_and_prepare(program, id_generator, project_directory)
-            .await
-            .map(|(_state, snap)| snap)
+        self.execute_and_prepare(program, exec_state).await
     }
 
     /// Execute the program, return the interpreter and outputs.
-    pub async fn execute_and_prepare(
-        &self,
-        program: NodeRef<'_, Program>,
-        id_generator: IdGenerator,
-        project_directory: Option<String>,
-    ) -> Result<(ExecState, TakeSnapshot)> {
-        let state = self.run(program, None, id_generator, project_directory).await?;
+    pub async fn execute_and_prepare(&self, program: &Program, exec_state: &mut ExecState) -> Result<TakeSnapshot> {
+        self.run(program, exec_state).await?;
 
         // Zoom to fit.
         self.engine
@@ -2607,7 +2199,7 @@ impl ExecutorContext {
         else {
             anyhow::bail!("Unexpected response from engine: {:?}", resp);
         };
-        Ok((state, contents))
+        Ok(contents)
     }
 }
 
@@ -2616,7 +2208,7 @@ impl ExecutorContext {
 /// Returns Err if too few/too many arguments were given for the function.
 fn assign_args_to_params(
     function_expression: NodeRef<'_, FunctionExpression>,
-    args: Vec<KclValue>,
+    args: Vec<Arg>,
     mut fn_memory: ProgramMemory,
 ) -> Result<ProgramMemory, KclError> {
     let num_args = function_expression.number_of_args();
@@ -2642,7 +2234,7 @@ fn assign_args_to_params(
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            fn_memory.add(&param.identifier.name, arg.clone(), (&param.identifier).into())?;
+            fn_memory.add(&param.identifier.name, arg.value.clone(), (&param.identifier).into())?;
         } else {
             // Argument was not provided.
             if param.optional {
@@ -2670,7 +2262,7 @@ fn assign_args_to_params(
 }
 
 pub(crate) async fn call_user_defined_function(
-    args: Vec<KclValue>,
+    args: Vec<Arg>,
     memory: &ProgramMemory,
     function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
@@ -2714,7 +2306,7 @@ mod tests {
     use crate::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
-        let program = crate::parser::top_level_parse(code)?;
+        let program = Program::parse(code)?;
 
         let ctx = ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
@@ -2723,7 +2315,8 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
+        let mut exec_state = ExecState::default();
+        ctx.run(&program, &mut exec_state).await?;
 
         Ok(exec_state.memory)
     }
@@ -3052,14 +2645,14 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
-        let ast = r#"fn box = (array) => {
+        let ast = r#"fn box = (arr) => {
  let myBox =startSketchOn('XY')
-    |> startProfileAt(array[0], %)
-    |> line([0, array[1]], %)
-    |> line([array[2], 0], %)
-    |> line([0, -array[1]], %)
+    |> startProfileAt(arr[0], %)
+    |> line([0, arr[1]], %)
+    |> line([arr[2], 0], %)
+    |> line([0, -arr[1]], %)
     |> close(%)
-    |> extrude(array[3], %)
+    |> extrude(arr[3], %)
 
   return myBox
 }
@@ -3568,6 +3161,7 @@ let w = f() + f()
                 return_type: None,
                 digest: None,
             });
+            let args = args.into_iter().map(Arg::synthetic).collect();
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(
                 actual, expected,

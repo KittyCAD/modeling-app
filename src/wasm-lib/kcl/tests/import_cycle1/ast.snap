@@ -1,0 +1,119 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing import_cycle1.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 35,
+        "items": [
+          {
+            "alias": null,
+            "end": 10,
+            "name": {
+              "end": 10,
+              "name": "two",
+              "start": 7,
+              "type": "Identifier"
+            },
+            "start": 7,
+            "type": "ImportItem"
+          }
+        ],
+        "path": "import_cycle2.kcl",
+        "raw_path": "\"import_cycle2.kcl\"",
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "declarations": [
+          {
+            "end": 81,
+            "id": {
+              "end": 50,
+              "name": "one",
+              "start": 47,
+              "type": "Identifier"
+            },
+            "init": {
+              "body": {
+                "body": [
+                  {
+                    "argument": {
+                      "end": 79,
+                      "left": {
+                        "arguments": [],
+                        "callee": {
+                          "end": 73,
+                          "name": "two",
+                          "start": 70,
+                          "type": "Identifier"
+                        },
+                        "end": 75,
+                        "optional": false,
+                        "start": 70,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "end": 79,
+                        "raw": "1",
+                        "start": 78,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 1
+                      },
+                      "start": 70,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "end": 79,
+                    "start": 63,
+                    "type": "ReturnStatement",
+                    "type": "ReturnStatement"
+                  }
+                ],
+                "end": 81,
+                "start": 59
+              },
+              "end": 81,
+              "params": [],
+              "start": 53,
+              "type": "FunctionExpression",
+              "type": "FunctionExpression"
+            },
+            "start": 47,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 81,
+        "kind": "fn",
+        "start": 37,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      }
+    ],
+    "end": 82,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 37,
+            "start": 35,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

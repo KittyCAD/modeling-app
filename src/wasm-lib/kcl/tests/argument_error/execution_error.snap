@@ -1,0 +1,5 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing argument_error.kcl
+---
+type: KclErrorDetails { source_ranges: [SourceRange([34, 35, 0])], message: "Expected an array but found Function" }
