@@ -132,6 +132,8 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 It will be used to document changelog discussions and release testing.
 
+https://github.com/KittyCAD/modeling-app/issues/new
+
 #### 2. Push a new tag
 
 Create a new tag and push it to the repo (eg. `v0.28.0` for `$VERSION`)

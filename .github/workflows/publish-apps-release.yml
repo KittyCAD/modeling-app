@@ -81,8 +81,19 @@ jobs:
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-download-json
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
       - name: List artifacts
         run: "ls -R out"
+
+      - name: Override release notes
+        env:
+          NOTES: ${{ github.event.release.body }}
+        run: yarn files:set-notes
 
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v2.1.7'
