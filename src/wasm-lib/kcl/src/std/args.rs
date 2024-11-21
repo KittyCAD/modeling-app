@@ -17,14 +17,39 @@ use crate::{
 use super::shapes::PolygonType;
 
 #[derive(Debug, Clone)]
+pub struct Arg {
+    /// The evaluated argument.
+    pub value: KclValue,
+    /// The source range of the unevaluated argument.
+    pub source_range: SourceRange,
+}
+
+impl Arg {
+    pub fn new(value: KclValue, source_range: SourceRange) -> Self {
+        Self { value, source_range }
+    }
+
+    pub fn synthetic(value: KclValue) -> Self {
+        Self {
+            value,
+            source_range: SourceRange::synthetic(),
+        }
+    }
+
+    pub fn source_ranges(&self) -> Vec<SourceRange> {
+        vec![self.source_range]
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Args {
-    pub args: Vec<KclValue>,
+    pub args: Vec<Arg>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
 }
 
 impl Args {
-    pub fn new(args: Vec<KclValue>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(args: Vec<Arg>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
         Self {
             args,
             source_range,
@@ -244,10 +269,10 @@ impl Args {
             .args
             .iter()
             .map(|arg| {
-                let Some(num) = f64::from_kcl_val(arg) else {
+                let Some(num) = f64::from_kcl_val(&arg.value) else {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        source_ranges: arg.metadata().iter().map(|x| x.source_range).collect(),
-                        message: format!("Expected a number but found {}", arg.human_friendly_type()),
+                        source_ranges: arg.source_ranges(),
+                        message: format!("Expected a number but found {}", arg.value.human_friendly_type()),
                     }));
                 };
                 Ok(num)
@@ -509,10 +534,10 @@ impl<'a> FromArgs<'a> for Vec<KclValue> {
                 source_ranges: vec![args.source_range],
             }));
         };
-        let KclValue::Array { value: array, meta: _ } = arg else {
-            let message = format!("Expected an array but found {}", arg.human_friendly_type());
+        let KclValue::Array { value: array, meta: _ } = &arg.value else {
+            let message = format!("Expected an array but found {}", arg.value.human_friendly_type());
             return Err(KclError::Type(KclErrorDetails {
-                source_ranges: arg.metadata().into_iter().map(|m| m.source_range).collect(),
+                source_ranges: arg.source_ranges(),
                 message,
             }));
         };
@@ -531,12 +556,12 @@ where
                 source_ranges: vec![args.source_range],
             }));
         };
-        let Some(val) = T::from_kcl_val(arg) else {
+        let Some(val) = T::from_kcl_val(&arg.value) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
                     type_name::<T>(),
-                    arg.human_friendly_type()
+                    arg.value.human_friendly_type()
                 ),
                 source_ranges: vec![args.source_range],
             }));
@@ -551,17 +576,17 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
-        if crate::ast::types::KclNone::from_kcl_val(arg).is_some() {
+        if crate::ast::types::KclNone::from_kcl_val(&arg.value).is_some() {
             return Ok(None);
         }
-        let Some(val) = T::from_kcl_val(arg) else {
+        let Some(val) = T::from_kcl_val(&arg.value) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
                     type_name::<T>(),
-                    arg.human_friendly_type()
+                    arg.value.human_friendly_type()
                 ),
-                source_ranges: vec![args.source_range],
+                source_ranges: arg.source_ranges(),
             }));
         };
         Ok(Some(val))

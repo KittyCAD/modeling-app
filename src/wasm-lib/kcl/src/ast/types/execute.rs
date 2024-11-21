@@ -11,7 +11,7 @@ use crate::{
         BodyType, ExecState, ExecutorContext, KclValue, Metadata, SourceRange, StatementKind, TagEngineInfo,
         TagIdentifier,
     },
-    std::FunctionKind,
+    std::{args::Arg, FunctionKind},
 };
 use async_recursion::async_recursion;
 
@@ -361,16 +361,20 @@ impl Node<CallExpression> {
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee.name;
 
-        let mut fn_args: Vec<KclValue> = Vec::with_capacity(self.arguments.len());
+        let mut fn_args: Vec<Arg> = Vec::with_capacity(self.arguments.len());
 
         for arg in &self.arguments {
             let metadata = Metadata {
                 source_range: SourceRange::from(arg),
             };
-            let result = ctx
+            let value = ctx
                 .execute_expr(arg, exec_state, &metadata, StatementKind::Expression)
                 .await?;
-            fn_args.push(result);
+            let arg = Arg {
+                value,
+                source_range: SourceRange::from(arg),
+            };
+            fn_args.push(arg);
         }
 
         match ctx.stdlib.get_either(&self.callee.name) {
@@ -470,14 +474,18 @@ impl Node<CallExpression> {
                 for (index, param) in required_params.iter().enumerate() {
                     fn_memory.add(
                         &param.identifier.name,
-                        fn_args.get(index).unwrap().clone(),
+                        fn_args.get(index).unwrap().value.clone(),
                         param.identifier.clone().into(),
                     )?;
                 }
                 // Add the optional arguments to the memory.
                 for (index, param) in optional_params.iter().enumerate() {
                     if let Some(arg) = fn_args.get(index + required_params.len()) {
-                        fn_memory.add(&param.identifier.name, arg.clone(), param.identifier.clone().into())?;
+                        fn_memory.add(
+                            &param.identifier.name,
+                            arg.value.clone(),
+                            param.identifier.clone().into(),
+                        )?;
                     } else {
                         fn_memory.add(
                             &param.identifier.name,

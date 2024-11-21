@@ -413,6 +413,36 @@ mod add_lots {
         super::execute(TEST_NAME, false).await
     }
 }
+mod argument_error {
+    //! The argument error points to the problematic argument in the call site,
+    //! not the function definition that the variable points to.
+
+    const TEST_NAME: &str = "argument_error";
+
+    /// Test tokenizing KCL.
+    #[test]
+    fn tokenize() {
+        super::tokenize(TEST_NAME)
+    }
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod array_elem_push {
     const TEST_NAME: &str = "array_elem_push";
 

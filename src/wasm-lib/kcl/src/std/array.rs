@@ -1,6 +1,9 @@
 use derive_docs::stdlib;
 
-use super::{args::FromArgs, Args, FnAsArg};
+use super::{
+    args::{Arg, FromArgs},
+    Args, FnAsArg,
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecState, KclValue, SourceRange},
@@ -75,7 +78,7 @@ async fn call_map_closure<'a>(
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn.call(exec_state, vec![input]).await?;
+    let output = map_fn.call(exec_state, vec![Arg::synthetic(input)]).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -202,7 +205,7 @@ async fn call_reduce_closure<'a>(
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
-    let reduce_fn_args = vec![elem, start];
+    let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
     let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
 
     // Unpack the returned transform object.
