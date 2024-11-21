@@ -1,9 +1,10 @@
 name: build-apps
 
 on:
+  pull_request:
   push:
     branches:
-      - pierremtb/issue4522-Make-the-release-process-non-blocking
+      - main
     tags:
       - 'v*-nightly'
       - 'v*-test'

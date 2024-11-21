@@ -1,0 +1,23 @@
+name: create-nightly-tag
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  # Daily at 04:00 AM UTC
+  # Will checkout the last commit from the default branch (main as of 2023-10-04)
+
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create tag
+        run: |
+          VERSION=v$(date +'%-y.%-m.%-d')-nightly
+          echo $VERSION
+          git tag $VERSION
+          git push origin --tags
