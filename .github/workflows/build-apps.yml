@@ -343,6 +343,11 @@ jobs:
             }' > out/last_download.json
             cat out/last_download.json
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: out-download-json
+          path: out/last_download.json
+
       - name: List artifacts
         run: "ls -R out"
 
@@ -390,6 +395,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+    needs: [prepare-files, build-apps]
     steps:
 
       - uses: actions/download-artifact@v4
