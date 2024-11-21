@@ -9,7 +9,7 @@ use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
     executor::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
-    std::FnAsArg,
+    std::{args::Arg, FnAsArg},
     ExecState, ExecutorContext, KclError, SourceRange,
 };
 
@@ -452,7 +452,7 @@ impl KclValue {
     /// If it's not a function, return Err.
     pub async fn call_fn(
         &self,
-        args: Vec<KclValue>,
+        args: Vec<Arg>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
     ) -> Result<Option<KclValue>, KclError> {

@@ -33,7 +33,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
     settings::types::UnitLength,
-    std::StdLib,
+    std::{args::Arg, StdLib},
     Program,
 };
 
@@ -740,7 +740,7 @@ impl std::hash::Hash for TagIdentifier {
 
 pub type MemoryFunction =
     fn(
-        s: Vec<KclValue>,
+        s: Vec<Arg>,
         memory: ProgramMemory,
         expression: crate::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
@@ -1030,6 +1030,11 @@ impl SourceRange {
     /// Create a new source range.
     pub fn new(start: usize, end: usize, module_id: ModuleId) -> Self {
         Self([start, end, module_id.as_usize()])
+    }
+
+    /// A source range that doesn't correspond to any source code.
+    pub fn synthetic() -> Self {
+        Self::default()
     }
 
     /// Get the start of the range.
@@ -2203,7 +2208,7 @@ impl ExecutorContext {
 /// Returns Err if too few/too many arguments were given for the function.
 fn assign_args_to_params(
     function_expression: NodeRef<'_, FunctionExpression>,
-    args: Vec<KclValue>,
+    args: Vec<Arg>,
     mut fn_memory: ProgramMemory,
 ) -> Result<ProgramMemory, KclError> {
     let num_args = function_expression.number_of_args();
@@ -2229,7 +2234,7 @@ fn assign_args_to_params(
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            fn_memory.add(&param.identifier.name, arg.clone(), (&param.identifier).into())?;
+            fn_memory.add(&param.identifier.name, arg.value.clone(), (&param.identifier).into())?;
         } else {
             // Argument was not provided.
             if param.optional {
@@ -2257,7 +2262,7 @@ fn assign_args_to_params(
 }
 
 pub(crate) async fn call_user_defined_function(
-    args: Vec<KclValue>,
+    args: Vec<Arg>,
     memory: &ProgramMemory,
     function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
@@ -3156,6 +3161,7 @@ let w = f() + f()
                 return_type: None,
                 digest: None,
             });
+            let args = args.into_iter().map(Arg::synthetic).collect();
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(
                 actual, expected,
