@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing parametric_with_tan_arc.kcl
 snapshot_kind: text
 ---
@@ -9,8 +9,8 @@ snapshot_kind: text
     {
       "bindings": {
         "FOS": {
-          "type": "Int",
-          "value": 2,
+          "type": "Number",
+          "value": 2.0,
           "__meta": [
             {
               "sourceRange": [
@@ -379,8 +379,8 @@ snapshot_kind: text
           ]
         },
         "distance": {
-          "type": "Int",
-          "value": 12,
+          "type": "Number",
+          "value": 12.0,
           "__meta": [
             {
               "sourceRange": [
@@ -412,8 +412,8 @@ snapshot_kind: text
           ]
         },
         "p": {
-          "type": "Int",
-          "value": 150,
+          "type": "Number",
+          "value": 150.0,
           "__meta": [
             {
               "sourceRange": [
@@ -425,8 +425,8 @@ snapshot_kind: text
           ]
         },
         "shelfMountL": {
-          "type": "Int",
-          "value": 9,
+          "type": "Number",
+          "value": 9.0,
           "__meta": [
             {
               "sourceRange": [
@@ -438,8 +438,8 @@ snapshot_kind: text
           ]
         },
         "sigmaAllow": {
-          "type": "Int",
-          "value": 15000,
+          "type": "Number",
+          "value": 15000.0,
           "__meta": [
             {
               "sourceRange": [
@@ -464,8 +464,8 @@ snapshot_kind: text
           ]
         },
         "wallMountL": {
-          "type": "Int",
-          "value": 8,
+          "type": "Number",
+          "value": 8.0,
           "__meta": [
             {
               "sourceRange": [
@@ -477,8 +477,8 @@ snapshot_kind: text
           ]
         },
         "width": {
-          "type": "Int",
-          "value": 11,
+          "type": "Number",
+          "value": 11.0,
           "__meta": [
             {
               "sourceRange": [

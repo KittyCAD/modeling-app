@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing tangential_arc.kcl
 snapshot_kind: text
 ---
@@ -29,7 +29,7 @@ snapshot_kind: text
                           "start": 27,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 31,
@@ -37,7 +37,7 @@ snapshot_kind: text
                           "start": 30,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 32,
@@ -68,7 +68,7 @@ snapshot_kind: text
                           "start": 45,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 50,
@@ -76,7 +76,7 @@ snapshot_kind: text
                           "start": 48,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10
+                          "value": 10.0
                         }
                       ],
                       "end": 51,
@@ -124,7 +124,7 @@ snapshot_kind: text
                             "start": 86,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 5
+                            "value": 5.0
                           }
                         },
                         {
@@ -143,7 +143,7 @@ snapshot_kind: text
                             "start": 98,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 90
+                            "value": 90.0
                           }
                         }
                       ],
@@ -180,7 +180,7 @@ snapshot_kind: text
                           "start": 118,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5
+                          "value": 5.0
                         },
                         {
                           "argument": {
@@ -189,7 +189,7 @@ snapshot_kind: text
                             "start": 122,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 15
+                            "value": 15.0
                           },
                           "end": 124,
                           "operator": "-",
@@ -230,7 +230,7 @@ snapshot_kind: text
                       "start": 143,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 10
+                      "value": 10.0
                     },
                     {
                       "end": 148,

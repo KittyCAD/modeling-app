@@ -273,16 +273,17 @@ impl KclValue {
 
     pub(crate) fn as_usize(&self) -> Option<usize> {
         match self {
-            KclValue::Int { value, .. } => Some(*value as usize),
+            KclValue::Int { value, .. } if *value > 0 => Some(*value as usize),
+            KclValue::Number { value, .. } => crate::try_f64_to_usize(*value),
             _ => None,
         }
     }
 
     pub fn as_int(&self) -> Option<i64> {
-        if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Int { value, .. } => Some(*value),
+            KclValue::Number { value, .. } => crate::try_f64_to_i64(*value),
+            _ => None,
         }
     }
 

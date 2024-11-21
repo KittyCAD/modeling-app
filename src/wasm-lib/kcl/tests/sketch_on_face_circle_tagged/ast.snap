@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing sketch_on_face_circle_tagged.kcl
 snapshot_kind: text
 ---
@@ -93,7 +93,7 @@ snapshot_kind: text
                                       "start": 98,
                                       "type": "Literal",
                                       "type": "Literal",
-                                      "value": 0
+                                      "value": 0.0
                                     },
                                     {
                                       "end": 106,
@@ -144,7 +144,7 @@ snapshot_kind: text
                                       "start": 132,
                                       "type": "Literal",
                                       "type": "Literal",
-                                      "value": 0
+                                      "value": 0.0
                                     }
                                   ],
                                   "end": 134,
@@ -181,7 +181,7 @@ snapshot_kind: text
                                       "start": 152,
                                       "type": "Literal",
                                       "type": "Literal",
-                                      "value": 0
+                                      "value": 0.0
                                     },
                                     {
                                       "argument": {
@@ -329,7 +329,7 @@ snapshot_kind: text
                           "start": 198,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 202,
@@ -337,7 +337,7 @@ snapshot_kind: text
                           "start": 201,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 203,
@@ -351,7 +351,7 @@ snapshot_kind: text
                       "start": 205,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 20
+                      "value": 20.0
                     }
                   ],
                   "callee": {
@@ -395,7 +395,7 @@ snapshot_kind: text
                       "start": 236,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 20
+                      "value": 20.0
                     },
                     {
                       "end": 241,
@@ -497,7 +497,7 @@ snapshot_kind: text
                                 "start": 308,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 0
+                                "value": 0.0
                               },
                               {
                                 "end": 312,
@@ -505,7 +505,7 @@ snapshot_kind: text
                                 "start": 311,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 0
+                                "value": 0.0
                               }
                             ],
                             "end": 313,
@@ -530,7 +530,7 @@ snapshot_kind: text
                             "start": 324,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 5
+                            "value": 5.0
                           }
                         }
                       ],
@@ -572,7 +572,7 @@ snapshot_kind: text
                       "start": 356,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     {
                       "end": 360,

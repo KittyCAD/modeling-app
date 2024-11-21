@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing basic_fillet_cube_start.kcl
 snapshot_kind: text
 ---
@@ -52,7 +52,7 @@ snapshot_kind: text
                           "start": 51,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 55,
@@ -60,7 +60,7 @@ snapshot_kind: text
                           "start": 54,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 56,
@@ -97,7 +97,7 @@ snapshot_kind: text
                           "start": 72,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 77,
@@ -105,7 +105,7 @@ snapshot_kind: text
                           "start": 75,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10
+                          "value": 10.0
                         }
                       ],
                       "end": 78,
@@ -149,7 +149,7 @@ snapshot_kind: text
                           "start": 102,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10
+                          "value": 10.0
                         },
                         {
                           "end": 107,
@@ -157,7 +157,7 @@ snapshot_kind: text
                           "start": 106,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 108,
@@ -194,7 +194,7 @@ snapshot_kind: text
                           "start": 124,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -203,7 +203,7 @@ snapshot_kind: text
                             "start": 128,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 10
+                            "value": 10.0
                           },
                           "end": 130,
                           "operator": "-",
@@ -272,7 +272,7 @@ snapshot_kind: text
                       "start": 172,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 10
+                      "value": 10.0
                     },
                     {
                       "end": 177,
@@ -314,7 +314,7 @@ snapshot_kind: text
                             "start": 202,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 2
+                            "value": 2.0
                           }
                         },
                         {

@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing poop_chute.kcl
 snapshot_kind: text
 ---
@@ -55,8 +55,8 @@ snapshot_kind: text
           "__meta": []
         },
         "back_length": {
-          "type": "Int",
-          "value": 7,
+          "type": "Number",
+          "value": 7.0,
           "__meta": [
             {
               "sourceRange": [
@@ -68,8 +68,8 @@ snapshot_kind: text
           ]
         },
         "back_walls_width": {
-          "type": "Int",
-          "value": 2,
+          "type": "Number",
+          "value": 2.0,
           "__meta": [
             {
               "sourceRange": [
@@ -81,8 +81,8 @@ snapshot_kind: text
           ]
         },
         "exit_height": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -107,8 +107,8 @@ snapshot_kind: text
           ]
         },
         "front_length": {
-          "type": "Int",
-          "value": 6,
+          "type": "Number",
+          "value": 6.0,
           "__meta": [
             {
               "sourceRange": [

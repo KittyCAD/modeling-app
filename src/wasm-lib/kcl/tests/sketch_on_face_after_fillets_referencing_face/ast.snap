@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
 snapshot_kind: text
 ---
@@ -23,7 +23,7 @@ snapshot_kind: text
               "start": 368,
               "type": "Literal",
               "type": "Literal",
-              "value": 8
+              "value": 8.0
             },
             "start": 354,
             "type": "VariableDeclarator"
@@ -51,7 +51,7 @@ snapshot_kind: text
               "start": 445,
               "type": "Literal",
               "type": "Literal",
-              "value": 6
+              "value": 6.0
             },
             "start": 432,
             "type": "VariableDeclarator"
@@ -79,7 +79,7 @@ snapshot_kind: text
               "start": 573,
               "type": "Literal",
               "type": "Literal",
-              "value": 35000
+              "value": 35000.0
             },
             "start": 560,
             "type": "VariableDeclarator"
@@ -107,7 +107,7 @@ snapshot_kind: text
               "start": 594,
               "type": "Literal",
               "type": "Literal",
-              "value": 6
+              "value": 6.0
             },
             "start": 586,
             "type": "VariableDeclarator"
@@ -135,7 +135,7 @@ snapshot_kind: text
               "start": 608,
               "type": "Literal",
               "type": "Literal",
-              "value": 300
+              "value": 300.0
             },
             "start": 604,
             "type": "VariableDeclarator"
@@ -163,7 +163,7 @@ snapshot_kind: text
               "start": 640,
               "type": "Literal",
               "type": "Literal",
-              "value": 12
+              "value": 12.0
             },
             "start": 636,
             "type": "VariableDeclarator"
@@ -215,7 +215,7 @@ snapshot_kind: text
                 "start": 665,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "start": 657,
               "type": "BinaryExpression",
@@ -247,7 +247,7 @@ snapshot_kind: text
               "start": 719,
               "type": "Literal",
               "type": "Literal",
-              "value": 2
+              "value": 2.0
             },
             "start": 713,
             "type": "VariableDeclarator"
@@ -283,7 +283,7 @@ snapshot_kind: text
                         "start": 855,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 6
+                        "value": 6.0
                       },
                       "operator": "*",
                       "right": {
@@ -431,7 +431,7 @@ snapshot_kind: text
                           "start": 1033,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 1037,
@@ -439,7 +439,7 @@ snapshot_kind: text
                           "start": 1036,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 1038,
@@ -476,7 +476,7 @@ snapshot_kind: text
                           "start": 1054,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 1067,
@@ -541,7 +541,7 @@ snapshot_kind: text
                           "start": 1110,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 1112,
@@ -585,7 +585,7 @@ snapshot_kind: text
                           "start": 1136,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -657,7 +657,7 @@ snapshot_kind: text
                           "start": 1191,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 1193,
@@ -701,7 +701,7 @@ snapshot_kind: text
                           "start": 1221,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 1247,
@@ -1360,7 +1360,7 @@ snapshot_kind: text
                       "start": 1740,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 10
+                      "value": 10.0
                     },
                     {
                       "end": 1745,

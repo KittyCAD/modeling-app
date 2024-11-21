@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing tan_arc_x_line.kcl
 snapshot_kind: text
 ---
@@ -29,8 +29,8 @@ snapshot_kind: text
           "__meta": []
         },
         "angleOffset": {
-          "type": "Int",
-          "value": 135,
+          "type": "Number",
+          "value": 135.0,
           "__meta": [
             {
               "sourceRange": [
@@ -42,8 +42,8 @@ snapshot_kind: text
           ]
         },
         "angleStart": {
-          "type": "Int",
-          "value": 110,
+          "type": "Number",
+          "value": 110.0,
           "__meta": [
             {
               "sourceRange": [
@@ -205,8 +205,8 @@ snapshot_kind: text
           ]
         },
         "r": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -218,8 +218,8 @@ snapshot_kind: text
           ]
         },
         "startX": {
-          "type": "Int",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": [
             {
               "sourceRange": [
@@ -231,8 +231,8 @@ snapshot_kind: text
           ]
         },
         "startY": {
-          "type": "Int",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": [
             {
               "sourceRange": [

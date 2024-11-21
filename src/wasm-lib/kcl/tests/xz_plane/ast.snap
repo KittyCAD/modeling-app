@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing xz_plane.kcl
 snapshot_kind: text
 ---
@@ -51,7 +52,7 @@ snapshot_kind: text
                           "start": 51,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 55,
@@ -59,7 +60,7 @@ snapshot_kind: text
                           "start": 54,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 56,
@@ -96,7 +97,7 @@ snapshot_kind: text
                           "start": 74,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 100
+                          "value": 100.0
                         },
                         {
                           "end": 82,
@@ -104,7 +105,7 @@ snapshot_kind: text
                           "start": 79,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 100
+                          "value": 100.0
                         }
                       ],
                       "end": 83,
@@ -141,7 +142,7 @@ snapshot_kind: text
                           "start": 101,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 100
+                          "value": 100.0
                         },
                         {
                           "end": 107,
@@ -149,7 +150,7 @@ snapshot_kind: text
                           "start": 106,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 108,
@@ -207,7 +208,7 @@ snapshot_kind: text
                         "start": 140,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 5
+                        "value": 5.0
                       },
                       "operator": "+",
                       "right": {
@@ -216,7 +217,7 @@ snapshot_kind: text
                         "start": 144,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 7
+                        "value": 7.0
                       },
                       "start": 140,
                       "type": "BinaryExpression",

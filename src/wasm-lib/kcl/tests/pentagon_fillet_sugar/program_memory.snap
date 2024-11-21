@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing pentagon_fillet_sugar.kcl
 snapshot_kind: text
 ---
@@ -1401,8 +1401,8 @@ snapshot_kind: text
           "type": "Object",
           "value": {
             "angle_end": {
-              "type": "Int",
-              "value": 360,
+              "type": "Number",
+              "value": 360.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -1414,8 +1414,8 @@ snapshot_kind: text
               ]
             },
             "angle_start": {
-              "type": "Int",
-              "value": 0,
+              "type": "Number",
+              "value": 0.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -1427,8 +1427,8 @@ snapshot_kind: text
               ]
             },
             "radius": {
-              "type": "Int",
-              "value": 80,
+              "type": "Number",
+              "value": 80.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -1528,7 +1528,7 @@ snapshot_kind: text
                                   "start": 519,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 2
+                                  "value": 2.0
                                 },
                                 "start": 502,
                                 "type": "BinaryExpression",
@@ -1864,8 +1864,8 @@ snapshot_kind: text
                     "type": "Object",
                     "value": {
                       "angle_end": {
-                        "type": "Int",
-                        "value": 360,
+                        "type": "Number",
+                        "value": 360.0,
                         "__meta": [
                           {
                             "sourceRange": [
@@ -1877,8 +1877,8 @@ snapshot_kind: text
                         ]
                       },
                       "angle_start": {
-                        "type": "Int",
-                        "value": 0,
+                        "type": "Number",
+                        "value": 0.0,
                         "__meta": [
                           {
                             "sourceRange": [
@@ -1890,8 +1890,8 @@ snapshot_kind: text
                         ]
                       },
                       "radius": {
-                        "type": "Int",
-                        "value": 80,
+                        "type": "Number",
+                        "value": 80.0,
                         "__meta": [
                           {
                             "sourceRange": [
@@ -2295,8 +2295,8 @@ snapshot_kind: text
                     ]
                   },
                   "plumbusLen": {
-                    "type": "Int",
-                    "value": 100,
+                    "type": "Number",
+                    "value": 100.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2308,8 +2308,8 @@ snapshot_kind: text
                     ]
                   },
                   "radius": {
-                    "type": "Int",
-                    "value": 80,
+                    "type": "Number",
+                    "value": 80.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2321,8 +2321,8 @@ snapshot_kind: text
                     ]
                   },
                   "triangleHeight": {
-                    "type": "Int",
-                    "value": 200,
+                    "type": "Number",
+                    "value": 200.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2334,8 +2334,8 @@ snapshot_kind: text
                     ]
                   },
                   "triangleLen": {
-                    "type": "Int",
-                    "value": 500,
+                    "type": "Number",
+                    "value": 500.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -3965,8 +3965,8 @@ snapshot_kind: text
           ]
         },
         "plumbusLen": {
-          "type": "Int",
-          "value": 100,
+          "type": "Number",
+          "value": 100.0,
           "__meta": [
             {
               "sourceRange": [
@@ -3978,8 +3978,8 @@ snapshot_kind: text
           ]
         },
         "radius": {
-          "type": "Int",
-          "value": 80,
+          "type": "Number",
+          "value": 80.0,
           "__meta": [
             {
               "sourceRange": [
@@ -3991,8 +3991,8 @@ snapshot_kind: text
           ]
         },
         "triangleHeight": {
-          "type": "Int",
-          "value": 200,
+          "type": "Number",
+          "value": 200.0,
           "__meta": [
             {
               "sourceRange": [
@@ -4004,8 +4004,8 @@ snapshot_kind: text
           ]
         },
         "triangleLen": {
-          "type": "Int",
-          "value": 500,
+          "type": "Number",
+          "value": 500.0,
           "__meta": [
             {
               "sourceRange": [

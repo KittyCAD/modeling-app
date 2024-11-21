@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing linear_pattern3d_a_pattern.kcl
 snapshot_kind: text
 ---
@@ -52,7 +52,7 @@ snapshot_kind: text
                           "start": 57,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 61,
@@ -60,7 +60,7 @@ snapshot_kind: text
                           "start": 60,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 62,
@@ -97,7 +97,7 @@ snapshot_kind: text
                           "start": 78,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 82,
@@ -105,7 +105,7 @@ snapshot_kind: text
                           "start": 81,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2
+                          "value": 2.0
                         }
                       ],
                       "end": 83,
@@ -142,7 +142,7 @@ snapshot_kind: text
                           "start": 99,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 3
+                          "value": 3.0
                         },
                         {
                           "end": 103,
@@ -150,7 +150,7 @@ snapshot_kind: text
                           "start": 102,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1
+                          "value": 1.0
                         }
                       ],
                       "end": 104,
@@ -187,7 +187,7 @@ snapshot_kind: text
                           "start": 120,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -196,7 +196,7 @@ snapshot_kind: text
                             "start": 124,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 4
+                            "value": 4.0
                           },
                           "end": 125,
                           "operator": "-",
@@ -258,7 +258,7 @@ snapshot_kind: text
                       "start": 158,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1
+                      "value": 1.0
                     },
                     {
                       "end": 162,
@@ -328,7 +328,7 @@ snapshot_kind: text
                             "start": 202,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 1
+                            "value": 1.0
                           },
                           {
                             "end": 206,
@@ -336,7 +336,7 @@ snapshot_kind: text
                             "start": 205,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           {
                             "end": 209,
@@ -344,7 +344,7 @@ snapshot_kind: text
                             "start": 208,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           }
                         ],
                         "end": 210,
@@ -369,7 +369,7 @@ snapshot_kind: text
                         "start": 226,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 7
+                        "value": 7.0
                       }
                     },
                     {
@@ -388,7 +388,7 @@ snapshot_kind: text
                         "start": 242,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 6
+                        "value": 6.0
                       }
                     }
                   ],
@@ -459,7 +459,7 @@ snapshot_kind: text
                             "start": 300,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           {
                             "end": 304,
@@ -467,7 +467,7 @@ snapshot_kind: text
                             "start": 303,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           {
                             "end": 307,
@@ -475,7 +475,7 @@ snapshot_kind: text
                             "start": 306,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 1
+                            "value": 1.0
                           }
                         ],
                         "end": 308,
@@ -500,7 +500,7 @@ snapshot_kind: text
                         "start": 323,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1
+                        "value": 1.0
                       }
                     },
                     {
@@ -519,7 +519,7 @@ snapshot_kind: text
                         "start": 340,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 7
+                        "value": 7.0
                       }
                     }
                   ],

@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing pipe_as_arg.kcl
 snapshot_kind: text
 ---
@@ -45,7 +46,7 @@ snapshot_kind: text
                             "start": 47,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 2
+                            "value": 2.0
                           },
                           "start": 38,
                           "type": "BinaryExpression",
@@ -87,7 +88,7 @@ snapshot_kind: text
                             "start": 62,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           "start": 55,
                           "type": "MemberExpression",
@@ -129,7 +130,7 @@ snapshot_kind: text
                             "start": 78,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 1
+                            "value": 1.0
                           },
                           "start": 71,
                           "type": "MemberExpression",
@@ -736,7 +737,7 @@ snapshot_kind: text
                         "start": 364,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2
+                        "value": 2.0
                       },
                       "start": 360,
                       "type": "BinaryExpression",
@@ -798,7 +799,7 @@ snapshot_kind: text
                       "start": 396,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 200
+                      "value": 200.0
                     },
                     "end": 399,
                     "start": 389,
@@ -845,7 +846,7 @@ snapshot_kind: text
                       "start": 417,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 200
+                      "value": 200.0
                     },
                     {
                       "arguments": [
@@ -882,7 +883,7 @@ snapshot_kind: text
                       "start": 438,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0
+                      "value": 0.0
                     },
                     {
                       "end": 442,
@@ -890,7 +891,7 @@ snapshot_kind: text
                       "start": 441,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0
+                      "value": 0.0
                     }
                   ],
                   "end": 443,

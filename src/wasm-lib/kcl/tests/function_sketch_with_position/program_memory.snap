@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing function_sketch_with_position.kcl
 snapshot_kind: text
 ---
@@ -105,7 +106,7 @@ snapshot_kind: text
                                     "start": 98,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   },
                                   {
                                     "end": 102,
@@ -156,7 +157,7 @@ snapshot_kind: text
                                     "start": 124,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   }
                                 ],
                                 "end": 126,
@@ -193,7 +194,7 @@ snapshot_kind: text
                                     "start": 144,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   },
                                   {
                                     "argument": {

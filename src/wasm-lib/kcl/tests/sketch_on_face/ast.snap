@@ -286,7 +286,7 @@ snapshot_kind: text
                       "start": 193,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     {
                       "end": 197,
@@ -374,7 +374,7 @@ snapshot_kind: text
                           "start": 260,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 264,
@@ -382,7 +382,7 @@ snapshot_kind: text
                           "start": 263,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 265,
@@ -419,7 +419,7 @@ snapshot_kind: text
                           "start": 281,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 286,
@@ -427,7 +427,7 @@ snapshot_kind: text
                           "start": 284,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10
+                          "value": 10.0
                         }
                       ],
                       "end": 287,
@@ -464,7 +464,7 @@ snapshot_kind: text
                           "start": 303,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10
+                          "value": 10.0
                         },
                         {
                           "end": 308,
@@ -472,7 +472,7 @@ snapshot_kind: text
                           "start": 307,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 309,
@@ -509,7 +509,7 @@ snapshot_kind: text
                           "start": 325,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -518,7 +518,7 @@ snapshot_kind: text
                             "start": 329,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 10
+                            "value": 10.0
                           },
                           "end": 331,
                           "operator": "-",
@@ -580,7 +580,7 @@ snapshot_kind: text
                       "start": 364,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     {
                       "end": 368,

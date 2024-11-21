@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
 snapshot_kind: text
 ---
@@ -97,7 +97,7 @@ snapshot_kind: text
                           "start": 117,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 126,
@@ -174,7 +174,7 @@ snapshot_kind: text
                             "start": 211,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 90
+                            "value": 90.0
                           },
                           "start": 180,
                           "type": "BinaryExpression",
@@ -452,7 +452,7 @@ snapshot_kind: text
                       "start": 447,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 100
+                      "value": 100.0
                     },
                     {
                       "end": 461,
@@ -495,7 +495,7 @@ snapshot_kind: text
                             "start": 486,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 20
+                            "value": 20.0
                           }
                         },
                         {
@@ -569,7 +569,7 @@ snapshot_kind: text
                             "start": 542,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 50
+                            "value": 50.0
                           }
                         },
                         {
@@ -665,7 +665,7 @@ snapshot_kind: text
                             "start": 628,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 50
+                            "value": 50.0
                           }
                         },
                         {
@@ -844,7 +844,7 @@ snapshot_kind: text
                           "start": 764,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 772,
@@ -921,7 +921,7 @@ snapshot_kind: text
                             "start": 857,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 90
+                            "value": 90.0
                           },
                           "start": 826,
                           "type": "BinaryExpression",
@@ -1258,7 +1258,7 @@ snapshot_kind: text
                           "start": 1204,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 1212,
@@ -1335,7 +1335,7 @@ snapshot_kind: text
                             "start": 1297,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 90
+                            "value": 90.0
                           },
                           "start": 1266,
                           "type": "BinaryExpression",
@@ -1594,7 +1594,7 @@ snapshot_kind: text
                   "start": 1563,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 50
+                  "value": 50.0
                 },
                 {
                   "end": 1576,
