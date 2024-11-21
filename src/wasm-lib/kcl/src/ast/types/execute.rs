@@ -363,16 +363,16 @@ impl Node<CallExpression> {
 
         let mut fn_args: Vec<Arg> = Vec::with_capacity(self.arguments.len());
 
-        for arg in &self.arguments {
+        for arg_expr in &self.arguments {
             let metadata = Metadata {
-                source_range: SourceRange::from(arg),
+                source_range: SourceRange::from(arg_expr),
             };
             let value = ctx
-                .execute_expr(arg, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
                 .await?;
             let arg = Arg {
                 value,
-                source_range: SourceRange::from(arg),
+                source_range: SourceRange::from(arg_expr),
             };
             fn_args.push(arg);
         }
