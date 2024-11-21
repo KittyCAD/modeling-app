@@ -1030,6 +1030,14 @@ impl KclValue {
         }
     }
 
+    pub fn into_object(self) -> Option<HashMap<String, KclValue>> {
+        if let KclValue::Object { value, meta: _ } = self {
+            Some(value)
+        } else {
+            None
+        }
+    }
+
     pub fn as_str(&self) -> Option<&str> {
         if let KclValue::String { value, meta: _ } = &self {
             Some(value)
