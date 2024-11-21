@@ -416,6 +416,10 @@ export async function getUtils(page: Page, test_?: typeof test) {
         .boundingBox({ timeout: 5_000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
+    crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
+      const code = await page.locator('.cm-content').innerText()
+      return code.replaceAll(' ', '').replaceAll("\n", '')
+    },
     normalisedEditorCode: async () => {
       const code = await page.locator('.cm-content').innerText()
       return normaliseKclNumbers(code)
