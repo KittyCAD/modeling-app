@@ -1,4 +1,4 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{cell::RefCell, collections::HashMap, str::FromStr};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
@@ -8,6 +8,7 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
+use self::error::ParseError;
 use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
@@ -25,14 +26,93 @@ use crate::{
     token::{Token, TokenType},
 };
 
-mod error;
+pub(crate) mod error;
+
+thread_local! {
+    /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
+    static CTXT: RefCell<Option<ParseContext>> = const { RefCell::new(None) };
+}
+
+pub type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
+
+pub fn run_parser(i: TokenSlice) -> super::ParseResult {
+    ParseContext::init();
+
+    let result = program.parse(i).save_err();
+    let ctxt = ParseContext::take();
+    result.map(|o| (o, ctxt)).into()
+}
+
+/// Context built up while parsing a program.
+///
+/// When returned from parsing contains the errors and warnings from the current parse.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct ParseContext {
+    pub errors: Vec<ParseError>,
+    #[allow(dead_code)]
+    pub warnings: Vec<ParseError>,
+}
+
+impl ParseContext {
+    fn new() -> Self {
+        ParseContext {
+            errors: Vec::new(),
+            warnings: Vec::new(),
+        }
+    }
+
+    /// Set a new `ParseContext` in thread-local storage. Panics if one already exists.
+    fn init() {
+        assert!(CTXT.with_borrow(|ctxt| ctxt.is_none()));
+        CTXT.with_borrow_mut(|ctxt| *ctxt = Some(ParseContext::new()));
+    }
+
+    /// Take the current `ParseContext` from thread-local storage, leaving `None`. Panics if a `ParseContext`
+    /// is not present.
+    fn take() -> ParseContext {
+        CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    /// Add an error to the current `ParseContext`, panics if there is none.
+    fn err(e: ParseError) {
+        CTXT.with_borrow_mut(|ctxt| ctxt.as_mut().unwrap().errors.push(e));
+    }
+
+    /// Add a warning to the current `ParseContext`, panics if there is none.
+    #[allow(dead_code)]
+    fn warn(mut e: ParseError) {
+        e.severity = error::Severity::Warning;
+        CTXT.with_borrow_mut(|ctxt| ctxt.as_mut().unwrap().warnings.push(e));
+    }
+}
 
 type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
 
-type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
+/// Helper trait for dealing with PResults and the `ParseContext`.
+trait PResultEx {
+    type O;
 
-pub fn run_parser(i: TokenSlice) -> Result<Node<Program>, KclError> {
-    program.parse(i).map_err(KclError::from)
+    /// If self is Ok, then returns it wrapped in `Ok(Some())`.
+    /// If self is a parsing error, saves it to the current `ParseContext` and returns `Ok(None)`.
+    /// If self is some other kind of error, then returns it.
+    fn save_err(self) -> Result<Option<Self::O>, KclError>;
+}
+
+impl<O, E: Into<error::ErrorKind>> PResultEx for Result<O, E> {
+    type O = O;
+
+    fn save_err(self) -> Result<Option<O>, KclError> {
+        match self {
+            Ok(o) => Ok(Some(o)),
+            Err(e) => match e.into() {
+                error::ErrorKind::Parse(e) => {
+                    ParseContext::err(e);
+                    Ok(None)
+                }
+                error::ErrorKind::Internal(e) => Err(e),
+            },
+        }
+    }
 }
 
 fn expected(what: &'static str) -> StrContext {
@@ -41,7 +121,7 @@ fn expected(what: &'static str) -> StrContext {
 
 fn program(i: TokenSlice) -> PResult<Node<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
-    let mut out = function_body.parse_next(i)?;
+    let mut out: Node<Program> = function_body.parse_next(i)?;
 
     // Add the shebang to the non-code meta.
     if let Some(shebang) = shebang {
@@ -2069,16 +2149,16 @@ mod tests {
         // Try to use it as a variable name.
         let code = format!(r#"{} = 0"#, word);
         let result = crate::parser::top_level_parse(code.as_str());
-        let err = result.unwrap_err();
+        let err = &result.unwrap_errs()[0];
         // Which token causes the error may change.  In "return = 0", for
         // example, "return" is the problem.
         assert!(
-            err.message().starts_with("Unexpected token: ")
+            err.message.starts_with("Unexpected token: ")
                 || err
-                    .message()
+                    .message
                     .starts_with("Cannot assign a variable to a reserved keyword: "),
             "Error message is: {}",
-            err.message(),
+            err.message,
         );
     }
 
@@ -2108,19 +2188,21 @@ mod tests {
     fn weird_program_unclosed_paren() {
         let tokens = crate::token::lexer("fn firstPrime=(", ModuleId::default()).unwrap();
         let last = tokens.last().unwrap();
-        let err: KclError = program.parse(&tokens).unwrap_err().into();
-        assert_eq!(err.source_ranges(), last.as_source_ranges());
+        let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
+        let err = err.unwrap_parse_error();
+        assert_eq!(vec![err.source_range], last.as_source_ranges());
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
-        assert_eq!(err.message(), "Unexpected end of file. The compiler expected )");
+        assert_eq!(err.message, "Unexpected end of file. The compiler expected )");
     }
 
     #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::token::lexer("|", ModuleId::default()).unwrap();
-        let err: KclError = program.parse(&tokens).unwrap_err().into();
-        assert_eq!(err.source_ranges(), vec![SourceRange([0, 1, 0])]);
-        assert_eq!(err.message(), "Unexpected token: |");
+        let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
+        let err = err.unwrap_parse_error();
+        assert_eq!(vec![err.source_range], vec![SourceRange([0, 1, 0])]);
+        assert_eq!(err.message, "Unexpected token: |");
     }
 
     #[test]
@@ -3048,15 +3130,29 @@ const mySk1 = startSketchAt([0, 0])"#;
         assert!(result.is_ok());
     }
 
+    #[track_caller]
+    fn assert_err(p: &str, msg: &str, src: [usize; 2]) {
+        let result = crate::parser::top_level_parse(p);
+        let err = &result.unwrap_errs()[0];
+        assert_eq!(err.message, msg);
+        assert_eq!(&err.source_range.0[..2], &src);
+    }
+
+    #[track_caller]
+    fn assert_err_contains(p: &str, expected: &str) {
+        let result = crate::parser::top_level_parse(p);
+        let err = &result.unwrap_errs()[0].message;
+        assert!(err.contains(expected), "actual='{err}'");
+    }
+
     #[test]
     fn test_parse_half_pipe_small() {
-        let code = "const secondExtrude = startSketchOn('XY')
+        assert_err_contains(
+            "const secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |";
-        let result = crate::parser::top_level_parse(code);
-        assert!(result.is_err());
-        let actual = result.err().unwrap().to_string();
-        assert!(actual.contains("Unexpected token: |"), "actual={actual:?}");
+  |",
+            "Unexpected token: |",
+        );
     }
 
     #[test]
@@ -3130,41 +3226,29 @@ const firstExtrude = startSketchOn('XY')
 const secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |";
-        let result = crate::parser::top_level_parse(code);
-        assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token: |"));
+        assert_err_contains(code, "Unexpected token: |");
     }
 
     #[test]
     fn test_parse_greater_bang() {
-        let module_id = ModuleId::default();
-        let err = crate::parser::parse_str(">!", module_id).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1, 0])], message: "Unexpected token: >" }"#
-        );
+        assert_err(">!", "Unexpected token: >", [0, 1]);
     }
 
     #[test]
     fn test_parse_z_percent_parens() {
-        let module_id = ModuleId::default();
-        let err = crate::parser::parse_str("z%)", module_id).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2, 0])], message: "Unexpected token: %" }"#
-        );
+        assert_err("z%)", "Unexpected token: %", [1, 2]);
     }
 
     #[test]
     fn test_parse_parens_unicode() {
-        let module_id = ModuleId::default();
-        let err = crate::parser::parse_str("(ޜ", module_id).unwrap_err();
+        let result = crate::parser::top_level_parse("(ޜ");
+        let KclError::Lexical(details) = result.0.unwrap_err() else {
+            panic!();
+        };
         // TODO: Better errors when program cannot tokenize.
         // https://github.com/KittyCAD/modeling-app/issues/696
-        assert_eq!(
-            err.to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([1, 2, 0])], message: "found unknown token 'ޜ'" }"#
-        );
+        assert_eq!(details.message, "found unknown token 'ޜ'");
+        assert_eq!(&details.source_ranges[0].0[..2], &[1, 2]);
     }
 
     #[test]
@@ -3183,61 +3267,46 @@ const bracket = [-leg2 + thickness, 0]
             r#"
 z(-[["#,
         )
-        .unwrap_err();
+        .unwrap_errs();
     }
 
     #[test]
     fn test_parse_weird_new_line_function() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"z
- (--#"#,
-        )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4, 0])], message: "Unexpected token: (" }"#
+(--#"#,
+            "Unexpected token: (",
+            [2, 3],
         );
     }
 
     #[test]
     fn test_parse_weird_lots_of_fancy_brackets() {
-        let err = crate::parser::top_level_parse(r#"zz({{{{{{{{)iegAng{{{{{{{##"#).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3, 0])], message: "Unexpected token: (" }"#
-        );
+        assert_err(r#"zz({{{{{{{{)iegAng{{{{{{{##"#, "Unexpected token: (", [2, 3]);
     }
 
     #[test]
     fn test_parse_weird_close_before_open() {
-        let err = crate::parser::top_level_parse(
+        assert_err_contains(
             r#"fn)n
 e
 ["#,
-        )
-        .unwrap_err();
-        assert!(err
-            .to_string()
-            .contains("expected whitespace, found ')' which is brace"));
+            "expected whitespace, found ')' which is brace",
+        );
     }
 
     #[test]
     fn test_parse_weird_close_before_nada() {
-        let err = crate::parser::top_level_parse(r#"fn)n-"#).unwrap_err();
-        assert!(err
-            .to_string()
-            .contains("expected whitespace, found ')' which is brace"));
+        assert_err_contains(r#"fn)n-"#, "expected whitespace, found ')' which is brace");
     }
 
     #[test]
     fn test_parse_weird_lots_of_slashes() {
-        let err = crate::parser::top_level_parse(
+        assert_err_contains(
             r#"J///////////o//+///////////P++++*++++++P///////˟
 ++4"#,
-        )
-        .unwrap_err();
-        let actual = err.to_string();
-        assert!(actual.contains("Unexpected token: +"), "actual={actual:?}");
+            "Unexpected token: +",
+        );
     }
 
     #[test]
@@ -3324,62 +3393,53 @@ e
 
     #[test]
     fn test_error_keyword_in_variable() {
-        let err = crate::parser::top_level_parse(r#"const let = "thing""#).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([6, 9, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        assert_err(
+            r#"const let = "thing""#,
+            "Cannot assign a variable to a reserved keyword: let",
+            [6, 9],
         );
     }
 
     #[test]
     fn test_error_keyword_in_fn_name() {
-        let err = crate::parser::top_level_parse(r#"fn let = () {}"#).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        assert_err(
+            r#"fn let = () {}"#,
+            "Cannot assign a variable to a reserved keyword: let",
+            [3, 6],
         );
     }
 
     #[test]
     fn test_error_stdlib_in_fn_name() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"fn cos = () => {
             return 1
         }"#,
-        )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6, 0])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
+            "Cannot assign a variable to a reserved keyword: cos",
+            [3, 6],
         );
     }
 
     #[test]
     fn test_error_keyword_in_fn_args() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"fn thing = (let) => {
     return 1
 }"#,
+            "Cannot assign a variable to a reserved keyword: let",
+            [12, 15],
         )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
-        );
     }
 
     #[test]
     fn test_error_stdlib_in_fn_args() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"fn thing = (cos) => {
     return 1
 }"#,
+            "Cannot assign a variable to a reserved keyword: cos",
+            [12, 15],
         )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15, 0])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
-        );
     }
 
     #[test]
@@ -3491,28 +3551,20 @@ thing(false)
 "#,
                 name
             );
-            let err = crate::parser::top_level_parse(&some_program_string).unwrap_err();
-            assert_eq!(
-                err.to_string(),
-                format!(
-                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}, 0])], message: "Expected a `fn` variable kind, found: `const`" }}"#,
-                    name.len(),
-                )
+            assert_err(
+                &some_program_string,
+                "Expected a `fn` variable kind, found: `const`",
+                [0, name.len()],
             );
         }
     }
 
     #[test]
     fn test_error_define_var_as_function() {
-        let some_program_string = r#"fn thing = "thing""#;
-        let err = crate::parser::top_level_parse(some_program_string).unwrap_err();
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
         // It should say that the compiler is expecting a function expression on the RHS.
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18, 0])], message: "Unexpected token: \"thing\"" }"#
-        );
+        assert_err(r#"fn thing = "thing""#, "Unexpected token: \"thing\"", [11, 18]);
     }
 
     #[test]
@@ -3525,7 +3577,7 @@ thing(false)
     |> line([-5.09, 12.33], %)
     asdasd
 "#;
-        crate::parser::top_level_parse(test_program).unwrap_err();
+        crate::parser::top_level_parse(test_program).unwrap_errs();
     }
 
     #[test]
@@ -3573,17 +3625,40 @@ let myBox = box([0,0], -3, -16, -10)
 "#;
         crate::parser::top_level_parse(some_program_string).unwrap();
     }
+
     #[test]
     fn must_use_percent_in_pipeline_fn() {
         let some_program_string = r#"
         foo()
             |> bar(2)
         "#;
-        let err = crate::parser::top_level_parse(some_program_string).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36, 0])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
+        assert_err(
+            some_program_string,
+            "All expressions in a pipeline must use the % (substitution operator)",
+            [30, 36],
         );
+    }
+
+    #[test]
+    fn test_parse_tag_named_std_lib() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $xLine)
+"#;
+        assert_err(
+            some_program_string,
+            "Cannot assign a tag to a reserved keyword: xLine",
+            [76, 82],
+        );
+    }
+
+    #[test]
+    fn test_parse_empty_tag() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $)
+"#;
+        assert_err(some_program_string, "Unexpected token: |>", [57, 59]);
     }
 }
 

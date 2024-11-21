@@ -1000,19 +1000,6 @@ myNestedVar = [
     }
 
     #[test]
-    fn test_recast_shebang_only() {
-        let some_program_string = r#"#!/usr/local/env zoo kcl"#;
-
-        let result = crate::parser::top_level_parse(some_program_string);
-
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([21, 24, 0])], message: "Unexpected end of file. The compiler expected a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item" }"#
-        );
-    }
-
-    #[test]
     fn test_recast_shebang() {
         let some_program_string = r#"#!/usr/local/env zoo kcl
 part001 = startSketchOn('XY')

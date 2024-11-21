@@ -60,7 +60,7 @@ fn parse(test_name: &str) {
     };
 
     // Parse the tokens into an AST.
-    let parse_res = crate::parser::parse_tokens(tokens);
+    let parse_res = Result::<_, KclError>::Ok(crate::parser::parse_tokens(tokens).unwrap());
     assert_snapshot(test_name, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res);
     });

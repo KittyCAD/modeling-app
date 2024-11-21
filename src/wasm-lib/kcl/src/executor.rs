@@ -2413,7 +2413,8 @@ impl ExecutorContext {
                     }
                     let module_id = exec_state.add_module(resolved_path.clone());
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-                    let program = crate::parser::parse_str(&source, module_id)?;
+                    // TODO handle parsing errors properly
+                    let program = crate::parser::parse_str(&source, module_id).parse_errs_as_err()?;
                     let (module_memory, module_exports) = {
                         exec_state.import_stack.push(resolved_path.clone());
                         let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
