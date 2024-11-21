@@ -99,7 +99,8 @@ async function removeCurrentCode(page: Page) {
 
 export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
-  await page.getByTestId('custom-cmd-send-button').click()
+  await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
+  await page.getByTestId('custom-cmd-send-button').click({ delay: 1000 })
 }
 
 async function clearCommandLogs(page: Page) {
@@ -165,6 +166,9 @@ async function closeKclCodePanel(page: Page) {
 
 async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
+
+  // The debug pane needs time to load everything.
+  await page.waitForTimeout(3000)
 }
 
 export async function closeDebugPanel(page: Page) {
