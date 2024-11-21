@@ -41,7 +41,9 @@ export class HomePageFixture {
 
     this.projectButtonNew = this.page.getByTestId('home-new-file')
     this.projectTextName = this.page.getByTestId('cmd-bar-arg-value')
-    this.projectButtonContinue = this.page.getByRole('button', { name: 'Continue' })
+    this.projectButtonContinue = this.page.getByRole('button', {
+      name: 'Continue',
+    })
 
     this.sortByDateBtn = this.page.getByTestId('home-sort-by-modified')
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
@@ -116,7 +118,7 @@ export class HomePageFixture {
     await projectCard.click()
   }
 
-  goToModelingScene = async (name?: string = "testDefault") => {
+  goToModelingScene = async (name?: string = 'testDefault') => {
     await this.createAndGoToProject(name)
   }
 }
