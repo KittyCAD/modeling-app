@@ -56,7 +56,7 @@ echo "New version number without 'v': $new_version_number"
 
 git checkout -b "cut-release-$new_version"
 
-VERSION=$new_version_number yarn json:set-version
+VERSION=$new_version_number yarn files:set-version
 
 git add package.json
 git commit -m "Cut release $new_version"
