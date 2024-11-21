@@ -463,7 +463,7 @@ export class KclManager {
 
     if (optionalParams?.focusPath) {
       returnVal = {
-        codeBasedSelections: [],
+        graphSelections: [],
         otherSelections: [],
       }
 
@@ -485,9 +485,11 @@ export class KclManager {
           }
 
         if (start && end) {
-          returnVal.codeBasedSelections.push({
-            type: 'default',
-            range: [start, end],
+          returnVal.graphSelections.push({
+            codeRef: {
+              range: [start, end],
+              pathToNode: path,
+            },
           })
         }
       }

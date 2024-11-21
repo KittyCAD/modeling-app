@@ -1,52 +1,13 @@
 import { Selections } from 'lib/selections'
 import {
-  Program,
   PathToNode,
   CallExpression,
   Literal,
   ArrayExpression,
   BinaryExpression,
 } from './wasm'
-import { getNodeFromPath } from './queryAst'
 import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
-import { err } from 'lib/trap'
-
-export function pathMapToSelections(
-  ast: Program,
-  prevSelections: Selections,
-  pathToNodeMap: { [key: number]: PathToNode }
-): Selections {
-  const newSelections: Selections = {
-    ...prevSelections,
-    codeBasedSelections: [],
-  }
-  Object.entries(pathToNodeMap).forEach(([index, path]) => {
-    const nodeMeta = getNodeFromPath<any>(ast, path)
-    if (err(nodeMeta)) return
-    const node = nodeMeta.node as any
-    const selection = prevSelections.codeBasedSelections[Number(index)]
-    if (node) {
-      if (
-        selection.type === 'base-edgeCut' ||
-        selection.type === 'adjacent-edgeCut' ||
-        selection.type === 'opposite-edgeCut'
-      ) {
-        newSelections.codeBasedSelections.push({
-          range: [node.start, node.end],
-          type: selection.type,
-          secondaryRange: selection.secondaryRange,
-        })
-      } else {
-        newSelections.codeBasedSelections.push({
-          range: [node.start, node.end],
-          type: selection.type,
-        })
-      }
-    }
-  })
-  return newSelections
-}
 
 export function updatePathToNodeFromMap(
   oldPath: PathToNode,
@@ -72,11 +33,11 @@ export function isCursorInSketchCommandRange(
     {
       types: ['segment', 'path'],
       predicate: (artifact) => {
-        return selectionRanges.codeBasedSelections.some(
+        return selectionRanges.graphSelections.some(
           (selection) =>
-            Array.isArray(selection?.range) &&
+            Array.isArray(selection?.codeRef?.range) &&
             Array.isArray(artifact?.codeRef?.range) &&
-            isOverlap(selection.range, artifact.codeRef.range)
+            isOverlap(selection?.codeRef?.range, artifact.codeRef.range)
         )
       },
     },

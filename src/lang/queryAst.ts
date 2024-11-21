@@ -31,6 +31,7 @@ import {
 import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -130,7 +131,7 @@ function moreNodePathFromSourceRange(
     | VariableDeclaration
     | ReturnStatement
   >,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange
@@ -381,7 +382,7 @@ function moreNodePathFromSourceRange(
 
 export function getNodePathFromSourceRange(
   node: Program,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange || []
@@ -560,7 +561,7 @@ export function findAllPreviousVariablesPath(
 export function findAllPreviousVariables(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
@@ -705,19 +706,26 @@ export function isValueZero(val?: Expr): boolean {
 
 export function isLinesParallelAndConstrained(
   ast: Program,
+  artifactGraph: ArtifactGraph,
   programMemory: ProgramMemory,
   primaryLine: Selection,
   secondaryLine: Selection
 ):
   | {
       isParallelAndConstrained: boolean
-      sourceRange: SourceRange
+      selection: Selection | null
     }
   | Error {
   try {
     const EPSILON = 0.005
-    const primaryPath = getNodePathFromSourceRange(ast, primaryLine.range)
-    const secondaryPath = getNodePathFromSourceRange(ast, secondaryLine.range)
+    const primaryPath = getNodePathFromSourceRange(
+      ast,
+      primaryLine?.codeRef?.range
+    )
+    const secondaryPath = getNodePathFromSourceRange(
+      ast,
+      secondaryLine?.codeRef?.range
+    )
     const _secondaryNode = getNodeFromPath<CallExpression>(
       ast,
       secondaryPath,
@@ -733,12 +741,15 @@ export function isLinesParallelAndConstrained(
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
-      primaryLine.range
+      primaryLine?.codeRef?.range
     )
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
-    const _segment = getSketchSegmentFromSourceRange(sg, secondaryLine.range)
+    const _segment = getSketchSegmentFromSourceRange(
+      sg,
+      secondaryLine?.codeRef?.range
+    )
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
     const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
@@ -751,7 +762,7 @@ export function isLinesParallelAndConstrained(
       Math.abs(primaryAngle - secondaryAngle) < EPSILON ||
       Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
-    // is secordary line fully constrain, or has constrain type of 'angle'
+    // is secondary line fully constrain, or has constrain type of 'angle'
     const secondaryFirstArg = getFirstArg(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
@@ -761,14 +772,14 @@ export function isLinesParallelAndConstrained(
     )
 
     const constraintLevelMeta = getConstraintLevelFromSourceRange(
-      secondaryLine.range,
+      secondaryLine?.codeRef.range,
       ast
     )
     if (err(constraintLevelMeta)) {
       console.error(constraintLevelMeta)
       return {
         isParallelAndConstrained: false,
-        sourceRange: [0, 0],
+        selection: null,
       }
     }
     const constraintLevel = constraintLevelMeta.level
@@ -785,12 +796,15 @@ export function isLinesParallelAndConstrained(
 
     return {
       isParallelAndConstrained,
-      sourceRange: prevSourceRange,
+      selection: {
+        codeRef: codeRefFromRange(prevSourceRange, ast),
+        artifact: artifactGraph.get(prevSegment.__geoMeta.id),
+      },
     }
   } catch (e) {
     return {
       isParallelAndConstrained: false,
-      sourceRange: [0, 0],
+      selection: null,
     }
   }
 }
@@ -804,10 +818,9 @@ export function doesPipeHaveCallExp({
   ast: Program
   selection: Selection
 }): boolean {
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const pipeExpressionMeta = getNodeFromPath<PipeExpression>(
     ast,
-    pathToNode,
+    selection?.codeRef?.pathToNode,
     'PipeExpression'
   )
   if (err(pipeExpressionMeta)) {
@@ -832,10 +845,9 @@ export function hasExtrudeSketch({
   selection: Selection
   programMemory: ProgramMemory
 }): boolean {
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const varDecMeta = getNodeFromPath<VariableDeclaration>(
     ast,
-    pathToNode,
+    selection?.codeRef?.pathToNode,
     'VariableDeclaration'
   )
   if (err(varDecMeta)) {
@@ -856,9 +868,9 @@ export function isSingleCursorInPipe(
   selectionRanges: Selections,
   ast: Program
 ) {
-  if (selectionRanges.codeBasedSelections.length !== 1) return false
-  const selection = selectionRanges.codeBasedSelections[0]
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  if (selectionRanges.graphSelections.length !== 1) return false
+  const selection = selectionRanges.graphSelections[0]
+  const pathToNode = getNodePathFromSourceRange(ast, selection?.codeRef?.range)
   const nodeTypes = pathToNode.map(([, type]) => type)
   if (nodeTypes.includes('FunctionExpression')) return false
   if (!nodeTypes.includes('VariableDeclaration')) return false
@@ -928,10 +940,9 @@ export function findUsesOfTagInPipe(
 }
 
 export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
-  const path = getNodePathFromSourceRange(ast, selection.range)
   const _node = getNodeFromPath<Node<PipeExpression>>(
     ast,
-    path,
+    selection.codeRef.pathToNode,
     'PipeExpression'
   )
   if (err(_node)) return false
@@ -939,7 +950,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   if (pipeExpression.type !== 'PipeExpression') return false
   const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection.codeRef.pathToNode,
     'VariableDeclarator'
   )
   if (err(_varDec)) return false
