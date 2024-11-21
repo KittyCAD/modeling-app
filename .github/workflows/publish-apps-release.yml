@@ -1,4 +1,4 @@
-name: publish-apps
+name: publish-apps-release
 
 on:
   release:
@@ -6,7 +6,6 @@ on:
 
 env:
   NOTES: ${{ github.event.release.body }}
-  NIGHTLY: ${{ endsWith(github.event.release.name, '-nightly') }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -19,9 +18,7 @@ jobs:
       contents: write
     env:
       PUB_DATE: ${{ github.event.release.created_at }}
-      BUCKET_DIR: ${{ endsWith(github.event.release.name, '-nightly') && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app' }}
-      WEBSITE_DIR: ${{ endsWith(github.event.release.name, '-nightly') && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-      URL_CODED_NAME: ${{ endsWith(github.event.release.name, '-nightly') && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+      BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app' }}
     steps:
       # TODO: download draft release artifacts
 
@@ -42,26 +39,11 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v2.2.1
         with:
           path: out
-          glob: 'Zoo*'
+          glob: '*'
           parent: false
-          destination: ${{ env.BUCKET_DIR }}
-
-      - name: Upload update endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
-        with:
-          path: out
-          glob: 'latest*'
-          parent: false
-          destination: ${{ env.BUCKET_DIR }}
-
-      - name: Upload download endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
-        with:
-          path: out/last_download.json
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
-        if: ${{ env.NIGHTLY == false }}
         run: |
           gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/last_download.json" --async
           gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-linux-arm64.yml" --async

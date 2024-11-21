@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # package.json
+VERSION=$(date +'%-y.%-m.%-d') yarn files:set-version
 echo "$(jq --arg name 'Zoo Modeling App (Nightly)' '.productName=$name' package.json --indent 2)" > package.json
 
 # electron-builder.yml
