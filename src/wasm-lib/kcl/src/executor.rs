@@ -922,7 +922,7 @@ impl std::hash::Hash for TagIdentifier {
 
 pub type MemoryFunction =
     fn(
-        s: Vec<KclValue>,
+        s: Vec<Arg>,
         memory: ProgramMemory,
         expression: crate::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
@@ -1206,7 +1206,7 @@ impl KclValue {
         };
         if let Some(func) = func {
             func(
-                args.into_iter().map(|arg| arg.value).collect(),
+                args,
                 closure_memory.as_ref().clone(),
                 expression.clone(),
                 meta.clone(),

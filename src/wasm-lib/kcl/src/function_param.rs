@@ -23,7 +23,7 @@ impl<'a> FunctionParam<'a> {
     pub async fn call(&self, exec_state: &mut ExecState, args: Vec<Arg>) -> Result<Option<KclValue>, KclError> {
         if let Some(inner) = self.inner {
             inner(
-                args.into_iter().map(|arg| arg.value).collect(),
+                args,
                 self.memory.clone(),
                 self.fn_expr.clone(),
                 self.meta.clone(),
