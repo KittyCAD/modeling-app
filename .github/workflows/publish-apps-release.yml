@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Find tag workflow id
         id: tag_workflow_id
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch ${{ github.event.release.tag_name }} --json databaseId | jq '.[0].databaseId')
           id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --commit b07a36c5654eaa272153e403c5daa80c0cb1eecc --json databaseId | jq '.[0].databaseId')
