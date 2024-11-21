@@ -12,6 +12,12 @@ on:
   # Daily at 04:00 AM UTC
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
+env:
+  IS_RELEASE: ${{ github.ref_type == 'tag' }}
+  # IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  IS_NIGHTLY: true
+  IS_MAIN: ${{ github.ref_type == 'branch' && github.head_ref == 'main' }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -21,9 +27,6 @@ jobs:
     runs-on: ubuntu-22.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
-    env:
-      IS_RELEASE: ${{ github.ref_type == 'tag' }}
-      IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -71,12 +74,12 @@ jobs:
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
       - name: Prepare electron-builder.yml file for updater test
-        if: ${{ env.IS_RELEASE == 'true' }}
+        if: ${{ env.IS_MAIN == 'true' }}
         run: |
           yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test"' electron-builder.yml
 
       - uses: actions/upload-artifact@v3
-        if: ${{ env.IS_RELEASE == 'true' }}
+        if: ${{ env.IS_MAIN == 'true' }}
         with:
           name: prepared-files-updater-test
           path: |
@@ -98,9 +101,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
-      IS_RELEASE: ${{ github.ref_type == 'tag' }}
-      IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
-      IS_MAIN: ${{ github.ref_type == 'branch' && github.head_ref == 'main' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -259,8 +259,6 @@ jobs:
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
-      IS_RELEASE: ${{ github.ref_type == 'tag' }}
-      IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
       PUB_DATE: ${{ github.event.repository.updated_at }}
       BUCKET_DIR: ${{ github.event_name == 'schedule' && 'dl.kittycad.io/releases/modeling-app/nightly' || 'dl.kittycad.io/releases/modeling-app' }}
       WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
