@@ -5,10 +5,6 @@ import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
 
-
-
-
-
 test.describe('Testing selections', () => {
   test.setTimeout(90_000)
   test('Selections work on fresh and edited sketch', { tag: ['@skipWin'] }, async ({ page, homePage }) => { // Skip on windows its being weird.
