@@ -31,6 +31,7 @@ jobs:
           name: out-arm64-win
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           
       - uses: actions/download-artifact@v4
         with:
