@@ -640,6 +640,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
     }
 
     let solids = inner_pattern_linear_3d(data, solid_set, exec_state, args).await?;
+    dbg!(&solids);
     Ok(solids.into())
 }
 
@@ -674,7 +675,7 @@ async fn inner_pattern_linear_3d(
     let [x, y, z] = axis;
     let axis_len = f64::sqrt(x * x + y * y + z * z);
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
-    let transforms: Vec<_> = (0..data.instances.u64())
+    let transforms: Vec<_> = (1..data.instances.u64())
         .map(|i| {
             let d = data.distance * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
