@@ -16,11 +16,10 @@ env:
   IS_RELEASE: ${{ github.ref_type == 'tag' }}
   # IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
   IS_NIGHTLY: true
-  IS_MAIN: ${{ github.ref_type == 'branch' && github.head_ref == 'main' }}
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   prepare-files:
@@ -52,6 +51,13 @@ jobs:
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:flip-to-nightly
 
+      - name: Set release version
+        if: ${{ env.IS_RELEASE == 'true' }}
+        run: |
+          TAG=${{ github.ref_name }}
+          export VERSION=${TAG#v}
+          yarn json:set-version
+
       - uses: actions/upload-artifact@v4
         with:
           name: prepared-files
@@ -67,12 +73,12 @@ jobs:
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
       - name: Prepare electron-builder.yml file for updater test
-        if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' }}
         run: |
           yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/updater-test"' electron-builder.yml
 
       - uses: actions/upload-artifact@v4
-        if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' }}
         with:
           name: prepared-files-updater-test
           path: |
@@ -149,7 +155,7 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
+        if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' && env.IS_MAIN == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation
         run: yarn electron-builder --config
@@ -199,18 +205,20 @@ jobs:
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
+      # updater-test builds are only happening on main
+
       - uses: actions/download-artifact@v4
-        if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' }}
         name: prepared-files-updater-test
 
       - name: Copy updated electron-builder.yml file for updater test
-        if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' }}
         run: |
           ls -R prepared-files-updater-test
           cp prepared-files-updater-test/electron-builder.yml electron-builder.yml
 
       - name: Build the app (updater-test)
-        if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -224,7 +232,7 @@ jobs:
         run: yarn electron-builder --config --publish always
 
       - uses: actions/upload-artifact@v4
-        if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' }}
         with:
           name: updater-test-arm64-${{ matrix.platform }}
           path: |
@@ -233,7 +241,7 @@ jobs:
             out/*-arm64-linux.AppImage
 
       - uses: actions/upload-artifact@v4
-        if: ${{ env.IS_MAIN == 'true' }}
+        if: ${{ env.IS_RELEASE == 'true' }}
         with:
           name: updater-test-x64-${{ matrix.platform }}
           path: |
@@ -262,7 +270,7 @@ jobs:
         with:
           name: out-arm64-win
           path: out
-
+          
       - uses: actions/download-artifact@v4
         with:
           name: out-x64-win
@@ -389,7 +397,7 @@ jobs:
 
             **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/{BEFORE}...${{ github.ref_name }}
           draft: true
-          files: 'out/*'
+          files: 'out/Zoo*'
 
   dummy:
     runs-on: ubuntu-22.04
@@ -400,8 +408,56 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          path: out
+          path: out-merged
           merge-multiple: true
+
+      - name: List artifacts
+        run: "ls -R out-merged"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-win
+          path: out
+          
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-win
+          path: out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-win
+          path: out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-mac
+          path: out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-mac
+          path: out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-mac
+          path: out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-linux
+          path: out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-linux
+          path: out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-linux
+          path: out
 
       - name: List artifacts
         run: "ls -R out"

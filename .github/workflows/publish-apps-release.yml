@@ -29,6 +29,55 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
+          name: out-arm64-win
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+          
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-win
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-win
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-mac
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-mac
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-mac
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-arm64-linux
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-x64-linux
+          path: out
+          run-id: ${{ steps.tag_workflow_id.outputs.id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: out-yml-linux
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
 
