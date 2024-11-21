@@ -3,9 +3,9 @@ name: publish-apps-release
 on:
   release:
     types: [published]
-
-env:
-  NOTES: ${{ github.event.release.body }}
+  push:
+    branches:
+      - pierremtb/issue4522-Make-the-release-process-non-blocking
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -16,15 +16,12 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    env:
-      PUB_DATE: ${{ github.event.release.created_at }}
-      BUCKET_DIR: ${{ 'dl.kittycad.io/releases/modeling-app' }}
     steps:
-      # TODO: find run id associated with tag
       - name: Find tag workflow id
         id: tag_workflow_id
         run: |
-          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch ${{ github.event.release.tag_name }} --json databaseId | jq '.[0].databaseId')
+          # id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch ${{ github.event.release.tag_name }} --json databaseId | jq '.[0].databaseId')
+          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --commit b07a36c5654eaa272153e403c5daa80c0cb1eecc --json databaseId | jq '.[0].databaseId')
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v4
@@ -88,12 +85,13 @@ jobs:
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
 
       - name: List artifacts
-        run: "ls -R out"
+        run: ls -R out
 
       - name: Override release notes
         env:
-          NOTES: ${{ github.event.release.body }}
-        run: yarn files:set-notes
+          # NOTES: ${{ github.event.release.body }}
+          NOTES: "# Test\nabc\ndef"
+        run: yarn files:set-notes && cat out/la*
 
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v2.1.7'
@@ -111,36 +109,36 @@ jobs:
           path: out
           glob: '*'
           parent: false
-          destination: ${{ env.BUCKET_DIR }}
+          destination: 'dl.kittycad.io/releases/modeling-app/test/new-workflow'
 
-      - name: Invalidate bucket cache on latest*.yml and last_download.json files
-        run: |
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/last_download.json" --async
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-linux-arm64.yml" --async
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-mac.yml" --async
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest.yml" --async
+      # - name: Invalidate bucket cache on latest*.yml and last_download.json files
+      #   run: |
+      #     gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/last_download.json" --async
+      #     gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-linux-arm64.yml" --async
+      #     gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-mac.yml" --async
+      #     gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest.yml" --async
 
 
-  announce_release:
-    needs: [publish-apps-release]
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
+  # announce_release:
+  #   needs: [publish-apps-release]
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: Check out code
+  #       uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install requests
 
-      - name: Announce Release
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          RELEASE_VERSION: ${{ github.event.release.tag_name }}
-          RELEASE_BODY: ${{ github.event.release.body }}
-        run: python public/announce_release.py
+  #     - name: Announce Release
+  #       env:
+  #         DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  #         RELEASE_VERSION: ${{ github.event.release.tag_name }}
+  #         RELEASE_BODY: ${{ github.event.release.body }}
+  #       run: python public/announce_release.py

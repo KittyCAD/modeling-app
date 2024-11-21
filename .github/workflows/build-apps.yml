@@ -14,8 +14,7 @@ on:
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  # IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
-  IS_NIGHTLY: true
+  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -257,7 +256,10 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    # if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
+    if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
+    env:
+      VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
+      VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
     needs: [prepare-files, build-apps]
     steps:
       - uses: actions/checkout@v4
@@ -310,8 +312,6 @@ jobs:
       - name: Generate the download static endpoint
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
-          VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
-          VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
           WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
           URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
@@ -362,33 +362,33 @@ jobs:
       - name: List artifacts
         run: "ls -R out"
 
-      # - name: Authenticate to Google Cloud
-      #   if: ${{ env.IS_NIGHTLY == 'true' }}
-      #   uses: 'google-github-actions/auth@v2.1.7'
-      #   with:
-      #     credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
+      - name: Authenticate to Google Cloud
+        if: ${{ env.IS_NIGHTLY == 'true' }}
+        uses: 'google-github-actions/auth@v2.1.7'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
-      # - name: Set up Google Cloud SDK
-      #   if: ${{ env.IS_NIGHTLY == 'true' }}
-      #   uses: google-github-actions/setup-gcloud@v2.1.2
-      #   with:
-      #     project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
+      - name: Set up Google Cloud SDK
+        if: ${{ env.IS_NIGHTLY == 'true' }}
+        uses: google-github-actions/setup-gcloud@v2.1.2
+        with:
+          project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
-      # - name: Upload nightly files to public bucket
-      #   if: ${{ env.IS_NIGHTLY == 'true' }}
-      #   uses: google-github-actions/upload-cloud-storage@v2.2.1
-      #   with:
-      #     path: out
-      #     glob: '*'
-      #     parent: false
-      #     destination: 'dl.kittycad.io/releases/modeling-app/nightly'
+      - name: Upload nightly files to public bucket
+        if: ${{ env.IS_NIGHTLY == 'true' }}
+        uses: google-github-actions/upload-cloud-storage@v2.2.1
+        with:
+          path: out
+          glob: '*'
+          parent: false
+          destination: 'dl.kittycad.io/releases/modeling-app/nightly'
 
-      # - name: Create draft release
-      #   uses: softprops/action-gh-release@v2
-      #   if: ${{ env.IS_RELEASE == 'true' }}
-      #   with:
-      #     name: ${{ github.tag_name }}
-      #     tag_name: ${{ github.tag_name }}
-      #     draft: true
-      # .   generate_release_notes: true
-      #     files: 'out/Zoo*'
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
+        if: ${{ env.IS_RELEASE == 'true' }}
+        with:
+          name: ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
+          draft: true
+          generate_release_notes: true
+          files: 'out/Zoo*'
