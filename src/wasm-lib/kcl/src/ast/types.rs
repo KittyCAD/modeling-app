@@ -3194,7 +3194,7 @@ const cylinder = startSketchOn('-XZ')
     return arg0
 }"#;
         let module_id = ModuleId::default();
-        let program = crate::parser::parse(some_program_string, module_id).unwrap();
+        let program = crate::parser::parse_str(some_program_string, module_id).unwrap();
 
         // Check the program output for the types of the parameters.
         let function = program.body.first().unwrap();
@@ -3265,7 +3265,7 @@ const cylinder = startSketchOn('-XZ')
     return 1
 }"#;
         let module_id = ModuleId::default();
-        let program = crate::parser::parse(some_program_string, module_id).unwrap();
+        let program = crate::parser::parse_str(some_program_string, module_id).unwrap();
 
         // Check the program output for the types of the parameters.
         let function = program.body.first().unwrap();

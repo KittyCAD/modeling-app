@@ -1,11 +1,7 @@
 cnr := "cargo nextest run"
 cita := "cargo insta test --accept"
 
-# Create a new KCL snapshot test from `tests/inputs/my-test.kcl`.
-new-test name:
-    echo "kcl_test!(\"{{name}}\", {{name}});" >> tests/executor/visuals.rs
-    TWENTY_TWENTY=overwrite {{cnr}} --test executor -E 'test(=visuals::{{name}})'
-
+# Run the same lint checks we run in CI.
 lint:
     cargo clippy --workspace --all-targets -- -D warnings
 
