@@ -563,7 +563,7 @@ where
                     type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
-                source_ranges: vec![args.source_range],
+                source_ranges: arg.source_ranges(),
             }));
         };
         Ok(val)
