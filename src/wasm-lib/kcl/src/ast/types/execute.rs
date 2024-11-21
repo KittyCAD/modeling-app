@@ -370,10 +370,7 @@ impl Node<CallExpression> {
             let value = ctx
                 .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
                 .await?;
-            let arg = Arg {
-                value,
-                source_range: SourceRange::from(arg_expr),
-            };
+            let arg = Arg::new(value, SourceRange::from(arg_expr));
             fn_args.push(arg);
         }
 

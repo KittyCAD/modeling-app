@@ -3161,10 +3161,7 @@ let w = f() + f()
                 return_type: None,
                 digest: None,
             });
-            let args = args
-                .into_iter()
-                .map(|value| Arg::new(value, SourceRange::default()))
-                .collect();
+            let args = args.into_iter().map(Arg::synthetic).collect();
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(
                 actual, expected,
