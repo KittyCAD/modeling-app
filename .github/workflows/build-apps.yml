@@ -13,9 +13,9 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  IS_RELEASE: true
-  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  IS_RELEASE: ${{ github.ref_type == 'tag' }}
+  # IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  IS_NIGHTLY: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -55,7 +55,6 @@ jobs:
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
         run: |
-          GITHUB_REF_NAME=v0.1.2
           export VERSION=${GITHUB_REF_NAME#v}
           yarn files:set-version
 
