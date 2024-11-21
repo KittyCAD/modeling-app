@@ -68,7 +68,6 @@ debug = "line-tables-only"
 members = [
 	"derive-docs",
 	"kcl",
-	"kcl-macros",
 	"kcl-test-server",
 	"kcl-to-core",
 ]
@@ -76,7 +75,7 @@ members = [
 [workspace.dependencies]
 http = "1"
 kittycad = { version = "0.3.25", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.72", features = ["websocket"] }
+kittycad-modeling-cmds = { version = "0.2.76", features = ["websocket"] }
 
 [[test]]
 name = "executor"

@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { Selections } from 'lib/selections'
+import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   transformSecondarySketchLinesTagFirst,
@@ -31,12 +28,8 @@ export function angleBetweenInfo({
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -44,10 +37,10 @@ export function angleBetweenInfo({
   if (err(_err1)) return _err1
   const nodes = _nodes as Expr[]
 
-  const _varDecs = paths.map((pathToNode) => {
+  const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp
@@ -71,7 +64,7 @@ export function angleBetweenInfo({
   const theTransforms = getTransformInfos(
     {
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+      graphSelections: selectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
     'setAngleBetween'
@@ -88,10 +81,8 @@ export function angleBetweenInfo({
 
 export async function applyConstraintAngleBetween({
   selectionRanges,
-}: // constraint,
-{
+}: {
   selectionRanges: Selections
-  // constraint: 'setHorzDistance' | 'setVertDistance'
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap

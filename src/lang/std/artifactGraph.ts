@@ -5,36 +5,40 @@ import { err } from 'lib/trap'
 
 export type ArtifactId = string
 
-interface CommonCommandProperties {
+interface BaseArtifact {
+  id: ArtifactId
+}
+
+export interface CodeRef {
   range: SourceRange
   pathToNode: PathToNode
 }
 
-export interface PlaneArtifact {
+export interface PlaneArtifact extends BaseArtifact {
   type: 'plane'
   pathIds: Array<ArtifactId>
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
-export interface PlaneArtifactRich {
+export interface PlaneArtifactRich extends BaseArtifact {
   type: 'plane'
   paths: Array<PathArtifact>
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
 
-export interface PathArtifact {
+export interface PathArtifact extends BaseArtifact {
   type: 'path'
   planeId: ArtifactId
   segIds: Array<ArtifactId>
   sweepId: ArtifactId
   solid2dId?: ArtifactId
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
 
-interface solid2D {
+interface solid2D extends BaseArtifact {
   type: 'solid2D'
   pathId: ArtifactId
 }
-export interface PathArtifactRich {
+export interface PathArtifactRich extends BaseArtifact {
   type: 'path'
   /** A path must always lie on a plane */
   plane: PlaneArtifact | WallArtifact
@@ -42,52 +46,52 @@ export interface PathArtifactRich {
   segments: Array<SegmentArtifact>
   /** A path may not result in a sweep artifact */
   sweep?: SweepArtifact
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
 
-export interface SegmentArtifact {
+export interface SegmentArtifact extends BaseArtifact {
   type: 'segment'
   pathId: ArtifactId
   surfaceId: ArtifactId
   edgeIds: Array<ArtifactId>
   edgeCutId?: ArtifactId
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
-interface SegmentArtifactRich {
+interface SegmentArtifactRich extends BaseArtifact {
   type: 'segment'
   path: PathArtifact
   surf: WallArtifact
   edges: Array<SweepEdge>
   edgeCut?: EdgeCut
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
 
 /** A Sweep is a more generic term for extrude, revolve, loft and sweep*/
-interface SweepArtifact {
+interface SweepArtifact extends BaseArtifact {
   type: 'sweep'
   subType: 'extrusion' | 'revolve'
   pathId: string
   surfaceIds: Array<string>
   edgeIds: Array<string>
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
-interface SweepArtifactRich {
+interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
   subType: 'extrusion' | 'revolve'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
 
-interface WallArtifact {
+interface WallArtifact extends BaseArtifact {
   type: 'wall'
   segId: ArtifactId
   edgeCutEdgeIds: Array<ArtifactId>
   sweepId: ArtifactId
   pathIds: Array<ArtifactId>
 }
-interface CapArtifact {
+interface CapArtifact extends BaseArtifact {
   type: 'cap'
   subType: 'start' | 'end'
   edgeCutEdgeIds: Array<ArtifactId>
@@ -95,7 +99,7 @@ interface CapArtifact {
   pathIds: Array<ArtifactId>
 }
 
-interface SweepEdge {
+interface SweepEdge extends BaseArtifact {
   type: 'sweepEdge'
   segId: ArtifactId
   sweepId: ArtifactId
@@ -103,16 +107,16 @@ interface SweepEdge {
 }
 
 /** A edgeCut is a more generic term for both fillet or chamfer */
-interface EdgeCut {
+interface EdgeCut extends BaseArtifact {
   type: 'edgeCut'
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: ArtifactId
   edgeIds: Array<ArtifactId>
   surfaceId: ArtifactId
-  codeRef: CommonCommandProperties
+  codeRef: CodeRef
 }
 
-interface EdgeCutEdge {
+interface EdgeCutEdge extends BaseArtifact {
   type: 'edgeCutEdge'
   edgeCutId: ArtifactId
   surfaceId: ArtifactId
@@ -257,6 +261,7 @@ export function getArtifactsToUpdate({
         id,
         artifact: {
           type: 'plane',
+          id,
           pathIds: [],
           codeRef: { range, pathToNode },
         },
@@ -274,6 +279,7 @@ export function getArtifactsToUpdate({
           id: currentPlaneId,
           artifact: {
             type: 'wall',
+            id: currentPlaneId,
             segId: existingPlane.segId,
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
@@ -283,7 +289,10 @@ export function getArtifactsToUpdate({
       ]
     } else {
       return [
-        { id: currentPlaneId, artifact: { type: 'plane', pathIds, codeRef } },
+        {
+          id: currentPlaneId,
+          artifact: { type: 'plane', id: currentPlaneId, pathIds, codeRef },
+        },
       ]
     }
   } else if (cmd.type === 'start_path') {
@@ -291,6 +300,7 @@ export function getArtifactsToUpdate({
       id,
       artifact: {
         type: 'path',
+        id,
         segIds: [],
         planeId: currentPlaneId,
         sweepId: '',
@@ -303,7 +313,7 @@ export function getArtifactsToUpdate({
     if (plane?.type === 'plane') {
       returnArr.push({
         id: currentPlaneId,
-        artifact: { type: 'plane', pathIds: [id], codeRef },
+        artifact: { type: 'plane', id: currentPlaneId, pathIds: [id], codeRef },
       })
     }
     if (plane?.type === 'wall') {
@@ -311,6 +321,7 @@ export function getArtifactsToUpdate({
         id: currentPlaneId,
         artifact: {
           type: 'wall',
+          id: currentPlaneId,
           segId: plane.segId,
           edgeCutEdgeIds: plane.edgeCutEdgeIds,
           sweepId: plane.sweepId,
@@ -325,6 +336,7 @@ export function getArtifactsToUpdate({
       id,
       artifact: {
         type: 'segment',
+        id,
         pathId,
         surfaceId: '',
         edgeIds: [],
@@ -343,7 +355,11 @@ export function getArtifactsToUpdate({
     ) {
       returnArr.push({
         id: response.data.modeling_response.data.face_id,
-        artifact: { type: 'solid2D', pathId },
+        artifact: {
+          type: 'solid2D',
+          id: response.data.modeling_response.data.face_id,
+          pathId,
+        },
       })
       const path = getArtifact(pathId)
       if (path?.type === 'path')
@@ -363,6 +379,7 @@ export function getArtifactsToUpdate({
       artifact: {
         type: 'sweep',
         subType: subType,
+        id,
         pathId: cmd.target,
         surfaceIds: [],
         edgeIds: [],
@@ -394,6 +411,7 @@ export function getArtifactsToUpdate({
               id: face_id,
               artifact: {
                 type: 'wall',
+                id: face_id,
                 segId: curve_id,
                 edgeCutEdgeIds: [],
                 sweepId: path.sweepId,
@@ -426,6 +444,7 @@ export function getArtifactsToUpdate({
             id: face_id,
             artifact: {
               type: 'cap',
+              id: face_id,
               subType: cap === 'bottom' ? 'start' : 'end',
               edgeCutEdgeIds: [],
               sweepId: path.sweepId,
@@ -472,6 +491,7 @@ export function getArtifactsToUpdate({
         id: response.data.modeling_response.data.edge,
         artifact: {
           type: 'sweepEdge',
+          id: response.data.modeling_response.data.edge,
           subType:
             cmd.type === 'solid3d_get_next_adjacent_edge'
               ? 'adjacent'
@@ -500,6 +520,7 @@ export function getArtifactsToUpdate({
       id,
       artifact: {
         type: 'edgeCut',
+        id,
         subType: cmd.cut_type,
         consumedEdgeId: cmd.edge_id,
         edgeIds: [],
@@ -590,6 +611,7 @@ export function expandPlane(
   )
   return {
     type: 'plane',
+    id: plane.id,
     paths: Array.from(paths.values()),
     codeRef: plane.codeRef,
   }
@@ -620,6 +642,7 @@ export function expandPath(
   if (err(plane)) return plane
   return {
     type: 'path',
+    id: path.id,
     segments: Array.from(segs.values()),
     sweep,
     plane,
@@ -647,6 +670,7 @@ export function expandSweep(
   return {
     type: 'sweep',
     subType: sweep.subType,
+    id: sweep.id,
     surfaces: Array.from(surfs.values()),
     edges: Array.from(edges.values()),
     path,
@@ -682,6 +706,7 @@ export function expandSegment(
 
   return {
     type: 'segment',
+    id: segment.id,
     path,
     surf,
     edges: Array.from(edges.values()),
@@ -693,7 +718,7 @@ export function expandSegment(
 export function getCapCodeRef(
   cap: CapArtifact,
   artifactGraph: ArtifactGraph
-): CommonCommandProperties | Error {
+): CodeRef | Error {
   const sweep = getArtifactOfTypes(
     { key: cap.sweepId, types: ['sweep'] },
     artifactGraph
@@ -710,7 +735,7 @@ export function getCapCodeRef(
 export function getSolid2dCodeRef(
   solid2D: solid2D,
   artifactGraph: ArtifactGraph
-): CommonCommandProperties | Error {
+): CodeRef | Error {
   const path = getArtifactOfTypes(
     { key: solid2D.pathId, types: ['path'] },
     artifactGraph
@@ -722,7 +747,7 @@ export function getSolid2dCodeRef(
 export function getWallCodeRef(
   wall: WallArtifact,
   artifactGraph: ArtifactGraph
-): CommonCommandProperties | Error {
+): CodeRef | Error {
   const seg = getArtifactOfTypes(
     { key: wall.segId, types: ['segment'] },
     artifactGraph
@@ -734,7 +759,7 @@ export function getWallCodeRef(
 export function getSweepEdgeCodeRef(
   edge: SweepEdge,
   artifactGraph: ArtifactGraph
-): CommonCommandProperties | Error {
+): CodeRef | Error {
   const seg = getArtifactOfTypes(
     { key: edge.segId, types: ['segment'] },
     artifactGraph
@@ -742,10 +767,10 @@ export function getSweepEdgeCodeRef(
   if (err(seg)) return seg
   return seg.codeRef
 }
-export function getEdgeCuteConsumedCodeRef(
+export function getEdgeCutConsumedCodeRef(
   edge: EdgeCut,
   artifactGraph: ArtifactGraph
-): CommonCommandProperties | Error {
+): CodeRef | Error {
   const seg = getArtifactOfTypes(
     { key: edge.consumedEdgeId, types: ['segment', 'sweepEdge'] },
     artifactGraph
@@ -802,4 +827,47 @@ export function getSweepFromSuspectedPath(
     { key: path.sweepId, types: ['sweep'] },
     artifactGraph
   )
+}
+
+export function getCodeRefsByArtifactId(
+  id: string,
+  artifactGraph: ArtifactGraph
+): Array<CodeRef> | null {
+  const artifact = artifactGraph.get(id)
+  if (artifact?.type === 'solid2D') {
+    const codeRef = getSolid2dCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return [codeRef]
+  } else if (artifact?.type === 'cap') {
+    const codeRef = getCapCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return [codeRef]
+  } else if (artifact?.type === 'wall') {
+    const extrusion = getSweepFromSuspectedSweepSurface(id, artifactGraph)
+    const codeRef = getWallCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return err(extrusion) ? [codeRef] : [codeRef, extrusion.codeRef]
+  } else if (artifact?.type === 'sweepEdge') {
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) return null
+    return [codeRef]
+  } else if (artifact?.type === 'segment') {
+    return [artifact.codeRef]
+  } else if (artifact?.type === 'edgeCut') {
+    const codeRef = artifact.codeRef
+    const consumedCodeRef = getEdgeCutConsumedCodeRef(artifact, artifactGraph)
+    if (err(consumedCodeRef)) return [codeRef]
+    return [codeRef, consumedCodeRef]
+  } else if (artifact && 'codeRef' in artifact) {
+    return [artifact.codeRef]
+  } else {
+    return null
+  }
+}
+
+export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
+  return {
+    range,
+    pathToNode: getNodePathFromSourceRange(ast, range),
+  }
 }

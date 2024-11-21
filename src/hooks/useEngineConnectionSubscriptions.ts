@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   editorManager,
   engineCommandManager,
@@ -9,11 +9,9 @@ import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   getCapCodeRef,
-  getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
-  getEdgeCuteConsumedCodeRef,
-  getSolid2dCodeRef,
   getWallCodeRef,
+  getCodeRefsByArtifactId,
   getArtifactOfTypes,
   SegmentArtifact,
 } from 'lang/std/artifactGraph'
@@ -25,6 +23,8 @@ import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
+  const stateRef = useRef(state)
+  stateRef.current = state
 
   useEffect(() => {
     if (!engineCommandManager) return
@@ -34,66 +34,12 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
-          const artifact = engineCommandManager.artifactGraph.get(
-            data.entity_id
+          const codeRefs = getCodeRefsByArtifactId(
+            data.entity_id,
+            engineCommandManager.artifactGraph
           )
-          if (artifact?.type === 'solid2D') {
-            const codeRef = getSolid2dCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'cap') {
-            const codeRef = getCapCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'wall') {
-            const extrusion = getSweepFromSuspectedSweepSurface(
-              data.entity_id,
-              engineCommandManager.artifactGraph
-            )
-            const codeRef = getWallCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange(
-              err(extrusion)
-                ? [codeRef.range]
-                : [codeRef.range, extrusion.codeRef.range]
-            )
-          } else if (artifact?.type === 'sweepEdge') {
-            const codeRef = getSweepEdgeCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'segment') {
-            editorManager.setHighlightRange([
-              artifact?.codeRef?.range || [0, 0],
-            ])
-          } else if (artifact?.type === 'edgeCut') {
-            const codeRef = artifact.codeRef
-            const consumedCodeRef = getEdgeCuteConsumedCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            editorManager.setHighlightRange(
-              err(consumedCodeRef)
-                ? [codeRef.range]
-                : [codeRef.range, consumedCodeRef.range]
-            )
-          } else if (artifact?.type === 'plane') {
-            const codeRef = artifact.codeRef
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else {
-            editorManager.setHighlightRange([[0, 0]])
+          if (codeRefs) {
+            editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
           }
         } else if (
           !editorManager.highlightRange ||
@@ -108,6 +54,7 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: (engineEvent) => {
         ;(async () => {
+          if (stateRef.current.matches('Sketch no face')) return
           const event = await getEventForSelectWithPoint(engineEvent)
           event && send(event)
         })().catch(reportRejection)

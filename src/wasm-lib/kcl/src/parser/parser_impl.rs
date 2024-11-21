@@ -596,6 +596,21 @@ fn array_end_start(i: TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
     ))
 }
 
+fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    ignore_whitespace(i);
+    Ok(Node {
+        start: key.start,
+        end: key.end,
+        module_id: key.module_id,
+        inner: ObjectProperty {
+            value: Expr::Identifier(Box::new(key.clone())),
+            key,
+            digest: None,
+        },
+    })
+}
+
 fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
@@ -642,7 +657,11 @@ pub(crate) fn object(i: TokenSlice) -> PResult<Node<ObjectExpression>> {
         0..,
         alt((
             terminated(non_code_node.map(NonCodeOr::NonCode), whitespace),
-            terminated(object_property, property_separator).map(NonCodeOr::Code),
+            terminated(
+                alt((object_property, object_property_same_key_and_val)),
+                property_separator,
+            )
+            .map(NonCodeOr::Code),
         )),
     )
     .context(expected(
@@ -2808,7 +2827,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         for test in tests {
             // Run the original parser
             let tokens = crate::token::lexer(test, ModuleId::default()).unwrap();
-            let mut expected_body = crate::parser::Parser::new(tokens.clone()).ast().unwrap().inner.body;
+            let mut expected_body = crate::parser::parse_tokens(tokens.clone()).unwrap().inner.body;
             assert_eq!(expected_body.len(), 1);
             let BodyItem::VariableDeclaration(expected) = expected_body.pop().unwrap() else {
                 panic!("Expected variable declaration");
@@ -2835,8 +2854,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_math_parse() {
         let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(r#"5 + "a""#, module_id).unwrap();
-        let actual = crate::parser::Parser::new(tokens).ast().unwrap().inner.body;
+        let actual = crate::parser::parse_str(r#"5 + "a""#, module_id).unwrap().inner.body;
         let expr = Node::boxed(
             BinaryExpression {
                 operator: BinaryOperator::Add,
@@ -2972,8 +2990,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn test_abstract_syntax_tree() {
         let code = "5 +6";
         let module_id = ModuleId::default();
-        let parser = crate::parser::Parser::new(crate::token::lexer(code, module_id).unwrap());
-        let result = parser.ast().unwrap();
+        let result = crate::parser::parse_str(code, module_id).unwrap();
         let expected_result = Node::new(
             Program {
                 body: vec![BodyItem::ExpressionStatement(Node::new(
@@ -3121,9 +3138,7 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_greater_bang() {
         let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(">!", module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let err = parser.ast().unwrap_err();
+        let err = crate::parser::parse_str(">!", module_id).unwrap_err();
         assert_eq!(
             err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1, 0])], message: "Unexpected token: >" }"#
@@ -3133,12 +3148,9 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_z_percent_parens() {
         let module_id = ModuleId::default();
-        let tokens = crate::token::lexer("z%)", module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        let err = crate::parser::parse_str("z%)", module_id).unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2, 0])], message: "Unexpected token: %" }"#
         );
     }
@@ -3146,12 +3158,11 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_parens_unicode() {
         let module_id = ModuleId::default();
-        let result = crate::token::lexer("(ޜ", module_id);
+        let err = crate::parser::parse_str("(ޜ", module_id).unwrap_err();
         // TODO: Better errors when program cannot tokenize.
         // https://github.com/KittyCAD/modeling-app/issues/696
-        assert!(result.is_err());
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"lexical: KclErrorDetails { source_ranges: [SourceRange([1, 2, 0])], message: "found unknown token 'ޜ'" }"#
         );
     }
@@ -3168,96 +3179,64 @@ const bracket = [-leg2 + thickness, 0]
 
     #[test]
     fn test_parse_nested_open_brackets() {
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(
+        crate::parser::top_level_parse(
             r#"
 z(-[["#,
-            module_id,
         )
-        .unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        .unwrap_err();
     }
 
     #[test]
     fn test_parse_weird_new_line_function() {
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(
+        let err = crate::parser::top_level_parse(
             r#"z
  (--#"#,
-            module_id,
         )
-        .unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        .unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4, 0])], message: "Unexpected token: (" }"#
         );
     }
 
     #[test]
     fn test_parse_weird_lots_of_fancy_brackets() {
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(r#"zz({{{{{{{{)iegAng{{{{{{{##"#, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        let err = crate::parser::top_level_parse(r#"zz({{{{{{{{)iegAng{{{{{{{##"#).unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3, 0])], message: "Unexpected token: (" }"#
         );
     }
 
     #[test]
     fn test_parse_weird_close_before_open() {
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(
+        let err = crate::parser::top_level_parse(
             r#"fn)n
 e
 ["#,
-            module_id,
         )
-        .unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
-        assert!(result
-            .err()
-            .unwrap()
+        .unwrap_err();
+        assert!(err
             .to_string()
             .contains("expected whitespace, found ')' which is brace"));
     }
 
     #[test]
     fn test_parse_weird_close_before_nada() {
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(r#"fn)n-"#, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
-        assert!(result
-            .err()
-            .unwrap()
+        let err = crate::parser::top_level_parse(r#"fn)n-"#).unwrap_err();
+        assert!(err
             .to_string()
             .contains("expected whitespace, found ')' which is brace"));
     }
 
     #[test]
     fn test_parse_weird_lots_of_slashes() {
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(
+        let err = crate::parser::top_level_parse(
             r#"J///////////o//+///////////P++++*++++++P///////˟
 ++4"#,
-            module_id,
         )
-        .unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
-        let actual = result.err().unwrap().to_string();
+        .unwrap_err();
+        let actual = err.to_string();
         assert!(actual.contains("Unexpected token: +"), "actual={actual:?}");
     }
 
@@ -3345,76 +3324,60 @@ e
 
     #[test]
     fn test_error_keyword_in_variable() {
-        let some_program_string = r#"const let = "thing""#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        let err = crate::parser::top_level_parse(r#"const let = "thing""#).unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([6, 9, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
         );
     }
 
     #[test]
     fn test_error_keyword_in_fn_name() {
-        let some_program_string = r#"fn let = () {}"#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        let err = crate::parser::top_level_parse(r#"fn let = () {}"#).unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
         );
     }
 
     #[test]
     fn test_error_stdlib_in_fn_name() {
-        let some_program_string = r#"fn cos = () => {
+        let err = crate::parser::top_level_parse(
+            r#"fn cos = () => {
             return 1
-        }"#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        }"#,
+        )
+        .unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6, 0])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
         );
     }
 
     #[test]
     fn test_error_keyword_in_fn_args() {
-        let some_program_string = r#"fn thing = (let) => {
+        let err = crate::parser::top_level_parse(
+            r#"fn thing = (let) => {
     return 1
-}"#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+}"#,
+        )
+        .unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
         );
     }
 
     #[test]
     fn test_error_stdlib_in_fn_args() {
-        let some_program_string = r#"fn thing = (cos) => {
+        let err = crate::parser::top_level_parse(
+            r#"fn thing = (cos) => {
     return 1
-}"#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+}"#,
+        )
+        .unwrap_err();
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15, 0])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
         );
     }
@@ -3528,13 +3491,9 @@ thing(false)
 "#,
                 name
             );
-            let module_id = ModuleId::default();
-            let tokens = crate::token::lexer(&some_program_string, module_id).unwrap();
-            let parser = crate::parser::Parser::new(tokens);
-            let result = parser.ast();
-            assert!(result.is_err());
+            let err = crate::parser::top_level_parse(&some_program_string).unwrap_err();
             assert_eq!(
-                result.err().unwrap().to_string(),
+                err.to_string(),
                 format!(
                     r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}, 0])], message: "Expected a `fn` variable kind, found: `const`" }}"#,
                     name.len(),
@@ -3546,16 +3505,12 @@ thing(false)
     #[test]
     fn test_error_define_var_as_function() {
         let some_program_string = r#"fn thing = "thing""#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_err());
+        let err = crate::parser::top_level_parse(some_program_string).unwrap_err();
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
         // It should say that the compiler is expecting a function expression on the RHS.
         assert_eq!(
-            result.err().unwrap().to_string(),
+            err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18, 0])], message: "Unexpected token: \"thing\"" }"#
         );
     }
@@ -3570,11 +3525,7 @@ thing(false)
     |> line([-5.09, 12.33], %)
     asdasd
 "#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(test_program, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        let _e = result.unwrap_err();
+        crate::parser::top_level_parse(test_program).unwrap_err();
     }
 
     #[test]
@@ -3628,10 +3579,7 @@ let myBox = box([0,0], -3, -16, -10)
         foo()
             |> bar(2)
         "#;
-        let module_id = ModuleId::default();
-        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let err = parser.ast().unwrap_err();
+        let err = crate::parser::top_level_parse(some_program_string).unwrap_err();
         assert_eq!(
             err.to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36, 0])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
@@ -3888,6 +3836,11 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
     snapshot_test!(bh, "const obj = {center : [10, 10], radius: 5}");
+    snapshot_test!(
+        bi,
+        r#"x = 3
+        obj = { x, y: 4}"#
+    );
 }
 
 #[allow(unused)]

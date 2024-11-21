@@ -1,4 +1,4 @@
 pub mod checks;
-pub mod rule;
+mod rule;
 
-pub use rule::{Discovered, Finding};
+pub use rule::{Discovered, Finding, Rule};

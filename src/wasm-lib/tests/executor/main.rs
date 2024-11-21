@@ -1,6 +1,6 @@
 use kcl_lib::{
-    settings::types::UnitLength,
     test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
+    UnitLength,
 };
 
 /// The minimum permissible difference between asserted twenty-twenty images.
@@ -526,7 +526,7 @@ async fn kcl_test_import_obj_with_mtl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_obj_with_mtl_units() {
-    let code = r#"model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
+    let code = r#"model = import("tests/executor/inputs/cube.obj", {format: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
     assert_out("import_obj_with_mtl_units", &result);
@@ -574,13 +574,13 @@ async fn kcl_test_import_glb_no_assign() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_import_ext_doesnt_match() {
-    let code = r#"model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
+    let code = r#"model = import("tests/executor/inputs/cube.gltf", {format: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 76, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([8, 78, 0])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
     );
 }
 

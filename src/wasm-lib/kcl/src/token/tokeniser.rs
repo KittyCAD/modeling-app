@@ -42,6 +42,7 @@ lazy_static! {
         set.insert("const", TokenType::Keyword);
         // "import" is special because of import().
         set.insert("export", TokenType::Keyword);
+        set.insert("type", TokenType::Keyword);
         set.insert("interface", TokenType::Keyword);
         set.insert("new", TokenType::Keyword);
         set.insert("self", TokenType::Keyword);

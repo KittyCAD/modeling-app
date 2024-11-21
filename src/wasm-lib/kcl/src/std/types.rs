@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 #[ts(export)]
 pub struct Uint(f64);
 
+#[allow(dead_code)]
 impl Uint {
     pub fn new(value: f64) -> Self {
         if value < 0.0 {

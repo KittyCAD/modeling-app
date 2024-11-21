@@ -8,12 +8,12 @@ fn cube = (length, center) => {
   p3 = [l + x, -l + y]
 
   return startSketchAt(p0)
-  |> lineTo(p1, %)
-  |> lineTo(p2, %)
-  |> lineTo(p3, %)
-  |> lineTo(p0, %)
-  |> close(%)
-  |> extrude(length, %)
+    |> lineTo(p1, %)
+    |> lineTo(p2, %)
+    |> lineTo(p3, %)
+    |> lineTo(p0, %)
+    |> close(%)
+    |> extrude(length, %)
 }
 
 fn double = (x) => {

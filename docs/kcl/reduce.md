@@ -89,7 +89,7 @@ fn decagon = (radius) => {
     x = cos(stepAngle * i) * radius
     y = sin(stepAngle * i) * radius
     return lineTo([x, y], partialDecagon)
-})
+  })
 
   return fullDecagon
 }
