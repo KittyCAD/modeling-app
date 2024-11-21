@@ -1,0 +1,137 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing argument_error.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declarations": [
+          {
+            "end": 28,
+            "id": {
+              "end": 4,
+              "name": "f",
+              "start": 3,
+              "type": "Identifier"
+            },
+            "init": {
+              "body": {
+                "body": [
+                  {
+                    "argument": {
+                      "end": 26,
+                      "raw": "5",
+                      "start": 25,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 5
+                    },
+                    "end": 26,
+                    "start": 18,
+                    "type": "ReturnStatement",
+                    "type": "ReturnStatement"
+                  }
+                ],
+                "end": 28,
+                "start": 14
+              },
+              "end": 28,
+              "params": [
+                {
+                  "type": "Parameter",
+                  "identifier": {
+                    "end": 9,
+                    "name": "i",
+                    "start": 8,
+                    "type": "Identifier"
+                  },
+                  "optional": false
+                }
+              ],
+              "start": 7,
+              "type": "FunctionExpression",
+              "type": "FunctionExpression"
+            },
+            "start": 3,
+            "type": "VariableDeclarator"
+          }
+        ],
+        "end": 28,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 44,
+        "expression": {
+          "arguments": [
+            {
+              "end": 35,
+              "name": "f",
+              "start": 34,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "elements": [
+                {
+                  "end": 39,
+                  "raw": "0",
+                  "start": 38,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 0
+                },
+                {
+                  "end": 42,
+                  "raw": "1",
+                  "start": 41,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 1
+                }
+              ],
+              "end": 43,
+              "start": 37,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
+          ],
+          "callee": {
+            "end": 33,
+            "name": "map",
+            "start": 30,
+            "type": "Identifier"
+          },
+          "end": 44,
+          "optional": false,
+          "start": 30,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 30,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 45,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 30,
+            "start": 28,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

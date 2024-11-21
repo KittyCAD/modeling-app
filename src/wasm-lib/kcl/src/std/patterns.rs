@@ -22,6 +22,8 @@ use crate::{
     std::{types::Uint, Args},
 };
 
+use super::args::Arg;
+
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
 /// Data for a linear pattern on a 2D sketch.
@@ -381,7 +383,7 @@ async fn make_transform<'a>(
         value: i.into(),
         meta: vec![source_range.into()],
     };
-    let transform_fn_args = vec![repetition_num];
+    let transform_fn_args = vec![Arg::synthetic(repetition_num)];
     let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
 
     // Unpack the returned transform object.
