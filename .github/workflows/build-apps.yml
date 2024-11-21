@@ -13,8 +13,7 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  IS_RELEASE: true
+  IS_RELEASE: ${{ github.ref_type == 'tag' }}
   IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
 
 concurrency:
@@ -54,7 +53,6 @@ jobs:
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
         run: |
-          GITHUB_REF_NAME=v1.2.3
           export VERSION=${GITHUB_REF_NAME#v}
           yarn files:set-version
 
@@ -155,7 +153,7 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' && env.IS_MAIN == 'false' }}
+        if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
         # this is just not doing any codesign or release yml generation
         run: yarn electron-builder --config
@@ -398,66 +396,3 @@ jobs:
             **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/{BEFORE}...${{ github.ref_name }}
           draft: true
           files: 'out/Zoo*'
-
-  dummy:
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-    needs: [prepare-files, build-apps]
-    steps:
-
-      - uses: actions/download-artifact@v4
-        with:
-          path: out-merged
-          merge-multiple: true
-
-      - name: List artifacts
-        run: "ls -R out-merged"
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-arm64-win
-          path: out
-          
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-x64-win
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-yml-win
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-arm64-mac
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-x64-mac
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-yml-mac
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-arm64-linux
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-x64-linux
-          path: out
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-yml-linux
-          path: out
-
-      - name: List artifacts
-        run: "ls -R out"
