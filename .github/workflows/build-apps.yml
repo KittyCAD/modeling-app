@@ -48,16 +48,9 @@ jobs:
       - name: Run build:wasm
         run: "yarn build:wasm"
 
-      - name: Set nightly version, product name, and icons
+      - name: Set nightly version, product name, release notes, and icons
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: yarn files:flip-to-nightly
-
-      - name: Generate release notes
-        env:
-          NOTES: ${{ format('Development build, commit {0}', github.sha) }}
-        run: |
-          echo "$NOTES" > release-notes.md
-          cat release-notes.md
 
       - uses: actions/upload-artifact@v3
         with:
