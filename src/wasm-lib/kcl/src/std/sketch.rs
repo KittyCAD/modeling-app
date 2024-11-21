@@ -1966,6 +1966,7 @@ async fn inner_tangential_arc_to_relative(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
+    let to = [from.x + delta[0], from.y + delta[1]];
     let tangent_info = sketch.get_tangential_info_from_paths();
     let tan_previous_point = if tangent_info.is_center {
         get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
@@ -2002,7 +2003,7 @@ async fn inner_tangential_arc_to_relative(
     let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
-            to: delta,
+            to,
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,

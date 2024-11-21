@@ -824,6 +824,7 @@ impl SketchSurface {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct GetTangentialInfoFromPathsResult {
     pub center_or_tangent_point: [f64; 2],
     pub is_center: bool,
@@ -869,26 +870,7 @@ impl Sketch {
                 ccw: false,
             };
         };
-        match path {
-            Path::TangentialArc { center, ccw, .. } => GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: *center,
-                is_center: true,
-                ccw: *ccw,
-            },
-            Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: *center,
-                is_center: true,
-                ccw: *ccw,
-            },
-            _ => {
-                let base = path.get_base();
-                GetTangentialInfoFromPathsResult {
-                    center_or_tangent_point: base.from,
-                    is_center: false,
-                    ccw: false,
-                }
-            }
-        }
+        path.get_tangential_info()
     }
 }
 
@@ -1428,6 +1410,29 @@ impl Path {
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
+        }
+    }
+
+    pub(crate) fn get_tangential_info(&self) -> GetTangentialInfoFromPathsResult {
+        match self {
+            Path::TangentialArc { center, ccw, .. } => GetTangentialInfoFromPathsResult {
+                center_or_tangent_point: *center,
+                is_center: true,
+                ccw: *ccw,
+            },
+            Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
+                center_or_tangent_point: *center,
+                is_center: true,
+                ccw: *ccw,
+            },
+            _ => {
+                let base = self.get_base();
+                GetTangentialInfoFromPathsResult {
+                    center_or_tangent_point: base.from,
+                    is_center: false,
+                    ccw: false,
+                }
+            }
         }
     }
 }

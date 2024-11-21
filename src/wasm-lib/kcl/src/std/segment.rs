@@ -2,12 +2,15 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
+use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, Sketch, TagIdentifier},
+    executor::{ExecState, KclValue, Point2d, Sketch, TagIdentifier},
     std::{utils::between, Args},
 };
+
+use super::utils::get_tangent_point_from_previous_arc;
 
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -409,6 +412,98 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     let result = between(path.get_from().into(), path.get_to().into());
 
     Ok(result.to_degrees())
+}
+
+/// Returns the tangential angle of the segment in degrees.
+pub async fn segment_tangential_angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let tag: TagIdentifier = args.get_data()?;
+
+    let result = inner_segment_tangential_angle(&tag, exec_state, args.clone()).await?;
+    Ok(args.make_user_val_from_f64(result))
+}
+
+/// Returns the tangential angle of the segment in degrees.
+///
+/// ```no_run
+/// // Horizontal pill.
+/// pillSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([20, 0], %)
+///   |> tangentialArcToRelative([0, 10], %, $arc1)
+///   |> angledLine({
+///     angle: segmentTangentialAngle(arc1),
+///     length: 20,
+///   }, %)
+///   |> tangentialArcToRelative([0, -10], %)
+///   |> close(%)
+///
+/// pillExtrude = extrude(10, pillSketch)
+/// ```
+///
+/// ```no_run
+/// // Vertical pill.
+/// pillSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([0, 20], %)
+///   |> tangentialArcToRelative([10, 0], %, $arc1)
+///   |> angledLine({
+///     angle: segmentTangentialAngle(arc1),
+///     length: 20,
+///   }, %)
+///   |> tangentialArcToRelative([-10, 0], %)
+///   |> close(%)
+///
+/// pillExtrude = extrude(10, pillSketch)
+/// ```
+///
+/// ```no_run
+/// rectangleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([10, 0], %, $seg1)
+///   |> angledLine({
+///     angle: segmentTangentialAngle(seg1),
+///     length: 10,
+///   }, %)
+///   |> line([0, 10], %)
+///   |> line([-20, 0], %)
+///   |> close(%)
+///
+/// rectangleExtrude = extrude(10, rectangleSketch)
+/// ```
+#[stdlib {
+    name = "segmentTangentialAngle",
+}]
+async fn inner_segment_tangential_angle(
+    tag: &TagIdentifier,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<f64, KclError> {
+    let line = args.get_tag_engine_info(exec_state, tag)?;
+    let path = line.path.clone().ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Expected a line segment with a path, found `{:?}`", line),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+
+    let from = Point2d::from(path.get_to());
+
+    // Undocumented voodoo from get_tangential_arc_to_info
+    let tangent_info = path.get_tangential_info();
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
+    };
+
+    // Calculate the end point from the angle and radius.
+    // atan2 outputs radians.
+    let previous_end_tangent = Angle::from_radians(f64::atan2(
+        from.y - tan_previous_point[1],
+        from.x - tan_previous_point[0],
+    ));
+
+    Ok(previous_end_tangent.to_degrees())
 }
 
 /// Returns the angle to match the given length for x.
