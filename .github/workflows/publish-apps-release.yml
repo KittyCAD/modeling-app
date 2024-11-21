@@ -24,7 +24,8 @@ jobs:
       - name: Find tag workflow id
         id: tag_workflow_id
         run: |
-          echo "id=TEST" >> "$GITHUB_OUTPUT"
+          id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch ${{ github.event.release.tag_name }} --json databaseId | jq '.[0].databaseId')
+          echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v4
         with:
@@ -63,7 +64,6 @@ jobs:
   announce_release:
     needs: [publish-apps-release]
     runs-on: ubuntu-22.04
-    if: github.event_name == 'release'
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -82,5 +82,5 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           RELEASE_VERSION: ${{ github.event.release.tag_name }}
-          RELEASE_BODY: ${{ github.event.release.body}}
+          RELEASE_BODY: ${{ github.event.release.body }}
         run: python public/announce_release.py

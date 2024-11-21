@@ -246,7 +246,6 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-      pull-requests: read
     if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
     needs: [prepare-files, build-apps]
     env:
@@ -386,3 +385,16 @@ jobs:
             **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/{BEFORE}...${{ github.ref_name }}
           draft: true
           files: 'out/*'
+
+  dummy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+
+      - name: List artifacts
+        run: "ls -R out"
