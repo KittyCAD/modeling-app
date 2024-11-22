@@ -268,9 +268,8 @@ export const AllSettingsFields = forwardRef(
               <p className="max-w-2xl mt-6">
                 Want to experience the latest and (hopefully) greatest from our
                 main development branch?{' '}
-                {/* TODO: fetch and parse the json to provide the right arch&plat link directly */}
                 <a
-                  href="https://dl.zoo.dev/releases/modeling-app/nightly/last_download.json"
+                  href="https://zoo.dev/modeling-app/download/nightly"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
