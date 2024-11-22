@@ -89,7 +89,8 @@ impl Program {
     pub fn parse(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
         let tokens = token::lexer(input, module_id)?;
-        let ast = parser::parse_tokens(tokens)?;
+        // TODO handle parsing errors properly
+        let ast = parser::parse_tokens(tokens).parse_errs_as_err()?;
 
         Ok(Program { ast })
     }
