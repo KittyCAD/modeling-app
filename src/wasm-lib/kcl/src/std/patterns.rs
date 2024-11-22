@@ -328,7 +328,7 @@ async fn inner_pattern_transform<'a>(
         }));
     }
     for i in 1..total_instances {
-        let t = make_transform(i, &transform_function, args.source_range, exec_state, Dimensions::Three).await?;
+        let t = make_transform::<Box<Solid>>(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
     let transform = transform; // remove mutability
@@ -366,7 +366,7 @@ async fn inner_pattern_transform_2d<'a>(
         }));
     }
     for i in 1..total_instances {
-        let t = make_transform(i, &transform_function, args.source_range, exec_state, Dimensions::Two).await?;
+        let t = make_transform::<Box<Sketch>>(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
     let transform = transform; // remove mutability
@@ -422,6 +422,7 @@ async fn execute_pattern_transform_3d<'a>(
 trait GeometryWithId: Clone {
     fn id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
+    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
 }
 
 impl GeometryWithId for Box<Sketch> {
@@ -430,6 +431,9 @@ impl GeometryWithId for Box<Sketch> {
     }
     fn id(&self) -> Uuid {
         self.id
+    }
+    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+        array_to_point3d(val, source_ranges)
     }
 }
 
@@ -440,6 +444,10 @@ impl GeometryWithId for Box<Solid> {
 
     fn id(&self) -> Uuid {
         self.id
+    }
+    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+        let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
+        Ok(Point3d { x, y, z: 0.0 })
     }
 }
 
@@ -483,12 +491,11 @@ async fn send_pattern_transform<T: GeometryWithId>(
     Ok(geometries)
 }
 
-async fn make_transform<'a>(
+async fn make_transform<'a, T: GeometryWithId>(
     i: u32,
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
-    dimensions: Dimensions,
 ) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::Int {
@@ -530,22 +537,13 @@ async fn make_transform<'a>(
 
     transforms
         .into_iter()
-        .map(|obj| transform_from_obj_fields(obj, source_ranges.clone(), dimensions))
+        .map(|obj| transform_from_obj_fields::<T>(obj, source_ranges.clone()))
         .collect()
 }
 
-#[derive(Clone, Copy, Eq, PartialEq)]
-enum Dimensions {
-    /// 2D
-    Two,
-    /// 3D
-    Three,
-}
-
-fn transform_from_obj_fields(
+fn transform_from_obj_fields<T: GeometryWithId>(
     transform: HashMap<String, KclValue>,
     source_ranges: Vec<SourceRange>,
-    dimensions: Dimensions,
 ) -> Result<Transform, KclError> {
     // Apply defaults to the transform.
     let replicate = match transform.get("replicate") {
@@ -560,22 +558,14 @@ fn transform_from_obj_fields(
         None => true,
     };
 
-    let scale = match (transform.get("scale"), dimensions) {
-        (Some(x), Dimensions::Three) => array_to_point3d(x, source_ranges.clone())?,
-        (Some(x), Dimensions::Two) => {
-            let Point2d { x, y } = array_to_point2d(x, source_ranges.clone())?;
-            Point3d { x, y, z: 0.0 }
-        }
-        (None, _) => Point3d { x: 1.0, y: 1.0, z: 1.0 },
+    let scale = match transform.get("scale") {
+        Some(x) => T::array_to_point3d(x, source_ranges.clone())?,
+        None => Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
-    let translate = match (transform.get("translate"), dimensions) {
-        (Some(x), Dimensions::Three) => array_to_point3d(x, source_ranges.clone())?,
-        (Some(x), Dimensions::Two) => {
-            let Point2d { x, y } = array_to_point2d(x, source_ranges.clone())?;
-            Point3d { x, y, z: 0.0 }
-        }
-        (None, _) => Point3d { x: 0.0, y: 0.0, z: 0.0 },
+    let translate = match transform.get("translate") {
+        Some(x) => T::array_to_point3d(x, source_ranges.clone())?,
+        None => Point3d { x: 0.0, y: 0.0, z: 0.0 },
     };
 
     let mut rotation = Rotation::default();
@@ -588,13 +578,7 @@ fn transform_from_obj_fields(
             }));
         };
         if let Some(axis) = rot.get("axis") {
-            rotation.axis = match dimensions {
-                Dimensions::Three => array_to_point3d(axis, source_ranges.clone())?.into(),
-                Dimensions::Two => {
-                    let Point2d { x, y } = array_to_point2d(axis, source_ranges.clone())?;
-                    Point3d { x, y, z: 0.0 }.into()
-                }
-            };
+            rotation.axis = T::array_to_point3d(axis, source_ranges.clone())?.into();
         }
         if let Some(angle) = rot.get("angle") {
             match angle {
@@ -610,16 +594,11 @@ fn transform_from_obj_fields(
             }
         }
         if let Some(origin) = rot.get("origin") {
-            rotation.origin = match (origin, dimensions) {
-                (KclValue::String { value: s, meta: _ }, _) if s == "local" => OriginType::Local,
-                (KclValue::String { value: s, meta: _ }, _) if s == "global" => OriginType::Global,
-                (other, Dimensions::Three) => {
-                    let origin = array_to_point3d(other, source_ranges.clone())?.into();
-                    OriginType::Custom { origin }
-                }
-                (other, Dimensions::Two) => {
-                    let Point2d { x, y } = array_to_point2d(other, source_ranges.clone())?;
-                    let origin = kcmc::shared::Point3d { x, y, z: 0.0 };
+            rotation.origin = match origin {
+                KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
+                KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
+                other => {
+                    let origin = T::array_to_point3d(other, source_ranges.clone())?.into();
                     OriginType::Custom { origin }
                 }
             };
