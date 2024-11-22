@@ -56,7 +56,7 @@ echo "New version number without 'v': $new_version_number"
 
 git checkout -b "cut-release-$new_version"
 
-echo "$(jq --arg v "$new_version_number" '.version=$v' package.json --indent 2)" > package.json
+VERSION=$new_version_number yarn json:set-version
 
 git add package.json
 git commit -m "Cut release $new_version"

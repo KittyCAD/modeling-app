@@ -1,4 +1,4 @@
-import { Program, SourceRange } from 'lang/wasm'
+import { SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -1398,11 +1398,6 @@ export class EngineCommandManager extends EventTarget {
     this._camControlsCameraChange = cb
   }
 
-  private getAst: () => Program = () =>
-    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
-  set getAstCb(cb: () => Program) {
-    this.getAst = cb
-  }
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
   private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
@@ -2125,18 +2120,30 @@ export class EngineCommandManager extends EventTarget {
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
    */
-  async waitForAllCommands() {
+  async waitForAllCommands(useFakeExecutor = false) {
     await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    this.artifactGraph = createArtifactGraph({
-      orderedCommands: this.orderedCommands,
-      responseMap: this.responseMap,
-      ast: this.getAst(),
+    setTimeout(() => {
+      // the ast is wrong without this one tick timeout.
+      // an example is `Solids should be select and deletable` e2e test will fail
+      // because the out of date ast messes with selections
+      // TODO: race condition
+      if (!this?.kclManager) return
+      this.artifactGraph = createArtifactGraph({
+        orderedCommands: this.orderedCommands,
+        responseMap: this.responseMap,
+        ast: this.kclManager.ast,
+      })
+      if (useFakeExecutor) {
+        // mock executions don't produce an artifactGraph, so this will always be empty
+        // skipping the below logic to wait for the next real execution
+        return
+      }
+      if (this.artifactGraph.size) {
+        this.deferredArtifactEmptied(null)
+      } else {
+        this.deferredArtifactPopulated(null)
+      }
     })
-    if (this.artifactGraph.size) {
-      this.deferredArtifactEmptied(null)
-    } else {
-      this.deferredArtifactPopulated(null)
-    }
   }
 
   /**

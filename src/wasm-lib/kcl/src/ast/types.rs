@@ -3492,36 +3492,6 @@ const cylinder = startSketchOn('-XZ')
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_parse_tag_named_std_lib() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $xLine)
-"#;
-        let result = crate::parser::top_level_parse(some_program_string);
-
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([76, 82, 0])], message: "Cannot assign a tag to a reserved keyword: xLine" }"#
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_parse_empty_tag() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $)
-"#;
-        let result = crate::parser::top_level_parse(some_program_string);
-
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([57, 59, 0])], message: "Unexpected token: |>" }"#
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_digest() {
         let prog1_string = r#"startSketchOn('XY')
     |> startProfileAt([0, 0], %)

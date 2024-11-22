@@ -35,8 +35,8 @@ export function useCalculateKclExpression({
   const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
   const selectionRange:
-    | (typeof context.selectionRanges.codeBasedSelections)[number]['range']
-    | undefined = context.selectionRanges.codeBasedSelections[0]?.range
+    | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
+    | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -102,6 +102,7 @@ export function useCalculateKclExpression({
         engineCommandManager,
         useFakeExecutor: true,
         programMemoryOverride: kclManager.programMemory.clone(),
+        idGenerator: kclManager.execState.idGenerator,
       })
       const resultDeclaration = ast.body.find(
         (a) =>

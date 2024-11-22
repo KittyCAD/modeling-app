@@ -1,6 +1,6 @@
 //! Standard library patterns.
 
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::HashMap};
 
 use anyhow::Result;
 use derive_docs::stdlib;
@@ -21,6 +21,8 @@ use crate::{
     function_param::FunctionParam,
     std::{types::Uint, Args},
 };
+
+use super::args::Arg;
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
@@ -57,7 +59,6 @@ pub struct LinearPattern3dData {
 }
 
 pub enum LinearPattern {
-    ThreeD(LinearPattern3dData),
     TwoD(LinearPattern2dData),
 }
 
@@ -65,14 +66,12 @@ impl LinearPattern {
     pub fn axis(&self) -> [f64; 3] {
         match self {
             LinearPattern::TwoD(lp) => [lp.axis[0], lp.axis[1], 0.0],
-            LinearPattern::ThreeD(lp) => lp.axis,
         }
     }
 
     fn repetitions(&self) -> RepetitionsNeeded {
         let n = match self {
             LinearPattern::TwoD(lp) => lp.instances.u32(),
-            LinearPattern::ThreeD(lp) => lp.instances.u32(),
         };
         RepetitionsNeeded::from(n)
     }
@@ -80,7 +79,6 @@ impl LinearPattern {
     pub fn distance(&self) -> f64 {
         match self {
             LinearPattern::TwoD(lp) => lp.distance,
-            LinearPattern::ThreeD(lp) => lp.distance,
         }
     }
 }
@@ -270,6 +268,24 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 /// // The 100 layers are replica of each other, with a slight transformation applied to each.
 /// let vase = layer() |> patternTransform(100, transform, %)
 /// ```
+/// ```
+/// fn transform = (i) => {
+///   // Transform functions can return multiple transforms. They'll be applied in order.
+///   return [
+///     { translate: [30 * i, 0, 0] },
+///     { rotation: { angle: 45 * i } },
+///   ]
+/// }
+/// startSketchAt([0, 0])
+///   |> polygon({
+///        radius: 10,
+///        numSides: 4,
+///        center: [0, 0],
+///        inscribed: false
+///      }, %)
+///   |> extrude(4, %)
+///   |> patternTransform(3, transform, %)
+/// ```
 #[stdlib {
      name = "patternTransform",
  }]
@@ -292,6 +308,16 @@ async fn inner_pattern_transform<'a>(
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
+    let transform = transform; // remove mutability
+    execute_pattern_transform(transform, solid_set, exec_state, args).await
+}
+
+async fn execute_pattern_transform<'a>(
+    transforms: Vec<Vec<Transform>>,
+    solid_set: SolidSet,
+    exec_state: &mut ExecState,
+    args: &'a Args,
+) -> Result<Vec<Box<Solid>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
@@ -306,7 +332,7 @@ async fn inner_pattern_transform<'a>(
 
     let mut solids = Vec::new();
     for e in starting_solids {
-        let new_solids = send_pattern_transform(transform.clone(), &e, exec_state, args).await?;
+        let new_solids = send_pattern_transform(transforms.clone(), &e, exec_state, args).await?;
         solids.extend(new_solids);
     }
     Ok(solids)
@@ -315,7 +341,7 @@ async fn inner_pattern_transform<'a>(
 async fn send_pattern_transform(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
-    transform: Vec<Transform>,
+    transforms: Vec<Vec<Transform>>,
     solid: &Solid,
     exec_state: &mut ExecState,
     args: &Args,
@@ -327,7 +353,8 @@ async fn send_pattern_transform(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: solid.id,
-                transform,
+                transform: Default::default(),
+                transforms,
             }),
         )
         .await?;
@@ -356,13 +383,13 @@ async fn make_transform<'a>(
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
-) -> Result<Transform, KclError> {
+) -> Result<Vec<Transform>, KclError> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::Int {
         value: i.into(),
         meta: vec![source_range.into()],
     };
-    let transform_fn_args = vec![repetition_num];
+    let transform_fn_args = vec![Arg::synthetic(repetition_num)];
     let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
 
     // Unpack the returned transform object.
@@ -373,13 +400,38 @@ async fn make_transform<'a>(
             source_ranges: source_ranges.clone(),
         })
     })?;
-    let KclValue::Object { value: transform, meta } = transform_fn_return else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Transform function must return a transform object".to_string(),
-            source_ranges: source_ranges.clone(),
-        }));
+    let transforms = match transform_fn_return {
+        KclValue::Object { value, meta: _ } => vec![value],
+        KclValue::Array { value, meta: _ } => {
+            let transforms: Vec<_> = value
+                .into_iter()
+                .map(|val| {
+                    val.into_object().ok_or(KclError::Semantic(KclErrorDetails {
+                        message: "Transform function must return a transform object".to_string(),
+                        source_ranges: source_ranges.clone(),
+                    }))
+                })
+                .collect::<Result<_, _>>()?;
+            transforms
+        }
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Transform function must return a transform object".to_string(),
+                source_ranges: source_ranges.clone(),
+            }))
+        }
     };
 
+    transforms
+        .into_iter()
+        .map(|obj| transform_from_obj_fields(obj, source_ranges.clone()))
+        .collect()
+}
+
+fn transform_from_obj_fields(
+    transform: HashMap<String, KclValue>,
+    source_ranges: Vec<SourceRange>,
+) -> Result<Transform, KclError> {
     // Apply defaults to the transform.
     let replicate = match transform.get("replicate") {
         Some(KclValue::Bool { value: true, .. }) => true,
@@ -420,7 +472,7 @@ async fn make_transform<'a>(
                 _ => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "The 'rotation.angle' key must be a number (of degrees)".to_string(),
-                        source_ranges: meta.iter().map(|m| m.source_range).collect(),
+                        source_ranges: source_ranges.clone(),
                     }));
                 }
             }
@@ -436,13 +488,12 @@ async fn make_transform<'a>(
             };
         }
     }
-    let t = Transform {
+    Ok(Transform {
         replicate,
         scale: scale.into(),
         translate: translate.into(),
         rotation,
-    };
-    Ok(t)
+    })
 }
 
 fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
@@ -619,39 +670,21 @@ async fn inner_pattern_linear_3d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
-    // Flush the batch for our fillets/chamfers if there are any.
-    // If we do not flush these, then you won't be able to pattern something with fillets.
-    // Flush just the fillets/chamfers that apply to these solids.
-    args.flush_batch_for_solid_set(exec_state, solid_set.clone().into())
-        .await?;
-
-    let starting_solids: Vec<Box<Solid>> = solid_set.into();
-
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
-        return Ok(starting_solids);
-    }
-
-    let mut solids = Vec::new();
-    for solid in starting_solids.iter() {
-        let geometries = pattern_linear(
-            LinearPattern::ThreeD(data.clone()),
-            Geometry::Solid(solid.clone()),
-            exec_state,
-            args.clone(),
-        )
-        .await?;
-
-        let Geometries::Solids(new_solids) = geometries else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of solids".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-
-        solids.extend(new_solids);
-    }
-
-    Ok(solids)
+    let axis = data.axis;
+    let [x, y, z] = axis;
+    let axis_len = f64::sqrt(x * x + y * y + z * z);
+    let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
+    let transforms: Vec<_> = (1..data.instances.u64())
+        .map(|i| {
+            let d = data.distance * (i as f64);
+            let translate = (normalized_axis * d).map(LengthUnit);
+            vec![Transform {
+                translate,
+                ..Default::default()
+            }]
+        })
+        .collect();
+    execute_pattern_transform(transforms, solid_set, exec_state, &args).await
 }
 
 async fn pattern_linear(

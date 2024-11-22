@@ -1,0 +1,630 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing function_sketch_with_position.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "box": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [
+                {
+                  "declarations": [
+                    {
+                      "end": 191,
+                      "id": {
+                        "end": 34,
+                        "name": "myBox",
+                        "start": 29,
+                        "type": "Identifier"
+                      },
+                      "init": {
+                        "body": [
+                          {
+                            "arguments": [
+                              {
+                                "end": 55,
+                                "raw": "'XY'",
+                                "start": 51,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": "XY"
+                              }
+                            ],
+                            "callee": {
+                              "end": 50,
+                              "name": "startSketchOn",
+                              "start": 37,
+                              "type": "Identifier"
+                            },
+                            "end": 56,
+                            "optional": false,
+                            "start": 37,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "arguments": [
+                              {
+                                "end": 80,
+                                "name": "p",
+                                "start": 79,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              {
+                                "end": 83,
+                                "start": 82,
+                                "type": "PipeSubstitution",
+                                "type": "PipeSubstitution"
+                              }
+                            ],
+                            "callee": {
+                              "end": 78,
+                              "name": "startProfileAt",
+                              "start": 64,
+                              "type": "Identifier"
+                            },
+                            "end": 84,
+                            "optional": false,
+                            "start": 64,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "arguments": [
+                              {
+                                "elements": [
+                                  {
+                                    "end": 99,
+                                    "raw": "0",
+                                    "start": 98,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": 0
+                                  },
+                                  {
+                                    "end": 102,
+                                    "name": "l",
+                                    "start": 101,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                ],
+                                "end": 103,
+                                "start": 97,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              {
+                                "end": 106,
+                                "start": 105,
+                                "type": "PipeSubstitution",
+                                "type": "PipeSubstitution"
+                              }
+                            ],
+                            "callee": {
+                              "end": 96,
+                              "name": "line",
+                              "start": 92,
+                              "type": "Identifier"
+                            },
+                            "end": 107,
+                            "optional": false,
+                            "start": 92,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "arguments": [
+                              {
+                                "elements": [
+                                  {
+                                    "end": 122,
+                                    "name": "w",
+                                    "start": 121,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  {
+                                    "end": 125,
+                                    "raw": "0",
+                                    "start": 124,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": 0
+                                  }
+                                ],
+                                "end": 126,
+                                "start": 120,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              {
+                                "end": 129,
+                                "start": 128,
+                                "type": "PipeSubstitution",
+                                "type": "PipeSubstitution"
+                              }
+                            ],
+                            "callee": {
+                              "end": 119,
+                              "name": "line",
+                              "start": 115,
+                              "type": "Identifier"
+                            },
+                            "end": 130,
+                            "optional": false,
+                            "start": 115,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "arguments": [
+                              {
+                                "elements": [
+                                  {
+                                    "end": 145,
+                                    "raw": "0",
+                                    "start": 144,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": 0
+                                  },
+                                  {
+                                    "argument": {
+                                      "end": 149,
+                                      "name": "l",
+                                      "start": 148,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "end": 149,
+                                    "operator": "-",
+                                    "start": 147,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  }
+                                ],
+                                "end": 150,
+                                "start": 143,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              {
+                                "end": 153,
+                                "start": 152,
+                                "type": "PipeSubstitution",
+                                "type": "PipeSubstitution"
+                              }
+                            ],
+                            "callee": {
+                              "end": 142,
+                              "name": "line",
+                              "start": 138,
+                              "type": "Identifier"
+                            },
+                            "end": 154,
+                            "optional": false,
+                            "start": 138,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "arguments": [
+                              {
+                                "end": 169,
+                                "start": 168,
+                                "type": "PipeSubstitution",
+                                "type": "PipeSubstitution"
+                              }
+                            ],
+                            "callee": {
+                              "end": 167,
+                              "name": "close",
+                              "start": 162,
+                              "type": "Identifier"
+                            },
+                            "end": 170,
+                            "optional": false,
+                            "start": 162,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          {
+                            "arguments": [
+                              {
+                                "end": 187,
+                                "name": "h",
+                                "start": 186,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              {
+                                "end": 190,
+                                "start": 189,
+                                "type": "PipeSubstitution",
+                                "type": "PipeSubstitution"
+                              }
+                            ],
+                            "callee": {
+                              "end": 185,
+                              "name": "extrude",
+                              "start": 178,
+                              "type": "Identifier"
+                            },
+                            "end": 191,
+                            "optional": false,
+                            "start": 178,
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          }
+                        ],
+                        "end": 191,
+                        "start": 37,
+                        "type": "PipeExpression",
+                        "type": "PipeExpression"
+                      },
+                      "start": 29,
+                      "type": "VariableDeclarator"
+                    }
+                  ],
+                  "end": 191,
+                  "kind": "const",
+                  "start": 29,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 207,
+                    "name": "myBox",
+                    "start": 202,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 207,
+                  "start": 195,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 209,
+              "nonCodeMeta": {
+                "nonCodeNodes": {
+                  "0": [
+                    {
+                      "end": 195,
+                      "start": 191,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": []
+              },
+              "start": 25
+            },
+            "end": 209,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 11,
+                  "name": "p",
+                  "start": 10,
+                  "type": "Identifier"
+                },
+                "optional": false
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 14,
+                  "name": "h",
+                  "start": 13,
+                  "type": "Identifier"
+                },
+                "optional": false
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 17,
+                  "name": "l",
+                  "start": 16,
+                  "type": "Identifier"
+                },
+                "optional": false
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 20,
+                  "name": "w",
+                  "start": 19,
+                  "type": "Identifier"
+                },
+                "optional": false
+              }
+            ],
+            "start": 9,
+            "type": "FunctionExpression"
+          },
+          "memory": {
+            "environments": [
+              {
+                "bindings": {
+                  "HALF_TURN": {
+                    "type": "Number",
+                    "value": 180.0,
+                    "__meta": []
+                  },
+                  "QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 90.0,
+                    "__meta": []
+                  },
+                  "THREE_QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 270.0,
+                    "__meta": []
+                  },
+                  "ZERO": {
+                    "type": "Number",
+                    "value": 0.0,
+                    "__meta": []
+                  }
+                },
+                "parent": null
+              }
+            ],
+            "currentEnv": 0,
+            "return": null
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                9,
+                209,
+                0
+              ]
+            }
+          ]
+        },
+        "thing": {
+          "type": "Solid",
+          "type": "Solid",
+          "id": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                92,
+                107,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                115,
+                130,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                138,
+                154,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                162,
+                170,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    92,
+                    107,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  6.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    115,
+                    130,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  6.0
+                ],
+                "tag": null,
+                "to": [
+                  10.0,
+                  6.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    138,
+                    154,
+                    0
+                  ]
+                },
+                "from": [
+                  10.0,
+                  6.0
+                ],
+                "tag": null,
+                "to": [
+                  10.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    162,
+                    170,
+                    0
+                  ]
+                },
+                "from": [
+                  10.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  64,
+                  84,
+                  0
+                ]
+              }
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  64,
+                  84,
+                  0
+                ]
+              }
+            ]
+          },
+          "height": 3.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "__meta": [
+            {
+              "sourceRange": [
+                64,
+                84,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

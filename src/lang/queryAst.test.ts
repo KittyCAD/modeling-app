@@ -20,6 +20,7 @@ import {
   createPipeSubstitution,
 } from './modifyAst'
 import { err } from 'lib/trap'
+import { codeRefFromRange } from './std/artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -365,7 +366,9 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: codeRefFromRange([100, 101], ast),
+      },
     })
     expect(result).toEqual(true)
   })
@@ -385,7 +388,9 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'extrude',
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: codeRefFromRange([100, 101], ast),
+      },
     })
     expect(result).toEqual(true)
   })
@@ -403,7 +408,9 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: codeRefFromRange([100, 101], ast),
+      },
     })
     expect(result).toEqual(false)
   })
@@ -415,7 +422,9 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
-      selection: { type: 'default', range: [9, 10] },
+      selection: {
+        codeRef: codeRefFromRange([9, 10], ast),
+      },
     })
     expect(result).toEqual(false)
   })
@@ -435,7 +444,9 @@ part001 = startSketchAt([-1.41, 3.46])
     const execState = await enginelessExecutor(ast)
     const result = hasExtrudeSketch({
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: codeRefFromRange([100, 101], ast),
+      },
       programMemory: execState.memory,
     })
     expect(result).toEqual(true)
@@ -454,7 +465,9 @@ part001 = startSketchAt([-1.41, 3.46])
     const execState = await enginelessExecutor(ast)
     const result = hasExtrudeSketch({
       ast,
-      selection: { type: 'default', range: [100, 101] },
+      selection: {
+        codeRef: codeRefFromRange([100, 101], ast),
+      },
       programMemory: execState.memory,
     })
     expect(result).toEqual(true)
@@ -467,7 +480,9 @@ part001 = startSketchAt([-1.41, 3.46])
     const execState = await enginelessExecutor(ast)
     const result = hasExtrudeSketch({
       ast,
-      selection: { type: 'default', range: [10, 11] },
+      selection: {
+        codeRef: codeRefFromRange([10, 11], ast),
+      },
       programMemory: execState.memory,
     })
     expect(result).toEqual(false)
@@ -556,8 +571,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        range: [characterIndex, characterIndex],
-        type: 'default',
+        codeRef: codeRefFromRange([characterIndex, characterIndex], ast),
       },
       ast
     )
@@ -571,8 +585,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        range: [characterIndex, characterIndex],
-        type: 'default',
+        codeRef: codeRefFromRange([characterIndex, characterIndex], ast),
       },
       ast
     )
@@ -586,8 +599,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        range: [characterIndex, characterIndex],
-        type: 'default',
+        codeRef: codeRefFromRange([characterIndex, characterIndex], ast),
       },
       ast
     )

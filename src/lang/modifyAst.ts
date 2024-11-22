@@ -1,5 +1,5 @@
-import { Selection } from 'lib/selections'
 import { err, reportRejection, trap } from 'lib/trap'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -836,7 +836,7 @@ export function createBinaryExpressionWithUnary([left, right]: [
 
 export function giveSketchFnCallTag(
   ast: Node<Program>,
-  range: Selection['range'],
+  range: SourceRange,
   tag?: string
 ):
   | {
@@ -910,7 +910,7 @@ export function moveValueIntoNewVariablePath(
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   variableName: string
 ): {
   modifiedAst: Node<Program>
@@ -1035,18 +1035,15 @@ export async function deleteFromSelection(
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
-  const range = selection.range
-  const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection?.codeRef?.pathToNode,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
   if (
-    (selection.type === 'extrude-wall' ||
-      selection.type === 'end-cap' ||
-      selection.type === 'start-cap') &&
+    (selection?.artifact?.type === 'wall' ||
+      selection?.artifact?.type === 'cap') &&
     varDec.node.init.type === 'PipeExpression'
   ) {
     const varDecName = varDec.node.id.name
@@ -1126,7 +1123,6 @@ export async function deleteFromSelection(
               sketchName
             )
             if (err(sketchToPreserve)) return sketchToPreserve
-            console.log('sketchName', sketchName)
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
             const faceDetails = await getFaceDetails(sketchToPreserve.on.id)
