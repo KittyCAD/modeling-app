@@ -59,7 +59,6 @@ pub struct LinearPattern3dData {
 }
 
 pub enum LinearPattern {
-    ThreeD(LinearPattern3dData),
     TwoD(LinearPattern2dData),
 }
 
@@ -67,14 +66,12 @@ impl LinearPattern {
     pub fn axis(&self) -> [f64; 3] {
         match self {
             LinearPattern::TwoD(lp) => [lp.axis[0], lp.axis[1], 0.0],
-            LinearPattern::ThreeD(lp) => lp.axis,
         }
     }
 
     fn repetitions(&self) -> RepetitionsNeeded {
         let n = match self {
             LinearPattern::TwoD(lp) => lp.instances.u32(),
-            LinearPattern::ThreeD(lp) => lp.instances.u32(),
         };
         RepetitionsNeeded::from(n)
     }
@@ -82,7 +79,6 @@ impl LinearPattern {
     pub fn distance(&self) -> f64 {
         match self {
             LinearPattern::TwoD(lp) => lp.distance,
-            LinearPattern::ThreeD(lp) => lp.distance,
         }
     }
 }
@@ -312,6 +308,16 @@ async fn inner_pattern_transform<'a>(
         let t = make_transform(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
+    let transform = transform; // remove mutability
+    execute_pattern_transform(transform, solid_set, exec_state, args).await
+}
+
+async fn execute_pattern_transform<'a>(
+    transforms: Vec<Vec<Transform>>,
+    solid_set: SolidSet,
+    exec_state: &mut ExecState,
+    args: &'a Args,
+) -> Result<Vec<Box<Solid>>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
@@ -326,7 +332,7 @@ async fn inner_pattern_transform<'a>(
 
     let mut solids = Vec::new();
     for e in starting_solids {
-        let new_solids = send_pattern_transform(transform.clone(), &e, exec_state, args).await?;
+        let new_solids = send_pattern_transform(transforms.clone(), &e, exec_state, args).await?;
         solids.extend(new_solids);
     }
     Ok(solids)
@@ -664,39 +670,21 @@ async fn inner_pattern_linear_3d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Solid>>, KclError> {
-    // Flush the batch for our fillets/chamfers if there are any.
-    // If we do not flush these, then you won't be able to pattern something with fillets.
-    // Flush just the fillets/chamfers that apply to these solids.
-    args.flush_batch_for_solid_set(exec_state, solid_set.clone().into())
-        .await?;
-
-    let starting_solids: Vec<Box<Solid>> = solid_set.into();
-
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
-        return Ok(starting_solids);
-    }
-
-    let mut solids = Vec::new();
-    for solid in starting_solids.iter() {
-        let geometries = pattern_linear(
-            LinearPattern::ThreeD(data.clone()),
-            Geometry::Solid(solid.clone()),
-            exec_state,
-            args.clone(),
-        )
-        .await?;
-
-        let Geometries::Solids(new_solids) = geometries else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of solids".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-
-        solids.extend(new_solids);
-    }
-
-    Ok(solids)
+    let axis = data.axis;
+    let [x, y, z] = axis;
+    let axis_len = f64::sqrt(x * x + y * y + z * z);
+    let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
+    let transforms: Vec<_> = (1..data.instances.u64())
+        .map(|i| {
+            let d = data.distance * (i as f64);
+            let translate = (normalized_axis * d).map(LengthUnit);
+            vec![Transform {
+                translate,
+                ..Default::default()
+            }]
+        })
+        .collect();
+    execute_pattern_transform(transforms, solid_set, exec_state, &args).await
 }
 
 async fn pattern_linear(
