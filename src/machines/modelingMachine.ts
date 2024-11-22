@@ -748,14 +748,6 @@ export const modelingMachine = setup({
         })
       })().catch(reportRejection)
     },
-    'conditionally equip line tool': ({ event: { type } }) => {
-      if (type === 'xstate.done.actor.animate-to-face') {
-        sceneInfra.modelingSend({
-          type: 'change tool',
-          data: { tool: 'line' },
-        })
-      }
-    },
     'setup client side sketch segments': ({
       context: { sketchDetails, selectionRanges },
     }) => {
@@ -860,7 +852,6 @@ export const modelingMachine = setup({
 
     'listen for circle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-      sceneEntitiesManager.createIntersectionPlane()
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
@@ -966,7 +957,6 @@ export const modelingMachine = setup({
     },
     'setup noPoints onClick listener': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
-
       sceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
         afterClick: () => sceneInfra.modelingSend({ type: 'Add start point' }),
@@ -2176,11 +2166,7 @@ export const modelingMachine = setup({
         'enable copilot',
       ],
 
-      entry: [
-        'add axis n grid',
-        'conditionally equip line tool',
-        'clientToEngine cam sync direction',
-      ],
+      entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },
 
     'Sketch no face': {
