@@ -407,7 +407,8 @@ impl GeometryTrait for Box<Sketch> {
         self.id
     }
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-        array_to_point3d(val, source_ranges)
+        let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
+        Ok(Point3d { x, y, z: 0.0 })
     }
 }
 
@@ -421,8 +422,7 @@ impl GeometryTrait for Box<Solid> {
         self.id
     }
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-        let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
-        Ok(Point3d { x, y, z: 0.0 })
+        array_to_point3d(val, source_ranges)
     }
 }
 
