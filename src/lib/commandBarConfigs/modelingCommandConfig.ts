@@ -40,6 +40,10 @@ export type ModelingCommandSchema = {
     selection: Selections
     radius: KclCommandValue
   }
+  'Offset plane': {
+    plane: Selections
+    distance: KclCommandValue
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -272,6 +276,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       angle: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+    },
+  },
+  'Offset plane': {
+    description: 'Offset a plane.',
+    icon: 'plane',
+    args: {
+      plane: {
+        inputType: 'selection',
+        selectionTypes: ['plane'],
+        multiple: true,
+        required: true,
+        skip: true,
+      },
+      distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
     },
