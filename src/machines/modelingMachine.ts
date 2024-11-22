@@ -1058,11 +1058,11 @@ export const modelingMachine = setup({
     'engineToClient cam sync direction': () => {
       sceneInfra.camControls.syncDirection = 'engineToClient'
     },
-    /** TODO: this action is hiding unawaited asynchroneous code */
+    /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': () => {
       kclManager.setSelectionFilter(['face', 'object'])
     },
-    /** TODO: this action is hiding unawaited asynchroneous code */
+    /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': () =>
       kclManager.defaultSelectionFilter(),
     'Delete segment': ({ context: { sketchDetails }, event }) => {

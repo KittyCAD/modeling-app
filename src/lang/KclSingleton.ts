@@ -603,7 +603,7 @@ const defaultSelectionFilter: EntityType_type[] = [
   'object',
 ]
 
-/** TODO: This function is not syncrhonous but is currently treated as such */
+/** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
@@ -612,7 +612,7 @@ function setSelectionFilterToDefault(
   setSelectionFilter(defaultSelectionFilter, engineCommandManager)
 }
 
-/** TODO: This function is not syncrhonous but is currently treated as such */
+/** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
   filter: EntityType_type[],
   engineCommandManager: EngineCommandManager
