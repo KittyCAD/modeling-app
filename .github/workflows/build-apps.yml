@@ -207,7 +207,7 @@ jobs:
 
       # TODO: add the 'Build for Mac TestFlight (nightly)' stage back
 
-      # updater-test builds are only happening on main
+      # The steps below are for updater-test builds, only on release
 
       - uses: actions/download-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
