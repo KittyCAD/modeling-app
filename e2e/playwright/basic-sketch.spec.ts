@@ -9,7 +9,11 @@ import { HomePageFixture } from './fixtures/homePageFixture'
 
 test.setTimeout(120000)
 
-async function doBasicSketch(page: Page, homePage: HomePageFixture, openPanes: string[]) {
+async function doBasicSketch(
+  page: Page,
+  homePage: HomePageFixture,
+  openPanes: string[]
+) {
   const u = await getUtils(page)
   await page.setBodyDimensions({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -139,16 +143,19 @@ async function doBasicSketch(page: Page, homePage: HomePageFixture, openPanes: s
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', async ({ page, homePage }) => { // Skip on windows it is being weird.
+  test('code pane open at start', async ({ page, homePage }) => {
+    // Skip on windows it is being weird.
     await doBasicSketch(page, homePage, ['code'])
   })
 
-  test('code pane closed at start', async ({ page, homePage }) => { // Load the app with the code panes
-  await page.addInitScript(async (persistModelingContext) => {
-    localStorage.setItem(
-      persistModelingContext,
-      JSON.stringify({ openPanes: [] })
-    )
-  }, PERSIST_MODELING_CONTEXT)
-  await doBasicSketch(page, homePage, []) })
+  test('code pane closed at start', async ({ page, homePage }) => {
+    // Load the app with the code panes
+    await page.addInitScript(async (persistModelingContext) => {
+      localStorage.setItem(
+        persistModelingContext,
+        JSON.stringify({ openPanes: [] })
+      )
+    }, PERSIST_MODELING_CONTEXT)
+    await doBasicSketch(page, homePage, [])
+  })
 })

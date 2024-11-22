@@ -418,7 +418,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
-      return code.replaceAll(' ', '').replaceAll("\n", '')
+      return code.replaceAll(' ', '').replaceAll('\n', '')
     },
     normalisedEditorCode: async () => {
       const code = await page.locator('.cm-content').innerText()
@@ -687,14 +687,16 @@ const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
 
   const downloadDir = path.resolve(
     page.TEST_SETTINGS_FILE_KEY,
-    "downloads-during-playwright"
+    'downloads-during-playwright'
   )
 
   // Expect there to be at least one file
-  expect.poll(async () => {
-    const files = await fsp.readdir(downloadDir)
-    return files.length
-  }).toBe(1)
+  expect
+    .poll(async () => {
+      const files = await fsp.readdir(downloadDir)
+      return files.length
+    })
+    .toBe(1)
 
   // Go through the downloads dir and move files to new location
   const files = await fsp.readdir(downloadDir)
@@ -832,7 +834,13 @@ export async function setup(
   testInfo?: TestInfo
 ) {
   await context.addInitScript(
-    async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY, PLAYWRIGHT_TEST_DIR }) => {
+    async ({
+      token,
+      settingsKey,
+      settings,
+      IS_PLAYWRIGHT_KEY,
+      PLAYWRIGHT_TEST_DIR,
+    }) => {
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
