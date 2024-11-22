@@ -100,6 +100,7 @@ layout: manual
 * [`startSketchAt`](kcl/startSketchAt)
 * [`startSketchOn`](kcl/startSketchOn)
 * [`tan`](kcl/tan)
+* [`tangentToEnd`](kcl/tangentToEnd)
 * [`tangentialArc`](kcl/tangentialArc)
 * [`tangentialArcTo`](kcl/tangentialArcTo)
 * [`tangentialArcToRelative`](kcl/tangentialArcToRelative)
