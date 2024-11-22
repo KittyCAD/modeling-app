@@ -34,6 +34,8 @@ export function useCalculateKclExpression({
 } {
   const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
+  // If there is no selection, use the end of the code
+  // so all variables are available
   const selectionRange:
     | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
     | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
@@ -72,11 +74,12 @@ export function useCalculateKclExpression({
   }, [programMemory, newVariableName])
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!programMemory) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
       kclManager.programMemory,
-      selectionRange
+      // If there is no selection, use the end of the code
+      selectionRange || [code.length, code.length]
     )
     setAvailableVarInfo(varInfo)
   }, [kclManager.ast, kclManager.programMemory, selectionRange])
