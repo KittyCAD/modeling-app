@@ -3,7 +3,6 @@ import fsSync from 'node:fs'
 import path from 'path'
 import { dialog, shell } from 'electron'
 import { MachinesListing } from 'components/MachineManagerProvider'
-import { ReleaseInfo } from 'lib/types'
 
 type EnvFn = (value?: string) => string
 
@@ -70,7 +69,6 @@ export interface IElectronAPI {
   }
   kittycad: (access: string, args: any) => any
   listMachines: (machineApiIp: string) => Promise<MachinesListing>
-  getNightlyReleases: () => Promise<ReleaseInfo>
   getMachineApiIp: () => Promise<string | null>
   onUpdateDownloadStart: (
     callback: (value: { version: string }) => void
