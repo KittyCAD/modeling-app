@@ -62,7 +62,7 @@ lazy_static! {
     };
 }
 
-pub fn lexer(i: &str, module_id: ModuleId) -> Result<Vec<Token>, ParseError<Input<'_>, ContextError>> {
+pub fn lex(i: &str, module_id: ModuleId) -> Result<Vec<Token>, ParseError<Input<'_>, ContextError>> {
     let state = State::new(module_id);
     let input = Input {
         input: Located::new(i),
@@ -469,7 +469,7 @@ mod tests {
     fn test_program0() {
         let program = "const a=5";
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer(program, module_id).unwrap();
+        let actual = lex(program, module_id).unwrap();
         let expected = vec![
             Token {
                 token_type: TokenType::Keyword,
@@ -514,7 +514,7 @@ mod tests {
     fn test_program1() {
         let program = "54 + 22500 + 6";
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer(program, module_id).unwrap();
+        let actual = lex(program, module_id).unwrap();
         let expected = vec![
             Token {
                 token_type: TokenType::Number,
@@ -1388,7 +1388,7 @@ show(part001)"#;
                 value: ")".to_owned(),
             },
         ];
-        let actual = lexer(program, module_id).unwrap();
+        let actual = lex(program, module_id).unwrap();
         assert_tokens(expected, actual);
     }
 
@@ -1403,7 +1403,7 @@ const things = "things"
 
 // this is also a comment"#;
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer(program, module_id).unwrap();
+        let actual = lex(program, module_id).unwrap();
         use TokenType::*;
         let expected = vec![
             Token {
@@ -1837,26 +1837,26 @@ const things = "things"
                 value: "]".to_owned(),
             },
         ];
-        let actual = lexer(program, module_id).unwrap();
+        let actual = lex(program, module_id).unwrap();
         assert_tokens(expected, actual);
     }
 
     #[test]
     fn test_kitt() {
         let program = include_str!("../../../tests/executor/inputs/kittycad_svg.kcl");
-        let actual = lexer(program, ModuleId::default()).unwrap();
+        let actual = lex(program, ModuleId::default()).unwrap();
         assert_eq!(actual.len(), 5103);
     }
     #[test]
     fn test_pipes_on_pipes() {
         let program = include_str!("../../../tests/executor/inputs/pipes_on_pipes.kcl");
-        let actual = lexer(program, ModuleId::default()).unwrap();
+        let actual = lex(program, ModuleId::default()).unwrap();
         assert_eq!(actual.len(), 17841);
     }
     #[test]
     fn test_lexer_negative_word() {
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer("-legX", module_id).unwrap();
+        let actual = lex("-legX", module_id).unwrap();
         let expected = vec![
             Token {
                 token_type: TokenType::Operator,
@@ -1879,7 +1879,7 @@ const things = "things"
     #[test]
     fn not_eq() {
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer("!=", module_id).unwrap();
+        let actual = lex("!=", module_id).unwrap();
         let expected = vec![Token {
             token_type: TokenType::Operator,
             value: "!=".to_owned(),
@@ -1893,7 +1893,7 @@ const things = "things"
     #[test]
     fn test_unrecognized_token() {
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer("12 ; 8", module_id).unwrap();
+        let actual = lex("12 ; 8", module_id).unwrap();
         let expected = vec![
             Token {
                 token_type: TokenType::Number,
@@ -1938,7 +1938,7 @@ const things = "things"
     #[test]
     fn import_keyword() {
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer("import foo", module_id).unwrap();
+        let actual = lex("import foo", module_id).unwrap();
         let expected = Token {
             token_type: TokenType::Keyword,
             value: "import".to_owned(),
@@ -1952,7 +1952,7 @@ const things = "things"
     #[test]
     fn import_function() {
         let module_id = ModuleId::from_usize(1);
-        let actual = lexer("import(3)", module_id).unwrap();
+        let actual = lex("import(3)", module_id).unwrap();
         let expected = Token {
             token_type: TokenType::Word,
             value: "import".to_owned(),

@@ -379,6 +379,7 @@ export class SceneInfra {
       this.currentMouseVector,
       this.camControls.camera
     )
+
     // Get the intersection of the ray with the default planes
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,

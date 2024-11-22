@@ -44,6 +44,13 @@ pub struct KclErrorDetails {
 }
 
 impl KclError {
+    pub fn internal(message: String) -> KclError {
+        KclError::Internal(KclErrorDetails {
+            source_ranges: Default::default(),
+            message,
+        })
+    }
+
     /// Get the error message.
     pub fn get_message(&self) -> String {
         format!("{}: {}", self.error_type(), self.message())
