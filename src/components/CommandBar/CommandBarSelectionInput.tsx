@@ -1,6 +1,5 @@
 import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useKclContext } from 'lang/KclProvider'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandArgument } from 'lib/commandTypes'
 import {
@@ -49,7 +48,6 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
-  const { code } = useKclContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)

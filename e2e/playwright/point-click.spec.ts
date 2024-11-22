@@ -2,7 +2,6 @@ import { test, expect, AuthenticatedApp } from './fixtures/fixtureSetup'
 import { EditorFixture } from './fixtures/editorFixture'
 import { SceneFixture } from './fixtures/sceneFixture'
 import { ToolbarFixture } from './fixtures/toolbarFixture'
-import { TEST_COLORS } from './test-utils'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
