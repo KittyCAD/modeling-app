@@ -1289,6 +1289,8 @@ pub enum Path {
         center: [f64; 2],
         /// Radius of the circle that this arc is drawn on.
         radius: f64,
+        /// True if the arc is counterclockwise.
+        ccw: bool,
     },
 }
 
@@ -1415,17 +1417,18 @@ impl Path {
 
     pub(crate) fn get_tangential_info(&self) -> GetTangentialInfoFromPathsResult {
         match self {
-            Path::TangentialArc { center, ccw, .. } => GetTangentialInfoFromPathsResult {
+            Path::TangentialArc { center, ccw, .. }
+            | Path::TangentialArcTo { center, ccw, .. }
+            | Path::Arc { center, ccw, .. } => GetTangentialInfoFromPathsResult {
                 center_or_tangent_point: *center,
                 is_center: true,
                 ccw: *ccw,
             },
-            Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: *center,
-                is_center: true,
-                ccw: *ccw,
-            },
-            _ => {
+            Path::ToPoint { .. }
+            | Path::Circle { .. }
+            | Path::Horizontal { .. }
+            | Path::AngledLineTo { .. }
+            | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult {
                     center_or_tangent_point: base.from,

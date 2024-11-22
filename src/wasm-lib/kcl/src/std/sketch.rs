@@ -1564,6 +1564,7 @@ pub(crate) async fn inner_arc(
             source_ranges: vec![args.source_range],
         }));
     }
+    let ccw = angle_start.to_degrees() < angle_end.to_degrees();
 
     let id = exec_state.id_generator.next_uuid();
 
@@ -1594,6 +1595,7 @@ pub(crate) async fn inner_arc(
         },
         center: center.into(),
         radius,
+        ccw,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1668,8 +1670,8 @@ pub(crate) async fn inner_arc_to(
     .await?;
 
     let start = [from.x, from.y];
-    let interior = [data.interior[0], data.interior[1]];
-    let end = [data.end[0], data.end[1]];
+    let interior = data.interior;
+    let end = data.end;
 
     // compute the center of the circle since we do not have the value returned from the engine
     let center = calculate_circle_center(start, interior, end);
@@ -1679,6 +1681,8 @@ pub(crate) async fn inner_arc_to(
     let sum_of_square_differences =
         (center[0] - start[0] * center[0] - start[0]) + (center[1] - start[1] * center[1] - start[1]);
     let radius = sum_of_square_differences.sqrt();
+
+    let ccw = is_ccw(start, interior, end);
 
     let current_path = Path::Arc {
         base: BasePath {
@@ -1692,6 +1696,7 @@ pub(crate) async fn inner_arc_to(
         },
         center,
         radius,
+        ccw,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1702,6 +1707,26 @@ pub(crate) async fn inner_arc_to(
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
+}
+
+/// Returns true if the three-point arc is counterclockwise.  The order of
+/// parameters is critical.
+///
+/// |   end
+/// |  /
+/// |  |    / interior
+/// |  /  /
+/// | | /
+/// |/_____________
+/// start
+///
+/// If the slope of the line from start to interior is less than the slope of
+/// the line from start to end, the arc is counterclockwise.
+fn is_ccw(start: [f64; 2], interior: [f64; 2], end: [f64; 2]) -> bool {
+    let t1 = (interior[0] - start[0]) * (end[1] - start[1]);
+    let t2 = (end[0] - start[0]) * (interior[1] - start[1]);
+    // If these terms are equal, the points are collinear.
+    t1 > t2
 }
 
 /// Data to draw a tangential arc.

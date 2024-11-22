@@ -441,11 +441,11 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 ///
 /// ```no_run
-/// // Vertical pill.
+/// // Vertical pill.  Use absolute coordinate for arc.
 /// pillSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 20], %)
-///   |> tangentialArcToRelative([10, 0], %, $arc1)
+///   |> tangentialArcTo([10, 20], %, $arc1)
 ///   |> angledLine({
 ///     angle: tangentToEnd(arc1),
 ///     length: 20,
@@ -469,6 +469,17 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   |> close(%)
 ///
 /// rectangleExtrude = extrude(10, rectangleSketch)
+/// ```
+///
+/// ```no_run
+/// bottom = startSketchOn("XY")
+///   |> startProfileAt([0, 0], %)
+///   |> arcTo({
+///        end: [10, 10],
+///        interior: [5, 1]
+///      }, %, $arc1)
+///   |> angledLine([tangentToEnd(arc1), 20], %)
+///   |> close(%)
 /// ```
 #[stdlib {
     name = "tangentToEnd",
