@@ -128,45 +128,39 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-#### 1. Bump the versions by running `./make-release.sh`
+#### 1. Create a 'Cut release $VERSION' issue
 
-The `./make-release.sh` script has git commands to pull main but to be sure you can run the following git commands to have a fresh `main` locally.
+It will be used to document changelog discussions and release testing.
+
+https://github.com/KittyCAD/modeling-app/issues/new
+
+#### 2. Push a new tag
+
+Create a new tag and push it to the repo (eg. `v0.28.0` for `$VERSION`)
 
 ```
-git branch -D main
-git checkout main
-git pull origin
-./make-release.sh
-# Copy within the back ticks and paste the stdout of the change log
-git push --set-upstream origin <branch name created from ./make-release.sh>
+VERSION=$(./scripts/semantic-release.sh)
+git tag $VERSION
+git push origin --tags
 ```
 
-That will create the branch with the updated json files for you:
-- run `./make-release.sh` or `./make-release.sh patch` for a patch update;
-- run `./make-release.sh minor` for minor; or
-- run `./make-release.sh major` for major.
+This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files as well as updater-test artifacts.
 
-After it runs you should just need the push the branch and open a PR.
-
-#### 2. Create a Cut Release PR
-
-When you open the PR copy the change log from the output of the `./make-release.sh` script into the description of the PR.
-
-**Important:** Pull request title needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
-
-The PR may then serve as a place to discuss the human-readable changelog and extra QA. The `make-release.sh` tool suggests a changelog for you too to be used as PR description, just make sure to delete lines that are not user facing.
+Once the workflow succeeds, a draft release will be created at https://github.com/KittyCAD/modeling-app/releases.
 
 #### 3. Manually test artifacts from the Cut Release PR
 
 ##### Release builds
 
-The release builds can be found under the `out-{platform}` zip, at the very bottom of the `build-publish-apps` summary page for each commit on this branch.
+The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in 2.).
 
-Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the Cut Release PR.
+Alternatively, the draft release will also include these builds.
+
+Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
 
 ##### Updater-test builds
 
-The other `build-publish-apps` output in Cut Release PRs is `updater-test-{platform}`. As we don't have a way to test this fully automatically, we have a semi-automated process. For macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
+The other `build-apps` output in the release `build-apps` workflow (triggered by 2.) is `updater-test-{arch}-{platform}`. It's a semi-automated process: for macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
 
 The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
 
@@ -182,18 +176,15 @@ If the prompt doesn't show up, start the app in command line to grab the electro
 ./Zoo Modeling App-{version}-{arch}-linux.AppImage
 ```
 
-#### 4. Merge the Cut Release PR
+#### 4. Publish the release
 
-This will kick the `create-release` action, that creates a _Draft_ release out of this Cut Release PR merge after less than a minute, with the new version as title and Cut Release PR as description.
+Head over to https://github.com/KittyCAD/modeling-app/releases, paste in the changelog discussed in the issue, and publish the draft release created by the `build-apps` workflow from step 2.
 
+A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter. On success, the files will be uploaded to the public bucket and the announcement on Discord will be sent. 
 
-#### 5. Publish the release
+#### 5. Close the issue
 
-Head over to https://github.com/KittyCAD/modeling-app/releases, the draft release corresponding to the merged Cut Release PR should show up at the top as _Draft_. Click on it, verify the content, and hit _Publish_.
-
-#### 6. Profit
-
-A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter.
+If everything is well and the release is out to the public, the issue tracking the release shall be closed.
 
 
 ## Fuzzing the parser
