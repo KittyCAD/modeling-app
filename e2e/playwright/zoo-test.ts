@@ -10,6 +10,10 @@ export { expect, Page, BrowserContext, TestInfo } from '@playwright/test'
 // switch between web and electron if needed.
 const pwTestFnWithFixtures = playwrightTestFn.extend<Fixtures>(fixtures)
 
+
+// In JavaScript you cannot replace a function's body only (despite functions
+// are themselves objects, which you'd expect a body property or something...)
+// So we must redefine the function and then re-attach properties.
 export function test(desc, objOrFn, fnMaybe) {
   const hasTestConf = typeof objOrFn === 'object'
   const fn = hasTestConf ? fnMaybe : objOrFn
@@ -54,6 +58,13 @@ export function test(desc, objOrFn, fnMaybe) {
         }, dims)
       }
 
+      // We need to expose this in order for some tests that require folder
+      // creation. Before they used to do this by their own electronSetup({...})
+      // calls.
+      tronApp.context.folderSetupFn = function(fn) {
+        return fn(tronApp.dir).then(() => ({ dir: tronApp.dir }))
+      }
+
       await fn(
         {
           context: tronApp.context,
@@ -74,3 +85,4 @@ test.afterEach = pwTestFnWithFixtures.afterEach
 test.step = pwTestFnWithFixtures.step
 test.skip = pwTestFnWithFixtures.skip
 test.setTimeout = pwTestFnWithFixtures.setTimeout
+test.fixme = pwTestFnWithFixtures.fixme

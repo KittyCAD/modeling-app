@@ -65,6 +65,7 @@ export class AuthenticatedTronApp {
   public readonly testInfo: TestInfo
   public electronApp?: ElectronApplication
   public readonly viewPortSize = { width: 1200, height: 500 }
+  public dir: string = ""
 
   constructor(context: BrowserContext, page: Page, testInfo: TestInfo) {
     this._page = page
@@ -80,7 +81,7 @@ export class AuthenticatedTronApp {
       appSettings?: Partial<SaveSettingsPayload>
     } = { fixtures: {} }
   ) {
-    const { electronApp, page, context } = await setupElectron({
+    const { electronApp, page, context, dir } = await setupElectron({
       testInfo: this.testInfo,
       folderSetupFn: arg.folderSetupFn,
       cleanProjectDir: arg.cleanProjectDir,
@@ -89,6 +90,7 @@ export class AuthenticatedTronApp {
     this.page = page
     this.context = context
     this.electronApp = electronApp
+    this.dir = dir
 
     // Setup localStorage, addCookies, reload
     await setup(this.context, this.page, this.testInfo)

@@ -11,7 +11,7 @@ import {
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
-import { join } from 'path'
+import path from 'path'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
@@ -682,6 +682,29 @@ export const makeTemplate: (
   }
 }
 
+const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
+  await fsp.mkdir(path.dirname(toLocation), { recursive: true })
+
+  const downloadDir = path.resolve(
+    page.TEST_SETTINGS_FILE_KEY,
+    "downloads-during-playwright"
+  )
+
+  // Expect there to be at least one file
+  expect.poll(async () => {
+    const files = await fsp.readdir(downloadDir)
+    return files.length
+  }).toBe(1)
+
+  // Go through the downloads dir and move files to new location
+  const files = await fsp.readdir(downloadDir)
+
+  // Assumption: only ever one file here.
+  for (let file of files) {
+    await fsp.rename(path.resolve(downloadDir, file), toLocation)
+  }
+}
+
 export interface Paths {
   modelPath: string
   imagePath: string
@@ -694,7 +717,8 @@ export const doExport = async (
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
   if (exportFrom === 'dropdown') {
-    await page.getByRole('button', { name: APP_NAME }).click()
+    await page.getByTestId('project-sidebar-toggle').click()
+
     const exportMenuButton = page.getByRole('button', {
       name: 'Export current part',
     })
@@ -735,25 +759,12 @@ export const doExport = async (
   }
   await expect(page.getByText('Confirm Export')).toBeVisible()
 
-  const getPromiseAndResolve = () => {
-    let resolve: any = () => {}
-    const promise = new Promise<Download>((r) => {
-      resolve = r
-    })
-    return [promise, resolve]
-  }
-
-  const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
-  let downloadCnt = 0
-
-  if (exportFrom === 'dropdown')
-    page.on('download', async (download) => {
-      if (downloadCnt === 0) {
-        downloadResolve1(download)
-      }
-      downloadCnt++
-    })
   await page.getByRole('button', { name: 'Submit command' }).click()
+
+  // This usually happens immediately after. If we're too slow we don't
+  // catch it.
+  await expect(page.getByText('Exported successfully')).toBeVisible()
+
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
     return {
       modelPath: '',
@@ -763,14 +774,11 @@ export const doExport = async (
   }
 
   // Handle download
-  const download = await downloadPromise1
   const downloadLocationer = (extra = '', isImage = false) =>
     `./e2e/playwright/export-snapshots/${output.type}-${
       'storage' in output ? output.storage : ''
     }${extra}.${isImage ? 'png' : output.type}`
   const downloadLocation = downloadLocationer()
-
-  await download.saveAs(downloadLocation)
 
   if (output.type === 'step') {
     // stable timestamps for step files
@@ -780,6 +788,12 @@ export const doExport = async (
       '1970-01-01T00:00:00.0+00:00'
     )
     await fsp.writeFile(downloadLocation, newFileContents)
+  } else {
+    // By default all files are downloaded to the same place in playwright
+    // (declared in src/lib/exportSave)
+    // To remain consistent with our old web tests, we want to move some downloads
+    // (images) to another directory.
+    await moveDownloadedFileTo(page, downloadLocation)
   }
 
   return {
@@ -818,12 +832,13 @@ export async function setup(
   testInfo?: TestInfo
 ) {
   await context.addInitScript(
-    async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+    async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY, PLAYWRIGHT_TEST_DIR }) => {
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
+      localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
     },
     {
       token: secrets.token,
@@ -840,6 +855,7 @@ export async function setup(
         } as Partial<SaveSettingsPayload>,
       }),
       IS_PLAYWRIGHT_KEY,
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app.projectDirectory,
     }
   )
 
@@ -901,11 +917,13 @@ export async function setupElectron({
   const context = electronApp.context()
   const page = await electronApp.firstWindow()
 
+  page.TEST_SETTINGS_FILE_KEY = projectDirName
+
   context.on('console', console.log)
   page.on('console', console.log)
 
   if (cleanProjectDir) {
-    const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
+    const tempSettingsFilePath = path.join(projectDirName, SETTINGS_FILE_NAME)
     const settingsOverrides = TOML.stringify(
       appSettings
         ? {
@@ -1022,7 +1040,7 @@ export async function createProject({
 }
 
 export function executorInputPath(fileName: string): string {
-  return join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+  return path.join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
 }
 
 export async function doAndWaitForImageDiff(
