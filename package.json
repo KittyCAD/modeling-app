@@ -1,6 +1,6 @@
 {
   "name": "zoo-modeling-app",
-  "version": "0.27.0",
+  "version": "0.0.0",
   "private": true,
   "productName": "Zoo Modeling App",
   "author": {
@@ -93,6 +93,7 @@
     "lint-fix": "eslint --fix src e2e packages/codemirror-lsp-client",
     "lint": "eslint --max-warnings 0 src e2e packages/codemirror-lsp-client",
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
+    "files:set-notes": "./scripts/set-files-notes.sh",
     "files:flip-to-nightly": "./scripts/flip-files-to-nightly.sh",
     "postinstall": "yarn fetch:samples && yarn xstate:typegen && ./node_modules/.bin/electron-rebuild",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\"",
