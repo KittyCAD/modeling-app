@@ -1,23 +1,16 @@
-import { test, expect } from '@playwright/test'
-import { getUtils, setup, tearDown } from './test-utils'
+import { test, expect } from './zoo-test'
+import { getUtils } from './test-utils'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
 test.describe('Copilot ghost text', () => {
   // eslint-disable-next-line jest/valid-title
   test.skip(true, 'Needs to get covered again')
 
-  test('completes code in empty file', async ({ page }) => {
+  test('completes code in empty file', async ({ page, homePage }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -55,9 +48,9 @@ test.describe('Copilot ghost text', () => {
   }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -101,12 +94,13 @@ test.describe('Copilot ghost text', () => {
 
   test('copilot disabled in sketch mode after selecting plane', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -184,12 +178,12 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText')).not.toBeVisible()
   })
 
-  test('ArrowUp in code rejects the suggestion', async ({ page }) => {
+  test('ArrowUp in code rejects the suggestion', async ({ page, homePage }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -212,12 +206,15 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
 
-  test('ArrowDown in code rejects the suggestion', async ({ page }) => {
+  test('ArrowDown in code rejects the suggestion', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -240,12 +237,15 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
 
-  test('ArrowLeft in code rejects the suggestion', async ({ page }) => {
+  test('ArrowLeft in code rejects the suggestion', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -268,12 +268,15 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
 
-  test('ArrowRight in code rejects the suggestion', async ({ page }) => {
+  test('ArrowRight in code rejects the suggestion', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -296,12 +299,12 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-content')).toHaveText(``)
   })
 
-  test('Enter in code scoots it down', async ({ page }) => {
+  test('Enter in code scoots it down', async ({ page, homePage }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -326,12 +329,15 @@ test.describe('Copilot ghost text', () => {
     )
   })
 
-  test('Ctrl+shift+z in code rejects the suggestion', async ({ page }) => {
+  test('Ctrl+shift+z in code rejects the suggestion', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.codeLocator.click()
     await expect(page.locator('.cm-content')).toHaveText(``)
@@ -360,12 +366,13 @@ test.describe('Copilot ghost text', () => {
 
   test('Ctrl+z in code rejects the suggestion and undos the last code', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await page.waitForTimeout(800)
     await u.codeLocator.click()
@@ -420,98 +427,107 @@ test.describe('Copilot ghost text', () => {
     await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 
     // TODO when we make codemirror a widget, we can test this.
-    //await expect(page.locator('.cm-content')).toHaveText(``)
-  })
+    //await expect(page.locator('.cm-content')).toHaveText(``) })
 
-  test('delete in code rejects the suggestion', async ({ page }) => {
-    const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    test('delete in code rejects the suggestion', async ({
+      page,
+      homePage,
+    }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
 
-    await u.codeLocator.click()
-    await expect(page.locator('.cm-content')).toHaveText(``)
+      await u.codeLocator.click()
+      await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
-    await page.waitForTimeout(500)
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
-    await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
-    )
-    await expect(page.locator('.cm-ghostText').first()).toHaveText(
-      `fn cube = (pos, scale) => {`
-    )
+      await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+      await page.waitForTimeout(500)
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+      await expect(page.locator('.cm-content')).toHaveText(
+        `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+      )
+      await expect(page.locator('.cm-ghostText').first()).toHaveText(
+        `fn cube = (pos, scale) => {`
+      )
 
-    // Going elsewhere in the code should hide the ghost text.
-    await page.keyboard.press('Delete')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+      // Going elsewhere in the code should hide the ghost text.
+      await page.keyboard.press('Delete')
+      await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 
-    await expect(page.locator('.cm-content')).toHaveText(``)
-  })
+      await expect(page.locator('.cm-content')).toHaveText(``)
+    })
 
-  test('backspace in code rejects the suggestion', async ({ page }) => {
-    const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    test('backspace in code rejects the suggestion', async ({
+      page,
+      homePage,
+    }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
 
-    await u.codeLocator.click()
-    await expect(page.locator('.cm-content')).toHaveText(``)
+      await u.codeLocator.click()
+      await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
-    await page.waitForTimeout(500)
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
-    await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
-    )
-    await expect(page.locator('.cm-ghostText').first()).toHaveText(
-      `fn cube = (pos, scale) => {`
-    )
+      await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+      await page.waitForTimeout(500)
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+      await expect(page.locator('.cm-content')).toHaveText(
+        `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+      )
+      await expect(page.locator('.cm-ghostText').first()).toHaveText(
+        `fn cube = (pos, scale) => {`
+      )
 
-    // Going elsewhere in the code should hide the ghost text.
-    await page.keyboard.press('Backspace')
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+      // Going elsewhere in the code should hide the ghost text.
+      await page.keyboard.press('Backspace')
+      await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 
-    await expect(page.locator('.cm-content')).toHaveText(``)
-  })
+      await expect(page.locator('.cm-content')).toHaveText(``)
+    })
 
-  test('focus outside code pane rejects the suggestion', async ({ page }) => {
-    const u = await getUtils(page)
-    // const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setViewportSize({ width: 1200, height: 500 })
+    test('focus outside code pane rejects the suggestion', async ({
+      page,
+      homePage,
+    }) => {
+      const u = await getUtils(page)
+      // const PUR = 400 / 37.5 //pixeltoUnitRatio
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
 
-    await u.codeLocator.click()
-    await expect(page.locator('.cm-content')).toHaveText(``)
+      await u.codeLocator.click()
+      await expect(page.locator('.cm-content')).toHaveText(``)
 
-    await expect(page.locator('.cm-ghostText')).not.toBeVisible()
-    await page.waitForTimeout(500)
-    await page.keyboard.press('Enter')
-    await expect(page.locator('.cm-ghostText').first()).toBeVisible()
-    await expect(page.locator('.cm-content')).toHaveText(
-      `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
-    )
-    await expect(page.locator('.cm-ghostText').first()).toHaveText(
-      `fn cube = (pos, scale) => {`
-    )
+      await expect(page.locator('.cm-ghostText')).not.toBeVisible()
+      await page.waitForTimeout(500)
+      await page.keyboard.press('Enter')
+      await expect(page.locator('.cm-ghostText').first()).toBeVisible()
+      await expect(page.locator('.cm-content')).toHaveText(
+        `fn cube = (pos, scale) => {  sg = startSketchOn('XY')    |> startProfileAt(pos, %)    |> line([0, scale], %)    |> line([scale, 0], %)    |> line([0, -scale], %)  return sg}part001 = cube([0,0], 20)    |> close(%)    |> extrude(20, %)`
+      )
+      await expect(page.locator('.cm-ghostText').first()).toHaveText(
+        `fn cube = (pos, scale) => {`
+      )
 
-    // Going outside the editor should hide the ghost text.
-    await page.mouse.move(0, 0)
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
+      // Going outside the editor should hide the ghost text.
+      await page.mouse.move(0, 0)
+      await page
+        .getByRole('button', { name: 'Start Sketch' })
+        .waitFor({ state: 'visible' })
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await expect(page.locator('.cm-ghostText').first()).not.toBeVisible()
 
-    await expect(page.locator('.cm-content')).toHaveText(``)
+      await expect(page.locator('.cm-content')).toHaveText(``)
+    })
   })
 })

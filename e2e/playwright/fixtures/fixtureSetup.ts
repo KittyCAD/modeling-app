@@ -65,7 +65,7 @@ export class AuthenticatedTronApp {
   public readonly testInfo: TestInfo
   public electronApp?: ElectronApplication
   public readonly viewPortSize = { width: 1200, height: 500 }
-  public dir: string = ""
+  public dir: string = ''
 
   constructor(context: BrowserContext, page: Page, testInfo: TestInfo) {
     this._page = page

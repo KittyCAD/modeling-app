@@ -79,12 +79,13 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   }
   test('XY', async ({ page, homePage }) => {
     await sketchOnPlaneAndBackSideTest(
-    page,
-    homePage,
-    'XY',
-    { x: 600, y: 388 } // red plane
-    // { x: 600, y: 400 }, // red plane // clicks grid helper and that causes problems, should fix so that these coords work too.
-  ) })
+      page,
+      homePage,
+      'XY',
+      { x: 600, y: 388 } // red plane
+      // { x: 600, y: 400 }, // red plane // clicks grid helper and that causes problems, should fix so that these coords work too.
+    )
+  })
 
   test('YZ', async ({ page, homePage }) => {
     await sketchOnPlaneAndBackSideTest(page, homePage, 'YZ', { x: 700, y: 250 }) // green plane
@@ -95,11 +96,17 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   })
 
   test('-XY', async ({ page, homePage }) => {
-    await sketchOnPlaneAndBackSideTest(page, homePage, '-XY', { x: 600, y: 118 }) // back of red plane
+    await sketchOnPlaneAndBackSideTest(page, homePage, '-XY', {
+      x: 600,
+      y: 118,
+    }) // back of red plane
   })
 
   test('-YZ', async ({ page, homePage }) => {
-    await sketchOnPlaneAndBackSideTest(page, homePage, '-YZ', { x: 700, y: 219 }) // back of green plan
+    await sketchOnPlaneAndBackSideTest(page, homePage, '-YZ', {
+      x: 700,
+      y: 219,
+    }) // back of green plan
   })
 
   test('-XZ', async ({ page, homePage }) => {
