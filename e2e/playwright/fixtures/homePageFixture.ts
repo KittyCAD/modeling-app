@@ -1,5 +1,6 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
+import { test } from './fixtureSetup'
 
 interface ProjectCardState {
   title: string
@@ -15,6 +16,7 @@ interface HomePageState {
 export class HomePageFixture {
   public page: Page
 
+  newProjectButton!: Locator
   projectCard!: Locator
   projectCardTitle!: Locator
   projectCardFile!: Locator
@@ -29,6 +31,9 @@ export class HomePageFixture {
   reConstruct = (page: Page) => {
     this.page = page
 
+    this.newProjectButton = this.page.getByRole('button', {
+      name: 'New project',
+    })
     this.projectCard = this.page.getByTestId('project-link')
     this.projectCardTitle = this.page.getByTestId('project-title')
     this.projectCardFile = this.page.getByTestId('project-file-count')
@@ -94,10 +99,36 @@ export class HomePageFixture {
       .toEqual(expectedState)
   }
 
+  /** Open an existing project from the home page */
   openProject = async (projectTitle: string) => {
     const projectCard = this.projectCard.locator(
       this.page.getByText(projectTitle)
     )
     await projectCard.click()
+  }
+
+  /**
+   * Create a new project, optionally returning to the home page.
+   * Migrated from test-utils.ts
+   */
+  createProject = async ({
+    name,
+    returnHome = false,
+  }: {
+    name: string
+    returnHome?: boolean
+  }) => {
+    await test.step(`Create project and navigate to it`, async () => {
+      await this.newProjectButton.click()
+      await this.page.getByRole('textbox', { name: 'Name' }).fill(name)
+      await this.page.getByRole('button', { name: 'Continue' }).click()
+
+      if (returnHome) {
+        await this.page.waitForURL('**/file/**', {
+          waitUntil: 'domcontentloaded',
+        })
+        await this.page.getByTestId('app-logo').click()
+      }
+    })
   }
 }
