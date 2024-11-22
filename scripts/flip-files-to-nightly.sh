@@ -2,7 +2,8 @@
 
 # package.json
 VERSION=$(date +'%-y.%-m.%-d') yarn files:set-version
-echo "$(jq --arg name 'Zoo Modeling App (Nightly)' '.productName=$name' package.json --indent 2)" > package.json
+PACKAGE=$(jq '.productName="Zoo Modeling App (Nightly)" | .name="zoo-modeling-app-nightly"' package.json --indent 2)
+echo "$PACKAGE" > package.json
 
 # electron-builder.yml
 yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/nightly"' electron-builder.yml
