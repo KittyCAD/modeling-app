@@ -21,8 +21,8 @@ use crate::{
     },
     std::{
         utils::{
-            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
-            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
+            intersection_with_parallel_line, TangentialArcInfoInput,
         },
         Args,
     },
@@ -1789,11 +1789,7 @@ async fn inner_tangential_arc(
     let from: Point2d = sketch.current_pen_position()?;
     // next set of lines is some undocumented voodoo from get_tangential_arc_to_info
     let tangent_info = sketch.get_tangential_info_from_paths(); //this function desperately needs some documentation
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
 
     let id = exec_state.id_generator.next_uuid();
 
@@ -1922,11 +1918,7 @@ async fn inner_tangential_arc_to(
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     let tangent_info = sketch.get_tangential_info_from_paths();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1993,11 +1985,8 @@ async fn inner_tangential_arc_to_relative(
     let from: Point2d = sketch.current_pen_position()?;
     let to = [from.x + delta[0], from.y + delta[1]];
     let tangent_info = sketch.get_tangential_info_from_paths();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
+
     let [dx, dy] = delta;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],

@@ -97,6 +97,7 @@ async fn inner_circle(
     )
     .await?;
 
+    let from = [data.center[0] + data.radius, data.center[1]];
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
@@ -119,8 +120,8 @@ async fn inner_circle(
 
     let current_path = Path::Circle {
         base: BasePath {
-            from: data.center,
-            to: data.center,
+            from,
+            to: from,
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,

@@ -10,8 +10,6 @@ use crate::{
     std::{utils::between, Args},
 };
 
-use super::utils::get_tangent_point_from_previous_arc;
-
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
@@ -481,6 +479,17 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   |> angledLine([tangentToEnd(arc1), 20], %)
 ///   |> close(%)
 /// ```
+///
+/// ```no_run
+/// circSketch = startSketchOn("XY")
+///   |> circle({ center: [0, 0], radius: 3 }, %, $circ)
+///
+/// triangleSketch = startSketchOn("XY")
+///   |> startProfileAt([-5, 0], %)
+///   |> angledLine([tangentToEnd(circ), 10], %)
+///   |> line([-15, 0], %)
+///   |> close(%)
+/// ```
 #[stdlib {
     name = "tangentToEnd",
 }]
@@ -497,11 +506,7 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
 
     // Undocumented voodoo from get_tangential_arc_to_info
     let tangent_info = path.get_tangential_info();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
 
     // Calculate the end point from the angle and radius.
     // atan2 outputs radians.
