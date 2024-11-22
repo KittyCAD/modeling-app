@@ -139,6 +139,7 @@ https://github.com/KittyCAD/modeling-app/issues/new
 Create a new tag and push it to the repo (eg. `v0.28.0` for `$VERSION`)
 
 ```
+VERSION=$(./scripts/semantic-release.sh)
 git tag $VERSION
 git push origin --tags
 ```
