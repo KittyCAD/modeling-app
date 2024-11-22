@@ -665,6 +665,7 @@ export const modelingMachine = setup({
           ast,
           selection.graphSelections[0]?.codeRef.range
         )
+
         const revolveSketchRes = revolveSketch(
           ast,
           pathToNode,

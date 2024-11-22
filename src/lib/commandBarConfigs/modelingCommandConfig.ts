@@ -280,14 +280,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       axis: {
         required: true,
-        inputType: 'options',
-        defaultValue: KCL_DEFAULT_AXIS,
-        options: [
-          { name: 'Local X Axis', isCurrent: true, value: KCL_AXIS_X },
-          { name: 'Local Y Axis', isCurrent: false, value: KCL_AXIS_Y },
-          { name: 'Local -X Axis', isCurrent: false, value: KCL_AXIS_NEG_X },
-          { name: 'Local -Y Axis', isCurrent: false, value: KCL_AXIS_NEG_Y },
-        ],
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        // inputType: 'options',
+        // defaultValue: KCL_DEFAULT_AXIS,
+        // options: [
+        //   { name: 'Local X Axis', isCurrent: true, value: KCL_AXIS_X },
+        //   { name: 'Local Y Axis', isCurrent: false, value: KCL_AXIS_Y },
+        //   { name: 'Local -X Axis', isCurrent: false, value: KCL_AXIS_NEG_X },
+        //   { name: 'Local -Y Axis', isCurrent: false, value: KCL_AXIS_NEG_Y },
+        // ],
       },
       angle: {
         inputType: 'kcl',

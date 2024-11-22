@@ -1,5 +1,5 @@
 import { err, reportRejection, trap } from 'lib/trap'
-import { Selection } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -45,6 +45,8 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { mutateAstWithTagForSketchSegment } from './modifyAst/addFillet'
+import { locateDeclarator } from './modifyAst/utils'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -351,7 +353,7 @@ export function revolveSketch(
   pathToNode: PathToNode,
   shouldPipe = false,
   angle: Expr = createLiteral(4),
-  axis: string
+  axis: Selections
 ):
   | {
       modifiedAst: Node<Program>
@@ -362,6 +364,36 @@ export function revolveSketch(
   const _node = structuredClone(node)
   const _node1 = getNodeFromPath(_node, pathToNode)
   if (err(_node1)) return _node1
+
+  // testing code
+  const pathToAxisSelection = getNodePathFromSourceRange(
+    node,
+    axis.graphSelections[0]?.codeRef.range
+  )
+
+  const lineNode = getNodeFromPath<CallExpression>(
+    node,
+    pathToAxisSelection,
+    'CallExpression'
+  )
+
+  if (err(lineNode)) return lineNode
+
+  console.log('axis node path', pathToAxisSelection)
+  console.log('line call expression', lineNode)
+  console.log('axis selection from artifact graph', axis.graphSelections[0])
+
+  // TODO Kevin: What if |> close(%)?
+  // TODO Kevin: What if opposite edge
+  // TODO Kevin: What if the edge isn't planar to the sketch?
+
+  // TODO Kevin: add a tag.
+  // This adds a tag, need to find a tag if one already exists.
+  const tagResult = mutateAstWithTagForSketchSegment(_node, pathToAxisSelection)
+  if (err(tagResult)) return tagResult
+  const { tag } = tagResult
+
+  /* Original Code */
   const { node: sketchExpression } = _node1
 
   // determine if sketchExpression is in a pipeExpression or not
@@ -386,7 +418,8 @@ export function revolveSketch(
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      axis: createLiteral(axis),
+      // axis: createLiteral(axis),
+      axis: createLiteral('Y'),
     }),
     createIdentifier(variableDeclarator.id.name),
   ])
@@ -811,7 +844,7 @@ export function createUnaryExpression(
 export function createBinaryExpression([left, operator, right]: [
   BinaryExpression['left'],
   BinaryExpression['operator'],
-  BinaryExpression['right']
+  BinaryExpression['right'],
 ]): Node<BinaryExpression> {
   return {
     type: 'BinaryExpression',
@@ -827,7 +860,7 @@ export function createBinaryExpression([left, operator, right]: [
 
 export function createBinaryExpressionWithUnary([left, right]: [
   BinaryExpression['left'],
-  BinaryExpression['right']
+  BinaryExpression['right'],
 ]): Node<BinaryExpression> {
   if (right.type === 'UnaryExpression' && right.operator === '-')
     return createBinaryExpression([left, '-', right.argument])
@@ -1032,7 +1065,7 @@ export async function deleteFromSelection(
   selection: Selection,
   programMemory: ProgramMemory,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({} as any)
+    ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
   const varDec = getNodeFromPath<VariableDeclarator>(

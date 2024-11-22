@@ -261,7 +261,8 @@ async function updateAstAndFocus(
   }
 }
 
-function mutateAstWithTagForSketchSegment(
+// TODO Kevin: use this for revolve line tagging
+export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {
