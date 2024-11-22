@@ -640,7 +640,6 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
     }
 
     let solids = inner_pattern_linear_3d(data, solid_set, exec_state, args).await?;
-    dbg!(&solids);
     Ok(solids.into())
 }
 
