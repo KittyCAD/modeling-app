@@ -2,6 +2,7 @@ import { test, expect, AuthenticatedApp } from './fixtures/fixtureSetup'
 import { EditorFixture } from './fixtures/editorFixture'
 import { SceneFixture } from './fixtures/sceneFixture'
 import { ToolbarFixture } from './fixtures/toolbarFixture'
+import { TEST_COLORS } from './test-utils'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -551,3 +552,56 @@ test(`Verify axis, origin, and horizontal snapping`, async ({
     )
   })
 })
+
+test(
+  `Offset plane point-and-click`,
+  {
+    tag: ['@electron'],
+  },
+  async ({ tronApp, homePage, scene, editor, toolbar, cmdBar }) => {
+    await tronApp.initialise({
+      fixtures: { homePage, scene, editor, toolbar },
+    })
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 700, y: 150 }
+
+    await homePage.createProject({ name: 'offset-plane-test' })
+    const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    await test.step(`Look for the blue of the XZ plane`, async () => {
+      await scene.expectPixelColor([50, 51, 96], testPoint, 10)
+    })
+    await test.step(`Go through the command bar flow`, async () => {
+      await toolbar.offsetPlaneButton.click()
+      await tronApp.debugPause()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'plane',
+        currentArgValue: '{}',
+        headerArguments: { Plane: '', Distance: '' },
+        highlightedHeaderArg: 'plane',
+        commandName: 'Offset plane',
+      })
+      await clickOnXzPlane()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'distance',
+        currentArgValue: '5',
+        headerArguments: { Plane: '1 plane', Distance: '' },
+        highlightedHeaderArg: 'distance',
+        commandName: 'Offset plane',
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+      await editor.expectEditor.toContain(`plane001 = offsetPlane(10, 'XZ')`)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: ['plane001 = offsetPlane(10, "XZ")'],
+        highlightedCode: '',
+      })
+      await scene.expectPixelColor([40, 40, 40], testPoint, 10)
+    })
+  }
+)
