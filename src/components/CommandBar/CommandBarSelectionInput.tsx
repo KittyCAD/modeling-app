@@ -5,17 +5,23 @@ import { Artifact } from 'lang/std/artifactGraph'
 import { CommandArgument } from 'lib/commandTypes'
 import {
   canSubmitSelectionArg,
-  getSelectionType,
+  getSelectionCountByType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
-const semanticEntityNames: { [key: string]: Array<Artifact['type']> } = {
+const semanticEntityNames: {
+  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
+} = {
   face: ['wall', 'cap', 'solid2D'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
   point: [],
+  plane: ['defaultPlane'],
 }
 
 function getSemanticSelectionType(selectionType: Array<Artifact['type']>) {
@@ -49,15 +55,8 @@ function CommandBarSelectionInput({
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    const selectionRangeEnd = !selection
-      ? null
-      : selection?.graphSelections[0]?.codeRef?.range[1]
-    return !selectionRangeEnd || selectionRangeEnd === code.length || !selection
-      ? 'none'
-      : !selection
-      ? 'none'
-      : getSelectionType(selection)
-  }, [selection, code])
+    return getSelectionCountByType(selection)
+  }, [selection])
   const canSubmitSelection = useMemo<boolean>(
     () => canSubmitSelectionArg(selectionsByType, arg),
     [selectionsByType]
@@ -66,6 +65,30 @@ function CommandBarSelectionInput({
   useEffect(() => {
     inputRef.current?.focus()
   }, [selection, inputRef])
+
+  // Show the default planes if the selection type is 'plane'
+  useEffect(() => {
+    if (arg.selectionTypes.includes('plane') && !canSubmitSelection) {
+      toSync(() => {
+        return Promise.all([
+          kclManager.showPlanes(),
+          kclManager.setSelectionFilter(['plane', 'object']),
+        ])
+      }, reportRejection)()
+    }
+
+    return () => {
+      toSync(() => {
+        const promises = [
+          new Promise(() => kclManager.defaultSelectionFilter()),
+        ]
+        if (!kclManager._isAstEmpty(kclManager.ast)) {
+          promises.push(kclManager.hidePlanes())
+        }
+        return Promise.all(promises)
+      }, reportRejection)()
+    }
+  }, [])
 
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already

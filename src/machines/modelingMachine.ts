@@ -5,7 +5,13 @@ import {
   parse,
   recast,
 } from 'lang/wasm'
-import { Axis, Selections, Selection, updateSelections } from 'lib/selections'
+import {
+  Axis,
+  DefaultPlaneSelection,
+  Selections,
+  Selection,
+  updateSelections,
+} from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
@@ -75,8 +81,12 @@ export type SetSelections =
       selection?: Selection
     }
   | {
-      selectionType: 'otherSelection'
+      selectionType: 'axisSelection'
       selection: Axis
+    }
+  | {
+      selectionType: 'defaultPlaneSelection'
+      selection: DefaultPlaneSelection
     }
   | {
       selectionType: 'completeSelection'
