@@ -15,7 +15,7 @@ use crate::{
         CallExpression, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression,
         Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
         UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
@@ -141,11 +141,8 @@ fn expected(what: &'static str) -> StrContext {
 fn program(i: TokenSlice) -> PResult<Node<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
     let mut out: Node<Program> = function_body.parse_next(i)?;
+    out.shebang = shebang;
 
-    // Add the shebang to the non-code meta.
-    if let Some(shebang) = shebang {
-        out.non_code_meta.start_nodes.insert(0, shebang);
-    }
     // Match original parser behaviour, for now.
     // Once this is merged and stable, consider changing this as I think it's more accurate
     // without the -1.
@@ -533,7 +530,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 
 /// A shebang is a line at the start of a file that starts with `#!`.
 /// If the shebang is present it takes up the whole line.
-fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
+fn shebang(i: TokenSlice) -> PResult<Node<Shebang>> {
     // Parse the hash and the bang.
     hash.parse_next(i)?;
     bang.parse_next(i)?;
@@ -556,12 +553,7 @@ fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     opt(whitespace).parse_next(i)?;
 
     Ok(Node::new(
-        NonCodeNode {
-            value: NonCodeValue::Shebang {
-                value: format!("#!{}", value),
-            },
-            digest: None,
-        },
+        Shebang::new(format!("#!{}", value)),
         0,
         tokens.last().unwrap().end,
         tokens.first().unwrap().module_id,
@@ -1079,7 +1071,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
                 // There's an empty line between the body item and the comment,
                 // This means the comment is a NewLineBlockComment!
                 let value = match nc.inner.value {
-                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
                     // Other variants don't need to change.
@@ -1100,7 +1091,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
                 // There's no newline between the body item and comment,
                 // so if this is a comment, it must be inline with code.
                 let value = match nc.inner.value {
-                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
                     // Other variants don't need to change.
@@ -1300,6 +1290,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
         Program {
             body,
             non_code_meta,
+            shebang: None,
             digest: None,
         },
         start.0,
@@ -2419,6 +2410,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                                 )],
                                 digest: None,
                             },
+                            shebang: None,
                             digest: None,
                         },
                         7,
@@ -3156,6 +3148,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     4,
                     module_id,
                 ))],
+                shebang: None,
                 non_code_meta: NonCodeMeta::default(),
                 digest: None,
             },

@@ -11,23 +11,6 @@ layout: manual
 
 **This schema accepts exactly one of the following:**
 
-A shebang. This is a special type of comment that is at the top of the file. It looks like this: ```python,no_run #!/usr/bin/env python ```
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: `shebang`|  | No |
-| `value` |`string`|  | No |
-
-
-----
 An inline comment. Here are examples: `1 + 1 // This is an inline comment`. `1 + 1 /* Here's another */`.
 
 **Type:** `object`

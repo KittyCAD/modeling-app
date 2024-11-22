@@ -3191,6 +3191,7 @@ let w = f() + f()
                     inner: crate::ast::types::Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        shebang: None,
                         digest: None,
                     },
                     start: 0,

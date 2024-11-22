@@ -65,6 +65,10 @@ impl<T> Node<T> {
             source_range: SourceRange([self.start, self.end, self.module_id.0 as usize]),
         }
     }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        self.start <= pos && pos <= self.end
+    }
 }
 
 impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
@@ -177,6 +181,8 @@ pub struct Program {
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shebang: Option<Node<Shebang>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -265,19 +271,14 @@ impl Program {
     }
 
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        // Check if we are in the non code meta.
-        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
-            for node in &meta.start_nodes {
-                if node.contains(pos) {
-                    // We only care about the shebang.
-                    if let NonCodeValue::Shebang { value: _ } = &node.value {
-                        let source_range: SourceRange = node.into();
-                        return Some(Hover::Comment {
-                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
-                            range: source_range.to_lsp_range(code),
-                        });
-                    }
-                }
+        // Check if we are in shebang.
+        if let Some(node) = &self.shebang {
+            if node.contains(pos) {
+                let source_range: SourceRange = node.into();
+                return Some(Hover::Comment {
+                    value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
+                    range: source_range.to_lsp_range(code),
+                });
             }
         }
 
@@ -529,6 +530,26 @@ impl Program {
         }
 
         None
+    }
+}
+
+/// A shebang.
+/// This is a special type of comment that is at the top of the file.
+/// It looks like this:
+/// ```python,no_run
+/// #!/usr/bin/env python
+/// ```
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+pub struct Shebang {
+    pub content: String,
+}
+
+impl Shebang {
+    pub fn new(content: String) -> Self {
+        Shebang { content }
     }
 }
 
@@ -952,13 +973,8 @@ pub struct NonCodeNode {
 }
 
 impl Node<NonCodeNode> {
-    pub fn contains(&self, pos: usize) -> bool {
-        self.start <= pos && pos <= self.end
-    }
-
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
-            NonCodeValue::Shebang { value } => format!("{}\n\n", value),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
@@ -998,7 +1014,6 @@ impl Node<NonCodeNode> {
 impl NonCodeNode {
     pub fn value(&self) -> String {
         match &self.value {
-            NonCodeValue::Shebang { value } => value.clone(),
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
@@ -1032,15 +1047,6 @@ impl CommentStyle {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
-    /// A shebang.
-    /// This is a special type of comment that is at the top of the file.
-    /// It looks like this:
-    /// ```python,no_run
-    /// #!/usr/bin/env python
-    /// ```
-    Shebang {
-        value: String,
-    },
     /// An inline comment.
     /// Here are examples:
     /// `1 + 1 // This is an inline comment`.
@@ -3342,6 +3348,7 @@ const cylinder = startSketchOn('-XZ')
                     body: Node::no_src(Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        shebang: None,
                         digest: None,
                     }),
                     return_type: None,
@@ -3365,6 +3372,7 @@ const cylinder = startSketchOn('-XZ')
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
+                            shebang: None,
                             digest: None,
                         },
                         start: 0,
@@ -3392,6 +3400,7 @@ const cylinder = startSketchOn('-XZ')
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
+                            shebang: None,
                             digest: None,
                         },
                         start: 0,
@@ -3430,6 +3439,7 @@ const cylinder = startSketchOn('-XZ')
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
+                            shebang: None,
                             digest: None,
                         },
                         start: 0,
