@@ -139,9 +139,9 @@ async function doBasicSketch(page: Page, homePage: HomePageFixture, openPanes: s
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', { tag: ['@skipWin'] }, async ({ page, homePage }) => { // Skip on windows it is being weird.
-  test.skip(process.platform === 'win32', 'Skip on windows')
-  await doBasicSketch(page, homePage, ['code']) })
+  test('code pane open at start', async ({ page, homePage }) => { // Skip on windows it is being weird.
+    await doBasicSketch(page, homePage, ['code'])
+  })
 
   test('code pane closed at start', async ({ page, homePage }) => { // Load the app with the code panes
   await page.addInitScript(async (persistModelingContext) => {
