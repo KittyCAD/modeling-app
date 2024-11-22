@@ -414,15 +414,15 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
     Ok(result.to_degrees())
 }
 
-/// Returns the tangential angle of the segment in degrees.
-pub async fn segment_tangential_angle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+/// Returns the angle coming out of the end of the segment in degrees.
+pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_data()?;
 
-    let result = inner_segment_tangential_angle(&tag, exec_state, args.clone()).await?;
+    let result = inner_tangent_to_end(&tag, exec_state, args.clone()).await?;
     Ok(args.make_user_val_from_f64(result))
 }
 
-/// Returns the tangential angle of the segment in degrees.
+/// Returns the angle coming out of the end of the segment in degrees.
 ///
 /// ```no_run
 /// // Horizontal pill.
@@ -431,7 +431,7 @@ pub async fn segment_tangential_angle(exec_state: &mut ExecState, args: Args) ->
 ///   |> line([20, 0], %)
 ///   |> tangentialArcToRelative([0, 10], %, $arc1)
 ///   |> angledLine({
-///     angle: segmentTangentialAngle(arc1),
+///     angle: tangentToEnd(arc1),
 ///     length: 20,
 ///   }, %)
 ///   |> tangentialArcToRelative([0, -10], %)
@@ -447,7 +447,7 @@ pub async fn segment_tangential_angle(exec_state: &mut ExecState, args: Args) ->
 ///   |> line([0, 20], %)
 ///   |> tangentialArcToRelative([10, 0], %, $arc1)
 ///   |> angledLine({
-///     angle: segmentTangentialAngle(arc1),
+///     angle: tangentToEnd(arc1),
 ///     length: 20,
 ///   }, %)
 ///   |> tangentialArcToRelative([-10, 0], %)
@@ -461,7 +461,7 @@ pub async fn segment_tangential_angle(exec_state: &mut ExecState, args: Args) ->
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %, $seg1)
 ///   |> angledLine({
-///     angle: segmentTangentialAngle(seg1),
+///     angle: tangentToEnd(seg1),
 ///     length: 10,
 ///   }, %)
 ///   |> line([0, 10], %)
@@ -471,13 +471,9 @@ pub async fn segment_tangential_angle(exec_state: &mut ExecState, args: Args) ->
 /// rectangleExtrude = extrude(10, rectangleSketch)
 /// ```
 #[stdlib {
-    name = "segmentTangentialAngle",
+    name = "tangentToEnd",
 }]
-async fn inner_segment_tangential_angle(
-    tag: &TagIdentifier,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<f64, KclError> {
+async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
