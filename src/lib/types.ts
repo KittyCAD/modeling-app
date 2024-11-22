@@ -111,3 +111,21 @@ export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
   F,
   Promise<unknown>
 >
+
+// For nightly release parsing
+type PlatformRelease = {
+  url: string
+}
+
+export const artifacts: { [key: string]: string } = {
+  darwin: 'dmg',
+  win32: 'exe',
+  linux: 'appimage',
+}
+
+export type ReleaseInfo = {
+  version: string
+  pub_date: string
+  notes: string
+  platforms: Record<string, PlatformRelease>
+}

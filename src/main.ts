@@ -77,6 +77,8 @@ const createWindow = (filePath?: string): BrowserWindow => {
       contextIsolation: true, // expose system functions in preload
       sandbox: false, // expose nodejs in preload
       preload: path.join(__dirname, './preload.js'),
+      // TODO: REVERT BEFORE MERGE, need to fix that cors issue
+      webSecurity: false,
     },
     icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
     frame: os.platform() !== 'darwin',

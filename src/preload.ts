@@ -6,6 +6,7 @@ import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
+import { ReleaseInfo } from 'lib/types'
 
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
@@ -114,6 +115,14 @@ const listMachines = async (
   })
 }
 
+const getNightlyReleases = async (): Promise<ReleaseInfo> => {
+  return fetch(
+    'https://dl.zoo.dev/releases/modeling-app/last_download.json'
+  ).then((resp) => {
+    return resp.json()
+  })
+}
+
 const getMachineApiIp = async (): Promise<String | null> =>
   ipcRenderer.invoke('find_machine_api')
 
@@ -183,6 +192,7 @@ contextBridge.exposeInMainWorld('electron', {
   },
   kittycad,
   listMachines,
+  getNightlyReleases,
   getMachineApiIp,
   onUpdateDownloadStart,
   onUpdateDownloaded,

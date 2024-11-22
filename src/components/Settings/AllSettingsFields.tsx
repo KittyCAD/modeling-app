@@ -24,6 +24,17 @@ import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { artifacts } from 'lib/types'
+
+async function fetchLatestNightlyAndDownload() {
+  // TODO: split the logic more and add test
+  const latest = await window.electron.getNightlyReleases()
+  const { arch, platform } = window.electron
+  if (!arch || !platform) return
+  const artifact = artifacts[platform]
+  const url = latest.platforms[`${artifact}-${arch}`].url
+  await window.electron.openExternal(url)
+}
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -270,9 +281,8 @@ export const AllSettingsFields = forwardRef(
                 main development branch?{' '}
                 {/* TODO: fetch and parse the json to provide the right arch&plat link directly */}
                 <a
-                  href="https://dl.zoo.dev/releases/modeling-app/nightly/last_download.json"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  onClick={() => fetchLatestNightlyAndDownload()}
+                  className="cursor-pointer"
                 >
                   Click here to grab Zoo Modeling App (Nightly)
                 </a>
