@@ -26,7 +26,7 @@ export const APP_VERSION =
       window.electron.packageJson.version
     : 'main'
 
-export const APP_NAME = isDesktop()
+export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name
   : 'zoo-modeling-app'
 
