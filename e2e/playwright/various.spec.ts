@@ -4,42 +4,44 @@ import { doExport, getUtils, makeTemplate } from './test-utils'
 
 test.fixme('Units menu', async ({ page, homePage }) => {
   const u = await getUtils(page)
-await page.setBodyDimensions({ width: 1200, height: 500 })
-await homePage.goToModelingScene()
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
 
-const unitsMenuButton = page.getByRole('button', {
-  name: 'Current Units',
-  exact: false,
+  const unitsMenuButton = page.getByRole('button', {
+    name: 'Current Units',
+    exact: false,
+  })
+  await expect(unitsMenuButton).toBeVisible()
+  await expect(unitsMenuButton).toContainText('in')
+
+  await unitsMenuButton.click()
+  const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
+
+  await expect(millimetersButton).toBeVisible()
+  await millimetersButton.click()
+
+  // Look out for the toast message
+  const toastMessage = page.getByText(
+    `Set default unit to "mm" for this project`
+  )
+  await expect(toastMessage).toBeVisible()
+
+  // Verify that the popover has closed
+  await expect(millimetersButton).not.toBeAttached()
+
+  // Verify that the button label has updated
+  await expect(unitsMenuButton).toContainText('mm')
 })
-await expect(unitsMenuButton).toBeVisible()
-await expect(unitsMenuButton).toContainText('in')
 
-await unitsMenuButton.click()
-const millimetersButton = page.getByRole('button', { name: 'Millimeters' })
-
-await expect(millimetersButton).toBeVisible()
-await millimetersButton.click()
-
-// Look out for the toast message
-const toastMessage = page.getByText(
-  `Set default unit to "mm" for this project`
-)
-await expect(toastMessage).toBeVisible()
-
-// Verify that the popover has closed
-await expect(millimetersButton).not.toBeAttached()
-
-// Verify that the button label has updated
-await expect(unitsMenuButton).toContainText('mm') })
-
-test('Successful export shows a success toast', async ({ page, homePage }) => { // FYI this test doesn't work with only engine running locally
-// And you will need to have the KittyCAD CLI installed
-const u = await getUtils(page)
-await page.addInitScript(async () => {
-  ;(window as any).playwrightSkipFilePicker = true
-  localStorage.setItem(
-    'persistCode',
-    `topAng = 25
+test('Successful export shows a success toast', async ({ page, homePage }) => {
+  // FYI this test doesn't work with only engine running locally
+  // And you will need to have the KittyCAD CLI installed
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    ;(window as any).playwrightSkipFilePicker = true
+    localStorage.setItem(
+      'persistCode',
+      `topAng = 25
 bottomAng = 35
 baseLen = 3.5
 baseHeight = 1
@@ -77,158 +79,172 @@ part001 = startSketchOn('-XZ')
 |> xLineTo(ZERO, %)
 |> close(%)
 |> extrude(4, %)`
+    )
+  })
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+
+  await homePage.goToModelingScene()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.waitForCmdReceive('extrude')
+  await page.waitForTimeout(1000)
+  await u.clearAndCloseDebugPanel()
+
+  await doExport(
+    {
+      type: 'gltf',
+      storage: 'embedded',
+      presentation: 'pretty',
+    },
+    page
   )
 })
-await page.setBodyDimensions({ width: 1200, height: 500 })
 
-await homePage.goToModelingScene()
-await u.openDebugPanel()
-await u.expectCmdLog('[data-message-type="execution-done"]')
-await u.waitForCmdReceive('extrude')
-await page.waitForTimeout(1000)
-await u.clearAndCloseDebugPanel()
-
-await doExport(
-  {
-    type: 'gltf',
-    storage: 'embedded',
-    presentation: 'pretty',
-  },
-  page
-)
-
-})
-
-test('Paste should not work unless an input is focused', async ({ page, browserName, homePage }) => { // To run this test locally, uncomment Firefox in playwright.config.ts
-test.skip(
-  browserName !== 'firefox',
-  "This bug is really Firefox-only, which we don't run in CI."
-)
-const u = await getUtils(page)
-await page.setBodyDimensions({ width: 1200, height: 500 })
-await homePage.goToModelingScene()
-await page
-  .getByRole('button', { name: 'Start Sketch' })
-  .waitFor({ state: 'visible' })
-
-const codeEditorText = page.locator('.cm-content')
-const pasteContent = `// was this pasted?`
-const typeContent = `// this should be typed`
-
-// Load text into the clipboard
-await page.evaluate((t) => navigator.clipboard.writeText(t), pasteContent)
-
-// Focus the text editor
-await codeEditorText.focus()
-
-// Show that we can type into it
-await page.keyboard.type(typeContent)
-await page.keyboard.press('Enter')
-
-// Paste without the code pane focused
-await codeEditorText.blur()
-await page.keyboard.press('ControlOrMeta+KeyV')
-
-// Show that the paste didn't work but typing did
-await expect(codeEditorText).not.toContainText(pasteContent)
-await expect(codeEditorText).toContainText(typeContent)
-
-// Paste with the code editor focused
-// Following this guidance: https://github.com/microsoft/playwright/issues/8114
-await codeEditorText.focus()
-await page.keyboard.press('ControlOrMeta+KeyV')
-await expect(
-  await page.evaluate(
-    () => document.querySelector('.cm-content')?.textContent
+test('Paste should not work unless an input is focused', async ({
+  page,
+  browserName,
+  homePage,
+}) => {
+  // To run this test locally, uncomment Firefox in playwright.config.ts
+  test.skip(
+    browserName !== 'firefox',
+    "This bug is really Firefox-only, which we don't run in CI."
   )
-).toContain(pasteContent) })
+  const u = await getUtils(page)
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
 
-test('Keyboard shortcuts can be viewed through the help menu', async ({ page,  homePage }) => { const u = await getUtils(page)
-await page.setBodyDimensions({ width: 1200, height: 500 })
-await homePage.goToModelingScene()
+  const codeEditorText = page.locator('.cm-content')
+  const pasteContent = `// was this pasted?`
+  const typeContent = `// this should be typed`
 
-await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
-await page
-  .getByRole('button', { name: 'Start Sketch' })
-  .waitFor({ state: 'visible' })
+  // Load text into the clipboard
+  await page.evaluate((t) => navigator.clipboard.writeText(t), pasteContent)
 
-// Open the help menu
-await page.getByRole('button', { name: 'Help and resources' }).click()
+  // Focus the text editor
+  await codeEditorText.focus()
 
-// Open the keyboard shortcuts
-await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
+  // Show that we can type into it
+  await page.keyboard.type(typeContent)
+  await page.keyboard.press('Enter')
 
-// Verify the URL and that you can see a list of shortcuts
-await expect.poll(() => page.url()).toContain('?tab=keybindings')
-await expect(
-  page.getByRole('heading', { name: 'Enter Sketch Mode' })
-).toBeAttached()
+  // Paste without the code pane focused
+  await codeEditorText.blur()
+  await page.keyboard.press('ControlOrMeta+KeyV')
+
+  // Show that the paste didn't work but typing did
+  await expect(codeEditorText).not.toContainText(pasteContent)
+  await expect(codeEditorText).toContainText(typeContent)
+
+  // Paste with the code editor focused
+  // Following this guidance: https://github.com/microsoft/playwright/issues/8114
+  await codeEditorText.focus()
+  await page.keyboard.press('ControlOrMeta+KeyV')
+  await expect(
+    await page.evaluate(
+      () => document.querySelector('.cm-content')?.textContent
+    )
+  ).toContain(pasteContent)
 })
 
-test('First escape in tool pops you out of tool, second exits sketch mode', async ({ page,  homePage }) => { // Wait for the app to be ready for use
-const u = await getUtils(page)
-await page.setBodyDimensions({ width: 1200, height: 500 })
+test('Keyboard shortcuts can be viewed through the help menu', async ({
+  page,
+  homePage,
+}) => {
+  const u = await getUtils(page)
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
 
-await homePage.goToModelingScene()
-await u.openDebugPanel()
-await u.expectCmdLog('[data-message-type="execution-done"]')
-await u.closeDebugPanel()
+  await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
 
-const lineButton = page.getByRole('button', {
-  name: 'line Line',
-  exact: true,
+  // Open the help menu
+  await page.getByRole('button', { name: 'Help and resources' }).click()
+
+  // Open the keyboard shortcuts
+  await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
+
+  // Verify the URL and that you can see a list of shortcuts
+  await expect.poll(() => page.url()).toContain('?tab=keybindings')
+  await expect(
+    page.getByRole('heading', { name: 'Enter Sketch Mode' })
+  ).toBeAttached()
 })
-const arcButton = page.getByRole('button', {
-  name: 'arc Tangential Arc',
-  exact: true,
+
+test('First escape in tool pops you out of tool, second exits sketch mode', async ({
+  page,
+  homePage,
+}) => {
+  // Wait for the app to be ready for use
+  const u = await getUtils(page)
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+
+  await homePage.goToModelingScene()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  const lineButton = page.getByRole('button', {
+    name: 'line Line',
+    exact: true,
+  })
+  const arcButton = page.getByRole('button', {
+    name: 'arc Tangential Arc',
+    exact: true,
+  })
+
+  // Test these hotkeys perform actions when
+  // focus is on the canvas
+  await page.mouse.move(600, 250)
+  await page.mouse.click(600, 250)
+
+  // Start a sketch
+  await page.keyboard.press('s')
+  await page.mouse.move(800, 300)
+  await page.mouse.click(800, 300)
+  await page.waitForTimeout(1000)
+  await expect(lineButton).toBeVisible()
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+
+  // Draw a line
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  // Equip arc tool
+  await page.keyboard.press('a')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await page.mouse.move(1000, 100, { steps: 5 })
+  await page.mouse.click(1000, 100)
+  await page.keyboard.press('Escape')
+  await page.keyboard.press('l')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+
+  // Do not close the sketch.
+  // On close it will exit sketch mode.
+
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  // Exit sketch
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
 })
-
-// Test these hotkeys perform actions when
-// focus is on the canvas
-await page.mouse.move(600, 250)
-await page.mouse.click(600, 250)
-
-// Start a sketch
-await page.keyboard.press('s')
-await page.mouse.move(800, 300)
-await page.mouse.click(800, 300)
-await page.waitForTimeout(1000)
-await expect(lineButton).toBeVisible()
-await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
-
-// Draw a line
-await page.mouse.move(700, 200, { steps: 5 })
-await page.mouse.click(700, 200)
-await page.mouse.move(800, 250, { steps: 5 })
-await page.mouse.click(800, 250)
-// Unequip line tool
-await page.keyboard.press('Escape')
-// Make sure we didn't pop out of sketch mode.
-await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
-await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
-// Equip arc tool
-await page.keyboard.press('a')
-await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
-await page.mouse.move(1000, 100, { steps: 5 })
-await page.mouse.click(1000, 100)
-await page.keyboard.press('Escape')
-await page.keyboard.press('l')
-await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
-
-// Do not close the sketch.
-// On close it will exit sketch mode.
-
-// Unequip line tool
-await page.keyboard.press('Escape')
-await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
-await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
-// Make sure we didn't pop out of sketch mode.
-await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
-// Exit sketch
-await page.keyboard.press('Escape')
-await expect(
-  page.getByRole('button', { name: 'Exit Sketch' })
-).not.toBeVisible() })
 
 test.fixme(
   'Basic default modeling and sketch hotkeys work',
@@ -412,37 +428,38 @@ test.fixme(
 )
 
 test('Delete key does not navigate back', async ({ page, homePage }) => {
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
 
-await page.setBodyDimensions({ width: 1200, height: 500 })
-await homePage.goToModelingScene();
+  await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
 
-await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
+  const settingsButton = page.getByRole('link', {
+    name: 'Settings',
+    exact: false,
+  })
+  const settingsCloseButton = page.getByTestId('settings-close-button')
 
-const settingsButton = page.getByRole('link', {
-  name: 'Settings',
-  exact: false,
+  await settingsButton.click()
+  await expect.poll(() => page.url()).toContain('/settings')
+
+  // Make sure that delete doesn't go back from settings
+  await page.keyboard.press('Delete')
+  await expect.poll(() => page.url()).toContain('/settings')
+
+  // Now close the settings and try delete again,
+  // make sure it doesn't go back to settings
+  await settingsCloseButton.click()
+  await page.keyboard.press('Delete')
+  await expect.poll(() => page.url()).not.toContain('/settings')
 })
-const settingsCloseButton = page.getByTestId('settings-close-button')
 
-await settingsButton.click()
-await expect.poll(() => page.url()).toContain('/settings')
-
-// Make sure that delete doesn't go back from settings
-await page.keyboard.press('Delete')
-await expect.poll(() => page.url()).toContain('/settings')
-
-// Now close the settings and try delete again,
-// make sure it doesn't go back to settings
-await settingsCloseButton.click()
-await page.keyboard.press('Delete')
-await expect.poll(() => page.url()).not.toContain('/settings') })
-
-test('Sketch on face', async ({ page, homePage }) => { test.setTimeout(90_000)
-const u = await getUtils(page)
-await page.addInitScript(async () => {
-  localStorage.setItem(
-    'persistCode',
-    `sketch001 = startSketchOn('XZ')
+test('Sketch on face', async ({ page, homePage }) => {
+  test.setTimeout(90_000)
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `sketch001 = startSketchOn('XZ')
 |> startProfileAt([3.29, 7.86], %)
 |> line([2.48, 2.44], %)
 |> line([2.66, 1.17], %)
@@ -456,126 +473,127 @@ await page.addInitScript(async () => {
 |> line([-17.67, 0.85], %)
 |> close(%)
 extrude001 = extrude(5 + 7, sketch001)`
+    )
+  })
+
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+
+  await homePage.goToModelingScene()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(300)
+
+  let previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await u.openAndClearDebugPanel()
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(625, 165),
+    'default_camera_get_settings',
+    true
   )
-})
+  await page.waitForTimeout(150)
+  await u.closeDebugPanel()
 
-await page.setBodyDimensions({ width: 1200, height: 500 })
+  const firstClickPosition = [612, 238]
+  const secondClickPosition = [661, 242]
+  const thirdClickPosition = [609, 267]
 
-await homePage.goToModelingScene()
+  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 
-// wait for execution done
-await u.openDebugPanel()
-await u.expectCmdLog('[data-message-type="execution-done"]')
-await u.closeDebugPanel()
+  await page.waitForTimeout(100)
+  await page.mouse.click(secondClickPosition[0], secondClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 
-await expect(
-  page.getByRole('button', { name: 'Start Sketch' })
-).not.toBeDisabled()
+  await page.waitForTimeout(100)
+  await page.mouse.click(thirdClickPosition[0], thirdClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 
-await page.getByRole('button', { name: 'Start Sketch' }).click()
-await page.waitForTimeout(300)
+  await page.waitForTimeout(100)
+  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 
-let previousCodeContent = await page.locator('.cm-content').innerText()
-
-await u.openAndClearDebugPanel()
-await u.doAndWaitForCmd(
-  () => page.mouse.click(625, 165),
-  'default_camera_get_settings',
-  true
-)
-await page.waitForTimeout(150)
-await u.closeDebugPanel()
-
-const firstClickPosition = [612, 238]
-const secondClickPosition = [661, 242]
-const thirdClickPosition = [609, 267]
-
-await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
-await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-previousCodeContent = await page.locator('.cm-content').innerText()
-
-await page.waitForTimeout(100)
-await page.mouse.click(secondClickPosition[0], secondClickPosition[1])
-await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-previousCodeContent = await page.locator('.cm-content').innerText()
-
-await page.waitForTimeout(100)
-await page.mouse.click(thirdClickPosition[0], thirdClickPosition[1])
-await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-previousCodeContent = await page.locator('.cm-content').innerText()
-
-await page.waitForTimeout(100)
-await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
-await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-previousCodeContent = await page.locator('.cm-content').innerText()
-
-await expect.poll(u.normalisedEditorCode).toContain(
-  u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
+  await expect.poll(u.normalisedEditorCode).toContain(
+    u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2.6, -1.25], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 `)
-)
+  )
 
-await u.openAndClearDebugPanel()
-await page.getByRole('button', { name: 'Exit Sketch' }).click()
-await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
-await u.updateCamPosition([1049, 239, 686])
-await u.closeDebugPanel()
+  await u.updateCamPosition([1049, 239, 686])
+  await u.closeDebugPanel()
 
-await page.getByText('startProfileAt([-12').click()
-await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-await page.getByRole('button', { name: 'Edit Sketch' }).click()
-await page.waitForTimeout(400)
-await page.waitForTimeout(150)
-await page.setBodyDimensions({ width: 1200, height: 1200 })
-await u.openAndClearDebugPanel()
-await u.updateCamPosition([452, -152, 1166])
-await u.closeDebugPanel()
-await page.waitForTimeout(200)
+  await page.getByText('startProfileAt([-12').click()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(400)
+  await page.waitForTimeout(150)
+  await page.setBodyDimensions({ width: 1200, height: 1200 })
+  await u.openAndClearDebugPanel()
+  await u.updateCamPosition([452, -152, 1166])
+  await u.closeDebugPanel()
+  await page.waitForTimeout(200)
 
-const pointToDragFirst = [787, 565]
-await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
-await page.mouse.down()
-await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
-  steps: 5,
-})
-await page.mouse.up()
-await page.waitForTimeout(100)
-await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
-previousCodeContent = await page.locator('.cm-content').innerText()
+  const pointToDragFirst = [787, 565]
+  await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
+  await page.mouse.down()
+  await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
+    steps: 5,
+  })
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 
-const result = makeTemplate`sketch002 = startSketchOn(extrude001, seg01)
+  const result = makeTemplate`sketch002 = startSketchOn(extrude001, seg01)
 |> startProfileAt([-12.83, 6.7], %)
 |> line([${[2.28, 2.35]}, -${0.07}], %)
 |> line([-3.05, -1.47], %)
 |> lineTo([profileStartX(%), profileStartY(%)], %)
 |> close(%)`
 
-await expect(page.locator('.cm-content')).toHaveText(result.regExp)
+  await expect(page.locator('.cm-content')).toHaveText(result.regExp)
 
-// exit sketch
-await u.openAndClearDebugPanel()
-await page.getByRole('button', { name: 'Exit Sketch' }).click()
-await u.expectCmdLog('[data-message-type="execution-done"]')
+  // exit sketch
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
-await page.getByText('startProfileAt([-12').click()
+  await page.getByText('startProfileAt([-12').click()
 
-await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
-await page.waitForTimeout(100)
-await page.getByRole('button', { name: 'Extrude' }).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
+  await page.waitForTimeout(100)
+  await page.getByRole('button', { name: 'Extrude' }).click()
 
-await expect(page.getByTestId('command-bar')).toBeVisible()
-await page.waitForTimeout(100)
+  await expect(page.getByTestId('command-bar')).toBeVisible()
+  await page.waitForTimeout(100)
 
-await page.getByRole('button', { name: 'arrow right Continue' }).click()
-await page.waitForTimeout(100)
-await expect(page.getByText('Confirm Extrude')).toBeVisible()
-await page.getByRole('button', { name: 'checkmark Submit command' }).click()
+  await page.getByRole('button', { name: 'arrow right Continue' }).click()
+  await page.waitForTimeout(100)
+  await expect(page.getByText('Confirm Extrude')).toBeVisible()
+  await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
-const result2 = result.genNext`
+  const result2 = result.genNext`
 const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
-await expect(page.locator('.cm-content')).toHaveText(result2.regExp) })
+  await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
+})
