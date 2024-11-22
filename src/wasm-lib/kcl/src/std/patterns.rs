@@ -331,8 +331,7 @@ async fn inner_pattern_transform<'a>(
         let t = make_transform::<Box<Solid>>(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
-    let transform = transform; // remove mutability
-    execute_pattern_transform_3d(transform, solid_set, exec_state, args).await
+    execute_pattern_transform(transform, solid_set, exec_state, args).await
 }
 
 /// Just like patternTransform, but works on 2D sketches not 3D solids.
@@ -369,63 +368,38 @@ async fn inner_pattern_transform_2d<'a>(
         let t = make_transform::<Box<Sketch>>(i, &transform_function, args.source_range, exec_state).await?;
         transform.push(t);
     }
-    let transform = transform; // remove mutability
-    execute_pattern_transform_2d(transform, solid_set, exec_state, args).await
+    execute_pattern_transform(transform, solid_set, exec_state, args).await
 }
 
-async fn execute_pattern_transform_2d<'a>(
+async fn execute_pattern_transform<'a, T: GeometryTrait>(
     transforms: Vec<Vec<Transform>>,
-    sketch_set: SketchSet,
+    sketch_set: T::Set,
     exec_state: &mut ExecState,
     args: &'a Args,
-) -> Result<Vec<Box<Sketch>>, KclError> {
-    let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
+) -> Result<Vec<T>, KclError> {
+    let starting: Vec<T> = sketch_set.into();
 
     if args.ctx.context_type == crate::executor::ContextType::Mock {
-        return Ok(starting_sketches);
+        return Ok(starting);
     }
 
-    let mut sketches = Vec::new();
-    for e in starting_sketches {
-        let new_sketches = send_pattern_transform(transforms.clone(), &e, exec_state, args).await?;
-        sketches.extend(new_sketches);
+    let mut output = Vec::new();
+    for geo in starting {
+        let new = send_pattern_transform(transforms.clone(), &geo, exec_state, args).await?;
+        output.extend(new)
     }
-    Ok(sketches)
+    Ok(output)
 }
 
-async fn execute_pattern_transform_3d<'a>(
-    transforms: Vec<Vec<Transform>>,
-    solid_set: SolidSet,
-    exec_state: &mut ExecState,
-    args: &'a Args,
-) -> Result<Vec<Box<Solid>>, KclError> {
-    // Flush the batch for our fillets/chamfers if there are any.
-    // If we do not flush these, then you won't be able to pattern something with fillets.
-    // Flush just the fillets/chamfers that apply to these solids.
-    args.flush_batch_for_solid_set(exec_state, solid_set.clone().into())
-        .await?;
-
-    let starting_solids: Vec<Box<Solid>> = solid_set.into();
-
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
-        return Ok(starting_solids);
-    }
-
-    let mut solids = Vec::new();
-    for e in starting_solids {
-        let new_solids = send_pattern_transform(transforms.clone(), &e, exec_state, args).await?;
-        solids.extend(new_solids);
-    }
-    Ok(solids)
-}
-
-trait GeometryWithId: Clone {
+trait GeometryTrait: Clone {
+    type Set: Into<Vec<Self>>;
     fn id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
 }
 
-impl GeometryWithId for Box<Sketch> {
+impl GeometryTrait for Box<Sketch> {
+    type Set = SketchSet;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
     }
@@ -437,7 +411,8 @@ impl GeometryWithId for Box<Sketch> {
     }
 }
 
-impl GeometryWithId for Box<Solid> {
+impl GeometryTrait for Box<Solid> {
+    type Set = SolidSet;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
     }
@@ -451,7 +426,7 @@ impl GeometryWithId for Box<Solid> {
     }
 }
 
-async fn send_pattern_transform<T: GeometryWithId>(
+async fn send_pattern_transform<T: GeometryTrait>(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
     transforms: Vec<Vec<Transform>>,
@@ -491,7 +466,7 @@ async fn send_pattern_transform<T: GeometryWithId>(
     Ok(geometries)
 }
 
-async fn make_transform<'a, T: GeometryWithId>(
+async fn make_transform<'a, T: GeometryTrait>(
     i: u32,
     transform_function: &FunctionParam<'a>,
     source_range: SourceRange,
@@ -541,7 +516,7 @@ async fn make_transform<'a, T: GeometryWithId>(
         .collect()
 }
 
-fn transform_from_obj_fields<T: GeometryWithId>(
+fn transform_from_obj_fields<T: GeometryTrait>(
     transform: HashMap<String, KclValue>,
     source_ranges: Vec<SourceRange>,
 ) -> Result<Transform, KclError> {
@@ -832,7 +807,7 @@ async fn inner_pattern_linear_3d(
             }]
         })
         .collect();
-    execute_pattern_transform_3d(transforms, solid_set, exec_state, &args).await
+    execute_pattern_transform(transforms, solid_set, exec_state, &args).await
 }
 
 async fn pattern_linear(
