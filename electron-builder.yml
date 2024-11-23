@@ -73,18 +73,6 @@ linux:
       mimeType: text/vnd.zoo.kcl
       description: Zoo KCL File
       role: Editor
-deb:
-  depends:
-    - zlib1g-dev
-    - libfuse2
-    - libnss3
-    - libatk1.0-0
-    - libatk-bridge2.0-0
-    - libcups2
-    - libgtk-3-0
-    - libgbm-dev
-    - libasound2
-    - xdg-utils
 publish:
   - provider: generic
     url: https://dl.zoo.dev/releases/modeling-app
