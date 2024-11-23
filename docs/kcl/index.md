@@ -74,6 +74,7 @@ layout: manual
 * [`patternLinear2d`](kcl/patternLinear2d)
 * [`patternLinear3d`](kcl/patternLinear3d)
 * [`patternTransform`](kcl/patternTransform)
+* [`patternTransform2d`](kcl/patternTransform2d)
 * [`pi`](kcl/pi)
 * [`polar`](kcl/polar)
 * [`polygon`](kcl/polygon)
