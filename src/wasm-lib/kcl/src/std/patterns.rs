@@ -61,31 +61,6 @@ pub struct LinearPattern3dData {
     pub axis: [f64; 3],
 }
 
-pub enum LinearPattern {
-    TwoD(LinearPattern2dData),
-}
-
-impl LinearPattern {
-    pub fn axis(&self) -> [f64; 3] {
-        match self {
-            LinearPattern::TwoD(lp) => [lp.axis[0], lp.axis[1], 0.0],
-        }
-    }
-
-    fn repetitions(&self) -> RepetitionsNeeded {
-        let n = match self {
-            LinearPattern::TwoD(lp) => lp.instances.u32(),
-        };
-        RepetitionsNeeded::from(n)
-    }
-
-    pub fn distance(&self) -> f64 {
-        match self {
-            LinearPattern::TwoD(lp) => lp.distance,
-        }
-    }
-}
-
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (num_repetitions, transform, extr) = args.get_pattern_transform_args()?;
@@ -733,33 +708,21 @@ async fn inner_pattern_linear_2d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
-    let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
-
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
-        return Ok(starting_sketches);
-    }
-
-    let mut sketches = Vec::new();
-    for sketch in starting_sketches.iter() {
-        let geometries = pattern_linear(
-            LinearPattern::TwoD(data.clone()),
-            Geometry::Sketch(sketch.clone()),
-            exec_state,
-            args.clone(),
-        )
-        .await?;
-
-        let Geometries::Sketches(new_sketches) = geometries else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of sketches".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-
-        sketches.extend(new_sketches);
-    }
-
-    Ok(sketches)
+    let axis = data.axis;
+    let [x, y] = axis;
+    let axis_len = f64::sqrt(x * x + y * y);
+    let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
+    let transforms: Vec<_> = (1..data.instances.u64())
+        .map(|i| {
+            let d = data.distance * (i as f64);
+            let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
+            vec![Transform {
+                translate,
+                ..Default::default()
+            }]
+        })
+        .collect();
+    execute_pattern_transform(transforms, sketch_set, exec_state, &args).await
 }
 
 /// A linear pattern on a 3D model.
@@ -821,73 +784,6 @@ async fn inner_pattern_linear_3d(
         })
         .collect();
     execute_pattern_transform(transforms, solid_set, exec_state, &args).await
-}
-
-async fn pattern_linear(
-    data: LinearPattern,
-    geometry: Geometry,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Geometries, KclError> {
-    let id = exec_state.id_generator.next_uuid();
-
-    let num_repetitions = match data.repetitions() {
-        RepetitionsNeeded::More(n) => n,
-        RepetitionsNeeded::None => {
-            return Ok(Geometries::from(geometry));
-        }
-        RepetitionsNeeded::Invalid => {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![args.source_range],
-                message: MUST_HAVE_ONE_INSTANCE.to_owned(),
-            }));
-        }
-    };
-
-    let resp = args
-        .send_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::EntityLinearPattern {
-                axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
-                num_repetitions,
-                spacing: LengthUnit(data.distance()),
-            }),
-        )
-        .await?;
-
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityLinearPattern(pattern_info),
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("EntityLinearPattern response was not as expected: {:?}", resp),
-            source_ranges: vec![args.source_range],
-        }));
-    };
-
-    let geometries = match geometry {
-        Geometry::Sketch(sketch) => {
-            let mut geometries = vec![sketch.clone()];
-            for id in pattern_info.entity_ids.iter() {
-                let mut new_sketch = sketch.clone();
-                new_sketch.id = *id;
-                geometries.push(new_sketch);
-            }
-            Geometries::Sketches(geometries)
-        }
-        Geometry::Solid(solid) => {
-            let mut geometries = vec![solid.clone()];
-            for id in pattern_info.entity_ids.iter() {
-                let mut new_solid = solid.clone();
-                new_solid.id = *id;
-                geometries.push(new_solid);
-            }
-            Geometries::Solids(geometries)
-        }
-    };
-
-    Ok(geometries)
 }
 
 /// Data for a circular pattern on a 2D sketch.
