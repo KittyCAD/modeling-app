@@ -373,11 +373,15 @@ async fn inner_pattern_transform_2d<'a>(
 
 async fn execute_pattern_transform<'a, T: GeometryTrait>(
     transforms: Vec<Vec<Transform>>,
-    sketch_set: T::Set,
+    geo_set: T::Set,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<T>, KclError> {
-    let starting: Vec<T> = sketch_set.into();
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we do not flush these, then you won't be able to pattern something with fillets.
+    // Flush just the fillets/chamfers that apply to these solids.
+    T::flush_batch(args, exec_state, geo_set.clone()).await?;
+    let starting: Vec<T> = geo_set.into();
 
     if args.ctx.context_type == crate::executor::ContextType::Mock {
         return Ok(starting);
@@ -392,10 +396,11 @@ async fn execute_pattern_transform<'a, T: GeometryTrait>(
 }
 
 trait GeometryTrait: Clone {
-    type Set: Into<Vec<Self>>;
+    type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
+    async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: Self::Set) -> Result<(), KclError>;
 }
 
 impl GeometryTrait for Box<Sketch> {
@@ -410,6 +415,10 @@ impl GeometryTrait for Box<Sketch> {
         let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
         Ok(Point3d { x, y, z: 0.0 })
     }
+
+    async fn flush_batch(_: &Args, _: &mut ExecState, _: Self::Set) -> Result<(), KclError> {
+        Ok(())
+    }
 }
 
 impl GeometryTrait for Box<Solid> {
@@ -423,6 +432,10 @@ impl GeometryTrait for Box<Solid> {
     }
     fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
         array_to_point3d(val, source_ranges)
+    }
+
+    async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: Self::Set) -> Result<(), KclError> {
+        args.flush_batch_for_solid_set(exec_state, solid_set.into()).await
     }
 }
 
