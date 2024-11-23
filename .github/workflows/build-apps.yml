@@ -241,6 +241,7 @@ jobs:
             out/*-arm64-win.exe
             out/*-arm64-mac.dmg
             out/*-arm64-linux.AppImage
+            out/*-arm64-linux.deb
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -250,7 +251,7 @@ jobs:
             out/*-x64-win.exe
             out/*-x64-mac.dmg
             out/*-x86_64-linux.AppImage
-
+            out/*-x86_64-linux.deb
 
   upload-apps-release:
     runs-on: ubuntu-22.04
@@ -325,6 +326,8 @@ jobs:
             --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
             --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-win.exe" \
             --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-win.exe" \
+            --arg deb_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.deb" \
+            --arg deb_amd64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-amd64-linux.deb" \
             --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
             --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
             '{
@@ -343,6 +346,12 @@ jobs:
                 },
                 "exe-x64": {
                   "url": $windows_x64_url
+                },
+                "deb-arm64" :{
+                  "url": "$deb_arm64_url"
+                },
+                "deb-amd64" :{
+                  "url": "$deb_amd64_url"
                 },
                 "appimage-arm64": {
                   "url": $linux_arm64_url
