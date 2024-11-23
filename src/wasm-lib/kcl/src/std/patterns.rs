@@ -395,50 +395,6 @@ async fn execute_pattern_transform<'a, T: GeometryTrait>(
     Ok(output)
 }
 
-trait GeometryTrait: Clone {
-    type Set: Into<Vec<Self>> + Clone;
-    fn id(&self) -> Uuid;
-    fn set_id(&mut self, id: Uuid);
-    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
-    async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: Self::Set) -> Result<(), KclError>;
-}
-
-impl GeometryTrait for Box<Sketch> {
-    type Set = SketchSet;
-    fn set_id(&mut self, id: Uuid) {
-        self.id = id;
-    }
-    fn id(&self) -> Uuid {
-        self.id
-    }
-    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-        let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
-        Ok(Point3d { x, y, z: 0.0 })
-    }
-
-    async fn flush_batch(_: &Args, _: &mut ExecState, _: Self::Set) -> Result<(), KclError> {
-        Ok(())
-    }
-}
-
-impl GeometryTrait for Box<Solid> {
-    type Set = SolidSet;
-    fn set_id(&mut self, id: Uuid) {
-        self.id = id;
-    }
-
-    fn id(&self) -> Uuid {
-        self.id
-    }
-    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
-        array_to_point3d(val, source_ranges)
-    }
-
-    async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: Self::Set) -> Result<(), KclError> {
-        args.flush_batch_for_solid_set(exec_state, solid_set.into()).await
-    }
-}
-
 async fn send_pattern_transform<T: GeometryTrait>(
     // This should be passed via reference, see
     // https://github.com/KittyCAD/modeling-app/issues/2821
@@ -662,6 +618,50 @@ fn array_to_point2d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<P
     let x = f(&arr[0], 'x')?;
     let y = f(&arr[1], 'y')?;
     Ok(Point2d { x, y })
+}
+
+trait GeometryTrait: Clone {
+    type Set: Into<Vec<Self>> + Clone;
+    fn id(&self) -> Uuid;
+    fn set_id(&mut self, id: Uuid);
+    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError>;
+    async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: Self::Set) -> Result<(), KclError>;
+}
+
+impl GeometryTrait for Box<Sketch> {
+    type Set = SketchSet;
+    fn set_id(&mut self, id: Uuid) {
+        self.id = id;
+    }
+    fn id(&self) -> Uuid {
+        self.id
+    }
+    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+        let Point2d { x, y } = array_to_point2d(val, source_ranges)?;
+        Ok(Point3d { x, y, z: 0.0 })
+    }
+
+    async fn flush_batch(_: &Args, _: &mut ExecState, _: Self::Set) -> Result<(), KclError> {
+        Ok(())
+    }
+}
+
+impl GeometryTrait for Box<Solid> {
+    type Set = SolidSet;
+    fn set_id(&mut self, id: Uuid) {
+        self.id = id;
+    }
+
+    fn id(&self) -> Uuid {
+        self.id
+    }
+    fn array_to_point3d(val: &KclValue, source_ranges: Vec<SourceRange>) -> Result<Point3d, KclError> {
+        array_to_point3d(val, source_ranges)
+    }
+
+    async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: Self::Set) -> Result<(), KclError> {
+        args.flush_batch_for_solid_set(exec_state, solid_set.into()).await
+    }
 }
 
 #[cfg(test)]
