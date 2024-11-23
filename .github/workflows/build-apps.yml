@@ -251,7 +251,7 @@ jobs:
             out/*-x64-win.exe
             out/*-x64-mac.dmg
             out/*-x86_64-linux.AppImage
-            out/*-x86_64-linux.deb
+            out/*-amd64-linux.deb
 
   upload-apps-release:
     runs-on: ubuntu-22.04
