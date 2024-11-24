@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing non_string_key_of_object.kcl
 snapshot_kind: text
 ---
@@ -36,7 +36,7 @@ snapshot_kind: text
                     "start": 14,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 123
+                    "value": 123.0
                   }
                 }
               ],
@@ -80,7 +80,7 @@ snapshot_kind: text
                 "start": 30,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 26,
               "type": "MemberExpression",

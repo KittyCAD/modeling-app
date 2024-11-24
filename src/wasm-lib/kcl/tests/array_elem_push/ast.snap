@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing array_elem_push.kcl
 snapshot_kind: text
 ---
@@ -24,7 +25,7 @@ snapshot_kind: text
                   "start": 7,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1
+                  "value": 1.0
                 },
                 {
                   "end": 11,
@@ -32,7 +33,7 @@ snapshot_kind: text
                   "start": 10,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2
+                  "value": 2.0
                 },
                 {
                   "end": 14,
@@ -40,7 +41,7 @@ snapshot_kind: text
                   "start": 13,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 3
+                  "value": 3.0
                 }
               ],
               "end": 15,
@@ -83,7 +84,7 @@ snapshot_kind: text
                   "start": 37,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 4
+                  "value": 4.0
                 }
               ],
               "callee": {
@@ -133,7 +134,7 @@ snapshot_kind: text
                   "start": 66,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 5
+                  "value": 5.0
                 }
               ],
               "callee": {
@@ -178,7 +179,7 @@ snapshot_kind: text
                 "start": 90,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0
+                "value": 0.0
               },
               "start": 81,
               "type": "MemberExpression",
@@ -190,7 +191,7 @@ snapshot_kind: text
               "start": 94,
               "type": "Literal",
               "type": "Literal",
-              "value": 1
+              "value": 1.0
             },
             {
               "end": 104,
@@ -245,7 +246,7 @@ snapshot_kind: text
                 "start": 164,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1
+                "value": 1.0
               },
               "start": 155,
               "type": "MemberExpression",
@@ -257,7 +258,7 @@ snapshot_kind: text
               "start": 168,
               "type": "Literal",
               "type": "Literal",
-              "value": 2
+              "value": 2.0
             },
             {
               "end": 178,
@@ -312,7 +313,7 @@ snapshot_kind: text
                 "start": 238,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "start": 229,
               "type": "MemberExpression",
@@ -324,7 +325,7 @@ snapshot_kind: text
               "start": 242,
               "type": "Literal",
               "type": "Literal",
-              "value": 3
+              "value": 3.0
             },
             {
               "end": 252,
@@ -379,7 +380,7 @@ snapshot_kind: text
                 "start": 312,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 303,
               "type": "MemberExpression",
@@ -391,7 +392,7 @@ snapshot_kind: text
               "start": 316,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             {
               "end": 326,
@@ -446,7 +447,7 @@ snapshot_kind: text
                 "start": 388,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0
+                "value": 0.0
               },
               "start": 379,
               "type": "MemberExpression",
@@ -458,7 +459,7 @@ snapshot_kind: text
               "start": 392,
               "type": "Literal",
               "type": "Literal",
-              "value": 1
+              "value": 1.0
             },
             {
               "end": 402,
@@ -513,7 +514,7 @@ snapshot_kind: text
                 "start": 462,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1
+                "value": 1.0
               },
               "start": 453,
               "type": "MemberExpression",
@@ -525,7 +526,7 @@ snapshot_kind: text
               "start": 466,
               "type": "Literal",
               "type": "Literal",
-              "value": 2
+              "value": 2.0
             },
             {
               "end": 476,
@@ -580,7 +581,7 @@ snapshot_kind: text
                 "start": 536,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "start": 527,
               "type": "MemberExpression",
@@ -592,7 +593,7 @@ snapshot_kind: text
               "start": 540,
               "type": "Literal",
               "type": "Literal",
-              "value": 3
+              "value": 3.0
             },
             {
               "end": 550,
@@ -647,7 +648,7 @@ snapshot_kind: text
                 "start": 610,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 601,
               "type": "MemberExpression",
@@ -659,7 +660,7 @@ snapshot_kind: text
               "start": 614,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             {
               "end": 624,
@@ -714,7 +715,7 @@ snapshot_kind: text
                 "start": 686,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 677,
               "type": "MemberExpression",
@@ -726,7 +727,7 @@ snapshot_kind: text
               "start": 690,
               "type": "Literal",
               "type": "Literal",
-              "value": 5
+              "value": 5.0
             },
             {
               "end": 700,

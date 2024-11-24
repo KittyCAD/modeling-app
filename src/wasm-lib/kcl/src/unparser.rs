@@ -217,14 +217,13 @@ impl VariableDeclaration {
 impl Literal {
     fn recast(&self) -> String {
         match self.value {
-            LiteralValue::Fractional(x) => {
-                if x.fract() == 0.0 {
+            LiteralValue::Number(x) => {
+                if self.raw.contains('.') && x.fract() == 0.0 {
                     format!("{x:?}")
                 } else {
                     self.raw.clone()
                 }
             }
-            LiteralValue::IInteger(_) => self.raw.clone(),
             LiteralValue::String(ref s) => {
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")

@@ -161,8 +161,7 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
 
     fn unlitafy(lit: &LiteralValue) -> Option<f64> {
         Some(match lit {
-            LiteralValue::IInteger(value) => *value as f64,
-            LiteralValue::Fractional(value) => *value,
+            LiteralValue::Number(value) => *value,
             _ => {
                 return None;
             }

@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing property_of_object.kcl
 snapshot_kind: text
 ---
@@ -32,8 +32,8 @@ snapshot_kind: text
           "type": "Object",
           "value": {
             "bar": {
-              "type": "Int",
-              "value": 0,
+              "type": "Number",
+              "value": 0.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -45,8 +45,8 @@ snapshot_kind: text
               ]
             },
             "foo": {
-              "type": "Int",
-              "value": 1,
+              "type": "Number",
+              "value": 1.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -75,8 +75,8 @@ snapshot_kind: text
               "type": "Object",
               "value": {
                 "bar": {
-                  "type": "Int",
-                  "value": 0,
+                  "type": "Number",
+                  "value": 0.0,
                   "__meta": [
                     {
                       "sourceRange": [
@@ -88,8 +88,8 @@ snapshot_kind: text
                   ]
                 },
                 "foo": {
-                  "type": "Int",
-                  "value": 1,
+                  "type": "Number",
+                  "value": 1.0,
                   "__meta": [
                     {
                       "sourceRange": [
@@ -123,8 +123,8 @@ snapshot_kind: text
           ]
         },
         "one_a": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -136,8 +136,8 @@ snapshot_kind: text
           ]
         },
         "one_b": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -149,8 +149,8 @@ snapshot_kind: text
           ]
         },
         "one_c": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -162,8 +162,8 @@ snapshot_kind: text
           ]
         },
         "one_d": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [

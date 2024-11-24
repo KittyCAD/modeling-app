@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing sketch_on_face_after_fillets_referencing_face.kcl
 snapshot_kind: text
 ---
@@ -9,8 +9,8 @@ snapshot_kind: text
     {
       "bindings": {
         "FOS": {
-          "type": "Int",
-          "value": 2,
+          "type": "Number",
+          "value": 2.0,
           "__meta": [
             {
               "sourceRange": [
@@ -27,8 +27,8 @@ snapshot_kind: text
           "__meta": []
         },
         "L": {
-          "type": "Int",
-          "value": 12,
+          "type": "Number",
+          "value": 12.0,
           "__meta": [
             {
               "sourceRange": [
@@ -705,8 +705,8 @@ snapshot_kind: text
           ]
         },
         "p": {
-          "type": "Int",
-          "value": 300,
+          "type": "Number",
+          "value": 300.0,
           "__meta": [
             {
               "sourceRange": [
@@ -778,8 +778,8 @@ snapshot_kind: text
           ]
         },
         "shelfMountL": {
-          "type": "Int",
-          "value": 8,
+          "type": "Number",
+          "value": 8.0,
           "__meta": [
             {
               "sourceRange": [
@@ -791,8 +791,8 @@ snapshot_kind: text
           ]
         },
         "sigmaAllow": {
-          "type": "Int",
-          "value": 35000,
+          "type": "Number",
+          "value": 35000.0,
           "__meta": [
             {
               "sourceRange": [
@@ -1532,8 +1532,8 @@ snapshot_kind: text
           ]
         },
         "wallMountL": {
-          "type": "Int",
-          "value": 6,
+          "type": "Number",
+          "value": 6.0,
           "__meta": [
             {
               "sourceRange": [
@@ -1545,8 +1545,8 @@ snapshot_kind: text
           ]
         },
         "width": {
-          "type": "Int",
-          "value": 6,
+          "type": "Number",
+          "value": 6.0,
           "__meta": [
             {
               "sourceRange": [

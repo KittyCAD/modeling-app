@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing computed_var.kcl
 snapshot_kind: text
 ---
@@ -32,8 +32,8 @@ snapshot_kind: text
           "type": "Array",
           "value": [
             {
-              "type": "Int",
-              "value": 0,
+              "type": "Number",
+              "value": 0.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -45,8 +45,8 @@ snapshot_kind: text
               ]
             },
             {
-              "type": "Int",
-              "value": 0,
+              "type": "Number",
+              "value": 0.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -58,8 +58,8 @@ snapshot_kind: text
               ]
             },
             {
-              "type": "Int",
-              "value": 0,
+              "type": "Number",
+              "value": 0.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -71,8 +71,8 @@ snapshot_kind: text
               ]
             },
             {
-              "type": "Int",
-              "value": 10,
+              "type": "Number",
+              "value": 10.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -95,8 +95,8 @@ snapshot_kind: text
           ]
         },
         "i": {
-          "type": "Int",
-          "value": 3,
+          "type": "Number",
+          "value": 3.0,
           "__meta": [
             {
               "sourceRange": [
@@ -111,8 +111,8 @@ snapshot_kind: text
           "type": "Object",
           "value": {
             "bar": {
-              "type": "Int",
-              "value": 0,
+              "type": "Number",
+              "value": 0.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -124,8 +124,8 @@ snapshot_kind: text
               ]
             },
             "foo": {
-              "type": "Int",
-              "value": 1,
+              "type": "Number",
+              "value": 1.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -148,8 +148,8 @@ snapshot_kind: text
           ]
         },
         "one": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -174,8 +174,8 @@ snapshot_kind: text
           ]
         },
         "ten": {
-          "type": "Int",
-          "value": 10,
+          "type": "Number",
+          "value": 10.0,
           "__meta": [
             {
               "sourceRange": [

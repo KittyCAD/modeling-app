@@ -22,7 +22,7 @@ use crate::{
         ExecState, Geometries, Geometry, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange,
     },
     function_param::FunctionParam,
-    std::{types::Uint, Args},
+    std::Args,
 };
 
 use super::args::Arg;
@@ -38,7 +38,7 @@ pub struct LinearPattern2dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern. This is a 2D vector.
@@ -54,7 +54,7 @@ pub struct LinearPattern3dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern.
@@ -712,7 +712,7 @@ async fn inner_pattern_linear_2d(
     let [x, y] = axis;
     let axis_len = f64::sqrt(x * x + y * y);
     let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
-    let transforms: Vec<_> = (1..data.instances.u64())
+    let transforms: Vec<_> = (1..data.instances)
         .map(|i| {
             let d = data.distance * (i as f64);
             let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
@@ -773,7 +773,7 @@ async fn inner_pattern_linear_3d(
     let [x, y, z] = axis;
     let axis_len = f64::sqrt(x * x + y * y + z * z);
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
-    let transforms: Vec<_> = (1..data.instances.u64())
+    let transforms: Vec<_> = (1..data.instances)
         .map(|i| {
             let d = data.distance * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
@@ -795,7 +795,7 @@ pub struct CircularPattern2dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The center about which to make the pattern. This is a 2D vector.
     pub center: [f64; 2],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
@@ -813,7 +813,7 @@ pub struct CircularPattern3dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The axis around which to make the pattern. This is a 3D vector.
     pub axis: [f64; 3],
     /// The center about which to make the pattern. This is a 3D vector.
@@ -865,8 +865,8 @@ impl CircularPattern {
 
     fn repetitions(&self) -> RepetitionsNeeded {
         let n = match self {
-            CircularPattern::TwoD(lp) => lp.instances.u32(),
-            CircularPattern::ThreeD(lp) => lp.instances.u32(),
+            CircularPattern::TwoD(lp) => lp.instances,
+            CircularPattern::ThreeD(lp) => lp.instances,
         };
         RepetitionsNeeded::from(n)
     }

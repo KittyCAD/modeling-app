@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing cube.kcl
 snapshot_kind: text
 ---
@@ -45,7 +46,7 @@ snapshot_kind: text
                             "start": 47,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 2
+                            "value": 2.0
                           },
                           "start": 38,
                           "type": "BinaryExpression",
@@ -87,7 +88,7 @@ snapshot_kind: text
                             "start": 62,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           "start": 55,
                           "type": "MemberExpression",
@@ -129,7 +130,7 @@ snapshot_kind: text
                             "start": 78,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 1
+                            "value": 1.0
                           },
                           "start": 71,
                           "type": "MemberExpression",
@@ -724,7 +725,7 @@ snapshot_kind: text
                   "start": 344,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 40
+                  "value": 40.0
                 },
                 {
                   "elements": [
@@ -734,7 +735,7 @@ snapshot_kind: text
                       "start": 349,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0
+                      "value": 0.0
                     },
                     {
                       "end": 353,
@@ -742,7 +743,7 @@ snapshot_kind: text
                       "start": 352,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0
+                      "value": 0.0
                     }
                   ],
                   "end": 354,

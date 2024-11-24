@@ -23,9 +23,9 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// If `num` is negative, the result will be too.
 ///
 /// ```no_run
-/// assertEqual(rem(int( 7), int(4)),  3, 0.01, "remainder is 3")
-/// assertEqual(rem(int(-7), int(4)), -3, 0.01, "remainder is 3")
-/// assertEqual(rem(int( 7), int(-4)), 3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, 4),  3, 0.01, "remainder is 3")
+/// assertEqual(rem(-7, 4), -3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, -4), 3, 0.01, "remainder is 3")
 /// ```
 #[stdlib {
     name = "rem",
@@ -215,6 +215,34 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }]
 fn inner_abs(num: f64) -> Result<f64, KclError> {
     Ok(num.abs())
+}
+
+/// Round a number to the nearest integer.
+pub async fn round(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let num = args.get_number()?;
+    let result = inner_round(num)?;
+
+    Ok(args.make_user_val_from_f64(result))
+}
+
+/// Round a number to the nearest integer.
+///
+/// ```no_run
+/// const sketch001 = startSketchOn('XZ')
+///    |> startProfileAt([0, 0], %)
+///    |> lineTo([12, 10], %)
+///    |> line([round(7.02986), 0], %)
+///    |> yLineTo(0, %)
+///    |> close(%)
+///
+///  const extrude001 = extrude(5, sketch001)
+/// ```
+#[stdlib {
+    name = "round",
+    tags = ["math"],
+}]
+fn inner_round(num: f64) -> Result<f64, KclError> {
+    Ok(num.round())
 }
 
 /// Compute the largest integer less than or equal to a number.

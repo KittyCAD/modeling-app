@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing parametric.kcl
 snapshot_kind: text
 ---
@@ -22,7 +23,7 @@ snapshot_kind: text
               "start": 13,
               "type": "Literal",
               "type": "Literal",
-              "value": 35000
+              "value": 35000.0
             },
             "start": 0,
             "type": "VariableDeclarator"
@@ -50,7 +51,7 @@ snapshot_kind: text
               "start": 34,
               "type": "Literal",
               "type": "Literal",
-              "value": 9
+              "value": 9.0
             },
             "start": 26,
             "type": "VariableDeclarator"
@@ -78,7 +79,7 @@ snapshot_kind: text
               "start": 48,
               "type": "Literal",
               "type": "Literal",
-              "value": 150
+              "value": 150.0
             },
             "start": 44,
             "type": "VariableDeclarator"
@@ -106,7 +107,7 @@ snapshot_kind: text
               "start": 87,
               "type": "Literal",
               "type": "Literal",
-              "value": 6
+              "value": 6.0
             },
             "start": 76,
             "type": "VariableDeclarator"
@@ -134,7 +135,7 @@ snapshot_kind: text
               "start": 105,
               "type": "Literal",
               "type": "Literal",
-              "value": 2
+              "value": 2.0
             },
             "start": 99,
             "type": "VariableDeclarator"
@@ -162,7 +163,7 @@ snapshot_kind: text
               "start": 115,
               "type": "Literal",
               "type": "Literal",
-              "value": 5
+              "value": 5.0
             },
             "start": 108,
             "type": "VariableDeclarator"
@@ -190,7 +191,7 @@ snapshot_kind: text
               "start": 134,
               "type": "Literal",
               "type": "Literal",
-              "value": 8
+              "value": 8.0
             },
             "start": 127,
             "type": "VariableDeclarator"
@@ -262,7 +263,7 @@ snapshot_kind: text
                         "start": 184,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 6
+                        "value": 6.0
                       },
                       "start": 163,
                       "type": "BinaryExpression",
@@ -360,7 +361,7 @@ snapshot_kind: text
                           "start": 269,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 273,
@@ -368,7 +369,7 @@ snapshot_kind: text
                           "start": 272,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 274,
@@ -405,7 +406,7 @@ snapshot_kind: text
                           "start": 290,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 297,
@@ -456,7 +457,7 @@ snapshot_kind: text
                           "start": 320,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 322,
@@ -493,7 +494,7 @@ snapshot_kind: text
                           "start": 338,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -572,7 +573,7 @@ snapshot_kind: text
                           "start": 387,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 389,
@@ -609,7 +610,7 @@ snapshot_kind: text
                           "start": 405,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 425,

@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
+assertion_line: 92
 description: Program memory after executing sketch_on_face_circle_tagged.kcl
 snapshot_kind: text
 ---
@@ -106,7 +106,7 @@ snapshot_kind: text
                                     "start": 98,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   },
                                   {
                                     "end": 106,
@@ -157,7 +157,7 @@ snapshot_kind: text
                                     "start": 132,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   }
                                 ],
                                 "end": 134,
@@ -194,7 +194,7 @@ snapshot_kind: text
                                     "start": 152,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   },
                                   {
                                     "argument": {

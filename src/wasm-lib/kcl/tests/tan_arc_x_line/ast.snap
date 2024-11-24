@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 65
+assertion_line: 52
 description: Result of parsing tan_arc_x_line.kcl
 snapshot_kind: text
 ---
@@ -23,7 +23,7 @@ snapshot_kind: text
               "start": 9,
               "type": "Literal",
               "type": "Literal",
-              "value": 0
+              "value": 0.0
             },
             "start": 0,
             "type": "VariableDeclarator"
@@ -51,7 +51,7 @@ snapshot_kind: text
               "start": 20,
               "type": "Literal",
               "type": "Literal",
-              "value": 0
+              "value": 0.0
             },
             "start": 11,
             "type": "VariableDeclarator"
@@ -79,7 +79,7 @@ snapshot_kind: text
               "start": 36,
               "type": "Literal",
               "type": "Literal",
-              "value": 135
+              "value": 135.0
             },
             "start": 22,
             "type": "VariableDeclarator"
@@ -107,7 +107,7 @@ snapshot_kind: text
               "start": 44,
               "type": "Literal",
               "type": "Literal",
-              "value": 1
+              "value": 1.0
             },
             "start": 40,
             "type": "VariableDeclarator"
@@ -135,7 +135,7 @@ snapshot_kind: text
               "start": 59,
               "type": "Literal",
               "type": "Literal",
-              "value": 110
+              "value": 110.0
             },
             "start": 46,
             "type": "VariableDeclarator"
@@ -544,7 +544,7 @@ snapshot_kind: text
                   "start": 451,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1
+                  "value": 1.0
                 },
                 {
                   "end": 455,

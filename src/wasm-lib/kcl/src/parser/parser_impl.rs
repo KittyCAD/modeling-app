@@ -352,9 +352,6 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                if let Ok(x) = token.value.parse::<u64>() {
-                    return Ok((LiteralValue::IInteger(x as i64), token));
-                }
                 let x: f64 = token.value.parse().map_err(|_| {
                     KclError::Syntax(KclErrorDetails {
                         source_ranges: token.as_source_ranges(),
@@ -362,7 +359,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
                     })
                 })?;
 
-                Ok((LiteralValue::Fractional(x), token))
+                Ok((LiteralValue::Number(x), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),

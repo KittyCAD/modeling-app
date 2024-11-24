@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing big_number_angle_to_match_length_x.kcl
 snapshot_kind: text
 ---
@@ -51,7 +52,7 @@ snapshot_kind: text
                           "start": 51,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 55,
@@ -59,7 +60,7 @@ snapshot_kind: text
                           "start": 54,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 56,
@@ -96,7 +97,7 @@ snapshot_kind: text
                           "start": 72,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1
+                          "value": 1.0
                         },
                         {
                           "end": 79,
@@ -158,7 +159,7 @@ snapshot_kind: text
                                 "start": 141,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 3
+                                "value": 3.0
                               },
                               {
                                 "end": 145,
@@ -191,7 +192,7 @@ snapshot_kind: text
                           "start": 148,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 3
+                          "value": 3.0
                         }
                       ],
                       "end": 150,
@@ -247,7 +248,7 @@ snapshot_kind: text
                       "start": 182,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 10
+                      "value": 10.0
                     },
                     {
                       "end": 187,
