@@ -10,13 +10,13 @@ wallMountL = 8
 
 bracket = startSketchAt([0, 0])
   |> line([0, wallMountL], %)
-  |> tangentialArc({ radius: filletR, offset: 90 }, %)
+  |> tangentialArc({ radius = filletR, offset = 90 }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
   |> tangentialArc({
-       radius: filletR - thickness,
-       offset: -90
+       radius = filletR - thickness,
+       offset = -90
      }, %)
   |> line([0, -wallMountL], %)
   |> close(%)

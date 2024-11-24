@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 65
 description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
 snapshot_kind: text
 ---
@@ -9,7 +10,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 286,
+            "end": 288,
             "id": {
               "end": 7,
               "name": "part001",
@@ -309,10 +310,10 @@ snapshot_kind: text
                 {
                   "arguments": [
                     {
-                      "end": 282,
+                      "end": 284,
                       "properties": [
                         {
-                          "end": 227,
+                          "end": 228,
                           "key": {
                             "end": 224,
                             "name": "radius",
@@ -322,51 +323,51 @@ snapshot_kind: text
                           "start": 218,
                           "type": "ObjectProperty",
                           "value": {
-                            "end": 227,
+                            "end": 228,
                             "raw": "2",
-                            "start": 226,
+                            "start": 227,
                             "type": "Literal",
                             "type": "Literal",
                             "value": 2
                           }
                         },
                         {
-                          "end": 275,
+                          "end": 277,
                           "key": {
-                            "end": 240,
+                            "end": 241,
                             "name": "tags",
-                            "start": 236,
+                            "start": 237,
                             "type": "Identifier"
                           },
-                          "start": 236,
+                          "start": 237,
                           "type": "ObjectProperty",
                           "value": {
                             "elements": [
                               {
                                 "arguments": [
                                   {
-                                    "end": 273,
+                                    "end": 275,
                                     "name": "thing3",
-                                    "start": 267,
+                                    "start": 269,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 ],
                                 "callee": {
-                                  "end": 266,
+                                  "end": 268,
                                   "name": "getPreviousAdjacentEdge",
-                                  "start": 243,
+                                  "start": 245,
                                   "type": "Identifier"
                                 },
-                                "end": 274,
+                                "end": 276,
                                 "optional": false,
-                                "start": 243,
+                                "start": 245,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
                               }
                             ],
-                            "end": 275,
-                            "start": 242,
+                            "end": 277,
+                            "start": 244,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           }
@@ -377,8 +378,8 @@ snapshot_kind: text
                       "type": "ObjectExpression"
                     },
                     {
-                      "end": 285,
-                      "start": 284,
+                      "end": 287,
+                      "start": 286,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     }
@@ -389,14 +390,14 @@ snapshot_kind: text
                     "start": 202,
                     "type": "Identifier"
                   },
-                  "end": 286,
+                  "end": 288,
                   "optional": false,
                   "start": 202,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
-              "end": 286,
+              "end": 288,
               "start": 10,
               "type": "PipeExpression",
               "type": "PipeExpression"
@@ -405,14 +406,14 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 286,
+        "end": 288,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 287,
+    "end": 289,
     "start": 0
   }
 }

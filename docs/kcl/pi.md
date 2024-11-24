@@ -30,8 +30,8 @@ circumference = 70
 
 exampleSketch = startSketchOn("XZ")
   |> circle({
-       center: [0, 0],
-       radius: circumference / (2 * pi())
+       center = [0, 0],
+       radius = circumference / (2 * pi())
      }, %)
 
 example = extrude(5, exampleSketch)

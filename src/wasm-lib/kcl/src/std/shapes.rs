@@ -58,7 +58,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("-XZ")
-///   |> circle({ center: [0, 0], radius: 10 }, %)
+///   |> circle({ center = [0, 0], radius = 10 }, %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
@@ -70,7 +70,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> line([0, 30], %)
 ///   |> line([-30, 0], %)
 ///   |> close(%)
-///   |> hole(circle({ center: [0, 15], radius: 5 }, %), %)
+///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
@@ -195,10 +195,10 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// // Create a regular hexagon inscribed in a circle of radius 10
 /// hex = startSketchOn('XY')
 ///   |> polygon({
-///     radius: 10,
-///     numSides: 6,
-///     center: [0, 0],
-///     inscribed: true,
+///     radius = 10,
+///     numSides = 6,
+///     center = [0, 0],
+///     inscribed = true,
 ///   }, %)
 ///
 /// example = extrude(5, hex)
@@ -208,10 +208,10 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// // Create a square circumscribed around a circle of radius 5
 /// square = startSketchOn('XY')
 ///   |> polygon({
-///     radius: 5.0,
-///     numSides: 4,
-///     center: [10, 10],
-///     inscribed: false,
+///     radius = 5.0,
+///     numSides = 4,
+///     center = [10, 10],
+///     inscribed = false,
 ///   }, %)
 /// example = extrude(5, square)
 /// ```

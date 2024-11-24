@@ -8,7 +8,7 @@ ten = arr[i]
 assertEqual(ten, 10, 0.000001, "oops")
 
 p = "foo"
-obj = { foo: 1, bar: 0 }
+obj = { foo = 1, bar = 0 }
 one = obj[p]
 
 assertEqual(one, 1, 0.0000001, "oops")

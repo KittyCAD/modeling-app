@@ -31,7 +31,7 @@ map(array: [KclValue], map_fn: FunctionParam) -> [KclValue]
 r = 10 // radius
 fn drawCircle = (id) => {
   return startSketchOn("XY")
-    |> circle({ center: [id * 2 * r, 0], radius: r }, %)
+    |> circle({ center = [id * 2 * r, 0], radius = r }, %)
 }
 
 // Call `drawCircle`, passing in each element of the array.
@@ -47,7 +47,7 @@ r = 10 // radius
 // Call `map`, using an anonymous function instead of a named one.
 circles = map([1..3], (id) => {
   return startSketchOn("XY")
-    |> circle({ center: [id * 2 * r, 0], radius: r }, %)
+    |> circle({ center = [id * 2 * r, 0], radius = r }, %)
 })
 ```
 

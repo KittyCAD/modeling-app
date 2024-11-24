@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 65
 description: Result of parsing property_of_object.kcl
 snapshot_kind: text
 ---
@@ -9,7 +10,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 74,
+            "end": 76,
             "id": {
               "end": 53,
               "name": "obj",
@@ -17,10 +18,10 @@ snapshot_kind: text
               "type": "Identifier"
             },
             "init": {
-              "end": 74,
+              "end": 76,
               "properties": [
                 {
-                  "end": 64,
+                  "end": 65,
                   "key": {
                     "end": 61,
                     "name": "foo",
@@ -30,28 +31,28 @@ snapshot_kind: text
                   "start": 58,
                   "type": "ObjectProperty",
                   "value": {
-                    "end": 64,
+                    "end": 65,
                     "raw": "1",
-                    "start": 63,
+                    "start": 64,
                     "type": "Literal",
                     "type": "Literal",
                     "value": 1
                   }
                 },
                 {
-                  "end": 72,
+                  "end": 74,
                   "key": {
-                    "end": 69,
+                    "end": 70,
                     "name": "bar",
-                    "start": 66,
+                    "start": 67,
                     "type": "Identifier"
                   },
-                  "start": 66,
+                  "start": 67,
                   "type": "ObjectProperty",
                   "value": {
-                    "end": 72,
+                    "end": 74,
                     "raw": "0",
-                    "start": 71,
+                    "start": 73,
                     "type": "Literal",
                     "type": "Literal",
                     "value": 0
@@ -66,7 +67,7 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 74,
+        "end": 76,
         "kind": "const",
         "start": 50,
         "type": "VariableDeclaration",
@@ -75,631 +76,631 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 132,
+            "end": 134,
             "id": {
-              "end": 119,
+              "end": 121,
               "name": "one_a",
-              "start": 114,
+              "start": 116,
               "type": "Identifier"
             },
             "init": {
               "computed": false,
-              "end": 132,
+              "end": 134,
               "object": {
-                "end": 125,
+                "end": 127,
                 "name": "obj",
-                "start": 122,
+                "start": 124,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 131,
+                "end": 133,
                 "raw": "\"foo\"",
-                "start": 126,
+                "start": 128,
                 "type": "Literal",
                 "type": "Literal",
                 "value": "foo"
               },
-              "start": 122,
+              "start": 124,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
-            "start": 114,
+            "start": 116,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 132,
+        "end": 134,
         "kind": "const",
-        "start": 114,
+        "start": 116,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 189,
+        "end": 191,
         "expression": {
           "arguments": [
             {
-              "end": 158,
+              "end": 160,
               "name": "one_a",
-              "start": 153,
+              "start": 155,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 161,
+              "end": 163,
               "raw": "1",
-              "start": 160,
+              "start": 162,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 188,
+              "end": 190,
               "raw": "\"Literal property lookup\"",
-              "start": 163,
+              "start": 165,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 152,
+            "end": 154,
             "name": "assertLessThanOrEq",
-            "start": 134,
+            "start": 136,
             "type": "Identifier"
           },
-          "end": 189,
+          "end": 191,
           "optional": false,
-          "start": 134,
+          "start": 136,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 134,
+        "start": 136,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 248,
+        "end": 250,
         "expression": {
           "arguments": [
             {
-              "end": 217,
+              "end": 219,
               "name": "one_a",
-              "start": 212,
+              "start": 214,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 220,
+              "end": 222,
               "raw": "1",
-              "start": 219,
+              "start": 221,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 247,
+              "end": 249,
               "raw": "\"Literal property lookup\"",
-              "start": 222,
+              "start": 224,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 211,
+            "end": 213,
             "name": "assertGreaterThanOrEq",
-            "start": 190,
+            "start": 192,
             "type": "Identifier"
           },
-          "end": 248,
+          "end": 250,
           "optional": false,
-          "start": 190,
+          "start": 192,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 190,
+        "start": 192,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declarations": [
           {
-            "end": 347,
+            "end": 349,
             "id": {
-              "end": 339,
+              "end": 341,
               "name": "p",
-              "start": 338,
+              "start": 340,
               "type": "Identifier"
             },
             "init": {
-              "end": 347,
+              "end": 349,
               "raw": "\"foo\"",
-              "start": 342,
+              "start": 344,
               "type": "Literal",
               "type": "Literal",
               "value": "foo"
             },
-            "start": 338,
+            "start": 340,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 347,
+        "end": 349,
         "kind": "const",
-        "start": 338,
+        "start": 340,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declarations": [
           {
-            "end": 362,
+            "end": 364,
             "id": {
-              "end": 353,
+              "end": 355,
               "name": "one_b",
-              "start": 348,
+              "start": 350,
               "type": "Identifier"
             },
             "init": {
               "computed": true,
-              "end": 362,
+              "end": 364,
               "object": {
-                "end": 359,
+                "end": 361,
                 "name": "obj",
-                "start": 356,
+                "start": 358,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 361,
+                "end": 363,
                 "name": "p",
-                "start": 360,
+                "start": 362,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 356,
+              "start": 358,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
-            "start": 348,
+            "start": 350,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 362,
+        "end": 364,
         "kind": "const",
-        "start": 348,
+        "start": 350,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 420,
+        "end": 422,
         "expression": {
           "arguments": [
             {
-              "end": 388,
+              "end": 390,
               "name": "one_b",
-              "start": 383,
+              "start": 385,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 391,
+              "end": 393,
               "raw": "1",
-              "start": 390,
+              "start": 392,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 419,
+              "end": 421,
               "raw": "\"Computed property lookup\"",
-              "start": 393,
+              "start": 395,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 382,
+            "end": 384,
             "name": "assertLessThanOrEq",
-            "start": 364,
+            "start": 366,
             "type": "Identifier"
           },
-          "end": 420,
+          "end": 422,
           "optional": false,
-          "start": 364,
+          "start": 366,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 364,
+        "start": 366,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 480,
+        "end": 482,
         "expression": {
           "arguments": [
             {
-              "end": 448,
+              "end": 450,
               "name": "one_b",
-              "start": 443,
+              "start": 445,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 451,
+              "end": 453,
               "raw": "1",
-              "start": 450,
+              "start": 452,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 479,
+              "end": 481,
               "raw": "\"Computed property lookup\"",
-              "start": 453,
+              "start": 455,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 442,
+            "end": 444,
             "name": "assertGreaterThanOrEq",
-            "start": 421,
+            "start": 423,
             "type": "Identifier"
           },
-          "end": 480,
+          "end": 482,
           "optional": false,
-          "start": 421,
+          "start": 423,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 421,
+        "start": 423,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declarations": [
           {
-            "end": 543,
+            "end": 546,
             "id": {
-              "end": 526,
+              "end": 528,
               "name": "obj2",
-              "start": 522,
+              "start": 524,
               "type": "Identifier"
             },
             "init": {
-              "end": 543,
+              "end": 546,
               "properties": [
                 {
-                  "end": 541,
+                  "end": 544,
                   "key": {
-                    "end": 536,
+                    "end": 538,
                     "name": "inner",
-                    "start": 531,
+                    "start": 533,
                     "type": "Identifier"
                   },
-                  "start": 531,
+                  "start": 533,
                   "type": "ObjectProperty",
                   "value": {
-                    "end": 541,
+                    "end": 544,
                     "name": "obj",
-                    "start": 538,
+                    "start": 541,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 }
               ],
-              "start": 529,
+              "start": 531,
               "type": "ObjectExpression",
               "type": "ObjectExpression"
             },
-            "start": 522,
+            "start": 524,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 543,
+        "end": 546,
         "kind": "const",
-        "start": 522,
+        "start": 524,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declarations": [
           {
-            "end": 570,
+            "end": 573,
             "id": {
-              "end": 550,
+              "end": 553,
               "name": "one_c",
-              "start": 545,
+              "start": 548,
               "type": "Identifier"
             },
             "init": {
               "computed": false,
-              "end": 570,
+              "end": 573,
               "object": {
                 "computed": false,
-                "end": 563,
+                "end": 566,
                 "object": {
-                  "end": 557,
+                  "end": 560,
                   "name": "obj2",
-                  "start": 553,
+                  "start": 556,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "property": {
-                  "end": 563,
+                  "end": 566,
                   "name": "inner",
-                  "start": 558,
+                  "start": 561,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
-                "start": 553,
+                "start": 556,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "property": {
-                "end": 569,
+                "end": 572,
                 "raw": "\"foo\"",
-                "start": 564,
+                "start": 567,
                 "type": "Literal",
                 "type": "Literal",
                 "value": "foo"
               },
-              "start": 553,
+              "start": 556,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
-            "start": 545,
+            "start": 548,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 570,
+        "end": 573,
         "kind": "const",
-        "start": 545,
+        "start": 548,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 627,
+        "end": 630,
         "expression": {
           "arguments": [
             {
-              "end": 596,
+              "end": 599,
               "name": "one_c",
-              "start": 591,
+              "start": 594,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 599,
+              "end": 602,
               "raw": "1",
-              "start": 598,
+              "start": 601,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 626,
+              "end": 629,
               "raw": "\"Literal property lookup\"",
-              "start": 601,
+              "start": 604,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 590,
+            "end": 593,
             "name": "assertLessThanOrEq",
-            "start": 572,
+            "start": 575,
             "type": "Identifier"
           },
-          "end": 627,
+          "end": 630,
           "optional": false,
-          "start": 572,
+          "start": 575,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 572,
+        "start": 575,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 686,
+        "end": 689,
         "expression": {
           "arguments": [
             {
-              "end": 655,
+              "end": 658,
               "name": "one_c",
-              "start": 650,
+              "start": 653,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 658,
+              "end": 661,
               "raw": "1",
-              "start": 657,
+              "start": 660,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 685,
+              "end": 688,
               "raw": "\"Literal property lookup\"",
-              "start": 660,
+              "start": 663,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 649,
+            "end": 652,
             "name": "assertGreaterThanOrEq",
-            "start": 628,
+            "start": 631,
             "type": "Identifier"
           },
-          "end": 686,
+          "end": 689,
           "optional": false,
-          "start": 628,
+          "start": 631,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 628,
+        "start": 631,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declarations": [
           {
-            "end": 770,
+            "end": 773,
             "id": {
-              "end": 754,
+              "end": 757,
               "name": "one_d",
-              "start": 749,
+              "start": 752,
               "type": "Identifier"
             },
             "init": {
               "computed": true,
-              "end": 770,
+              "end": 773,
               "object": {
                 "computed": false,
-                "end": 767,
+                "end": 770,
                 "object": {
-                  "end": 761,
+                  "end": 764,
                   "name": "obj2",
-                  "start": 757,
+                  "start": 760,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "property": {
-                  "end": 767,
+                  "end": 770,
                   "name": "inner",
-                  "start": 762,
+                  "start": 765,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
-                "start": 757,
+                "start": 760,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "property": {
-                "end": 769,
+                "end": 772,
                 "name": "p",
-                "start": 768,
+                "start": 771,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 757,
+              "start": 760,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
-            "start": 749,
+            "start": 752,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 770,
+        "end": 773,
         "kind": "const",
-        "start": 749,
+        "start": 752,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 828,
+        "end": 831,
         "expression": {
           "arguments": [
             {
-              "end": 796,
+              "end": 799,
               "name": "one_d",
-              "start": 791,
+              "start": 794,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 799,
+              "end": 802,
               "raw": "1",
-              "start": 798,
+              "start": 801,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 827,
+              "end": 830,
               "raw": "\"Computed property lookup\"",
-              "start": 801,
+              "start": 804,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 790,
+            "end": 793,
             "name": "assertLessThanOrEq",
-            "start": 772,
+            "start": 775,
             "type": "Identifier"
           },
-          "end": 828,
+          "end": 831,
           "optional": false,
-          "start": 772,
+          "start": 775,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 772,
+        "start": 775,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 888,
+        "end": 891,
         "expression": {
           "arguments": [
             {
-              "end": 856,
+              "end": 859,
               "name": "one_d",
-              "start": 851,
+              "start": 854,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 859,
+              "end": 862,
               "raw": "1",
-              "start": 858,
+              "start": 861,
               "type": "Literal",
               "type": "Literal",
               "value": 1
             },
             {
-              "end": 887,
+              "end": 890,
               "raw": "\"Computed property lookup\"",
-              "start": 861,
+              "start": 864,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 850,
+            "end": 853,
             "name": "assertGreaterThanOrEq",
-            "start": 829,
+            "start": 832,
             "type": "Identifier"
           },
-          "end": 888,
+          "end": 891,
           "optional": false,
-          "start": 829,
+          "start": 832,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 829,
+        "start": 832,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 889,
+    "end": 892,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 111,
-            "start": 74,
+            "end": 113,
+            "start": 76,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -708,8 +709,8 @@ snapshot_kind: text
             }
           },
           {
-            "end": 114,
-            "start": 111,
+            "end": 116,
+            "start": 113,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -718,8 +719,8 @@ snapshot_kind: text
         ],
         "1": [
           {
-            "end": 134,
-            "start": 132,
+            "end": 136,
+            "start": 134,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -728,8 +729,8 @@ snapshot_kind: text
         ],
         "3": [
           {
-            "end": 286,
-            "start": 248,
+            "end": 288,
+            "start": 250,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -738,8 +739,8 @@ snapshot_kind: text
             }
           },
           {
-            "end": 335,
-            "start": 287,
+            "end": 337,
+            "start": 289,
             "type": "NonCodeNode",
             "value": {
               "type": "blockComment",
@@ -748,8 +749,8 @@ snapshot_kind: text
             }
           },
           {
-            "end": 338,
-            "start": 335,
+            "end": 340,
+            "start": 337,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -758,8 +759,8 @@ snapshot_kind: text
         ],
         "5": [
           {
-            "end": 364,
-            "start": 362,
+            "end": 366,
+            "start": 364,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -768,8 +769,8 @@ snapshot_kind: text
         ],
         "7": [
           {
-            "end": 519,
-            "start": 480,
+            "end": 521,
+            "start": 482,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -778,8 +779,8 @@ snapshot_kind: text
             }
           },
           {
-            "end": 522,
-            "start": 519,
+            "end": 524,
+            "start": 521,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -788,8 +789,8 @@ snapshot_kind: text
         ],
         "8": [
           {
-            "end": 545,
-            "start": 543,
+            "end": 548,
+            "start": 546,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -798,8 +799,8 @@ snapshot_kind: text
         ],
         "9": [
           {
-            "end": 572,
-            "start": 570,
+            "end": 575,
+            "start": 573,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -808,8 +809,8 @@ snapshot_kind: text
         ],
         "11": [
           {
-            "end": 746,
-            "start": 686,
+            "end": 749,
+            "start": 689,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -818,8 +819,8 @@ snapshot_kind: text
             }
           },
           {
-            "end": 749,
-            "start": 746,
+            "end": 752,
+            "start": 749,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -828,8 +829,8 @@ snapshot_kind: text
         ],
         "12": [
           {
-            "end": 772,
-            "start": 770,
+            "end": 775,
+            "start": 773,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

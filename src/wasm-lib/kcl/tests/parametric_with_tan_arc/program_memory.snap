@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 105
 description: Program memory after executing parametric_with_tan_arc.kcl
 snapshot_kind: text
 ---
@@ -61,7 +62,7 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 296,
-                345,
+                347,
                 0
               ],
               "tag": null,
@@ -71,8 +72,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                351,
-                377,
+                353,
+                379,
                 0
               ],
               "tag": null,
@@ -82,8 +83,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                383,
-                407,
+                385,
+                409,
                 0
               ],
               "tag": null,
@@ -93,8 +94,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                413,
-                438,
+                415,
+                440,
                 0
               ],
               "tag": null,
@@ -104,8 +105,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                444,
-                525,
+                446,
+                529,
                 0
               ],
               "tag": null,
@@ -115,8 +116,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                531,
-                556,
+                535,
+                560,
                 0
               ],
               "tag": null,
@@ -126,8 +127,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                562,
-                570,
+                566,
+                574,
                 0
               ],
               "tag": null,
@@ -163,7 +164,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     296,
-                    345,
+                    347,
                     0
                   ]
                 },
@@ -187,8 +188,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    351,
-                    377,
+                    353,
+                    379,
                     0
                   ]
                 },
@@ -207,8 +208,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    383,
-                    407,
+                    385,
+                    409,
                     0
                   ]
                 },
@@ -227,8 +228,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    413,
-                    438,
+                    415,
+                    440,
                     0
                   ]
                 },
@@ -247,8 +248,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    444,
-                    525,
+                    446,
+                    529,
                     0
                   ]
                 },
@@ -272,8 +273,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    531,
-                    556,
+                    535,
+                    560,
                     0
                   ]
                 },
@@ -292,8 +293,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    562,
-                    570,
+                    566,
+                    574,
                     0
                   ]
                 },

@@ -147,12 +147,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
 /// fn transform = (id) => {
-///   return { translate: [4 * id, 0, 0] }
+///   return { translate = [4 * id, 0, 0] }
 /// }
 ///
 /// // Sketch 4 cylinders.
 /// const sketch001 = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(5, %)
 ///   |> patternTransform(4, transform, %)
 /// ```
@@ -165,7 +165,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// const sketch001 = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(5, %)
 ///   |> patternTransform(4, transform, %)
 /// ```
@@ -192,13 +192,13 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// fn transform = (i) => {
 ///   return {
 ///     // Move down each time.
-///     translate: [0, 0, -i * width],
+///     translate = [0, 0, -i * width],
 ///     // Make the cube longer, wider and flatter each time.
-///     scale: [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
+///     scale = [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
 ///     // Turn by 15 degrees each time.
-///     rotation: {
-///       angle: 15 * i,
-///       origin: "local",
+///     rotation = {
+///       angle = 15 * i,
+///       origin = "local",
 ///     }
 ///   }
 /// }
@@ -230,11 +230,11 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// let width = 20
 /// fn transform = (i) => {
 ///   return {
-///     translate: [0, 0, -i * width],
-///     rotation: {
-///       angle: 90 * i,
+///     translate = [0, 0, -i * width],
+///     rotation = {
+///       angle = 90 * i,
 ///       // Rotate around the overall scene's origin.
-///       origin: "global",
+///       origin = "global",
 ///     }
 ///   }
 /// }
@@ -252,14 +252,14 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// fn transform = (replicaId) => {
 ///   let scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
 ///   return {
-///     translate: [0, 0, replicaId * 10],
-///     scale: [scale, scale, 0],
+///     translate = [0, 0, replicaId * 10],
+///     scale = [scale, scale, 0],
 ///   }
 /// }
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
+///     |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
@@ -690,11 +690,11 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 1 }, %)
+///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///   |> patternLinear2d({
-///        axis: [1, 0],
-///        instances: 7,
-///        distance: 4
+///        axis = [1, 0],
+///        instances = 7,
+///        distance = 4
 ///      }, %)
 ///
 /// const example = extrude(1, exampleSketch)
@@ -755,9 +755,9 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// const example = extrude(1, exampleSketch)
 ///   |> patternLinear3d({
-///        axis: [1, 0, 1],
-///        instances: 7,
-///       distance: 6
+///       axis = [1, 0, 1],
+///       instances = 7,
+///       distance = 6
 ///     }, %)
 /// ```
 #[stdlib {
@@ -907,10 +907,10 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> line([0, -5], %)
 ///   |> close(%)
 ///   |> patternCircular2d({
-///        center: [0, 0],
-///        instances: 13,
-///        arcDegrees: 360,
-///        rotateDuplicates: true
+///        center = [0, 0],
+///        instances = 13,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
 ///      }, %)
 ///
 /// const example = extrude(1, exampleSketch)
@@ -968,15 +968,15 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 1 }, %)
+///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///
 /// const example = extrude(-5, exampleSketch)
 ///   |> patternCircular3d({
-///        axis: [1, -1, 0],
-///        center: [10, -20, 0],
-///        instances: 11,
-///        arcDegrees: 360,
-///        rotateDuplicates: true
+///        axis = [1, -1, 0],
+///        center = [10, -20, 0],
+///        instances = 11,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
 ///      }, %)
 /// ```
 #[stdlib {

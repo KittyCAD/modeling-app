@@ -37,10 +37,10 @@ n = int(ceil(5 / 2))
 assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
 // Draw n cylinders.
 startSketchOn('XZ')
-  |> circle({ center: [0, 0], radius: 2 }, %)
+  |> circle({ center = [0, 0], radius = 2 }, %)
   |> extrude(5, %)
   |> patternTransform(n, (id) => {
-    return { translate: [4 * id, 0, 0] }
+    return { translate = [4 * id, 0, 0] }
   }, %)
 ```
 

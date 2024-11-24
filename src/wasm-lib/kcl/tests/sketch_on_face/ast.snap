@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing sketch_on_face.kcl
 snapshot_kind: text
 ---

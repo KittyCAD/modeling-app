@@ -101,7 +101,7 @@ exampleSketch = startSketchOn('XY')
   |> line([-2, 0], %)
   |> close(%)
 
-example = revolve({ axis: 'y', angle: 180 }, exampleSketch)
+example = revolve({ axis = 'y', angle = 180 }, exampleSketch)
 
 exampleSketch002 = startSketchOn(example, 'end')
   |> startProfileAt([4.5, -5], %)
@@ -117,11 +117,11 @@ example002 = extrude(5, exampleSketch002)
 
 ```js
 a1 = startSketchOn({
-       plane: {
-         origin: { x: 0, y: 0, z: 0 },
-         xAxis: { x: 1, y: 0, z: 0 },
-         yAxis: { x: 0, y: 1, z: 0 },
-         zAxis: { x: 0, y: 0, z: 1 }
+       plane = {
+         origin = { x = 0, y = 0, z = 0 },
+         xAxis = { x = 1, y = 0, z = 0 },
+         yAxis = { x = 0, y = 1, z = 0 },
+         zAxis = { x = 0, y = 0, z = 1 }
        }
      })
   |> startProfileAt([0, 0], %)
