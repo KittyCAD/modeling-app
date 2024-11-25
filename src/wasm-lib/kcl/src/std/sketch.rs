@@ -1564,7 +1564,7 @@ pub(crate) async fn inner_arc(
             source_ranges: vec![args.source_range],
         }));
     }
-    let ccw = angle_start.to_degrees() < angle_end.to_degrees();
+    let ccw = angle_start < angle_end;
 
     let id = exec_state.id_generator.next_uuid();
 
