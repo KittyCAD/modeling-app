@@ -246,6 +246,9 @@ export const AllSettingsFields = forwardRef(
                   to inject the version from package.json */}
               App version {APP_VERSION}.{' '}
               <a
+                onClick={openExternalBrowserIfDesktop(
+                  `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`
+                )}
                 href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -256,6 +259,9 @@ export const AllSettingsFields = forwardRef(
             <p className="max-w-2xl mt-6">
               Don't see the feature you want? Check to see if it's on{' '}
               <a
+                onClick={openExternalBrowserIfDesktop(
+                  'https://github.com/KittyCAD/modeling-app/discussions'
+                )}
                 href="https://github.com/KittyCAD/modeling-app/discussions"
                 target="_blank"
                 rel="noopener noreferrer"
