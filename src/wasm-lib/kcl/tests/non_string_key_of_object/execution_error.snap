@@ -1,7 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 116
 description: Error from executing non_string_key_of_object.kcl
 snapshot_kind: text
 ---
-semantic: KclErrorDetails { source_ranges: [SourceRange([26, 32, 0])], message: "Only strings can be used as the property of an object, but you're using a number" }
+KCL Semantic error
+
+  × semantic: Only strings can be used as the property of an object, but
+  │ you're using a number
+   ╭─[2:7]
+ 1 │ obj = { key = 123 }
+ 2 │ num = obj[3]
+   ·       ──────
+   ╰────
