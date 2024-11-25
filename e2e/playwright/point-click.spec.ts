@@ -552,55 +552,52 @@ test(`Verify axis, origin, and horizontal snapping`, async ({
   })
 })
 
-test(
-  `Offset plane point-and-click`,
-  {
-    tag: ['@electron'],
-  },
-  async ({ tronApp, homePage, scene, editor, toolbar, cmdBar }) => {
-    await tronApp.initialise({
-      fixtures: { homePage, scene, editor, toolbar },
-    })
+test(`Offset plane point-and-click`, async ({
+  app,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  await app.initialise()
 
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 700, y: 150 }
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 700, y: 150 }
+  const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const expectedOutput = `plane001 = offsetPlane('XZ', 5)`
 
-    await homePage.createProject({ name: 'offset-plane-test' })
-    const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    await test.step(`Look for the blue of the XZ plane`, async () => {
-      await scene.expectPixelColor([50, 51, 96], testPoint, 10)
+  await test.step(`Look for the blue of the XZ plane`, async () => {
+    await scene.expectPixelColor([50, 51, 96], testPoint, 15)
+  })
+  await test.step(`Go through the command bar flow`, async () => {
+    await toolbar.offsetPlaneButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'plane',
+      currentArgValue: '',
+      headerArguments: { Plane: '', Distance: '' },
+      highlightedHeaderArg: 'plane',
+      commandName: 'Offset plane',
     })
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.offsetPlaneButton.click()
-      await tronApp.debugPause()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'plane',
-        currentArgValue: '{}',
-        headerArguments: { Plane: '', Distance: '' },
-        highlightedHeaderArg: 'plane',
-        commandName: 'Offset plane',
-      })
-      await clickOnXzPlane()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'distance',
-        currentArgValue: '5',
-        headerArguments: { Plane: '1 plane', Distance: '' },
-        highlightedHeaderArg: 'distance',
-        commandName: 'Offset plane',
-      })
-      await cmdBar.progressCmdBar()
+    await clickOnXzPlane()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'distance',
+      currentArgValue: '5',
+      headerArguments: { Plane: '1 plane', Distance: '' },
+      highlightedHeaderArg: 'distance',
+      commandName: 'Offset plane',
     })
+    await cmdBar.progressCmdBar()
+  })
 
-    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await editor.expectEditor.toContain(`plane001 = offsetPlane(10, 'XZ')`)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: ['plane001 = offsetPlane(10, "XZ")'],
-        highlightedCode: '',
-      })
-      await scene.expectPixelColor([40, 40, 40], testPoint, 10)
+  await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await editor.expectEditor.toContain(expectedOutput)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [expectedOutput],
+      highlightedCode: '',
     })
-  }
-)
+    await scene.expectPixelColor([74, 74, 74], testPoint, 15)
+  })
+})

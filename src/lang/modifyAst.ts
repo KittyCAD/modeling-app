@@ -545,7 +545,7 @@ export function addOffsetPlane({
   const newPlane = createVariableDeclaration(
     newPlaneName,
     createCallExpressionStdLib('offsetPlane', [
-      createLiteral(defaultPlane),
+      createLiteral(defaultPlane.toUpperCase()),
       offset,
     ])
   )
