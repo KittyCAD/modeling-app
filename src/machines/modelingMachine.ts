@@ -787,8 +787,6 @@ export const modelingMachine = setup({
               : distance.valueAst,
         })
 
-        console.log('offsetPlaneResult', offsetPlaneResult)
-
         const updateAstResult = await kclManager.updateAst(
           offsetPlaneResult.modifiedAst,
           true,
