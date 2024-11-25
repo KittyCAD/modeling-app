@@ -21,8 +21,8 @@ use crate::{
     },
     std::{
         utils::{
-            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
-            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
+            intersection_with_parallel_line, TangentialArcInfoInput,
         },
         Args,
     },
@@ -1564,6 +1564,7 @@ pub(crate) async fn inner_arc(
             source_ranges: vec![args.source_range],
         }));
     }
+    let ccw = angle_start.to_degrees() < angle_end.to_degrees();
 
     let id = exec_state.id_generator.next_uuid();
 
@@ -1594,6 +1595,7 @@ pub(crate) async fn inner_arc(
         },
         center: center.into(),
         radius,
+        ccw,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1668,8 +1670,8 @@ pub(crate) async fn inner_arc_to(
     .await?;
 
     let start = [from.x, from.y];
-    let interior = [data.interior[0], data.interior[1]];
-    let end = [data.end[0], data.end[1]];
+    let interior = data.interior;
+    let end = data.end;
 
     // compute the center of the circle since we do not have the value returned from the engine
     let center = calculate_circle_center(start, interior, end);
@@ -1679,6 +1681,8 @@ pub(crate) async fn inner_arc_to(
     let sum_of_square_differences =
         (center[0] - start[0] * center[0] - start[0]) + (center[1] - start[1] * center[1] - start[1]);
     let radius = sum_of_square_differences.sqrt();
+
+    let ccw = is_ccw(start, interior, end);
 
     let current_path = Path::Arc {
         base: BasePath {
@@ -1692,6 +1696,7 @@ pub(crate) async fn inner_arc_to(
         },
         center,
         radius,
+        ccw,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1702,6 +1707,26 @@ pub(crate) async fn inner_arc_to(
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
+}
+
+/// Returns true if the three-point arc is counterclockwise.  The order of
+/// parameters is critical.
+///
+/// |   end
+/// |  /
+/// |  |    / interior
+/// |  /  /
+/// | | /
+/// |/_____________
+/// start
+///
+/// If the slope of the line from start to interior is less than the slope of
+/// the line from start to end, the arc is counterclockwise.
+fn is_ccw(start: [f64; 2], interior: [f64; 2], end: [f64; 2]) -> bool {
+    let t1 = (interior[0] - start[0]) * (end[1] - start[1]);
+    let t2 = (end[0] - start[0]) * (interior[1] - start[1]);
+    // If these terms are equal, the points are collinear.
+    t1 > t2
 }
 
 /// Data to draw a tangential arc.
@@ -1764,11 +1789,7 @@ async fn inner_tangential_arc(
     let from: Point2d = sketch.current_pen_position()?;
     // next set of lines is some undocumented voodoo from get_tangential_arc_to_info
     let tangent_info = sketch.get_tangential_info_from_paths(); //this function desperately needs some documentation
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
 
     let id = exec_state.id_generator.next_uuid();
 
@@ -1897,11 +1918,7 @@ async fn inner_tangential_arc_to(
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     let tangent_info = sketch.get_tangential_info_from_paths();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1966,12 +1983,10 @@ async fn inner_tangential_arc_to_relative(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
+    let to = [from.x + delta[0], from.y + delta[1]];
     let tangent_info = sketch.get_tangential_info_from_paths();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
+
     let [dx, dy] = delta;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -2002,7 +2017,7 @@ async fn inner_tangential_arc_to_relative(
     let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
-            to: delta,
+            to,
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
