@@ -693,13 +693,19 @@ export const makeTemplate: (
   }
 }
 
+const PLAYWRIGHT_DOWNLOAD_DIR = 'downloads-during-playwright'
+
+export const getPlaywrightDownloadDir = (page: Page) => {
+  return path.resolve(
+    page.TEST_SETTINGS_FILE_KEY,
+    PLAYWRIGHT_DOWNLOAD_DIR
+  )
+}
+
 const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
   await fsp.mkdir(path.dirname(toLocation), { recursive: true })
 
-  const downloadDir = path.resolve(
-    page.TEST_SETTINGS_FILE_KEY,
-    'downloads-during-playwright'
-  )
+  const downloadDir = getPlaywrightDownloadDir()
 
   // Expect there to be at least one file
   expect
