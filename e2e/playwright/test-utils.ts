@@ -151,6 +151,17 @@ export async function closePane(page: Page, testId: string) {
 
 async function openKclCodePanel(page: Page) {
   await openPane(page, 'code-pane-button')
+
+  // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
+  await page.evaluate(() => {
+    // editorManager is available on the window object.
+    editorManager._editorView.dispatch({
+      selection: { 
+        anchor: editorManager._editorView.docView.length
+      },
+      scrollIntoView: true,
+    })
+  })
 }
 
 async function closeKclCodePanel(page: Page) {
