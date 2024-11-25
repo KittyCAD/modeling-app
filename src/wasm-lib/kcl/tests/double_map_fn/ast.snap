@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing double_map_fn.kcl
 snapshot_kind: text
 ---
@@ -36,7 +37,7 @@ snapshot_kind: text
                         "start": 37,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1
+                        "value": 1.0
                       },
                       "start": 33,
                       "type": "BinaryExpression",
@@ -96,7 +97,7 @@ snapshot_kind: text
                 "start": 51,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "endInclusive": true,
               "start": 47,
@@ -106,7 +107,7 @@ snapshot_kind: text
                 "start": 48,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0
+                "value": 0.0
               },
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"

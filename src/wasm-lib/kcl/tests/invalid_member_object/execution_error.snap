@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 103
 description: Error from executing invalid_member_object.kcl
 snapshot_kind: text
 ---
-semantic: KclErrorDetails { source_ranges: [SourceRange([14, 20, 0])], message: "Only arrays and objects can be indexed, but you're trying to index an integer" }
+semantic: KclErrorDetails { source_ranges: [SourceRange([14, 20, 0])], message: "Only arrays and objects can be indexed, but you're trying to index a number" }

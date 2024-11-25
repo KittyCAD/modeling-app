@@ -1,5 +1,6 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3677
 expression: actual
 snapshot_kind: text
 ---
@@ -34,7 +35,7 @@ snapshot_kind: text
                   "start": 17,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1
+                  "value": 1.0
                 }
               },
               {
@@ -53,7 +54,7 @@ snapshot_kind: text
                   "start": 23,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2
+                  "value": 2.0
                 }
               }
             ],
@@ -89,7 +90,7 @@ snapshot_kind: text
               "start": 47,
               "type": "Literal",
               "type": "Literal",
-              "value": 1
+              "value": 1.0
             },
             "operator": "-",
             "right": {

@@ -57,12 +57,12 @@ patternTransform(total_instances: u32, transform_function: FunctionParam, solid_
 ```js
 // Each instance will be shifted along the X axis.
 fn transform = (id) => {
-  return { translate: [4 * id, 0, 0] }
+  return { translate = [4 * id, 0, 0] }
 }
 
 // Sketch 4 cylinders.
 sketch001 = startSketchOn('XZ')
-  |> circle({ center: [0, 0], radius: 2 }, %)
+  |> circle({ center = [0, 0], radius = 2 }, %)
   |> extrude(5, %)
   |> patternTransform(4, transform, %)
 ```
@@ -74,11 +74,11 @@ sketch001 = startSketchOn('XZ')
 // with a gap between the original (at x = 0) and the first replica
 // (at x = 8). This is because `id` starts at 1.
 fn transform = (id) => {
-  return { translate: [4 * (1 + id), 0, 0] }
+  return { translate = [4 * (1 + id), 0, 0] }
 }
 
 sketch001 = startSketchOn('XZ')
-  |> circle({ center: [0, 0], radius: 2 }, %)
+  |> circle({ center = [0, 0], radius = 2 }, %)
   |> extrude(5, %)
   |> patternTransform(4, transform, %)
 ```
@@ -108,11 +108,11 @@ width = 20
 fn transform = (i) => {
   return {
     // Move down each time.
-    translate: [0, 0, -i * width],
+    translate = [0, 0, -i * width],
     // Make the cube longer, wider and flatter each time.
-    scale: [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
+    scale = [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
     // Turn by 15 degrees each time.
-    rotation: { angle: 15 * i, origin: "local" }
+    rotation = { angle = 15 * i, origin = "local" }
   }
 }
 
@@ -144,11 +144,11 @@ fn cube = (length, center) => {
 width = 20
 fn transform = (i) => {
   return {
-    translate: [0, 0, -i * width],
-    rotation: {
-      angle: 90 * i,
+    translate = [0, 0, -i * width],
+    rotation = {
+      angle = 90 * i,
       // Rotate around the overall scene's origin.
-      origin: "global"
+      origin = "global"
     }
   }
 }
@@ -168,15 +168,15 @@ t = 0.005 // taper factor [0-1)
 fn transform = (replicaId) => {
   scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
   return {
-    translate: [0, 0, replicaId * 10],
-    scale: [scale, scale, 0]
+    translate = [0, 0, replicaId * 10],
+    scale = [scale, scale, 0]
   }
 }
 // Each layer is just a pretty thin cylinder.
 fn layer = () => {
   return startSketchOn("XY")
     // or some other plane idk
-    |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
+    |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
     |> extrude(h, %)
 }
 // The vase is 100 layers tall.
@@ -191,16 +191,16 @@ vase = layer()
 fn transform = (i) => {
   // Transform functions can return multiple transforms. They'll be applied in order.
   return [
-    { translate: [30 * i, 0, 0] },
-    { rotation: { angle: 45 * i } }
+    { translate = [30 * i, 0, 0] },
+    { rotation = { angle = 45 * i } }
   ]
 }
 startSketchAt([0, 0])
   |> polygon({
-       radius: 10,
-       numSides: 4,
-       center: [0, 0],
-       inscribed: false
+       radius = 10,
+       numSides = 4,
+       center = [0, 0],
+       inscribed = false
      }, %)
   |> extrude(4, %)
   |> patternTransform(3, transform, %)

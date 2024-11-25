@@ -30,7 +30,7 @@ circle(data: CircleData, sketch_surface_or_group: SketchOrSurface, tag?: TagDecl
 
 ```js
 exampleSketch = startSketchOn("-XZ")
-  |> circle({ center: [0, 0], radius: 10 }, %)
+  |> circle({ center = [0, 0], radius = 10 }, %)
 
 example = extrude(5, exampleSketch)
 ```
@@ -44,7 +44,7 @@ exampleSketch = startSketchOn("XZ")
   |> line([0, 30], %)
   |> line([-30, 0], %)
   |> close(%)
-  |> hole(circle({ center: [0, 15], radius: 5 }, %), %)
+  |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
 
 example = extrude(5, exampleSketch)
 ```

@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing add_lots.kcl
 snapshot_kind: text
 ---
@@ -36,7 +37,7 @@ snapshot_kind: text
                         "start": 29,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2
+                        "value": 2.0
                       },
                       "start": 25,
                       "type": "BinaryExpression",
@@ -296,7 +297,7 @@ snapshot_kind: text
                                                                                                                                                                                                                           "start": 40,
                                                                                                                                                                                                                           "type": "Literal",
                                                                                                                                                                                                                           "type": "Literal",
-                                                                                                                                                                                                                          "value": 0
+                                                                                                                                                                                                                          "value": 0.0
                                                                                                                                                                                                                         }
                                                                                                                                                                                                                       ],
                                                                                                                                                                                                                       "callee": {
@@ -320,7 +321,7 @@ snapshot_kind: text
                                                                                                                                                                                                                           "start": 47,
                                                                                                                                                                                                                           "type": "Literal",
                                                                                                                                                                                                                           "type": "Literal",
-                                                                                                                                                                                                                          "value": 1
+                                                                                                                                                                                                                          "value": 1.0
                                                                                                                                                                                                                         }
                                                                                                                                                                                                                       ],
                                                                                                                                                                                                                       "callee": {
@@ -348,7 +349,7 @@ snapshot_kind: text
                                                                                                                                                                                                                         "start": 54,
                                                                                                                                                                                                                         "type": "Literal",
                                                                                                                                                                                                                         "type": "Literal",
-                                                                                                                                                                                                                        "value": 2
+                                                                                                                                                                                                                        "value": 2.0
                                                                                                                                                                                                                       }
                                                                                                                                                                                                                     ],
                                                                                                                                                                                                                     "callee": {
@@ -376,7 +377,7 @@ snapshot_kind: text
                                                                                                                                                                                                                       "start": 61,
                                                                                                                                                                                                                       "type": "Literal",
                                                                                                                                                                                                                       "type": "Literal",
-                                                                                                                                                                                                                      "value": 3
+                                                                                                                                                                                                                      "value": 3.0
                                                                                                                                                                                                                     }
                                                                                                                                                                                                                   ],
                                                                                                                                                                                                                   "callee": {
@@ -404,7 +405,7 @@ snapshot_kind: text
                                                                                                                                                                                                                     "start": 68,
                                                                                                                                                                                                                     "type": "Literal",
                                                                                                                                                                                                                     "type": "Literal",
-                                                                                                                                                                                                                    "value": 4
+                                                                                                                                                                                                                    "value": 4.0
                                                                                                                                                                                                                   }
                                                                                                                                                                                                                 ],
                                                                                                                                                                                                                 "callee": {
@@ -432,7 +433,7 @@ snapshot_kind: text
                                                                                                                                                                                                                   "start": 75,
                                                                                                                                                                                                                   "type": "Literal",
                                                                                                                                                                                                                   "type": "Literal",
-                                                                                                                                                                                                                  "value": 5
+                                                                                                                                                                                                                  "value": 5.0
                                                                                                                                                                                                                 }
                                                                                                                                                                                                               ],
                                                                                                                                                                                                               "callee": {
@@ -460,7 +461,7 @@ snapshot_kind: text
                                                                                                                                                                                                                 "start": 82,
                                                                                                                                                                                                                 "type": "Literal",
                                                                                                                                                                                                                 "type": "Literal",
-                                                                                                                                                                                                                "value": 6
+                                                                                                                                                                                                                "value": 6.0
                                                                                                                                                                                                               }
                                                                                                                                                                                                             ],
                                                                                                                                                                                                             "callee": {
@@ -488,7 +489,7 @@ snapshot_kind: text
                                                                                                                                                                                                               "start": 89,
                                                                                                                                                                                                               "type": "Literal",
                                                                                                                                                                                                               "type": "Literal",
-                                                                                                                                                                                                              "value": 7
+                                                                                                                                                                                                              "value": 7.0
                                                                                                                                                                                                             }
                                                                                                                                                                                                           ],
                                                                                                                                                                                                           "callee": {
@@ -516,7 +517,7 @@ snapshot_kind: text
                                                                                                                                                                                                             "start": 96,
                                                                                                                                                                                                             "type": "Literal",
                                                                                                                                                                                                             "type": "Literal",
-                                                                                                                                                                                                            "value": 8
+                                                                                                                                                                                                            "value": 8.0
                                                                                                                                                                                                           }
                                                                                                                                                                                                         ],
                                                                                                                                                                                                         "callee": {
@@ -544,7 +545,7 @@ snapshot_kind: text
                                                                                                                                                                                                           "start": 103,
                                                                                                                                                                                                           "type": "Literal",
                                                                                                                                                                                                           "type": "Literal",
-                                                                                                                                                                                                          "value": 9
+                                                                                                                                                                                                          "value": 9.0
                                                                                                                                                                                                         }
                                                                                                                                                                                                       ],
                                                                                                                                                                                                       "callee": {
@@ -572,7 +573,7 @@ snapshot_kind: text
                                                                                                                                                                                                         "start": 110,
                                                                                                                                                                                                         "type": "Literal",
                                                                                                                                                                                                         "type": "Literal",
-                                                                                                                                                                                                        "value": 10
+                                                                                                                                                                                                        "value": 10.0
                                                                                                                                                                                                       }
                                                                                                                                                                                                     ],
                                                                                                                                                                                                     "callee": {
@@ -600,7 +601,7 @@ snapshot_kind: text
                                                                                                                                                                                                       "start": 118,
                                                                                                                                                                                                       "type": "Literal",
                                                                                                                                                                                                       "type": "Literal",
-                                                                                                                                                                                                      "value": 11
+                                                                                                                                                                                                      "value": 11.0
                                                                                                                                                                                                     }
                                                                                                                                                                                                   ],
                                                                                                                                                                                                   "callee": {
@@ -628,7 +629,7 @@ snapshot_kind: text
                                                                                                                                                                                                     "start": 126,
                                                                                                                                                                                                     "type": "Literal",
                                                                                                                                                                                                     "type": "Literal",
-                                                                                                                                                                                                    "value": 12
+                                                                                                                                                                                                    "value": 12.0
                                                                                                                                                                                                   }
                                                                                                                                                                                                 ],
                                                                                                                                                                                                 "callee": {
@@ -656,7 +657,7 @@ snapshot_kind: text
                                                                                                                                                                                                   "start": 134,
                                                                                                                                                                                                   "type": "Literal",
                                                                                                                                                                                                   "type": "Literal",
-                                                                                                                                                                                                  "value": 13
+                                                                                                                                                                                                  "value": 13.0
                                                                                                                                                                                                 }
                                                                                                                                                                                               ],
                                                                                                                                                                                               "callee": {
@@ -684,7 +685,7 @@ snapshot_kind: text
                                                                                                                                                                                                 "start": 142,
                                                                                                                                                                                                 "type": "Literal",
                                                                                                                                                                                                 "type": "Literal",
-                                                                                                                                                                                                "value": 14
+                                                                                                                                                                                                "value": 14.0
                                                                                                                                                                                               }
                                                                                                                                                                                             ],
                                                                                                                                                                                             "callee": {
@@ -712,7 +713,7 @@ snapshot_kind: text
                                                                                                                                                                                               "start": 150,
                                                                                                                                                                                               "type": "Literal",
                                                                                                                                                                                               "type": "Literal",
-                                                                                                                                                                                              "value": 15
+                                                                                                                                                                                              "value": 15.0
                                                                                                                                                                                             }
                                                                                                                                                                                           ],
                                                                                                                                                                                           "callee": {
@@ -740,7 +741,7 @@ snapshot_kind: text
                                                                                                                                                                                             "start": 158,
                                                                                                                                                                                             "type": "Literal",
                                                                                                                                                                                             "type": "Literal",
-                                                                                                                                                                                            "value": 16
+                                                                                                                                                                                            "value": 16.0
                                                                                                                                                                                           }
                                                                                                                                                                                         ],
                                                                                                                                                                                         "callee": {
@@ -768,7 +769,7 @@ snapshot_kind: text
                                                                                                                                                                                           "start": 166,
                                                                                                                                                                                           "type": "Literal",
                                                                                                                                                                                           "type": "Literal",
-                                                                                                                                                                                          "value": 17
+                                                                                                                                                                                          "value": 17.0
                                                                                                                                                                                         }
                                                                                                                                                                                       ],
                                                                                                                                                                                       "callee": {
@@ -796,7 +797,7 @@ snapshot_kind: text
                                                                                                                                                                                         "start": 174,
                                                                                                                                                                                         "type": "Literal",
                                                                                                                                                                                         "type": "Literal",
-                                                                                                                                                                                        "value": 18
+                                                                                                                                                                                        "value": 18.0
                                                                                                                                                                                       }
                                                                                                                                                                                     ],
                                                                                                                                                                                     "callee": {
@@ -824,7 +825,7 @@ snapshot_kind: text
                                                                                                                                                                                       "start": 182,
                                                                                                                                                                                       "type": "Literal",
                                                                                                                                                                                       "type": "Literal",
-                                                                                                                                                                                      "value": 19
+                                                                                                                                                                                      "value": 19.0
                                                                                                                                                                                     }
                                                                                                                                                                                   ],
                                                                                                                                                                                   "callee": {
@@ -852,7 +853,7 @@ snapshot_kind: text
                                                                                                                                                                                     "start": 190,
                                                                                                                                                                                     "type": "Literal",
                                                                                                                                                                                     "type": "Literal",
-                                                                                                                                                                                    "value": 20
+                                                                                                                                                                                    "value": 20.0
                                                                                                                                                                                   }
                                                                                                                                                                                 ],
                                                                                                                                                                                 "callee": {
@@ -880,7 +881,7 @@ snapshot_kind: text
                                                                                                                                                                                   "start": 198,
                                                                                                                                                                                   "type": "Literal",
                                                                                                                                                                                   "type": "Literal",
-                                                                                                                                                                                  "value": 21
+                                                                                                                                                                                  "value": 21.0
                                                                                                                                                                                 }
                                                                                                                                                                               ],
                                                                                                                                                                               "callee": {
@@ -908,7 +909,7 @@ snapshot_kind: text
                                                                                                                                                                                 "start": 206,
                                                                                                                                                                                 "type": "Literal",
                                                                                                                                                                                 "type": "Literal",
-                                                                                                                                                                                "value": 22
+                                                                                                                                                                                "value": 22.0
                                                                                                                                                                               }
                                                                                                                                                                             ],
                                                                                                                                                                             "callee": {
@@ -936,7 +937,7 @@ snapshot_kind: text
                                                                                                                                                                               "start": 214,
                                                                                                                                                                               "type": "Literal",
                                                                                                                                                                               "type": "Literal",
-                                                                                                                                                                              "value": 23
+                                                                                                                                                                              "value": 23.0
                                                                                                                                                                             }
                                                                                                                                                                           ],
                                                                                                                                                                           "callee": {
@@ -964,7 +965,7 @@ snapshot_kind: text
                                                                                                                                                                             "start": 222,
                                                                                                                                                                             "type": "Literal",
                                                                                                                                                                             "type": "Literal",
-                                                                                                                                                                            "value": 24
+                                                                                                                                                                            "value": 24.0
                                                                                                                                                                           }
                                                                                                                                                                         ],
                                                                                                                                                                         "callee": {
@@ -992,7 +993,7 @@ snapshot_kind: text
                                                                                                                                                                           "start": 230,
                                                                                                                                                                           "type": "Literal",
                                                                                                                                                                           "type": "Literal",
-                                                                                                                                                                          "value": 25
+                                                                                                                                                                          "value": 25.0
                                                                                                                                                                         }
                                                                                                                                                                       ],
                                                                                                                                                                       "callee": {
@@ -1020,7 +1021,7 @@ snapshot_kind: text
                                                                                                                                                                         "start": 238,
                                                                                                                                                                         "type": "Literal",
                                                                                                                                                                         "type": "Literal",
-                                                                                                                                                                        "value": 26
+                                                                                                                                                                        "value": 26.0
                                                                                                                                                                       }
                                                                                                                                                                     ],
                                                                                                                                                                     "callee": {
@@ -1048,7 +1049,7 @@ snapshot_kind: text
                                                                                                                                                                       "start": 246,
                                                                                                                                                                       "type": "Literal",
                                                                                                                                                                       "type": "Literal",
-                                                                                                                                                                      "value": 27
+                                                                                                                                                                      "value": 27.0
                                                                                                                                                                     }
                                                                                                                                                                   ],
                                                                                                                                                                   "callee": {
@@ -1076,7 +1077,7 @@ snapshot_kind: text
                                                                                                                                                                     "start": 254,
                                                                                                                                                                     "type": "Literal",
                                                                                                                                                                     "type": "Literal",
-                                                                                                                                                                    "value": 28
+                                                                                                                                                                    "value": 28.0
                                                                                                                                                                   }
                                                                                                                                                                 ],
                                                                                                                                                                 "callee": {
@@ -1104,7 +1105,7 @@ snapshot_kind: text
                                                                                                                                                                   "start": 262,
                                                                                                                                                                   "type": "Literal",
                                                                                                                                                                   "type": "Literal",
-                                                                                                                                                                  "value": 29
+                                                                                                                                                                  "value": 29.0
                                                                                                                                                                 }
                                                                                                                                                               ],
                                                                                                                                                               "callee": {
@@ -1132,7 +1133,7 @@ snapshot_kind: text
                                                                                                                                                                 "start": 270,
                                                                                                                                                                 "type": "Literal",
                                                                                                                                                                 "type": "Literal",
-                                                                                                                                                                "value": 30
+                                                                                                                                                                "value": 30.0
                                                                                                                                                               }
                                                                                                                                                             ],
                                                                                                                                                             "callee": {
@@ -1160,7 +1161,7 @@ snapshot_kind: text
                                                                                                                                                               "start": 278,
                                                                                                                                                               "type": "Literal",
                                                                                                                                                               "type": "Literal",
-                                                                                                                                                              "value": 31
+                                                                                                                                                              "value": 31.0
                                                                                                                                                             }
                                                                                                                                                           ],
                                                                                                                                                           "callee": {
@@ -1188,7 +1189,7 @@ snapshot_kind: text
                                                                                                                                                             "start": 286,
                                                                                                                                                             "type": "Literal",
                                                                                                                                                             "type": "Literal",
-                                                                                                                                                            "value": 32
+                                                                                                                                                            "value": 32.0
                                                                                                                                                           }
                                                                                                                                                         ],
                                                                                                                                                         "callee": {
@@ -1216,7 +1217,7 @@ snapshot_kind: text
                                                                                                                                                           "start": 294,
                                                                                                                                                           "type": "Literal",
                                                                                                                                                           "type": "Literal",
-                                                                                                                                                          "value": 33
+                                                                                                                                                          "value": 33.0
                                                                                                                                                         }
                                                                                                                                                       ],
                                                                                                                                                       "callee": {
@@ -1244,7 +1245,7 @@ snapshot_kind: text
                                                                                                                                                         "start": 302,
                                                                                                                                                         "type": "Literal",
                                                                                                                                                         "type": "Literal",
-                                                                                                                                                        "value": 34
+                                                                                                                                                        "value": 34.0
                                                                                                                                                       }
                                                                                                                                                     ],
                                                                                                                                                     "callee": {
@@ -1272,7 +1273,7 @@ snapshot_kind: text
                                                                                                                                                       "start": 310,
                                                                                                                                                       "type": "Literal",
                                                                                                                                                       "type": "Literal",
-                                                                                                                                                      "value": 35
+                                                                                                                                                      "value": 35.0
                                                                                                                                                     }
                                                                                                                                                   ],
                                                                                                                                                   "callee": {
@@ -1300,7 +1301,7 @@ snapshot_kind: text
                                                                                                                                                     "start": 318,
                                                                                                                                                     "type": "Literal",
                                                                                                                                                     "type": "Literal",
-                                                                                                                                                    "value": 36
+                                                                                                                                                    "value": 36.0
                                                                                                                                                   }
                                                                                                                                                 ],
                                                                                                                                                 "callee": {
@@ -1328,7 +1329,7 @@ snapshot_kind: text
                                                                                                                                                   "start": 326,
                                                                                                                                                   "type": "Literal",
                                                                                                                                                   "type": "Literal",
-                                                                                                                                                  "value": 37
+                                                                                                                                                  "value": 37.0
                                                                                                                                                 }
                                                                                                                                               ],
                                                                                                                                               "callee": {
@@ -1356,7 +1357,7 @@ snapshot_kind: text
                                                                                                                                                 "start": 334,
                                                                                                                                                 "type": "Literal",
                                                                                                                                                 "type": "Literal",
-                                                                                                                                                "value": 38
+                                                                                                                                                "value": 38.0
                                                                                                                                               }
                                                                                                                                             ],
                                                                                                                                             "callee": {
@@ -1384,7 +1385,7 @@ snapshot_kind: text
                                                                                                                                               "start": 342,
                                                                                                                                               "type": "Literal",
                                                                                                                                               "type": "Literal",
-                                                                                                                                              "value": 39
+                                                                                                                                              "value": 39.0
                                                                                                                                             }
                                                                                                                                           ],
                                                                                                                                           "callee": {
@@ -1412,7 +1413,7 @@ snapshot_kind: text
                                                                                                                                             "start": 350,
                                                                                                                                             "type": "Literal",
                                                                                                                                             "type": "Literal",
-                                                                                                                                            "value": 40
+                                                                                                                                            "value": 40.0
                                                                                                                                           }
                                                                                                                                         ],
                                                                                                                                         "callee": {
@@ -1440,7 +1441,7 @@ snapshot_kind: text
                                                                                                                                           "start": 358,
                                                                                                                                           "type": "Literal",
                                                                                                                                           "type": "Literal",
-                                                                                                                                          "value": 41
+                                                                                                                                          "value": 41.0
                                                                                                                                         }
                                                                                                                                       ],
                                                                                                                                       "callee": {
@@ -1468,7 +1469,7 @@ snapshot_kind: text
                                                                                                                                         "start": 366,
                                                                                                                                         "type": "Literal",
                                                                                                                                         "type": "Literal",
-                                                                                                                                        "value": 42
+                                                                                                                                        "value": 42.0
                                                                                                                                       }
                                                                                                                                     ],
                                                                                                                                     "callee": {
@@ -1496,7 +1497,7 @@ snapshot_kind: text
                                                                                                                                       "start": 374,
                                                                                                                                       "type": "Literal",
                                                                                                                                       "type": "Literal",
-                                                                                                                                      "value": 43
+                                                                                                                                      "value": 43.0
                                                                                                                                     }
                                                                                                                                   ],
                                                                                                                                   "callee": {
@@ -1524,7 +1525,7 @@ snapshot_kind: text
                                                                                                                                     "start": 382,
                                                                                                                                     "type": "Literal",
                                                                                                                                     "type": "Literal",
-                                                                                                                                    "value": 44
+                                                                                                                                    "value": 44.0
                                                                                                                                   }
                                                                                                                                 ],
                                                                                                                                 "callee": {
@@ -1552,7 +1553,7 @@ snapshot_kind: text
                                                                                                                                   "start": 390,
                                                                                                                                   "type": "Literal",
                                                                                                                                   "type": "Literal",
-                                                                                                                                  "value": 45
+                                                                                                                                  "value": 45.0
                                                                                                                                 }
                                                                                                                               ],
                                                                                                                               "callee": {
@@ -1580,7 +1581,7 @@ snapshot_kind: text
                                                                                                                                 "start": 398,
                                                                                                                                 "type": "Literal",
                                                                                                                                 "type": "Literal",
-                                                                                                                                "value": 46
+                                                                                                                                "value": 46.0
                                                                                                                               }
                                                                                                                             ],
                                                                                                                             "callee": {
@@ -1608,7 +1609,7 @@ snapshot_kind: text
                                                                                                                               "start": 406,
                                                                                                                               "type": "Literal",
                                                                                                                               "type": "Literal",
-                                                                                                                              "value": 47
+                                                                                                                              "value": 47.0
                                                                                                                             }
                                                                                                                           ],
                                                                                                                           "callee": {
@@ -1636,7 +1637,7 @@ snapshot_kind: text
                                                                                                                             "start": 414,
                                                                                                                             "type": "Literal",
                                                                                                                             "type": "Literal",
-                                                                                                                            "value": 48
+                                                                                                                            "value": 48.0
                                                                                                                           }
                                                                                                                         ],
                                                                                                                         "callee": {
@@ -1664,7 +1665,7 @@ snapshot_kind: text
                                                                                                                           "start": 422,
                                                                                                                           "type": "Literal",
                                                                                                                           "type": "Literal",
-                                                                                                                          "value": 49
+                                                                                                                          "value": 49.0
                                                                                                                         }
                                                                                                                       ],
                                                                                                                       "callee": {
@@ -1692,7 +1693,7 @@ snapshot_kind: text
                                                                                                                         "start": 430,
                                                                                                                         "type": "Literal",
                                                                                                                         "type": "Literal",
-                                                                                                                        "value": 50
+                                                                                                                        "value": 50.0
                                                                                                                       }
                                                                                                                     ],
                                                                                                                     "callee": {
@@ -1720,7 +1721,7 @@ snapshot_kind: text
                                                                                                                       "start": 438,
                                                                                                                       "type": "Literal",
                                                                                                                       "type": "Literal",
-                                                                                                                      "value": 51
+                                                                                                                      "value": 51.0
                                                                                                                     }
                                                                                                                   ],
                                                                                                                   "callee": {
@@ -1748,7 +1749,7 @@ snapshot_kind: text
                                                                                                                     "start": 446,
                                                                                                                     "type": "Literal",
                                                                                                                     "type": "Literal",
-                                                                                                                    "value": 52
+                                                                                                                    "value": 52.0
                                                                                                                   }
                                                                                                                 ],
                                                                                                                 "callee": {
@@ -1776,7 +1777,7 @@ snapshot_kind: text
                                                                                                                   "start": 454,
                                                                                                                   "type": "Literal",
                                                                                                                   "type": "Literal",
-                                                                                                                  "value": 53
+                                                                                                                  "value": 53.0
                                                                                                                 }
                                                                                                               ],
                                                                                                               "callee": {
@@ -1804,7 +1805,7 @@ snapshot_kind: text
                                                                                                                 "start": 462,
                                                                                                                 "type": "Literal",
                                                                                                                 "type": "Literal",
-                                                                                                                "value": 54
+                                                                                                                "value": 54.0
                                                                                                               }
                                                                                                             ],
                                                                                                             "callee": {
@@ -1832,7 +1833,7 @@ snapshot_kind: text
                                                                                                               "start": 470,
                                                                                                               "type": "Literal",
                                                                                                               "type": "Literal",
-                                                                                                              "value": 55
+                                                                                                              "value": 55.0
                                                                                                             }
                                                                                                           ],
                                                                                                           "callee": {
@@ -1860,7 +1861,7 @@ snapshot_kind: text
                                                                                                             "start": 478,
                                                                                                             "type": "Literal",
                                                                                                             "type": "Literal",
-                                                                                                            "value": 56
+                                                                                                            "value": 56.0
                                                                                                           }
                                                                                                         ],
                                                                                                         "callee": {
@@ -1888,7 +1889,7 @@ snapshot_kind: text
                                                                                                           "start": 486,
                                                                                                           "type": "Literal",
                                                                                                           "type": "Literal",
-                                                                                                          "value": 57
+                                                                                                          "value": 57.0
                                                                                                         }
                                                                                                       ],
                                                                                                       "callee": {
@@ -1916,7 +1917,7 @@ snapshot_kind: text
                                                                                                         "start": 494,
                                                                                                         "type": "Literal",
                                                                                                         "type": "Literal",
-                                                                                                        "value": 58
+                                                                                                        "value": 58.0
                                                                                                       }
                                                                                                     ],
                                                                                                     "callee": {
@@ -1944,7 +1945,7 @@ snapshot_kind: text
                                                                                                       "start": 502,
                                                                                                       "type": "Literal",
                                                                                                       "type": "Literal",
-                                                                                                      "value": 59
+                                                                                                      "value": 59.0
                                                                                                     }
                                                                                                   ],
                                                                                                   "callee": {
@@ -1972,7 +1973,7 @@ snapshot_kind: text
                                                                                                     "start": 510,
                                                                                                     "type": "Literal",
                                                                                                     "type": "Literal",
-                                                                                                    "value": 60
+                                                                                                    "value": 60.0
                                                                                                   }
                                                                                                 ],
                                                                                                 "callee": {
@@ -2000,7 +2001,7 @@ snapshot_kind: text
                                                                                                   "start": 518,
                                                                                                   "type": "Literal",
                                                                                                   "type": "Literal",
-                                                                                                  "value": 61
+                                                                                                  "value": 61.0
                                                                                                 }
                                                                                               ],
                                                                                               "callee": {
@@ -2028,7 +2029,7 @@ snapshot_kind: text
                                                                                                 "start": 526,
                                                                                                 "type": "Literal",
                                                                                                 "type": "Literal",
-                                                                                                "value": 62
+                                                                                                "value": 62.0
                                                                                               }
                                                                                             ],
                                                                                             "callee": {
@@ -2056,7 +2057,7 @@ snapshot_kind: text
                                                                                               "start": 534,
                                                                                               "type": "Literal",
                                                                                               "type": "Literal",
-                                                                                              "value": 63
+                                                                                              "value": 63.0
                                                                                             }
                                                                                           ],
                                                                                           "callee": {
@@ -2084,7 +2085,7 @@ snapshot_kind: text
                                                                                             "start": 542,
                                                                                             "type": "Literal",
                                                                                             "type": "Literal",
-                                                                                            "value": 64
+                                                                                            "value": 64.0
                                                                                           }
                                                                                         ],
                                                                                         "callee": {
@@ -2112,7 +2113,7 @@ snapshot_kind: text
                                                                                           "start": 550,
                                                                                           "type": "Literal",
                                                                                           "type": "Literal",
-                                                                                          "value": 65
+                                                                                          "value": 65.0
                                                                                         }
                                                                                       ],
                                                                                       "callee": {
@@ -2140,7 +2141,7 @@ snapshot_kind: text
                                                                                         "start": 558,
                                                                                         "type": "Literal",
                                                                                         "type": "Literal",
-                                                                                        "value": 66
+                                                                                        "value": 66.0
                                                                                       }
                                                                                     ],
                                                                                     "callee": {
@@ -2168,7 +2169,7 @@ snapshot_kind: text
                                                                                       "start": 566,
                                                                                       "type": "Literal",
                                                                                       "type": "Literal",
-                                                                                      "value": 67
+                                                                                      "value": 67.0
                                                                                     }
                                                                                   ],
                                                                                   "callee": {
@@ -2196,7 +2197,7 @@ snapshot_kind: text
                                                                                     "start": 574,
                                                                                     "type": "Literal",
                                                                                     "type": "Literal",
-                                                                                    "value": 68
+                                                                                    "value": 68.0
                                                                                   }
                                                                                 ],
                                                                                 "callee": {
@@ -2224,7 +2225,7 @@ snapshot_kind: text
                                                                                   "start": 582,
                                                                                   "type": "Literal",
                                                                                   "type": "Literal",
-                                                                                  "value": 69
+                                                                                  "value": 69.0
                                                                                 }
                                                                               ],
                                                                               "callee": {
@@ -2252,7 +2253,7 @@ snapshot_kind: text
                                                                                 "start": 590,
                                                                                 "type": "Literal",
                                                                                 "type": "Literal",
-                                                                                "value": 70
+                                                                                "value": 70.0
                                                                               }
                                                                             ],
                                                                             "callee": {
@@ -2280,7 +2281,7 @@ snapshot_kind: text
                                                                               "start": 598,
                                                                               "type": "Literal",
                                                                               "type": "Literal",
-                                                                              "value": 71
+                                                                              "value": 71.0
                                                                             }
                                                                           ],
                                                                           "callee": {
@@ -2308,7 +2309,7 @@ snapshot_kind: text
                                                                             "start": 606,
                                                                             "type": "Literal",
                                                                             "type": "Literal",
-                                                                            "value": 72
+                                                                            "value": 72.0
                                                                           }
                                                                         ],
                                                                         "callee": {
@@ -2336,7 +2337,7 @@ snapshot_kind: text
                                                                           "start": 614,
                                                                           "type": "Literal",
                                                                           "type": "Literal",
-                                                                          "value": 73
+                                                                          "value": 73.0
                                                                         }
                                                                       ],
                                                                       "callee": {
@@ -2364,7 +2365,7 @@ snapshot_kind: text
                                                                         "start": 622,
                                                                         "type": "Literal",
                                                                         "type": "Literal",
-                                                                        "value": 74
+                                                                        "value": 74.0
                                                                       }
                                                                     ],
                                                                     "callee": {
@@ -2392,7 +2393,7 @@ snapshot_kind: text
                                                                       "start": 630,
                                                                       "type": "Literal",
                                                                       "type": "Literal",
-                                                                      "value": 75
+                                                                      "value": 75.0
                                                                     }
                                                                   ],
                                                                   "callee": {
@@ -2420,7 +2421,7 @@ snapshot_kind: text
                                                                     "start": 638,
                                                                     "type": "Literal",
                                                                     "type": "Literal",
-                                                                    "value": 76
+                                                                    "value": 76.0
                                                                   }
                                                                 ],
                                                                 "callee": {
@@ -2448,7 +2449,7 @@ snapshot_kind: text
                                                                   "start": 646,
                                                                   "type": "Literal",
                                                                   "type": "Literal",
-                                                                  "value": 77
+                                                                  "value": 77.0
                                                                 }
                                                               ],
                                                               "callee": {
@@ -2476,7 +2477,7 @@ snapshot_kind: text
                                                                 "start": 654,
                                                                 "type": "Literal",
                                                                 "type": "Literal",
-                                                                "value": 78
+                                                                "value": 78.0
                                                               }
                                                             ],
                                                             "callee": {
@@ -2504,7 +2505,7 @@ snapshot_kind: text
                                                               "start": 662,
                                                               "type": "Literal",
                                                               "type": "Literal",
-                                                              "value": 79
+                                                              "value": 79.0
                                                             }
                                                           ],
                                                           "callee": {
@@ -2532,7 +2533,7 @@ snapshot_kind: text
                                                             "start": 670,
                                                             "type": "Literal",
                                                             "type": "Literal",
-                                                            "value": 80
+                                                            "value": 80.0
                                                           }
                                                         ],
                                                         "callee": {
@@ -2560,7 +2561,7 @@ snapshot_kind: text
                                                           "start": 678,
                                                           "type": "Literal",
                                                           "type": "Literal",
-                                                          "value": 81
+                                                          "value": 81.0
                                                         }
                                                       ],
                                                       "callee": {
@@ -2588,7 +2589,7 @@ snapshot_kind: text
                                                         "start": 686,
                                                         "type": "Literal",
                                                         "type": "Literal",
-                                                        "value": 82
+                                                        "value": 82.0
                                                       }
                                                     ],
                                                     "callee": {
@@ -2616,7 +2617,7 @@ snapshot_kind: text
                                                       "start": 694,
                                                       "type": "Literal",
                                                       "type": "Literal",
-                                                      "value": 83
+                                                      "value": 83.0
                                                     }
                                                   ],
                                                   "callee": {
@@ -2644,7 +2645,7 @@ snapshot_kind: text
                                                     "start": 702,
                                                     "type": "Literal",
                                                     "type": "Literal",
-                                                    "value": 84
+                                                    "value": 84.0
                                                   }
                                                 ],
                                                 "callee": {
@@ -2672,7 +2673,7 @@ snapshot_kind: text
                                                   "start": 710,
                                                   "type": "Literal",
                                                   "type": "Literal",
-                                                  "value": 85
+                                                  "value": 85.0
                                                 }
                                               ],
                                               "callee": {
@@ -2700,7 +2701,7 @@ snapshot_kind: text
                                                 "start": 718,
                                                 "type": "Literal",
                                                 "type": "Literal",
-                                                "value": 86
+                                                "value": 86.0
                                               }
                                             ],
                                             "callee": {
@@ -2728,7 +2729,7 @@ snapshot_kind: text
                                               "start": 726,
                                               "type": "Literal",
                                               "type": "Literal",
-                                              "value": 87
+                                              "value": 87.0
                                             }
                                           ],
                                           "callee": {
@@ -2756,7 +2757,7 @@ snapshot_kind: text
                                             "start": 734,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 88
+                                            "value": 88.0
                                           }
                                         ],
                                         "callee": {
@@ -2784,7 +2785,7 @@ snapshot_kind: text
                                           "start": 742,
                                           "type": "Literal",
                                           "type": "Literal",
-                                          "value": 89
+                                          "value": 89.0
                                         }
                                       ],
                                       "callee": {
@@ -2812,7 +2813,7 @@ snapshot_kind: text
                                         "start": 750,
                                         "type": "Literal",
                                         "type": "Literal",
-                                        "value": 90
+                                        "value": 90.0
                                       }
                                     ],
                                     "callee": {
@@ -2840,7 +2841,7 @@ snapshot_kind: text
                                       "start": 758,
                                       "type": "Literal",
                                       "type": "Literal",
-                                      "value": 91
+                                      "value": 91.0
                                     }
                                   ],
                                   "callee": {
@@ -2868,7 +2869,7 @@ snapshot_kind: text
                                     "start": 766,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 92
+                                    "value": 92.0
                                   }
                                 ],
                                 "callee": {
@@ -2896,7 +2897,7 @@ snapshot_kind: text
                                   "start": 774,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 93
+                                  "value": 93.0
                                 }
                               ],
                               "callee": {
@@ -2924,7 +2925,7 @@ snapshot_kind: text
                                 "start": 782,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 94
+                                "value": 94.0
                               }
                             ],
                             "callee": {
@@ -2952,7 +2953,7 @@ snapshot_kind: text
                               "start": 790,
                               "type": "Literal",
                               "type": "Literal",
-                              "value": 95
+                              "value": 95.0
                             }
                           ],
                           "callee": {
@@ -2980,7 +2981,7 @@ snapshot_kind: text
                             "start": 798,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 96
+                            "value": 96.0
                           }
                         ],
                         "callee": {
@@ -3008,7 +3009,7 @@ snapshot_kind: text
                           "start": 806,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 97
+                          "value": 97.0
                         }
                       ],
                       "callee": {
@@ -3036,7 +3037,7 @@ snapshot_kind: text
                         "start": 814,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 98
+                        "value": 98.0
                       }
                     ],
                     "callee": {
@@ -3064,7 +3065,7 @@ snapshot_kind: text
                       "start": 822,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 99
+                      "value": 99.0
                     }
                   ],
                   "callee": {
@@ -3092,7 +3093,7 @@ snapshot_kind: text
                     "start": 830,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 100
+                    "value": 100.0
                   }
                 ],
                 "callee": {
@@ -3138,7 +3139,7 @@ snapshot_kind: text
               "start": 851,
               "type": "Literal",
               "type": "Literal",
-              "value": 10100
+              "value": 10100.0
             },
             {
               "end": 861,

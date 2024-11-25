@@ -50,7 +50,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> line([-8, -3], %)
 ///     |> line([9, -1], %)
 ///     |> line([-19, -0], %)
-///     |> mirror2d({axis: 'Y'}, %)
+///     |> mirror2d({axis = 'Y'}, %)
 ///
 /// const example = extrude(10, sketch001)
 /// ```
@@ -61,7 +61,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> startProfileAt([0, 8.5], %)
 ///     |> line([20, -8.5], %)
 ///     |> line([-20, -8.5], %)
-///     |> mirror2d({axis: 'Y'}, %)
+///     |> mirror2d({axis = 'Y'}, %)
 ///
 /// const example = extrude(10, sketch001)
 /// ```
@@ -76,7 +76,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> startProfileAt([0, 8.5], %)
 ///     |> line([20, -8.5], %)
 ///     |> line([-20, -8.5], %)
-///     |> mirror2d({axis: edge001}, %)
+///     |> mirror2d({axis = edge001}, %)
 ///
 /// const example = extrude(10, sketch001)
 /// ```
@@ -88,10 +88,10 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> line([20, -8.5], %)
 ///     |> line([-20, -8.5], %)
 ///     |> mirror2d({
-///   axis: {
-///     custom: {
-///       axis: [0.0, 1.0],
-///       origin: [0.0, 0.0]
+///   axis = {
+///     custom = {
+///       axis = [0.0, 1.0],
+///       origin = [0.0, 0.0]
 ///     }
 ///   }
 /// }, %)

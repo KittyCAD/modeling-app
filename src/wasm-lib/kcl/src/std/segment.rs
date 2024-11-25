@@ -32,7 +32,7 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// fn cylinder = (radius, tag) => {
 ///   return startSketchAt([0, 0])
-///   |> circle({ radius: radius, center: segEnd(tag) }, %)
+///   |> circle({ radius = radius, center = segEnd(tag) }, %)
 ///   |> extrude(radius, %)
 /// }
 ///
@@ -151,7 +151,7 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// fn cylinder = (radius, tag) => {
 ///   return startSketchAt([0, 0])
-///   |> circle({ radius: radius, center: segStart(tag) }, %)
+///   |> circle({ radius = radius, center = segStart(tag) }, %)
 ///   |> extrude(radius, %)
 /// }
 ///
@@ -340,16 +340,16 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %, $thing)
 ///   |> tangentialArc({
-///     offset: -120,
-///     radius: 5,
+///     offset = -120,
+///     radius = 5,
 ///   }, %)
 ///   |> angledLine({
-///     angle: -60,
-///     length: segLen(thing),
+///     angle = -60,
+///     length = segLen(thing),
 ///   }, %)
 ///   |> close(%)
 ///
@@ -595,8 +595,8 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([1, 2], %, $seg01)
 ///   |> angledLine({
-///     angle: angleToMatchLengthY(seg01, 15, %),
-///     length: 5,
+///     angle = angleToMatchLengthY(seg01, 15, %),
+///     length = 5,
 ///     }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)

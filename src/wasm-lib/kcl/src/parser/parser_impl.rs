@@ -352,9 +352,6 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                if let Ok(x) = token.value.parse::<u64>() {
-                    return Ok((LiteralValue::IInteger(x as i64), token));
-                }
                 let x: f64 = token.value.parse().map_err(|_| {
                     KclError::Syntax(KclErrorDetails {
                         source_ranges: token.as_source_ranges(),
@@ -362,7 +359,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
                     })
                 })?;
 
-                Ok((LiteralValue::Fractional(x), token))
+                Ok((LiteralValue::Number(x), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -552,13 +549,6 @@ fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     ))
 }
 
-/// Parse the = operator.
-fn equals(i: TokenSlice) -> PResult<Token> {
-    one_of((TokenType::Operator, "="))
-        .context(expected("the equals operator, ="))
-        .parse_next(i)
-}
-
 #[allow(clippy::large_enum_variant)]
 pub enum NonCodeOr<T> {
     NonCode(Node<NonCodeNode>),
@@ -692,11 +682,12 @@ fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectPropert
 }
 
 fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    colon
+    // Temporarily accept both `:` and `=` for compatibility.
+    alt((colon, equals))
         .context(expected(
-            "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
+            "`=`, which separates the property's key from the value you're setting it to, e.g. 'height = 4'",
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
@@ -1930,6 +1921,13 @@ fn double_period(i: TokenSlice) -> PResult<Token> {
 
 fn colon(i: TokenSlice) -> PResult<()> {
     TokenType::Colon.parse_from(i)?;
+    Ok(())
+}
+
+fn equals(i: TokenSlice) -> PResult<()> {
+    one_of((TokenType::Operator, "="))
+        .context(expected("the equals operator, ="))
+        .parse_next(i)?;
     Ok(())
 }
 

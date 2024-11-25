@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing kittycad_svg.kcl
 snapshot_kind: text
 ---
@@ -51,7 +52,7 @@ snapshot_kind: text
                           "start": 47,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "end": 51,
@@ -59,7 +60,7 @@ snapshot_kind: text
                           "start": 50,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 52,
@@ -304,7 +305,7 @@ snapshot_kind: text
                           "start": 282,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -356,7 +357,7 @@ snapshot_kind: text
                           "start": 336,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -1240,7 +1241,7 @@ snapshot_kind: text
                           "start": 1273,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 21
+                          "value": 21.0
                         },
                         {
                           "argument": {
@@ -1292,7 +1293,7 @@ snapshot_kind: text
                           "start": 1327,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 21
+                          "value": 21.0
                         },
                         {
                           "argument": {
@@ -9569,7 +9570,7 @@ snapshot_kind: text
                             "start": 10356,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           "end": 10357,
                           "operator": "-",
@@ -9621,7 +9622,7 @@ snapshot_kind: text
                             "start": 10421,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           "end": 10422,
                           "operator": "-",
@@ -10817,7 +10818,7 @@ snapshot_kind: text
                             "start": 11714,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           "end": 11715,
                           "operator": "-",
@@ -10869,7 +10870,7 @@ snapshot_kind: text
                             "start": 11765,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 0
+                            "value": 0.0
                           },
                           "end": 11766,
                           "operator": "-",
@@ -14727,7 +14728,7 @@ snapshot_kind: text
                       "start": 15826,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1
+                      "value": 1.0
                     },
                     {
                       "end": 15830,

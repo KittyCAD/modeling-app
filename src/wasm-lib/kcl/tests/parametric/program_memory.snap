@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing parametric.kcl
 snapshot_kind: text
 ---
@@ -8,8 +9,8 @@ snapshot_kind: text
     {
       "bindings": {
         "FOS": {
-          "type": "Int",
-          "value": 2,
+          "type": "Number",
+          "value": 2.0,
           "__meta": [
             {
               "sourceRange": [
@@ -306,8 +307,8 @@ snapshot_kind: text
           ]
         },
         "distance": {
-          "type": "Int",
-          "value": 6,
+          "type": "Number",
+          "value": 6.0,
           "__meta": [
             {
               "sourceRange": [
@@ -319,8 +320,8 @@ snapshot_kind: text
           ]
         },
         "leg1": {
-          "type": "Int",
-          "value": 5,
+          "type": "Number",
+          "value": 5.0,
           "__meta": [
             {
               "sourceRange": [
@@ -332,8 +333,8 @@ snapshot_kind: text
           ]
         },
         "leg2": {
-          "type": "Int",
-          "value": 8,
+          "type": "Number",
+          "value": 8.0,
           "__meta": [
             {
               "sourceRange": [
@@ -345,8 +346,8 @@ snapshot_kind: text
           ]
         },
         "p": {
-          "type": "Int",
-          "value": 150,
+          "type": "Number",
+          "value": 150.0,
           "__meta": [
             {
               "sourceRange": [
@@ -358,8 +359,8 @@ snapshot_kind: text
           ]
         },
         "sigmaAllow": {
-          "type": "Int",
-          "value": 35000,
+          "type": "Number",
+          "value": 35000.0,
           "__meta": [
             {
               "sourceRange": [
@@ -384,8 +385,8 @@ snapshot_kind: text
           ]
         },
         "width": {
-          "type": "Int",
-          "value": 9,
+          "type": "Number",
+          "value": 9.0,
           "__meta": [
             {
               "sourceRange": [

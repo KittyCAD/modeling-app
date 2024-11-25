@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 105
 description: Program memory after executing helix_ccw.kcl
 snapshot_kind: text
 ---
@@ -37,7 +38,7 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 35,
-                76,
+                78,
                 0
               ],
               "tag": null,
@@ -53,7 +54,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     35,
-                    76,
+                    78,
                     0
                   ]
                 },
@@ -115,7 +116,7 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   35,
-                  76,
+                  78,
                   0
                 ]
               }
@@ -124,7 +125,7 @@ snapshot_kind: text
               {
                 "sourceRange": [
                   35,
-                  76,
+                  78,
                   0
                 ]
               }
@@ -137,7 +138,7 @@ snapshot_kind: text
             {
               "sourceRange": [
                 35,
-                76,
+                78,
                 0
               ]
             }

@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing array_range_expr.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -24,7 +23,7 @@ snapshot_kind: text
                 "start": 9,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "endInclusive": true,
               "start": 5,
@@ -34,7 +33,7 @@ snapshot_kind: text
                 "start": 6,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0
+                "value": 0.0
               },
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
@@ -69,7 +68,7 @@ snapshot_kind: text
                 "start": 27,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 24,
               "type": "MemberExpression",
@@ -81,7 +80,7 @@ snapshot_kind: text
               "start": 31,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             {
               "end": 41,
@@ -132,7 +131,7 @@ snapshot_kind: text
               "start": 79,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             "start": 72,
             "type": "VariableDeclarator"
@@ -160,7 +159,7 @@ snapshot_kind: text
               "start": 88,
               "type": "Literal",
               "type": "Literal",
-              "value": 0
+              "value": 0.0
             },
             "start": 81,
             "type": "VariableDeclarator"
@@ -233,7 +232,7 @@ snapshot_kind: text
                 "start": 123,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 120,
               "type": "MemberExpression",
@@ -245,7 +244,7 @@ snapshot_kind: text
               "start": 127,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             {
               "end": 137,
@@ -308,7 +307,7 @@ snapshot_kind: text
                     "start": 186,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1
+                    "value": 1.0
                   },
                   "start": 179,
                   "type": "BinaryExpression",
@@ -398,7 +397,7 @@ snapshot_kind: text
                 "start": 222,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 219,
               "type": "MemberExpression",
@@ -410,7 +409,7 @@ snapshot_kind: text
               "start": 226,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             {
               "end": 236,
@@ -465,7 +464,7 @@ snapshot_kind: text
                 "start": 291,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 5
+                "value": 5.0
               },
               "start": 288,
               "type": "MemberExpression",
@@ -477,7 +476,7 @@ snapshot_kind: text
               "start": 295,
               "type": "Literal",
               "type": "Literal",
-              "value": 5
+              "value": 5.0
             },
             {
               "end": 305,
@@ -542,7 +541,7 @@ snapshot_kind: text
                       "start": 370,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1
+                      "value": 1.0
                     },
                     "start": 363,
                     "type": "BinaryExpression",
@@ -581,7 +580,7 @@ snapshot_kind: text
                       "start": 353,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1
+                      "value": 1.0
                     },
                     "start": 346,
                     "type": "BinaryExpression",
@@ -633,7 +632,7 @@ snapshot_kind: text
                 "start": 389,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0
+                "value": 0.0
               },
               "start": 386,
               "type": "MemberExpression",
@@ -645,7 +644,7 @@ snapshot_kind: text
               "start": 393,
               "type": "Literal",
               "type": "Literal",
-              "value": 1
+              "value": 1.0
             },
             {
               "end": 403,
@@ -700,7 +699,7 @@ snapshot_kind: text
                 "start": 442,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "start": 439,
               "type": "MemberExpression",
@@ -712,7 +711,7 @@ snapshot_kind: text
               "start": 446,
               "type": "Literal",
               "type": "Literal",
-              "value": 3
+              "value": 3.0
             },
             {
               "end": 456,
@@ -767,7 +766,7 @@ snapshot_kind: text
                 "start": 504,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 501,
               "type": "MemberExpression",
@@ -779,7 +778,7 @@ snapshot_kind: text
               "start": 508,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             {
               "end": 518,

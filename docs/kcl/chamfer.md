@@ -44,8 +44,8 @@ mountingPlateSketch = startSketchOn("XY")
 
 mountingPlate = extrude(thickness, mountingPlateSketch)
   |> chamfer({
-       length: chamferLength,
-       tags: [
+       length = chamferLength,
+       tags = [
          getNextAdjacentEdge(edge1),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),
@@ -72,8 +72,8 @@ part001 = cube([0, 0], 20)
   |> close(%, $line1)
   |> extrude(20, %)
   |> chamfer({
-       length: 10,
-       tags: [getOppositeEdge(line1)]
+       length = 10,
+       tags = [getOppositeEdge(line1)]
      }, %, $chamfer1) // We tag the chamfer to reference it later.
 
 sketch001 = startSketchOn(part001, chamfer1)

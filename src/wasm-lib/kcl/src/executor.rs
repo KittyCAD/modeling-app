@@ -2839,7 +2839,7 @@ let notNull = !myNull
         assert_eq!(
             parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: integer".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange([14, 16, 0])],
             })
         );
@@ -2862,7 +2862,7 @@ let notMember = !obj.a
         assert_eq!(
             parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: integer".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange([36, 42, 0])],
             })
         );

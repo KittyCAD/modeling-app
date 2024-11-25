@@ -248,26 +248,26 @@ describe('testing addTagForSketchOnFace', () => {
     {
       desc: 'chamfer in pipeExpr',
       originalChamfer: `  |> chamfer({
-       length: 30,
-       tags: [seg01, getOppositeEdge(seg01)]
+       length = 30,
+       tags = [seg01, getOppositeEdge(seg01)]
      }, %)`,
       expectedChamfer: `  |> chamfer({
-       length: 30,
-       tags: [getOppositeEdge(seg01)]
+       length = 30,
+       tags = [getOppositeEdge(seg01)]
      }, %, $seg03)
-  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+  |> chamfer({ length = 30, tags = [seg01] }, %)`,
     },
     {
       desc: 'chamfer with its own variable',
       originalChamfer: `chamf = chamfer({
-       length: 30,
-       tags: [seg01, getOppositeEdge(seg01)]
+       length = 30,
+       tags = [seg01, getOppositeEdge(seg01)]
      }, extrude001)`,
       expectedChamfer: `chamf = chamfer({
-       length: 30,
-       tags: [getOppositeEdge(seg01)]
+       length = 30,
+       tags = [getOppositeEdge(seg01)]
      }, extrude001, $seg03)
-  |> chamfer({ length: 30, tags: [seg01] }, %)`,
+  |> chamfer({ length = 30, tags = [seg01] }, %)`,
     },
     // Add more test cases here if needed
   ] as const
@@ -329,8 +329,8 @@ describe('testing getConstraintInfo', () => {
   |> startProfileAt([0,0], %)
   |> line([3, 4], %)
   |> angledLine({
-    angle: 3.14,
-    length: 3.14,
+    angle = 3.14,
+    length = 3.14,
   }, %)
   |> lineTo([6.14, 3.14], %)
   |> xLineTo(8, %)
@@ -338,25 +338,25 @@ describe('testing getConstraintInfo', () => {
   |> yLine(3.14, %, 'a')
   |> xLine(3.14, %)
   |> angledLineOfXLength({
-    angle: 3.14,
-    length: 3.14,
+    angle = 3.14,
+    length = 3.14,
   }, %)
   |> angledLineOfYLength({
-    angle: 30,
-    length: 3,
+    angle = 30,
+    length = 3,
   }, %)
   |> angledLineToX({
-    angle: 12.14,
-    to: 12,
+    angle = 12.14,
+    to = 12,
   }, %)
   |> angledLineToY({
-    angle: 30,
-    to: 10.14,
+    angle = 30,
+    to = 10.14,
   }, %)
   |> angledLineThatIntersects({
-    angle: 3.14,
-    intersectTag: 'a',
-    offset: 0
+    angle = 3.14,
+    intersectTag = 'a',
+    offset = 0
   }, %)
   |> tangentialArcTo([3.14, 13.14], %)`
     const ast = parse(code)
@@ -713,9 +713,9 @@ describe('testing getConstraintInfo', () => {
     |> angledLineToX([12, 12], %)
     |> angledLineToY([30, 10], %)
     |> angledLineThatIntersects({
-         angle: 3.14,
-         intersectTag: 'a',
-         offset: 0
+         angle = 3.14,
+         intersectTag = 'a',
+         offset = 0
        }, %)
     |> tangentialArcTo([3.14, 13.14], %)`
     const ast = parse(code)
@@ -856,20 +856,20 @@ describe('testing getConstraintInfo', () => {
     const code = `const part001 = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
     |> line([3 + 0, 4 + 0], %)
-    |> angledLine({ angle: 3.14 + 0, length: 3.14 + 0 }, %)
+    |> angledLine({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
     |> lineTo([6.14 + 0, 3.14 + 0], %)
     |> xLineTo(8 + 0, %)
     |> yLineTo(5 + 0, %)
     |> yLine(3.14 + 0, %, 'a')
     |> xLine(3.14 + 0, %)
-    |> angledLineOfXLength({ angle: 3.14 + 0, length: 3.14 + 0 }, %)
-    |> angledLineOfYLength({ angle: 30 + 0, length: 3 + 0 }, %)
-    |> angledLineToX({ angle: 12.14 + 0, to: 12 + 0 }, %)
-    |> angledLineToY({ angle: 30 + 0, to: 10.14 + 0 }, %)
+    |> angledLineOfXLength({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
+    |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
+    |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
+    |> angledLineToY({ angle = 30 + 0, to = 10.14 + 0 }, %)
     |> angledLineThatIntersects({
-         angle: 3.14 + 0,
-         intersectTag: 'a',
-         offset: 0 + 0
+         angle = 3.14 + 0,
+         intersectTag = 'a',
+         offset = 0 + 0
        }, %)
     |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
     const ast = parse(code)

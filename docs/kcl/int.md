@@ -6,12 +6,10 @@ layout: manual
 
 Convert a number to an integer.
 
-Callers should use floor(), ceil(), or other rounding function first if they care about how numbers with fractional parts are converted.  If the number has a fractional part, it's truncated, moving the number towards zero.
-
-If the number is NaN or has a magnitude, either positive or negative, that is too large to fit into the internal integer representation, the result is a runtime error.
+DEPRECATED use floor(), ceil(), or round().
 
 ```js
-int(num: number) -> i64
+int(num: number) -> number
 ```
 
 ### Tags
@@ -27,7 +25,7 @@ int(num: number) -> i64
 
 ### Returns
 
-`i64` 
+`number` 
 
 
 ### Examples
@@ -37,10 +35,10 @@ n = int(ceil(5 / 2))
 assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
 // Draw n cylinders.
 startSketchOn('XZ')
-  |> circle({ center: [0, 0], radius: 2 }, %)
+  |> circle({ center = [0, 0], radius = 2 }, %)
   |> extrude(5, %)
   |> patternTransform(n, (id) => {
-    return { translate: [4 * id, 0, 0] }
+    return { translate = [4 * id, 0, 0] }
   }, %)
 ```
 

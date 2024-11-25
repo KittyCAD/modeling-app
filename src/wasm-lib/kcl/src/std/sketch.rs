@@ -180,14 +180,14 @@ pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLineTo(15, %)
 ///   |> angledLine({
-///     angle: 80,
-///     length: 15,
+///     angle = 80,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> xLineTo(40, %)
 ///   |> angledLine({
-///     angle: 135,
-///     length: 30,
+///     angle = 135,
+///     length = 30,
 ///   }, %)
 ///   |> xLineTo(10, %)
 ///   |> close(%)
@@ -229,8 +229,8 @@ pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: 45,
+///     angle = 50,
+///     length = 45,
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -354,14 +354,14 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLine(15, %)
 ///   |> angledLine({
-///     angle: 80,
-///     length: 15,
+///     angle = 80,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> xLine(10, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 30,
+///     angle = 120,
+///     length = 30,
 ///   }, %)
 ///   |> xLine(-15, %)
 ///   |> close(%)
@@ -399,8 +399,8 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(15, %)
 ///   |> angledLine({
-///     angle: 30,
-///     length: 15,
+///     angle = 30,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> yLine(-5, %)
@@ -455,8 +455,8 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLineTo(15, %)
 ///   |> angledLine({
-///     angle: 30,
-///     length: 15,
+///     angle = 30,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> yLineTo(0, %)
@@ -540,8 +540,8 @@ pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> 
 /// ```no_run
 /// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineOfXLength({ angle: 45, length: 10 }, %, $edge1)
-///   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+///   |> angledLineOfXLength({ angle = 45, length = 10 }, %, $edge1)
+///   |> angledLineOfXLength({ angle = -15, length = 20 }, %, $edge2)
 ///   |> line([0, -5], %)
 ///   |> close(%, $edge3)
 ///
@@ -611,7 +611,7 @@ pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineToX({ angle: 30, to: 10 }, %)
+///   |> angledLineToX({ angle = 30, to = 10 }, %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
@@ -671,9 +671,9 @@ pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> 
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
-///   |> angledLineOfYLength({ angle: 45, length: 10 }, %)
+///   |> angledLineOfYLength({ angle = 45, length = 10 }, %)
 ///   |> line([0, 10], %)
-///   |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+///   |> angledLineOfYLength({ angle = 135, length = 10 }, %)
 ///   |> line([-10, 0], %)
 ///   |> line([0, -30], %)
 ///
@@ -732,9 +732,9 @@ pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineToY({ angle: 60, to: 20 }, %)
+///   |> angledLineToY({ angle = 60, to = 20 }, %)
 ///   |> line([-20, 0], %)
-///   |> angledLineToY({ angle: 70, to: 10 }, %)
+///   |> angledLineToY({ angle = 70, to = 10 }, %)
 ///   |> close(%)
 ///
 /// const example = extrude(10, exampleSketch)
@@ -809,9 +809,9 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 ///   |> lineTo([-10, 10], %, $lineToIntersect)
 ///   |> lineTo([0, 20], %)
 ///   |> angledLineThatIntersects({
-///        angle: 80,
-///        intersectTag: lineToIntersect,
-///        offset: 10
+///        angle = 80,
+///        intersectTag = lineToIntersect,
+///        offset = 10
 ///      }, %)
 ///   |> close(%)
 ///
@@ -1046,10 +1046,10 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```no_run
 /// const a1 = startSketchOn({
 ///       plane: {
-///         origin: { x: 0, y: 0, z: 0 },
-///         xAxis: { x: 1, y: 0, z: 0 },
-///         yAxis: { x: 0, y: 1, z: 0 },
-///         zAxis: { x: 0, y: 0, z: 1 }
+///         origin = { x = 0, y = 0, z = 0 },
+///         xAxis = { x = 1, y = 0, z = 0 },
+///         yAxis = { x = 0, y = 1, z = 0 },
+///         zAxis = { x = 0, y = 0, z = 1 }
 ///       }
 ///     })
 ///  |> startProfileAt([0, 0], %)
@@ -1318,7 +1318,7 @@ pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine([-26.6, 50], %)
 ///  |> angledLine([90, 50], %)
-///  |> angledLineToX({ angle: 30, to: profileStartX(%) }, %)
+///  |> angledLineToX({ angle = 30, to = profileStartX(%) }, %)
 /// ```
 #[stdlib {
     name = "profileStartX"
@@ -1340,8 +1340,8 @@ pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle: -60, length: 14 }, %)
-///  |> angledLineToY({ angle: 30, to: profileStartY(%) }, %)
+///  |> angledLine({ angle = -60, length = 14 }, %)
+///  |> angledLineToY({ angle = 30, to = profileStartY(%) }, %)
 /// ```
 #[stdlib {
     name = "profileStartY"
@@ -1363,8 +1363,8 @@ pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle: 120, length: 50 }, %, $seg01)
-///  |> angledLine({ angle: segAng(seg01) + 120, length: 50 }, %)
+///  |> angledLine({ angle = 120, length = 50 }, %, $seg01)
+///  |> angledLine({ angle = segAng(seg01) + 120, length = 50 }, %)
 ///  |> lineTo(profileStart(%), %)
 ///  |> close(%)
 ///  |> extrude(20, %)
@@ -1522,9 +1522,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
-///        angleStart: 0,
-///        angleEnd: 280,
-///        radius: 16
+///        angleStart = 0,
+///        angleEnd = 280,
+///        radius = 16
 ///      }, %)
 ///   |> close(%)
 /// const example = extrude(10, exampleSketch)
@@ -1628,8 +1628,8 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> arcTo({
-///         end: [10,0],
-///         interior: [5,5]
+///         end = [10,0],
+///         interior = [5,5]
 ///      }, %)
 ///   |> close(%)
 /// const example = extrude(10, exampleSketch)
@@ -1764,13 +1764,13 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
-///   |> tangentialArc({ radius: 10, offset: -120 }, %)
+///   |> tangentialArc({ radius = 10, offset = -120 }, %)
 ///   |> angledLine({
-///     angle: -60,
-///     length: 10,
+///     angle = -60,
+///     length = 10,
 ///   }, %)
 ///   |> close(%)
 ///
@@ -1897,8 +1897,8 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> tangentialArcTo([15, 15], %)
 ///   |> line([10, -15], %)
@@ -1963,8 +1963,8 @@ async fn inner_tangential_arc_to(
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 45,
-///     length: 10,
+///     angle = 45,
+///     length = 10,
 ///   }, %)
 ///   |> tangentialArcToRelative([0, -10], %)
 ///   |> line([-10, 0], %)
@@ -2106,9 +2106,9 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 10], %)
 ///   |> bezierCurve({
-///        to: [10, 10],
-///        control1: [5, 0],
-///        control2: [5, 10]
+///        to = [10, 10],
+///        control1 = [5, 0],
+///        control2 = [5, 10]
 ///      }, %)
 ///   |> lineTo([10, 0], %)
 ///   |> close(%)
@@ -2188,8 +2188,8 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> line([5, 0], %)
 ///   |> line([0, -5], %)
 ///   |> close(%)
-///   |> hole(circle({ center: [1, 1], radius: .25 }, %), %)
-///   |> hole(circle({ center: [1, 4], radius: .25 }, %), %)
+///   |> hole(circle({ center = [1, 1], radius = .25 }, %), %)
+///   |> hole(circle({ center = [1, 4], radius = .25 }, %), %)
 ///
 /// const example = extrude(1, exampleSketch)
 /// ```
@@ -2206,7 +2206,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   }
 ///
 ///  const exampleSketch = startSketchOn('-XZ')
-///     |> circle({ center: [0, 0], radius: 3 }, %)
+///     |> circle({ center = [0, 0], radius = 3 }, %)
 ///     |> hole(squareHoleSketch(), %)
 ///  const example = extrude(1, exampleSketch)
 /// ```
