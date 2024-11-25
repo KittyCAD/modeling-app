@@ -91,7 +91,7 @@ a complete arc
 | `type` |enum: `Circle`|  | No |
 | `center` |`[number, number]`| the arc's center | No |
 | `radius` |`number`| the arc's radius | No |
-| `ccw` |`boolean`| arc's direction | No |
+| `ccw` |`boolean`| arc's direction This is used to compute the tangential angle. | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
@@ -177,6 +177,7 @@ A circular arc, not necessarily tangential to the current point.
 | `type` |enum: `Arc`|  | No |
 | `center` |`[number, number]`| Center of the circle that this arc is drawn on. | No |
 | `radius` |`number`| Radius of the circle that this arc is drawn on. | No |
+| `ccw` |`boolean`| True if the arc is counterclockwise. | No |
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
