@@ -287,7 +287,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       plane: {
         inputType: 'selection',
         selectionTypes: ['plane'],
-        multiple: true,
+        multiple: false,
         required: true,
         skip: true,
       },
