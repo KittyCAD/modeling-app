@@ -308,6 +308,10 @@ fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<Extrus
         match face_info.cap {
             ExtrusionFaceCapType::Bottom => faces.start_cap_id = face_info.face_id,
             ExtrusionFaceCapType::Top => faces.end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Both => {
+                faces.end_cap_id = face_info.face_id;
+                faces.start_cap_id = face_info.face_id;
+            }
             ExtrusionFaceCapType::None => {
                 if let Some(curve_id) = face_info.curve_id {
                     faces.sides.insert(curve_id, face_info.face_id);
