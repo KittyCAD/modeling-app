@@ -33,8 +33,8 @@ pillSketch = startSketchOn('XZ')
   |> line([20, 0], %)
   |> tangentialArcToRelative([0, 10], %, $arc1)
   |> angledLine({
-       angle: tangentToEnd(arc1),
-       length: 20
+       angle = tangentToEnd(arc1),
+       length = 20
      }, %)
   |> tangentialArcToRelative([0, -10], %)
   |> close(%)
@@ -51,8 +51,8 @@ pillSketch = startSketchOn('XZ')
   |> line([0, 20], %)
   |> tangentialArcTo([10, 20], %, $arc1)
   |> angledLine({
-       angle: tangentToEnd(arc1),
-       length: 20
+       angle = tangentToEnd(arc1),
+       length = 20
      }, %)
   |> tangentialArcToRelative([-10, 0], %)
   |> close(%)
@@ -67,8 +67,8 @@ rectangleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %, $seg1)
   |> angledLine({
-       angle: tangentToEnd(seg1),
-       length: 10
+       angle = tangentToEnd(seg1),
+       length = 10
      }, %)
   |> line([0, 10], %)
   |> line([-20, 0], %)
@@ -82,7 +82,7 @@ rectangleExtrude = extrude(10, rectangleSketch)
 ```js
 bottom = startSketchOn("XY")
   |> startProfileAt([0, 0], %)
-  |> arcTo({ end: [10, 10], interior: [5, 1] }, %, $arc1)
+  |> arcTo({ end = [10, 10], interior = [5, 1] }, %, $arc1)
   |> angledLine([tangentToEnd(arc1), 20], %)
   |> close(%)
 ```
@@ -91,7 +91,7 @@ bottom = startSketchOn("XY")
 
 ```js
 circSketch = startSketchOn("XY")
-  |> circle({ center: [0, 0], radius: 3 }, %, $circ)
+  |> circle({ center = [0, 0], radius = 3 }, %, $circ)
 
 triangleSketch = startSketchOn("XY")
   |> startProfileAt([-5, 0], %)
