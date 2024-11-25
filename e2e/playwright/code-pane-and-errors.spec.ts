@@ -52,6 +52,7 @@ test.describe('Code pane and errors', () => {
   test('Opening and closing the code pane will consistently show error diagnostics', async ({
     page,
     homePage,
+    editor,
   }) => {
     const u = await getUtils(page)
 
@@ -77,8 +78,9 @@ test.describe('Code pane and errors', () => {
     await expect(codePaneButtonHolder).not.toContainText('notification')
 
     // Delete a character to break the KCL
-    await u.openKclCodePanel()
-    await page.getByText('thickness, bracketLeg1Sketch)').click()
+    await editor.openPane()
+    await editor.scrollToText('thickness, bracketLeg1Sketch)')
+    await page.getByText('extrude(thickness, bracketLeg1Sketch)').click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
@@ -102,7 +104,10 @@ test.describe('Code pane and errors', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     // Open the code pane
-    await u.openKclCodePanel()
+    await editor.openPane()
+
+    // Go to our problematic code again (missing closing paren!)
+    await editor.scrollToText('extrude(thickness, bracketLeg1Sketch')
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')
