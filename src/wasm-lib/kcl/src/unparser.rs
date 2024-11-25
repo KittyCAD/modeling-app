@@ -3,7 +3,7 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        Expr, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
+        Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
         LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression,
         PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
@@ -205,13 +205,13 @@ impl VariableDeclaration {
             ItemVisibility::Export => "export ".to_owned(),
         };
         self.declarations.iter().fold(output, |mut output, declaration| {
-            let keyword = match self.kind {
-                VariableKind::Fn => "fn ",
-                VariableKind::Const => "",
+            let (keyword, eq) = match self.kind {
+                VariableKind::Fn => ("fn ", ""),
+                VariableKind::Const => ("", " = "),
             };
             let _ = write!(
                 output,
-                "{}{keyword}{} = {}",
+                "{}{keyword}{}{eq}{}",
                 indentation,
                 declaration.id.name,
                 declaration.init.recast(options, indentation_level, false).trim()
@@ -568,13 +568,25 @@ impl FunctionExpression {
         let param_list = self
             .params
             .iter()
+            // TODO arg types
             .map(|param| param.identifier.name.clone())
             .collect::<Vec<String>>()
             .join(", ");
         let tab0 = options.get_indentation(indentation_level);
         let tab1 = options.get_indentation(indentation_level + 1);
+        let return_type = match &self.return_type {
+            Some(rt) => format!(": {}", rt.recast(&new_options, indentation_level)),
+            None => String::new(),
+        };
         let body = self.body.recast(&new_options, indentation_level + 1);
-        format!("({param_list}) => {{\n{tab1}{body}\n{tab0}}}")
+
+        format!("({param_list}){return_type} {{\n{tab1}{body}\n{tab0}}}")
+    }
+}
+
+impl FnArgType {
+    pub fn recast(&self, _options: &FormatOptions, _indentation_level: usize) -> String {
+        "TODO".to_owned()
     }
 }
 

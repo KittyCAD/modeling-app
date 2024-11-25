@@ -941,25 +941,31 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
 }
 
 // Looks like
-// (arg0, arg1) => {
+// (arg0, arg1) {
 //     const x = arg0 + arg1;
 //     return x
 // }
 fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
+    fn return_type(i: TokenSlice) -> PResult<FnArgType> {
+        colon(i)?;
+        ignore_whitespace(i);
+        argument_type(i)
+    }
+
     let open = open_paren(i)?;
     let start = open.start;
     let params = parameters(i)?;
     close_paren(i)?;
     ignore_whitespace(i);
-    big_arrow(i)?;
+    let arrow = opt(big_arrow).parse_next(i)?;
     ignore_whitespace(i);
-    // Optional type arguments.
-    let return_type = opt(argument_type).parse_next(i)?;
+    // Optional return type.
+    let return_type = opt(return_type).parse_next(i)?;
     ignore_whitespace(i);
     open_brace(i)?;
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
-    Ok(Node::new(
+    let result = Node::new(
         FunctionExpression {
             params,
             body,
@@ -969,7 +975,18 @@ fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
         start,
         end,
         open.module_id,
-    ))
+    );
+
+    if let Some(arrow) = arrow {
+        ParseContext::warn(ParseError::with_suggestion(
+            arrow.as_source_range(),
+            Some(result.as_source_range()),
+            "Unnecessary `=>` in function declaration",
+            Some(""),
+        ));
+    }
+
+    Ok(result)
 }
 
 /// E.g. `person.name`
@@ -1543,6 +1560,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     let (kind, mut start, dec_end, module_id) = if let Some((kind, token)) = &decl_token {
         (*kind, token.start, token.end, token.module_id)
     } else {
+        // TODO warn on const
         (VariableKind::Const, id.start, id.end, id.module_id)
     };
     if let Some(token) = visibility_token {
@@ -1550,24 +1568,32 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     }
 
     ignore_whitespace(i);
-    equals(i)?;
-    // After this point, the parser is DEFINITELY parsing a variable declaration, because
-    // `fn`, `let`, `const` etc are all unambiguous. If you've parsed one of those tokens --
-    // and we certainly have because `kind` was parsed above -- then the following tokens
-    // MUST continue the variable declaration, otherwise the program is invalid.
-    //
-    // This means, from here until this function returns, any errors should be ErrMode::Cut,
-    // not ErrMode::Backtrack. Because the parser is definitely parsing a variable declaration.
-    // If there's an error, there's no point backtracking -- instead the parser should fail.
-    ignore_whitespace(i);
 
     let val = if kind == VariableKind::Fn {
-        function_expression
+        let eq = opt(equals).parse_next(i)?;
+        ignore_whitespace(i);
+
+        let val = function_expression
             .map(Box::new)
             .map(Expr::FunctionExpression)
-            .context(expected("a KCL function expression, like () => { return 1 }"))
-            .parse_next(i)
+            .context(expected("a KCL function expression, like () { return 1 }"))
+            .parse_next(i);
+
+        if let Some(t) = eq {
+            let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
+            ParseContext::warn(ParseError::with_suggestion(
+                t.as_source_range(),
+                Some(SourceRange([id.start, ctxt_end, module_id.as_usize()])),
+                "Unnecessary `=` in function declaration",
+                Some(""),
+            ));
+        }
+
+        val
     } else {
+        equals(i)?;
+        ignore_whitespace(i);
+
         expression
             .try_map(|val| {
                 // Function bodies can be used if and only if declaring a function.
@@ -2221,7 +2247,7 @@ mod tests {
 
     #[test]
     fn weird_program_unclosed_paren() {
-        let tokens = crate::token::lexer("fn firstPrime=(", ModuleId::default()).unwrap();
+        let tokens = crate::token::lexer("fn firstPrime(", ModuleId::default()).unwrap();
         let last = tokens.last().unwrap();
         let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
         let err = err.unwrap_parse_error();
@@ -2273,7 +2299,7 @@ mod tests {
 
     #[test]
     fn test_comments_in_function1() {
-        let test_program = r#"() => {
+        let test_program = r#"() {
             // comment 0
             const a = 1
             // comment 1
@@ -2295,7 +2321,7 @@ mod tests {
 
     #[test]
     fn test_comments_in_function2() {
-        let test_program = r#"() => {
+        let test_program = r#"() {
   const yo = { a = { b = { c = '123' } } } /* block
 comment */
 }"#;
@@ -2353,7 +2379,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_whitespace_in_function() {
-        let test_program = r#"() => {
+        let test_program = r#"() {
             return sg
             return sg
           }"#;
@@ -2364,7 +2390,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_empty_lines_in_function() {
-        let test_program = "() => {
+        let test_program = "() {
 
                 return 2
             }";
@@ -2387,14 +2413,14 @@ const mySk1 = startSketchAt([0, 0])"#;
                                             raw: "2".to_owned(),
                                             digest: None,
                                         },
-                                        32,
-                                        33,
+                                        29,
+                                        30,
                                         module_id,
                                     ))),
                                     digest: None,
                                 },
-                                25,
-                                33,
+                                22,
+                                30,
                                 module_id,
                             ))],
                             non_code_meta: NonCodeMeta {
@@ -2404,8 +2430,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                                         value: NonCodeValue::NewLine,
                                         digest: None
                                     },
-                                    7,
-                                    25,
+                                    4,
+                                    22,
                                     module_id,
                                 )],
                                 digest: None,
@@ -2413,15 +2439,15 @@ const mySk1 = startSketchAt([0, 0])"#;
                             shebang: None,
                             digest: None,
                         },
-                        7,
-                        47,
+                        4,
+                        44,
                         module_id,
                     ),
                     return_type: None,
                     digest: None,
                 },
                 0,
-                47,
+                44,
                 module_id,
             )
         );
@@ -2930,7 +2956,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_user_function() {
-        let input = "() => {
+        let input = "() {
             return 2
         }";
 
@@ -3171,7 +3197,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn assert_no_err(p: &str) -> (Node<Program>, ParseContext) {
         let result = crate::parser::top_level_parse(p);
         let result = result.0.unwrap();
-        assert!(result.1.errors.is_empty());
+        assert!(result.1.errors.is_empty(), "found: {:#?}", result.1.errors);
         (result.0.unwrap(), result.1)
     }
 
@@ -3575,7 +3601,7 @@ e
 
     #[test]
     fn test_keyword_ok_in_fn_args_return() {
-        let some_program_string = r#"fn thing = (param) => {
+        let some_program_string = r#"fn thing(param) {
     return true
 }
 
@@ -3726,6 +3752,25 @@ int(42.3)"#;
         let replaced = ctxt.warnings[1].apply_suggestion(some_program_string).unwrap();
         let replaced = ctxt.warnings[0].apply_suggestion(&replaced).unwrap();
         assert_eq!(replaced, "1.0\nround(42.3)");
+    }
+
+    #[test]
+    fn warn_fn_decl() {
+        let some_program_string = r#"fn foo = () => {
+    return 0
+}"#;
+        let (_, ctxt) = assert_no_err(some_program_string);
+        assert_eq!(ctxt.warnings.len(), 2);
+        let replaced = ctxt.warnings[0].apply_suggestion(some_program_string).unwrap();
+        let replaced = ctxt.warnings[1].apply_suggestion(&replaced).unwrap();
+        // Note the whitespace here is bad, but we're just testing the suggestion spans really. In
+        // real life we might reformat after applying suggestions.
+        assert_eq!(
+            replaced,
+            r#"fn foo  ()  {
+    return 0
+}"#
+        );
     }
 }
 

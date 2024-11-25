@@ -3270,7 +3270,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_return_type_on_functions() {
-        let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
+        let some_program_string = r#"fn thing(): {thing: number, things: string[], more?: string} {
     return 1
 }"#;
         let module_id = ModuleId::default();
@@ -3296,8 +3296,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "thing".to_owned(),
                                 digest: None
                             },
+                            13,
                             18,
-                            23,
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
@@ -3310,8 +3310,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "things".to_owned(),
                                 digest: None
                             },
-                            33,
-                            39,
+                            28,
+                            34,
                             module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
@@ -3324,8 +3324,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "more".to_owned(),
                                 digest: None
                             },
-                            51,
-                            55,
+                            46,
+                            50,
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
