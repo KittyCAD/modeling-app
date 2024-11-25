@@ -36,7 +36,7 @@ measurements = "0.11.0"
 miette = "7.2.0"
 mime_guess = "2.0.5"
 parse-display = "0.9.1"
-pyo3 = { version = "0.22.6", optional = true }
+pyo3 = { version = "0.23.2", optional = true }
 reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls"] }
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
