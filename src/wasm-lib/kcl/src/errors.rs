@@ -4,6 +4,26 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{ast::types::ModuleId, executor::SourceRange, lsp::IntoDiagnostic};
 
+/// How did the KCL execution fail
+#[derive(thiserror::Error, Debug)]
+pub enum ExecError {
+    #[error("{0}")]
+    Kcl(#[from] crate::KclError),
+    #[error("Could not connect to engine: {0}")]
+    Connection(#[from] ConnectionError),
+    #[error("PNG snapshot could not be decoded: {0}")]
+    BadPng(String),
+}
+
+/// How did KCL client fail to connect to the engine
+#[derive(thiserror::Error, Debug)]
+pub enum ConnectionError {
+    #[error("Could not create a Zoo client: {0}")]
+    CouldNotMakeClient(anyhow::Error),
+    #[error("Could not establish connection to engine: {0}")]
+    Establishing(anyhow::Error),
+}
+
 #[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
 #[serde(tag = "kind", rename_all = "snake_case")]

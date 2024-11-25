@@ -42,7 +42,7 @@ pub use ast::modify::modify_ast_for_sketch;
 pub use ast::types::{FormatOptions, ModuleId};
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
-pub use errors::KclError;
+pub use errors::{ConnectionError, ExecError, KclError};
 pub use executor::{ExecState, ExecutorContext, ExecutorSettings, SourceRange};
 pub use lsp::copilot::Backend as CopilotLspBackend;
 pub use lsp::kcl::Backend as KclLspBackend;

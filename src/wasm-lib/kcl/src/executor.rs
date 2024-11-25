@@ -34,7 +34,7 @@ use crate::{
     fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{args::Arg, StdLib},
-    Program,
+    ExecError, Program,
 };
 
 /// State for executing a program.
@@ -2179,12 +2179,16 @@ impl ExecutorContext {
         &self,
         program: &Program,
         exec_state: &mut ExecState,
-    ) -> Result<TakeSnapshot> {
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
         self.execute_and_prepare(program, exec_state).await
     }
 
     /// Execute the program, return the interpreter and outputs.
-    pub async fn execute_and_prepare(&self, program: &Program, exec_state: &mut ExecState) -> Result<TakeSnapshot> {
+    pub async fn execute_and_prepare(
+        &self,
+        program: &Program,
+        exec_state: &mut ExecState,
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
         self.run(program, exec_state).await?;
 
         // Zoom to fit.
@@ -2216,7 +2220,9 @@ impl ExecutorContext {
             modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
         } = resp
         else {
-            anyhow::bail!("Unexpected response from engine: {:?}", resp);
+            return Err(ExecError::BadPng(format!(
+                "Instead of a TakeSnapshot response, the engine returned {resp:?}"
+            )));
         };
         Ok(contents)
     }
