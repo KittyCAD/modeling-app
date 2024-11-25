@@ -55,7 +55,7 @@ pub enum KclError {
 }
 
 #[derive(thiserror::Error, Debug)]
-#[error("{error}")]
+#[error("{}", self.error.get_message())]
 pub struct Report {
     pub error: KclError,
     pub kcl_source: String,
@@ -64,7 +64,7 @@ pub struct Report {
 
 impl miette::Diagnostic for Report {
     fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
-        let error_string = match self.error {
+        let family = match self.error {
             KclError::Lexical(_) => "Lexical",
             KclError::Syntax(_) => "Syntax",
             KclError::Semantic(_) => "Semantic",
@@ -78,6 +78,7 @@ impl miette::Diagnostic for Report {
             KclError::Engine(_) => "Engine",
             KclError::Internal(_) => "Internal",
         };
+        let error_string = format!("KCL {family} error");
         Some(Box::new(error_string))
     }
 
