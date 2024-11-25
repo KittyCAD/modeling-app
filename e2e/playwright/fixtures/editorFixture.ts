@@ -150,10 +150,12 @@ export class EditorFixture {
   scrollToText(text: string) {
     return this.page.evaluate((scrollToText: string) => {
       // editorManager is available on the window object.
-      let index = editorManager._editorView.docView.view.state.doc.toString().indexOf(scrollToText)
+      let index = editorManager._editorView.docView.view.state.doc
+        .toString()
+        .indexOf(scrollToText)
       editorManager._editorView.dispatch({
-        selection: { 
-          anchor: index
+        selection: {
+          anchor: index,
         },
         scrollIntoView: true,
       })

@@ -156,8 +156,8 @@ async function openKclCodePanel(page: Page) {
   await page.evaluate(() => {
     // editorManager is available on the window object.
     editorManager._editorView.dispatch({
-      selection: { 
-        anchor: editorManager._editorView.docView.length
+      selection: {
+        anchor: editorManager._editorView.docView.length,
       },
       scrollIntoView: true,
     })
