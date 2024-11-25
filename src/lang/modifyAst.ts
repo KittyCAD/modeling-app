@@ -361,8 +361,8 @@ export function revolveSketch(
       pathToRevolveArg: PathToNode
     }
   | Error {
-  const _node = structuredClone(node)
-  const _node1 = getNodeFromPath(_node, pathToNode)
+  let clonedAST = structuredClone(node)
+  const _node1 = getNodeFromPath(clonedAST, pathToNode)
   if (err(_node1)) return _node1
 
   // testing code
@@ -389,16 +389,22 @@ export function revolveSketch(
 
   // TODO Kevin: add a tag.
   // This adds a tag, need to find a tag if one already exists.
-  const tagResult = mutateAstWithTagForSketchSegment(_node, pathToAxisSelection)
+  // Does this mutate brick something?
+  const tagResult = mutateAstWithTagForSketchSegment(
+    clonedAST,
+    pathToAxisSelection
+  )
   if (err(tagResult)) return tagResult
-  const { tag } = tagResult
+  const { tag, modifiedAst } = tagResult
+
+  console.log('my tag!', tag)
 
   /* Original Code */
   const { node: sketchExpression } = _node1
 
   // determine if sketchExpression is in a pipeExpression or not
   const _node2 = getNodeFromPath<PipeExpression>(
-    _node,
+    clonedAST,
     pathToNode,
     'PipeExpression'
   )
@@ -408,7 +414,7 @@ export function revolveSketch(
   const isInPipeExpression = pipeExpression.type === 'PipeExpression'
 
   const _node3 = getNodeFromPath<VariableDeclarator>(
-    _node,
+    clonedAST,
     pathToNode,
     'VariableDeclarator'
   )
@@ -418,8 +424,7 @@ export function revolveSketch(
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      // axis: createLiteral(axis),
-      axis: createLiteral('Y'),
+      axis: createLiteral('dog'),
     }),
     createIdentifier(variableDeclarator.id.name),
   ])
@@ -442,7 +447,7 @@ export function revolveSketch(
     ]
 
     return {
-      modifiedAst: _node,
+      modifiedAst: clonedAST,
       pathToNode,
       pathToRevolveArg,
     }
@@ -457,7 +462,7 @@ export function revolveSketch(
   const sketchIndexInBody = pathToDecleration[sketchIndexInPathToNode][0]
   if (typeof sketchIndexInBody !== 'number')
     return new Error('expected sketchIndexInBody to be a number')
-  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
+  clonedAST.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
@@ -469,7 +474,7 @@ export function revolveSketch(
     [0, 'index'],
   ]
   return {
-    modifiedAst: _node,
+    modifiedAst: clonedAST,
     pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
     pathToRevolveArg,
   }

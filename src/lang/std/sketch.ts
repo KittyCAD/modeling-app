@@ -135,10 +135,10 @@ const constrainInfo = (
     g === 'singleValue'
       ? { type: 'singleValue' }
       : typeof g === 'number'
-      ? { type: 'arrayItem', index: g }
-      : typeof g === 'string'
-      ? { type: 'objectProperty', key: g }
-      : undefined,
+        ? { type: 'arrayItem', index: g }
+        : typeof g === 'string'
+          ? { type: 'objectProperty', key: g }
+          : undefined,
   pathToNode: e,
   stdLibFnName: f,
 })
@@ -155,7 +155,7 @@ const commonConstraintInfoHelper = (
     {
       arrayInput?: 0 | 1
       objInput?: ObjectPropertyInput<any>['key']
-    }
+    },
   ],
   code: string,
   pathToNode: PathToNode
@@ -2275,10 +2275,11 @@ function isAngleLiteral(lineArugement: Expr): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? isLiteralArrayOrStatic(
-        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-      )
-    : false
+      ? isLiteralArrayOrStatic(
+          lineArugement.properties.find(({ key }) => key.name === 'angle')
+            ?.value
+        )
+      : false
 }
 
 type addTagFn = (
