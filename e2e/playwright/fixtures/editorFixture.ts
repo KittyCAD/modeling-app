@@ -147,4 +147,16 @@ export class EditorFixture {
   openPane() {
     return openPane(this.page, this.paneButtonTestId)
   }
+  scrollToText(text: string) {
+    return this.page.evaluate((scrollToText: string) => {
+      // editorManager is available on the window object.
+      let index = editorManager._editorView.docView.view.state.doc.toString().indexOf(scrollToText)
+      editorManager._editorView.dispatch({
+        selection: { 
+          anchor: index
+        },
+        scrollIntoView: true,
+      })
+    }, text)
+  }
 }
