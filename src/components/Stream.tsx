@@ -276,7 +276,9 @@ export const Stream = () => {
    * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
    * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
    */
-  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (e) => {
+  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (
+    e
+  ) => {
     if (!isNetworkOkay) return
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
