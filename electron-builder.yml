@@ -63,10 +63,6 @@ linux:
       arch:
         - x64
         - arm64
-    - target: deb
-      arch:
-        - x64
-        - arm64
   fileAssociations:
     - ext: kcl
       name: kcl
