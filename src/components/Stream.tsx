@@ -17,6 +17,8 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
+import { reportRejection } from 'lib/trap'
+import { Artifact } from 'lang/std/artifactGraph'
 
 enum StreamState {
   Playing = 'playing',
@@ -270,12 +272,46 @@ export const Stream = () => {
     }
   }
 
+  /**
+   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
+   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   */
+  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isNetworkOkay) return
+    if (!videoRef.current) return
+    if (state.matches('Sketch')) return
+    if (state.matches({ idle: 'showPlanes' })) return
+    if (sceneInfra.camControls.wasDragging === true) return
+    if (btnName(e.nativeEvent).left) {
+      sendSelectEventToEngine(e, videoRef.current)
+        .then(() => {
+          const maybeSelectedSketch =
+            state.context.selectionRanges.graphSelections
+          const selectionArtifactType = maybeSelectedSketch[0]?.artifact?.type
+          const sketchArtifactTypes: Artifact['type'][] = [
+            'path',
+            'solid2D',
+            'segment',
+          ]
+          if (
+            maybeSelectedSketch.length === 1 &&
+            selectionArtifactType &&
+            sketchArtifactTypes.includes(selectionArtifactType)
+          ) {
+            sceneInfra.modelingSend({ type: 'Enter sketch' })
+          }
+        })
+        .catch(reportRejection)
+    }
+  }
+
   return (
     <div
       className="absolute inset-0 z-0"
       id="stream"
       data-testid="stream"
       onClick={handleMouseUp}
+      onDoubleClick={enterSketchModeIfSelectingSketch}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
