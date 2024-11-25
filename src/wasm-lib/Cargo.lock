@@ -737,7 +737,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.30"
+version = "0.1.31"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1675,7 +1675,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.24"
+version = "0.2.26"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1739,7 +1739,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.16"
+version = "0.1.17"
 dependencies = [
  "anyhow",
  "hyper 0.14.30",
@@ -1806,9 +1806,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.76"
+version = "0.2.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2394fe2b28a1c6bd524dec1dbcd7e839c2782a6ecc743085e122cde77ee19cfa"
+checksum = "3b77259b37acafa360d98af27431ac394bc8899eeed7037513832ddbee856811"
 dependencies = [
  "anyhow",
  "chrono",
