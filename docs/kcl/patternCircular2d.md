@@ -35,10 +35,10 @@ exampleSketch = startSketchOn('XZ')
   |> line([0, -5], %)
   |> close(%)
   |> patternCircular2d({
-       center: [0, 0],
-       instances: 13,
-       arcDegrees: 360,
-       rotateDuplicates: true
+       center = [0, 0],
+       instances = 13,
+       arcDegrees = 360,
+       rotateDuplicates = true
      }, %)
 
 example = extrude(1, exampleSketch)

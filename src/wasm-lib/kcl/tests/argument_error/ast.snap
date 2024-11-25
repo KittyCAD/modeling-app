@@ -1,6 +1,8 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing argument_error.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -25,7 +27,7 @@ description: Result of parsing argument_error.kcl
                       "start": 25,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     "end": 26,
                     "start": 18,
@@ -82,7 +84,7 @@ description: Result of parsing argument_error.kcl
                   "start": 38,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0
+                  "value": 0.0
                 },
                 {
                   "end": 42,
@@ -90,7 +92,7 @@ description: Result of parsing argument_error.kcl
                   "start": 41,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1
+                  "value": 1.0
                 }
               ],
               "end": 43,

@@ -1718,8 +1718,7 @@ impl From<Node<Literal>> for KclValue {
     fn from(literal: Node<Literal>) -> Self {
         let meta = vec![literal.metadata()];
         match literal.inner.value {
-            LiteralValue::IInteger(value) => KclValue::Int { value, meta },
-            LiteralValue::Fractional(value) => KclValue::Number { value, meta },
+            LiteralValue::Number(value) => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }

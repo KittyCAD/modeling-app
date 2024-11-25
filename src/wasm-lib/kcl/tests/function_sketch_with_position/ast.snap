@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing function_sketch_with_position.kcl
 snapshot_kind: text
 ---
@@ -92,7 +93,7 @@ snapshot_kind: text
                                       "start": 98,
                                       "type": "Literal",
                                       "type": "Literal",
-                                      "value": 0
+                                      "value": 0.0
                                     },
                                     {
                                       "end": 102,
@@ -143,7 +144,7 @@ snapshot_kind: text
                                       "start": 124,
                                       "type": "Literal",
                                       "type": "Literal",
-                                      "value": 0
+                                      "value": 0.0
                                     }
                                   ],
                                   "end": 126,
@@ -180,7 +181,7 @@ snapshot_kind: text
                                       "start": 144,
                                       "type": "Literal",
                                       "type": "Literal",
-                                      "value": 0
+                                      "value": 0.0
                                     },
                                     {
                                       "argument": {
@@ -395,7 +396,7 @@ snapshot_kind: text
                       "start": 224,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0
+                      "value": 0.0
                     },
                     {
                       "end": 228,
@@ -403,7 +404,7 @@ snapshot_kind: text
                       "start": 227,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0
+                      "value": 0.0
                     }
                   ],
                   "end": 229,
@@ -417,7 +418,7 @@ snapshot_kind: text
                   "start": 231,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 3
+                  "value": 3.0
                 },
                 {
                   "end": 235,
@@ -425,7 +426,7 @@ snapshot_kind: text
                   "start": 234,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 6
+                  "value": 6.0
                 },
                 {
                   "end": 239,
@@ -433,7 +434,7 @@ snapshot_kind: text
                   "start": 237,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 10
+                  "value": 10.0
                 }
               ],
               "callee": {

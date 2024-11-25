@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing non_string_key_of_object.kcl
 snapshot_kind: text
 ---
@@ -9,7 +10,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 18,
+            "end": 19,
             "id": {
               "end": 3,
               "name": "obj",
@@ -17,10 +18,10 @@ snapshot_kind: text
               "type": "Identifier"
             },
             "init": {
-              "end": 18,
+              "end": 19,
               "properties": [
                 {
-                  "end": 16,
+                  "end": 17,
                   "key": {
                     "end": 11,
                     "name": "key",
@@ -30,12 +31,12 @@ snapshot_kind: text
                   "start": 8,
                   "type": "ObjectProperty",
                   "value": {
-                    "end": 16,
+                    "end": 17,
                     "raw": "123",
-                    "start": 13,
+                    "start": 14,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 123
+                    "value": 123.0
                   }
                 }
               ],
@@ -47,7 +48,7 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 18,
+        "end": 19,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -56,47 +57,47 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 31,
+            "end": 32,
             "id": {
-              "end": 22,
+              "end": 23,
               "name": "num",
-              "start": 19,
+              "start": 20,
               "type": "Identifier"
             },
             "init": {
               "computed": false,
-              "end": 31,
+              "end": 32,
               "object": {
-                "end": 28,
+                "end": 29,
                 "name": "obj",
-                "start": 25,
+                "start": 26,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 30,
+                "end": 31,
                 "raw": "3",
-                "start": 29,
+                "start": 30,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
-              "start": 25,
+              "start": 26,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
-            "start": 19,
+            "start": 20,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 31,
+        "end": 32,
         "kind": "const",
-        "start": 19,
+        "start": 20,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 32,
+    "end": 33,
     "start": 0
   }
 }

@@ -25,7 +25,7 @@ test(
     await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
       await moveToCircle()
       const circleSnippet =
-        'circle({ center: [318.33, 168.1], radius: 182.8 }, %)'
+        'circle({ center = [318.33, 168.1], radius = 182.8 }, %)'
       await editor.expectState({
         activeLines: [],
         highlightedCode: circleSnippet,
@@ -168,7 +168,7 @@ test.describe('verify sketch on chamfer works', () => {
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
         beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
-      chamfer({length:30,tags:[
+      chamfer({length = 30,tags = [
       seg01,
       getNextAdjacentEdge(yo),
       getNextAdjacentEdge(seg02),
@@ -199,8 +199,8 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA001) - 90,
          217.26
        ], %, $seg01)chamfer({
-         length: 30,
-         tags: [
+         length = 30,
+         tags = [
            seg01,
            getNextAdjacentEdge(yo),
            getNextAdjacentEdge(seg02)
@@ -227,8 +227,8 @@ test.describe('verify sketch on chamfer works', () => {
         cameraPos: { x: -6200, y: 1500, z: 6200 },
         cameraTarget: { x: 8300, y: 1100, z: 4800 },
         beforeChamferSnippet: `angledLine([0, 268.43], %, $rectangleSegmentA001)chamfer({
-         length: 30,
-         tags: [
+         length = 30,
+         tags = [
            getNextAdjacentEdge(yo),
            getNextAdjacentEdge(seg02)
          ]
@@ -254,8 +254,8 @@ test.describe('verify sketch on chamfer works', () => {
         cameraPos: { x: -1100, y: -7700, z: 1600 },
         cameraTarget: { x: 1450, y: 670, z: 4000 },
         beforeChamferSnippet: `chamfer({
-         length: 30,
-         tags: [getNextAdjacentEdge(yo)]
+         length = 30,
+         tags = [getNextAdjacentEdge(yo)]
        }, %)`,
         afterChamferSelectSnippet:
           'sketch005 = startSketchOn(extrude001, seg06)',
@@ -292,17 +292,17 @@ test.describe('verify sketch on chamfer works', () => {
       |> close(%)
     extrude001 = extrude(100, sketch001)
       |> chamfer({
-           length: 30,
-           tags: [getOppositeEdge(seg01)]
+           length = 30,
+           tags = [getOppositeEdge(seg01)]
          }, %, $seg03)
-      |> chamfer({ length: 30, tags: [seg01] }, %, $seg04)
+      |> chamfer({ length = 30, tags = [seg01] }, %, $seg04)
       |> chamfer({
-           length: 30,
-           tags: [getNextAdjacentEdge(seg02)]
+           length = 30,
+           tags = [getNextAdjacentEdge(seg02)]
          }, %, $seg05)
       |> chamfer({
-           length: 30,
-           tags: [getNextAdjacentEdge(yo)]
+           length = 30,
+           tags = [getNextAdjacentEdge(yo)]
          }, %, $seg06)
     sketch005 = startSketchOn(extrude001, seg06)
       |> startProfileAt([-23.43, 19.69], %)
@@ -383,7 +383,7 @@ test.describe('verify sketch on chamfer works', () => {
         cameraPos: { x: 16020, y: -2000, z: 10500 },
         cameraTarget: { x: -150, y: -4500, z: -80 },
         beforeChamferSnippet: `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)
-      chamfer({length:30,tags:[
+      chamfer({length=30,tags=[
       seg01,
       getNextAdjacentEdge(yo),
       getNextAdjacentEdge(seg02),
@@ -421,12 +421,12 @@ test.describe('verify sketch on chamfer works', () => {
   |> close(%)
 extrude001 = extrude(100, sketch001)
 chamf = chamfer({
-       length: 30,
-       tags: [getOppositeEdge(seg01)]
+       length = 30,
+       tags = [getOppositeEdge(seg01)]
      }, extrude001, $seg03)
   |> chamfer({
-       length: 30,
-       tags: [
+       length = 30,
+       tags = [
          seg01,
          getNextAdjacentEdge(yo),
          getNextAdjacentEdge(seg02)

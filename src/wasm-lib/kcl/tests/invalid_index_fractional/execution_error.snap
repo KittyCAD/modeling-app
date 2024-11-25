@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 103
 description: Error from executing invalid_index_fractional.kcl
 snapshot_kind: text
 ---
-semantic: KclErrorDetails { source_ranges: [SourceRange([20, 28, 0])], message: "Only strings or ints (>= 0) can be properties/indexes" }
+semantic: KclErrorDetails { source_ranges: [SourceRange([20, 28, 0])], message: "1.2 is not a valid index, indices must be whole numbers >= 0" }

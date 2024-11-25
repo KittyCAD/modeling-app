@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing computed_var.kcl
 snapshot_kind: text
 ---
@@ -24,7 +25,7 @@ snapshot_kind: text
                   "start": 44,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0
+                  "value": 0.0
                 },
                 {
                   "end": 48,
@@ -32,7 +33,7 @@ snapshot_kind: text
                   "start": 47,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0
+                  "value": 0.0
                 },
                 {
                   "end": 51,
@@ -40,7 +41,7 @@ snapshot_kind: text
                   "start": 50,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0
+                  "value": 0.0
                 },
                 {
                   "end": 55,
@@ -48,7 +49,7 @@ snapshot_kind: text
                   "start": 53,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 10
+                  "value": 10.0
                 }
               ],
               "end": 56,
@@ -82,7 +83,7 @@ snapshot_kind: text
               "start": 61,
               "type": "Literal",
               "type": "Literal",
-              "value": 3
+              "value": 3.0
             },
             "start": 57,
             "type": "VariableDeclarator"
@@ -152,7 +153,7 @@ snapshot_kind: text
               "start": 94,
               "type": "Literal",
               "type": "Literal",
-              "value": 10
+              "value": 10.0
             },
             {
               "end": 106,
@@ -218,7 +219,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 151,
+            "end": 153,
             "id": {
               "end": 130,
               "name": "obj",
@@ -226,10 +227,10 @@ snapshot_kind: text
               "type": "Identifier"
             },
             "init": {
-              "end": 151,
+              "end": 153,
               "properties": [
                 {
-                  "end": 141,
+                  "end": 142,
                   "key": {
                     "end": 138,
                     "name": "foo",
@@ -239,31 +240,31 @@ snapshot_kind: text
                   "start": 135,
                   "type": "ObjectProperty",
                   "value": {
-                    "end": 141,
+                    "end": 142,
                     "raw": "1",
-                    "start": 140,
+                    "start": 141,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1
+                    "value": 1.0
                   }
                 },
                 {
-                  "end": 149,
+                  "end": 151,
                   "key": {
-                    "end": 146,
+                    "end": 147,
                     "name": "bar",
-                    "start": 143,
+                    "start": 144,
                     "type": "Identifier"
                   },
-                  "start": 143,
+                  "start": 144,
                   "type": "ObjectProperty",
                   "value": {
-                    "end": 149,
+                    "end": 151,
                     "raw": "0",
-                    "start": 148,
+                    "start": 150,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0
+                    "value": 0.0
                   }
                 }
               ],
@@ -275,7 +276,7 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 151,
+        "end": 153,
         "kind": "const",
         "start": 127,
         "type": "VariableDeclaration",
@@ -284,98 +285,98 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 164,
+            "end": 166,
             "id": {
-              "end": 155,
+              "end": 157,
               "name": "one",
-              "start": 152,
+              "start": 154,
               "type": "Identifier"
             },
             "init": {
               "computed": true,
-              "end": 164,
+              "end": 166,
               "object": {
-                "end": 161,
+                "end": 163,
                 "name": "obj",
-                "start": 158,
+                "start": 160,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 163,
+                "end": 165,
                 "name": "p",
-                "start": 162,
+                "start": 164,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 158,
+              "start": 160,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
-            "start": 152,
+            "start": 154,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 164,
+        "end": 166,
         "kind": "const",
-        "start": 152,
+        "start": 154,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 204,
+        "end": 206,
         "expression": {
           "arguments": [
             {
-              "end": 181,
+              "end": 183,
               "name": "one",
-              "start": 178,
+              "start": 180,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 184,
+              "end": 186,
               "raw": "1",
-              "start": 183,
+              "start": 185,
               "type": "Literal",
               "type": "Literal",
-              "value": 1
+              "value": 1.0
             },
             {
-              "end": 195,
+              "end": 197,
               "raw": "0.0000001",
-              "start": 186,
+              "start": 188,
               "type": "Literal",
               "type": "Literal",
               "value": 0.0000001
             },
             {
-              "end": 203,
+              "end": 205,
               "raw": "\"oops\"",
-              "start": 197,
+              "start": 199,
               "type": "Literal",
               "type": "Literal",
               "value": "oops"
             }
           ],
           "callee": {
-            "end": 177,
+            "end": 179,
             "name": "assertEqual",
-            "start": 166,
+            "start": 168,
             "type": "Identifier"
           },
-          "end": 204,
+          "end": 206,
           "optional": false,
-          "start": 166,
+          "start": 168,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 166,
+        "start": 168,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 205,
+    "end": 207,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
@@ -400,8 +401,8 @@ snapshot_kind: text
         ],
         "6": [
           {
-            "end": 166,
-            "start": 164,
+            "end": 168,
+            "start": 166,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

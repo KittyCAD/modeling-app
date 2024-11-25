@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing riddle_small.kcl
 snapshot_kind: text
 ---
@@ -22,7 +23,7 @@ snapshot_kind: text
               "start": 9,
               "type": "Literal",
               "type": "Literal",
-              "value": 41803
+              "value": 41803.0
             },
             "start": 0,
             "type": "VariableDeclarator"
@@ -80,7 +81,7 @@ snapshot_kind: text
                           "start": 55,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 12345
+                          "value": 12345.0
                         },
                         "start": 42,
                         "type": "BinaryExpression",
@@ -93,7 +94,7 @@ snapshot_kind: text
                         "start": 64,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 214748
+                        "value": 214748.0
                       },
                       "start": 42,
                       "type": "BinaryExpression",
@@ -151,7 +152,7 @@ snapshot_kind: text
               "start": 79,
               "type": "Literal",
               "type": "Literal",
-              "value": 205804
+              "value": 205804.0
             },
             "start": 74,
             "type": "VariableDeclarator"
@@ -179,7 +180,7 @@ snapshot_kind: text
               "start": 91,
               "type": "Literal",
               "type": "Literal",
-              "value": 71816
+              "value": 71816.0
             },
             "start": 86,
             "type": "VariableDeclarator"
@@ -209,7 +210,7 @@ snapshot_kind: text
                 "start": 102,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 35
+                "value": 35.0
               },
               "operator": "-",
               "right": {
@@ -243,7 +244,7 @@ snapshot_kind: text
                   "start": 116,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 70
+                  "value": 70.0
                 },
                 "start": 108,
                 "type": "BinaryExpression",
@@ -281,7 +282,7 @@ snapshot_kind: text
                 "start": 125,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 35
+                "value": 35.0
               },
               "operator": "-",
               "right": {
@@ -315,7 +316,7 @@ snapshot_kind: text
                   "start": 139,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 70
+                  "value": 70.0
                 },
                 "start": 131,
                 "type": "BinaryExpression",
@@ -423,7 +424,7 @@ snapshot_kind: text
                           "start": 211,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1
+                          "value": 1.0
                         },
                         {
                           "end": 215,
@@ -431,7 +432,7 @@ snapshot_kind: text
                           "start": 214,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 216,
@@ -468,7 +469,7 @@ snapshot_kind: text
                           "start": 232,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         },
                         {
                           "argument": {
@@ -477,7 +478,7 @@ snapshot_kind: text
                             "start": 236,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 1
+                            "value": 1.0
                           },
                           "end": 237,
                           "operator": "-",
@@ -521,7 +522,7 @@ snapshot_kind: text
                             "start": 255,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 1
+                            "value": 1.0
                           },
                           "end": 256,
                           "operator": "-",
@@ -535,7 +536,7 @@ snapshot_kind: text
                           "start": 258,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0
+                          "value": 0.0
                         }
                       ],
                       "end": 260,
@@ -591,7 +592,7 @@ snapshot_kind: text
                       "start": 292,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1
+                      "value": 1.0
                     },
                     {
                       "end": 296,
