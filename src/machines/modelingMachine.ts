@@ -34,11 +34,8 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import {
-  deleteFromSelection,
-  extrudeSketch,
-  revolveSketch,
-} from 'lang/modifyAst'
+import { deleteFromSelection, extrudeSketch } from 'lang/modifyAst'
+import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import { applyFilletToSelection } from 'lang/modifyAst/addFillet'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
