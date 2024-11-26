@@ -1020,6 +1020,20 @@ impl From<[usize; 3]> for SourceRange {
     }
 }
 
+impl From<&SourceRange> for miette::SourceSpan {
+    fn from(source_range: &SourceRange) -> Self {
+        let length = source_range.end() - source_range.start();
+        let start = miette::SourceOffset::from(source_range.start());
+        Self::new(start, length)
+    }
+}
+
+impl From<SourceRange> for miette::SourceSpan {
+    fn from(source_range: SourceRange) -> Self {
+        Self::from(&source_range)
+    }
+}
+
 impl SourceRange {
     /// Create a new source range.
     pub fn new(start: usize, end: usize, module_id: ModuleId) -> Self {
@@ -3177,6 +3191,7 @@ let w = f() + f()
                     inner: crate::ast::types::Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        shebang: None,
                         digest: None,
                     },
                     start: 0,

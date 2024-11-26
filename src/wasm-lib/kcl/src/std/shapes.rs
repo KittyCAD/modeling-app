@@ -130,7 +130,7 @@ async fn inner_circle(
         },
         radius: data.radius,
         center: data.center,
-        ccw: angle_start.to_degrees() < angle_end.to_degrees(),
+        ccw: angle_start < angle_end,
     };
 
     let mut new_sketch = sketch.clone();
