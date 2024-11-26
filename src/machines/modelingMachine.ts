@@ -563,6 +563,9 @@ export const modelingMachine = setup({
           ? event.data.tool
           : 'none',
     }),
+    'reset selections': assign({
+      selectionRanges: { graphSelections: [], otherSelections: [] },
+    }),
     'enter sketching mode': assign({ currentMode: 'sketching' }),
     'enter modeling mode': assign({ currentMode: 'modeling' }),
     'set sketchMetadata from pathToNode': assign(
@@ -2182,7 +2185,7 @@ export const modelingMachine = setup({
             },
           ],
 
-          entry: 'assign tool in context',
+          entry: ['assign tool in context', 'reset selections'],
         },
         'Circle tool': {
           on: {

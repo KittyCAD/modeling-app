@@ -1,4 +1,4 @@
-use std::{any::type_name, collections::HashMap, num::NonZeroU32};
+use std::{any::type_name, num::NonZeroU32};
 
 use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
@@ -11,6 +11,7 @@ use crate::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
         SolidSet, SourceRange, TagIdentifier,
     },
+    kcl_value::KclObjectFields,
     std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
 };
 
@@ -1169,7 +1170,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         }
         // Case 2: custom plane
         let obj = arg.as_object()?;
-        let_field_of!(obj, plane, &std::collections::HashMap<String, KclValue>);
+        let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
         let x_axis = plane
             .get("xAxis")
@@ -1359,7 +1360,7 @@ impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
         }
         // Case 2: custom planes.
         let obj = arg.as_object()?;
-        let_field_of!(obj, custom, &HashMap<String, KclValue>);
+        let_field_of!(obj, custom, &KclObjectFields);
         let_field_of!(custom, origin);
         let_field_of!(custom, axis);
         Some(Self::Custom { axis, origin })
@@ -1419,7 +1420,7 @@ impl<'a> FromKclValue<'a> for i64 {
 }
 
 impl<'a> FromKclValue<'a> for &'a str {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<&'a str> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::String { value, meta: _ } = arg else {
             return None;
         };
@@ -1427,8 +1428,8 @@ impl<'a> FromKclValue<'a> for &'a str {
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a HashMap<String, KclValue> {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<&'a HashMap<String, KclValue>> {
+impl<'a> FromKclValue<'a> for &'a KclObjectFields {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Object { value, meta: _ } = arg else {
             return None;
         };
