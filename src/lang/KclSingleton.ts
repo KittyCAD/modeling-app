@@ -23,6 +23,7 @@ import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -281,7 +282,7 @@ export class KclManager {
       this.lints = await lintAst({ ast: ast })
 
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
-      defaultSelectionFilter(execState.memory, this.engineCommandManager)
+      setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
 
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
@@ -568,8 +569,13 @@ export class KclManager {
     }
     return Promise.all(thePromises)
   }
+  /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter() {
-    defaultSelectionFilter(this.programMemory, this.engineCommandManager)
+    setSelectionFilterToDefault(this.programMemory, this.engineCommandManager)
+  }
+  /** TODO: this function is hiding unawaited asynchronous work */
+  setSelectionFilter(filter: EntityType_type[]) {
+    setSelectionFilter(filter, this.engineCommandManager)
   }
 
   /**
@@ -591,18 +597,35 @@ export class KclManager {
   }
 }
 
-function defaultSelectionFilter(
+const defaultSelectionFilter: EntityType_type[] = [
+  'face',
+  'edge',
+  'solid2d',
+  'curve',
+  'object',
+]
+
+/** TODO: This function is not synchronous but is currently treated as such */
+function setSelectionFilterToDefault(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  programMemory.hasSketchOrSolid() &&
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'set_selection_filter',
-        filter: ['face', 'edge', 'solid2d', 'curve'],
-      },
-    })
+  setSelectionFilter(defaultSelectionFilter, engineCommandManager)
+}
+
+/** TODO: This function is not synchronous but is currently treated as such */
+function setSelectionFilter(
+  filter: EntityType_type[],
+  engineCommandManager: EngineCommandManager
+) {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'set_selection_filter',
+      filter,
+    },
+  })
 }

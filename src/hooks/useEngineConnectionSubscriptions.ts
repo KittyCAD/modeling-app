@@ -169,6 +169,7 @@ export function useEngineConnectionSubscriptions() {
                     pathToNode: artifact.codeRef.pathToNode,
                   },
                 })
+                return
               }
 
               // Artifact is likely an extrusion face

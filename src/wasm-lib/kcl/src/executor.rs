@@ -197,24 +197,17 @@ pub struct Environment {
     parent: Option<EnvironmentRef>,
 }
 
+const NO_META: Vec<Metadata> = Vec::new();
+
 impl Environment {
     pub fn root() -> Self {
         Self {
             // Prelude
             bindings: HashMap::from([
-                ("ZERO".to_string(), KclValue::from_number(0.0, Default::default())),
-                (
-                    "QUARTER_TURN".to_string(),
-                    KclValue::from_number(90.0, Default::default()),
-                ),
-                (
-                    "HALF_TURN".to_string(),
-                    KclValue::from_number(180.0, Default::default()),
-                ),
-                (
-                    "THREE_QUARTER_TURN".to_string(),
-                    KclValue::from_number(270.0, Default::default()),
-                ),
+                ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
+                ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
+                ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
+                ("THREE_QUARTER_TURN".to_string(), KclValue::from_number(270.0, NO_META)),
             ]),
             parent: None,
         }

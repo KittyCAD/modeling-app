@@ -17,6 +17,7 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 import { reportRejection } from 'lib/trap'
 import { Artifact } from 'lang/std/artifactGraph'
 
@@ -32,6 +33,7 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send } = useModelingContext()
+  const { commandBarState } = useCommandsContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
@@ -262,7 +264,15 @@ export const Stream = () => {
     if (!videoRef.current) return
     // If we're in sketch mode, don't send a engine-side select event
     if (state.matches('Sketch')) return
-    if (state.matches({ idle: 'showPlanes' })) return
+    // Only respect default plane selection if we're on a selection command argument
+    if (
+      state.matches({ idle: 'showPlanes' }) &&
+      !(
+        commandBarState.matches('Gathering arguments') &&
+        commandBarState.context.currentArgument?.inputType === 'selection'
+      )
+    )
+      return
     // If we're mousing up from a camera drag, don't send a select event
     if (sceneInfra.camControls.wasDragging === true) return
 
