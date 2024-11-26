@@ -1,7 +1,13 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 103
 description: Error from executing invalid_index_fractional.kcl
 snapshot_kind: text
 ---
-semantic: KclErrorDetails { source_ranges: [SourceRange([20, 28, 0])], message: "1.2 is not a valid index, indices must be whole numbers >= 0" }
+KCL Semantic error
+
+  × semantic: 1.2 is not a valid index, indices must be whole numbers >= 0
+   ╭─[2:5]
+ 1 │ arr = [1, 2, 3]
+ 2 │ x = arr[1.2]
+   ·     ────────
+   ╰────
