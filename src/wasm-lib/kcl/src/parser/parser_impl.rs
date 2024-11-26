@@ -1,7 +1,7 @@
 use std::{cell::RefCell, collections::HashMap, str::FromStr};
 
 use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
+    combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
@@ -12,11 +12,11 @@ use self::error::ParseError;
 use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
-        CallExpression, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression,
-        Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
-        UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+        CallExpression, CallExpressionKw, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType,
+        FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility, LabeledArg, Literal,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue,
+        ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
+        Shebang, TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
@@ -478,6 +478,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                 Expr::Identifier(x) => BinaryPart::Identifier(x),
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
                 Expr::CallExpression(x) => BinaryPart::CallExpression(x),
+                Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
             };
@@ -1511,6 +1512,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
+        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         identifier.map(Box::new).map(Expr::Identifier),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
@@ -2028,6 +2030,23 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Expr>> {
         .parse_next(i)
 }
 
+fn labeled_argument(i: TokenSlice) -> PResult<LabeledArg> {
+    separated_pair(identifier, (one_of(TokenType::Colon), opt(whitespace)), expression)
+        .map(|(label, arg)| LabeledArg {
+            label: label.inner.name,
+            arg,
+        })
+        .parse_next(i)
+}
+
+/// Arguments are passed into a function,
+/// preceded by the name of the parameter (the label).
+fn labeled_arguments(i: TokenSlice) -> PResult<Vec<LabeledArg>> {
+    separated(0.., labeled_argument, comma_sep)
+        .context(expected("function arguments"))
+        .parse_next(i)
+}
+
 /// A type of a function argument.
 /// This can be:
 /// - a primitive type, e.g. 'number' or 'string' or 'bool'
@@ -2147,7 +2166,7 @@ fn binding_name(i: TokenSlice) -> PResult<Node<Identifier>> {
         .parse_next(i)
 }
 
-fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[Expr]) -> PResult<()> {
+fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
     // Type check the arguments.
     for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
         let Some(arg) = &args.get(i) else {
@@ -2205,7 +2224,8 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
-        typecheck_all(std_fn, &args)?;
+        let just_args: Vec<_> = args.iter().collect();
+        typecheck_all(std_fn, &just_args)?;
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
@@ -2231,6 +2251,30 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
         module_id: fn_name.module_id,
         inner: CallExpression {
             callee: fn_name,
+            arguments: args,
+            digest: None,
+        },
+    })
+}
+
+fn fn_call_kw(i: TokenSlice) -> PResult<Node<CallExpressionKw>> {
+    let fn_name = identifier(i)?;
+    opt(whitespace).parse_next(i)?;
+    let _ = open_paren.parse_next(i)?;
+    ignore_whitespace(i);
+
+    let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
+    let args = labeled_arguments(i)?;
+    ignore_whitespace(i);
+    let end = close_paren.parse_next(i)?.end;
+
+    Ok(Node {
+        start: fn_name.start,
+        end,
+        module_id: fn_name.module_id,
+        inner: CallExpressionKw {
+            callee: fn_name,
+            unlabeled: initial_unlabeled_arg,
             arguments: args,
             digest: None,
         },
@@ -3760,6 +3804,25 @@ let myBox = box([0,0], -3, -16, -10)
     }
 
     #[test]
+    fn arg_labels() {
+        let input = r#"length: 3"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::token::lexer(input, module_id).unwrap();
+        let mut sl: &[Token] = &tokens;
+        super::labeled_arguments(&mut sl).unwrap();
+    }
+
+    #[test]
+    fn kw_fn() {
+        for input in ["val = foo(x, y: z)", "val = foo(y: z)"] {
+            let module_id = ModuleId::default();
+            let tokens = crate::token::lexer(input, module_id).unwrap();
+            let sl = &tokens;
+            super::program.parse(sl).unwrap();
+        }
+    }
+
+    #[test]
     fn test_parse_tag_named_std_lib() {
         let some_program_string = r#"startSketchOn('XY')
     |> startProfileAt([0, 0], %)
@@ -4082,6 +4145,8 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"x = 3
         obj = { x, y: 4}"#
     );
+    snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y: z)"#);
+    snapshot_test!(kw_function_all_named, r#"val = foo(x: a, y: b)"#);
 }
 
 #[allow(unused)]

@@ -1,11 +1,11 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
 use super::{
-    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ElseIf, Expr,
-    ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement, Literal,
-    LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-    ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
-    UnaryExpression, VariableDeclaration, VariableDeclarator,
+    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
+    ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
+    ImportStatement, Literal, LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode,
+    NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program,
+    ReturnStatement, TagDeclarator, UnaryExpression, VariableDeclaration, VariableDeclarator,
 };
 
 /// Position-independent digest of the AST node.
@@ -93,6 +93,7 @@ impl Expr {
             Expr::BinaryExpression(be) => be.compute_digest(),
             Expr::FunctionExpression(fe) => fe.compute_digest(),
             Expr::CallExpression(ce) => ce.compute_digest(),
+            Expr::CallExpressionKw(ce) => ce.compute_digest(),
             Expr::PipeExpression(pe) => pe.compute_digest(),
             Expr::PipeSubstitution(ps) => ps.compute_digest(),
             Expr::ArrayExpression(ae) => ae.compute_digest(),
@@ -117,6 +118,7 @@ impl BinaryPart {
             BinaryPart::Identifier(id) => id.compute_digest(),
             BinaryPart::BinaryExpression(be) => be.compute_digest(),
             BinaryPart::CallExpression(ce) => ce.compute_digest(),
+            BinaryPart::CallExpressionKw(ce) => ce.compute_digest(),
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
@@ -368,6 +370,22 @@ impl CallExpression {
         hasher.update(slf.arguments.len().to_ne_bytes());
         for argument in slf.arguments.iter_mut() {
             hasher.update(argument.compute_digest());
+        }
+    });
+}
+
+impl CallExpressionKw {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.callee.compute_digest());
+        if let Some(ref mut unlabeled) = slf.unlabeled {
+            hasher.update(unlabeled.compute_digest());
+        } else {
+            hasher.update("no_unlabeled");
+        }
+        hasher.update(slf.arguments.len().to_ne_bytes());
+        for argument in slf.arguments.iter_mut() {
+            hasher.update(&argument.label);
+            hasher.update(argument.arg.compute_digest());
         }
     });
 }

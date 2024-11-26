@@ -2145,6 +2145,7 @@ impl ExecutorContext {
                 }
             }
             Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
+            Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
             Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
                 StatementKind::Declaration { name } => {
