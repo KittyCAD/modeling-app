@@ -3069,9 +3069,9 @@ ghi("things")
             folding_ranges[1].collapsed_text,
             Some("startSketchOn('XY')".to_string())
         );
-        assert_eq!(folding_ranges[2].start_line, 390);
+        assert_eq!(folding_ranges[2].start_line, 384);
         assert_eq!(folding_ranges[2].end_line, 403);
-        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi = (x) => {".to_string()));
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
     }
 
     #[test]

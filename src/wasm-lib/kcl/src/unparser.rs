@@ -651,7 +651,7 @@ import a as aaa, b as bbb from "a.kcl"
 
     #[test]
     fn test_recast_export_fn() {
-        let input = r#"export fn a = () => {
+        let input = r#"export fn a() {
   return 0
 }
 "#;
@@ -670,7 +670,7 @@ s = 1 // s = 1 -> height of Z is 13.4mm
 // Depth
 d = 1
 
-fn rect = (x, y, w, h) => {
+fn rect(x, y, w, h) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
     |> xLine(w, %)
@@ -680,7 +680,7 @@ fn rect = (x, y, w, h) => {
     |> extrude(d, %)
 }
 
-fn quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
+fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
   startSketchOn('XY')
     |> startProfileAt([x1, y1], %)
     |> lineTo([x2, y2], %)
@@ -690,7 +690,7 @@ fn quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
     |> extrude(d, %)
 }
 
-fn crosshair = (x, y) => {
+fn crosshair(x, y) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
     |> yLine(1, %)
@@ -700,7 +700,7 @@ fn crosshair = (x, y) => {
     |> xLine(-2, %)
 }
 
-fn z = (z_x, z_y) => {
+fn z(z_x, z_y) {
   z_end_w = s * 8.4
   z_end_h = s * 3
   z_corner = s * 2
@@ -713,7 +713,7 @@ fn z = (z_x, z_y) => {
   quad(z_x, z_y - z_h + z_corner, z_x + z_w - z_corner, z_y, z_x + z_w, z_y - z_corner, z_x + z_corner, z_y - z_h)
 }
 
-fn o = (c_x, c_y) => {
+fn o(c_x, c_y) {
   // Outer and inner radii
   o_r = s * 6.95
   i_r = 0.5652173913043478 * o_r
@@ -770,7 +770,7 @@ fn o = (c_x, c_y) => {
     |> extrude(d, %)
 }
 
-fn zoo = (x0, y0) => {
+fn zoo(x0, y0) {
   z(x0, y0)
   o(x0 + s * 20, y0 - (s * 6.7))
   o(x0 + s * 35, y0 - (s * 6.7))
@@ -965,7 +965,7 @@ thing ( 1 )
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn thing = (x) => {
+            r#"fn thing(x) {
   return x + 1
 }
 
@@ -1243,7 +1243,7 @@ depth = 45.0
 thk = 5
 hole_diam = 5
 // define a rectangular shape func
-fn rectShape = (pos, w, l) => {
+fn rectShape(pos, w, l) {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
@@ -1266,7 +1266,7 @@ scarlett_body = rectShape([0, 0], width, length)
        ]
      }, %)
 // build the bracket sketch around the body
-fn bracketSketch = (w, d, t) => {
+fn bracketSketch(w, d, t) {
   s = startSketchOn({
          plane = {
            origin = { x = 0, y = length / 2 + thk, z = 0 },
@@ -1372,7 +1372,7 @@ tabs_l = startSketchOn({
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn cube = (pos, scale) => {
+            r#"fn cube(pos, scale) {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
@@ -1459,7 +1459,7 @@ tabs_l = startSketchOn({
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn myFn = () => {
+            r#"fn myFn() {
   // this is a comment
   yo = { a = { b = { c = '123' } } } /* block
   comment */
@@ -1791,7 +1791,7 @@ blah = 1
 foo = false
 baz = { a = 1, part001 = "thing" }
 
-fn ghi = (part001) => {
+fn ghi(part001) {
   return part001
 }
 "#
@@ -1809,7 +1809,7 @@ fn ghi = (part001) => {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn ghi = (newName, y, z) => {
+            r#"fn ghi(newName, y, z) {
   return newName
 }
 "#
@@ -1974,8 +1974,8 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);
         let expected = "\
-fn f = () => {
-  return () => {
+fn f() {
+  return () {
     return 1
   }
 }";

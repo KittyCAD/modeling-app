@@ -1,4 +1,4 @@
-fn test = () => {
+fn test() {
   return startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0, 1], %)
@@ -7,7 +7,7 @@ fn test = () => {
     |> close(%)
 }
 
-fn test2 = () => {
+fn test2() {
   return {
     thing1 = {
       thing2 = startSketchOn('XY')
