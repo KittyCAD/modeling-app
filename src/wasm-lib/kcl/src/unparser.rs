@@ -5,7 +5,7 @@ use crate::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
         Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
         LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression,
-        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
+        Parameter, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -568,8 +568,7 @@ impl FunctionExpression {
         let param_list = self
             .params
             .iter()
-            // TODO arg types
-            .map(|param| param.identifier.name.clone())
+            .map(|param| param.recast(options, indentation_level))
             .collect::<Vec<String>>()
             .join(", ");
         let tab0 = options.get_indentation(indentation_level);
@@ -584,9 +583,40 @@ impl FunctionExpression {
     }
 }
 
+impl Parameter {
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let mut result = self.identifier.name.clone();
+        if let Some(ty) = &self.type_ {
+            result += ": ";
+            result += &ty.recast(options, indentation_level);
+        }
+
+        result
+    }
+}
+
 impl FnArgType {
-    pub fn recast(&self, _options: &FormatOptions, _indentation_level: usize) -> String {
-        "TODO".to_owned()
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        match self {
+            FnArgType::Primitive(t) => t.to_string(),
+            FnArgType::Array(t) => format!("{t}[]"),
+            FnArgType::Object { properties } => {
+                let mut result = "{".to_owned();
+                for p in properties {
+                    result += " ";
+                    result += &p.recast(options, indentation_level);
+                    result += ",";
+                }
+
+                if result.ends_with(',') {
+                    result.pop();
+                    result += " ";
+                }
+                result += "}";
+
+                result
+            }
+        }
     }
 }
 
@@ -972,6 +1002,18 @@ thing ( 1 )
 thing(1)
 "#
         );
+    }
+
+    #[test]
+    fn test_recast_typed_fn() {
+        let some_program_string = r#"fn thing(x: string, y: bool[]): number {
+  return x + 1
+}
+"#;
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]

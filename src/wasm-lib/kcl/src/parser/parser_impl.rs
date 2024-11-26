@@ -2005,6 +2005,7 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Expr>> {
 fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
     let type_ = alt((
         // Object types
+        // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
         (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
         // Array types
         (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
@@ -2035,13 +2036,11 @@ fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
 }
 
 fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, bool)> {
-    let (arg_name, optional, _, _, _, type_) = (
+    let (arg_name, optional, _, type_) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
-        opt(colon),
-        opt(whitespace),
-        opt(argument_type),
+        opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
     )
         .parse_next(i)?;
     Ok((arg_name, type_, optional.is_some()))
