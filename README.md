@@ -148,13 +148,11 @@ This will trigger the `build-apps` workflow, set the version, build & sign the a
 
 Once the workflow succeeds, a draft release will be created at https://github.com/KittyCAD/modeling-app/releases.
 
-#### 3. Manually test artifacts from the Cut Release PR
+#### 3. Manually test artifacts
 
 ##### Release builds
 
 The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in 2.).
-
-Alternatively, the draft release will also include these builds.
 
 Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
 
@@ -178,7 +176,9 @@ If the prompt doesn't show up, start the app in command line to grab the electro
 
 #### 4. Publish the release
 
-Head over to https://github.com/KittyCAD/modeling-app/releases, paste in the changelog discussed in the issue, and publish the draft release created by the `build-apps` workflow from step 2.
+Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the _Release title_ field as well.
+
+Hit _Generate release notes_ as a starting point to discuss the changelog in the issue. Once done, make sure _Set as the latest release_ is checked, and hit _Publish release_. 
 
 A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter. On success, the files will be uploaded to the public bucket and the announcement on Discord will be sent. 
 
