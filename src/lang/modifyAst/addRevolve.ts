@@ -21,7 +21,6 @@ import {
 } from 'lang/modifyAst'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { mutateAstWithTagForSketchSegment } from 'lang/modifyAst/addFillet'
-import { pathToFileURL } from 'url'
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
@@ -50,7 +49,6 @@ export function revolveSketch(
     pathToAxisSelection,
     'CallExpression'
   )
-
   if (err(lineNode)) return lineNode
 
   console.log('axis node path', pathToAxisSelection)
@@ -68,51 +66,53 @@ export function revolveSketch(
     clonedAst,
     pathToAxisSelection
   )
-  if (err(tagResult)) return tagResult
-  const { tag, modifiedAst } = tagResult
 
-  console.log('my tag!', tag)
+  // Have the tag whether it is already created or a new one is generated
+  if (err(tagResult)) return tagResult
+  const { tag } = tagResult
 
   /* Original Code */
   const { node: sketchExpression } = sketchNode
 
   // determine if sketchExpression is in a pipeExpression or not
-  const _node2 = getNodeFromPath<PipeExpression>(
+  const sketchPipeExpressionNode = getNodeFromPath<PipeExpression>(
     clonedAst,
     pathToSketchNode,
     'PipeExpression'
   )
-  if (err(_node2)) return _node2
-  const { node: pipeExpression } = _node2
+  if (err(sketchPipeExpressionNode)) return sketchPipeExpressionNode
+  const { node: sketchPipeExpression } = sketchPipeExpressionNode
+  const isInPipeExpression = sketchPipeExpression.type === 'PipeExpression'
 
-  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
-
-  const _node3 = getNodeFromPath<VariableDeclarator>(
+  const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
     pathToSketchNode,
     'VariableDeclarator'
   )
-  if (err(_node3)) return _node3
-  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
+  if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
+  const {
+    node: sketchVariableDeclarator,
+    shallowPath: sketchPathToDecleration,
+  } = sketchVariableDeclaratorNode
 
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
       axis: createLiteral('Y'),
     }),
-    createIdentifier(variableDeclarator.id.name),
+    createIdentifier(sketchVariableDeclarator.id.name),
   ])
 
   if (shouldPipe) {
     const pipeChain = createPipeExpression(
       isInPipeExpression
-        ? [...pipeExpression.body, revolveCall]
+        ? [...sketchPipeExpression.body, revolveCall]
         : [sketchExpression as any, revolveCall]
     )
 
-    variableDeclarator.init = pipeChain
+    sketchVariableDeclarator.init = pipeChain
     const pathToRevolveArg: PathToNode = [
-      ...pathToDecleration,
+      ...sketchPathToDecleration,
       ['init', 'VariableDeclarator'],
       ['body', ''],
       [pipeChain.body.length - 1, 'index'],
@@ -132,8 +132,8 @@ export function revolveSketch(
   const name = findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
   const VariableDeclaration = createVariableDeclaration(name, revolveCall)
   const sketchIndexInPathToNode =
-    pathToDecleration.findIndex((a) => a[0] === 'body') + 1
-  const sketchIndexInBody = pathToDecleration[sketchIndexInPathToNode][0]
+    sketchPathToDecleration.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = sketchPathToDecleration[sketchIndexInPathToNode][0]
   if (typeof sketchIndexInBody !== 'number')
     return new Error('expected sketchIndexInBody to be a number')
   clonedAst.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
