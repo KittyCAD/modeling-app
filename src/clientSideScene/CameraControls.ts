@@ -280,12 +280,19 @@ export class CameraControls {
         camSettings.orientation.w
       ).invert()
 
+      const newUp = new Vector3(
+        camSettings.up.x,
+        camSettings.up.y,
+        camSettings.up.z
+      )
       this.camera.quaternion.set(
         orientation.x,
         orientation.y,
         orientation.z,
         orientation.w
       )
+      this.camera.up.copy(newUp)
+      this.camera.updateProjectionMatrix()
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
       }
