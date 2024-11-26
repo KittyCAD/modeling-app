@@ -98,7 +98,7 @@ export function revolveSketch(
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      axis: createLiteral('Y'),
+      axis: createIdentifier(tag),
     }),
     createIdentifier(sketchVariableDeclarator.id.name),
   ])
